@@ -129,7 +129,7 @@ public class StyleGroupsActivity
                     .setTitle(R.string.pg_style_groups)
                     .setMessage(R.string.warning_select_at_least_1_group)
                     // cancel button, or cancel dialog
-                    .setNegativeButton(R.string.btn_continue_editing, (dialog, which) ->
+                    .setNegativeButton(R.string.btn_continue_edit, (dialog, which) ->
                             dialog.dismiss())
                     .setPositiveButton(R.string.btn_confirm_exit, (dialog, which) ->
                             finish())

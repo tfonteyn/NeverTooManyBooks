@@ -114,7 +114,7 @@
     <string name="btn_confirm_save">Speichern</string>
     <string name="btn_confirm_update">Aktualisieren</string>
     <string name="btn_confirm_use">Benutzen</string>
-    <string name="btn_continue_editing">Bearbeiten fortsetzen</string>
+    <string name="btn_continue_edit">Bearbeiten fortsetzen</string>
     <string name="btn_delete_credentials">Anmeldeinformationen löschen</string>
     <string name="btn_disable_message">Meldung deaktivieren</string>
     <string name="btn_loan_returned">Zurückgegeben</string>

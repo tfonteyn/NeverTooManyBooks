@@ -113,7 +113,7 @@
     <string name="btn_confirm_save">Guardar</string>
     <string name="btn_confirm_update">Actualizar</string>
     <string name="btn_confirm_use">Utilizar</string>
-    <string name="btn_continue_editing">Continuar editando</string>
+    <string name="btn_continue_edit">Continuar editando</string>
     <string name="btn_delete_credentials">Eliminar credenciales</string>
     <string name="btn_disable_message">Deshabilitar mensaje</string>
     <string name="btn_loan_returned">Devuelto</string>

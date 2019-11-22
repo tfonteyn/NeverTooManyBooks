@@ -1086,7 +1086,7 @@
     <string name="btn_confirm_merge">Merge</string>
 
     <!-- when warned you have unsaved edits -->
-    <string name="btn_continue_editing">Continue Editing</string>
+    <string name="btn_continue_edit">Continue Editing</string>
 
     <!-- button text for import/export dialogs -->
     <string name="btn_options">Options</string>

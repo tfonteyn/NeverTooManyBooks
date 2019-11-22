@@ -111,7 +111,7 @@
     <string name="btn_confirm_save">Kaydet</string>
     <string name="btn_confirm_update">Güncelle</string>
     <string name="btn_confirm_use">Kullanım</string>
-    <string name="btn_continue_editing">Düzenlemeyi sürdür</string>
+    <string name="btn_continue_edit">Düzenlemeyi sürdür</string>
     <string name="btn_delete_credentials">Kimlik Bilgilerini Kaldır</string>
     <string name="btn_disable_message">İletiyi kapat</string>
     <string name="btn_loan_returned">Geri geldi</string>

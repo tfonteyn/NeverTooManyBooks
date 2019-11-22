@@ -112,7 +112,7 @@
     <string name="btn_confirm_save">Salva</string>
     <string name="btn_confirm_update">Aggiorna</string>
     <string name="btn_confirm_use">Uso</string>
-    <string name="btn_continue_editing">Annulla</string>
+    <string name="btn_continue_edit">Annulla</string>
     <string name="btn_delete_credentials">Rimuovi credenziali</string>
     <string name="btn_disable_message">Disattiva messaggio</string>
     <string name="btn_loan_returned">Restituito</string>

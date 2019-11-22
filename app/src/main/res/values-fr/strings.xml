@@ -114,7 +114,7 @@
     <string name="btn_confirm_save">Sauvegarder</string>
     <string name="btn_confirm_update">Mettre à jour</string>
     <string name="btn_confirm_use">Utiliser</string>
-    <string name="btn_continue_editing">Continuer la modification</string>
+    <string name="btn_continue_edit">Continuer la modification</string>
     <string name="btn_delete_credentials">Suppr. les données de connexion</string>
     <string name="btn_disable_message">Désactiver ce message</string>
     <string name="btn_loan_returned">Rendu</string>

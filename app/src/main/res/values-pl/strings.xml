@@ -112,7 +112,7 @@
     <string name="btn_confirm_save">Zapisz</string>
     <string name="btn_confirm_update">Aktualizuj</string>
     <string name="btn_confirm_use">Użyj</string>
-    <string name="btn_continue_editing">Kontynuuj edycję</string>
+    <string name="btn_continue_edit">Kontynuuj edycję</string>
     <string name="btn_delete_credentials">Usuń poświadczenia</string>
     <string name="btn_disable_message">Wyłącz komunikat.</string>
     <string name="btn_loan_returned">Zwrócona</string>

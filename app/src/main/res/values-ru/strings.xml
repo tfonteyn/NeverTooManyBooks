@@ -112,7 +112,7 @@
     <string name="btn_confirm_save">Сохранить</string>
     <string name="btn_confirm_update">Обновить</string>
     <string name="btn_confirm_use">использование</string>
-    <string name="btn_continue_editing">Продолжить редактирование</string>
+    <string name="btn_continue_edit">Продолжить редактирование</string>
     <string name="btn_delete_credentials">Удалить учетные данные</string>
     <string name="btn_disable_message">Отключить сообщение</string>
     <string name="btn_loan_returned">Возвращена</string>

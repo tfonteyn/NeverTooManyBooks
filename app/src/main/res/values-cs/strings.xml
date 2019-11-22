@@ -112,7 +112,7 @@
     <string name="btn_confirm_save">Uložit</string>
     <string name="btn_confirm_update">Upravit</string>
     <string name="btn_confirm_use">Použití</string>
-    <string name="btn_continue_editing">Pokračovat v úpravách</string>
+    <string name="btn_continue_edit">Pokračovat v úpravách</string>
     <string name="btn_delete_credentials">Odebrat pověření</string>
     <string name="btn_disable_message">Zakázat zprávu</string>
     <string name="btn_loan_returned">Vráceno</string>

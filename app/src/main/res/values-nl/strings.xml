@@ -112,7 +112,7 @@
     <string name="btn_confirm_save">Opslaan</string>
     <string name="btn_confirm_update">Bijwerken</string>
     <string name="btn_confirm_use">Gebruik</string>
-    <string name="btn_continue_editing">Doorgaan met bewerken</string>
+    <string name="btn_continue_edit">Doorgaan met bewerken</string>
     <string name="btn_delete_credentials">Verwijder inloggegevens</string>
     <string name="btn_disable_message">Bericht uitschakelen</string>
     <string name="btn_loan_returned">Terug</string>

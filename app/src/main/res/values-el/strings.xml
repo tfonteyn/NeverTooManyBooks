@@ -113,7 +113,7 @@
     <string name="btn_confirm_save">Αποθήκευση</string>
     <string name="btn_confirm_update">Ενημέρωση</string>
     <string name="btn_confirm_use">Χρήση</string>
-    <string name="btn_continue_editing">Συνέχεια Επεξεργασίας</string>
+    <string name="btn_continue_edit">Συνέχεια Επεξεργασίας</string>
     <string name="btn_delete_credentials">Κατάργηση διαπιστευτηρίων</string>
     <string name="btn_disable_message">Απενεργοποίηση μηνυμάτων</string>
     <string name="btn_loan_returned">Έχει επιστραφεί</string>
