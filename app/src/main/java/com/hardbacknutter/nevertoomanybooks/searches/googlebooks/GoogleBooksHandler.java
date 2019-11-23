@@ -36,6 +36,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
+ * 2019-11: this needs scrapping. See {@link GoogleBooksManager} class doc.
+ *
+ * THIS CLASS IS OBSOLETE (but still in use and working fine).
+ *
  * An XML handler for the Google Books return.
  * Gets the total number of books found, and their id (which is a URL)
  * <p>
@@ -46,7 +50,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * We then pass this URL to {@link GoogleBooksEntryHandler} which FETCHES THAT URL
  * and parses it.
  * <p>
- * FIXME: the GoogleBooks feed/entry fetching is sub-optimal and ambiguous.
  * rewrite the GoogleBooks xml handlers by merging them.
  * <p>
  * - So we do NOT parse the "entry" as delivered in the "feed"

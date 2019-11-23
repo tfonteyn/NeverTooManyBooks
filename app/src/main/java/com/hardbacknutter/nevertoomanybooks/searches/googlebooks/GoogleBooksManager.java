@@ -51,7 +51,19 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 /**
- * ENHANCE: Get editions via http://books.google.com/books/feeds/volumes?q=editions:ISBN0380014300
+ * FIXME: migrate to new googlebooks API.
+ *
+ * The url's and xml formats used here are deprecated (but still works fine)
+ * https://developers.google.com/gdata/docs/directory
+ * https://developers.google.com/gdata/docs/2.0/reference
+ * <p>
+ * <p>
+ * The new standard is:
+ * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">
+ * https://developers.google.com/books/docs/v1/getting_started?csw=1</a>
+ *
+ * example:
+ * https://stackoverflow.com/questions/7908954/google-books-api-searching-by-isbn
  */
 public final class GoogleBooksManager
         implements SearchEngine,

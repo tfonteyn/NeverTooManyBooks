@@ -50,6 +50,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
+ * 2019-11: this needs scrapping. See {@link GoogleBooksManager} class doc.
+ *
+ * THIS CLASS IS OBSOLETE (but still in use and working fine).
+ *
+ *
  * An XML handler for the Google Books entry return.
  *
  * <pre>
