@@ -29,17 +29,22 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -49,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
+import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
@@ -67,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * <li>Implement {@link SearchEngine} to create the new engine (class).</li>
  * <li>Add your new engine to {@link #getSearchEngine}</li>
  *
- * <li>Create+add a new {@link Site} instance to the lists in {@link #getSites}
+ * <li>Create+add a new {@link Site} instance to the lists in {@link #createSiteList}
  * and to {@link #DATA_RELIABILITY_ORDER}</li>
  *
  * <li>Add your new engine to {@link DebugReport#getSiteUrls}</li>
@@ -80,7 +86,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  */
 public final class SearchSites {
 
-
     /**
      * The Amazon handler uses the BookCatalogue proxy.
      * DO NOT USE UNTIL WE REMOVE THAT DEPENDENCY.
@@ -90,7 +95,6 @@ public final class SearchSites {
     /** Site. */
     public static final int AMAZON = 1 << 1;
     /** Site. */
-    @SuppressWarnings("WeakerAccess")
     public static final int GOOGLE_BOOKS = 1;
     /** Site. */
     public static final int LIBRARY_THING = 1 << 2;
@@ -101,7 +105,6 @@ public final class SearchSites {
     /** Site. */
     public static final int OPEN_LIBRARY = 1 << 5;
     /** Site: Dutch language books & comics. */
-    @SuppressWarnings("WeakerAccess")
     public static final int KB_NL = 1 << 6;
     /** Site: Dutch language (and to an extend French) comics. */
     public static final int STRIP_INFO_BE = 1 << 7;
@@ -109,26 +112,13 @@ public final class SearchSites {
     static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON
                                         | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
                                         | KB_NL | STRIP_INFO_BE;
-    /** tag. */
-    private static final String TAG = "SearchSites";
-    /** Used to pass a list of sites around. */
-    public static final String BKEY_DATA_SITES = TAG + ":data";
-    /** Used to pass a list of sites around. */
-    public static final String BKEY_COVERS_SITES = TAG + ":covers";
-    /** Used to pass a list of sites around. */
-    public static final String BKEY_ALT_ED_SITES = TAG + ":alt_ed";
 
-    private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
-    private static final String PREFS_ORDER_DATA = PREFS_ORDER_PREFIX + "data";
-    private static final String PREFS_ORDER_COVERS = PREFS_ORDER_PREFIX + "covers";
-    private static final String PREFS_ORDER_ALT_ED = PREFS_ORDER_PREFIX + "alt_ed";
     private static final String SEP = ",";
 
     /** Dutch language site. */
     private static final String NLD = "nld";
 
-    // use a map...
-    //private static EnumMap<ListType,ArrayList<Site>> sLists = new EnumMap<>(ListType.class);
+
     private static final String DATA_RELIABILITY_ORDER;
     /** Name suffix for Cover websites. */
     private static final String SUFFIX_COVERS = "Covers";
@@ -136,11 +126,7 @@ public final class SearchSites {
     private static final String SUFFIX_ALT_ED = "AltEd";
 
     /** Cached copy of the users preferred site order. */
-    private static ArrayList<Site> sDataSearchOrder;
-    /** Cached copy of the users preferred site order specific for covers. */
-    private static ArrayList<Site> sCoverSearchOrder;
-    /** Cached copy of the users preferred site order specific for alternative-editions. */
-    private static ArrayList<Site> sAltEditionsSearchOrder;
+    private static final EnumMap<ListType, ArrayList<Site>> sLists = new EnumMap<>(ListType.class);
 
     static {
         // order is hardcoded based on experience.
@@ -289,9 +275,9 @@ public final class SearchSites {
      *
      * @return list
      */
-    private static ArrayList<Site> getSites(@NonNull final Context context,
-                                            @NonNull final ListType listType,
-                                            final boolean loadPrefs) {
+    private static ArrayList<Site> createSiteList(@NonNull final Context context,
+                                                  @NonNull final ListType listType,
+                                                  final boolean loadPrefs) {
         ArrayList<Site> list = new ArrayList<>();
 
         switch (listType) {
@@ -343,7 +329,7 @@ public final class SearchSites {
                 site.loadFromPrefs(context);
             }
             String order = PreferenceManager.getDefaultSharedPreferences(context)
-                                            .getString(listType.getKey(), null);
+                                            .getString(listType.getListOrderPreferenceKey(), null);
             if (order != null) {
                 return reorder(order, list);
             }
@@ -351,10 +337,9 @@ public final class SearchSites {
         return list;
     }
 
-    static ArrayList<Site> getReliabilityOrder() {
-        // get the (cached) list with user preferences for the sites.
-        // Now reorder for reliability.
-        return reorder(DATA_RELIABILITY_ORDER, getSites(App.getAppContext(), ListType.Data));
+    static ArrayList<Site> getReliabilityOrder(@NonNull final Context context) {
+        // get the (cached) list with user preferences for the sites reordered by reliability.
+        return reorder(DATA_RELIABILITY_ORDER, getSites(context, ListType.Data));
     }
 
     /**
@@ -371,53 +356,17 @@ public final class SearchSites {
                                            @NonNull final ListType listType) {
 
         // already loaded ?
-        switch (listType) {
-            case Data:
-                if (sDataSearchOrder != null) {
-                    //noinspection unchecked
-                    return (ArrayList<Site>) sDataSearchOrder.clone();
-                }
-                break;
-
-            case Covers:
-                if (sCoverSearchOrder != null) {
-                    //noinspection unchecked
-                    return (ArrayList<Site>) sCoverSearchOrder.clone();
-                }
-                break;
-
-            case AltEditions:
-                if (sAltEditionsSearchOrder != null) {
-                    //noinspection unchecked
-                    return (ArrayList<Site>) sAltEditionsSearchOrder.clone();
-                }
-                break;
-
-            default:
-                throw new IllegalStateException();
+        ArrayList<Site> list = sLists.get(listType);
+        if (list != null) {
+            //noinspection unchecked
+            return (ArrayList<Site>) list.clone();
         }
 
-        // get the list according to user preferences.
-        ArrayList<Site> sites = getSites(context, listType, true);
+        // create the list according to user preferences.
+        ArrayList<Site> sites = createSiteList(context, listType, true);
 
         // cache the list for reuse
-        switch (listType) {
-            case Data:
-                sDataSearchOrder = sites;
-                break;
-
-            case Covers:
-                sCoverSearchOrder = sites;
-                break;
-
-            case AltEditions:
-                sAltEditionsSearchOrder = sites;
-                break;
-
-            default:
-                throw new IllegalStateException();
-        }
-
+        sLists.put(listType, sites);
 
         //noinspection unchecked
         return (ArrayList<Site>) sites.clone();
@@ -469,11 +418,15 @@ public final class SearchSites {
      *
      * @param context  Current context
      * @param listType type
+     *
+     * @return the new list
      */
-    public static void resetList(@NonNull final Context context,
-                                 @NonNull final ListType listType) {
+    public static ArrayList<Site> resetList(@NonNull final Context context,
+                                            @NonNull final ListType listType) {
 
-        setList(context, listType, getSites(context, listType, false));
+        ArrayList<Site> newList = createSiteList(context, listType, false);
+        setList(context, listType, newList);
+        return newList;
     }
 
     /**
@@ -488,22 +441,7 @@ public final class SearchSites {
                                @NonNull final ArrayList<Site> newList) {
 
         // replace the cached copy.
-        switch (listType) {
-            case Data:
-                sDataSearchOrder = newList;
-                break;
-
-            case Covers:
-                sCoverSearchOrder = newList;
-                break;
-
-            case AltEditions:
-                sAltEditionsSearchOrder = newList;
-                break;
-
-            default:
-                throw new IllegalStateException();
-        }
+        sLists.put(listType, newList);
 
         // Save the order of the given list (ids) and the individual site settings to preferences.
         SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context).edit();
@@ -513,24 +451,87 @@ public final class SearchSites {
             // and collect the id for the order string
             return String.valueOf(site.id);
         });
-        ed.putString(listType.getKey(), order);
+        ed.putString(listType.getListOrderPreferenceKey(), order);
         ed.apply();
     }
 
-    public enum ListType {
+    /**
+     * The different types of configurable site lists we maintain.
+     *
+     * <strong>Note:</strong> the order of the enum values is used as the order
+     * of the tabs in {@link SearchAdminActivity}.
+     */
+    public enum ListType
+            implements Parcelable {
+
         Data, Covers, AltEditions;
 
-        String getKey() {
+        public static final Parcelable.Creator<ListType> CREATOR =
+                new Parcelable.Creator<ListType>() {
+                    @Override
+                    public ListType createFromParcel(Parcel in) {
+                        return ListType.values()[in.readInt()];
+                    }
+
+                    @Override
+                    public ListType[] newArray(int size) {
+                        return new ListType[size];
+                    }
+                };
+        private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
+        private static final String TAG = "ListType";
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest,
+                                  int flags) {
+            dest.writeInt(this.ordinal());
+        }
+
+        @StringRes
+        public int getLabelId() {
             switch (this) {
-                case Covers:
-                    return PREFS_ORDER_COVERS;
-
-                case AltEditions:
-                    return PREFS_ORDER_ALT_ED;
-
                 case Data:
+                    return R.string.lbl_books;
+                case Covers:
+                    return R.string.lbl_covers;
+                case AltEditions:
+                    return R.string.tab_lbl_alternative_editions;
+
                 default:
-                    return PREFS_ORDER_DATA;
+                    throw new UnexpectedValueException(this);
+            }
+        }
+
+        public String getBundleKey() {
+            switch (this) {
+                case Data:
+                    return TAG + ":data";
+                case Covers:
+                    return TAG + ":covers";
+                case AltEditions:
+                    return TAG + ":alt_ed";
+
+                default:
+                    throw new UnexpectedValueException(this);
+            }
+        }
+
+        String getListOrderPreferenceKey() {
+            switch (this) {
+                case Data:
+                    return PREFS_ORDER_PREFIX + "data";
+                case Covers:
+                    return PREFS_ORDER_PREFIX + "covers";
+                case AltEditions:
+                    return PREFS_ORDER_PREFIX + "alt_ed";
+
+                default:
+                    throw new UnexpectedValueException(this);
             }
         }
     }

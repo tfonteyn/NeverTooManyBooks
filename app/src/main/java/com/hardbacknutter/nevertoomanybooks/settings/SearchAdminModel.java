@@ -28,21 +28,20 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
@@ -50,93 +49,45 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public class SearchAdminModel
         extends ViewModel {
 
-    public static final int TAB_BOOKS = 1;
-    static final int TAB_COVERS = 1 << 1;
-    static final int TAB_ALT_ED = 1 << 2;
-
-    static final int SHOW_ALL_TABS = TAB_BOOKS | TAB_COVERS | TAB_ALT_ED;
-
     private static final String TAG = "SearchAdminModel";
-    public static final String BKEY_TABS_TO_SHOW = TAG + ":tabs";
-    static final String BKEY_PERSIST = TAG + ":persist";
+    public static final String BKEY_LIST_TYPE = TAG + ":type";
 
-    /**
-     * Optional: set to one of the {@link SearchOrderFragment} tabs,
-     * if we should *only* show that tab, and NOT save the new setting (i.e. the "use" scenario).
-     */
-    @Tabs
-    private int mTabsToShow;
-    @Nullable
-    private ArrayList<Site> mBooks;
-    @Nullable
-    private ArrayList<Site> mCovers;
-    @Nullable
-    private ArrayList<Site> mAltEd;
+    private Map<SearchSites.ListType, ArrayList<Site>> mListMap;
 
-    private boolean mPersist;
+    /** Null for all lists. */
+    @Nullable
+    private SearchSites.ListType mListType;
 
     /**
      * Pseudo constructor.
      * <p>
      * If a single tab is asked for, we read the list first from the arguments if present.
      * When all tabs are asked for, we get the system/user preferred lists.
-     * <p>
-     * {@link #BKEY_PERSIST} must be explicitly set to {@code true} if needed.
      *
-     * @param context Current context
-     * @param args    {@link Fragment#getArguments()}
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
-        mTabsToShow = args.getInt(BKEY_TABS_TO_SHOW, SHOW_ALL_TABS);
-        mPersist = args.getBoolean(BKEY_PERSIST, false);
+    public void init(@Nullable final Bundle args) {
+        if (mListMap == null) {
+            mListMap = new EnumMap<>(SearchSites.ListType.class);
+            if (args != null) {
+                mListType = args.getParcelable(BKEY_LIST_TYPE);
 
-        // first see if we got passed in custom lists.
-        if (mBooks == null) {
-            mBooks = args.getParcelableArrayList(SearchSites.BKEY_DATA_SITES);
+                // first see if we got passed in any custom lists.
+                for (SearchSites.ListType type : SearchSites.ListType.values()) {
+                    if (!mListMap.containsKey(type)) {
+                        ArrayList<Site> list = args.getParcelableArrayList(type.getBundleKey());
+                        if (list != null) {
+                            mListMap.put(type, list);
+                        }
+                    }
+                }
+            }
         }
-        if (mCovers == null) {
-            mCovers = args.getParcelableArrayList(SearchSites.BKEY_COVERS_SITES);
-        }
-        if (mAltEd == null) {
-            mAltEd = args.getParcelableArrayList(SearchSites.BKEY_ALT_ED_SITES);
-        }
-        // now depending on which tabs to show, make sure the lists are not null.
-        // List(s) for tabs which are not shown remain null.
-        switch (mTabsToShow) {
-            case TAB_BOOKS:
-                if (mBooks == null) {
-                    mBooks = SearchSites.getSites(context, SearchSites.ListType.Data);
-                }
-                break;
+    }
 
-            case TAB_COVERS:
-                if (mCovers == null) {
-                    mCovers = SearchSites.getSites(context, SearchSites.ListType.Covers);
-                }
-                break;
-
-            case TAB_ALT_ED:
-                if (mAltEd == null) {
-                    mAltEd = SearchSites.getSites(context, SearchSites.ListType.AltEditions);
-                }
-                break;
-
-            case SHOW_ALL_TABS:
-                if (mBooks == null) {
-                    mBooks = SearchSites.getSites(context, SearchSites.ListType.Data);
-                }
-                if (mCovers == null) {
-                    mCovers = SearchSites.getSites(context, SearchSites.ListType.Covers);
-                }
-                if (mAltEd == null) {
-                    mAltEd = SearchSites.getSites(context, SearchSites.ListType.AltEditions);
-                }
-                break;
-
-            default:
-                throw new UnexpectedValueException(mTabsToShow);
-        }
+    @Nullable
+    SearchSites.ListType getListType() {
+        return mListType;
     }
 
     /**
@@ -145,24 +96,15 @@ public class SearchAdminModel
      * @return list matching the single tab.
      */
     @NonNull
-    public ArrayList<Site> getList() {
-        switch (mTabsToShow) {
-            case TAB_BOOKS:
-                //noinspection ConstantConditions
-                return mBooks;
+    ArrayList<Site> getList(@NonNull final Context context,
+                            @NonNull final SearchSites.ListType listType) {
 
-            case TAB_COVERS:
-                //noinspection ConstantConditions
-                return mCovers;
-
-            case TAB_ALT_ED:
-                //noinspection ConstantConditions
-                return mAltEd;
-
-            case SHOW_ALL_TABS:
-            default:
-                throw new UnexpectedValueException(mTabsToShow);
+        ArrayList<Site> list = mListMap.get(listType);
+        if (list == null) {
+            list = SearchSites.getSites(context, listType);
+            mListMap.put(listType, list);
         }
+        return list;
     }
 
     /**
@@ -175,29 +117,26 @@ public class SearchAdminModel
     public boolean persist(@NonNull final Context context) {
         int shouldHave = 0;
         int has = 0;
-        if (mPersist) {
-            if (mBooks != null) {
-                SearchSites.setList(context, SearchSites.ListType.Data, mBooks);
-                shouldHave++;
-                has += SearchSites.getEnabledSites(mBooks) > 0 ? 1 : 0;
-            }
-            if (mCovers != null) {
-                SearchSites.setList(context, SearchSites.ListType.Covers, mCovers);
-                shouldHave++;
-                has += SearchSites.getEnabledSites(mCovers) > 0 ? 1 : 0;
-            }
-            if (mAltEd != null) {
-                SearchSites.setList(context, SearchSites.ListType.AltEditions, mAltEd);
-                shouldHave++;
-                has += SearchSites.getEnabledSites(mAltEd) > 0 ? 1 : 0;
-            }
+        for (Map.Entry<SearchSites.ListType, ArrayList<Site>> entry : mListMap.entrySet()) {
+            SearchSites.setList(context, entry.getKey(), entry.getValue());
+            shouldHave++;
+            has += SearchSites.getEnabledSites(entry.getValue()) > 0 ? 1 : 0;
         }
+
         return (has > 0) && (shouldHave == has);
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef(flag = true, value = {SHOW_ALL_TABS, TAB_BOOKS, TAB_COVERS, TAB_ALT_ED})
-    @interface Tabs {
+    void resetList(@NonNull final Context context,
+                   @NonNull final SearchSites.ListType listType) {
 
+        ArrayList<Site> newList = SearchSites.resetList(context, listType);
+
+        ArrayList<Site> currentList = mListMap.get(listType);
+        if (currentList == null) {
+            mListMap.put(listType, newList);
+        } else {
+            currentList.clear();
+            currentList.addAll(newList);
+        }
     }
 }

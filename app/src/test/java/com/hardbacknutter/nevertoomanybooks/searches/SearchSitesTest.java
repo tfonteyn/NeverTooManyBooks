@@ -63,13 +63,9 @@ class SearchSitesTest
 
     @Test
     void site() {
-        ArrayList<Site> sites1 = SearchSites.getSites(mContext, SearchSites.ListType.Data);
-        System.out.println(sites1);
-
-        ArrayList<Site> sites2 = SearchSites.getSites(mContext, SearchSites.ListType.Covers);
-        System.out.println(sites2);
-
-        ArrayList<Site> sites3 = SearchSites.getSites(mContext, SearchSites.ListType.AltEditions);
-        System.out.println(sites3);
+        for (SearchSites.ListType type : SearchSites.ListType.values()) {
+            ArrayList<Site> sites = SearchSites.getSites(mContext, type);
+            System.out.println(sites);
+        }
     }
 }

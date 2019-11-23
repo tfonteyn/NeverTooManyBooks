@@ -30,8 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -46,11 +44,12 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
@@ -59,12 +58,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 public class SearchAdminActivity
         extends BaseActivity {
 
-    private static final String TAG = "SearchAdminActivity";
-
     private ViewPager2 mViewPager;
     private TabAdapter mTabAdapter;
 
-    private boolean mPersist;
+    private SearchAdminModel mModel;
 
     @Override
     protected int getLayoutId() {
@@ -75,41 +72,21 @@ public class SearchAdminActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        @SearchAdminModel.Tabs
-        int tabToShow = getIntent().getIntExtra(SearchAdminModel.BKEY_TABS_TO_SHOW,
-                                                SearchAdminModel.SHOW_ALL_TABS);
+        mModel = new ViewModelProvider(this).get(SearchAdminModel.class);
+        mModel.init(getIntent().getExtras());
 
         mViewPager = findViewById(R.id.tab_fragment);
         TabLayout tabLayout = findViewById(R.id.tab_panel);
 
-        switch (tabToShow) {
-            case SearchAdminModel.TAB_BOOKS: {
-                setTitle(R.string.lbl_books);
-                mPersist = false;
-                tabLayout.setVisibility(View.GONE);
-                break;
-            }
-            case SearchAdminModel.TAB_COVERS: {
-                setTitle(R.string.lbl_covers);
-                mPersist = false;
-                tabLayout.setVisibility(View.GONE);
-                break;
-            }
-            case SearchAdminModel.TAB_ALT_ED: {
-                setTitle(R.string.tab_lbl_alternative_editions);
-                mPersist = false;
-                tabLayout.setVisibility(View.GONE);
-                break;
-            }
-            case SearchAdminModel.SHOW_ALL_TABS:
-            default: {
-                setTitle(R.string.lbl_websites);
-                mPersist = true;
-                break;
-            }
+        if (mModel.getListType() == null) {
+            setTitle(R.string.lbl_websites);
+
+        } else {
+            setTitle(mModel.getListType().getLabelId());
+            tabLayout.setVisibility(View.GONE);
         }
 
-        mTabAdapter = new TabAdapter(this, tabToShow, mPersist, getIntent().getExtras());
+        mTabAdapter = new TabAdapter(this, mModel.getListType());
         mViewPager.setAdapter(mTabAdapter);
         new TabLayoutMediator(tabLayout, mViewPager, (tab, position) ->
                 tab.setText(getString(mTabAdapter.getTabTitle(position))))
@@ -119,14 +96,14 @@ public class SearchAdminActivity
     @Override
     public void onBackPressed() {
         boolean hasSites;
-        SearchAdminModel model = new ViewModelProvider(this).get(SearchAdminModel.class);
-        if (mPersist) {
-            hasSites = model.persist(this);
+        if (mModel.getListType() == null) {
+            hasSites = mModel.persist(this);
+
         } else {
-            Intent data = new Intent()
-                    .putExtra(SearchSites.BKEY_DATA_SITES, model.getList());
-            setResult(Activity.RESULT_OK, data);
-            hasSites = SearchSites.getEnabledSites(model.getList()) != 0;
+            ArrayList<Site> list = mModel.getList(this, mModel.getListType());
+            setResult(Activity.RESULT_OK,
+                      new Intent().putExtra(mModel.getListType().getBundleKey(), list));
+            hasSites = SearchSites.getEnabledSites(list) != 0;
         }
 
         if (hasSites) {
@@ -134,50 +111,6 @@ public class SearchAdminActivity
         } else {
             UserMessage.show(mViewPager, R.string.warning_enable_at_least_1_website);
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_RESET:
-                switch (mViewPager.getCurrentItem()) {
-                    case SearchAdminModel.TAB_BOOKS:
-                        SearchSites.resetList(this, SearchSites.ListType.Data);
-                        break;
-
-                    case SearchAdminModel.TAB_COVERS:
-                        SearchSites.resetList(this, SearchSites.ListType.Covers);
-                        break;
-
-                    case SearchAdminModel.TAB_ALT_ED:
-                        SearchSites.resetList(this, SearchSites.ListType.AltEditions);
-                        break;
-
-                    default:
-                        Logger.warnWithStackTrace(this, TAG,
-                                                  "item=" + mViewPager.getCurrentItem());
-                        break;
-                }
-                // not ideal, but it will do
-                recreate();
-
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
-        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
-            .setIcon(R.drawable.ic_undo)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-        return super.onCreateOptionsMenu(menu);
     }
 
     /**
@@ -188,98 +121,48 @@ public class SearchAdminActivity
     private static class TabAdapter
             extends FragmentStateAdapter {
 
-        private final int count;
-        private final int mTabsToShow;
-        private final boolean mPersist;
         @Nullable
-        private final Bundle mArgs;
+        private final SearchSites.ListType mListType;
 
         TabAdapter(@NonNull final FragmentActivity container,
-                   @SearchAdminModel.Tabs final int tabsToShow,
-                   final boolean persist,
-                   @Nullable final Bundle args) {
+                   @Nullable final SearchSites.ListType listType) {
             super(container);
-            mTabsToShow = tabsToShow;
-            mPersist = persist;
-            mArgs = args;
-            count = Integer.bitCount(mTabsToShow);
+            mListType = listType;
         }
 
         @Override
         public int getItemCount() {
-            return count;
+            if (mListType == null) {
+                return SearchSites.ListType.values().length;
+            } else {
+                return 1;
+            }
         }
 
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-
-            int tab;
-            if (count == 1) {
-                if ((mTabsToShow & SearchAdminModel.TAB_BOOKS) != 0) {
-                    tab = SearchAdminModel.TAB_BOOKS;
-                } else if ((mTabsToShow & SearchAdminModel.TAB_COVERS) != 0) {
-                    tab = SearchAdminModel.TAB_COVERS;
-                } else if ((mTabsToShow & SearchAdminModel.TAB_ALT_ED) != 0) {
-                    tab = SearchAdminModel.TAB_ALT_ED;
-                } else {
-                    throw new IllegalStateException("no active tabs set");
-                }
-            } else {
-                switch (position) {
-                    case 0:
-                        tab = SearchAdminModel.TAB_BOOKS;
-                        break;
-                    case 1:
-                        tab = SearchAdminModel.TAB_COVERS;
-                        break;
-                    case 2:
-                        tab = SearchAdminModel.TAB_ALT_ED;
-                        break;
-
-                    default:
-                        throw new UnexpectedValueException(position);
-                }
-            }
-
             Bundle args = new Bundle();
-            if (mArgs != null) {
-                // add original args first, we'll overwrite if needed.
-                args.putAll(mArgs);
-            }
-            args.putInt(SearchAdminModel.BKEY_TABS_TO_SHOW, tab);
-            args.putBoolean(SearchAdminModel.BKEY_PERSIST, mPersist);
+            args.putParcelable(SearchAdminModel.BKEY_LIST_TYPE, toType(position));
             Fragment fragment = new SearchOrderFragment();
             fragment.setArguments(args);
             return fragment;
         }
 
+
         @StringRes
         int getTabTitle(final int position) {
+            return toType(position).getLabelId();
+        }
 
-            if (count == 1) {
-                if ((mTabsToShow & SearchAdminModel.TAB_BOOKS) != 0) {
-                    return R.string.lbl_books;
-                } else if ((mTabsToShow & SearchAdminModel.TAB_COVERS) != 0) {
-                    return R.string.lbl_covers;
-                } else if ((mTabsToShow & SearchAdminModel.TAB_ALT_ED) != 0) {
-                    return R.string.tab_lbl_alternative_editions;
-                } else {
-                    throw new IllegalStateException("no active tabs set");
-                }
+        @NonNull
+        private SearchSites.ListType toType(final int position) {
+            // showing a single tab ?
+            if (mListType != null) {
+                return mListType;
+            } else {
+                return SearchSites.ListType.values()[position];
             }
-
-            switch (position) {
-                case 0:
-                    return R.string.lbl_books;
-                case 1:
-                    return R.string.lbl_covers;
-                case 2:
-                    return R.string.tab_lbl_alternative_editions;
-                default:
-                    throw new UnexpectedValueException(position);
-            }
-
         }
     }
 }

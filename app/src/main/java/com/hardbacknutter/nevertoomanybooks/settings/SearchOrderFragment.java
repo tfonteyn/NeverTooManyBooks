@@ -30,6 +30,9 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -45,8 +48,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -56,8 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * Handles the order of sites to search, and the individual site being enabled or not.
  * <p>
- * This fragment does not (need to) know which list it's handling
- * nor if it should be persisted or not. All this is handled in {@link SearchAdminModel}.
+ * Persistence is handled in {@link SearchAdminModel}.
  */
 public class SearchOrderFragment
         extends Fragment {
@@ -67,8 +71,18 @@ public class SearchOrderFragment
     private RecyclerView mListView;
     private ItemTouchHelper mItemTouchHelper;
 
-    @SuppressWarnings("FieldCanBeLocal")
+    /** The list we're handling in this fragment (tab). */
+    @Nullable
+    private SearchSites.ListType mOurListType;
+
     private SearchAdminModel mModel;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Mandatory
+        setHasOptionsMenu(true);
+    }
 
     @Override
     @Nullable
@@ -85,18 +99,21 @@ public class SearchOrderFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mOurListType = requireArguments().getParcelable(SearchAdminModel.BKEY_LIST_TYPE);
+        Objects.requireNonNull(mOurListType);
+
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
-        //noinspection ConstantConditions
-        mModel.init(getContext(), requireArguments());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
+        //noinspection ConstantConditions
         mListView.addItemDecoration(
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        mListAdapter = new SearchSiteListAdapter(getContext(), mModel.getList(),
+        mListAdapter = new SearchSiteListAdapter(getContext(),
+                                                 mModel.getList(getContext(), mOurListType),
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListView.setAdapter(mListAdapter);
 
@@ -104,6 +121,33 @@ public class SearchOrderFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
+            .setIcon(R.drawable.ic_undo)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_RESET:
+                //noinspection ConstantConditions
+                mModel.resetList(getContext(), mOurListType);
+                mListAdapter.notifyDataSetChanged();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private static class SearchSiteListAdapter

@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -240,7 +241,7 @@ public class UpdateFieldsFragment
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                            SearchSites.BKEY_DATA_SITES);
+                            SearchSites.ListType.Data.getBundleKey());
                     if (sites != null) {
                         mUpdateFieldsModel.setSearchSites(sites);
                     }
@@ -274,8 +275,9 @@ public class UpdateFieldsFragment
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES: {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                        .putExtra(SearchAdminModel.BKEY_TABS_TO_SHOW, SearchAdminModel.TAB_BOOKS)
-                        .putExtra(SearchSites.BKEY_DATA_SITES,
+                        .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
+                                  (Parcelable) SearchSites.ListType.Data)
+                        .putExtra(SearchSites.ListType.Data.getBundleKey(),
                                   mUpdateFieldsModel.getSearchSites());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;

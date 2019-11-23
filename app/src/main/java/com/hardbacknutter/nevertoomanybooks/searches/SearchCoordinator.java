@@ -226,7 +226,7 @@ public class SearchCoordinator
             if (tasksActive == 0) {
                 long processTime = System.nanoTime();
 
-                accumulateResults();
+                accumulateResults(App.getAppContext());
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                     for (Map.Entry<Integer, Long> entry : mSearchTasksStartTime.entrySet()) {
@@ -760,7 +760,7 @@ public class SearchCoordinator
     /**
      * Accumulate data from all sites.
      */
-    private void accumulateResults() {
+    private void accumulateResults(@NonNull final Context appContext) {
         // This list will be the actual order of the result we apply, based on the
         // actual results and the default order.
         final Collection<Integer> sites = new ArrayList<>();
@@ -770,7 +770,7 @@ public class SearchCoordinator
             // If ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final Collection<Integer> uncertain = new ArrayList<>();
-            for (Site site : SearchSites.getReliabilityOrder()) {
+            for (Site site : SearchSites.getReliabilityOrder(appContext)) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
@@ -798,7 +798,7 @@ public class SearchCoordinator
 
         } else {
             // If ISBN was not passed, then just use the default order
-            for (Site site : SearchSites.getReliabilityOrder()) {
+            for (Site site : SearchSites.getReliabilityOrder(appContext)) {
                 sites.add(site.id);
             }
         }

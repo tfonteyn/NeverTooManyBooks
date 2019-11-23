@@ -316,7 +316,8 @@ public class CoverBrowserViewModel
          */
         FileManager(@NonNull final Context context,
                     @NonNull final Bundle args) {
-            mSearchSitesForCovers = args.getParcelableArrayList(SearchSites.BKEY_COVERS_SITES);
+            mSearchSitesForCovers = args.getParcelableArrayList(
+                    SearchSites.ListType.Covers.getBundleKey());
             if (mSearchSitesForCovers == null) {
                 mSearchSitesForCovers = SearchSites.getSites(context, SearchSites.ListType.Covers);
             }
