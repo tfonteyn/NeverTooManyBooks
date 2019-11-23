@@ -1,7 +1,10 @@
 Get a list of alternative editions; i.e. feed it with an isbn, retrieve a list of alternative isbn
+https://www.oclc.org/developer/develop/web-services/worldcat-search-api/library-catalog-url.en.html
 
 https://www.worldcat.org/affiliate/webservices/xisbn/app.jsp
 => format is the same as LibraryThing => SearchLibraryThingEditionHandler
 
-https://www.oclc.org/developer/develop/web-services/worldcat-search-api/library-catalog-url.en.html
+The xISBN Web service is free for non-commercial use when usage does not exceed 500 requests per day.
+More requests is a paying service.
 
+No plans to implement for now.
