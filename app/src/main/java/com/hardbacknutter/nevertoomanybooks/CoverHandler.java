@@ -41,7 +41,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
@@ -66,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -409,13 +407,11 @@ public class CoverHandler {
 
         String isbn = mIsbnView.getText().toString().trim();
         if (ISBN.isValid(isbn)) {
+            // we must use the same fragment manager as the hosting fragment...
             FragmentManager fm = mFragment.getParentFragmentManager();
-            // we must use the same fragment manager as the hosting fragment.
-            mCoverBrowser = (CoverBrowserFragment) fm.findFragmentByTag(CoverBrowserFragment.TAG);
-            if (mCoverBrowser == null) {
-                mCoverBrowser = CoverBrowserFragment.newInstance(isbn);
-                mCoverBrowser.show(fm, CoverBrowserFragment.TAG);
-            }
+            mCoverBrowser = CoverBrowserFragment.newInstance(isbn);
+            mCoverBrowser.show(fm, CoverBrowserFragment.TAG);
+            // ... as we will communicate between the two fragments directly
             mCoverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
 
         } else {
@@ -436,7 +432,6 @@ public class CoverHandler {
             refreshImageView();
             // all done, get rid of the browser fragment
             mCoverBrowser.dismiss();
-            mCoverBrowser = null;
         }
     }
 
@@ -538,10 +533,9 @@ public class CoverHandler {
     private void startExternalCropper(@NonNull final File inputFile,
                                       @NonNull final File outputFile) {
 
-        Uri inputUri = FileProvider.getUriForFile(mContext, GenericFileProvider.AUTHORITY,
-                                                  inputFile);
-        // using the provider is not needed. Leaving here as reminder.
-        // FileProvider.getUriForFile(mContext, GenericFileProvider.AUTHORITY, outputFile);
+        Uri inputUri = App.getUriForFile(mContext, inputFile);
+
+        // using the provider is not needed for the output.
         Uri outputUri = Uri.fromFile(outputFile);
 
         //call the standard crop action intent (the device may not support it)

@@ -150,6 +150,7 @@
     <PreferenceCategory
         android:key="psk_style_series"
         android:title="@string/lbl_series"
+        app:isPreferenceVisible="false"
         >
 
     </PreferenceCategory>

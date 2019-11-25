@@ -239,8 +239,7 @@ public class CoverBrowserFragment
 
         if (mAlternativeEditions.isEmpty()) {
             mStatusTextView.setText(R.string.progress_msg_finding_editions);
-            //noinspection ConstantConditions
-            mModel.fetchEditions(getContext());
+            mModel.fetchEditions();
 
         } else {
             showGallery(mAlternativeEditions);

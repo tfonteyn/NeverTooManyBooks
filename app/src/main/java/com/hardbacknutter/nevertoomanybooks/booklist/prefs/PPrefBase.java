@@ -146,6 +146,11 @@ public abstract class PPrefBase<T>
         }
     }
 
+    /**
+     * Set the <strong>value</strong> from the Parcel.
+     *
+     * @param in parcel to read from
+     */
     public void set(@NonNull final Parcel in) {
         //noinspection unchecked
         T tmp = (T) in.readValue(getClass().getClassLoader());

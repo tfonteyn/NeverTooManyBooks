@@ -43,7 +43,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -396,13 +395,9 @@ public class EditBookSeriesActivity
             }
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> {
-                FragmentManager fm = getSupportFragmentManager();
-                if (fm.findFragmentByTag(EditBookSeriesDialogFragment.TAG) == null) {
-                    EditBookSeriesDialogFragment.newInstance(series)
-                                                .show(fm, EditBookSeriesDialogFragment.TAG);
-                }
-            });
+            holder.rowDetailsView.setOnClickListener(v -> EditBookSeriesDialogFragment
+                    .newInstance(series)
+                    .show(getSupportFragmentManager(), EditBookSeriesDialogFragment.TAG));
         }
     }
 }

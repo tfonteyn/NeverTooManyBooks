@@ -280,10 +280,6 @@ public class PreferredStylesActivity
                                           @NonNull final BooklistStyle style) {
 
         switch (menuItem.getItemId()) {
-            case R.id.MENU_DUPLICATE:
-                // pass the style id of the template style
-                editStyle(style.clone(this), style.getId());
-                return true;
 
             case R.id.MENU_EDIT:
                 // dev sanity check
@@ -298,6 +294,11 @@ public class PreferredStylesActivity
             case R.id.MENU_DELETE:
                 mModel.deleteStyle(this, style);
                 mListAdapter.notifyDataSetChanged();
+                return true;
+
+            case R.id.MENU_DUPLICATE:
+                // pass the style id of the template style
+                editStyle(style.clone(this), style.getId());
                 return true;
 
             default:

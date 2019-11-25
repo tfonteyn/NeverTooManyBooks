@@ -73,6 +73,11 @@ public abstract class Options
         this.uri = uri;
     }
 
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
     protected Options(@NonNull final Parcel in) {
         options = in.readInt();
         uri = in.readParcelable(getClass().getClassLoader());

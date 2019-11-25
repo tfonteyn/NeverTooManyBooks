@@ -51,8 +51,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -73,7 +73,7 @@ public class SearchOrderFragment
 
     /** The list we're handling in this fragment (tab). */
     @Nullable
-    private SearchSites.ListType mOurListType;
+    private SiteList.ListType mOurListType;
 
     private SearchAdminModel mModel;
 
@@ -112,8 +112,8 @@ public class SearchOrderFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        mListAdapter = new SearchSiteListAdapter(getContext(),
-                                                 mModel.getList(getContext(), mOurListType),
+        List<Site> list = mModel.getList(getContext(), mOurListType).getSites();
+        mListAdapter = new SearchSiteListAdapter(getContext(), list,
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListView.setAdapter(mListAdapter);
 

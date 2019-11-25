@@ -27,56 +27,23 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.MutableLiveData;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 
-/**
- * ViewModel to keep hold of a pass-through task listener.
- * <p>
- * A ViewModel can not actually have a parameter type. So, we use concrete classes, e.g.
- * <pre>
- *  {@code
- *      public class SomeTypeTaskModel
- *          extends TaskModel<SomeType> {
- *      }
- *  }
- * </pre>
- *
- * @param <Result> type of the task result object.
- */
-public abstract class TaskModel<Result>
+public class TaskModel
         extends ViewModel {
 
-    private final MutableLiveData<TaskListener.FinishMessage<Result>>
-            mTaskFinishedMessage = new MutableLiveData<>();
+    @Nullable
+    private TaskBase mTask;
 
-    private final MutableLiveData<TaskListener.ProgressMessage>
-            mTaskProgressMessage = new MutableLiveData<>();
-
-    private final TaskListener<Result> mTaskListener = new TaskListener<Result>() {
-        @Override
-        public void onFinished(@NonNull final FinishMessage<Result> message) {
-            mTaskFinishedMessage.setValue(message);
-        }
-
-        @Override
-        public void onProgress(@NonNull final ProgressMessage message) {
-            mTaskProgressMessage.setValue(message);
-        }
-    };
-
-    public TaskListener<Result> getTaskListener() {
-        return mTaskListener;
+    @Nullable
+    public TaskBase getTask() {
+        return mTask;
     }
 
-    public MutableLiveData<TaskListener.ProgressMessage> getTaskProgressMessage() {
-        return mTaskProgressMessage;
-    }
-
-    public MutableLiveData<TaskListener.FinishMessage<Result>> getTaskFinishedMessage() {
-        return mTaskFinishedMessage;
+    public void setTask(@Nullable final TaskBase task) {
+        mTask = task;
     }
 }

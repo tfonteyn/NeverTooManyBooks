@@ -74,10 +74,10 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.AdminModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportHelperModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportHelperModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.TaskModel;
 
 public class ImportExportFragment
         extends Fragment {
@@ -98,7 +98,7 @@ public class ImportExportFragment
     private ProgressDialogFragment mProgressDialog;
 
     /** ViewModel. */
-    private AdminModel mModel;
+    private TaskModel mTaskModel;
     /** ViewModel. */
     private ResultDataModel mResultDataModel;
 
@@ -137,16 +137,16 @@ public class ImportExportFragment
             autoStartBackup = args.getBoolean(BKEY_AUTO_START_BACKUP);
         }
 
-        mModel = new ViewModelProvider(this).get(AdminModel.class);
+        mTaskModel = new ViewModelProvider(this).get(TaskModel.class);
 
         //noinspection ConstantConditions
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             // reconnect after a fragment restart
-            mProgressDialog.setCancellable(mModel.getTask());
+            mProgressDialog.setCancellable(mTaskModel.getTask());
         }
 
         View root = getView();
@@ -352,13 +352,10 @@ public class ImportExportFragment
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setNeutralButton(R.string.btn_options, (dialog, which) -> {
                     // ask user what options they want
-                    FragmentManager fm = getChildFragmentManager();
-                    if (fm.findFragmentByTag(ImportHelperDialogFragment.TAG) == null) {
-                        boolean validDated =
-                                BackupManager.archiveHasValidDates(getContext(), uri);
-                        ImportHelperDialogFragment.newInstance(importHelper, validDated)
-                                                  .show(fm, ImportHelperDialogFragment.TAG);
-                    }
+                    boolean validDated = BackupManager.archiveHasValidDates(getContext(), uri);
+                    ImportHelperDialogFragment.newInstance(importHelper, validDated)
+                                              .show(getChildFragmentManager(),
+                                                    ImportHelperDialogFragment.TAG);
                 })
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
                         onImportOptionsSet(importHelper))
@@ -372,19 +369,15 @@ public class ImportExportFragment
      * @param importHelper final options to use
      */
     private void onImportOptionsSet(@NonNull final ImportHelper importHelper) {
-        FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment
-                    .newInstance(R.string.title_importing, false, 0);
-            mProgressDialog.show(fm, TAG);
+        RestoreTask task = new RestoreTask(importHelper, mImportHelperModel.getTaskListener());
 
-            RestoreTask task = new RestoreTask(importHelper,
-                                               mImportHelperModel.getTaskListener());
-            mModel.setTask(task);
-            task.execute();
-        }
-        mProgressDialog.setCancellable(mModel.getTask());
+        mProgressDialog = ProgressDialogFragment
+                .newInstance(R.string.title_importing, false, 0);
+        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
+
+        mTaskModel.setTask(task);
+        mProgressDialog.setCancellable(task);
+        task.execute();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -409,8 +402,7 @@ public class ImportExportFragment
                     // or should we use Intent.ACTION_OPEN_DOCUMENT ?
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                             .addCategory(Intent.CATEGORY_OPENABLE)
-                            // Android bug? When using "text/csv"
-                            // we cannot select a csv file?
+                            // Android bug? When using "text/csv" we cannot select a csv file?
                             .setType("text/*");
                     startActivityForResult(intent, REQ_PICK_FILE_FOR_CSV_IMPORT);
                 })
@@ -456,20 +448,17 @@ public class ImportExportFragment
      */
     private void importFromCSV(@NonNull final Uri uri,
                                final ImportHelper importHelper) {
-        FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment
-                    .newInstance(R.string.title_importing, false, 0);
-            mProgressDialog.show(fm, TAG);
+        //noinspection ConstantConditions
+        ImportCSVTask task = new ImportCSVTask(getContext(), uri, importHelper,
+                                               mImportHelperModel.getTaskListener());
 
-            //noinspection ConstantConditions
-            ImportCSVTask task = new ImportCSVTask(getContext(), uri, importHelper,
-                                                   mImportHelperModel.getTaskListener());
-            mModel.setTask(task);
-            task.execute();
-        }
-        mProgressDialog.setCancellable(mModel.getTask());
+        mProgressDialog = ProgressDialogFragment
+                .newInstance(R.string.title_importing, false, 0);
+        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
+
+        mTaskModel.setTask(task);
+        mProgressDialog.setCancellable(task);
+        task.execute();
     }
 
     /**
@@ -480,6 +469,7 @@ public class ImportExportFragment
     private void onImportFinished(@NonNull final TaskListener.FinishMessage<ImportHelper> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
 
         switch (message.taskId) {
@@ -504,8 +494,9 @@ public class ImportExportFragment
                 break;
             }
             default: {
-                //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), TAG, "taskId=" + message.taskId);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "taskId=" + message.taskId);
+                }
                 break;
             }
         }
@@ -619,11 +610,9 @@ public class ImportExportFragment
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setNeutralButton(R.string.btn_options, (dialog, which) -> {
                     // ask user what options they want
-                    FragmentManager fm = getChildFragmentManager();
-                    if (fm.findFragmentByTag(ExportHelperDialogFragment.TAG) == null) {
-                        ExportHelperDialogFragment.newInstance(exportHelper)
-                                                  .show(fm, ExportHelperDialogFragment.TAG);
-                    }
+                    ExportHelperDialogFragment.newInstance(exportHelper)
+                                              .show(getChildFragmentManager(),
+                                                    ExportHelperDialogFragment.TAG);
                 })
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
                         onBackupOptionsSet(exportHelper))
@@ -637,19 +626,15 @@ public class ImportExportFragment
      * @param exportHelper final options to use
      */
     private void onBackupOptionsSet(@NonNull final ExportHelper exportHelper) {
-        FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment
-                    .newInstance(R.string.title_backing_up, false, 0);
-            mProgressDialog.show(fm, TAG);
+        BackupTask task = new BackupTask(exportHelper, mExportHelperModel.getTaskListener());
 
-            BackupTask task = new BackupTask(exportHelper,
-                                             mExportHelperModel.getTaskListener());
-            mModel.setTask(task);
-            task.execute();
-        }
-        mProgressDialog.setCancellable(mModel.getTask());
+        mProgressDialog = ProgressDialogFragment
+                .newInstance(R.string.title_backing_up, false, 0);
+        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
+
+        mTaskModel.setTask(task);
+        mProgressDialog.setCancellable(task);
+        task.execute();
     }
 
     /* ------------------------------------------------------------------------------------------ */
@@ -675,21 +660,18 @@ public class ImportExportFragment
      * @param uri to write to
      */
     private void exportToCSV(@NonNull final Uri uri) {
+        //noinspection ConstantConditions
+        ExportCSVTask task = new ExportCSVTask(getContext(),
+                                               new ExportHelper(Options.BOOK_CSV, uri),
+                                               mExportHelperModel.getTaskListener());
 
-        FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
-        if (mProgressDialog == null) {
-            mProgressDialog = ProgressDialogFragment
-                    .newInstance(R.string.title_backing_up, false, 0);
-            mProgressDialog.show(fm, TAG);
-            //noinspection ConstantConditions
-            ExportCSVTask task = new ExportCSVTask(getContext(),
-                                                   new ExportHelper(Options.BOOK_CSV, uri),
-                                                   mExportHelperModel.getTaskListener());
-            mModel.setTask(task);
-            task.execute();
-        }
-        mProgressDialog.setCancellable(mModel.getTask());
+        mProgressDialog = ProgressDialogFragment
+                .newInstance(R.string.title_backing_up, false, 0);
+        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
+
+        mTaskModel.setTask(task);
+        mProgressDialog.setCancellable(task);
+        task.execute();
     }
 
     /**
@@ -700,6 +682,7 @@ public class ImportExportFragment
     private void onExportFinished(@NonNull final TaskListener.FinishMessage<ExportHelper> message) {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
 
         switch (message.taskId) {
@@ -744,8 +727,9 @@ public class ImportExportFragment
                 break;
             }
             default: {
-                //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), TAG, "taskId=" + message.taskId);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "taskId=" + message.taskId);
+                }
                 break;
             }
         }

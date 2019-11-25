@@ -332,8 +332,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(TAG,
-                                                  "mTag.type=" + mTag.type);
+                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
                 mTag = mTagStack.pop();
@@ -372,8 +371,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(TAG,
-                                                  "mTag.type=" + mTag.type);
+                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -439,8 +437,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(TAG,
-                                                  "mTag.type=" + mTag.type);
+                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -470,8 +467,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(TAG,
-                                                  "mTag.type=" + mTag.type);
+                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 

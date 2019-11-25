@@ -47,7 +47,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -593,11 +592,9 @@ public class EditBookAuthorsActivity
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> {
-                FragmentManager fm = getSupportFragmentManager();
-                if (fm.findFragmentByTag(EditBookAuthorDialogFragment.TAG) == null) {
-                    EditBookAuthorDialogFragment.newInstance(author)
-                                                .show(fm, EditBookAuthorDialogFragment.TAG);
-                }
+                EditBookAuthorDialogFragment.newInstance(author)
+                                            .show(getSupportFragmentManager(),
+                                                  EditBookAuthorDialogFragment.TAG);
             });
         }
     }

@@ -27,18 +27,14 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <PreferenceCategory
-        android:title="@string/amazon">
-
-        <EditTextPreference
-            android:defaultValue="https://www.amazon.com"
-            android:icon="@drawable/ic_link"
-            android:inputType="textUri"
-            android:key="amazon.host.url"
-            android:title="@string/amazon" />
-
-    </PreferenceCategory>
-
-</PreferenceScreen>
+<androidx.recyclerview.widget.RecyclerView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bookshelfList"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:textAppearance="?android:attr/textAppearanceMedium"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:listitem="@layout/row_edit_bookshelf"
+    />

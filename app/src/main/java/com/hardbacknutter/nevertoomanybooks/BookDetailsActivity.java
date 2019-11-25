@@ -62,6 +62,8 @@ public class BookDetailsActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
+
         replaceFragment(R.id.main_fragment, BookDetailsFragment.class, BookDetailsFragment.TAG);
     }
 

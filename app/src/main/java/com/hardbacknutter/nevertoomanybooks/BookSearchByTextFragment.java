@@ -142,8 +142,8 @@ public class BookSearchByTextFragment
         });
 
         if (savedInstanceState == null) {
-            SearchSites.promptToRegister(getContext(), false, "search",
-                                         mSearchCoordinator.getSearchSites());
+            mSearchCoordinator.getSiteList()
+                              .promptToRegister(getContext(), false, "search");
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }

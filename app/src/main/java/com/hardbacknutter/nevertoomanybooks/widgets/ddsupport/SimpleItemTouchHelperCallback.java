@@ -111,6 +111,7 @@ public class SimpleItemTouchHelperCallback
         return mIsLongPressDragEnabled;
     }
 
+    @SuppressWarnings("unused")
     public void setLongPressDragEnabled(final boolean longPressDragEnabled) {
         mIsLongPressDragEnabled = longPressDragEnabled;
     }
@@ -120,6 +121,7 @@ public class SimpleItemTouchHelperCallback
         return mIsItemViewSwipeEnabled;
     }
 
+    @SuppressWarnings("unused")
     public void setItemViewSwipeEnabled(final boolean itemViewSwipeEnabled) {
         mIsItemViewSwipeEnabled = itemViewSwipeEnabled;
     }

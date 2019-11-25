@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
@@ -62,8 +61,8 @@ public abstract class BookSearchByIsbnBaseFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            SearchSites.promptToRegister(getContext(), false, "search",
-                                         mSearchCoordinator.getSearchSites());
+            mSearchCoordinator.getSiteList()
+                              .promptToRegister(getContext(), false, "search");
         }
     }
 

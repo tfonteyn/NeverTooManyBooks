@@ -147,8 +147,8 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (!name.isEmpty()) {
-            // if the user had enter a (partial) new name, check if it's ok to leave
-            StandardDialogs.showConfirmUnsavedEditsDialog(this, () -> {
+            // if the user had entered a (partial) new name, check if it's ok to leave
+            StandardDialogs.unsavedEditsDialog(this, () -> {
                 // If the user clicks 'exit', we finish() the activity.
                 // The list IS saved.
                 setResult(Activity.RESULT_OK, data);

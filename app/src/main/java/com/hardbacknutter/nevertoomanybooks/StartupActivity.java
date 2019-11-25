@@ -48,7 +48,6 @@ import androidx.lifecycle.ViewModelProvider;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
@@ -319,7 +318,9 @@ public class StartupActivity
                 break;
 
             default:
-                Logger.warnWithStackTrace(this, TAG, "requestCode=" + requestCode);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "requestCode=" + requestCode);
+                }
                 break;
         }
     }

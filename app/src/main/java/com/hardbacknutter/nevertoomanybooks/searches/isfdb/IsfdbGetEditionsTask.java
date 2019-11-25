@@ -27,32 +27,27 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 public class IsfdbGetEditionsTask
-        extends AsyncTask<Void, Void, ArrayList<IsfdbEditionsHandler.Edition>> {
+        extends TaskBase<ArrayList<Edition>> {
 
     private static final String TAG = "IsfdbGetEditionsTask";
 
     @NonNull
     private final String mIsbn;
-    @NonNull
-    private final WeakReference<IsfdbResultsListener> mTaskListener;
 
     /**
      * Constructor.
@@ -62,34 +57,22 @@ public class IsfdbGetEditionsTask
      */
     @UiThread
     public IsfdbGetEditionsTask(@NonNull final String isbn,
-                                @NonNull final IsfdbResultsListener taskListener) {
+                                @NonNull final TaskListener<ArrayList<Edition>> taskListener) {
+
+        super(R.id.TASK_ID_ISFDB_EDITIONS, taskListener);
         mIsbn = isbn;
-        mTaskListener = new WeakReference<>(taskListener);
     }
 
     @Override
     @Nullable
     @WorkerThread
-    protected ArrayList<IsfdbEditionsHandler.Edition> doInBackground(final Void... params) {
+    protected ArrayList<Edition> doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetEditionsTask " + mIsbn);
         try {
             return new IsfdbEditionsHandler(App.getAppContext()).fetch(mIsbn);
         } catch (@NonNull final SocketTimeoutException e) {
             Logger.warn(TAG, "doInBackground", e.getLocalizedMessage());
             return null;
-        }
-    }
-
-    @Override
-    @UiThread
-    protected void onPostExecute(@Nullable final ArrayList<IsfdbEditionsHandler.Edition> result) {
-        // always send result, even if empty
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onGotIsfdbEditions(result);
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
-            }
         }
     }
 }

@@ -37,5 +37,5 @@ public interface IsfdbResultsListener {
 
     void onGotIsfdbBook(@Nullable Bundle bookData);
 
-    void onGotIsfdbEditions(@Nullable ArrayList<IsfdbEditionsHandler.Edition> editions);
+    void onGotIsfdbEditions(@Nullable ArrayList<Edition> editions);
 }

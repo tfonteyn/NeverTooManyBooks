@@ -52,6 +52,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -124,7 +125,7 @@ public class SearchCoordinator
     @Nullable
     private WeakReference<SearchCoordinatorListener> mSearchSearchCoordinatorListener;
     /** Sites to search on. If this list is empty, all searches will return {@code false}. */
-    private ArrayList<Site> mSearchSites;
+    private SiteList mSiteList;
     /** Base message for progress updates. */
     private String mBaseMessage;
     /** Flag */
@@ -311,7 +312,7 @@ public class SearchCoordinator
 
         mSearchSearchCoordinatorListener = new WeakReference<>(listener);
 
-        if (mSearchSites == null) {
+        if (mSiteList == null) {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 mSearchTasksStartTime = new HashMap<>();
@@ -342,7 +343,7 @@ public class SearchCoordinator
                 mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
 
                 // use global preference.
-                mSearchSites = SearchSites.getSites(context, SearchSites.ListType.Data);
+                mSiteList = SiteList.getList(context, SiteList.ListType.Data);
             }
         }
     }
@@ -409,7 +410,7 @@ public class SearchCoordinator
 
                 // Start the others...even if they have run before.
                 // They will redo the search with the ISBN.
-                startSearch(mSearchSites);
+                startSearch(mSiteList.getSites());
             } else {
                 // Start next one that has not run.
                 startNextSearch();
@@ -424,17 +425,17 @@ public class SearchCoordinator
      * @return list
      */
     @NonNull
-    public ArrayList<Site> getSearchSites() {
-        return mSearchSites;
+    public SiteList getSiteList() {
+        return mSiteList;
     }
 
     /**
      * Override the initial list.
      *
-     * @param searchSites to use temporarily
+     * @param siteList to use temporarily
      */
-    public void setSearchSites(@NonNull final ArrayList<Site> searchSites) {
-        mSearchSites = searchSites;
+    public void setSiteList(@NonNull final SiteList siteList) {
+        mSiteList = siteList;
     }
 
     /**
@@ -539,12 +540,12 @@ public class SearchCoordinator
             // not present, search the sites one at a time until we get an isbn
             mWaitingForIsbn = false;
             if (mHasValidIsbn) {
-                mIsSearchActive = startSearch(mSearchSites);
+                mIsSearchActive = startSearch(mSiteList.getSites());
 
             } else if (SearchSites.ENABLE_AMAZON_AWS) {
                 // Assume it's an ASIN, and just search Amazon
                 mSearchingAsin = true;
-                Collection<Site> amazon = new ArrayList<>();
+                List<Site> amazon = new ArrayList<>();
                 amazon.add(Site.newSite(SearchSites.AMAZON));
                 mIsSearchActive = startSearch(amazon);
             }
@@ -648,8 +649,8 @@ public class SearchCoordinator
      * @return {@code true} if a search was started, {@code false} if not
      */
     private boolean startNextSearch() {
-        // if mSearchSites is empty, we return false.
-        for (Site site : mSearchSites) {
+        // if mSiteList is empty, we return false.
+        for (Site site : mSiteList.getSites()) {
             if (site.isEnabled()) {
                 // If the site has not been searched yet, search it
                 if (!mSearchResults.containsKey(site.id)) {
@@ -666,14 +667,14 @@ public class SearchCoordinator
      * <strong>Note:</strong> we explicitly pass in the searchSites instead of using the global
      * so we can force an Amazon-only search (ASIN based) when needed.
      *
-     * @param currentSearchSites sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
+     * @param sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearch(@NonNull final Iterable<Site> currentSearchSites) {
+    private boolean startSearch(@NonNull final List<Site> sites) {
         // if currentSearchSites is empty, we return false.
         boolean atLeastOneStarted = false;
-        for (Site site : currentSearchSites) {
+        for (Site site : sites) {
             if (site.isEnabled()) {
                 // If the site has not been searched yet, search it
                 if (!mSearchResults.containsKey(site.id)) {
@@ -694,7 +695,7 @@ public class SearchCoordinator
      * @return {@code true} if enabled
      */
     public boolean isEnabled(final int siteId) {
-        return (SearchSites.getEnabledSites(mSearchSites) & siteId) != 0;
+        return (mSiteList.getEnabledSites() & siteId) != 0;
     }
 
     /**
@@ -770,7 +771,7 @@ public class SearchCoordinator
             // If ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final Collection<Integer> uncertain = new ArrayList<>();
-            for (Site site : SearchSites.getReliabilityOrder(appContext)) {
+            for (Site site : SiteList.getDataSitesByReliability(appContext)) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
@@ -798,7 +799,7 @@ public class SearchCoordinator
 
         } else {
             // If ISBN was not passed, then just use the default order
-            for (Site site : SearchSites.getReliabilityOrder(appContext)) {
+            for (Site site : SiteList.getDataSitesByReliability(appContext)) {
                 sites.add(site.id);
             }
         }

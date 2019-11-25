@@ -355,8 +355,9 @@ public class PartialDatePickerDialogFragment
                                 break;
 
                             default:
-                                Logger.warnWithStackTrace(getContext(), TAG,
-                                                          "id=" + picker.getId());
+                                if (BuildConfig.DEBUG /* always */) {
+                                    Log.d(TAG, "id=" + picker.getId());
+                                }
                                 break;
                         }
                     }

@@ -61,7 +61,7 @@ public class BooklistMappedCursorRow {
     /**
      * level text. Uses a dynamically set domain.
      * Why 30 members? There can be as many levels as there are groups;
-     * currently 28 of them (2019-09-29). While it's unlikely, the user COULD simply select all
+     * currently 30 of them (2019-11-24). While it's unlikely, the user COULD simply select all
      * groups... so let's guard against that.
      */
     private final int[] mLevelCol = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
@@ -190,9 +190,7 @@ public class BooklistMappedCursorRow {
         }
 
         int index = level - 1;
-        @BooklistGroup.RowKind.Kind
-        int kind = mStyle.getGroupKindAt(index);
-        return BooklistGroup.RowKind.format(context, kind, source);
+        return BooklistGroup.RowKind.format(context, mStyle.getGroupKindAt(index), source);
     }
 
     @NonNull

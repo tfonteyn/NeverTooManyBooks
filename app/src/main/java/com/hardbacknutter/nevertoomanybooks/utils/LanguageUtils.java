@@ -279,7 +279,7 @@ public final class LanguageUtils {
      *
      * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "WeakerAccess"})
     @NonNull
     public static String toTerminology(@NonNull final String iso3) {
         String source = iso3.trim().toLowerCase(Locale.getDefault());

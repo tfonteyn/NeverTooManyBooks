@@ -505,8 +505,8 @@ public final class QueueManager {
         public void handleMessage(@NonNull final Message msg) {
             Bundle bundle = msg.getData();
             if (bundle.containsKey(INTERNAL)) {
-                String kind = bundle.getString(INTERNAL);
-                if (TOAST.equals(kind)) {
+                String type = bundle.getString(INTERNAL);
+                if (TOAST.equals(type)) {
                     String text = bundle.getString(MESSAGE);
                     if (text != null) {
                         mQueueManager.get().doToast(text);

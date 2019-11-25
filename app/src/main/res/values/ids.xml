@@ -106,6 +106,8 @@
     <item name="ROW_CHECKABLE_BTN" type="id" />
     <!-- the grabber handle -->
     <item name="ROW_GRABBER_ICON" type="id" />
+    <item name="TASK_ID_ISFDB_GET_BOOK" type="id" />
+    <item name="TASK_ID_ISFDB_EDITIONS" type="id" />
     <!-- BEGIN used for rows in a {@link RecyclerView} -->
 
 </resources>

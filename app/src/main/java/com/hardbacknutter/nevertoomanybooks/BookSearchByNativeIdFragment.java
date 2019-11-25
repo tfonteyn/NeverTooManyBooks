@@ -38,7 +38,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -110,66 +109,9 @@ public class BookSearchByNativeIdFragment
 
     @Override
     protected boolean onSearch() {
-        int siteId = getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
+        int siteId = SearchSites.getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
         mSearchCoordinator.setNativeIdSearchText(mEntryView.getText().toString().trim());
         return mSearchCoordinator.searchByNativeId(Site.newSite(siteId));
-    }
-
-    @SearchSites.Id
-    private int getSiteIdFromResId(@IdRes final int checkedId) {
-        //NEWTHINGS: add new site specific ID:
-        switch (checkedId) {
-            case R.id.site_amazon:
-                return SearchSites.AMAZON;
-
-            case R.id.site_goodreads:
-                return SearchSites.GOODREADS;
-
-            case R.id.site_isfdb:
-                return SearchSites.ISFDB;
-
-            case R.id.site_library_thing:
-                return SearchSites.LIBRARY_THING;
-
-            case R.id.site_open_library:
-                return SearchSites.OPEN_LIBRARY;
-
-            case R.id.site_strip_info_be:
-                return SearchSites.STRIP_INFO_BE;
-
-            default:
-                throw new UnexpectedValueException(checkedId);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    @IdRes
-    private int getResIdFromSiteId(@SearchSites.Id final int siteId) {
-        //NEWTHINGS: add new site specific ID:
-        switch (siteId) {
-            case SearchSites.AMAZON:
-                return R.id.site_amazon;
-
-            case SearchSites.GOODREADS:
-                return R.id.site_goodreads;
-
-            case SearchSites.ISFDB:
-                return R.id.site_isfdb;
-
-            case SearchSites.LIBRARY_THING:
-                return R.id.site_library_thing;
-
-            case SearchSites.OPEN_LIBRARY:
-                return R.id.site_open_library;
-
-            case SearchSites.STRIP_INFO_BE:
-                return R.id.site_strip_info_be;
-
-            case SearchSites.GOOGLE_BOOKS:
-            case SearchSites.KB_NL:
-            default:
-                throw new UnexpectedValueException(siteId);
-        }
     }
 
     @Override
@@ -207,7 +149,7 @@ public class BookSearchByNativeIdFragment
     private void onSiteSelect(@NonNull final RadioGroup group,
                               final int checkedId) {
 
-        Site site = Site.newSite(getSiteIdFromResId(checkedId));
+        Site site = Site.newSite(SearchSites.getSiteIdFromResId(checkedId));
         SearchEngine searchEngine = site.getSearchEngine();
         if (!searchEngine.isAvailable()) {
             // If the selected site needs registration, prompt the user.

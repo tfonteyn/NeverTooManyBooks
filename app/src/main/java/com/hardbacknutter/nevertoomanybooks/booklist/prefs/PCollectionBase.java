@@ -47,7 +47,7 @@ import java.util.Collection;
  */
 public abstract class PCollectionBase<E, T extends Collection<E>>
         extends PPrefBase<T>
-        implements PCollection<E> {
+        implements PCollection {
 
     static final String DELIM = ",";
 
@@ -104,6 +104,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     /**
      * Bypass the real type. Writes out a CSV string.
      */
+    @Override
     public void set(@Nullable final Iterable values) {
         if (!mIsPersistent) {
             throw new IllegalArgumentException("uuid was empty");

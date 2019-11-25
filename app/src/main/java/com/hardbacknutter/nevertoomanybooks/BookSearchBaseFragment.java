@@ -47,13 +47,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -149,7 +146,7 @@ public abstract class BookSearchBaseFragment
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             // reconnect after a fragment restart
             mProgressDialog.setCancellable(mSearchCoordinator);
@@ -203,9 +200,9 @@ public abstract class BookSearchBaseFragment
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
-                                  (Parcelable) SearchSites.ListType.Data)
-                        .putExtra(SearchSites.ListType.Data.getBundleKey(),
-                                  mSearchCoordinator.getSearchSites());
+                                  (Parcelable) SiteList.ListType.Data)
+                        .putExtra(SiteList.ListType.Data.getBundleKey(),
+                                  mSearchCoordinator.getSiteList());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
 
@@ -230,7 +227,7 @@ public abstract class BookSearchBaseFragment
     /**
      * Start the actual search with the {@link SearchCoordinator} in the background.
      * <p>
-     * This is final; instead override {@link #onSearch()} if needed.
+     * This is final; override {@link #onSearch()}.
      */
     final void startSearch() {
         // check if we have an active search, if so, quit silently.
@@ -245,31 +242,18 @@ public abstract class BookSearchBaseFragment
             return;
         }
 
-        FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
-        if (mProgressDialog == null) {
+        // Start the lookup in a background search task.
+        if (onSearch()) {
+            // we started at least one search.
             mProgressDialog = ProgressDialogFragment
                     .newInstance(R.string.progress_msg_searching, true, 0);
-            mProgressDialog.show(fm, TAG);
-            // Start the lookup in a background search task.
-            if (onSearch()) {
-                // we started at least one search.
-                mProgressDialog.setCancellable(mSearchCoordinator);
-            } else {
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-                //TODO: not the best error message, but it will do for now.
-                //noinspection ConstantConditions
-                UserMessage.show(getView(), R.string.error_search_failed_network);
-            }
-            return;
+            mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
+            mProgressDialog.setCancellable(mSearchCoordinator);
+        } else {
+            //TODO: not the best error message, but it will do for now.
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.error_search_failed_network);
         }
-
-        Intent resultData = mResultDataModel.getActivityResultData();
-        if (resultData.getExtras() != null) {
-            mHostActivity.setResult(Activity.RESULT_OK, resultData);
-        }
-        mHostActivity.finish();
     }
 
     /**
@@ -292,10 +276,10 @@ public abstract class BookSearchBaseFragment
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                            SearchSites.ListType.Data.getBundleKey());
-                    if (sites != null) {
-                        mSearchCoordinator.setSearchSites(sites);
+                    SiteList siteList = data.getParcelableExtra(
+                            SiteList.ListType.Data.getBundleKey());
+                    if (siteList != null) {
+                        mSearchCoordinator.setSiteList(siteList);
                     }
                     // Make sure that the ASIN option (Amazon) is (not) offered.
                     //noinspection ConstantConditions
@@ -313,7 +297,7 @@ public abstract class BookSearchBaseFragment
                 break;
             }
 //            case UniqueId.REQ_NAV_PANEL_SETTINGS: {
-//                mSearchCoordinator.setSearchSites(sites);
+//                mSearchCoordinator.setSiteList(sites);
 //            }
 
             default: {

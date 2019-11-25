@@ -39,7 +39,6 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,11 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
-import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
-import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public final class DebugReport {
@@ -172,7 +168,7 @@ public final class DebugReport {
                .append("Signed-By: ").append(signedBy(context)).append('\n')
 
                .append("Search sites URL:\n")
-               .append(getSiteUrls(context));
+               .append(SearchSites.getSiteUrls(context));
 
         // Scanners installed
         try {
@@ -236,8 +232,7 @@ public final class DebugReport {
             for (String fileSpec : files) {
                 File file = new File(fileSpec);
                 if (file.exists() && file.length() > 0) {
-                    Uri uri = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY,
-                                                         file);
+                    Uri uri = App.getUriForFile(context, file);
                     uriList.add(uri);
                 }
             }
@@ -262,19 +257,6 @@ public final class DebugReport {
             Logger.error(context, TAG, e);
             return false;
         }
-    }
-
-    public static String getSiteUrls(@NonNull final Context context) {
-        return AmazonManager.getBaseURL(context) + '\n'
-//               + GoodreadsManager.getBaseURL(context) + '\n'
-//               + GoogleBooksManager.getBaseURL(context) + '\n'
-               + IsfdbManager.getBaseURL(context) + '\n'
-               + KbNlManager.getBaseURL(context) + '\n'
-//               + LibraryThingManager.getBaseURL(context) + '\n'
-//               + OpenLibraryManager.getBaseURL(context) + '\n'
-//               + StripInfoManager.getBaseURL(context) + '\n'
-                ;
-        //NEWTHINGS: add new search engine if it supports a changeable url.
     }
 
     /**

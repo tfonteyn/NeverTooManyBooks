@@ -92,7 +92,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
@@ -106,6 +105,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
 import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 
@@ -469,7 +469,6 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
         getMenuInflater().inflate(R.menu.o_bob, menu);
 
         if (BuildConfig.DEBUG /* always */) {
@@ -570,10 +569,9 @@ public class BooksOnBookshelf
     protected boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
         switch (item.getItemId()) {
-
             case R.id.nav_manage_bookshelves: {
                 Intent intent = new Intent(this, EditBookshelvesActivity.class)
-                        .putExtra(EditBookshelvesActivity.BKEY_CURRENT_BOOKSHELF,
+                        .putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF,
                                   mModel.getCurrentBookshelf().getId());
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
@@ -584,18 +582,7 @@ public class BooksOnBookshelf
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
                 return true;
             }
-            case R.id.nav_import_export: {
-                Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportExportFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMP_EXP);
-                return true;
-            }
-            case R.id.nav_goodreads: {
-                Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_GOODREADS);
-                return true;
-            }
+
             default:
                 return super.onNavigationItemSelected(item);
         }
@@ -1249,8 +1236,8 @@ public class BooksOnBookshelf
                 getMenuInflater().inflate(R.menu.c_author, menu);
 
                 boolean isComplete = row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-                menu.findItem(R.id.MENU_AUTHOR_COMPLETE).setVisible(!isComplete);
-                menu.findItem(R.id.MENU_AUTHOR_INCOMPLETE).setVisible(isComplete);
+                menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!isComplete);
+                menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(isComplete);
 
                 MenuHandler.prepareOptionalMenus(menu, row);
                 break;
@@ -1260,8 +1247,8 @@ public class BooksOnBookshelf
                     getMenuInflater().inflate(R.menu.c_series, menu);
 
                     boolean isComplete = row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
-                    menu.findItem(R.id.MENU_SERIES_COMPLETE).setVisible(!isComplete);
-                    menu.findItem(R.id.MENU_SERIES_INCOMPLETE).setVisible(isComplete);
+                    menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!isComplete);
+                    menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(isComplete);
 
                     MenuHandler.prepareOptionalMenus(menu, row);
                 }
@@ -1322,7 +1309,9 @@ public class BooksOnBookshelf
                 break;
             }
             default: {
-                Logger.warnWithStackTrace(this, TAG, "rowKind=" + rowKind);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "rowKind=" + rowKind);
+                }
                 break;
             }
         }
@@ -1385,12 +1374,10 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_BOOK_LOAN_ADD: {
-                if (fm.findFragmentByTag(LendBookDialogFragment.TAG) == null) {
-                    LendBookDialogFragment.newInstance(bookId,
-                                                       row.getLong(DBDefinitions.KEY_FK_AUTHOR),
-                                                       row.getString(DBDefinitions.KEY_TITLE))
-                                          .show(fm, LendBookDialogFragment.TAG);
-                }
+                LendBookDialogFragment.newInstance(bookId,
+                                                   row.getLong(DBDefinitions.KEY_FK_AUTHOR),
+                                                   row.getString(DBDefinitions.KEY_TITLE))
+                                      .show(fm, LendBookDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {
@@ -1467,16 +1454,14 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_SERIES_EDIT: {
-                if (fm.findFragmentByTag(EditSeriesDialogFragment.TAG) == null) {
-                    long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
-                    //noinspection ConstantConditions
-                    EditSeriesDialogFragment.newInstance(mModel.getDb().getSeries(seriesId))
-                                            .show(fm, EditSeriesDialogFragment.TAG);
-                }
+                long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
+                //noinspection ConstantConditions
+                EditSeriesDialogFragment.newInstance(mModel.getDb().getSeries(seriesId))
+                                        .show(fm, EditSeriesDialogFragment.TAG);
                 return true;
             }
-            case R.id.MENU_SERIES_COMPLETE:
-            case R.id.MENU_SERIES_INCOMPLETE: {
+            case R.id.MENU_SERIES_SET_COMPLETE:
+            case R.id.MENU_SERIES_SET_INCOMPLETE: {
                 long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
                 // toggle the complete status
                 boolean status = !row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
@@ -1506,16 +1491,15 @@ public class BooksOnBookshelf
             }
 
             case R.id.MENU_AUTHOR_EDIT: {
-                if (fm.findFragmentByTag(EditAuthorDialogFragment.TAG) == null) {
-                    long authorId = row.getLong(DBDefinitions.KEY_FK_AUTHOR);
-                    //noinspection ConstantConditions
-                    EditAuthorDialogFragment.newInstance(mModel.getDb().getAuthor(authorId))
-                                            .show(fm, EditAuthorDialogFragment.TAG);
-                }
+                long authorId = row.getLong(DBDefinitions.KEY_FK_AUTHOR);
+                //noinspection ConstantConditions
+                EditAuthorDialogFragment.newInstance(mModel.getDb().getAuthor(authorId))
+                                        .show(fm, EditAuthorDialogFragment.TAG);
+
                 return true;
             }
-            case R.id.MENU_AUTHOR_COMPLETE:
-            case R.id.MENU_AUTHOR_INCOMPLETE: {
+            case R.id.MENU_AUTHOR_SET_COMPLETE:
+            case R.id.MENU_AUTHOR_SET_INCOMPLETE: {
                 long authorId = row.getLong(DBDefinitions.KEY_FK_AUTHOR);
                 // toggle the complete status
                 boolean status = !row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
@@ -1527,11 +1511,10 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_PUBLISHER_EDIT: {
-                if (fm.findFragmentByTag(EditPublisherDialogFragment.TAG) == null) {
-                    Publisher publisher = new Publisher(row.getString(DBDefinitions.KEY_PUBLISHER));
-                    EditPublisherDialogFragment.newInstance(publisher)
-                                               .show(fm, EditPublisherDialogFragment.TAG);
-                }
+                Publisher publisher = new Publisher(row.getString(DBDefinitions.KEY_PUBLISHER));
+                EditPublisherDialogFragment.newInstance(publisher)
+                                           .show(fm, EditPublisherDialogFragment.TAG);
+
                 return true;
             }
             /* ********************************************************************************** */

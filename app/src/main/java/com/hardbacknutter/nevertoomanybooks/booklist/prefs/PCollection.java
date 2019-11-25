@@ -37,7 +37,7 @@ import androidx.annotation.NonNull;
  * This call allows by-passing the real type for write-through.
  * Used in importing from a backup.
  */
-public interface PCollection<E> {
+public interface PCollection {
 
     /**
      * This call allows by-passing the real type for write-through.

@@ -94,7 +94,7 @@ public class StyleGroupsModel
         // add them if wanted.
         for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle.getUuid(),
                                                               mStyle.isUserDefined())) {
-            if (!mStyle.hasGroupKind(group.getKind())) {
+            if (!mStyle.hasGroup(group.getId())) {
                 wrappers.add(new GroupWrapper(group, false));
             }
         }
@@ -110,7 +110,7 @@ public class StyleGroupsModel
         // Loop through all groups
         for (GroupWrapper wrapper : mList) {
             // Remove its kind from style
-            mStyle.removeGroup(wrapper.group.getKind());
+            mStyle.removeGroup(wrapper.group.getId());
             // If required, add the group back; this also takes care of the order.
             if (wrapper.present) {
                 mStyle.addGroup(wrapper.group);

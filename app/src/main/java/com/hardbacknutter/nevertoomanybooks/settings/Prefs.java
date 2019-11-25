@@ -74,7 +74,6 @@ public final class Prefs {
     public static final String pk_ui_messages_use = "ui.messages.use";
     public static final String pk_network_allow_metered = "network.allow.metered";
     public static final String pk_scanner_preferred = "scanner.preferred";
-    public static final String pk_scanner_has_ui = "scanner.ui";
     public static final String pk_search_form_advanced = "search.form.advanced";
     public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
     public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";

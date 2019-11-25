@@ -231,6 +231,7 @@ public class XmlFilter {
         return setStartAction(startAction, null);
     }
 
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public XmlFilter setStartAction(@NonNull final XmlHandler startAction,
                                     @Nullable final Object userArg) {

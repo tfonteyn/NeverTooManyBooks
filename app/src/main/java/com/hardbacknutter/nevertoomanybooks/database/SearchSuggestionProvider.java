@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches;
+package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.ContentProvider;
 import android.content.SearchRecentSuggestionsProvider;
@@ -36,7 +36,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 /**
  * <a href="https://developer.android.com/guide/topics/search/adding-custom-suggestions.html">

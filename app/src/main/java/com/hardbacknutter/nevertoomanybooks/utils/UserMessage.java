@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -36,8 +35,6 @@ import androidx.annotation.StringRes;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -53,8 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  */
 public final class UserMessage {
 
-    private static final String TAG = "UserMessage";
-
     private static final int TOAST = 0;
     private static final int SNACKBAR = 1;
 
@@ -66,27 +61,15 @@ public final class UserMessage {
 
     public static void show(@NonNull final View view,
                             @StringRes final int message) {
-        if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
-            Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
-        } else {
-            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Log.d(TAG, "show1|" + view.getContext().getString(message), new Throwable());
-        }
+        show(view, view.getContext().getString(message));
     }
 
     public static void show(@NonNull final View view,
-                            @NonNull final String message) {
+                            @NonNull final CharSequence message) {
         if (0 == PIntString.getListPreference(Prefs.pk_ui_messages_use, DEFAULT)) {
             Toast.makeText(view.getContext(), message, Toast.LENGTH_LONG).show();
         } else {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.USER_MESSAGE_STACK_TRACE) {
-            Log.d(TAG, "show2|" + message, new Throwable());
         }
     }
 }

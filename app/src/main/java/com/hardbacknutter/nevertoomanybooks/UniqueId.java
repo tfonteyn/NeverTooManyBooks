@@ -103,7 +103,6 @@ public final class UniqueId {
     /** Bundle key for {@code ParcelableArrayList<Bookshelf>}. */
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
-
     /**
      * Bundle key for Author search text
      * (all DB KEY's and the ARRAY key is for authors with verified names).
@@ -111,9 +110,6 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_AUTHOR = "searchAuthor";
     /** Bundle key for generic search text. */
     public static final String BKEY_SEARCH_TEXT = "searchText";
-
-    /** Bundle key for Book native website id search text. */
-    public static final String BKEY_BOOK_NATIVE_ID = "";
 
     /**
      * Single fileSpecs or uri.
@@ -216,14 +212,6 @@ public final class UniqueId {
      * setResult
      */
     public static final String BKEY_EXPORT_RESULT = "exportResult";
-
-    /**
-     * Return the status of a startActivityForResult when a task was 'isCancelled'.
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_CANCELED = "cancelled";
 
     /**
      * Something changed (or not) that warrants a recreation of the caller to be needed.

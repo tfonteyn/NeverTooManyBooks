@@ -3026,7 +3026,7 @@ public class DAO
      * @return {@link Cursor} containing all records, if any
      */
     @NonNull
-    public Cursor fetchSearchSuggestions(@NonNull final String query) {
+    Cursor fetchSearchSuggestions(@NonNull final String query) {
         String q = '%' + query + '%';
         return sSyncedDb.rawQuery(SqlSelect.SEARCH_SUGGESTIONS, new String[]{q, q, q, q});
     }
@@ -3157,6 +3157,19 @@ public class DAO
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();
+        }
+    }
+
+
+    /**
+     * Returns a unique list of all loanee in the database.
+     *
+     * @return The list
+     */
+    @NonNull
+    public ArrayList<String> getLoanees() {
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.LOANEE, null)) {
+            return getFirstColumnAsList(cursor);
         }
     }
 
@@ -4920,6 +4933,12 @@ public class DAO
                 // The index of DOM_PK_ID, DOM_TITLE, DOM_TITLE_OB is hardcoded - don't change!
                 "SELECT " + DOM_PK_ID + ',' + DOM_TITLE + ',' + DOM_TITLE_OB
                 + " FROM " + TBL_TOC_ENTRIES;
+
+        /** name only, for {@link AutoCompleteTextView}. */
+        private static final String LOANEE =
+                "SELECT DISTINCT " + DOM_LOANEE
+                + " FROM " + TBL_BOOK_LOANEE
+                + " ORDER BY lower(" + DOM_LOANEE + ')' + COLLATION;
     }
 
     /**

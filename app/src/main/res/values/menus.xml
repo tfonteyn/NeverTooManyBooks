@@ -58,6 +58,9 @@
     <integer name="MENU_ORDER_AMAZON_SERIES">910</integer>
     <integer name="MENU_ORDER_AMAZON_AUTHOR_IN_SERIES">915</integer>
 
+    <!-- So why not use generic menu ids everywhere?
+         Well, having individual menu id's (e.g. multiple 'menu_edit_*')
+         makes the code much more readable and up to a point foolproof.  -->
     <item name="MENU_EDIT" type="id" />
     <item name="MENU_DELETE" type="id" />
     <item name="MENU_DUPLICATE" type="id" />
@@ -76,8 +79,8 @@
     <item name="MENU_BOOK_UNREAD" type="id" />
 
     <item name="MENU_AUTHOR_EDIT" type="id" />
-    <item name="MENU_AUTHOR_COMPLETE" type="id" />
-    <item name="MENU_AUTHOR_INCOMPLETE" type="id" />
+    <item name="MENU_AUTHOR_SET_COMPLETE" type="id" />
+    <item name="MENU_AUTHOR_SET_INCOMPLETE" type="id" />
 
     <item name="MENU_AUTHOR_WORKS" type="id" />
     <item name="MENU_AUTHOR_WORKS_ALL" type="id" />
@@ -86,8 +89,8 @@
 
     <item name="MENU_SERIES_DELETE" type="id" />
     <item name="MENU_SERIES_EDIT" type="id" />
-    <item name="MENU_SERIES_COMPLETE" type="id" />
-    <item name="MENU_SERIES_INCOMPLETE" type="id" />
+    <item name="MENU_SERIES_SET_COMPLETE" type="id" />
+    <item name="MENU_SERIES_SET_INCOMPLETE" type="id" />
 
     <item name="MENU_FORMAT_EDIT" type="id" />
     <item name="MENU_COLOR_EDIT" type="id" />

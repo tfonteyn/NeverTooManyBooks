@@ -1,5 +1,5 @@
 Get a list of alternative editions; i.e. feed it with an isbn, retrieve a list of alternative isbn
-https://www.oclc.org/developer/develop/web-services/worldcat-search-api/library-catalog-url.en.html
+https://www.oclc.org/developer/
 
 https://www.worldcat.org/affiliate/webservices/xisbn/app.jsp
 => format is the same as LibraryThing => SearchLibraryThingEditionHandler

@@ -38,7 +38,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,12 +94,9 @@ public abstract class EditBookBaseFragment<T>
 
     private final PartialDatePickerDialogFragment.PartialDatePickerResultsListener
             mPartialDatePickerResultsListener =
-            (destinationFieldId, year, month, day) -> getFields().getField(destinationFieldId)
-                                                                 .setValue(DateUtils
-                                                                                   .buildPartialDate(
-                                                                                           year,
-                                                                                           month,
-                                                                                           day));
+            (destinationFieldId, year, month, day) ->
+                    getFields().getField(destinationFieldId)
+                               .setValue(DateUtils.buildPartialDate(year, month, day));
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -252,15 +248,9 @@ public abstract class EditBookBaseFragment<T>
                                final boolean todayIfNone) {
         // only bother when it's in use
         if (field.isUsed()) {
-            fieldView.setOnClickListener(v -> {
-                FragmentManager fm = getChildFragmentManager();
-                if (fm.findFragmentByTag(PartialDatePickerDialogFragment.TAG) == null) {
-                    String value = field.getValue();
-                    PartialDatePickerDialogFragment
-                            .newInstance(field.getId(), value, dialogTitleId, todayIfNone)
-                            .show(fm, PartialDatePickerDialogFragment.TAG);
-                }
-            });
+            fieldView.setOnClickListener(v -> PartialDatePickerDialogFragment
+                    .newInstance(field.getId(), field.getValue(), dialogTitleId, todayIfNone)
+                    .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG));
         }
     }
 
@@ -279,13 +269,9 @@ public abstract class EditBookBaseFragment<T>
                              CheckListDialogFragment.CheckListEditorListGetter<T> listGetter) {
         // only bother when it's in use
         if (field.isUsed()) {
-            fieldView.setOnClickListener(v -> {
-                FragmentManager fm = getChildFragmentManager();
-                if (fm.findFragmentByTag(CheckListDialogFragment.TAG) == null) {
-                    CheckListDialogFragment.newInstance(field.getId(), dialogTitleId, listGetter)
-                                           .show(fm, CheckListDialogFragment.TAG);
-                }
-            });
+            fieldView.setOnClickListener(v -> CheckListDialogFragment
+                    .newInstance(field.getId(), dialogTitleId, listGetter)
+                    .show(getChildFragmentManager(), CheckListDialogFragment.TAG));
         }
     }
 }

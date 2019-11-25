@@ -110,8 +110,6 @@ public final class Site
 
     /**
      * {@link Parcelable} Constructor.
-     * <p>
-     * Reminder: this is IPC.. so don't load prefs!
      *
      * @param in Parcel to construct the object from
      */
@@ -119,6 +117,7 @@ public final class Site
         id = in.readInt();
         mName = SearchSites.getName(id);
         mEnabled = in.readInt() != 0;
+        // Reminder: this is IPC.. so don't load prefs!
     }
 
     /**
@@ -180,7 +179,7 @@ public final class Site
         return mSearchEngine;
     }
 
-    public void loadFromPrefs(@NonNull final Context context) {
+    void loadFromPrefs(@NonNull final Context context) {
         String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
         mEnabled = PreferenceManager.getDefaultSharedPreferences(context)
                                     .getBoolean(lcName + "enabled", mEnabled);

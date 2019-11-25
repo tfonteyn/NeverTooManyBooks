@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,13 +51,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
@@ -148,7 +144,7 @@ public class UpdateFieldsFragment
         mUpdateFieldsModel.init(getContext(), getArguments(), mUpdateFieldsListener);
 
         FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
+        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             // reconnect after a fragment restart
             mProgressDialog.setCancellable(mUpdateFieldsModel.getTask());
@@ -173,8 +169,8 @@ public class UpdateFieldsFragment
         populateFields();
 
         if (savedInstanceState == null) {
-            SearchSites.promptToRegister(getContext(), false, "update_from_internet",
-                                         mUpdateFieldsModel.getSearchSites());
+            mUpdateFieldsModel.getSiteList()
+                              .promptToRegister(getContext(), false, "update_from_internet");
 
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, null);
         }
@@ -203,7 +199,6 @@ public class UpdateFieldsFragment
      * Display the list of fields.
      */
     private void populateFields() {
-
         for (FieldUsage usage : mUpdateFieldsModel.getFieldUsages().values()) {
             View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
                                                    mFieldListView, false);
@@ -240,10 +235,9 @@ public class UpdateFieldsFragment
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                            SearchSites.ListType.Data.getBundleKey());
+                    SiteList sites = data.getParcelableExtra(SiteList.ListType.Data.getBundleKey());
                     if (sites != null) {
-                        mUpdateFieldsModel.setSearchSites(sites);
+                        mUpdateFieldsModel.setSiteList(sites);
                     }
                 }
                 break;
@@ -276,9 +270,9 @@ public class UpdateFieldsFragment
             case R.id.MENU_PREFS_SEARCH_SITES: {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
-                                  (Parcelable) SearchSites.ListType.Data)
-                        .putExtra(SearchSites.ListType.Data.getBundleKey(),
-                                  mUpdateFieldsModel.getSearchSites());
+                                  (Parcelable) SiteList.ListType.Data)
+                        .putExtra(SiteList.ListType.Data.getBundleKey(),
+                                  mUpdateFieldsModel.getSiteList());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
             }
@@ -353,23 +347,13 @@ public class UpdateFieldsFragment
     }
 
     private void startSearch() {
-        FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(TAG);
-        if (mProgressDialog == null) {
+        // Start the lookup in a background search task.
+        if (mUpdateFieldsModel.startSearch()) {
+            // we started at least one search.
             mProgressDialog = ProgressDialogFragment
                     .newInstance(R.string.progress_msg_searching, true, 0);
-            mProgressDialog.show(fm, TAG);
-            // Start the lookup in a background search task.
-            if (mUpdateFieldsModel.startSearch()) {
-                // we started at least one search.
-                mProgressDialog.setCancellable(mUpdateFieldsModel.getTask());
-            } else {
-                Log.d(TAG, "onSearch was false");
-                // unlikely... but paranoia.
-                //TEST: the user might see a flash ??
-                mProgressDialog.dismiss();
-                mProgressDialog = null;
-            }
+            mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
+            mProgressDialog.setCancellable(mUpdateFieldsModel.getTask());
         }
     }
 }

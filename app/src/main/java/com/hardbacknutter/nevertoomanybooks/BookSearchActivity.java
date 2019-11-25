@@ -36,13 +36,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
@@ -121,12 +118,11 @@ public class BookSearchActivity
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
-                ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                        SearchSites.ListType.Data.getBundleKey());
-                if (sites != null) {
+                SiteList siteList = data.getParcelableExtra(SiteList.ListType.Data.getBundleKey());
+                if (siteList != null) {
                     SearchCoordinator model =
                             new ViewModelProvider(this).get(SearchCoordinator.class);
-                    model.setSearchSites(sites);
+                    model.setSiteList(siteList);
                 }
             }
         }

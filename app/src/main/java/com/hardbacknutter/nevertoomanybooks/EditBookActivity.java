@@ -54,6 +54,8 @@ public class EditBookActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
+
         replaceFragment(R.id.main_fragment, EditBookFragment.class, EditBookFragment.TAG);
     }
 
@@ -72,7 +74,7 @@ public class EditBookActivity
 
         if (model.isDirty()) {
             // If the user clicks 'exit', we finish() the activity.
-            StandardDialogs.showConfirmUnsavedEditsDialog(this, this::finish);
+            StandardDialogs.unsavedEditsDialog(this, this::finish);
             return;
         }
 

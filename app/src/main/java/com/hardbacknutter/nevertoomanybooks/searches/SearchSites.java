@@ -28,24 +28,18 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Parcel;
-import android.os.Parcelable;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksManager;
@@ -54,8 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -71,12 +63,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * It will be used in SharedPreferences so should never be changed.
  * </li>
  * <li>Implement {@link SearchEngine} to create the new engine (class).</li>
- * <li>Add your new engine to {@link #getSearchEngine}</li>
+ * <li>Add the new engine to {@link #getSearchEngine}</li>
  *
  * <li>Create+add a new {@link Site} instance to the lists in {@link #createSiteList}
  * and to {@link #DATA_RELIABILITY_ORDER}</li>
  *
- * <li>Add your new engine to {@link DebugReport#getSiteUrls}</li>
+ * <li>Add your new engine to {@link #getSiteUrls}</li>
  * <li>Optional: add to res/xml/preferences.xml if the url should be editable.<br>
  * See the Amazon example in that xml file.</li>
  * </ol>
@@ -94,39 +86,31 @@ public final class SearchSites {
 
     /** Site. */
     public static final int AMAZON = 1 << 1;
+    static final String DATA_RELIABILITY_ORDER;
     /** Site. */
-    public static final int GOOGLE_BOOKS = 1;
+    private static final int GOOGLE_BOOKS = 1;
     /** Site. */
-    public static final int LIBRARY_THING = 1 << 2;
+    private static final int LIBRARY_THING = 1 << 2;
     /** Site. */
-    public static final int GOODREADS = 1 << 3;
+    private static final int GOODREADS = 1 << 3;
     /** Site: Speculative Fiction only. i.e. Science-Fiction/Fantasy etc... */
-    public static final int ISFDB = 1 << 4;
+    private static final int ISFDB = 1 << 4;
     /** Site. */
-    public static final int OPEN_LIBRARY = 1 << 5;
+    private static final int OPEN_LIBRARY = 1 << 5;
     /** Site: Dutch language books & comics. */
-    public static final int KB_NL = 1 << 6;
+    private static final int KB_NL = 1 << 6;
     /** Site: Dutch language (and to an extend French) comics. */
-    public static final int STRIP_INFO_BE = 1 << 7;
+    private static final int STRIP_INFO_BE = 1 << 7;
     /** Mask including all search sources. */
-    static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON
-                                        | LIBRARY_THING | GOODREADS | ISFDB | OPEN_LIBRARY
+    static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON | LIBRARY_THING | GOODREADS
+                                        | ISFDB | OPEN_LIBRARY
                                         | KB_NL | STRIP_INFO_BE;
-
-    private static final String SEP = ",";
-
     /** Dutch language site. */
     private static final String NLD = "nld";
-
-
-    private static final String DATA_RELIABILITY_ORDER;
     /** Name suffix for Cover websites. */
     private static final String SUFFIX_COVERS = "Covers";
     /** Name suffix for Alternative Editions websites. */
     private static final String SUFFIX_ALT_ED = "AltEd";
-
-    /** Cached copy of the users preferred site order. */
-    private static final EnumMap<ListType, ArrayList<Site>> sLists = new EnumMap<>(ListType.class);
 
     static {
         // order is hardcoded based on experience.
@@ -138,28 +122,10 @@ public final class SearchSites {
                 + ',' + GOOGLE_BOOKS
                 + ',' + LIBRARY_THING
                 + ',' + KB_NL
-                + ',' + OPEN_LIBRARY
-        ;
+                + ',' + OPEN_LIBRARY;
     }
 
     private SearchSites() {
-    }
-
-    /**
-     * Check if the device or user locale matches the given language.
-     * <p>
-     * Non-english sites are by default only enabled if either the device or
-     * this app is running in the specified language.
-     * The user can still enable/disable them at will of course.
-     *
-     * @param iso language code to check
-     *
-     * @return {@code true} if sites should be enabled by default.
-     */
-    private static boolean isLang(@SuppressWarnings("SameParameterValue")
-                                  @NonNull final String iso) {
-        return iso.equals(App.getSystemLocale().getISO3Language())
-               || iso.equals(Locale.getDefault().getISO3Language());
     }
 
     /**
@@ -207,6 +173,8 @@ public final class SearchSites {
     /**
      * Get a new SearchEngine class instance for the given ID.
      *
+     * @param id site id
+     *
      * @return instance
      */
     static SearchEngine getSearchEngine(@SearchSites.Id final int id) {
@@ -232,38 +200,14 @@ public final class SearchSites {
         }
     }
 
-    /** Hardcoded to ISFDB for now, as that's the only site supporting this flag. */
+    /**
+     * Hardcoded to ISFDB for now, as that's the only site supporting this flag.
+     *
+     * @param context Current context
+     */
     public static boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
-    }
-
-    /**
-     * Bring up an Alert to the user if the searchSites include a site where registration
-     * is beneficial/required.
-     *
-     * @param context     Current context
-     * @param required    {@code true} if we <strong>must</strong> have access to LT.
-     *                    {@code false} if it would be beneficial.
-     * @param prefSuffix  Tip preference marker
-     * @param searchSites sites
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public static boolean promptToRegister(@NonNull final Context context,
-                                           final boolean required,
-                                           @NonNull final String prefSuffix,
-                                           @NonNull final Iterable<Site> searchSites) {
-        boolean showingAlert = false;
-        for (Site site : searchSites) {
-            if (site.isEnabled()) {
-                showingAlert |= site.getSearchEngine()
-                                    .promptToRegister(context, required, prefSuffix);
-            }
-        }
-
-        return showingAlert;
     }
 
     /**
@@ -275,10 +219,10 @@ public final class SearchSites {
      *
      * @return list
      */
-    private static ArrayList<Site> createSiteList(@NonNull final Context context,
-                                                  @NonNull final ListType listType,
-                                                  final boolean loadPrefs) {
-        ArrayList<Site> list = new ArrayList<>();
+    static SiteList createSiteList(@NonNull final Context context,
+                                   @NonNull final SiteList.ListType listType,
+                                   final boolean loadPrefs) {
+        SiteList list = new SiteList(listType);
 
         switch (listType) {
             case Data: {
@@ -317,6 +261,7 @@ public final class SearchSites {
 
             case AltEditions: {
                 list.add(Site.newSite(LIBRARY_THING, SUFFIX_ALT_ED, true));
+                list.add(Site.newSite(ISFDB, SUFFIX_ALT_ED, true));
                 break;
             }
 
@@ -325,215 +270,104 @@ public final class SearchSites {
         }
 
         if (loadPrefs) {
-            for (Site site : list) {
-                site.loadFromPrefs(context);
-            }
-            String order = PreferenceManager.getDefaultSharedPreferences(context)
-                                            .getString(listType.getListOrderPreferenceKey(), null);
-            if (order != null) {
-                return reorder(order, list);
-            }
+            list.loadPrefs(context);
         }
         return list;
     }
 
-    static ArrayList<Site> getReliabilityOrder(@NonNull final Context context) {
-        // get the (cached) list with user preferences for the sites reordered by reliability.
-        return reorder(DATA_RELIABILITY_ORDER, getSites(context, ListType.Data));
+    @Id
+    public static int getSiteIdFromResId(@IdRes final int checkedId) {
+        //NEWTHINGS: add new site specific ID:
+        // not all sites actually have/need a resource id.
+        switch (checkedId) {
+            case R.id.site_amazon:
+                return AMAZON;
+
+            case R.id.site_goodreads:
+                return GOODREADS;
+
+            case R.id.site_isfdb:
+                return ISFDB;
+
+            case R.id.site_library_thing:
+                return LIBRARY_THING;
+
+            case R.id.site_open_library:
+                return OPEN_LIBRARY;
+
+            case R.id.site_strip_info_be:
+                return STRIP_INFO_BE;
+
+            default:
+                throw new UnexpectedValueException(checkedId);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    @IdRes
+    private static int getResIdFromSiteId(@Id final int siteId) {
+        //NEWTHINGS: add new site specific ID:
+        switch (siteId) {
+            case AMAZON:
+                return R.id.site_amazon;
+
+            case GOODREADS:
+                return R.id.site_goodreads;
+
+            case ISFDB:
+                return R.id.site_isfdb;
+
+            case LIBRARY_THING:
+                return R.id.site_library_thing;
+
+            case OPEN_LIBRARY:
+                return R.id.site_open_library;
+
+            case STRIP_INFO_BE:
+                return R.id.site_strip_info_be;
+
+            case GOOGLE_BOOKS:
+            case KB_NL:
+            default:
+                throw new UnexpectedValueException(siteId);
+        }
     }
 
     /**
-     * Get the global search site list in the preferred order.
-     * Includes enabled <strong>AND</strong> disabled sites.
+     * DEBUG method. Returns a text block containing potentially changed urls.
      *
-     * @param context  Current context
-     * @param listType type
+     * @param context Current context
      *
-     * @return the list
+     * @return url list
      */
-    @NonNull
-    public static ArrayList<Site> getSites(@NonNull final Context context,
-                                           @NonNull final ListType listType) {
-
-        // already loaded ?
-        ArrayList<Site> list = sLists.get(listType);
-        if (list != null) {
-            //noinspection unchecked
-            return (ArrayList<Site>) list.clone();
-        }
-
-        // create the list according to user preferences.
-        ArrayList<Site> sites = createSiteList(context, listType, true);
-
-        // cache the list for reuse
-        sLists.put(listType, sites);
-
-        //noinspection unchecked
-        return (ArrayList<Site>) sites.clone();
+    public static String getSiteUrls(@NonNull final Context context) {
+        return AmazonManager.getBaseURL(context) + '\n'
+//               + GoodreadsManager.getBaseURL(context) + '\n'
+//               + GoogleBooksManager.getBaseURL(context) + '\n'
+               + IsfdbManager.getBaseURL(context) + '\n'
+               + KbNlManager.getBaseURL(context) + '\n'
+//               + LibraryThingManager.getBaseURL(context) + '\n'
+//               + OpenLibraryManager.getBaseURL(context) + '\n'
+//               + StripInfoManager.getBaseURL(context) + '\n'
+                ;
+        //NEWTHINGS: add new search engine if it supports a changeable url.
     }
 
     /**
-     * Reorder the given list based on user preferences.
+     * Check if the device or user locale matches the given language.
+     * <p>
+     * Non-english sites are by default only enabled if either the device or
+     * this app is running in the specified language.
+     * The user can still enable/disable them at will of course.
      *
-     * @param order CSV string with site ids
-     * @param sites list to reorder
+     * @param iso language code to check
      *
-     * @return ordered list
+     * @return {@code true} if sites should be enabled by default.
      */
-    private static ArrayList<Site> reorder(@NonNull final String order,
-                                           @NonNull final Iterable<Site> sites) {
-        ArrayList<Site> orderedList = new ArrayList<>();
-        for (String idStr : order.split(SEP)) {
-            int id = Integer.parseInt(idStr);
-            for (Site site : sites) {
-                if (site.id == id) {
-                    orderedList.add(site);
-                    break;
-                }
-            }
-        }
-        return orderedList;
-    }
-
-    /**
-     * Get a bitmask with the enabled sites for the given list.
-     *
-     * @param list to filter
-     *
-     * @return bitmask containing only the enables sites
-     */
-    public static int getEnabledSites(@NonNull final Iterable<Site> list) {
-        int sites = 0;
-        for (Site site : list) {
-            if (site.isEnabled()) {
-                // add the site
-                sites = sites | site.id;
-            }
-        }
-        return sites;
-    }
-
-    /**
-     * Reset a list back to the hardcoded defaults.
-     *
-     * @param context  Current context
-     * @param listType type
-     *
-     * @return the new list
-     */
-    public static ArrayList<Site> resetList(@NonNull final Context context,
-                                            @NonNull final ListType listType) {
-
-        ArrayList<Site> newList = createSiteList(context, listType, false);
-        setList(context, listType, newList);
-        return newList;
-    }
-
-    /**
-     * Update the given list.
-     *
-     * @param context  Current context
-     * @param listType type
-     * @param newList  to use
-     */
-    public static void setList(@NonNull final Context context,
-                               @NonNull final ListType listType,
-                               @NonNull final ArrayList<Site> newList) {
-
-        // replace the cached copy.
-        sLists.put(listType, newList);
-
-        // Save the order of the given list (ids) and the individual site settings to preferences.
-        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        String order = Csv.join(SEP, newList, site -> {
-            // store individual site settings
-            site.saveToPrefs(ed);
-            // and collect the id for the order string
-            return String.valueOf(site.id);
-        });
-        ed.putString(listType.getListOrderPreferenceKey(), order);
-        ed.apply();
-    }
-
-    /**
-     * The different types of configurable site lists we maintain.
-     *
-     * <strong>Note:</strong> the order of the enum values is used as the order
-     * of the tabs in {@link SearchAdminActivity}.
-     */
-    public enum ListType
-            implements Parcelable {
-
-        Data, Covers, AltEditions;
-
-        public static final Parcelable.Creator<ListType> CREATOR =
-                new Parcelable.Creator<ListType>() {
-                    @Override
-                    public ListType createFromParcel(Parcel in) {
-                        return ListType.values()[in.readInt()];
-                    }
-
-                    @Override
-                    public ListType[] newArray(int size) {
-                        return new ListType[size];
-                    }
-                };
-        private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
-        private static final String TAG = "ListType";
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest,
-                                  int flags) {
-            dest.writeInt(this.ordinal());
-        }
-
-        @StringRes
-        public int getLabelId() {
-            switch (this) {
-                case Data:
-                    return R.string.lbl_books;
-                case Covers:
-                    return R.string.lbl_covers;
-                case AltEditions:
-                    return R.string.tab_lbl_alternative_editions;
-
-                default:
-                    throw new UnexpectedValueException(this);
-            }
-        }
-
-        public String getBundleKey() {
-            switch (this) {
-                case Data:
-                    return TAG + ":data";
-                case Covers:
-                    return TAG + ":covers";
-                case AltEditions:
-                    return TAG + ":alt_ed";
-
-                default:
-                    throw new UnexpectedValueException(this);
-            }
-        }
-
-        String getListOrderPreferenceKey() {
-            switch (this) {
-                case Data:
-                    return PREFS_ORDER_PREFIX + "data";
-                case Covers:
-                    return PREFS_ORDER_PREFIX + "covers";
-                case AltEditions:
-                    return PREFS_ORDER_PREFIX + "alt_ed";
-
-                default:
-                    throw new UnexpectedValueException(this);
-            }
-        }
+    private static boolean isLang(@SuppressWarnings("SameParameterValue")
+                                  @NonNull final String iso) {
+        return iso.equals(App.getSystemLocale().getISO3Language())
+               || iso.equals(Locale.getDefault().getISO3Language());
     }
 
     @IntDef(flag = true, value = {

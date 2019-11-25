@@ -160,18 +160,7 @@ public class AuthorWorksFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-
-        menu.add(R.id.MENU_AUTHOR_WORKS, R.id.MENU_AUTHOR_WORKS_ALL, 0,
-                 R.string.menu_author_works_all)
-            .setChecked(true);
-
-        menu.add(R.id.MENU_AUTHOR_WORKS, R.id.MENU_AUTHOR_WORKS_TOC, 0,
-                 R.string.menu_author_works_toc);
-        menu.add(R.id.MENU_AUTHOR_WORKS, R.id.MENU_AUTHOR_WORKS_BOOKS, 0,
-                 R.string.menu_author_works_book);
-
-        menu.setGroupCheckable(R.id.MENU_AUTHOR_WORKS, true, true);
-
+        inflater.inflate(R.menu.o_author_works, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

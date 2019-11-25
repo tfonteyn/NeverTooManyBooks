@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.SearchSuggestionProvider;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -277,7 +278,9 @@ public class SynchronizedDb {
         try {
             long id = mSqlDb.insert(table, nullColumnHack, cv);
             if (id == -1) {
-                Logger.warnWithStackTrace(TAG, "Insert failed");
+                Logger.warnWithStackTrace(TAG, "Insert failed",
+                                          "table=" + table,
+                                          "cv=" + cv);
             }
             return id;
         } catch (@NonNull final SQLException e) {
@@ -370,7 +373,7 @@ public class SynchronizedDb {
      * <p>
      * lint says this cursor is not always closed.
      * 2019-01-14: the only place it's not closed is in
-     * {@link com.hardbacknutter.nevertoomanybooks.searches.SearchSuggestionProvider}
+     * {@link SearchSuggestionProvider}
      * where it seems not possible to close it ourselves.
      *
      * @return the cursor

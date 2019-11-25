@@ -27,7 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -63,8 +63,8 @@ class SearchSitesTest
 
     @Test
     void site() {
-        for (SearchSites.ListType type : SearchSites.ListType.values()) {
-            ArrayList<Site> sites = SearchSites.getSites(mContext, type);
+        for (SiteList.ListType type : SiteList.ListType.values()) {
+            List<Site> sites = SiteList.getSites(mContext, type);
             System.out.println(sites);
         }
     }

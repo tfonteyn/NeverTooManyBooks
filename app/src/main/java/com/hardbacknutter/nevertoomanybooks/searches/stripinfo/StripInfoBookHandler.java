@@ -695,17 +695,20 @@ public class StripInfoBookHandler
                 if (nameNode != null) {
                     String name = nameNode.toString();
                     Author currentAuthor = Author.fromString(name);
+                    boolean add = true;
                     // check if already present
                     for (Author author : mAuthors) {
                         if (author.equals(currentAuthor)) {
                             // merge types.
                             author.addType(currentAuthorType);
-                            return 1;
+                            add = false;
                         }
                     }
-                    // just add
-                    currentAuthor.setType(currentAuthorType);
-                    mAuthors.add(currentAuthor);
+
+                    if (add) {
+                        currentAuthor.setType(currentAuthorType);
+                        mAuthors.add(currentAuthor);
+                    }
                 }
             }
             return 1;

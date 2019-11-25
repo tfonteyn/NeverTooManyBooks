@@ -57,9 +57,9 @@ public final class StandardDialogs {
      * @param context Current context
      * @param onExit  Runnable to execute if the user clicks the Exit button.
      */
-    public static void showConfirmUnsavedEditsDialog(@NonNull final Context context,
-//                                                     @NonNull final Runnable onSave,
-                                                     @NonNull final Runnable onExit) {
+    public static void unsavedEditsDialog(@NonNull final Context context,
+//                                          @NonNull final Runnable onSave,
+                                          @NonNull final Runnable onExit) {
         new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_details_have_changed)

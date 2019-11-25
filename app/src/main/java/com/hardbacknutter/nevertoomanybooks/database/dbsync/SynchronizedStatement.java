@@ -388,7 +388,8 @@ public class SynchronizedStatement
                 Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {
-                    Logger.warnWithStackTrace(TAG, "Insert failed");
+                    Logger.warnWithStackTrace(TAG, "Insert failed",
+                                              "mStatement=" + mStatement);
                 }
             }
             return id;

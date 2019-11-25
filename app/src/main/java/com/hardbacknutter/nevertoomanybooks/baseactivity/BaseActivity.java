@@ -53,19 +53,24 @@ import com.google.android.material.navigation.NavigationView;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.About;
+import com.hardbacknutter.nevertoomanybooks.AdminActivity;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.EditBookshelvesActivity;
 import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
+import com.hardbacknutter.nevertoomanybooks.ImportExportFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * Base class for all (most?) Activity's.
+ * Base class for all Activity's (except the startup activity).
  * <p>
  * Fragments should implement:
  * <pre>
@@ -80,6 +85,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  *                      return;
  *                  }
  *              }
+ *
+ *              // do stuff here
  *          }
  *     }
  * </pre>
@@ -319,6 +326,29 @@ public abstract class BaseActivity
                     // standard system call.
                     return onSearchRequested();
                 }
+            }
+
+            case R.id.nav_manage_bookshelves: {
+                Intent intent = new Intent(this, EditBookshelvesActivity.class);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
+                return true;
+            }
+            case R.id.nav_manage_list_styles: {
+                Intent intent = new Intent(this, PreferredStylesActivity.class);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                return true;
+            }
+            case R.id.nav_import_export: {
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportExportFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMP_EXP);
+                return true;
+            }
+            case R.id.nav_goodreads: {
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_GOODREADS);
+                return true;
             }
             case R.id.nav_settings: {
                 startActivityForResult(new Intent(this, SettingsActivity.class),

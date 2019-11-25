@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 public class ProgressDialogFragment
         extends DialogFragment {
 
-    private static final String TAG = "ProgressDialogFragment";
+    public static final String TAG = "ProgressDialogFragment";
 
     private static final String BKEY_DIALOG_IS_INDETERMINATE = TAG + ":isIndeterminate";
     private static final String BKEY_MAX = TAG + ":max";
@@ -165,26 +165,20 @@ public class ProgressDialogFragment
         return dialog;
     }
 
-    @Override
-    public void onCancel(@NonNull final DialogInterface dialog) {
-        if (mCancellable != null) {
-            mCancellable.cancel(true);
-            // invalidate. The dialog can be reused.
-            mCancellable = null;
-        }
-    }
-
     /**
      * Optionally link this object with a Cancellable.
      *
      * @param cancellable that will be cancelled when this dialog is cancelled.
      */
     public void setCancellable(@Nullable final Cancellable cancellable) {
-        // cancel any previous task first.
-        if (mCancellable != null) {
-            mCancellable.cancel(true);
-        }
         mCancellable = cancellable;
+    }
+
+    @Override
+    public void onCancel(@NonNull final DialogInterface dialog) {
+        if (mCancellable != null) {
+            mCancellable.cancel(false);
+        }
     }
 
     @UiThread

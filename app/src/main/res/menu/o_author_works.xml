@@ -27,30 +27,24 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".EditBookshelvesActivity"
-    >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <include layout="@layout/inc_appbar" />
+    <group
+        android:checkableBehavior="single">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/bookshelfList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/row_edit_bookshelf"
-        />
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_ALL"
+            android:checked="true"
+            android:title="@string/menu_author_works_all" />
 
-    <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
-        android:id="@+id/fab"
-        style="@style/FAB"
-        android:src="@drawable/ic_add"
-        />
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_TOC"
+            android:title="@string/menu_author_works_toc" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_BOOKS"
+            android:title="@string/menu_author_works_book" />
+
+    </group>
+
+</menu>

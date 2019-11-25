@@ -351,6 +351,7 @@ public class ISBN {
         return mDigits != null && (mDigits.size() == 13) && isValid();
     }
 
+    @SuppressWarnings("WeakerAccess")
     public boolean isUpc() {
         return mIsUpc;
     }
@@ -520,7 +521,7 @@ public class ISBN {
      * @return string
      */
     @NonNull
-    public String getText() {
+    public String asText() {
         return concat(mDigits);
     }
 

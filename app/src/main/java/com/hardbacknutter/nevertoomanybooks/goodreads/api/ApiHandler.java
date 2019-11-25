@@ -32,7 +32,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 
 /**
- * Layered, to be able to easily swapped the native parent with an Apache based parent.
+ * Layered, to be able to easily swap the native parent with an Apache based parent.
  */
 abstract class ApiHandler
         extends ApiHandlerNative {

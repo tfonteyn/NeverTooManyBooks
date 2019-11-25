@@ -40,7 +40,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -52,6 +51,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -68,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItemBase;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -260,8 +259,7 @@ public class Book
         }
 
         // prepare the cover to post
-        Uri uri = FileProvider.getUriForFile(context, GenericFileProvider.AUTHORITY,
-                                             StorageUtils.getCoverFileForUuid(uuid));
+        Uri uri = App.getUriForFile(context, StorageUtils.getCoverFileForUuid(uuid));
 
         // so despite it being shown on the list it will not post any text unless the user types it.
         String text = context.getString(R.string.info_share_book_im_reading,
@@ -598,7 +596,8 @@ public class Book
 
     /**
      * Validate the Locale (based on the Book's language) and reset the language if needed.
-     * @param context        Current context
+     *
+     * @param context Current context
      */
     public void updateLocale(@NonNull final Context context) {
         getLocale(context, Locale.getDefault(), true);
@@ -608,7 +607,9 @@ public class Book
      * Convenience method.
      * <p>
      * Get the Book's Locale (based on its language).
-     * @param context        Current context
+     *
+     * @param context Current context
+     *
      * @return the Locale, or the users preferred Locale if no language was set.
      */
     @NonNull
@@ -734,20 +735,6 @@ public class Book
             // if not, take the long road.
             return db.getLoaneeByBookId(getId());
         }
-    }
-
-    /**
-     * Check if this book has at least one valid external id.
-     *
-     * @return {@code true} if we have an id
-     */
-    public boolean hasExternalId() {
-        //NEWTHINGS: add new site specific ID: add
-        return 0 != getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
-               || 0 != getLong(DBDefinitions.KEY_EID_LIBRARY_THING)
-               || 0 != getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)
-               || 0 != getLong(DBDefinitions.KEY_EID_ISFDB)
-               || !getString(DBDefinitions.KEY_EID_OPEN_LIBRARY).isEmpty();
     }
 
     @Retention(RetentionPolicy.SOURCE)

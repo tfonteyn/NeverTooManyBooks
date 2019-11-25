@@ -35,7 +35,6 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import java.io.File;
@@ -44,6 +43,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
@@ -85,9 +85,7 @@ public class CameraHelper {
             StorageUtils.deleteFile(file);
 
             //noinspection ConstantConditions
-            Uri uri = FileProvider.getUriForFile(fragment.getContext(),
-                                                 GenericFileProvider.AUTHORITY,
-                                                 file);
+            Uri uri = App.getUriForFile(fragment.getContext(), file);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
         fragment.startActivityForResult(intent, requestCode);

@@ -114,9 +114,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class BooklistStyle
         implements Parcelable, Entity {
 
-    /** Extra book data to show at lowest level. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int EXTRAS_THUMBNAIL = 1 << 8;
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
             new Creator<BooklistStyle>() {
@@ -132,6 +129,7 @@ public class BooklistStyle
             };
     /** default style when none is set yet. */
     public static final int DEFAULT_STYLE_ID = Builtin.AUTHOR_THEN_SERIES_ID;
+
     /** Extra book data to show at lowest level. (the bit numbers are not stored anywhere) */
     public static final int EXTRAS_BOOKSHELVES = 1;
     /** Extra book data to show at lowest level. */
@@ -148,6 +146,10 @@ public class BooklistStyle
     public static final int EXTRAS_ISBN = 1 << 6;
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_UNUSED_BIT = 1 << 7;
+    /** Extra book data to show at lowest level. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int EXTRAS_THUMBNAIL = 1 << 8;
+
     /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
     public static final int EXTRAS_BY_TASK = EXTRAS_BOOKSHELVES
                                              | EXTRAS_LOCATION | EXTRAS_FORMAT
@@ -271,21 +273,21 @@ public class BooklistStyle
     /**
      * Constructor for system-defined styles.
      *
-     * @param id     a negative int
-     * @param uuid   the hardcoded UUID for the builtin style.
-     * @param nameId the resource id for the name
-     * @param kinds  a list of group kinds to attach to this style
+     * @param id       a negative int
+     * @param uuid     the hardcoded UUID for the builtin style.
+     * @param nameId   the resource id for the name
+     * @param groupIds a list of groups to attach to this style
      */
     private BooklistStyle(@IntRange(from = -100, to = -1) final long id,
                           @NonNull final String uuid,
                           @StringRes final int nameId,
-                          @NonNull final int... kinds) {
+                          @NonNull final int... groupIds) {
         mId = id;
         mUuid = uuid;
         mNameResId = nameId;
         initPrefs();
-        for (int kind : kinds) {
-            mStyleGroups.add(BooklistGroup.newInstance(kind, mUuid, isUserDefined()));
+        for (@BooklistGroup.RowKind.Id int groupId : groupIds) {
+            mStyleGroups.add(BooklistGroup.newInstance(groupId, mUuid, isUserDefined()));
         }
     }
 
@@ -934,7 +936,7 @@ public class BooklistStyle
         // Save the current groups
         Map<Integer, BooklistGroup> currentGroups = new LinkedHashMap<>();
         for (BooklistGroup group : mStyleGroups.getGroups()) {
-            currentGroups.put(group.getKind(), group);
+            currentGroups.put(group.getId(), group);
         }
 
         // we'll collect the new Preferences to add here
@@ -943,13 +945,13 @@ public class BooklistStyle
         // Clear the current groups, and rebuild, reusing old values where possible
         mStyleGroups.clear();
         for (BooklistGroup newGroup : source.getGroups()) {
-            BooklistGroup current = currentGroups.get(newGroup.getKind());
+            BooklistGroup current = currentGroups.get(newGroup.getId());
             // if we don't have the new one...
             if (current == null) {
                 // copy the groups PPrefs locally
                 allGroupsPreferences.putAll(newGroup.getPreferences());
                 // and add a new instance of that group
-                mStyleGroups.add(BooklistGroup.newInstance(newGroup.getKind(),
+                mStyleGroups.add(BooklistGroup.newInstance(newGroup.getId(),
                                                            mUuid, isUserDefined()));
             } else {
                 // otherwise, just re-add our (old) current group.
@@ -973,10 +975,10 @@ public class BooklistStyle
     /**
      * Remove a group from this style.
      *
-     * @param kind of group to remove.
+     * @param id of group to remove.
      */
-    public void removeGroup(@BooklistGroup.RowKind.Kind final int kind) {
-        mStyleGroups.remove(kind);
+    public void removeGroup(@BooklistGroup.RowKind.Id final int id) {
+        mStyleGroups.remove(id);
     }
 
     /**
@@ -996,8 +998,8 @@ public class BooklistStyle
      *
      * @return {@code true} if present
      */
-    public boolean hasGroupKind(@BooklistGroup.RowKind.Kind final int kind) {
-        return mStyleGroups.getGroupKinds().contains(kind);
+    public boolean hasGroup(@BooklistGroup.RowKind.Id final int id) {
+        return mStyleGroups.getGroupKinds().contains(id);
     }
 
     /**
@@ -1015,7 +1017,7 @@ public class BooklistStyle
      *
      * @return kind
      */
-    @BooklistGroup.RowKind.Kind
+    @BooklistGroup.RowKind.Id
     int getGroupKindAt(final int index) {
         return mStyleGroups.getGroupKindAt(index);
     }
@@ -1352,10 +1354,10 @@ public class BooklistStyle
      * @return {@code true} if we want "given-names last-name" formatted authors.
      */
     public boolean showAuthorGivenNameFirst(@NonNull final Context context) {
-        if (hasGroupKind(BooklistGroup.RowKind.AUTHOR)) {
+        if (hasGroup(BooklistGroup.RowKind.AUTHOR)) {
             BooklistGroup.BooklistAuthorGroup authorGroup =
                     (BooklistGroup.BooklistAuthorGroup)
-                            (mStyleGroups.getGroupForKind(BooklistGroup.RowKind.AUTHOR));
+                            (mStyleGroups.getGroup(BooklistGroup.RowKind.AUTHOR));
             if (authorGroup != null) {
                 return authorGroup.showAuthorGivenNameFirst();
             }
@@ -1432,8 +1434,8 @@ public class BooklistStyle
 
             // load the group ID's from the SharedPreference and populates the Group object list.
             mGroups.clear();
-            for (int kind : get()) {
-                mGroups.add(BooklistGroup.newInstance(kind, uuid, isUserDefined));
+            for (@BooklistGroup.RowKind.Id int id : get()) {
+                mGroups.add(BooklistGroup.newInstance(id, uuid, isUserDefined));
             }
         }
 
@@ -1443,10 +1445,10 @@ public class BooklistStyle
         }
 
         @Nullable
-        BooklistGroup getGroupForKind(@SuppressWarnings("SameParameterValue")
-                                      @BooklistGroup.RowKind.Kind final int kind) {
+        BooklistGroup getGroup(@SuppressWarnings("SameParameterValue")
+                               @BooklistGroup.RowKind.Id final int id) {
             for (BooklistGroup group : mGroups) {
-                if (group.getKind() == kind) {
+                if (group.getId() == id) {
                     return group;
                 }
             }
@@ -1458,7 +1460,7 @@ public class BooklistStyle
             return get();
         }
 
-        @BooklistGroup.RowKind.Kind
+        @BooklistGroup.RowKind.Id
         int getGroupKindAt(final int index) {
             return (int) get().toArray()[index];
         }
@@ -1467,6 +1469,11 @@ public class BooklistStyle
             return get().size();
         }
 
+        /**
+         * Set the <strong>value</strong> from the Parcel.
+         *
+         * @param in parcel to read from
+         */
         @Override
         public void set(@NonNull final Parcel in) {
             clear();
@@ -1489,23 +1496,23 @@ public class BooklistStyle
          */
         void add(@NonNull final BooklistGroup group) {
             mGroups.add(group);
-            super.add(group.getKind());
+            super.add(group.getId());
         }
 
         /**
          * We need the *kind* of group to remove (and NOT the group itself),
          * so we can (optionally) replace it with a new (different) copy.
          *
-         * @param kind of group to remove
+         * @param id of group to remove
          */
-        void remove(@BooklistGroup.RowKind.Kind final int kind) {
+        void remove(@BooklistGroup.RowKind.Id final int id) {
             Iterator<BooklistGroup> it = mGroups.iterator();
             while (it.hasNext()) {
-                @BooklistGroup.RowKind.Kind
-                int groupKind = it.next().getKind();
-                if (groupKind == kind) {
+                @BooklistGroup.RowKind.Id
+                int groupId = it.next().getId();
+                if (groupId == id) {
                     it.remove();
-                    super.remove(groupKind);
+                    super.remove(groupId);
                 }
             }
         }
@@ -1537,7 +1544,7 @@ public class BooklistStyle
         private void writeGroupIds() {
             List<Integer> list = new ArrayList<>();
             for (BooklistGroup group : mGroups) {
-                list.add(group.getKind());
+                list.add(group.getId());
             }
             set(list);
         }

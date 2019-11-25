@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.AlternativeExecutor;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -95,7 +96,9 @@ public class CoverBrowserViewModel
         if (mBaseIsbn == null) {
             mBaseIsbn = args.getString(DBDefinitions.KEY_ISBN);
             Objects.requireNonNull(mBaseIsbn, "ISBN must be passed in args");
-            mFileManager = new FileManager(context, args);
+            // optional
+            SiteList siteList = args.getParcelable(SiteList.ListType.Covers.getBundleKey());
+            mFileManager = new FileManager(context, siteList);
         }
     }
 
@@ -156,12 +159,9 @@ public class CoverBrowserViewModel
 
     /**
      * Start a search for alternative editions of the book (using the isbn).
-     *
-     * @param context Current context
      */
-    public void fetchEditions(@NonNull final Context context) {
-        ArrayList<Site> sites = SearchSites.getSites(context, SearchSites.ListType.AltEditions);
-        addTask(new GetEditionsTask(mBaseIsbn, sites, this)).execute();
+    public void fetchEditions() {
+        addTask(new GetEditionsTask(mBaseIsbn, this)).execute();
     }
 
     public MutableLiveData<ArrayList<String>> getEditions() {
@@ -306,20 +306,20 @@ public class CoverBrowserViewModel
         private final Map<String, FileInfo> mFiles = Collections.synchronizedMap(new HashMap<>());
 
         /** Sites the user wants to search for cover images. */
-        private ArrayList<Site> mSearchSitesForCovers;
+        private final SiteList mSiteList;
 
         /**
          * Constructor.
          *
-         * @param context Current context
-         * @param args    arguments
+         * @param appContext Current context
+         * @param siteList    (optional) site list
          */
-        FileManager(@NonNull final Context context,
-                    @NonNull final Bundle args) {
-            mSearchSitesForCovers = args.getParcelableArrayList(
-                    SearchSites.ListType.Covers.getBundleKey());
-            if (mSearchSitesForCovers == null) {
-                mSearchSitesForCovers = SearchSites.getSites(context, SearchSites.ListType.Covers);
+        FileManager(@NonNull final Context appContext,
+                    @Nullable final SiteList siteList) {
+            if (siteList != null) {
+                mSiteList = siteList;
+            } else {
+                mSiteList = SiteList.getList(appContext, SiteList.ListType.Covers);
             }
         }
 
@@ -376,7 +376,7 @@ public class CoverBrowserViewModel
 
             // we will disable sites on the fly for the *current* search without modifying the list.
             @SearchSites.Id
-            int currentSearchSites = SearchSites.getEnabledSites(mSearchSitesForCovers);
+            int currentSearchSites = mSiteList.getEnabledSites();
 
             // we need to use the size as the outer loop (and not inside of getCoverImage itself).
             // the idea is to check all sites for the same size first.
@@ -403,7 +403,7 @@ public class CoverBrowserViewModel
                     mFiles.remove(key);
                 }
 
-                for (Site site : mSearchSitesForCovers) {
+                for (Site site : mSiteList.getSites()) {
                     // Should we search this site ?
                     if ((currentSearchSites & site.id) != 0) {
                         SearchEngine engine = site.getSearchEngine();
@@ -515,13 +515,11 @@ public class CoverBrowserViewModel
     /**
      * Fetch alternative edition isbn's.
      */
-    static class GetEditionsTask
+    private static class GetEditionsTask
             extends AsyncTask<Void, Void, ArrayList<String>> {
 
         @NonNull
         private final String mIsbn;
-        @NonNull
-        private final ArrayList<Site> mSites;
         @NonNull
         private final WeakReference<CoverBrowserViewModel> mTaskListener;
 
@@ -533,10 +531,8 @@ public class CoverBrowserViewModel
          */
         @UiThread
         GetEditionsTask(@NonNull final String isbn,
-                        @NonNull final ArrayList<Site> sites,
                         @NonNull final CoverBrowserViewModel taskListener) {
             mIsbn = isbn;
-            mSites = sites;
             mTaskListener = new WeakReference<>(taskListener);
         }
 
@@ -546,16 +542,16 @@ public class CoverBrowserViewModel
         protected ArrayList<String> doInBackground(final Void... params) {
             Thread.currentThread().setName("GetEditionsTask " + mIsbn);
 
-            Context context = App.getAppContext();
+            Context appContext = App.getAppContext();
 
             ArrayList<String> editions = new ArrayList<>();
-            for (Site site : mSites) {
+            for (Site site : SiteList.getSites(appContext, SiteList.ListType.AltEditions)) {
                 if (site.isEnabled()) {
                     try {
                         SearchEngine searchEngine = site.getSearchEngine();
                         if (searchEngine instanceof SearchEngine.AlternativeEditions) {
                             editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                                    .getAlternativeEditions(context, mIsbn));
+                                                    .getAlternativeEditions(appContext, mIsbn));
                         }
                     } catch (@NonNull RuntimeException ignore) {
                     }

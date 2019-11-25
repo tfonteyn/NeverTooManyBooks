@@ -139,8 +139,7 @@ public class EditBookNotesFragment
         //noinspection ConstantConditions
         Field<Long> editionsField = fields
                 .addLong(R.id.edition, mEditionView, DBDefinitions.KEY_EDITION_BITMASK)
-                .setFormatter(new Fields.BitMaskFormatter(
-                        Book.getEditions(getContext())))
+                .setFormatter(new Fields.BitMaskFormatter(Book.getEditions(getContext())))
                 .setRelatedFields(R.id.lbl_edition);
         initCheckListEditor(editionsField, mEditionView, R.string.lbl_edition, () ->
                 mBookModel.getBook().getEditableEditionList());

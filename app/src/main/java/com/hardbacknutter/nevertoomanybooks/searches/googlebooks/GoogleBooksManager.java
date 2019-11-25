@@ -62,6 +62,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">
  * https://developers.google.com/books/docs/v1/getting_started?csw=1</a>
  *
+ * T&C:
+ * https://developers.google.com/books/terms.html
+ * You may not charge users any fee for the use of your application,...
+ * => so it seems if this SearchEngine is included, the entire app has to be free.
+ *
  * example:
  * https://stackoverflow.com/questions/7908954/google-books-api-searching-by-isbn
  */

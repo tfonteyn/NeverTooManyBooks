@@ -177,7 +177,7 @@ public final class TipManager {
         final Tip tip = ALL.get(stringId);
         if (tip == null) {
             // log but ignore.
-            Logger.warnWithStackTrace(context, TAG, "display", "stringId=" + stringId);
+            Logger.warn(context, TAG, "display", "stringId=" + stringId);
             return;
         }
         if (!tip.shouldBeShown(context)) {

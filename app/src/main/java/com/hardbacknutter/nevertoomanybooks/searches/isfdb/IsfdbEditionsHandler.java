@@ -31,7 +31,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -43,6 +43,7 @@ import org.jsoup.select.Elements;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * Given an ISBN, search for other editions on the site.
@@ -62,6 +63,8 @@ public class IsfdbEditionsHandler
     private final ArrayList<Edition> mEditions = new ArrayList<>();
     @NonNull
     private final Context mAppContext;
+    /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
+    private String mIsbn;
 
     /**
      * Constructor.
@@ -69,6 +72,19 @@ public class IsfdbEditionsHandler
      * @param appContext Application context
      */
     IsfdbEditionsHandler(@NonNull final Context appContext) {
+        mAppContext = appContext;
+    }
+
+    /**
+     * Constructor used for testing.
+     *
+     * @param appContext Application context
+     * @param doc        the JSoup Document.
+     */
+    @VisibleForTesting
+    IsfdbEditionsHandler(@NonNull final Context appContext,
+                         @NonNull final Document doc) {
+        super(doc);
         mAppContext = appContext;
     }
 
@@ -83,6 +99,7 @@ public class IsfdbEditionsHandler
      */
     public ArrayList<Edition> fetch(@NonNull final String isbn)
             throws SocketTimeoutException {
+        mIsbn = isbn;
 
         String url = IsfdbManager.getBaseURL(mAppContext) + String.format(EDITIONS_URL, isbn);
 
@@ -121,27 +138,26 @@ public class IsfdbEditionsHandler
      * @return list of editions found, can be empty, but never {@code null}
      */
     @NonNull
-    private ArrayList<Edition> parseDoc() {
-        // http://www.isfdb.org/cgi-bin/se.cgi?arg=0887331602&type=ISBN
-        // http://www.isfdb.org/cgi-bin/pl.cgi?326539
+    @VisibleForTesting
+    ArrayList<Edition> parseDoc() {
         String pageUrl = mDoc.location();
 
         if (pageUrl.contains(IsfdbManager.URL_PL_CGI)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
-            mEditions.add(new Edition(stripNumber(pageUrl, '?'), mDoc));
+            mEditions.add(new Edition(stripNumber(pageUrl, '?'), mIsbn, mDoc));
 
         } else if (pageUrl.contains(IsfdbManager.URL_TITLE_CGI)
                    || pageUrl.contains(IsfdbManager.URL_SE_CGI)
                    || pageUrl.contains(IsfdbManager.URL_ADV_SEARCH_RESULTS_CGI)) {
+            // example: http://www.isfdb.org/cgi-bin/title.cgi?11169
             // we have multiple editions. We get here from one of:
             // - direct link to the "title" of the publication; i.e. 'show the editions'
             // - search or advanced-search for the title.
 
-            // first edition line is a "tr.table1", 2nd "tr.table0", 3rd "tr.table1" etc...
-            findEntries(mDoc, "tr.table1", "tr.table0");
+            findEntries(mDoc);
         } else {
             // dunno, let's log it
-            Logger.warnWithStackTrace(TAG, "pageUrl=" + pageUrl);
+            Logger.warn(TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
@@ -153,60 +169,39 @@ public class IsfdbEditionsHandler
     /**
      * Search/scrape for the selectors to build the edition list.
      *
+     * TODO: currently fetches the list odd rows first, followed by all even rows.
+     *
      * @param doc       to parse
-     * @param selectors to search for
      */
-    private void findEntries(@NonNull final Document doc,
-                             @NonNull final String... selectors) {
+    private void findEntries(@NonNull final Document doc) {
+        Element publications = doc.selectFirst("table.publications");
+
+        // first edition line is a "tr.table1", 2nd "tr.table0", 3rd "tr.table1" etc...
+        String[] selectors = {"tr.table1", "tr.table0"};
         for (String selector : selectors) {
-            Elements entries = doc.select(selector);
-            for (Element entry : entries) {
-                // first column has the book link
-                Element edLink = entry.select("a").first();
+            Elements entries = publications.select(selector);
+            for (Element tr : entries) {
+                // 1th column: Title ==the book link
+                Element edLink = tr.child(0).select("a").first();
                 if (edLink != null) {
                     String url = edLink.attr("href");
                     if (url != null) {
-                        mEditions.add(new Edition(stripNumber(url, '?')));
+                        // 4th column: ISBN/Catalog ID
+                        String isbnStr = tr.child(4).childNode(0).toString();
+                        if (isbnStr.length() < 10) {
+                            isbnStr = null;
+                        } else {
+                            ISBN isbn = new ISBN(isbnStr);
+                            if (isbn.isValid()) {
+                                isbnStr = isbn.asText();
+                            } else {
+                                isbnStr = null;
+                            }
+                        }
+                        mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * A data class for holding the ISFDB native book id and its (optional) doc (web page).
-     */
-    public static class Edition {
-
-        /** The ISFDB native book ID. */
-        final long isfdbId;
-        /**
-         * If a fetch of editions resulted in a single book returned (via redirects),
-         * then the doc is kept here for immediate processing.
-         */
-        @Nullable
-        final Document doc;
-
-        /**
-         * Constructor: we found a link to a book.
-         *
-         * @param isfdbId of the book link we found
-         */
-        Edition(final long isfdbId) {
-            this.isfdbId = isfdbId;
-            doc = null;
-        }
-
-        /**
-         * Constructor: we found a single edition, the doc contains the book for further processing.
-         *
-         * @param isfdbId of the book we found
-         * @param doc     of the book we found
-         */
-        Edition(final long isfdbId,
-                @Nullable final Document doc) {
-            this.isfdbId = isfdbId;
-            this.doc = doc;
         }
     }
 }

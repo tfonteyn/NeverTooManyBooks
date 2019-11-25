@@ -36,12 +36,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
@@ -52,11 +50,12 @@ public class SearchAdminModel
     private static final String TAG = "SearchAdminModel";
     public static final String BKEY_LIST_TYPE = TAG + ":type";
 
-    private Map<SearchSites.ListType, ArrayList<Site>> mListMap;
+    /** Contains cloned copies of the lists we're handling. */
+    private Map<SiteList.ListType, SiteList> mListMap;
 
-    /** Null for all lists. */
+    /** {@code null} if we're doing all lists. */
     @Nullable
-    private SearchSites.ListType mListType;
+    private SiteList.ListType mListType;
 
     /**
      * Pseudo constructor.
@@ -68,16 +67,16 @@ public class SearchAdminModel
      */
     public void init(@Nullable final Bundle args) {
         if (mListMap == null) {
-            mListMap = new EnumMap<>(SearchSites.ListType.class);
+            mListMap = new EnumMap<>(SiteList.ListType.class);
             if (args != null) {
                 mListType = args.getParcelable(BKEY_LIST_TYPE);
 
                 // first see if we got passed in any custom lists.
-                for (SearchSites.ListType type : SearchSites.ListType.values()) {
+                for (SiteList.ListType type : SiteList.ListType.values()) {
                     if (!mListMap.containsKey(type)) {
-                        ArrayList<Site> list = args.getParcelableArrayList(type.getBundleKey());
-                        if (list != null) {
-                            mListMap.put(type, list);
+                        SiteList siteList = args.getParcelable(type.getBundleKey());
+                        if (siteList != null) {
+                            mListMap.put(type, siteList);
                         }
                     }
                 }
@@ -86,22 +85,25 @@ public class SearchAdminModel
     }
 
     @Nullable
-    SearchSites.ListType getListType() {
+    SiteList.ListType getListType() {
         return mListType;
     }
 
     /**
      * Getter for single tab mode.
      *
+     * @param appContext Current context
+     * @param listType   type of list
+     *
      * @return list matching the single tab.
      */
     @NonNull
-    ArrayList<Site> getList(@NonNull final Context context,
-                            @NonNull final SearchSites.ListType listType) {
+    SiteList getList(@NonNull final Context appContext,
+                     @NonNull final SiteList.ListType listType) {
 
-        ArrayList<Site> list = mListMap.get(listType);
+        SiteList list = mListMap.get(listType);
         if (list == null) {
-            list = SearchSites.getSites(context, listType);
+            list = SiteList.getList(appContext, listType);
             mListMap.put(listType, list);
         }
         return list;
@@ -110,33 +112,32 @@ public class SearchAdminModel
     /**
      * Persist the lists.
      *
-     * @param context Current context
+     * @param appContext Current context
      *
      * @return {@code true} if each list handled has at least one site enabled.
      */
-    public boolean persist(@NonNull final Context context) {
+    public boolean persist(@NonNull final Context appContext) {
         int shouldHave = 0;
         int has = 0;
-        for (Map.Entry<SearchSites.ListType, ArrayList<Site>> entry : mListMap.entrySet()) {
-            SearchSites.setList(context, entry.getKey(), entry.getValue());
+        for (SiteList list : mListMap.values()) {
+            list.update(appContext);
             shouldHave++;
-            has += SearchSites.getEnabledSites(entry.getValue()) > 0 ? 1 : 0;
+            has += list.getEnabledSites() > 0 ? 1 : 0;
         }
 
         return (has > 0) && (shouldHave == has);
     }
 
-    void resetList(@NonNull final Context context,
-                   @NonNull final SearchSites.ListType listType) {
+    void resetList(@NonNull final Context appContext,
+                   @NonNull final SiteList.ListType listType) {
 
-        ArrayList<Site> newList = SearchSites.resetList(context, listType);
+        SiteList newList = SiteList.resetList(appContext, listType);
 
-        ArrayList<Site> currentList = mListMap.get(listType);
+        SiteList currentList = mListMap.get(listType);
         if (currentList == null) {
             mListMap.put(listType, newList);
         } else {
-            currentList.clear();
-            currentList.addAll(newList);
+            currentList.clearAndAddAll(newList);
         }
     }
 }

@@ -678,7 +678,7 @@ public class BooklistBuilder
             // Create the VALUES clause for the next level up
             StringBuilder listValues = new StringBuilder()
                     .append(level)
-                    .append(',').append(group.getKind())
+                    .append(',').append(group.getId())
                     .append(",New.").append(DOM_BL_ROOT_KEY);
 
             // Create the where-clause to detect if the next level up is already defined
@@ -1922,7 +1922,7 @@ public class BooklistBuilder
          */
         void addGroup(@NonNull final BooklistGroup group) {
 
-            switch (group.getKind()) {
+            switch (group.getId()) {
 
                 case BooklistGroup.RowKind.BOOK:
                     // do nothing.
@@ -2152,7 +2152,7 @@ public class BooklistBuilder
                 // NEWTHINGS: RowKind.ROW_KIND_x
 
                 default:
-                    throw new UnexpectedValueException(group.getKind());
+                    throw new UnexpectedValueException(group.getId());
             }
         }
 

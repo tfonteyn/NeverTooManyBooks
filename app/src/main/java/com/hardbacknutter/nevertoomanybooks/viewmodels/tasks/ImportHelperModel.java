@@ -37,5 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
  * The catch: it will work in the emulator, but fail on a real device.
  */
 public class ImportHelperModel
-        extends TaskModel<ImportHelper> {
+        extends TaskListenerModel<ImportHelper> {
+
 }

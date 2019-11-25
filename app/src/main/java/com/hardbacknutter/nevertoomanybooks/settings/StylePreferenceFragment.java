@@ -70,12 +70,6 @@ public class StylePreferenceFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        // add the preferences from all groups:
-        PreferenceScreen screen = getPreferenceScreen();
-        for (BooklistGroup group : mStyle.getGroups()) {
-            group.addPreferencesTo(screen);
-        }
-
         Preference thumbScale = findPreference(Prefs.pk_bob_thumbnail_scale);
         if (thumbScale != null) {
             thumbScale.setDependency(Prefs.pk_bob_show_thumbnails);
@@ -111,28 +105,25 @@ public class StylePreferenceFragment
     public void onResume() {
         super.onResume();
 
+        PreferenceScreen screen = getPreferenceScreen();
+        // loop over all groups, add the preferences for groups we have
+        // and hide for groups we don't/no longer have.
+        for (BooklistGroup group : BooklistGroup.getAllGroups("", false)) {
+            group.addPreferences(screen, mStyle.hasGroup(group.getId()));
+        }
+
         // handle custom summaries
         updateSummary(Prefs.psk_style_show_details);
         updateSummary(Prefs.psk_style_filters);
-        updateSummary(Prefs.psk_style_series);
-//        updateSummary(Prefs.psk_style_author);
     }
 
     /**
      * Update summary texts.
      *
-     * <ul>
-     * <li>hide/show the "Series" category</li>
-     * <li>filter labels</li>
-     * <li>extras labels</li>
-     * <li>group labels</li>
-     * </ul>
-     * <p>
      * Reminder: prefs lookups can return {@code null} as the screen swaps in and out sub screens.
      */
     @Override
     void updateSummary(@NonNull final String key) {
-
         switch (key) {
             case Prefs.pk_bob_font_scale: {
                 SeekBarPreference preference = findPreference(key);
@@ -206,22 +197,6 @@ public class StylePreferenceFragment
                 }
                 break;
             }
-            case Prefs.psk_style_series: {
-                // The "Series" category has no settings of its own (in contrast to "Authors").
-                // So unless the group is included, we hide the "Series" category.
-                Preference preference = findPreference(key);
-                if (preference != null) {
-                    preference.setVisible(mStyle.hasGroupKind(BooklistGroup.RowKind.SERIES));
-                }
-                break;
-            }
-//            case Prefs.psk_style_author: {
-//                Preference preference = findPreference(key);
-//                if (preference != null) {
-//                    preference.setVisible(mStyle.hasGroupKind(BooklistGroup.RowKind.AUTHOR));
-//                }
-//                break;
-//            }
 
             default:
                 super.updateSummary(key);

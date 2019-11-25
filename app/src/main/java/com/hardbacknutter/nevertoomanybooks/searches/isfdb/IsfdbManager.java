@@ -57,7 +57,8 @@ public class IsfdbManager
         implements SearchEngine,
                    SearchEngine.ByText,
                    SearchEngine.ByIsbn,
-                   SearchEngine.ByNativeId {
+                   SearchEngine.ByNativeId,
+                   SearchEngine.AlternativeEditions {
 
     /**
      * The site claims to use ISO-8859-1.
@@ -138,8 +139,7 @@ public class IsfdbManager
                                final boolean fetchThumbnail)
             throws IOException {
 
-        ArrayList<IsfdbEditionsHandler.Edition> editions =
-                new IsfdbEditionsHandler(localizedAppContext).fetch(isbn);
+        ArrayList<Edition> editions = new IsfdbEditionsHandler(localizedAppContext).fetch(isbn);
         return fetchBook(localizedAppContext, editions, fetchThumbnail);
     }
 
@@ -200,7 +200,7 @@ public class IsfdbManager
     }
 
     private Bundle fetchBook(@NonNull final Context localizedAppContext,
-                             final List<IsfdbEditionsHandler.Edition> editions,
+                             final List<Edition> editions,
                              final boolean fetchThumbnail)
             throws SocketTimeoutException {
         if (!editions.isEmpty()) {
@@ -229,4 +229,22 @@ public class IsfdbManager
         return R.string.isfdb;
     }
 
+    @NonNull
+    @Override
+    public ArrayList<String> getAlternativeEditions(@NonNull final Context appContext,
+                                                    @NonNull final String isbn) {
+
+        ArrayList<String> isbnList = new ArrayList<>();
+        ArrayList<Edition> editions;
+        try {
+            editions = new IsfdbEditionsHandler(appContext).fetch(isbn);
+            for (Edition edition : editions) {
+                if (edition.isbn != null) {
+                    isbnList.add(edition.isbn);
+                }
+            }
+        } catch (@NonNull final SocketTimeoutException ignore) {
+        }
+        return isbnList;
+    }
 }

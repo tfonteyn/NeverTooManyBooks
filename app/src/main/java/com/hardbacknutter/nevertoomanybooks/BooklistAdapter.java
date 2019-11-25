@@ -143,7 +143,7 @@ public class BooklistAdapter
     @NonNull
     @Override
     public RowViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
-                                            @RowKind.Kind final int viewType) {
+                                            @RowKind.Id final int viewType) {
 
         View itemView = createView(parent, viewType);
 
@@ -216,7 +216,7 @@ public class BooklistAdapter
     }
 
     private View createView(@NonNull final ViewGroup parent,
-                            @RowKind.Kind final int viewType) {
+                            @RowKind.Id final int viewType) {
 
         CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
         int level = row.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
@@ -298,7 +298,7 @@ public class BooklistAdapter
     }
 
     @Override
-    @RowKind.Kind
+    @RowKind.Id
     public int getItemViewType(final int position) {
         mCursor.moveToPosition(position);
         CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();

@@ -150,7 +150,7 @@ public class UpdateFieldsTask
      * @param taskListener were to send the UpdateFieldsTask messages
      */
     public UpdateFieldsTask(@NonNull final DAO db,
-                            @NonNull final ArrayList<Site> searchSites,
+                            @NonNull final SiteList searchSites,
                             @NonNull final Map<String, FieldUsage> fields,
                             @NonNull final TaskListener<Long> taskListener) {
 
@@ -165,7 +165,7 @@ public class UpdateFieldsTask
 
         mSearchCoordinator = new SearchCoordinator();
         mSearchCoordinator.init(null, mSearchCoordinatorListener);
-        mSearchCoordinator.setSearchSites(searchSites);
+        mSearchCoordinator.setSiteList(searchSites);
     }
 
     /**

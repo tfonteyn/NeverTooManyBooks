@@ -160,7 +160,7 @@ public class IsfdbBookHandler
     /** The fully qualified ISFDB search url. */
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
-    private List<IsfdbEditionsHandler.Edition> mEditions;
+    private List<Edition> mEditions;
     /** set during book load, used during content table load. */
     @Nullable
     private String mTitle;
@@ -195,11 +195,10 @@ public class IsfdbBookHandler
 
         mBaseUrl = IsfdbManager.getBaseURL(mLocalizedAppContext);
         mUnknown = mLocalizedAppContext.getString(R.string.unknown);
-
     }
 
     @Nullable
-    public List<IsfdbEditionsHandler.Edition> getEditions() {
+    public List<Edition> getEditions() {
         return mEditions;
     }
 
@@ -262,14 +261,14 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(@Size(min = 1) @NonNull final List<IsfdbEditionsHandler.Edition> editions,
+    public Bundle fetch(@Size(min = 1) @NonNull final List<Edition> editions,
                         final boolean addSeriesFromToc,
                         final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         mEditions = editions;
 
-        IsfdbEditionsHandler.Edition edition = editions.get(0);
+        Edition edition = editions.get(0);
         mPath = mBaseUrl + String.format(BOOK_URL, edition.isfdbId);
 
         // check if we already got the book

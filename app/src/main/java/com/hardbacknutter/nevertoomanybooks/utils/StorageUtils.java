@@ -611,7 +611,7 @@ public final class StorageUtils {
     /**
      * Format a number of bytes in a human readable form.
      * <p>
-     * 2019-03-16: decimalized as per IEC: <a href="https://en.wikipedia.org/wiki/File_size">
+     * 2019-03-16: decimal as per IEC: <a href="https://en.wikipedia.org/wiki/File_size">
      * https://en.wikipedia.org/wiki/File_size</a>
      *
      * @param context Current context

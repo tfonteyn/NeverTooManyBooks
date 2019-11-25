@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
@@ -157,8 +158,8 @@ public class BooklistGroup
     @NonNull
     final String mUuid;
     /** The kind of row/group we represent, see {@link RowKind}. */
-    @RowKind.Kind
-    private final int mKind;
+    @RowKind.Id
+    private final int mId;
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group and outer groups
@@ -169,14 +170,14 @@ public class BooklistGroup
     /**
      * Constructor.
      *
-     * @param kind               Kind of group to create
+     * @param id                 of group to create
      * @param uuid               of the style
      * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      */
-    private BooklistGroup(@RowKind.Kind final int kind,
+    private BooklistGroup(@RowKind.Id final int id,
                           @NonNull final String uuid,
                           final boolean isUserDefinedStyle) {
-        this.mKind = kind;
+        this.mId = id;
         mUuid = uuid;
         mIsUserDefinedStyle = isUserDefinedStyle;
         initPrefs();
@@ -188,7 +189,7 @@ public class BooklistGroup
      * @param in Parcel to construct the object from
      */
     private BooklistGroup(@NonNull final Parcel in) {
-        mKind = in.readInt();
+        mId = in.readInt();
         //noinspection ConstantConditions
         mUuid = in.readString();
         mIsUserDefinedStyle = in.readInt() != 0;
@@ -202,7 +203,7 @@ public class BooklistGroup
      * Create a new BooklistGroup of the specified kind, creating any specific
      * subclasses as necessary.
      *
-     * @param kind               Kind of group to create
+     * @param id                 of group to create
      * @param uuid               of the style
      * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      *
@@ -210,17 +211,17 @@ public class BooklistGroup
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
-    public static BooklistGroup newInstance(@RowKind.Kind final int kind,
+    public static BooklistGroup newInstance(@RowKind.Id final int id,
                                             @NonNull final String uuid,
                                             final boolean isUserDefinedStyle) {
-        switch (kind) {
+        switch (id) {
             case RowKind.AUTHOR:
                 return new BooklistAuthorGroup(uuid, isUserDefinedStyle);
             case RowKind.SERIES:
                 return new BooklistSeriesGroup(uuid, isUserDefinedStyle);
 
             default:
-                return new BooklistGroup(kind, uuid, isUserDefinedStyle);
+                return new BooklistGroup(id, uuid, isUserDefinedStyle);
         }
     }
 
@@ -236,8 +237,8 @@ public class BooklistGroup
     public static List<BooklistGroup> getAllGroups(@NonNull final String uuid,
                                                    final boolean isUserDefinedStyle) {
         List<BooklistGroup> list = new ArrayList<>();
-        for (@RowKind.Kind int kind : RowKind.getAllGroupKinds()) {
-            list.add(newInstance(kind, uuid, isUserDefinedStyle));
+        for (@RowKind.Id int id : RowKind.getAllGroupKinds()) {
+            list.add(newInstance(id, uuid, isUserDefinedStyle));
         }
         return list;
     }
@@ -248,38 +249,50 @@ public class BooklistGroup
         return 0;
     }
 
+    /**
+     * When one preference is visible, make the category visible.
+     *
+     * @param category to set
+     */
+    static void setCategoryVisibility(@NonNull final PreferenceCategory category) {
+        boolean catVis = false;
+        int i = 0;
+        while (!catVis && i < category.getPreferenceCount()) {
+            if (category.getPreference(i).isVisible()) {
+                catVis = true;
+            }
+            i++;
+        }
+        category.setVisible(catVis);
+    }
+
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(mKind);
+        dest.writeInt(mId);
         dest.writeString(mUuid);
         dest.writeInt(mIsUserDefinedStyle ? 1 : 0);
         dest.writeList(mDomains);
         // now the prefs for this class (none on this level for now)
     }
 
-    @RowKind.Kind
-    public int getKind() {
-        return mKind;
+    @RowKind.Id
+    public int getId() {
+        return mId;
     }
 
     public String getName(@NonNull final Context context) {
-        return RowKind.get(mKind).getName(context);
+        return RowKind.get(mId).getName(context);
     }
 
     @NonNull
     DomainDefinition getFormattedDomain() {
-        return RowKind.get(mKind).getFormattedDomain();
+        return RowKind.get(mId).getFormattedDomain();
     }
 
     @NonNull
     String getFormattedDomainExpression() {
-        return RowKind.get(mKind).getFormattedDomainExpression();
-    }
-
-    @NonNull
-    CompoundKey getCompoundKey() {
-        return RowKind.get(mKind).getCompoundKey();
+        return RowKind.get(mId).getFormattedDomainExpression();
     }
 
     /**
@@ -316,15 +329,29 @@ public class BooklistGroup
         return new LinkedHashMap<>();
     }
 
+    @NonNull
+    CompoundKey getCompoundKey() {
+        return RowKind.get(mId).getCompoundKey();
+    }
+
     /**
      * Preference UI support.
+     * <p>
+     * This method can be called multiple times.
+     * <p>
+     * Implementations should add the preferences only if they are not already present
+     * and if the current method call has visibility set to true.
+     * <p>
+     * Visibility of individual preferences should always be updated.
      * <p>
      * Add the Preference objects that this group will contribute to a Style.
      * TODO: could/should do this from xml instead I suppose.
      *
-     * @param screen to add the prefs to
+     * @param screen  which hosts the prefs
+     * @param visible whether to make the preferences visible
      */
-    public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
+    public void addPreferences(@NonNull final PreferenceScreen screen,
+                               final boolean visible) {
     }
 
     /**
@@ -382,9 +409,6 @@ public class BooklistGroup
             mAllSeries.writeToParcel(dest);
         }
 
-        /**
-         * Only ever init the Preferences if you have a valid UUID.
-         */
         @Override
         void initPrefs() {
             super.initPrefs();
@@ -392,9 +416,6 @@ public class BooklistGroup
                                       mIsUserDefinedStyle);
         }
 
-        /**
-         * Get the Preference objects that this group will contribute to a Style.
-         */
         @Override
         @CallSuper
         public Map<String, PPref> getPreferences() {
@@ -403,35 +424,35 @@ public class BooklistGroup
             return map;
         }
 
-        /**
-         * Preference UI support.
-         * <p>
-         * Add the Preference objects that this group will contribute to a Style.
-         *
-         * @param screen to add the prefs to
-         */
         @Override
-        public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
+        public void addPreferences(@NonNull final PreferenceScreen screen,
+                                   final boolean visible) {
 
             PreferenceCategory category = screen.findPreference(Prefs.psk_style_series);
             if (category != null) {
-                category.setVisible(true);
-
                 Context context = screen.getContext();
-                String description = context.getString(R.string.lbl_series);
 
-                SwitchPreference pShowAll = new SwitchPreference(context);
-                pShowAll.setTitle(R.string.pt_bob_books_under_multiple_series);
-                pShowAll.setIcon(R.drawable.ic_functions);
-                pShowAll.setKey(Prefs.pk_bob_books_under_multiple_series);
-                pShowAll.setDefaultValue(false);
+                SwitchPreference pShowAll = category
+                        .findPreference(Prefs.pk_bob_books_under_multiple_series);
+                if (visible && pShowAll == null) {
+                    String description = context.getString(R.string.lbl_series);
+                    pShowAll = new SwitchPreference(context);
+                    pShowAll.setTitle(R.string.pt_bob_books_under_multiple_series);
+                    pShowAll.setIcon(R.drawable.ic_functions);
+                    pShowAll.setKey(Prefs.pk_bob_books_under_multiple_series);
+                    pShowAll.setDefaultValue(false);
 
-                pShowAll.setSummaryOn(context.getString(
-                        R.string.pv_bob_books_under_multiple_each_1s, description));
-                pShowAll.setSummaryOff(context.getString(
-                        R.string.pv_bob_books_under_multiple_primary_1s_only, description));
-                //pAllSeries.setHint(R.string.hint_series_book_may_appear_more_than_once);
-                category.addPreference(pShowAll);
+                    pShowAll.setSummaryOn(context.getString(
+                            R.string.pv_bob_books_under_multiple_each_1s, description));
+                    pShowAll.setSummaryOff(context.getString(
+                            R.string.pv_bob_books_under_multiple_primary_1s_only, description));
+                    category.addPreference(pShowAll);
+                }
+                if (pShowAll != null) {
+                    pShowAll.setVisible(visible);
+                }
+
+                setCategoryVisibility(category);
             }
         }
 
@@ -498,9 +519,6 @@ public class BooklistGroup
             mGivenNameFirst.writeToParcel(dest);
         }
 
-        /**
-         * Only ever init the Preferences if you have a valid UUID.
-         */
         @Override
         protected void initPrefs() {
             super.initPrefs();
@@ -510,9 +528,6 @@ public class BooklistGroup
                                            mIsUserDefinedStyle);
         }
 
-        /**
-         * Get the Preference objects that this group will contribute to a Style.
-         */
         @Override
         @CallSuper
         public Map<String, PPref> getPreferences() {
@@ -522,45 +537,52 @@ public class BooklistGroup
             return map;
         }
 
-        /**
-         * Preference UI support.
-         * <p>
-         * Add the Preference objects that this group will contribute to a Style.
-         *
-         * @param screen to add the prefs to
-         */
         @Override
-        public void addPreferencesTo(@NonNull final PreferenceScreen screen) {
+        public void addPreferences(@NonNull final PreferenceScreen screen,
+                                   final boolean visible) {
 
             PreferenceCategory category = screen.findPreference(Prefs.psk_style_author);
             if (category != null) {
-                category.setVisible(true);
-
                 Context context = screen.getContext();
-                String description = context.getString(R.string.lbl_author);
 
-                SwitchPreference pShowAll = new SwitchPreference(context);
-                pShowAll.setTitle(R.string.pt_bob_books_under_multiple_authors);
-                pShowAll.setIcon(R.drawable.ic_functions);
-                pShowAll.setKey(Prefs.pk_bob_books_under_multiple_authors);
-                pShowAll.setDefaultValue(false);
-                pShowAll.setSummaryOn(
-                        context.getString(R.string.pv_bob_books_under_multiple_each_1s,
-                                          description));
-                pShowAll.setSummaryOff(
-                        context.getString(R.string.pv_bob_books_under_multiple_primary_1s_only,
-                                          description));
-                //pAllAuthors.setHint(R.string.hint_authors_book_may_appear_more_than_once)
-                category.addPreference(pShowAll);
+                SwitchPreference pShowAll = category
+                        .findPreference(Prefs.pk_bob_books_under_multiple_authors);
+                if (visible && pShowAll == null) {
+                    pShowAll = new SwitchPreference(context);
+                    String description = context.getString(R.string.lbl_author);
+                    pShowAll.setTitle(R.string.pt_bob_books_under_multiple_authors);
+                    pShowAll.setIcon(R.drawable.ic_functions);
+                    pShowAll.setKey(Prefs.pk_bob_books_under_multiple_authors);
+                    pShowAll.setDefaultValue(false);
+                    pShowAll.setSummaryOn(context.getString(
+                            R.string.pv_bob_books_under_multiple_each_1s, description));
+                    pShowAll.setSummaryOff(context.getString(
+                            R.string.pv_bob_books_under_multiple_primary_1s_only, description));
 
-                SwitchPreference pGivenNameFirst = new SwitchPreference(context);
-                pGivenNameFirst.setTitle(R.string.pt_bob_authors_display);
-                pGivenNameFirst.setIcon(R.drawable.ic_reorder);
-                pGivenNameFirst.setKey(Prefs.pk_bob_format_author_name);
-                pGivenNameFirst.setDefaultValue(false);
-                pGivenNameFirst.setSummaryOn(R.string.pv_bob_author_name_given_first);
-                pGivenNameFirst.setSummaryOff(R.string.pv_bob_author_name_family_first);
-                category.addPreference(pGivenNameFirst);
+                    category.addPreference(pShowAll);
+                }
+                if (pShowAll != null) {
+                    pShowAll.setVisible(visible);
+                }
+
+                SwitchPreference pGivenNameFirst = category
+                        .findPreference(Prefs.pk_bob_format_author_name);
+                if (visible && pGivenNameFirst == null) {
+                    pGivenNameFirst = new SwitchPreference(context);
+                    pGivenNameFirst.setTitle(R.string.pt_bob_authors_display);
+                    pGivenNameFirst.setIcon(R.drawable.ic_reorder);
+                    pGivenNameFirst.setKey(Prefs.pk_bob_format_author_name);
+                    pGivenNameFirst.setDefaultValue(false);
+                    pGivenNameFirst.setSummaryOn(R.string.pv_bob_author_name_given_first);
+                    pGivenNameFirst.setSummaryOff(R.string.pv_bob_author_name_family_first);
+
+                    category.addPreference(pGivenNameFirst);
+                }
+                if (pGivenNameFirst != null) {
+                    pGivenNameFirst.setVisible(visible);
+                }
+
+                setCategoryVisibility(category);
             }
         }
 
@@ -591,9 +613,7 @@ public class BooklistGroup
      */
     public static final class RowKind {
 
-        private static final String TAG = "RowKind";
-
-        /** See {@link Kind}. */
+        /** See {@link Id}. */
         // The code relies on BOOK being == 0
         public static final int BOOK = 0;
         public static final int AUTHOR = 1;
@@ -626,7 +646,7 @@ public class BooklistGroup
         public static final int DATE_FIRST_PUB_MONTH = 28;
         public static final int COLOR = 29;
         public static final int SERIES_TITLE_LETTER = 30;
-
+        private static final String TAG = "RowKind";
         // NEWTHINGS: ROW_KIND_x
         // the highest valid index of kinds - ALWAYS to be updated after adding a row kind...
         private static final int ROW_KIND_MAX = 30;
@@ -636,162 +656,166 @@ public class BooklistGroup
             RowKind rowKind;
 
             rowKind = new RowKind(BOOK, R.string.lbl_book, "");
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
 
-            //noinspection ConstantConditions
             rowKind = new RowKind(AUTHOR, R.string.lbl_author, "a")
                     .setKey(DOM_FK_AUTHOR, TBL_AUTHORS.dot(DOM_PK_ID))
                     // the source expression is not used
-                    .setFormattedDomain(DOM_AUTHOR_FORMATTED, null);
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+                    .setFormattedDomain(DOM_AUTHOR_FORMATTED, "''");
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(SERIES, R.string.lbl_series, "s")
                     .setKey(DOM_FK_SERIES, TBL_SERIES.dot(DOM_PK_ID))
                     .setFormattedDomain(DOM_SERIES_TITLE, TBL_SERIES.dot(DOM_SERIES_TITLE));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
+
+            rowKind = new RowKind(PUBLISHER, R.string.lbl_publisher, "p")
+                    .setDomain(DOM_BOOK_PUBLISHER, TBL_BOOKS.dot(DOM_BOOK_PUBLISHER));
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
 
             rowKind = new RowKind(BOOKSHELF, R.string.lbl_bookshelf, "shelf")
                     .setDomain(DOM_BOOKSHELF, TBL_BOOKSHELF.dot(DOM_BOOKSHELF));
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
-            ALL_KINDS.put(rowKind.mKind, rowKind);
 
             rowKind = new RowKind(LOANED, R.string.lbl_loaned, "l")
                     .setDomain(DOM_LOANEE, DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY);
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
+
+
+
+
+            rowKind = new RowKind(READ_STATUS, R.string.lbl_read_and_unread, "r")
+                    .setDomain(DOM_RK_READ_STATUS, TBL_BOOKS.dot(DOM_BOOK_READ));
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
 
             rowKind = new RowKind(GENRE, R.string.lbl_genre, "g")
                     .setDomain(DOM_BOOK_GENRE, TBL_BOOKS.dot(DOM_BOOK_GENRE));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
-
-            rowKind = new RowKind(PUBLISHER, R.string.lbl_publisher, "p")
-                    .setDomain(DOM_BOOK_PUBLISHER, TBL_BOOKS.dot(DOM_BOOK_PUBLISHER));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
-
-            rowKind = new RowKind(READ_STATUS, R.string.lbl_read_and_unread, "r")
-                    .setDomain(DOM_RK_READ_STATUS, TBL_BOOKS.dot(DOM_BOOK_READ));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(LOCATION, R.string.lbl_location, "loc")
                     .setDomain(DOM_BOOK_LOCATION, TBL_BOOKS.dot(DOM_BOOK_LOCATION));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(LANGUAGE, R.string.lbl_language, "lng")
                     .setDomain(DOM_BOOK_LANGUAGE, TBL_BOOKS.dot(DOM_BOOK_LANGUAGE));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(FORMAT, R.string.lbl_format, "fmt")
                     .setDomain(DOM_BOOK_FORMAT, TBL_BOOKS.dot(DOM_BOOK_FORMAT));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(COLOR, R.string.lbl_color, "col")
                     .setDomain(DOM_BOOK_COLOR, TBL_BOOKS.dot(DOM_BOOK_COLOR));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(RATING, R.string.lbl_rating, "rt")
                     .setDomain(DOM_BOOK_RATING,
                                "CAST(" + TBL_BOOKS.dot(DOM_BOOK_RATING) + " AS INTEGER)");
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
+
 
             // uses the OrderBy column
             rowKind = new RowKind(TITLE_LETTER, R.string.style_builtin_first_letter_book_title, "t")
                     .setDomain(DOM_RK_TITLE_LETTER,
                                "upper(SUBSTR(" + TBL_BOOKS.dot(DOM_TITLE_OB) + ",1,1))");
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             // uses the OrderBy column
             rowKind = new RowKind(SERIES_TITLE_LETTER,
                                   R.string.style_builtin_first_letter_series_title, "st")
                     .setDomain(DOM_RK_SERIES_TITLE_LETTER,
                                "upper(SUBSTR(" + TBL_SERIES.dot(DOM_SERIES_TITLE_OB) + ",1,1))");
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
+
 
 
             rowKind = new RowKind(DATE_PUBLISHED_YEAR, R.string.lbl_publication_year, "yrp")
                     .setDomain(DOM_RK_DATE_PUBLISHED_YEAR,
                                DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_PUBLISHED_MONTH, R.string.lbl_publication_month, "mp")
                     .setDomain(DOM_RK_DATE_PUBLISHED_MONTH,
                                DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_FIRST_PUB_YEAR, R.string.lbl_first_pub_year, "yfp")
                     .setDomain(DOM_RK_DATE_FIRST_PUBLICATION_YEAR,
                                DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_DATE_FIRST_PUB), false));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_FIRST_PUB_MONTH, R.string.lbl_first_pub_month, "mfp")
                     .setDomain(DOM_RK_DATE_FIRST_PUBLICATION_MONTH,
                                DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_DATE_FIRST_PUB), false));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
 
             rowKind = new RowKind(DATE_ADDED_YEAR, R.string.lbl_added_year, "ya")
                     .setDomain(DOM_RK_DATE_ADDED_YEAR,
                                DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_ADDED_MONTH, R.string.lbl_added_month, "ma")
                     .setDomain(DOM_RK_DATE_ADDED_MONTH,
                                DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_ADDED_DAY, R.string.lbl_added_day, "da")
                     .setDomain(DOM_RK_DATE_ADDED_DAY,
                                DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ADDED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_READ_YEAR, R.string.lbl_read_year, "yr")
                     .setDomain(DOM_RK_DATE_READ_YEAR,
                                DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_READ_MONTH, R.string.lbl_read_month, "mr")
                     .setDomain(DOM_RK_DATE_READ_MONTH,
                                DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_READ_DAY, R.string.lbl_read_day, "dr")
                     .setDomain(DOM_RK_DATE_READ_DAY,
                                DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_READ_END), false));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_YEAR, R.string.lbl_update_year, "yu")
                     .setDomain(DOM_RK_DATE_LAST_UPDATED_YEAR,
                                DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_MONTH, R.string.lbl_update_month, "mu")
                     .setDomain(DOM_RK_DATE_LAST_UPDATED_MONTH,
                                DAO.SqlColumns
                                        .month(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_LAST_UPDATE_DAY, R.string.lbl_update_day, "du")
                     .setDomain(DOM_RK_DATE_LAST_UPDATED_DAY,
                                DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_DATE_LAST_UPDATED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_YEAR, R.string.lbl_date_acquired_year, "yac")
                     .setDomain(DOM_RK_DATE_ACQUIRED_YEAR,
                                DAO.SqlColumns
                                        .year(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_MONTH, R.string.lbl_date_acquired_month, "mac")
                     .setDomain(DOM_RK_DATE_ACQUIRED_MONTH,
                                DAO.SqlColumns
                                        .month(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_ACQUIRED_DAY, R.string.lbl_date_acquired_day, "dac")
                     .setDomain(DOM_RK_DATE_ACQUIRED_DAY,
                                DAO.SqlColumns.dayGlob(TBL_BOOKS.dot(DOM_BOOK_DATE_ACQUIRED), true));
-            ALL_KINDS.put(rowKind.mKind, rowKind);
+            ALL_KINDS.put(rowKind.mId, rowKind);
 
 
             // NEWTHINGS: ROW_KIND_x
@@ -805,33 +829,30 @@ public class BooklistGroup
                 // Developer sanity check
                 Collection<String> prefixes = new HashSet<>();
                 for (
-                        @Kind
-                        int kind = 0; kind <= ROW_KIND_MAX; kind++) {
-                    if (!ALL_KINDS.containsKey(kind)) {
-                        throw new IllegalStateException("Missing kind " + kind);
+                        @Id
+                        int id = 0; id <= ROW_KIND_MAX; id++) {
+                    if (!ALL_KINDS.containsKey(id)) {
+                        throw new IllegalStateException("Missing id: " + id);
                     }
 
                     //noinspection ConstantConditions
-                    String prefix = ALL_KINDS.get(kind).mKeyPrefix;
+                    String prefix = ALL_KINDS.get(id).mKeyPrefix;
                     if (!prefixes.add(prefix)) {
-                        throw new IllegalStateException("Duplicate prefix " + prefix);
+                        throw new IllegalStateException("Duplicate prefix: " + prefix);
                     }
                 }
             }
         }
 
-        @Kind
-        private final int mKind;
+        @Id
+        private final int mId;
         @StringRes
         private final int mLabelId;
-
-        @Nullable
-        private CompoundKey mCompoundKey;
-
         @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
         private final String mKeyPrefix;
-
+        @Nullable
+        private CompoundKey mCompoundKey;
         @Nullable
         private DomainDefinition mFormattedDomain;
         @Nullable
@@ -840,27 +861,27 @@ public class BooklistGroup
         /**
          * Constructor.
          *
-         * @param kind      1 to max. The kind==0 should be created with the no-args constructor.
+         * @param id        1 to max. The id==0 should be created with the no-args constructor.
          * @param labelId   User displayable label
          * @param keyPrefix the prefix (as short as possible) to use for the compound key
          */
-        private RowKind(@Kind final int kind,
+        private RowKind(@Id final int id,
                         @StringRes final int labelId,
                         @NonNull final String keyPrefix) {
-            mKind = kind;
+            mId = id;
             mLabelId = labelId;
             mKeyPrefix = keyPrefix;
         }
 
         /**
-         * @param kind to create
+         * @param id to create
          *
          * @return a cached instance of a RowKind
          */
         @NonNull
-        public static RowKind get(@Kind final int kind) {
+        public static RowKind get(@Id final int id) {
             //noinspection ConstantConditions
-            return ALL_KINDS.get(kind);
+            return ALL_KINDS.get(id);
         }
 
         /**
@@ -885,16 +906,16 @@ public class BooklistGroup
          * TODO: come up with a clean solution to merge these.
          *
          * @param context Current context
-         * @param kind    for this row
+         * @param id      for this row
          * @param source  text to reformat
          *
          * @return reformatted text
          */
         @NonNull
         public static String format(@NonNull final Context context,
-                                    @Kind final int kind,
+                                    @Id final int id,
                                     @NonNull final String source) {
-            switch (kind) {
+            switch (id) {
                 case READ_STATUS: {
                     switch (source) {
                         case "0":
@@ -976,11 +997,12 @@ public class BooklistGroup
                     return source;
 
                 default:
-                    Logger.warnWithStackTrace(context, TAG, "format",
-                                              "source=" + source,
-                                              "kind=" + kind);
-                    throw new UnexpectedValueException(kind);
-
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.d(TAG, "format"
+                                   + "|source=" + source
+                                   + "|id=" + id);
+                    }
+                    throw new UnexpectedValueException(id);
             }
         }
 
@@ -1071,7 +1093,7 @@ public class BooklistGroup
         public String toString() {
             return "RowKind{"
                    + "name=" + App.getAppContext().getString(mLabelId)
-                   + ", mKind=" + mKind
+                   + ", mId=" + mId
                    + ", mCompoundKey=" + mCompoundKey
                    + ", mFormattedDomain=" + mFormattedDomain
                    + ", mFormattedDomainExpression=`" + mFormattedDomainExpression + '`'
@@ -1119,7 +1141,7 @@ public class BooklistGroup
                  RowKind.DATE_ACQUIRED_DAY,
                 })
         @Retention(RetentionPolicy.SOURCE)
-        public @interface Kind {
+        public @interface Id {
 
         }
     }

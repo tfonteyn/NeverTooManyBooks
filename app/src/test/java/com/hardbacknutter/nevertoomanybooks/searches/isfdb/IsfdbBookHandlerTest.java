@@ -64,11 +64,6 @@ import static org.mockito.Mockito.when;
 class IsfdbBookHandlerTest
         extends CommonSetup {
 
-    /** This test does not 'live' fetch the doc, but this is the correct baseUri. */
-    private static final String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
-    /** instead we read this file locally. */
-    private static final String filename = "/isfdb/isfdb-book-1.html";
-
     @BeforeEach
     @Override
     protected void setUp() {
@@ -83,8 +78,11 @@ class IsfdbBookHandlerTest
      * We parse the Jsoup Document for ISFDB data. This is NOT a test for Jsoup.parse.
      */
     @Test
-    void parse()
+    void parseBook()
             throws IOException {
+
+        String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?112781";
+        String filename = "/isfdb/isfdb-book-1.html";
 
         Document doc;
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {

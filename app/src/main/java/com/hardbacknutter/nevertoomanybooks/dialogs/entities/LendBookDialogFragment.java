@@ -53,6 +53,8 @@ import androidx.fragment.app.DialogFragment;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -171,7 +173,10 @@ public class LendBookDialogFragment
             mLoaneeView.setText(mLoanee);
         }
 
-        setPhoneContactsAdapter();
+        ArrayList<String> contacts = getPhoneContacts();
+        if (contacts != null) {
+            initAdapter(contacts);
+        }
 
         //noinspection ConstantConditions
         return new AlertDialog.Builder(getContext())
@@ -249,10 +254,24 @@ public class LendBookDialogFragment
         mBookChangedListener = new WeakReference<>(listener);
     }
 
+    private void initAdapter(@NonNull final Collection<String> contacts) {
+
+        ArrayList<String> people = mDb.getLoanees();
+        people.addAll(contacts);
+        Collections.sort(people);
+
+        //noinspection ConstantConditions
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
+                                   people);
+        mLoaneeView.setAdapter(adapter);
+    }
+
     /**
      * Auto complete list comes from your Contacts.
      */
-    private void setPhoneContactsAdapter() {
+    @Nullable
+    private ArrayList<String> getPhoneContacts() {
         //noinspection ConstantConditions
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
             != PackageManager.PERMISSION_GRANTED) {
@@ -260,15 +279,10 @@ public class LendBookDialogFragment
             ActivityCompat.requestPermissions(getActivity(),
                                               new String[]{Manifest.permission.READ_CONTACTS},
                                               UniqueId.REQ_ANDROID_PERMISSIONS);
-            return;
+            return null;
         }
 
-        // call secured method
-        ArrayList<String> contacts = getPhoneContacts();
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                   contacts);
-        mLoaneeView.setAdapter(adapter);
+        return getSecuredPhoneContacts();
     }
 
     /**
@@ -280,7 +294,7 @@ public class LendBookDialogFragment
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @NonNull
-    private ArrayList<String> getPhoneContacts()
+    private ArrayList<String> getSecuredPhoneContacts()
             throws SecurityException {
         ArrayList<String> list = new ArrayList<>();
         @SuppressWarnings("ConstantConditions")
@@ -309,13 +323,18 @@ public class LendBookDialogFragment
             case UniqueId.REQ_ANDROID_PERMISSIONS:
                 if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    setPhoneContactsAdapter();
+
+                    ArrayList<String> contacts = getPhoneContacts();
+                    if (contacts != null) {
+                        initAdapter(contacts);
+                    }
                 }
                 break;
 
             default:
-                //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), TAG, "requestCode=" + requestCode);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "requestCode=" + requestCode);
+                }
                 break;
         }
     }

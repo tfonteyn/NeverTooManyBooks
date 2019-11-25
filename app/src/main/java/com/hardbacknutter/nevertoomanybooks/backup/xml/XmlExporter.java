@@ -852,7 +852,7 @@ public class XmlExporter
             writer.append('<' + XmlTags.XML_GROUP_LIST + '>');
             for (BooklistGroup group : style.getGroups()) {
                 writer.append('<' + XmlTags.XML_GROUP)
-                      .append(id(group.getKind()))
+                      .append(id(group.getId()))
                       .append(">\n");
                 for (PPref p : group.getPreferences().values()) {
                     writer.append(typedTag(p.getKey(), p.get()));

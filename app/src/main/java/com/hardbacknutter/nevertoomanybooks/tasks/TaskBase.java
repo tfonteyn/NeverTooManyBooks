@@ -56,16 +56,14 @@ public abstract class TaskBase<Result>
 
     /** id set at construction time, passed back in all messages. */
     protected final int mTaskId;
-
-    @NonNull
-    private final WeakReference<TaskListener<Result>> mTaskListener;
-
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can check it.
      */
     @Nullable
     protected Exception mException;
+    @NonNull
+    private WeakReference<TaskListener<Result>> mTaskListener;
 
     /**
      * Constructor.
@@ -77,6 +75,17 @@ public abstract class TaskBase<Result>
                        @NonNull final TaskListener<Result> taskListener) {
         mTaskId = taskId;
         mTaskListener = new WeakReference<>(taskListener);
+    }
+
+    /**
+     * (Re)set the listener.
+     *
+     * @param taskListener for sending progress and finish messages to.
+     */
+    public void setListener(final TaskListener<Result> taskListener) {
+        synchronized (this) {
+            mTaskListener = new WeakReference<>(taskListener);
+        }
     }
 
     /**

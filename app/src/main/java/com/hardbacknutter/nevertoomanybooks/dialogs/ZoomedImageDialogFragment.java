@@ -71,9 +71,7 @@ public class ZoomedImageDialogFragment
                             @NonNull final File image) {
         // if there is no file, just silently ignore.
         if (image.exists()) {
-            if (fm.findFragmentByTag(TAG) == null) {
-                newInstance(image).show(fm, TAG);
-            }
+            newInstance(image).show(fm, TAG);
         }
     }
 

@@ -32,6 +32,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 
@@ -56,15 +57,15 @@ public class FieldUsage {
     /**
      * Constructor.
      *
+     * @param fieldId      key
      * @param nameStringId label to show to the user.
      * @param usage        how to use this field.
      * @param allowAppend  {@code true} if this field is capable of appending extra data.
-     * @param fieldId      key
      */
-    public FieldUsage(@StringRes final int nameStringId,
+    public FieldUsage(@NonNull final String fieldId,
+                      @StringRes final int nameStringId,
                       @NonNull final Usage usage,
-                      final boolean allowAppend,
-                      @NonNull final String fieldId) {
+                      final boolean allowAppend) {
         this.fieldId = fieldId;
         mNameStringId = nameStringId;
         mUsage = usage;
@@ -106,6 +107,17 @@ public class FieldUsage {
      */
     public void nextState() {
         mUsage = mUsage.nextState(mAllowAppend);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "FieldUsage{"
+               + "fieldId='" + fieldId + '\''
+               + ", mAllowAppend=" + mAllowAppend
+               + ", mNameStringId=" + App.getAppContext().getString(mNameStringId)
+               + ", mUsage=" + mUsage
+               + '}';
     }
 
     public enum Usage {

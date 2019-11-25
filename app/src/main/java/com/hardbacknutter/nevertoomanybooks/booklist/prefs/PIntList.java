@@ -61,6 +61,11 @@ public class PIntList
         mNonPersistedValue = new ArrayList<>();
     }
 
+    /**
+     * Set the <strong>value</strong> from the Parcel.
+     *
+     * @param in parcel to read from
+     */
     @Override
     public void set(@NonNull final Parcel in) {
         List<Integer> tmp = new ArrayList<>();

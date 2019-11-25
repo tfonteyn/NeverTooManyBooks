@@ -44,12 +44,9 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
@@ -100,10 +97,10 @@ public class SearchAdminActivity
             hasSites = mModel.persist(this);
 
         } else {
-            ArrayList<Site> list = mModel.getList(this, mModel.getListType());
-            setResult(Activity.RESULT_OK,
-                      new Intent().putExtra(mModel.getListType().getBundleKey(), list));
-            hasSites = SearchSites.getEnabledSites(list) != 0;
+            SiteList siteList = mModel.getList(this, mModel.getListType());
+            Intent data = new Intent().putExtra(mModel.getListType().getBundleKey(), siteList);
+            setResult(Activity.RESULT_OK, data);
+            hasSites = siteList.getEnabledSites() != 0;
         }
 
         if (hasSites) {
@@ -122,10 +119,10 @@ public class SearchAdminActivity
             extends FragmentStateAdapter {
 
         @Nullable
-        private final SearchSites.ListType mListType;
+        private final SiteList.ListType mListType;
 
         TabAdapter(@NonNull final FragmentActivity container,
-                   @Nullable final SearchSites.ListType listType) {
+                   @Nullable final SiteList.ListType listType) {
             super(container);
             mListType = listType;
         }
@@ -133,7 +130,7 @@ public class SearchAdminActivity
         @Override
         public int getItemCount() {
             if (mListType == null) {
-                return SearchSites.ListType.values().length;
+                return SiteList.ListType.values().length;
             } else {
                 return 1;
             }
@@ -156,12 +153,12 @@ public class SearchAdminActivity
         }
 
         @NonNull
-        private SearchSites.ListType toType(final int position) {
+        private SiteList.ListType toType(final int position) {
             // showing a single tab ?
             if (mListType != null) {
                 return mListType;
             } else {
-                return SearchSites.ListType.values()[position];
+                return SiteList.ListType.values()[position];
             }
         }
     }

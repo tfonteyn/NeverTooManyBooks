@@ -54,7 +54,6 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -319,8 +318,9 @@ public class BookDetailsFragment
                     }
                     // onResume will display the new book
                     mBookModel.reload();
-                    //FIXME: swiping through the flattened booklist will not see the new book
-                    // until we go back to BoB.
+                    //FIXME: swiping through the flattened booklist will not see
+                    // the duplicated book until we go back to BoB.
+                    // Easiest solution would be to remove the dup. option from this screen...
                 }
                 break;
 
@@ -501,9 +501,7 @@ public class BookDetailsFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-
         inflater.inflate(R.menu.co_book, menu);
-
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -576,14 +574,9 @@ public class BookDetailsFragment
             /* ********************************************************************************** */
 
             case R.id.MENU_BOOK_LOAN_ADD: {
-                FragmentManager fm = getChildFragmentManager();
-                LendBookDialogFragment lendBookDialogFragment =
-                        (LendBookDialogFragment) fm.findFragmentByTag(LendBookDialogFragment.TAG);
-                if (lendBookDialogFragment == null) {
-                    //noinspection ConstantConditions
-                    lendBookDialogFragment = LendBookDialogFragment.newInstance(getContext(), book);
-                    lendBookDialogFragment.show(fm, LendBookDialogFragment.TAG);
-                }
+                //noinspection ConstantConditions
+                LendBookDialogFragment.newInstance(getContext(), book)
+                                      .show(getChildFragmentManager(), LendBookDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {

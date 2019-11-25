@@ -49,7 +49,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -73,15 +73,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbEditionsHandler;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbResultsListener;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.TaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -95,7 +97,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * <p>
  * The ISFDB direct interaction should however be seen as temporary as this class should not
  * have to know about any specific search web site.
- * <strong>Note:</strong> FIXME: the ISFDB task will die upon fragment restarts.
  * <p>
  * This is still not obsolete as the standard search engines can only return a single book,
  * and hence a single TOC. The interaction here with ISFDB allows the user to reject the first
@@ -127,20 +128,20 @@ public class EditBookTocFragment
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
     private CompoundButton mIsAnthologyCbx;
+
+    private TaskModel mIsfdbTaskModel;
+
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
     @Nullable
-    private ArrayList<IsfdbEditionsHandler.Edition> mIsfdbEditions;
-    private final IsfdbResultsListener mIsfdbResultsListener = new IsfdbResultsListener() {
-        /**
-         * we got a book.
-         *
-         * @param bookData our book from ISFDB.
-         */
+    private ArrayList<Edition> mIsfdbEditions;
+    private final TaskListener<Bundle> mIsfdbBookResultsListener = new TaskListener<Bundle>() {
+
         @Override
-        public void onGotIsfdbBook(@Nullable final Bundle bookData) {
+        public void onFinished(@NonNull final FinishMessage<Bundle> message) {
+            Bundle bookData = message.result;
             if (bookData == null) {
                 //noinspection ConstantConditions
                 UserMessage.show(getView(), R.string.warning_book_not_found);
@@ -172,29 +173,35 @@ public class EditBookTocFragment
             }
 
             // finally the TOC itself;  only put on display for the user to approve
-            FragmentManager fm = getChildFragmentManager();
-            if (fm.findFragmentByTag(ConfirmTocDialogFragment.TAG) == null) {
-                boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
-                ConfirmTocDialogFragment.newInstance(bookData, hasOtherEditions)
-                                        .show(fm, ConfirmTocDialogFragment.TAG);
-            }
+            boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
+            ConfirmTocDialogFragment.newInstance(bookData, hasOtherEditions)
+                                    .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
         }
 
-        /**
-         * we got one or more editions from ISFDB.
-         * Store the url's locally as the user might want to try the next in line
-         */
-        public void onGotIsfdbEditions(
-                @Nullable final ArrayList<IsfdbEditionsHandler.Edition> editions) {
-            mIsfdbEditions = editions != null ? editions : new ArrayList<>();
-            if (!mIsfdbEditions.isEmpty()) {
-                new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(), this).execute();
-            } else {
-                //noinspection ConstantConditions
-                UserMessage.show(getView(), R.string.warning_no_editions);
-            }
+        @Override
+        public void onProgress(@NonNull final ProgressMessage message) {
+            // ignore
         }
     };
+
+    /**
+     * we got one or more editions from ISFDB.
+     * Stores the url's locally as the user might want to try the next in line
+     */
+    private final TaskListener<ArrayList<Edition>> mIsfdbEditionResultsListener =
+            new TaskListener<ArrayList<Edition>>() {
+                public void onFinished(@NonNull final FinishMessage<ArrayList<Edition>> message) {
+                    ArrayList<Edition> editions = message.result;
+                    mIsfdbEditions = editions != null ? editions : new ArrayList<>();
+                    searchIsfdb();
+                }
+
+                @Override
+                public void onProgress(@NonNull final ProgressMessage message) {
+                    // ignore
+                }
+            };
+
     private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
             new ConfirmTocDialogFragment.ConfirmTocResults() {
                 /**
@@ -220,13 +227,11 @@ public class EditBookTocFragment
                 public void getNextEdition() {
                     // remove the top one, and try again
                     mIsfdbEditions.remove(0);
-                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
-                                         mIsfdbResultsListener).execute();
+                    searchIsfdb();
                 }
             };
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultiAuthorsView;
-
     /** Hold the item position in the ist while we're editing an item. */
     @Nullable
     private Integer mEditPosition;
@@ -248,6 +253,19 @@ public class EditBookTocFragment
                     mListAdapter.notifyDataSetChanged();
                 }
             };
+
+    private void searchIsfdb() {
+        if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
+            IsfdbGetBookTask task = new IsfdbGetBookTask(mIsfdbEditions,
+                                                         isAddSeriesFromToc(),
+                                                         mIsfdbBookResultsListener);
+            mIsfdbTaskModel.setTask(task);
+            task.execute();
+        } else {
+            //noinspection ConstantConditions
+            UserMessage.show(getView(), R.string.warning_no_editions);
+        }
+    }
 
     @Override
     @Nullable
@@ -300,6 +318,17 @@ public class EditBookTocFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mIsfdbTaskModel = new ViewModelProvider(this).get(TaskModel.class);
+        TaskBase task = mIsfdbTaskModel.getTask();
+        if (task != null) {
+            if (task instanceof IsfdbGetBookTask) {
+                //noinspection unchecked
+                mIsfdbTaskModel.getTask().setListener(mIsfdbBookResultsListener);
+            } else if (task instanceof IsfdbGetEditionsTask) {
+                //noinspection unchecked
+                mIsfdbTaskModel.getTask().setListener(mIsfdbEditionResultsListener);
+            }
+        }
         Book book = mBookModel.getBook();
 
         // Author to use if mMultiAuthorsView is set to false
@@ -328,17 +357,19 @@ public class EditBookTocFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB:
-                if (mBookModel.getBook().containsKey(DBDefinitions.KEY_EID_ISFDB)) {
-                    long isfdbId = mBookModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
+                long isfdbId = mBookModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
+                if (isfdbId != 0) {
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.progress_msg_connecting);
-                    new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),
-                                         mIsfdbResultsListener).execute();
+                    IsfdbGetBookTask task = new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),
+                                                                 mIsfdbBookResultsListener);
+                    mIsfdbTaskModel.setTask(task);
+                    task.execute();
 
                 } else if (ISBN.isValid(mIsbn)) {
                     //noinspection ConstantConditions
                     UserMessage.show(getView(), R.string.progress_msg_connecting);
-                    new IsfdbGetEditionsTask(mIsbn, mIsfdbResultsListener).execute();
+                    searchIsfdb(mIsbn);
 
                 } else {
                     //noinspection ConstantConditions
@@ -349,6 +380,15 @@ public class EditBookTocFragment
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * @param isbn an Already validated isbn.
+     */
+    private void searchIsfdb(@NonNull final String isbn) {
+        IsfdbGetEditionsTask task = new IsfdbGetEditionsTask(isbn, mIsfdbEditionResultsListener);
+        mIsfdbTaskModel.setTask(task);
+        task.execute();
     }
 
     @Override
@@ -464,11 +504,9 @@ public class EditBookTocFragment
                            @Nullable final Integer position) {
         mEditPosition = position;
 
-        FragmentManager fm = getChildFragmentManager();
-        if (fm.findFragmentByTag(EditTocEntryDialogFragment.TAG) == null) {
-            EditTocEntryDialogFragment.newInstance(tocEntry, mMultiAuthorsView.isChecked())
-                                      .show(fm, EditTocEntryDialogFragment.TAG);
-        }
+        EditTocEntryDialogFragment.newInstance(tocEntry, mMultiAuthorsView.isChecked())
+                                  .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
+
     }
 
     private boolean isAddSeriesFromToc() {

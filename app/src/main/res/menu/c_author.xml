@@ -41,16 +41,16 @@
         android:title="@string/menu_edit" />
 
     <item
-        android:id="@id/MENU_AUTHOR_COMPLETE"
+        android:id="@id/MENU_AUTHOR_SET_COMPLETE"
         android:icon="@drawable/ic_check_box"
         android:orderInCategory="@integer/MENU_ORDER_COMPLETE"
-        android:title="@string/menu_set_incomplete" />
+        android:title="@string/menu_set_complete" />
 
     <item
-        android:id="@id/MENU_AUTHOR_INCOMPLETE"
+        android:id="@id/MENU_AUTHOR_SET_INCOMPLETE"
         android:icon="@drawable/ic_check_box_outline_blank"
         android:orderInCategory="@integer/MENU_ORDER_INCOMPLETE"
-        android:title="@string/menu_set_complete" />
+        android:title="@string/menu_set_incomplete" />
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"

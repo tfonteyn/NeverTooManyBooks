@@ -30,12 +30,13 @@ package com.hardbacknutter.nevertoomanybooks.database.cursors;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * A handy wrapper allowing to fetch columns by name.
@@ -225,8 +226,10 @@ public class CursorMapper {
                         break;
 
                     default:
-                        Logger.warnWithStackTrace(context, TAG, "columnName=" + columnName,
-                                                  "type=" + mCursor.getType(col));
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.d(TAG, "columnName=" + columnName
+                                       + "|type=" + mCursor.getType(col));
+                        }
                         break;
                 }
             }

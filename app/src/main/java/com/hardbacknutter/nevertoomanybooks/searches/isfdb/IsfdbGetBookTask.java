@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -37,29 +36,26 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 public class IsfdbGetBookTask
-        extends AsyncTask<Void, Void, Bundle> {
+        extends TaskBase<Bundle> {
 
     private static final String TAG = "IsfdbGetBookTask";
-
-    /** Where to send our results to. */
-    @NonNull
-    private final WeakReference<IsfdbResultsListener> mTaskListener;
 
     private final long mIsfdbId;
     /** whether the TOC should get parsed for Series information. */
     private final boolean mAddSeriesFromToc;
     @Nullable
-    private final List<IsfdbEditionsHandler.Edition> mEditions;
+    private final List<Edition> mEditions;
 
     /**
      * Constructor. Initiate a single book lookup by edition.
@@ -69,14 +65,13 @@ public class IsfdbGetBookTask
      * @param taskListener     where to send the results to
      */
     @UiThread
-    public IsfdbGetBookTask(@NonNull final List<IsfdbEditionsHandler.Edition> editions,
+    public IsfdbGetBookTask(@NonNull final List<Edition> editions,
                             final boolean addSeriesFromToc,
-                            @NonNull final IsfdbResultsListener taskListener) {
+                            @NonNull final TaskListener<Bundle> taskListener) {
+        super(R.id.TASK_ID_ISFDB_GET_BOOK, taskListener);
         mIsfdbId = 0;
         mEditions = editions;
         mAddSeriesFromToc = addSeriesFromToc;
-
-        mTaskListener = new WeakReference<>(taskListener);
     }
 
     /**
@@ -89,12 +84,11 @@ public class IsfdbGetBookTask
     @UiThread
     public IsfdbGetBookTask(final long isfdbId,
                             final boolean addSeriesFromToc,
-                            @NonNull final IsfdbResultsListener taskListener) {
+                            @NonNull final TaskListener<Bundle> taskListener) {
+        super(R.id.TASK_ID_ISFDB_GET_BOOK, taskListener);
         mIsfdbId = isfdbId;
         mAddSeriesFromToc = addSeriesFromToc;
         mEditions = null;
-
-        mTaskListener = new WeakReference<>(taskListener);
     }
 
     @Override
@@ -124,18 +118,5 @@ public class IsfdbGetBookTask
         }
 
         return null;
-    }
-
-    @Override
-    @UiThread
-    protected void onPostExecute(@Nullable final Bundle result) {
-        // always send result, even if empty
-        if (mTaskListener.get() != null) {
-            mTaskListener.get().onGotIsfdbBook(result);
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
-            }
-        }
     }
 }
