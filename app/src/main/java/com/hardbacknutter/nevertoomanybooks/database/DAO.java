@@ -55,7 +55,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -353,7 +352,7 @@ public class DAO
      */
     @NonNull
     public static String encodeString(@NonNull final CharSequence value) {
-        return ENCODE_STRING.matcher(value).replaceAll(Matcher.quoteReplacement("''"));
+        return ENCODE_STRING.matcher(value).replaceAll("''");
     }
 
     /**

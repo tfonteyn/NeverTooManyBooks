@@ -627,8 +627,6 @@ public class SynchronizedDb {
      * <p>
      * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
      * <p>
-     * TODO: Generalize code to allow for arbitrary changes to choice of collation.
-     * <p>
      * This method is supposed to return {@code false} in normal circumstances.
      */
     private boolean collationIsCaseSensitive() {

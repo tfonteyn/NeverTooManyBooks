@@ -30,44 +30,22 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn;
 import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 
 /**
- * <strong>Notes on the virtual keyboard:</strong>
- * <p>
- * Stop if from showing when a field gets the focus.<br>
- * This must be done for <strong>ALL</strong> fields individually
- * <pre>
- * {@code
- *      editText.setShowSoftInputOnFocus(false);
- * }
- * </pre>
- * Hide it when already showing:
- * <pre>
- * {@code
- *      InputMethodManager imm = getContext().getSystemService(InputMethodManager.class);
- *      if (imm != null && imm.isActive(this)) {
- *          imm.hideSoftInputFromWindow(getWindowToken(), 0);
- *      }
- * }
- * </pre>
+ * The input field is not being limited in length. This is to allow entering UPC numbers.
  */
 public class BookSearchByIsbnFragment
         extends BookSearchByIsbnBaseFragment {
@@ -133,58 +111,6 @@ public class BookSearchByIsbnFragment
             //noinspection ConstantConditions
             prepareSearch(mIsbnView.getText().toString().trim());
         });
-
-        // init the isbn edit field if needed (avoid initializing twice)
-        if (mAllowAsin) {
-            mIsbnView.setAllowAsin(true);
-        }
-    }
-
-    @Override
-    @CallSuper
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-
-        //dev note: we could eliminate onPrepareOptionsMenu as invalidateOptionsMenu()
-        // MUST be called to make this menu be show for as long there is only this one
-        // option in the menu. But... leaving the code as-is, so if/when a second menu
-        // item is added, no code changes are needed.
-        menu.add(Menu.NONE, R.id.MENU_PREFS_ASIN, 0, R.string.lbl_allow_asin)
-            .setCheckable(true)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        // if Amazon is enabled, we show the ASIN option; else make sure it's disabled.
-        boolean amazon = mSearchCoordinator.isEnabled(SearchSites.AMAZON);
-        MenuItem asin = menu.findItem(R.id.MENU_PREFS_ASIN);
-        asin.setVisible(amazon);
-        if (!amazon) {
-            asin.setChecked(false);
-        }
-
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_PREFS_ASIN:
-                mAllowAsin = !item.isChecked();
-
-                item.setChecked(mAllowAsin);
-                //noinspection ConstantConditions
-                mIsbnView.setAllowAsin(mAllowAsin);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override

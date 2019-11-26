@@ -706,13 +706,17 @@ public class Fields {
 
         /**
          * Add on onTouch listener that signals a 'dirty' event when touched.
+         * This is/should only be used for fields with Views
+         * <ul>
+         * <li>{@link Checkable}</li>
+         * <li>{@link RatingBar}</li>
+         * </ul>
+         * or similar
          *
          * @param view The view to watch
          */
         @SuppressLint("ClickableViewAccessibility")
         void addTouchSignalsDirty(@NonNull final View view) {
-            // Touching this View is considered a change to the field.
-            //TODO: We need to find a better way to handle this as this can cause a false-positive
             view.setOnTouchListener((v, event) -> {
                 if (MotionEvent.ACTION_UP == event.getAction()) {
                     mField.getFields().afterFieldChange(mField, null);
@@ -1894,7 +1898,7 @@ public class Fields {
 
         /**
          * Set the value of this Field.
-         *
+         * <p>
          * Calls {@link Fields#afterFieldChange(Field, Object)}.
          *
          * @param source New value

@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * <li>book.show  —   Get the reviews for a book given a Goodreads book id.</li>
  * <li>book.show_by_isbn   —   Get the reviews for a book given an ISBN.</li>
  * </ul>
- * The latter also accepts (with an identical URL) an ASIN.
  * <p>
  * This is an abstract class designed to be used by other classes that implement specific
  * search methods. It does the heavy lifting of parsing the results etc.

@@ -38,178 +38,48 @@
     tools:context=".BookSearchActivity"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border1"
+        android:orientation="vertical"
         >
 
-        <com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn
-            android:id="@+id/isbn"
-            style="@style/EditText.Isbn.Large"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill,LabelFor"
-            tools:text="123456789X123"
-            />
-
-        <TextView
-            android:id="@+id/altIsbn"
-            style="@style/AltIsbn.Horiz"
-            app:layout_constraintBaseline_toBaselineOf="@id/isbn"
-            app:layout_constraintStart_toEndOf="@id/isbn"
-            tools:ignore="SelectableText"
-            tools:text="123456789X123"
-            tools:visibility="visible"
-            />
-
-        <Button
-            android:id="@+id/isbn_del"
-            style="@style/IsbnKeyPadButton"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/menu_delete"
-            app:icon="@drawable/ic_backspace"
-            app:iconGravity="textStart"
-            app:layout_constraintBottom_toBottomOf="@id/isbn"
-            app:layout_constraintEnd_toEndOf="parent"
-            />
+            android:layout_margin="@dimen/border1"
+            >
 
+            <com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn
+                android:id="@+id/isbn"
+                style="@style/EditText.Isbn.Large"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="Autofill,LabelFor"
+                tools:text="123456789X123"
+                />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/topBarrier"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="isbn,altIsbn,isbn_del"
-            />
+            <TextView
+                android:id="@+id/altIsbn"
+                style="@style/AltIsbn.Horiz"
+                app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+                app:layout_constraintStart_toEndOf="@id/isbn"
+                tools:ignore="SelectableText"
+                tools:text="123456789X123"
+                tools:visibility="visible"
+                />
 
-        <Button
-            android:id="@+id/key_1"
-            style="@style/IsbnKeyPadButton"
-            android:text="1"
-            app:layout_constraintBottom_toTopOf="@id/key_7"
-            app:layout_constraintEnd_toStartOf="@id/key_2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topBarrier"
-            tools:ignore="HardcodedText"
-            />
+            <Button
+                android:id="@+id/isbn_del"
+                style="@style/IsbnKeyPadButton.Del"
+                android:contentDescription="@string/menu_delete"
+                app:icon="@drawable/ic_backspace"
+                app:iconGravity="textStart"
+                app:layout_constraintBottom_toBottomOf="@id/isbn"
+                app:layout_constraintEnd_toEndOf="parent"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
-            android:id="@+id/key_2"
-            style="@style/IsbnKeyPadButton"
-            android:text="2"
-            app:layout_constraintBottom_toTopOf="@id/key_8"
-            app:layout_constraintEnd_toStartOf="@id/key_3"
-            app:layout_constraintStart_toEndOf="@id/key_1"
-            app:layout_constraintTop_toBottomOf="@id/topBarrier"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_3"
-            style="@style/IsbnKeyPadButton"
-            android:text="3"
-            app:layout_constraintBottom_toTopOf="@id/key_9"
-            app:layout_constraintEnd_toStartOf="@id/key_4"
-            app:layout_constraintStart_toEndOf="@id/key_2"
-            app:layout_constraintTop_toBottomOf="@id/topBarrier"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_4"
-            style="@style/IsbnKeyPadButton"
-            android:text="4"
-            app:layout_constraintBottom_toTopOf="@id/key_0"
-            app:layout_constraintEnd_toStartOf="@id/key_5"
-            app:layout_constraintStart_toEndOf="@id/key_3"
-            app:layout_constraintTop_toBottomOf="@id/topBarrier"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_5"
-            style="@style/IsbnKeyPadButton"
-            android:text="5"
-            app:layout_constraintBottom_toTopOf="@id/key_X"
-            app:layout_constraintEnd_toStartOf="@id/key_6"
-            app:layout_constraintStart_toEndOf="@id/key_4"
-            app:layout_constraintTop_toBottomOf="@id/topBarrier"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_6"
-            style="@style/IsbnKeyPadButton"
-            android:text="6"
-            app:layout_constraintBottom_toTopOf="@id/btn_search"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/key_5"
-            app:layout_constraintTop_toBottomOf="@id/topBarrier"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_7"
-            style="@style/IsbnKeyPadButton"
-            android:text="7"
-            app:layout_constraintEnd_toStartOf="@id/key_8"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/key_1"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_8"
-            style="@style/IsbnKeyPadButton"
-            android:text="8"
-            app:layout_constraintEnd_toStartOf="@id/key_9"
-            app:layout_constraintStart_toEndOf="@id/key_7"
-            app:layout_constraintTop_toBottomOf="@id/key_2"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_9"
-            style="@style/IsbnKeyPadButton"
-            android:text="9"
-            app:layout_constraintEnd_toStartOf="@id/key_0"
-            app:layout_constraintStart_toEndOf="@id/key_8"
-            app:layout_constraintTop_toBottomOf="@id/key_3"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_0"
-            style="@style/IsbnKeyPadButton"
-            android:text="0"
-            app:layout_constraintEnd_toStartOf="@id/key_X"
-            app:layout_constraintStart_toEndOf="@id/key_9"
-            app:layout_constraintTop_toBottomOf="@id/key_4"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/key_X"
-            style="@style/IsbnKeyPadButton"
-            android:text="X"
-            app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintStart_toEndOf="@id/key_0"
-            app:layout_constraintTop_toBottomOf="@id/key_5"
-            tools:ignore="HardcodedText"
-            />
-
-        <Button
-            android:id="@+id/btn_search"
-            style="@style/IsbnKeyPadButton"
-            app:icon="@drawable/ic_search"
-            app:iconGravity="textStart"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/key_X"
-            app:layout_constraintTop_toBottomOf="@id/key_6"
-            />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <include layout="@layout/inc_isbn_keypad" />
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -91,9 +91,6 @@ public abstract class BasePreferenceFragment
         screen.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         // Set the summaries reflecting the current values for all Preferences.
-        //TODO: use this for all prefs instead:
-        // EditTextPreference np = screen.findPreference(Prefs.X));
-        // np.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
         for (String key : screen.getSharedPreferences().getAll().keySet()) {
             updateSummary(key);
         }
@@ -111,6 +108,11 @@ public abstract class BasePreferenceFragment
         super.onPause();
     }
 
+    /**
+     * TODO: implement {@link Preference.SummaryProvider}
+     *
+     * @param key for preference.
+     */
     @CallSuper
     void updateSummary(@NonNull final String key) {
         Preference preference = findPreference(key);

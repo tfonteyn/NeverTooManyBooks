@@ -336,8 +336,6 @@ public class BooklistPseudoCursor
                 int oldPos = -1;
                 for (int i = 0; i < MRU_LIST_SIZE; i++) {
                     if (mMruList[i] == cursorId) {
-                        // TODO: (4.1+): Remove Sanity check
-                        // should just 'break' from loop after setting oldPos
                         if (oldPos >= 0) {
                             throw new IllegalStateException("Cursor appears twice in MRU list");
                         }

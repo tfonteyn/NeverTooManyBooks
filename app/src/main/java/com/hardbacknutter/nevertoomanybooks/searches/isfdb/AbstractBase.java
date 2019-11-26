@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Document;
@@ -58,11 +57,13 @@ abstract class AbstractBase
     private static final Pattern CLEANUP_TITLE_PATTERN =
             Pattern.compile("[,.':;`~@#$%^&*(\\-=_+]*$");
 
+    /** a CR is replaced with a space. */
+    private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
+
     /** connect-timeout. Default is 5_000. */
     private static final int CONNECT_TIMEOUT = 30_000;
     /** read-timeout. Default is 10_000. */
     private static final int READ_TIMEOUT = 60_000;
-    private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
 
     /**
@@ -95,11 +96,8 @@ abstract class AbstractBase
 
     @NonNull
     String cleanUpName(@NonNull final String s) {
-        String tmp = CR_PATTERN.matcher(s.trim())
-                               .replaceAll(Matcher.quoteReplacement(" "));
-        return CLEANUP_TITLE_PATTERN.matcher(tmp)
-                                    .replaceAll("")
-                                    .trim();
+        String tmp = CR_PATTERN.matcher(s.trim()).replaceAll(" ");
+        return CLEANUP_TITLE_PATTERN.matcher(tmp).replaceAll("").trim();
     }
 
     /**

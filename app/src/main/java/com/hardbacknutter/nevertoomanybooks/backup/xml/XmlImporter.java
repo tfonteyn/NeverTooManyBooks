@@ -52,7 +52,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -224,11 +223,11 @@ public class XmlImporter
 
         // must be last of the entities
         String result = data.trim();
-        result = AMP_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("&"));
-        result = GT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement(">"));
-        result = LT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("<"));
-        result = APOS_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("'"));
-        result = QUOT_PATTERN.matcher(result).replaceAll(Matcher.quoteReplacement("\""));
+        result = AMP_PATTERN.matcher(result).replaceAll("&");
+        result = GT_PATTERN.matcher(result).replaceAll(">");
+        result = LT_PATTERN.matcher(result).replaceAll("<");
+        result = APOS_PATTERN.matcher(result).replaceAll("'");
+        result = QUOT_PATTERN.matcher(result).replaceAll("\"");
         return result;
     }
 

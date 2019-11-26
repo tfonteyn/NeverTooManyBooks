@@ -44,8 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  *
  * <a href="https://www.goodreads.com/api/index#book.show_by_isbn">
  * https://www.goodreads.com/api/index#book.show_by_isbn</a>
- * <p>
- * This also accepts an ASIN as the isbn.
  */
 public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {
@@ -71,7 +69,7 @@ public class ShowBookByIsbnApiHandler
     /**
      * Perform a search and handle the results.
      *
-     * @param isbn           ISBN or ASIN to search for
+     * @param isbn           ISBN to search for
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return the Bundle of book data.

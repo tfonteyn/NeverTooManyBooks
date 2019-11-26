@@ -52,7 +52,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -488,8 +487,7 @@ public class SearchCoordinator
     }
 
     public void setIsbnSearchText(@NonNull final String isbnSearchText) {
-        // intercept UPC numbers
-        mIsbnSearchText = ISBN.upc2isbn(isbnSearchText);
+        mIsbnSearchText = isbnSearchText;
     }
 
     @NonNull
@@ -545,7 +543,7 @@ public class SearchCoordinator
             } else if (SearchSites.ENABLE_AMAZON_AWS) {
                 // Assume it's an ASIN, and just search Amazon
                 mSearchingAsin = true;
-                List<Site> amazon = new ArrayList<>();
+                Collection<Site> amazon = new ArrayList<>();
                 amazon.add(Site.newSite(SearchSites.AMAZON));
                 mIsSearchActive = startSearch(amazon);
             }
@@ -671,7 +669,7 @@ public class SearchCoordinator
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearch(@NonNull final List<Site> sites) {
+    private boolean startSearch(@NonNull final Iterable<Site> sites) {
         // if currentSearchSites is empty, we return false.
         boolean atLeastOneStarted = false;
         for (Site site : sites) {

@@ -79,10 +79,9 @@ public class StripInfoBookHandler
 
 
     /** The description contains h4 and div tags which we remove to make the text shorter. */
-    private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>", Pattern.LITERAL);
-    private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("</h4>", Pattern.LITERAL);
-    private static final Pattern DIV_OPEN_PATTERN = Pattern.compile("<div>", Pattern.LITERAL);
-    private static final Pattern DIV_CLOSE_PATTERN = Pattern.compile("</div>", Pattern.LITERAL);
+    private static final Pattern H4_OPEN_PATTERN = Pattern.compile("<h4>\\s*");
+    private static final Pattern H4_CLOSE_PATTERN = Pattern.compile("\\s*</h4>");
+    private static final Pattern DIV_PATTERN = Pattern.compile("(\n*\\s*<div>\\s*|\\s*</div>)");
     private static final Pattern AMPERSAND_PATTERN = Pattern.compile("&amp;", Pattern.LITERAL);
     /**
      * When a multi-result page is returned, its title will start with this text.
@@ -254,9 +253,8 @@ public class StripInfoBookHandler
 
                     // extract the site native id from the url
                     processSiteNativeId(titleElement, bookData);
-
-                    bookData.putString(DBDefinitions.KEY_TITLE,
-                                       cleanText(titleElement.childNode(1).childNode(0)));
+                    Node titleNode = titleElement.childNode(1).childNode(0);
+                    bookData.putString(DBDefinitions.KEY_TITLE, cleanText(titleNode.toString()));
 
                     Elements tds = row.select("td");
                     int i = 0;
@@ -644,7 +642,7 @@ public class StripInfoBookHandler
                             @NonNull final Bundle bookData) {
         Element dataElement = td.nextElementSibling();
         if (dataElement.childNodeSize() == 1) {
-            bookData.putString(key, cleanText(dataElement.childNode(0)));
+            bookData.putString(key, cleanText(dataElement.childNode(0).toString()));
             return 1;
         }
         return 0;
@@ -730,7 +728,7 @@ public class StripInfoBookHandler
             for (int i = 0; i < aas.size(); i++) {
                 Node nameNode = aas.get(i).childNode(0);
                 if (nameNode != null) {
-                    String text = cleanText(nameNode);
+                    String text = cleanText(nameNode.toString());
                     Series currentSeries = fromString(text);
                     // check if already present
                     for (Series series : mSeries) {
@@ -819,7 +817,7 @@ public class StripInfoBookHandler
             for (int i = 0; i < aas.size(); i++) {
                 Node nameNode = aas.get(i).childNode(0);
                 if (nameNode != null) {
-                    String name = cleanText(nameNode);
+                    String name = cleanText(nameNode.toString());
                     Publisher currentPublisher = Publisher.fromString(name);
                     // check if already present
                     for (Publisher publisher : mPublishers) {
@@ -859,20 +857,17 @@ public class StripInfoBookHandler
             for (int i = 0; i < sections.size(); i++) {
                 Element sectionElement = sections.get(i);
                 // a section usually has 'h4' tags, replace with 'b' and add a line feed 'br'
-                String cleanedText = H4_OPEN_PATTERN
+                String text = H4_OPEN_PATTERN
                         .matcher(sectionElement.html())
                         .replaceAll(Matcher.quoteReplacement("<b>"));
-                cleanedText = H4_CLOSE_PATTERN
-                        .matcher(cleanedText)
-                        .replaceAll(Matcher.quoteReplacement("</b><br>"));
-                // the div elements only create empty lines, we remove them to save screen space
-                cleanedText = DIV_OPEN_PATTERN.matcher(cleanedText).replaceAll("");
-                cleanedText = DIV_CLOSE_PATTERN.matcher(cleanedText).replaceAll("");
+                text = H4_CLOSE_PATTERN
+                        .matcher(text)
+                        .replaceAll(Matcher.quoteReplacement("</b>\n<br>"));
 
-                content.append(cleanedText);
+                content.append(cleanText(text));
                 if (i < sections.size() - 1) {
                     // separate multiple sections
-                    content.append("<br><br>");
+                    content.append("\n<br>\n<br>");
                 }
             }
             if (content.length() > 0) {
@@ -882,11 +877,15 @@ public class StripInfoBookHandler
     }
 
 
-    private String cleanText(@NonNull final Node node) {
-        String text = node.toString().trim();
+    private String cleanText(@NonNull final String textToClean) {
+        String text = textToClean.trim();
         // add more rules when needed.
         if (text.contains("&")) {
             text = AMPERSAND_PATTERN.matcher(text).replaceAll(Matcher.quoteReplacement("&"));
+        }
+        if (text.contains("<div>")) {
+            // the div elements only create empty lines, we remove them to save screen space
+            text = DIV_PATTERN.matcher(text).replaceAll("");
         }
         return text;
     }

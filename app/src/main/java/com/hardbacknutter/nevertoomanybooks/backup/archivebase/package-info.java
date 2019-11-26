@@ -30,13 +30,21 @@
  * Archive Format
  * ==============
  * <p>
- * The below was for archiver version 1. Things have changed... TODO: update this description
- * <p>
  * Assumed to have multiple 'entries', processed sequentially. Could be zip, tar, or any other
  * amenable stream
+ *
+ * Entries don't have to be in a particular order, but reading is faster if the order is:
+ * <ol>
+ *     <li>INFO.xml</li>
+ *     <li>styles.xml</li>
+ *     <li>preferences.xml</li>
+ *     <li>other files</li>
+ * </ol>
  * <p>
- * First entry: "INFO.xml"
- * -----------------------
+ * Other then INFO.xml, all entries are optional.
+ * <p>
+ * ---------------------------------------------------------------------
+ * "INFO.xml"
  * <p>
  * Contains a simple name-value set including:
  * <p>
@@ -54,66 +62,25 @@
  * <p>
  * For a full list, see {@link com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo}
  * <p>
- * Optional Entries: "INFO_*.xml"
- * ------------------------------
+ * ---------------------------------------------------------------------
+ * "styles.xml"
  * <p>
- * Later versions of the archiver *may* introduce specific INFO files for their versions.
- * The archiver should skip over INFO files it does not understand or expect.
+ * User-defined BooklistStyles
  * <p>
- * First Data Entry: "books.csv"
- * -----------------------------
+ * ---------------------------------------------------------------------
+ * "preferences.xml"
+ * <p>
+ * User settings
+ * <p>
+ * ---------------------------------------------------------------------
+ * "books.csv"
  * <p>
  * A CSV export appropriate for the archiver that created the archive. i.e. the most recent
  * archiver version for the app version that is installed.
  * <p>
- * Optional Data Entries: books{ArchVersion}.csv"
- * -----------------------------------------------
+ * ---------------------------------------------------------------------
+ * "*.jpg" / "*.png"
  * <p>
- * For backwards compatibility, there may be alternate CSV files for older versions.
- * The ArchVersion field indicates the last version it was completely compatible with.
- * <p>
- * Scanning for "books*.csv"
- * -------------------------
- * <p>
- * The basic rule is to scan the file until the last BOOKS*.csv is found and use the version that
- * has an ArchVersion >= the current archiver version, or BOOKS.CSV if none match.
- * <p>
- * e.g. suppose the archive contains:
- * <p>
- * BOOKS.csv
- * BOOKS_3.csv
- * BOOKS_5.csv
- * <p>
- * if the current Archiver is version 7 then use BOOKS.csv
- * if the current Archiver is version 5 then use BOOKS_5.csv
- * if the current Archiver is version 4 then use BOOKS_5.csv
- * if the current Archiver is version 1 then use BOOKS_3.csv
- * <p>
- * Optional Data Entries: "snapshot.db"
- * ------------------------------------
- * A copy of the database.
- * <strong>Note:</strong> v5.2.2 does not write this file. Not sure if any older versions did.
- * <p>
- * Optional Data Entries: "preferences"
- * ------------------------------------
- * <p>
- * <strong>Note:</strong> future versions may drop this entry when writing and instead write
- * into an extendable xml file, for example "config.xml", section {@code <preferences>}
- * Reading legacy file *should* be preserved.
- * <p>
- * Optional Data Entries: "style.blob.[0-9]*"
- * ------------------------------------------
- * Serialised User-defined BooklistStyle
- * <p>
- * <strong>Note:</strong> future versions may drop this entry when writing and
- * instead write xml file(s). Reading legacy file *should* be preserved.
- * <p>
- * Optional Data Entries: "*.xml"
- * ------------------------------
- * Definition added 2018-11-10, for future expansion.
- * <p>
- * Remaining Data Entries: *.*
- * ---------------------------
- * Any other name is assumed to be a cover image.
+ * Cover image. The full filename pattern is determined by the archiver.
  */
 package com.hardbacknutter.nevertoomanybooks.backup.archivebase;

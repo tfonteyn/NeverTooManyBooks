@@ -37,7 +37,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -182,6 +181,6 @@ public final class GoogleBooksManager
      */
     private String encodeSpaces(@NonNull final CharSequence s) {
 //        return URLEncoder.encode(s, "UTF-8");
-        return SPACE_PATTERN.matcher(s).replaceAll(Matcher.quoteReplacement("%20"));
+        return SPACE_PATTERN.matcher(s).replaceAll("%20");
     }
 }

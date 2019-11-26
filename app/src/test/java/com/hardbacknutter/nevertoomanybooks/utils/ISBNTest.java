@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +39,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ISBNTest {
+
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ \\-]");
 
     /**
      * Valid ISBN 10,13 digits
@@ -85,6 +88,10 @@ class ISBNTest {
             assertTrue(ISBN.isValid(isbnPair[0]));
             assertTrue(ISBN.isValid(isbnPair[1]));
         }
+    }
+
+    @Test
+    void isInvalid() {
         for (String[] isbnPair : invalid) {
             assertFalse(ISBN.isValid(isbnPair[0]));
             assertFalse(ISBN.isValid(isbnPair[1]));
@@ -126,8 +133,11 @@ class ISBNTest {
     @Test
     void swap() {
         for (String[] isbnPair : valid) {
-            assertEquals(isbnPair[1].replace("-", ""), ISBN.isbn2isbn(isbnPair[0]));
-            assertEquals(isbnPair[0].replace("-", ""), ISBN.isbn2isbn(isbnPair[1]));
+            assertEquals(WHITESPACE_PATTERN.matcher(isbnPair[1]).replaceAll(""),
+                         ISBN.isbn2isbn(isbnPair[0]));
+
+            assertEquals(WHITESPACE_PATTERN.matcher(isbnPair[0]).replaceAll(""),
+                         ISBN.isbn2isbn(isbnPair[1]));
         }
     }
 

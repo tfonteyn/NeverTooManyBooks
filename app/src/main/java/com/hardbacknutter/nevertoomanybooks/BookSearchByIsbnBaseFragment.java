@@ -34,15 +34,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 public abstract class BookSearchByIsbnBaseFragment
         extends BookSearchBaseFragment {
-
-    /** Flag to allow ASIN key input (true) or pure ISBN input (false). */
-    boolean mAllowAsin;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -61,8 +59,7 @@ public abstract class BookSearchByIsbnBaseFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            mSearchCoordinator.getSiteList()
-                              .promptToRegister(getContext(), false, "search");
+            mSearchCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
         }
     }
 
@@ -89,7 +86,8 @@ public abstract class BookSearchByIsbnBaseFragment
             clearPreviousSearchCriteria();
         } else {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_no_matching_book_found);
+            Snackbar.make(getView(), R.string.warning_no_matching_book_found,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -98,21 +96,24 @@ public abstract class BookSearchByIsbnBaseFragment
      * <p>
      * mIsbnSearchText must be 10 characters (or more) to even consider a search.
      */
-    void prepareSearch(@NonNull final String isbn) {
-        // valid or not, store for later
-        mSearchCoordinator.setIsbnSearchText(isbn);
+    void prepareSearch(@NonNull final String isbnSearchText) {
+        // valid or not, store for later.
+        mSearchCoordinator.setIsbnSearchText(isbnSearchText);
+
+        // Coverts UPC numbers if applicable.
+        String isbn = ISBN.upc2isbn(isbnSearchText);
 
         // sanity check
         if (isbn.length() < 10) {
             return;
         }
 
-        // not a valid ISBN/ASIN ?
-        if (!ISBN.isValid(isbn) && (!mAllowAsin || !ISBN.isValidAsin(isbn))) {
+        // not a valid ISBN ?
+        if (!ISBN.isValid(isbn)) {
             isbnInvalid(isbn);
             return;
         }
-        // at this point, we have a valid isbn/asin.
+        // at this point, we have a valid isbn
         onValid();
 
         // See if ISBN already exists in our database, if not then start the search.
@@ -158,14 +159,9 @@ public abstract class BookSearchByIsbnBaseFragment
     private void isbnInvalid(@NonNull final String isbn) {
         onInvalid();
 
-        String msg;
-        if (mAllowAsin) {
-            msg = getString(R.string.warning_x_is_not_a_valid_isbn_or_asin, isbn);
-        } else {
-            msg = getString(R.string.warning_x_is_not_a_valid_isbn, isbn);
-        }
+        String msg = getString(R.string.warning_x_is_not_a_valid_isbn, isbn);
         //noinspection ConstantConditions
-        UserMessage.show(getView(), msg);
+        Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
 
         startInput();
     }

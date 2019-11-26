@@ -36,10 +36,8 @@ import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -50,11 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
  * <p>
  * ISBN stands for International Standard Book Number.
  * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
- * <p>
- * ASIN stands for Amazon Standard Identification Number.
- * Every product on Amazon has its own ASIN, a unique code used to identify it.
- * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
- * is created when the item is uploaded to their catalogue.
  * <p>
  * Lots of info:
  * <a href="https://isbn-information.com">https://isbn-information.com</a>
@@ -90,9 +83,8 @@ public class ISBN {
      * UPC Prefix -- ISBN Prefix mapping file (may not be complete)
      */
     private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
-    /** Remove '-' chars. */
-    private static final Pattern DASH_TO_EMPTY_PATTERN = Pattern
-            .compile("-", Pattern.LITERAL);
+    /** Remove '-' and space chars. */
+    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ -]");
 
     static {
         UPC_2_ISBN_PREFIX.put("014794", "08041");
@@ -141,12 +133,12 @@ public class ISBN {
     /**
      * Constructor.
      * <p>
-     * 0345330137
-     * 0709990049 523 3013
+     * Accepts (and removes) ' ' and '-' characters.
      *
      * @param s the isbn string, 10 or 13, or the old UPC
      */
     public ISBN(@NonNull final String s) {
+
         List<Integer> digits;
         // regular ISBN 10/13
         try {
@@ -259,10 +251,9 @@ public class ISBN {
 
         } else {
             // this covers comparing 2 UPC codes, or in fact any other code whatsoever.
-            // we first strip '-' characters.
-            String litRepString = Matcher.quoteReplacement("");
-            String i1 = DASH_TO_EMPTY_PATTERN.matcher(code1).replaceAll(litRepString);
-            String i2 = DASH_TO_EMPTY_PATTERN.matcher(code2).replaceAll(litRepString);
+            // we first strip whitespace characters.
+            String i1 = WHITESPACE_PATTERN.matcher(code1).replaceAll("");
+            String i2 = WHITESPACE_PATTERN.matcher(code2).replaceAll("");
             if (i1.length() == i2.length()) {
                 return code1.equalsIgnoreCase(code2);
             } else {
@@ -294,38 +285,6 @@ public class ISBN {
 
         // might be invalid, but let the caller deal with that.
         return isbn;
-    }
-
-    /**
-     * Validate an Amazon ASIN.
-     */
-    public static boolean isValidAsin(@NonNull String asin) {
-
-        // Book ASIN codes are always 10 characters.
-        if (asin.length() != 10) {
-            return false;
-        }
-
-        // An Book ASIN is basically an ISBN-10.
-        if (isValid(asin)) {
-            return true;
-        }
-
-        // TODO: should we even check this ?
-        boolean foundAlpha = false;
-        asin = asin.toUpperCase(Locale.ENGLISH).trim();
-        for (int i = 0; i < asin.length(); i++) {
-            int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
-            // Make sure it's a valid char
-            if (pos == -1) {
-                return false;
-            }
-            // See if we got a non-numeric
-            if (pos >= 10) {
-                foundAlpha = true;
-            }
-        }
-        return foundAlpha;
     }
 
     public boolean isValid() {
@@ -539,22 +498,22 @@ public class ISBN {
      * <p>
      * Allows and ignore '-' and space characters.
      *
-     * @param isbn to convert
+     * @param input to convert
      *
      * @return list of digits
      *
      * @throws NumberFormatException if conversion fails
      */
     @NonNull
-    private List<Integer> isbnToDigits(@NonNull final CharSequence isbn)
+    private List<Integer> isbnToDigits(@NonNull final CharSequence input)
             throws NumberFormatException {
         // the digit '10' represented as 'X' in an isbn indicates we got to the end
         boolean foundX = false;
 
         List<Integer> digits = new ArrayList<>();
 
-        for (int i = 0; i < isbn.length(); i++) {
-            final char c = isbn.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            final char c = input.charAt(i);
             int digit;
             if (Character.isDigit(c)) {
                 if (foundX) {
@@ -590,8 +549,8 @@ public class ISBN {
     }
 
     /**
-     * @param upc UPC code, example: "070999 00225 530054", "00225" (price) and "5"
-     *            will be discarded to construct the isbn.
+     * @param input UPC code, example: "070999 00225 530054", "00225" (price) and "5"
+     *              will be discarded to construct the isbn.
      *
      * @return list of digits or empty on failure
      *
@@ -600,8 +559,11 @@ public class ISBN {
      *                                         not pass a string which is to short. But...
      */
     @NonNull
-    private List<Integer> upcToDigits(@NonNull final String upc)
+    private List<Integer> upcToDigits(@NonNull final String input)
             throws NumberFormatException, StringIndexOutOfBoundsException {
+
+        String upc = WHITESPACE_PATTERN.matcher(input).replaceAll("");
+
         String isbnPrefix = UPC_2_ISBN_PREFIX.get(upc.substring(0, 6));
         if (isbnPrefix == null) {
             return new ArrayList<>();

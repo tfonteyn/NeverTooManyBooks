@@ -41,13 +41,14 @@ import android.widget.RadioGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 public class BookSearchByNativeIdFragment
         extends BookSearchBaseFragment {
@@ -99,7 +100,8 @@ public class BookSearchByNativeIdFragment
             //sanity check
             if (mEntryView.getText().toString().trim().isEmpty()
                 || mRadioGroup.getCheckedRadioButtonId() == View.NO_ID) {
-                UserMessage.show(mEntryView, R.string.warning_requires_site_and_id);
+                Snackbar.make(mEntryView, R.string.warning_requires_site_and_id,
+                              Snackbar.LENGTH_LONG).show();
                 return;
             }
 
@@ -183,7 +185,6 @@ public class BookSearchByNativeIdFragment
             case R.id.site_amazon:
             case R.id.site_open_library:
                 mEntryView.setInputType(InputType.TYPE_CLASS_TEXT
-                                        | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS
                                         | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
                 // display an alphanumeric keyboard icon
                 mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(

@@ -68,14 +68,14 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             >
 
-            <!-- TODO: have a think... allow searching for ASIN here or in the ISBN fragment.
-                For now it's academic as Amazon search is disabled. -->
+            <!-- Amazon search is disabled. -->
             <RadioButton
                 android:id="@+id/site_amazon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/amazon"
                 android:visibility="gone"
+                tools:visibility="visible"
                 />
 
             <RadioButton
@@ -100,6 +100,7 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:text="@string/library_thing"
+                tools:visibility="visible"
                 />
 
             <RadioButton

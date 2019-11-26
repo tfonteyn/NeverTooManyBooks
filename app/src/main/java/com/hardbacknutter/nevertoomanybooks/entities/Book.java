@@ -48,7 +48,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -62,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BitmaskDataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BooleanDataAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -99,6 +97,7 @@ public class Book
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
+
     /**
      * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
      * <p>
@@ -117,10 +116,14 @@ public class Book
     public static final int TOC_SINGLE_AUTHOR_SINGLE_WORK = 0;
     public static final int TOC_MULTIPLE_WORKS = 1;
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
+
+    /** log tag. */
+    private static final String TAG = "Book";
+
     /** mapping the edition bit to a resource string for displaying. Ordered. */
     @SuppressLint("UseSparseArrays")
     private static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
-    private static final String TAG = "Book";
+
     private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
     /** first edition ever of this work/content/story. */
     private static final int EDITION_FIRST = 1;
@@ -150,6 +153,7 @@ public class Book
     private static final int EDITION_SIGNED = 1 << 4;
     /** It's a bookclub edition. */
     private static final int EDITION_BOOK_CLUB = 1 << 7;
+    /** Bitmask for all editions. */
     private static final int EDITIONS_MASK = EDITION_FIRST
                                              | EDITION_FIRST_IMPRESSION
                                              | EDITION_LIMITED
@@ -235,9 +239,7 @@ public class Book
         String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
 
         if (!series.isEmpty()) {
-            series = " (" + SERIES_NR_PATTERN.matcher(series)
-                                             .replaceAll(Matcher.quoteReplacement("%23 "))
-                     + ')';
+            series = " (" + SERIES_NR_PATTERN.matcher(series).replaceAll("%23 ") + ')';
         }
 
         //remove trailing 0's
@@ -291,18 +293,17 @@ public class Book
         // This would be ok if we discard the original object (in memory only)
         // but lets play this safe.
 
-
         // Do not copy any identifiers.
-//        DOM_PK_ID
-//        DOM_BOOK_UUID
-//        DOM_BOOK_LIBRARY_THING_ID
-//        DOM_BOOK_ISFDB_ID
-//        DOM_BOOK_GOODREADS_ID
+        // DOM_PK_ID
+        // DOM_BOOK_UUID
+        // DOM_BOOK_LIBRARY_THING_ID
+        // DOM_BOOK_ISFDB_ID
+        // DOM_BOOK_GOODREADS_ID
 
         // Do not copy these specific dates.
-//        DOM_BOOK_DATE_ADDED
-//        DOM_DATE_LAST_UPDATED
-//        DOM_BOOK_GOODREADS_LAST_SYNC_DATE
+        // DOM_BOOK_DATE_ADDED
+        // DOM_DATE_LAST_UPDATED
+        // DOM_BOOK_GOODREADS_LAST_SYNC_DATE
 
         bookData.putString(DBDefinitions.KEY_TITLE,
                            getString(DBDefinitions.KEY_TITLE));
@@ -542,7 +543,7 @@ public class Book
     }
 
     /**
-     * TODO: use {@link DataAccessor}.
+     * Get the Authors. If there is more then one, we get the first Author + " et. al.".
      *
      * @param context Current context
      *
@@ -738,9 +739,7 @@ public class Book
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS,
-                                  TOC_MULTIPLE_AUTHORS,
-    })
+    @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS, TOC_MULTIPLE_AUTHORS})
     public @interface TocBits {
 
     }
