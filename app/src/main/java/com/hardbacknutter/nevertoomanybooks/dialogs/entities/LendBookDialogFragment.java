@@ -51,6 +51,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * Dialog to create a new loan, or edit an existing one.
@@ -201,7 +202,8 @@ public class LendBookDialogFragment
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     String newName = mLoaneeView.getText().toString().trim();
                     if (newName.isEmpty()) {
-                        UserMessage.show(mLoaneeView, R.string.warning_missing_name);
+                        Snackbar.make(mLoaneeView, R.string.warning_missing_name,
+                                      Snackbar.LENGTH_LONG).show();
                         return;
                     }
                     dismiss();

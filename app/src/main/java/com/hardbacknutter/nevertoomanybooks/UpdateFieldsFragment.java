@@ -50,6 +50,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -61,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
@@ -97,7 +97,8 @@ public class UpdateFieldsFragment
                     if (wasCancelled) {
                         // This message will likely not be seen
                         //noinspection ConstantConditions
-                        UserMessage.show(getView(), R.string.progress_end_cancelled);
+                        Snackbar.make(getView(), R.string.progress_end_cancelled,
+                                      Snackbar.LENGTH_LONG).show();
                     }
 
                     if (data != null) {
@@ -178,7 +179,8 @@ public class UpdateFieldsFragment
         // Warn the user, but don't abort.
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_network_no_connection);
+            Snackbar.make(getView(), R.string.error_network_no_connection,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -308,14 +310,16 @@ public class UpdateFieldsFragment
         // sanity check
         if (!hasSelections()) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_select_at_least_1_field);
+            Snackbar.make(getView(), R.string.warning_select_at_least_1_field,
+                          Snackbar.LENGTH_LONG).show();
             return;
         }
 
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_network_no_connection);
+            Snackbar.make(getView(), R.string.error_network_no_connection,
+                          Snackbar.LENGTH_LONG).show();
             return;
         }
 

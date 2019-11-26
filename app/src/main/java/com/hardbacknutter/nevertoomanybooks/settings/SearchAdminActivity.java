@@ -41,13 +41,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * USE scenario is (2019-07-05) on a per-page basis only. Hence we 'use' the current displayed list.
@@ -106,7 +106,8 @@ public class SearchAdminActivity
         if (hasSites) {
             super.onBackPressed();
         } else {
-            UserMessage.show(mViewPager, R.string.warning_enable_at_least_1_website);
+            Snackbar.make(mViewPager, R.string.warning_enable_at_least_1_website,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 

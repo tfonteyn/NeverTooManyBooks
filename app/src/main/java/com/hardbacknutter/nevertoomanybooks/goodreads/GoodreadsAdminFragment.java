@@ -40,6 +40,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity;
@@ -49,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.GoodreadsTaskModel;
 
 /**
@@ -99,7 +100,7 @@ public class GoodreadsAdminFragment
                     //noinspection ConstantConditions
                     String msg = GoodreadsTasks.handleResult(getContext(), message);
                     if (msg != null) {
-                        UserMessage.show(view, msg);
+                        Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
                     } else {
                         RequestAuthTask.needsRegistration(getContext(),
                                                           mGoodreadsTaskModel.getTaskListener());
@@ -147,7 +148,7 @@ public class GoodreadsAdminFragment
 
     private void onImport(final boolean isSync) {
         //noinspection ConstantConditions
-        UserMessage.show(getView(), R.string.progress_msg_connecting);
+        Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
         //noinspection ConstantConditions
         TaskBase<Integer> task = new ImportTask(getContext(), isSync,
@@ -164,7 +165,7 @@ public class GoodreadsAdminFragment
 
     private void onSend(final boolean updatesOnly) {
         //noinspection ConstantConditions
-        UserMessage.show(getView(), R.string.progress_msg_connecting);
+        Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
         //noinspection ConstantConditions
         TaskBase<Integer> task = new SendBooksTask(getContext(), updatesOnly,

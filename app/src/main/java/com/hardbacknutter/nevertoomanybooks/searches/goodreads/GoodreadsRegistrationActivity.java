@@ -36,12 +36,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * Activity to allow the user to authorize the application to access their
@@ -58,7 +59,7 @@ public class GoodreadsRegistrationActivity
             String msg = GoodreadsTasks.handleResult(GoodreadsRegistrationActivity.this,
                                                      message);
             if (msg != null) {
-                UserMessage.show(mAuthButton, msg);
+                Snackbar.make(mAuthButton, msg, Snackbar.LENGTH_LONG).show();
             } else {
                 RequestAuthTask.needsRegistration(GoodreadsRegistrationActivity.this,
                                                   mTaskListener);
@@ -68,7 +69,7 @@ public class GoodreadsRegistrationActivity
         @Override
         public void onProgress(@NonNull final ProgressMessage message) {
             if (message.text != null) {
-                UserMessage.show(mAuthButton, message.text);
+                Snackbar.make(mAuthButton, message.text, Snackbar.LENGTH_LONG).show();
             }
         }
     };
@@ -93,7 +94,8 @@ public class GoodreadsRegistrationActivity
         // Auth button
         mAuthButton = findViewById(R.id.authorize);
         mAuthButton.setOnClickListener(v -> {
-            UserMessage.show(mAuthButton, R.string.progress_msg_connecting);
+            Snackbar.make(mAuthButton, R.string.progress_msg_connecting,
+                          Snackbar.LENGTH_LONG).show();
             new RequestAuthTask(mTaskListener).execute();
         });
 

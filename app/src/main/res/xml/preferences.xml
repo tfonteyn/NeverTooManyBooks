@@ -245,15 +245,6 @@
     <PreferenceCategory
         android:title="@string/lbl_advanced_options">
 
-        <!-- default snackbar == 1 -->
-        <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/pe_ui_messages_use"
-            android:entryValues="@array/pv_ui_messages_use"
-            android:icon="@drawable/ic_message"
-            android:key="ui.messages.use"
-            android:title="@string/pt_ui_messages_use" />
-
         <Preference
             android:icon="@drawable/ic_undo"
             android:key="psk_tip_reset_all"

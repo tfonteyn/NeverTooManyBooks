@@ -67,6 +67,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -79,7 +80,6 @@ import java.util.concurrent.CountDownLatch;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * The activity can crop specific region of interest from an image.
@@ -269,7 +269,8 @@ public class CropImageActivity
                 }
 
                 if (mNumFaces > 1) {
-                    UserMessage.show(mImageView, "Multi face crop help not available.");
+                    Snackbar.make(mImageView, "Multi face crop not available.",
+                                  Snackbar.LENGTH_LONG).show();
                 }
             });
         }
@@ -297,7 +298,7 @@ public class CropImageActivity
         int msgId = checkStorage();
         // tell user if needed.
         if (msgId != 0) {
-            UserMessage.show(mImageView, msgId);
+            Snackbar.make(mImageView, msgId, Snackbar.LENGTH_LONG).show();
         }
 
         Bundle args = getIntent().getExtras();

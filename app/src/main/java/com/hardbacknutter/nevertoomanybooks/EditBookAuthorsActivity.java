@@ -48,6 +48,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
@@ -72,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * <p>
  * Calling point is a Book; see {@link EditBookAuthorDialogFragment} for list
  * <p>
- * TODO: setting the TYPE of Author is still WIP.
  * You can edit the type in the edit-author dialog, but you cannot set it when adding
  * an author to the list.
  */
@@ -116,7 +116,8 @@ public class EditBookAuthorsActivity
     protected void onAdd(@NonNull final View target) {
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (name.isEmpty()) {
-            UserMessage.show(mAutoCompleteTextView, R.string.warning_missing_name);
+            Snackbar.make(mAutoCompleteTextView, R.string.warning_missing_name,
+                          Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -125,7 +126,8 @@ public class EditBookAuthorsActivity
         newAuthor.fixId(this, mModel.getDb(), Locale.getDefault());
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
-            UserMessage.show(mAutoCompleteTextView, R.string.warning_author_already_in_list);
+            Snackbar.make(mAutoCompleteTextView, R.string.warning_author_already_in_list,
+                          Snackbar.LENGTH_LONG).show();
             return;
         }
         // add the new one to the list. It is NOT saved at this point!
@@ -415,7 +417,8 @@ public class EditBookAuthorsActivity
                     .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                         mFamilyName = mFamilyNameView.getText().toString().trim();
                         if (mFamilyName.isEmpty()) {
-                            UserMessage.show(mFamilyNameView, R.string.warning_missing_name);
+                            Snackbar.make(mFamilyNameView, R.string.warning_missing_name,
+                                          Snackbar.LENGTH_LONG).show();
                             return;
                         }
 

@@ -42,6 +42,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 import java.util.Objects;
@@ -55,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * Dialog to edit an existing single Series.
@@ -146,7 +147,8 @@ public class EditSeriesDialogFragment
                 .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                     mName = mNameView.getText().toString().trim();
                     if (mName.isEmpty()) {
-                        UserMessage.show(mNameView, R.string.warning_missing_name);
+                        Snackbar.make(mNameView, R.string.warning_missing_name,
+                                      Snackbar.LENGTH_LONG).show();
                         return;
                     }
                     mIsComplete = mIsCompleteView.isChecked();

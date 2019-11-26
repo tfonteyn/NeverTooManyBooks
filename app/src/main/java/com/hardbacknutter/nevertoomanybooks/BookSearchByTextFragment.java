@@ -41,6 +41,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
@@ -134,7 +135,8 @@ public class BookSearchByTextFragment
             //sanity check
             if (mSearchCoordinator.getAuthorSearchText().isEmpty()
                 && mSearchCoordinator.getTitleSearchText().isEmpty()) {
-                UserMessage.show(getView(), R.string.warning_requires_at_least_one_field);
+                Snackbar.make(getView(), R.string.warning_requires_at_least_one_field,
+                              Snackbar.LENGTH_LONG).show();
                 return;
             }
 

@@ -43,6 +43,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -53,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
 /**
@@ -119,7 +120,7 @@ public abstract class BookBaseFragment
     private void showUserMessage(@Nullable final String message) {
         View view = getView();
         if (view != null && message != null && !message.isEmpty()) {
-            UserMessage.show(view, message);
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
     }
 

@@ -42,6 +42,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -51,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 abstract class EditStringBaseDialog {
 
@@ -143,7 +144,7 @@ abstract class EditStringBaseDialog {
     private void doSave() {
         String newText = mEditText.getText().toString().trim();
         if (newText.isEmpty()) {
-            UserMessage.show(mEditText, R.string.warning_missing_name);
+            Snackbar.make(mEditText, R.string.warning_missing_name, Snackbar.LENGTH_LONG).show();
             return;
         }
         // if there are no differences, just bail out.

@@ -71,7 +71,6 @@ public final class Prefs {
     /** Preference Key. */
     public static final String pk_ui_locale = "ui.locale";
     public static final String pk_ui_theme = "ui.theme";
-    public static final String pk_ui_messages_use = "ui.messages.use";
     public static final String pk_network_allow_metered = "network.allow.metered";
     public static final String pk_scanner_preferred = "scanner.preferred";
     public static final String pk_search_form_advanced = "search.form.advanced";

@@ -41,6 +41,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -54,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistra
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -139,7 +140,7 @@ public class GlobalPreferenceFragment
                 //noinspection ConstantConditions
                 TipManager.reset(getContext());
                 //noinspection ConstantConditions
-                UserMessage.show(getView(), R.string.tip_reset_done);
+                Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
                 return true;
             });
         }
@@ -157,7 +158,8 @@ public class GlobalPreferenceFragment
                         .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                             if (!DebugReport.sendDebugInfo(getContext())) {
                                 //noinspection ConstantConditions
-                                UserMessage.show(getView(), R.string.error_email_failed);
+                                Snackbar.make(getView(), R.string.error_email_failed,
+                                              Snackbar.LENGTH_LONG).show();
                             }
                         })
                         .create()

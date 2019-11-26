@@ -46,6 +46,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 
@@ -132,13 +133,15 @@ public class GoodreadsSearchActivity
             if (goodreadsWorks != null && !goodreadsWorks.isEmpty()) {
                 mWorks.addAll(goodreadsWorks);
             } else {
-                UserMessage.show(mListView, R.string.warning_no_matching_book_found);
+                Snackbar.make(mListView, R.string.warning_no_matching_book_found,
+                              Snackbar.LENGTH_LONG).show();
             }
             mWorksAdapter.notifyDataSetChanged();
         });
         mModel.getBookNoLongerExists().observe(this, flag -> {
             if (flag) {
-                UserMessage.show(mSearchTextView, R.string.warning_book_no_longer_exists);
+                Snackbar.make(mSearchTextView, R.string.warning_book_no_longer_exists,
+                              Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -197,7 +200,7 @@ public class GoodreadsSearchActivity
      * Start the search.
      */
     private void doSearch() {
-        UserMessage.show(mListView, R.string.progress_msg_connecting);
+        Snackbar.make(mListView, R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
         mModel.search(mSearchTextView.getText().toString().trim());
     }
 
@@ -208,7 +211,7 @@ public class GoodreadsSearchActivity
      */
     private void onWorkSelected(@NonNull final GoodreadsWork work) {
         String msg = "Not implemented: requires access to work.editions from Goodreads";
-        UserMessage.show(mListView, msg);
+        Snackbar.make(mListView, msg, Snackbar.LENGTH_LONG).show();
     }
 
     public static class GrSearchViewModel

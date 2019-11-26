@@ -44,6 +44,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -55,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 public class BookSearchByScanFragment
@@ -213,7 +214,8 @@ public class BookSearchByScanFragment
             int retry = SCANNER_RETRY;
             while (!scanner.isOperational() && retry > 0) {
                 //noinspection ConstantConditions
-                UserMessage.show(getView(), R.string.info_waiting_for_scanner);
+                Snackbar.make(getView(), R.string.info_waiting_for_scanner,
+                              Snackbar.LENGTH_LONG).show();
 
                 try {
                     Thread.sleep(SCANNER_WAIT);

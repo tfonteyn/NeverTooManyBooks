@@ -47,6 +47,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialog
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 
 /**
@@ -212,7 +212,8 @@ public class EditBookshelvesFragment
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
-                    UserMessage.show(mListView, R.string.warning_cannot_delete_1st_bs);
+                    Snackbar.make(mListView, R.string.warning_cannot_delete_1st_bs,
+                                  Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 

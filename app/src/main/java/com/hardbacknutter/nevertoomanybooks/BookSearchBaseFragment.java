@@ -47,6 +47,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -56,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 public abstract class BookSearchBaseFragment
@@ -101,7 +102,8 @@ public abstract class BookSearchBaseFragment
 
                     } else {
                         //noinspection ConstantConditions
-                        UserMessage.show(getView(), R.string.warning_no_matching_book_found);
+                        Snackbar.make(getView(), R.string.warning_no_matching_book_found,
+                                      Snackbar.LENGTH_LONG).show();
                     }
                 }
 
@@ -156,7 +158,8 @@ public abstract class BookSearchBaseFragment
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_network_no_connection);
+            Snackbar.make(getView(), R.string.error_network_no_connection, Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
@@ -216,7 +219,7 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     void onCancelled() {
         //noinspection ConstantConditions
-        UserMessage.show(getView(), R.string.progress_end_cancelled);
+        Snackbar.make(getView(), R.string.progress_end_cancelled, Snackbar.LENGTH_LONG).show();
     }
 
     @CallSuper
@@ -238,7 +241,8 @@ public abstract class BookSearchBaseFragment
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_network_no_connection);
+            Snackbar.make(getView(), R.string.error_network_no_connection, Snackbar.LENGTH_LONG)
+                    .show();
             return;
         }
 
@@ -252,7 +256,8 @@ public abstract class BookSearchBaseFragment
         } else {
             //TODO: not the best error message, but it will do for now.
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_search_failed_network);
+            Snackbar.make(getView(), R.string.error_search_failed_network, Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
@@ -281,9 +286,6 @@ public abstract class BookSearchBaseFragment
                     if (siteList != null) {
                         mSearchCoordinator.setSiteList(siteList);
                     }
-                    // Make sure that the ASIN option (Amazon) is (not) offered.
-                    //noinspection ConstantConditions
-                    getActivity().invalidateOptionsMenu();
                 }
                 break;
             }

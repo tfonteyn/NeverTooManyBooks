@@ -56,6 +56,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +84,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.TaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -144,7 +145,8 @@ public class EditBookTocFragment
             Bundle bookData = message.result;
             if (bookData == null) {
                 //noinspection ConstantConditions
-                UserMessage.show(getView(), R.string.warning_book_not_found);
+                Snackbar.make(getView(), R.string.warning_book_not_found, Snackbar.LENGTH_LONG)
+                        .show();
                 return;
             }
 
@@ -263,7 +265,7 @@ public class EditBookTocFragment
             task.execute();
         } else {
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.warning_no_editions);
+            Snackbar.make(getView(), R.string.warning_no_editions, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -360,7 +362,8 @@ public class EditBookTocFragment
                 long isfdbId = mBookModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
                 if (isfdbId != 0) {
                     //noinspection ConstantConditions
-                    UserMessage.show(getView(), R.string.progress_msg_connecting);
+                    Snackbar.make(getView(), R.string.progress_msg_connecting,
+                                  Snackbar.LENGTH_LONG).show();
                     IsfdbGetBookTask task = new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),
                                                                  mIsfdbBookResultsListener);
                     mIsfdbTaskModel.setTask(task);
@@ -368,12 +371,14 @@ public class EditBookTocFragment
 
                 } else if (ISBN.isValid(mIsbn)) {
                     //noinspection ConstantConditions
-                    UserMessage.show(getView(), R.string.progress_msg_connecting);
+                    Snackbar.make(getView(), R.string.progress_msg_connecting,
+                                  Snackbar.LENGTH_LONG).show();
                     searchIsfdb(mIsbn);
 
                 } else {
                     //noinspection ConstantConditions
-                    UserMessage.show(getView(), R.string.warning_requires_isbn);
+                    Snackbar.make(getView(), R.string.warning_requires_isbn,
+                                  Snackbar.LENGTH_LONG).show();
                 }
                 return true;
 

@@ -52,6 +52,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +63,6 @@ import java.util.concurrent.RejectedExecutionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
 
 /**
@@ -267,7 +268,8 @@ public class CoverBrowserFragment
 
         if (mAlternativeEditions.isEmpty()) {
             dismiss();
-            UserMessage.show(mStatusTextView, R.string.warning_no_editions);
+            Snackbar.make(mStatusTextView, R.string.warning_no_editions, Snackbar.LENGTH_LONG)
+                    .show();
             return;
         }
 
@@ -314,7 +316,8 @@ public class CoverBrowserFragment
 
         // and if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
-            UserMessage.show(mStatusTextView, R.string.warning_cover_not_found);
+            Snackbar.make(mStatusTextView, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
+                    .show();
             dismiss();
         }
     }
@@ -353,7 +356,8 @@ public class CoverBrowserFragment
 
         // Reset the switcher and info the user.
         mImageSwitcherView.setVisibility(View.GONE);
-        UserMessage.show(mImageSwitcherView, R.string.warning_cover_not_found);
+        Snackbar.make(mImageSwitcherView, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
+                .show();
         mStatusTextView.setText(R.string.info_tap_on_thumb);
     }
 

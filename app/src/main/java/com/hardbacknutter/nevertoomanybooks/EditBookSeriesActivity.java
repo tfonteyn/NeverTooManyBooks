@@ -44,6 +44,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -53,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
@@ -108,7 +109,8 @@ public class EditBookSeriesActivity
     protected void onAdd(@NonNull final View target) {
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (name.isEmpty()) {
-            UserMessage.show(mAutoCompleteTextView, R.string.warning_missing_name);
+            Snackbar.make(mAutoCompleteTextView, R.string.warning_missing_name,
+                          Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -118,7 +120,8 @@ public class EditBookSeriesActivity
         newSeries.fixId(this, mModel.getDb(), mModel.getBookLocale());
         // and check it's not already in the list.
         if (mList.contains(newSeries)) {
-            UserMessage.show(mAutoCompleteTextView, R.string.warning_series_already_in_list);
+            Snackbar.make(mAutoCompleteTextView, R.string.warning_series_already_in_list,
+                          Snackbar.LENGTH_LONG).show();
             return;
         }
         // add the new one to the list. It is NOT saved at this point!
@@ -297,7 +300,8 @@ public class EditBookSeriesActivity
                     .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                         mSeriesName = mTitleView.getText().toString().trim();
                         if (mSeriesName.isEmpty()) {
-                            UserMessage.show(mTitleView, R.string.warning_missing_name);
+                            Snackbar.make(mTitleView, R.string.warning_missing_name,
+                                          Snackbar.LENGTH_LONG).show();
                             return;
                         }
                         if (mIsCompleteView != null) {

@@ -48,6 +48,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.Locale;
@@ -58,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
@@ -231,13 +232,15 @@ public class PartialDatePickerDialogFragment
             dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
                     //noinspection ConstantConditions
-                    UserMessage.show(getDialog().getWindow().getDecorView(),
-                                     R.string.warning_if_day_set_month_and_year_must_be);
+                    Snackbar.make(getDialog().getWindow().getDecorView(),
+                                  R.string.warning_if_day_set_month_and_year_must_be,
+                                  Snackbar.LENGTH_LONG).show();
 
                 } else if (mMonth != null && mMonth > 0 && mYear == null) {
                     //noinspection ConstantConditions
-                    UserMessage.show(getDialog().getWindow().getDecorView(),
-                                     R.string.warning_if_month_set_year_must_be);
+                    Snackbar.make(getDialog().getWindow().getDecorView(),
+                                  R.string.warning_if_month_set_year_must_be,
+                                  Snackbar.LENGTH_LONG).show();
 
                 } else {
                     send();

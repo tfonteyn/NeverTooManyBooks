@@ -71,16 +71,6 @@
         <item>2</item>
     </string-array>
 
-    <!-- ListPreference - Implementation to use for user messages. -->
-    <string-array name="pe_ui_messages_use">
-        <item>Toast</item>
-        <item>Snackbar</item>
-    </string-array>
-    <string-array name="pv_ui_messages_use">
-        <item>0</item>
-        <item>1</item>
-    </string-array>
-
     <!-- ListPreference - booklist state-related preferences -->
     <string-array name="pe_bob_list_state">
         <item>@string/pe_bob_list_rebuild_state_preferred</item>

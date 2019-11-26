@@ -42,6 +42,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
@@ -54,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * Dialog to edit an existing single author.
@@ -162,7 +163,8 @@ public class EditAuthorDialogFragment
                 .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                     mFamilyName = mFamilyNameView.getText().toString().trim();
                     if (mFamilyName.isEmpty()) {
-                        UserMessage.show(mFamilyNameView, R.string.warning_missing_name);
+                        Snackbar.make(mFamilyNameView, R.string.warning_missing_name,
+                                      Snackbar.LENGTH_LONG).show();
                         return;
                     }
 

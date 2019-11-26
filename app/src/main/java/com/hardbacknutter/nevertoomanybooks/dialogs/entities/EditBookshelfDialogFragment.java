@@ -40,6 +40,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 
@@ -51,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * Dialog to edit an existing or new bookshelf.
@@ -137,7 +138,7 @@ public class EditBookshelfDialogFragment
     private void doSave() {
         mName = mNameView.getText().toString().trim();
         if (mName.isEmpty()) {
-            UserMessage.show(mNameView, R.string.warning_missing_name);
+            Snackbar.make(mNameView, R.string.warning_missing_name, Snackbar.LENGTH_LONG).show();
             return;
         }
 
@@ -150,7 +151,7 @@ public class EditBookshelfDialogFragment
             @SuppressWarnings("ConstantConditions")
             String msg = c.getString(R.string.warning_x_already_exists,
                                      c.getString(R.string.lbl_bookshelf));
-            UserMessage.show(mNameView, msg);
+            Snackbar.make(mNameView, msg, Snackbar.LENGTH_LONG).show();
             return;
         }
 

@@ -45,6 +45,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -52,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -287,7 +288,7 @@ public class StartupActivity
 
         int msgId = StorageUtils.initSharedDirectories(this);
         if (msgId != 0) {
-            UserMessage.show(mProgressMessageView, msgId);
+            Snackbar.make(mProgressMessageView, msgId, Snackbar.LENGTH_LONG).show();
         }
 
         return true;

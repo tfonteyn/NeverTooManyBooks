@@ -45,6 +45,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -415,7 +416,7 @@ public class CoverHandler {
             mCoverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
 
         } else {
-            UserMessage.show(mCoverView, R.string.warning_requires_isbn);
+            Snackbar.make(mCoverView, R.string.warning_requires_isbn, Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -470,14 +471,15 @@ public class CoverHandler {
                 String msg = mContext.getString(R.string.warning_cover_copy_failed) + ". "
                              + mContext.getString(R.string.error_if_the_problem_persists,
                                                   mContext.getString(R.string.lbl_send_debug_info));
-                UserMessage.show(mCoverView, msg);
+                Snackbar.make(mCoverView, msg, Snackbar.LENGTH_LONG).show();
             }
         } else {
             /* Deal with the case where the chooser returns a {@code null} intent.
              * This seems to happen when the filename is not properly understood
              * by the chooser (e.g. an apostrophe in the file name confuses
              * ES File Explorer in the current version as of 23-Sep-2012. */
-            UserMessage.show(mCoverView, R.string.warning_cover_copy_failed);
+            Snackbar.make(mCoverView, R.string.warning_cover_copy_failed, Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
@@ -565,7 +567,8 @@ public class CoverHandler {
 
         List<ResolveInfo> list = mContext.getPackageManager().queryIntentActivities(intent, 0);
         if (list.isEmpty()) {
-            UserMessage.show(mCoverView, R.string.error_no_external_crop_app);
+            Snackbar.make(mCoverView, R.string.error_no_external_crop_app, Snackbar.LENGTH_LONG)
+                    .show();
         } else {
             mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE_EXTERNAL);
         }

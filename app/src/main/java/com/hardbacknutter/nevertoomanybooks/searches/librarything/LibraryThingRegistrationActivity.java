@@ -41,6 +41,7 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 
@@ -53,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 /**
  * Contains details about LibraryThing links and how to register for a developer key.
@@ -69,7 +69,7 @@ public class LibraryThingRegistrationActivity
     private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Integer> message) {
-            UserMessage.show(mDevKeyView, message.result);
+            Snackbar.make(mDevKeyView, message.result, Snackbar.LENGTH_LONG).show();
         }
 
         @Override
@@ -115,7 +115,8 @@ public class LibraryThingRegistrationActivity
                              .apply();
 
             if (!devKey.isEmpty()) {
-                UserMessage.show(mDevKeyView, R.string.progress_msg_connecting);
+                Snackbar.make(mDevKeyView, R.string.progress_msg_connecting,
+                              Snackbar.LENGTH_LONG).show();
                 new ValidateKey(mListener).execute();
             }
         });

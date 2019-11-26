@@ -57,6 +57,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +103,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
@@ -296,7 +296,7 @@ public class BooksOnBookshelf
 
         mModel.getUserMessage().observe(this, message -> {
             if (message != null) {
-                UserMessage.show(mListView, message);
+                Snackbar.make(mListView, message, Snackbar.LENGTH_LONG).show();
             }
         });
         mModel.getNeedsGoodreads().observe(this, needs -> {
@@ -1394,7 +1394,8 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                UserMessage.show(mListView, R.string.progress_msg_connecting);
+                Snackbar.make(mListView, R.string.progress_msg_connecting,
+                              Snackbar.LENGTH_LONG).show();
                 new SendOneBookTask(bookId, mModel.getGoodreadsTaskListener())
                         .execute();
                 return true;

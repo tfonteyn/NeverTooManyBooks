@@ -38,11 +38,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 
 public class ExportHelperDialogFragment
         extends OptionsDialogBase<ExportHelper> {
@@ -131,7 +132,8 @@ public class ExportHelperDialogFragment
                 String date = mDateSinceView.getText().toString().trim();
                 mExportHelper.setDateFrom(DateUtils.parseDate(date));
             } catch (@NonNull final RuntimeException e) {
-                UserMessage.show(mDateSinceView, R.string.warning_requires_date);
+                Snackbar.make(mDateSinceView, R.string.warning_requires_date,
+                              Snackbar.LENGTH_LONG).show();
                 mExportHelper.options = Options.NOTHING;
             }
         } else {

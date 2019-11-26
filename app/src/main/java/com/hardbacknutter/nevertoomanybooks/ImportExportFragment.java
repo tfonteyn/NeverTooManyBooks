@@ -48,6 +48,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -73,7 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportHelperModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportHelperModel;
@@ -285,7 +286,7 @@ public class ImportExportFragment
                             msgId = R.string.error_backup_failed;
                         }
                         //noinspection ConstantConditions
-                        UserMessage.show(getView(), msgId);
+                        Snackbar.make(getView(), msgId, Snackbar.LENGTH_LONG).show();
                     }
                 }
                 break;
@@ -700,7 +701,8 @@ public class ImportExportFragment
                     }
                     case Cancelled: {
                         //noinspection ConstantConditions
-                        UserMessage.show(getView(), R.string.progress_end_cancelled);
+                        Snackbar.make(getView(), R.string.progress_end_cancelled,
+                                      Snackbar.LENGTH_LONG).show();
                         break;
                     }
                 }
@@ -720,7 +722,8 @@ public class ImportExportFragment
                     }
                     case Cancelled: {
                         //noinspection ConstantConditions
-                        UserMessage.show(getView(), R.string.progress_end_cancelled);
+                        Snackbar.make(getView(), R.string.progress_end_cancelled,
+                                      Snackbar.LENGTH_LONG).show();
                         break;
                     }
                 }
@@ -834,7 +837,7 @@ public class ImportExportFragment
             //noinspection ConstantConditions
             Logger.error(getContext(), TAG, e);
             //noinspection ConstantConditions
-            UserMessage.show(getView(), R.string.error_email_failed);
+            Snackbar.make(getView(), R.string.error_email_failed, Snackbar.LENGTH_LONG).show();
         }
     }
 }

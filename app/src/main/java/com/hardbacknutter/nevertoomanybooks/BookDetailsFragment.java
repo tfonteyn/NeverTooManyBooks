@@ -57,6 +57,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UserMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 
 /**
@@ -594,7 +594,8 @@ public class BookDetailsFragment
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
                 //noinspection ConstantConditions
-                UserMessage.show(getView(), R.string.progress_msg_connecting);
+                Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG)
+                        .show();
                 new SendOneBookTask(book.getId(), mBookModel.getGoodreadsTaskListener())
                         .execute();
                 return true;
