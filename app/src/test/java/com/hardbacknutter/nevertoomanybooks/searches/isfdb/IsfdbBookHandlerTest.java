@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
@@ -157,10 +158,79 @@ class IsfdbBookHandlerTest
         //assertEquals("1957-01-01", entry.getFirstPublication());
         assertEquals("Russell", entry.getAuthor().getFamilyName());
         assertEquals("Eric Frank", entry.getAuthor().getGivenNames());
+    }
 
-        //TODO: The test book does not contain
-        // publisher series
-        // publisher series #
-        // series (if 'from-toc'==true)
+    @Test
+    void parse02()
+            throws IOException {
+
+        String locationHeader = "http://www.isfdb.org/cgi-bin/pl.cgi?431964";
+        String filename = "/isfdb/431964.html";
+
+        Document doc;
+        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(in);
+            doc = Jsoup.parse(in, IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
+        }
+        assertNotNull(doc);
+        assertTrue(doc.hasText());
+
+        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(mContext, doc);
+        // we've set the doc, so no internet download will be done.
+        Bundle bookData = isfdbBookHandler.parseDoc(mBookData, true, false);
+
+        assertFalse(bookData.isEmpty());
+
+        assertEquals("Mort", bookData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals(431964, bookData.getLong(DBDefinitions.KEY_EID_ISFDB));
+        assertEquals("2013-11-07", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("9781473200104", bookData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("1473200105", bookData.getString(IsfdbBookHandler.BookField.ISBN_2));
+        assertEquals(9.99d, bookData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
+        assertEquals("GBP", bookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals("257", bookData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("hc", bookData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("NOVEL", bookData.getString(IsfdbBookHandler.BookField.BOOK_TYPE));
+
+        ArrayList<Publisher> allPublishers = mBookData
+                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+        assertNotNull(allPublishers);
+        assertEquals(1, allPublishers.size());
+
+        assertEquals("Gollancz", allPublishers.get(0).getName());
+
+        ArrayList<Author> authors = bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        assertNotNull(authors);
+        assertEquals(2, authors.size());
+        assertEquals("Pratchett", authors.get(0).getFamilyName());
+        assertEquals("Terry", authors.get(0).getGivenNames());
+        assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
+
+        assertEquals("McLaren", authors.get(1).getFamilyName());
+        assertEquals("Joe", authors.get(1).getGivenNames());
+        assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
+
+        ArrayList<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        assertNotNull(series);
+        assertEquals(2, series.size());
+        assertEquals("The Discworld Collector's Library", series.get(0).getTitle());
+        assertEquals("Discworld", series.get(1).getTitle());
+        assertEquals("4", series.get(1).getNumber());
+
+        ArrayList<TocEntry> toc = bookData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        assertNotNull(toc);
+        //7 • Allamagoosa • (1955) • short story by Eric Frank Russell
+        //24 • Hobbyist • (1947) • novelette by Eric Frank Russell
+        //65 • The Mechanical Mice • (1941) • novelette by Maurice G. Hugi and Eric Frank Russell
+        //95 • Into Your Tent I'll Creep • (1957) • short story by Eric Frank Russell
+        //106 • Nothing New • (1955) • short story by Eric Frank Russell
+        //119 • Exposure • (1950) • short story by Eric Frank Russell
+        //141 • Ultima Thule • (1951) • short story by Eric Frank Russell
+        assertEquals(1, toc.size());
+        TocEntry entry = toc.get(0);
+        assertEquals("Mort", entry.getTitle());
+        assertEquals("1987", entry.getFirstPublication());
+        assertEquals("Pratchett", entry.getAuthor().getFamilyName());
+        assertEquals("Terry", entry.getAuthor().getGivenNames());
     }
 }

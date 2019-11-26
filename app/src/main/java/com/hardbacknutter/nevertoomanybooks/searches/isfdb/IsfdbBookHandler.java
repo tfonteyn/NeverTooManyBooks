@@ -520,8 +520,7 @@ public class IsfdbBookHandler
                     tmpString = li.childNode(2).toString().trim();
                     // except that ISFDB uses 00 for the day/month when unknown ...
                     // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
-                    tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll(
-                            Matcher.quoteReplacement(""));
+                    tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll("");
                     // and we're paranoid...
                     Date d = DateUtils.parseDate(tmpString);
                     if (d != null) {
@@ -1005,11 +1004,23 @@ public class IsfdbBookHandler
                 } else if (author == null && href.contains(IsfdbManager.URL_EA_CGI)) {
                     author = Author.fromString(cleanUpName(a.text()));
 
-                } else if (addSeriesFromToc && mSeries.isEmpty()
-                           && href.contains(IsfdbManager.URL_PE_CGI)) {
-                    String series = a.text();
-                    Series newSeries = Series.fromString(series);
-                    mSeries.add(newSeries);
+                } else if (addSeriesFromToc && href.contains(IsfdbManager.URL_PE_CGI)) {
+                    Series series = Series.fromString(a.text());
+
+                    //  • 4] • (1987) • novel by
+                    String nr = a.nextSibling().toString();
+                    int dotIdx = nr.indexOf('•');
+                    if (dotIdx != -1) {
+                        int closeBrIdx = nr.indexOf(']');
+                        if (closeBrIdx > dotIdx) {
+                            nr = nr.substring(dotIdx + 1, closeBrIdx).trim();
+                            if (!nr.isEmpty()) {
+                                series.setNumber(nr);
+                            }
+                        }
+                    }
+
+                    mSeries.add(series);
                 }
             }
 
