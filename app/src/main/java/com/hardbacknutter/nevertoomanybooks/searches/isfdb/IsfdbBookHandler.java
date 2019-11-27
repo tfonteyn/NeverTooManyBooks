@@ -478,23 +478,16 @@ public class IsfdbBookHandler
                 Log.d(TAG, "fetch|" + li.toString());
             }
             try {
-                Elements children = li.children();
-
                 String fieldName = null;
 
-                Element fieldLabelElement = children.first();
-                if (fieldLabelElement != null && fieldLabelElement.childNodeSize() > 0) {
-                    fieldName = fieldLabelElement.childNode(0).toString();
+                // We want the first 'bold' child Element of the li; e.g. "<b>Publisher:</b>"
+                Element fieldLabelElement = li.selectFirst("b");
+                if (fieldLabelElement != null) {
+                    fieldName = fieldLabelElement.text();
                 }
 
                 if (fieldName == null) {
                     continue;
-                }
-
-                // bit of a hack, but it's getting around yet another complication
-                // where a field can be embedded in an extra <div>
-                if (fieldName.startsWith("<b>") && fieldName.endsWith("</b>")) {
-                    fieldName = fieldName.substring(3, fieldName.length() - 4);
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
@@ -502,7 +495,7 @@ public class IsfdbBookHandler
                 }
 
                 if ("Publication:".equalsIgnoreCase(fieldName)) {
-                    mTitle = li.childNode(1).toString().trim();
+                    mTitle = fieldLabelElement.nextSibling().toString().trim();
                     bookData.putString(DBDefinitions.KEY_TITLE, mTitle);
 
                 } else if ("Author:".equalsIgnoreCase(fieldName)
@@ -517,7 +510,7 @@ public class IsfdbBookHandler
                     }
                 } else if ("Date:".equalsIgnoreCase(fieldName)) {
                     // dates are in fact displayed as YYYY-MM-DD which is very nice.
-                    tmpString = li.childNode(2).toString().trim();
+                    tmpString = fieldLabelElement.nextSibling().toString().trim();
                     // except that ISFDB uses 00 for the day/month when unknown ...
                     // e.g. "1975-04-00" or "1974-00-00" Cut that part off.
                     tmpString = UNKNOWN_M_D_PATTERN.matcher(tmpString).replaceAll("");
@@ -534,11 +527,17 @@ public class IsfdbBookHandler
                 } else if ("ISBN:".equalsIgnoreCase(fieldName)) {
                     // we use them in the order found here.
                     //   <li><b>ISBN:</b> 0-00-712774-X [<small>978-0-00-712774-0</small>]
-                    tmpString = li.childNode(1).toString().trim();
-                    bookData.putString(DBDefinitions.KEY_ISBN, digits(tmpString, true));
+                    tmpString = fieldLabelElement.nextSibling().toString().trim();
+                    tmpString = digits(tmpString, true);
+                    if (!tmpString.isEmpty()) {
+                        bookData.putString(DBDefinitions.KEY_ISBN, tmpString);
+                    }
 
-                    tmpString = li.childNode(2).childNode(0).toString().trim();
-                    bookData.putString(BookField.ISBN_2, digits(tmpString, true));
+                    tmpString = fieldLabelElement.nextElementSibling().text();
+                    tmpString = digits(tmpString, true);
+                    if (!tmpString.isEmpty()) {
+                        bookData.putString(BookField.ISBN_2, tmpString);
+                    }
 
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     Elements as = li.select("a");
@@ -560,12 +559,12 @@ public class IsfdbBookHandler
                         }
                     }
                 } else if ("Pub. Series #:".equalsIgnoreCase(fieldName)) {
-                    tmpString = li.childNode(2).toString().trim();
+                    tmpString = fieldLabelElement.nextSibling().toString().trim();
                     // assume that if we get here, then we added a "Pub. Series:" as last one.
                     mSeries.get(mSeries.size() - 1).setNumber(tmpString);
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
-                    tmpString = li.childNode(2).toString().trim();
+                    tmpString = fieldLabelElement.nextSibling().toString().trim();
                     CurrencyUtils.splitPrice(IsfdbManager.SITE_LOCALE,
                                              tmpString,
                                              DBDefinitions.KEY_PRICE_LISTED,
@@ -573,19 +572,19 @@ public class IsfdbBookHandler
                                              bookData);
 
                 } else if ("Pages:".equalsIgnoreCase(fieldName)) {
-                    tmpString = li.childNode(2).toString().trim();
+                    tmpString = fieldLabelElement.nextSibling().toString().trim();
                     bookData.putString(DBDefinitions.KEY_PAGES, tmpString);
 
                 } else if ("Format:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Format:</b> <div class="tooltip">tp<sup class="mouseover">?</sup>
                     // <span class="tooltiptext tooltipnarrow">Trade paperback. bla bla...
                     // need to lift "tp".
-                    tmpString = li.childNode(3).childNode(0).toString().trim();
+                    tmpString = fieldLabelElement.nextElementSibling().ownText();
                     bookData.putString(DBDefinitions.KEY_FORMAT, tmpString);
 
                 } else if ("Type:".equalsIgnoreCase(fieldName)) {
                     // <li><b>Type:</b> COLLECTION
-                    tmpString = li.childNode(2).toString().trim();
+                    tmpString = fieldLabelElement.nextSibling().toString().trim();
                     bookData.putString(BookField.BOOK_TYPE, tmpString);
                     Integer type = TYPE_MAP.get(tmpString);
                     if (type != null) {
@@ -610,7 +609,7 @@ public class IsfdbBookHandler
 
                 } else if ("External IDs:".equalsIgnoreCase(fieldName)) {
                     // send the <ul> children
-                    handleExternalIdElements(li.child(1).children(), bookData);
+                    handleExternalIdElements(li.select("ul li"), bookData);
 
                 } else if ("Editors:".equalsIgnoreCase(fieldName)) {
                     Elements as = li.select("a");
@@ -634,9 +633,9 @@ public class IsfdbBookHandler
         // publication record.
         Elements recordIDDiv = contentBox.select("span.recordID");
         if (recordIDDiv != null) {
-            tmpString = recordIDDiv.first().childNode(1).toString().trim();
+            tmpString = recordIDDiv.first().ownText();
             tmpString = digits(tmpString, false);
-            if (tmpString != null && !tmpString.isEmpty()) {
+            if (!tmpString.isEmpty()) {
                 try {
                     long record = Long.parseLong(tmpString);
                     bookData.putLong(DBDefinitions.KEY_EID_ISFDB, record);
@@ -694,16 +693,15 @@ public class IsfdbBookHandler
         if (tocEntries.size() == 1) {
             // if the content table has only one entry,
             // then this will have the first publication year for sure
-            String d = digits(tocEntries.get(0).getFirstPublication(), false);
-            if (d != null && !d.isEmpty()) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, d);
+            tmpString = digits(tocEntries.get(0).getFirstPublication(), false);
+            if (!tmpString.isEmpty()) {
+                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, tmpString);
             }
         } else if (tocEntries.size() > 1) {
             // we gamble and take what we found in the TOC
             if (mFirstPublication != null) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                                   digits(mFirstPublication, false));
-            } // else take the book pub date ... but that might be wrong....
+                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublication);
+            } // else take the book pub date? ... but that might be wrong....
         }
 
         // optional fetch of the cover.
@@ -759,6 +757,8 @@ public class IsfdbBookHandler
      * linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
      * }
      *
+     * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
+     *
      * @param elements LI elements
      * @param bookData bundle to store the findings.
      */
@@ -769,22 +769,27 @@ public class IsfdbBookHandler
             Element extIdLink = extIdLi.select("a").first();
             externalIdUrls.add(extIdLink.attr("href"));
         }
-
         if (!externalIdUrls.isEmpty()) {
             for (String url : externalIdUrls) {
                 if (url.contains("www.worldcat.org")) {
                     // http://www.worldcat.org/oclc/60560136
-                    bookData.putLong(DBDefinitions.KEY_EID_WORLDCAT, stripNumber(url, '/'));
+                    bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, stripString(url, '/'));
+
                 } else if (url.contains("amazon")) {
-                    // this is an Amazon ASIN link.
-                    bookData.putString(DBDefinitions.KEY_EID_ASIN, stripString(url, '/'));
-
-
-                    //            } else if (url.contains("lccn.loc.gov")) {
+                    int start = url.lastIndexOf('/');
+                    if (start != -1) {
+                        int end = url.indexOf('?', start);
+                        if (end == -1) {
+                            end = url.length();
+                        }
+                        String asin = url.substring(start + 1, end);
+                        bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
+                    }
+                } else if (url.contains("lccn.loc.gov")) {
                     // Library of Congress (USA)
                     // http://lccn.loc.gov/2008299472
                     // http://lccn.loc.gov/95-22691
-
+                    bookData.putString(DBDefinitions.KEY_EID_LCCN, stripString(url, '/'));
 
                     //            } else if (url.contains("explore.bl.uk")) {
                     // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?
@@ -818,11 +823,11 @@ public class IsfdbBookHandler
      *
      * @return stripped string
      */
-    @Nullable
-    private String digits(@Nullable final CharSequence s,
+    @NonNull
+    private String digits(@Nullable final String s,
                           final boolean isIsbn) {
-        if (s == null) {
-            return null;
+        if (s == null || s.isEmpty()) {
+            return "";
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
@@ -832,6 +837,7 @@ public class IsfdbBookHandler
                 sb.append(c);
             }
         }
+        // ... but let empty Strings here just return.
         return sb.toString();
     }
 
@@ -1045,8 +1051,9 @@ public class IsfdbBookHandler
             String year = matcher.find() ? matcher.group(2) : "";
             // see if we can use it as the first publication year for the book.
             // i.e. if this entry has the same title as the book title
-            if (mFirstPublication == null && title.equalsIgnoreCase(mTitle)) {
-                mFirstPublication = year;
+            if ((mFirstPublication == null || mFirstPublication.isEmpty())
+                && title.equalsIgnoreCase(mTitle)) {
+                mFirstPublication = digits(year, false);
             }
 
             TocEntry tocEntry = new TocEntry(author, title, year);

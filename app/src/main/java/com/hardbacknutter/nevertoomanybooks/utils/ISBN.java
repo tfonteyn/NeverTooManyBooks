@@ -559,7 +559,7 @@ public class ISBN {
      *                                         not pass a string which is to short. But...
      */
     @NonNull
-    private List<Integer> upcToDigits(@NonNull final String input)
+    private List<Integer> upcToDigits(@NonNull final CharSequence input)
             throws NumberFormatException, StringIndexOutOfBoundsException {
 
         String upc = WHITESPACE_PATTERN.matcher(input).replaceAll("");

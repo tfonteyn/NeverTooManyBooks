@@ -697,7 +697,7 @@ public class DAO
                               @NonNull final TocEntry tocEntry,
                               @NonNull final Locale bookLocale) {
 
-        Locale tocLocale = tocEntry.getLocale(this, bookLocale);
+        Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
 
         SynchronizedStatement stmt = mStatements.get(STMT_GET_TOC_ENTRY_ID);
         if (stmt == null) {
@@ -778,14 +778,16 @@ public class DAO
     /**
      * Creates a new {@link Author}.
      *
-     * @param author object to insert. Will be updated with the id.
+     * @param context Current context
+     * @param author  object to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted Author, or -1 if an error occurred
      */
     @SuppressWarnings("UnusedReturnValue")
-    private long insertAuthor(@NonNull final Author /* in/out */ author) {
+    private long insertAuthor(@NonNull final Context context,
+                              @NonNull final Author /* in/out */ author) {
 
-        Locale authorLocale = author.getLocale(this, Locale.getDefault());
+        Locale authorLocale = author.getLocale(context, this, Locale.getDefault());
 
         SynchronizedStatement stmt = mStatements.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
@@ -809,13 +811,15 @@ public class DAO
     /**
      * Update an Author.
      *
-     * @param author to update
+     * @param context Current context
+     * @param author  to update
      *
      * @return rows affected, should be 1 for success
      */
-    private int updateAuthor(@NonNull final Author author) {
+    private int updateAuthor(@NonNull final Context context,
+                             @NonNull final Author author) {
 
-        Locale authorLocale = author.getLocale(this, Locale.getDefault());
+        Locale authorLocale = author.getLocale(context, this, Locale.getDefault());
 
         ContentValues cv = new ContentValues();
         cv.put(DOM_AUTHOR_FAMILY_NAME.getName(), author.getFamilyName());
@@ -844,11 +848,11 @@ public class DAO
                                         @NonNull final /* in/out */ Author author) {
 
         if (author.getId() != 0) {
-            return updateAuthor(author) > 0;
+            return updateAuthor(context, author) > 0;
         } else {
             // try to find first.
             if (author.fixId(context, this, Locale.getDefault()) == 0) {
-                return insertAuthor(author) > 0;
+                return insertAuthor(context, author) > 0;
             }
         }
         return false;
@@ -897,7 +901,7 @@ public class DAO
     public long getAuthorId(@NonNull final Author author,
                             @NonNull final Locale fallbackLocale) {
 
-        Locale authorLocale = author.getLocale(this, fallbackLocale);
+        Locale authorLocale = author.getLocale(App.getAppContext(), this, fallbackLocale);
 
         SynchronizedStatement stmt = mStatements.get(STMT_GET_AUTHOR_ID);
         if (stmt == null) {
@@ -1345,7 +1349,7 @@ public class DAO
                     Log.d(TAG, "preprocessLegacyAuthor|KEY_AUTHOR_FORMATTED"
                                + "|inserting author: " + author);
                 }
-                insertAuthor(author);
+                insertAuthor(context, author);
             }
             book.putLong(DOM_FK_AUTHOR.getName(), author.getId());
 
@@ -1364,7 +1368,7 @@ public class DAO
                     Log.d(TAG, "preprocessLegacyAuthor|KEY_AUTHOR_FAMILY_NAME"
                                + "|inserting author: " + author);
                 }
-                insertAuthor(author);
+                insertAuthor(context, author);
             }
             book.putLong(DOM_FK_AUTHOR.getName(), author.getId());
         }
@@ -1907,7 +1911,7 @@ public class DAO
                 }
             }
 
-            Locale seriesLocale = series.getLocale(this, bookLocale);
+            Locale seriesLocale = series.getLocale(context, this, bookLocale);
             String uniqueId = series.getId() + '_' + series.getNumber().toLowerCase(seriesLocale);
             if (!idHash.containsKey(uniqueId)) {
                 idHash.put(uniqueId, true);
@@ -1982,7 +1986,7 @@ public class DAO
             // handle the author.
             Author author = tocEntry.getAuthor();
             if (author.fixId(context, this, Locale.getDefault()) == 0) {
-                insertAuthor(author);
+                insertAuthor(context, author);
             }
 
             Locale bookLocale = book.getLocale(context);
@@ -2059,7 +2063,7 @@ public class DAO
                                 @NonNull final TocEntry tocEntry,
                                 @NonNull final Locale bookLocale) {
 
-        Locale tocLocale = tocEntry.getLocale(this, bookLocale);
+        Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
 
         SynchronizedStatement stmt = mStatements.get(STMT_INSERT_TOC_ENTRY);
         if (stmt == null) {
@@ -2124,7 +2128,7 @@ public class DAO
         for (Author author : authors) {
             // find/insert the author
             if (author.fixId(context, this, Locale.getDefault()) == 0) {
-                insertAuthor(author);
+                insertAuthor(context, author);
             }
 
             // we use the id as the KEY here, so yes, a String.
@@ -3329,7 +3333,7 @@ public class DAO
                               @NonNull final Series /* in/out */ series,
                               @NonNull final Locale bookLocale) {
 
-        Locale seriesLocale = series.getLocale(this, bookLocale);
+        Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
         SynchronizedStatement stmt = mStatements.get(STMT_INSERT_SERIES);
         if (stmt == null) {
@@ -3364,7 +3368,7 @@ public class DAO
                              @NonNull final Series series,
                              @NonNull final Locale bookLocale) {
 
-        Locale seriesLocale = series.getLocale(this, bookLocale);
+        Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
         String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
@@ -3486,7 +3490,7 @@ public class DAO
                             @NonNull final Series series,
                             @NonNull final Locale bookLocale) {
 
-        Locale seriesLocale = series.getLocale(this, bookLocale);
+        Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
         SynchronizedStatement stmt = mStatements.get(STMT_GET_SERIES_ID);
         if (stmt == null) {

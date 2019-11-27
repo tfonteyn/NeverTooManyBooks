@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Test the regular expressions used by {@link Series#fromString}.
@@ -387,7 +388,8 @@ class SeriesTest {
 
     @Test
     void fromString95() {
-        Series series = Series.fromString("Favorietenreeks (II) nr. 24");
+        // Testing the variant
+        Series series = Series.fromString3("Favorietenreeks (II) nr. 24");
         assertNotNull(series);
         assertEquals("Favorietenreeks", series.getTitle());
         assertEquals("2.24", series.getNumber());
@@ -402,7 +404,8 @@ class SeriesTest {
     }
 
     /**
-     * 2019-09-23: FAILS for obvious reasons... the rebels...
+     * See {@link Series#fromString(String)} where we have a horrible hack in place to
+     * make this series name work.
      */
     @Test
     void fromString100() {
@@ -410,6 +413,7 @@ class SeriesTest {
         assertNotNull(series);
         assertEquals("Blake's 7", series.getTitle());
         assertEquals("", series.getNumber());
+        fail("Has a hardcoded hack in Series#fromString(String)");
     }
 
     @Test

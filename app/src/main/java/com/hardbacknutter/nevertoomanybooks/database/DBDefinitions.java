@@ -375,17 +375,27 @@ public final class DBDefinitions {
     public static final String KEY_FK_BOOKSHELF = "bookshelf";
     public static final String KEY_FK_TOC_ENTRY = "anthology";
     public static final String KEY_FK_STYLE = "style";
-    /** External id. */
+
+    /** External id. - Long. */
     public static final String KEY_EID_GOODREADS_BOOK = "goodreads_book_id";
     public static final String KEY_EID_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
+
+    /** External id. - Long. */
     public static final String KEY_EID_ISFDB = "isfdb_book_id";
+    /** External id. - Long. */
     public static final String KEY_EID_LIBRARY_THING = "lt_book_id";
+    /** External id. - Long. */
     public static final String KEY_EID_OPEN_LIBRARY = "ol_book_id";
+    /** External id. - Long. */
     public static final String KEY_EID_STRIP_INFO_BE = "si_book_id";
+
     //NEWTHINGS: add new site specific ID: add a KEY
     // ENHANCE: the search engines already use these when found, but not stored yet.
+    /** External id. - String. */
     public static final String KEY_EID_ASIN = "asin";
+    /** External id. - String. */
     public static final String KEY_EID_WORLDCAT = "worldcat_oclc_book_id";
+    /** External id. - String. */
     public static final String KEY_EID_LCCN = "lccn_book_id";
 
     /** {@link #TBL_BOOK_BOOKSHELF}. */

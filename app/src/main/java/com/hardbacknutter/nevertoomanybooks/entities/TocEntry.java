@@ -255,6 +255,8 @@ public class TocEntry
      * ENHANCE: The Locale of the TocEntry should be based on either a specific language
      * setting for the TocEntry itself, or on the Locale of the <strong>primary</strong> book.
      *
+     *
+     * @param context
      * @param db         Database Access
      * @param bookLocale Locale to use if the TOCEntry does not have a Locale of its own.
      *
@@ -262,7 +264,8 @@ public class TocEntry
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final DAO db,
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final DAO db,
                             @NonNull final Locale bookLocale) {
         return bookLocale;
     }

@@ -76,12 +76,13 @@
             - SearchSuggestionProvider.java/AUTHORITY
         -->
         <provider
-            android:name="com.hardbacknutter.nevertoomanybooks.searches.SearchSuggestionProvider"
+            android:name="com.hardbacknutter.nevertoomanybooks.database.SearchSuggestionProvider"
             android:authorities="${packageName}.SearchSuggestionProvider"
             android:exported="false" />
 
+        <!-- The authorities value must match: App.java/getUriForFile -->
         <provider
-            android:name="com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${packageName}.GenericFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">

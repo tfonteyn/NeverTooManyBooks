@@ -90,7 +90,7 @@ public interface ItemWithFixableId {
             if (isBatchMode) {
                 itemLocale = fallbackLocale;
             } else {
-                itemLocale = item.getLocale(db, fallbackLocale);
+                itemLocale = item.getLocale(context, db, fallbackLocale);
             }
 
             // try to find the item.
@@ -131,13 +131,15 @@ public interface ItemWithFixableId {
      * <p>
      * The default implementation just returns the fallbackLocale itself.
      *
+     * @param context        Current context
      * @param db             Database Access
      * @param fallbackLocale Locale to use if the item does not have a Locale of its own.
      *
      * @return the item Locale, or the fallbackLocale.
      */
     @NonNull
-    default Locale getLocale(@NonNull final DAO db,
+    default Locale getLocale(@NonNull final Context context,
+                             @NonNull final DAO db,
                              @NonNull final Locale fallbackLocale) {
         return fallbackLocale;
     }

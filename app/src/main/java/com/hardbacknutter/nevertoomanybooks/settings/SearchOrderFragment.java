@@ -66,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 public class SearchOrderFragment
         extends Fragment {
 
-    @SuppressWarnings("FieldCanBeLocal")
     private SearchSiteListAdapter mListAdapter;
     private RecyclerView mListView;
     private ItemTouchHelper mItemTouchHelper;

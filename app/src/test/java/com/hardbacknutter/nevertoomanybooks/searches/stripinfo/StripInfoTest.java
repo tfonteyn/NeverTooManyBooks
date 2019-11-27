@@ -29,8 +29,11 @@ package com.hardbacknutter.nevertoomanybooks.searches.stripinfo;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
@@ -50,22 +53,24 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class StripInfoTest
         extends CommonSetup {
 
     @Test
-    void parse01()
-            throws IOException {
+    void parse01() {
 
         String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                 + "/336348_Hauteville_House_14_De_37ste_parallel";
         String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
 
-        Document doc;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(in);
-            doc = Jsoup.parse(in, "UTF-8", locationHeader);
+        Document doc = null;
+        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(is);
+            doc = Jsoup.parse(is, "UTF-8", locationHeader);
+        } catch (@NonNull final IOException e) {
+            fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
@@ -120,18 +125,19 @@ class StripInfoTest
     }
 
     @Test
-    void parse02()
-            throws IOException {
+    void parse02() {
 
         String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                 + "/2060_De_boom_van_de_twee_lentes_1_De_boom_van_de_twee_lentes";
         String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
                           + "_De_boom_van_de_twee_lentes.html";
 
-        Document doc;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(in);
-            doc = Jsoup.parse(in, null, locationHeader);
+        Document doc = null;
+        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(is);
+            doc = Jsoup.parse(is, null, locationHeader);
+        } catch (@NonNull final IOException e) {
+            fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
@@ -186,17 +192,18 @@ class StripInfoTest
     }
 
     @Test
-    void parseIntegrale()
-            throws IOException {
+    void parseIntegrale() {
 
         String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                 + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
 
-        Document doc;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(in);
-            doc = Jsoup.parse(in, null, locationHeader);
+        Document doc = null;
+        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(is);
+            doc = Jsoup.parse(is, null, locationHeader);
+        } catch (@NonNull final IOException e) {
+            fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
@@ -258,17 +265,18 @@ class StripInfoTest
     }
 
     @Test
-    void parseIntegrale2()
-            throws IOException {
+    void parseIntegrale2() {
 
         String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                 + "17030_Comanche_1_Red_Dust";
         String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
 
-        Document doc;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(in);
-            doc = Jsoup.parse(in, null, locationHeader);
+        Document doc = null;
+        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(is);
+            doc = Jsoup.parse(is, null, locationHeader);
+        } catch (@NonNull final IOException e) {
+            fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
@@ -327,17 +335,18 @@ class StripInfoTest
     }
 
     @Test
-    void parseFavReeks2()
-            throws IOException {
+    void parseFavReeks2() {
 
         String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                 + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
 
-        Document doc;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(in);
-            doc = Jsoup.parse(in, null, locationHeader);
+        Document doc = null;
+        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(is);
+            doc = Jsoup.parse(is, null, locationHeader);
+        } catch (@NonNull final IOException e) {
+            fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
@@ -393,22 +402,28 @@ class StripInfoTest
 
     /** Network access! */
     @Test
-    void parseMultiResult()
-            throws IOException {
+    void parseMultiResult() {
         String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
         String filename = "/stripinfo/multi-result-pluvi.html";
 
-        Document doc;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
-            assertNotNull(in);
-            doc = Jsoup.parse(in, null, locationHeader);
+        Document doc = null;
+        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+            assertNotNull(is);
+            doc = Jsoup.parse(is, null, locationHeader);
+        } catch (@NonNull final IOException e) {
+            fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
         StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(mContext, doc);
         // we've set the doc, but will redirect.. so an internet download WILL be done.
-        Bundle bookData = stripInfoBookHandler.parseMultiResult(mBookData, false);
+        Bundle bookData = null;
+        try {
+            bookData = stripInfoBookHandler.parseMultiResult(mBookData, false);
+        } catch (@NonNull final SocketTimeoutException e) {
+            fail(e);
+        }
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);

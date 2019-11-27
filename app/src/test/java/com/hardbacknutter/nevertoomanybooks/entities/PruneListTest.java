@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Currently this test will fail as we don't mock the right id for the objects.
+ * TODO: mock the id's and test them.
  * <p>
  * isUniqueById().
  * - 'true' for Author, Bookshelf, TocEntry
@@ -109,6 +109,8 @@ class PruneListTest {
 
     /**
      * Test {@link ItemWithFixableId#pruneList}.
+     *
+     * Currently this test will fail as we don't mock the right id for the objects.
      */
     @Test
     void pruneAuthorList() {
@@ -188,6 +190,7 @@ class PruneListTest {
      * this Series data is only setup for testing {@link Series#pruneList} itself.
      * <p>
      * The {@link #pruneAuthorList()} is used to test {@link ItemWithFixableId#pruneList}.
+     *
      */
     @Test
     void pruneSeriesList() {
@@ -218,7 +221,6 @@ class PruneListTest {
 
         //System.out.println(list);
         boolean modified = Series.pruneList(list, mContext, mDb, Locale.getDefault(), false);
-        System.out.println(list);
 
         assertFalse(series.isUniqueById());
         assertTrue(modified);

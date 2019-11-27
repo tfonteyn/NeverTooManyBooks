@@ -187,7 +187,7 @@ public class IsfdbEditionsHandler
                     String url = edLink.attr("href");
                     if (url != null) {
                         // 4th column: ISBN/Catalog ID
-                        String isbnStr = tr.child(4).childNode(0).toString();
+                        String isbnStr = tr.child(4).text();
                         if (isbnStr.length() < 10) {
                             isbnStr = null;
                         } else {

@@ -370,8 +370,8 @@ public class AuthorWorksFragment
             String title = tocEntry.getTitle();
             //noinspection ConstantConditions
             if (Prefs.reorderTitleForDisplaying(getContext())) {
-                title = LocaleUtils.reorderTitle(getContext(), title,
-                                                 tocEntry.getLocale(mDb, Locale.getDefault()));
+                Locale locale = tocEntry.getLocale(getContext(), mDb, Locale.getDefault());
+                title = LocaleUtils.reorderTitle(getContext(), title, locale);
             }
             holder.titleView.setText(title);
 

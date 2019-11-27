@@ -27,13 +27,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
@@ -41,41 +42,26 @@ import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Test parsing the Jsoup Document for ISFDB data.
- * This is NOT a test for Jsoup.parse.
- * The document used is loaded locally and the result of a page save of 0-413-60010-6
- * <a href="http://www.isfdb.org/cgi-bin/pl.cgi?112781">
- * http://www.isfdb.org/cgi-bin/pl.cgi?112781</a>
+ * Test parsing the Jsoup Document for ISFDB multi-edition data.
  */
 class IsfdbEditionsHandlerTest
         extends CommonSetup {
 
-    @BeforeEach
-    @Override
-    protected void setUp() {
-        super.setUp();
-
-        // Supposedly we should run two tests; i.e. true/false return.
-        when(mSharedPreferences.getBoolean(eq(IsfdbManager.PREFS_SERIES_FROM_TOC), anyBoolean()))
-                .thenReturn(true);
-    }
-
     @Test
-    void parseMultiEdition()
-            throws IOException {
+    void parseMultiEdition() {
 
         String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?11169";
         String filename = "/isfdb/11169-multi-edition.html";
 
-        Document doc;
+        Document doc = null;
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
             doc = Jsoup.parse(in, IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
+        } catch (@NonNull final IOException e) {
+            fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());

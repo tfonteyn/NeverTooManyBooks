@@ -48,7 +48,6 @@ class StringListTest {
             + "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes "
             + "The Alchemist's Question)";
 
-
     /**
      * First decode, test individual strings, then encode and test we got the original back.
      */

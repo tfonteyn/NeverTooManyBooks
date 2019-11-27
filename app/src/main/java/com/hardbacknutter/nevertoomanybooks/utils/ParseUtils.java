@@ -426,19 +426,29 @@ public final class ParseUtils {
             return Double.parseDouble(source);
         }
 
+        // no decimal part and no thousands sep ?
+        if (source.indexOf('.') == -1 && source.indexOf(',') == -1) {
+            return Double.parseDouble(source);
+        }
+
         // we check in order - first match returns.
-        // US is used for '.' as decimal; ',' as thousands separator.
+        // Locale.US is used for '.' as decimal and ',' as thousands separator.
         Locale[] locales = {sourceLocale, App.getSystemLocale(), Locale.US};
 
         for (Locale locale : locales) {
             try {
+                Number number;
                 DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
-//                char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
+                char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
 
-                Number number = nf.parse(source);
-                if (number != null) {
-                    return number.doubleValue();
+                // if the dec sep is present, decode with Locale; otherwise try next Locale
+                if (source.indexOf(decSep) != -1) {
+                    number = nf.parse(source);
+                    if (number != null) {
+                        return number.doubleValue();
+                    }
                 }
+
             } catch (@NonNull final ParseException ignore) {
                 // ignore
             }

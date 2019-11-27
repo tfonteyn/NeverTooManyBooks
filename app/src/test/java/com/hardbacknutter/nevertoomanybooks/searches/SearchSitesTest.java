@@ -41,7 +41,7 @@ class SearchSitesTest
 
     @BeforeEach
     @Override
-    protected void setUp() {
+    public void setUp() {
         super.setUp();
 
         when(mSharedPreferences.getBoolean(eq("search.site.goodreads.enabled"),

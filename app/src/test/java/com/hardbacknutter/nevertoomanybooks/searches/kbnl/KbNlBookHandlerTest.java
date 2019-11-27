@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.kbnl;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class KbNlBookHandlerTest
         extends CommonSetup {
@@ -68,16 +71,18 @@ class KbNlBookHandlerTest
         mHandler = new KbNlBookHandler(mBookData);
         try {
             mParser = factory.newSAXParser();
-        } catch (ParserConfigurationException | SAXException ignore) {
+        } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            fail(e);
         }
     }
 
     @Test
-    void parseComic()
-            throws IOException, SAXException {
+    void parseComic() {
 
         try (InputStream in = this.getClass().getResourceAsStream(comicFilename)) {
             mParser.parse(in, mHandler);
+        } catch (@NonNull final IOException | SAXException e) {
+            fail(e);
         }
 
         assertEquals("De buitengewone reis", mBookData.getString(DBDefinitions.KEY_TITLE));
@@ -119,11 +124,12 @@ class KbNlBookHandlerTest
     }
 
     @Test
-    void parseBook()
-            throws IOException, SAXException {
+    void parseBook() {
 
         try (InputStream in = this.getClass().getResourceAsStream(bookFilename)) {
             mParser.parse(in, mHandler);
+        } catch (@NonNull final IOException | SAXException e) {
+            fail(e);
         }
 
         assertEquals("De Foundation", mBookData.getString(DBDefinitions.KEY_TITLE));
@@ -156,6 +162,5 @@ class KbNlBookHandlerTest
         expectedSeries = new Series("Foundation-trilogie");
         expectedSeries.setNumber("1");
         assertEquals(expectedSeries, series.get(0));
-
     }
 }

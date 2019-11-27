@@ -45,7 +45,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
@@ -82,8 +81,7 @@ public class Series
             };
 
     /**
-     * Parse "some text (some more text) even more text" into
-     * "some text", "some more text" and "even more text".
+     * Parse "some text (some more text)" into "some text" and "some more text".
      * <p>
      * We want a "some text" that does not START with a bracket!
      */
@@ -93,6 +91,16 @@ public class Series
                             + "\\("
                             + /* */ "(.*)"
                             + "\\).*",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** Variant of the above, with an additional 3rd part. */
+    private static final Pattern TEXT1_BR_TEXT2_BR_TEXT3_PATTERN =
+            Pattern.compile("([^(]+.*)"
+                            + "\\s*"
+                            + "\\("
+                            + /* */ "(.*)"
+                            + "\\)"
+                            + "\\s*(.*)\\s*",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     private static final String NUMBER_REGEXP =
@@ -170,6 +178,7 @@ public class Series
     /** Remove any leading zeros from Series number. */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^[0-9]+$");
 
+
     private long mId;
     @NonNull
     private String mTitle;
@@ -239,27 +248,27 @@ public class Series
     /**
      * Constructor that will attempt to parse a single string into a Series title and number.
      *
-     * @param fullTitle string to decode
+     * @param text string to decode
      *
      * @return the Series
      */
     @NonNull
-    public static Series fromString(@NonNull final String fullTitle) {
+    public static Series fromString(@NonNull final String text) {
         // First check if we can simplify the decoding.
         // This makes the pattern easier to maintain.
-        Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
+        Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(text);
         if (matcher.find()) {
             //noinspection ConstantConditions
             return fromString(matcher.group(1), matcher.group(2));
         }
 
         // HORRENDOUS, HORRIBLE HACK...
-        if ("Blake's 7".equalsIgnoreCase(fullTitle)) {
-            return new Series(fullTitle);
+        if ("Blake's 7".equalsIgnoreCase(text)) {
+            return new Series(text);
         }
 
         // We now know that brackets do NOT separate the number part
-        matcher = TITLE_NUMBER_PATTERN.matcher(fullTitle);
+        matcher = TITLE_NUMBER_PATTERN.matcher(text);
         if (matcher.find()) {
 
             String uTitle = ParseUtils.unEscape(matcher.group(1));
@@ -275,9 +284,68 @@ public class Series
 
         } else {
             // no number part found
-            String uTitle = ParseUtils.unEscape(fullTitle.trim());
+            String uTitle = ParseUtils.unEscape(text.trim());
             return new Series(uTitle);
         }
+    }
+
+    /**
+     * Variant of {@link Series#fromString(String)} allowing 3 parts.
+     * <p>
+     * "Some Title (I) 12"  ==> "Some Title", "1.12"
+     * "Some Title (II) 13"  ==> "Some Title", "2.13"
+     * "Some Title (III) 14"  ==> "Some Title", "3.14"
+     * "Some Title (Special) 15"  ==> "Some Title (Special)", "15"
+     *
+     * <strong>Note:</strong> we could make this method the default {@link Series#fromString}
+     * but that would add overhead for most sites.
+     *
+     * @param text string to decode
+     *
+     * @return the Series
+     */
+    @NonNull
+    public static Series fromString3(@NonNull final String text) {
+        Series series;
+
+        // Detect "title (middle) number" and "title (number)"
+        Matcher matcher = TEXT1_BR_TEXT2_BR_TEXT3_PATTERN.matcher(text);
+        if (matcher.find()) {
+            String prefix = matcher.group(1);
+            String middle = matcher.group(2);
+            String suffix = matcher.group(3);
+
+            if (suffix != null && !suffix.isEmpty()) {
+                // the suffix group is the number.
+                //noinspection ConstantConditions
+                series = fromString(prefix, suffix);
+
+                // FIXME: see "Cycli" which needs to be folded in this.
+                // Cover a special case for this website.
+                // The middle group is potentially a roman numeral
+                // which should be prefixed to the number.
+                if ("I".equals(middle)) {
+                    series.setNumber("1." + series.getNumber());
+                } else if ("II".equals(middle)) {
+                    series.setNumber("2." + series.getNumber());
+                } else if ("III".equals(middle)) {
+                    series.setNumber("3." + series.getNumber());
+                } else {
+                    // But if it wasn't... add it back to the title including
+                    // the brackets we stripped off initially.
+                    series.setTitle(prefix + '(' + middle + ')');
+                }
+            } else {
+                // the middle group is the number.
+                //noinspection ConstantConditions
+                series = fromString(prefix, middle);
+            }
+        } else {
+            // did't match the specific pattern, handle as normal.
+            series = fromString(text);
+        }
+
+        return series;
     }
 
     /**
@@ -360,7 +428,7 @@ public class Series
             if (isBatchMode) {
                 locale = bookLocale;
             } else {
-                locale = series.getLocale(db, bookLocale);
+                locale = series.getLocale(context, db, bookLocale);
             }
 
             String title = series.getTitle().trim().toLowerCase(locale);
@@ -413,6 +481,7 @@ public class Series
         return ItemWithFixableId.pruneList(list, context, db, bookLocale, isBatchMode)
                || modified;
     }
+
 
     /**
      * @return {@code true} if the Series is complete
@@ -535,6 +604,7 @@ public class Series
      * Get the Locale for a Series.
      * This is defined as the Locale for the language from the first book in the Series.
      *
+     * @param context    Current context
      * @param db         Database Access
      * @param bookLocale Locale to use if the Series does not have a Locale of its own.
      *
@@ -542,7 +612,8 @@ public class Series
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final DAO db,
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final DAO db,
                             @NonNull final Locale bookLocale) {
 
         //FIXME: need a reliable way to cache the Locale here. See also {@link #pruneList}
@@ -551,7 +622,7 @@ public class Series
         //URGENT: *store* the language of a series.
         String lang = db.getSeriesLanguage(mId);
         if (!lang.isEmpty()) {
-            Locale seriesLocale = LocaleUtils.getLocale(App.getAppContext(), lang);
+            Locale seriesLocale = LocaleUtils.getLocale(context, lang);
             if (seriesLocale != null) {
                 return seriesLocale;
             }

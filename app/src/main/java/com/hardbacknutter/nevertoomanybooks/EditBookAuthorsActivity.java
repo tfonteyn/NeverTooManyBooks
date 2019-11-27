@@ -594,11 +594,10 @@ public class EditBookAuthorsActivity
             }
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> {
-                EditBookAuthorDialogFragment.newInstance(author)
-                                            .show(getSupportFragmentManager(),
-                                                  EditBookAuthorDialogFragment.TAG);
-            });
+            holder.rowDetailsView.setOnClickListener(
+                    v -> EditBookAuthorDialogFragment
+                            .newInstance(author)
+                            .show(getSupportFragmentManager(), EditBookAuthorDialogFragment.TAG));
         }
     }
 }

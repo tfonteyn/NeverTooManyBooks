@@ -36,11 +36,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -204,25 +206,33 @@ public class OpenLibraryManager
         String response;
         try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url)) {
             //noinspection ConstantConditions
-            BufferedReader streamReader = new BufferedReader(
-                    new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
-            String inputStr;
-            StringBuilder responseStrBuilder = new StringBuilder();
-            while ((inputStr = streamReader.readLine()) != null) {
-                responseStrBuilder.append(inputStr);
-            }
-            response = responseStrBuilder.toString();
+            response = readResponseStream(con.getInputStream());
         }
 
         // json-ify and handle.
         try {
-            Bundle bookData = handleResponse(new JSONObject(response), fetchThumbnail);
+            Bundle bookData = handleResponse(new Bundle(),
+                                             new JSONObject(response), fetchThumbnail);
             return bookData != null ? bookData : new Bundle();
 
         } catch (@NonNull final JSONException e) {
             // wrap parser exceptions in an IOException
             throw new IOException(e);
         }
+    }
+
+    @VisibleForTesting
+    String readResponseStream(@NonNull final InputStream is)
+            throws IOException {
+        StringBuilder response = new StringBuilder();
+        BufferedReader streamReader = new BufferedReader(
+                new InputStreamReader(is, StandardCharsets.UTF_8));
+        String line;
+
+        while ((line = streamReader.readLine()) != null) {
+            response.append(line);
+        }
+        return response.toString();
     }
 
     /**
@@ -418,14 +428,18 @@ public class OpenLibraryManager
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
-     * @param jsonObject the complete book record.
+     * @param bookData       bundle to populate
+     * @param jsonObject     the complete book record.
+     * @param fetchThumbnail flag
      *
-     * @return the book data bundle
+     * @return bookData
      *
      * @throws JSONException upon any error
      */
-    private Bundle handleResponse(@NonNull final JSONObject jsonObject,
-                                  final boolean fetchThumbnail)
+    @VisibleForTesting
+    Bundle handleResponse(@NonNull final Bundle bookData,
+                          @NonNull final JSONObject jsonObject,
+                          final boolean fetchThumbnail)
             throws JSONException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
             Log.d(TAG, "ENTER|handleResponse|" + jsonObject.toString(2));
@@ -438,18 +452,29 @@ public class OpenLibraryManager
             if (data.length == 2 &&
                 "ISBN,OLID".contains(data[0])
             ) {
-                return handleBook(data[1], fetchThumbnail, jsonObject.getJSONObject(topLevelKey));
+                return handleBook(bookData, data[1], fetchThumbnail,
+                                  jsonObject.getJSONObject(topLevelKey));
             }
         }
 
         return null;
     }
 
-    private Bundle handleBook(@NonNull final String isbn,
+    /**
+     * @param bookData       bundle to populate
+     * @param isbn           of the book
+     * @param fetchThumbnail flag
+     * @param result         JSON result data
+     *
+     * @return bookData object
+     *
+     * @throws JSONException upon any error
+     */
+    private Bundle handleBook(@NonNull final Bundle bookData,
+                              @NonNull final String isbn,
                               final boolean fetchThumbnail,
                               @NonNull final JSONObject result)
             throws JSONException {
-        Bundle bookData = new Bundle();
 
         JSONObject o;
         JSONArray a;
@@ -536,11 +561,11 @@ public class OpenLibraryManager
             }
             a = o.optJSONArray("lccn");
             if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_EID_LCCN, a.getLong(0));
+                bookData.putString(DBDefinitions.KEY_EID_LCCN, a.getString(0));
             }
             a = o.optJSONArray("oclc");
             if (a != null && a.length() > 0) {
-                bookData.putLong(DBDefinitions.KEY_EID_WORLDCAT, a.getLong(0));
+                bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, a.getString(0));
             }
         }
 

@@ -29,6 +29,8 @@ package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import java.net.SocketTimeoutException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,9 +38,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,13 +70,16 @@ class AbstractBaseTest {
      * Resulting url should have "pl.cgi".
      */
     @Test
-    void searchSingleEditionIsbn()
-            throws SocketTimeoutException {
-
+    void searchSingleEditionIsbn() {
         DummyLoader loader = new DummyLoader();
 
         String url = sBaseUrl + "/cgi-bin/se.cgi?arg=0887331602&type=ISBN";
-        String resultingUrl = loader.loadPage(App.getAppContext(), url);
+        String resultingUrl = null;
+        try {
+            resultingUrl = loader.loadPage(mContext, url);
+        } catch (@NonNull final SocketTimeoutException e) {
+            fail(e);
+        }
         assertEquals(sBaseUrl + "/cgi-bin/pl.cgi?326539", resultingUrl);
     }
 
@@ -85,13 +89,16 @@ class AbstractBaseTest {
      * Resulting url should have "se.cgi".
      */
     @Test
-    void searchMultiEditionIsbn()
-            throws SocketTimeoutException {
-
+    void searchMultiEditionIsbn() {
         DummyLoader loader = new DummyLoader();
 
         String url = sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN";
-        String resultingUrl = loader.loadPage(App.getAppContext(), url);
+        String resultingUrl = null;
+        try {
+            resultingUrl = loader.loadPage(mContext, url);
+        } catch (@NonNull final SocketTimeoutException e) {
+            fail(e);
+        }
         assertEquals(sBaseUrl + "/cgi-bin/se.cgi?arg=9781473208926&type=ISBN", resultingUrl);
     }
 

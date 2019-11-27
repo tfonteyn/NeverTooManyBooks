@@ -536,6 +536,8 @@ public class Author
     /**
      * ENHANCE: The Locale of the Author should be based on the main language the author writes in.
      *
+     *
+     * @param context
      * @param db         Database Access
      * @param userLocale Locale to use
      *
@@ -543,7 +545,8 @@ public class Author
      */
     @NonNull
     @Override
-    public Locale getLocale(@NonNull final DAO db,
+    public Locale getLocale(@NonNull final Context context,
+                            @NonNull final DAO db,
                             @NonNull final Locale userLocale) {
         return userLocale;
     }

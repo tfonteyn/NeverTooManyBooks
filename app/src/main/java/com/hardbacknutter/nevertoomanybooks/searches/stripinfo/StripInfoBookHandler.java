@@ -88,14 +88,6 @@ public class StripInfoBookHandler
      * (dutch for: Searching for...)
      */
     private static final String MULTI_RESULT_PAGE_TITLE = "Zoeken naar";
-    private static final Pattern TEXT1_BR_TEXT2_BR_TEXT3_PATTERN =
-            Pattern.compile("([^(]+.*)"
-                            + "\\s*"
-                            + "\\("
-                            + /* */ "(.*)"
-                            + "\\)"
-                            + "\\s*(.*)\\s*",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     /** accumulate all Authors for this book. */
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all Series for this book. */
@@ -245,22 +237,21 @@ public class StripInfoBookHandler
         for (Element row : rows) {
             // this code is not 100% foolproof yet, so surround with try/catch.
             try {
-                // use the title element to determine we are in a book row.
-                // but don't use it, we get title etc from the location url
-                Element titleElement = row.selectFirst("h2.title");
-                if (titleElement != null) {
-                    primarySeriesBookNr = titleElement.childNode(0).toString().trim();
+                // use the title header to determine we are in a book row.
+                Element titleHeader = row.selectFirst("h2.title");
+                if (titleHeader != null) {
+                    primarySeriesBookNr = titleHeader.textNodes().get(0).text().trim();
 
+                    Element titleUrlElement = titleHeader.selectFirst("a[href*=/strip/]");
+                    bookData.putString(DBDefinitions.KEY_TITLE, cleanText(titleUrlElement.text()));
                     // extract the site native id from the url
-                    processSiteNativeId(titleElement, bookData);
-                    Node titleNode = titleElement.childNode(1).childNode(0);
-                    bookData.putString(DBDefinitions.KEY_TITLE, cleanText(titleNode.toString()));
+                    processSiteNativeId(titleUrlElement, bookData);
 
                     Elements tds = row.select("td");
                     int i = 0;
                     while (i < tds.size()) {
                         Element td = tds.get(i);
-                        String label = td.childNode(0).toString();
+                        String label = td.text();
 
                         switch (label) {
                             case "Scenario":
@@ -333,7 +324,7 @@ public class StripInfoBookHandler
                                 i += processText(td, StripInfoField.EAN13, bookData);
                                 break;
 
-                            case "&nbsp;":
+                            case "":
                                 i += processEmptyLabel(td, bookData);
                                 break;
 
@@ -376,7 +367,7 @@ public class StripInfoBookHandler
         }
 
         if (primarySeriesTitle != null && !primarySeriesTitle.isEmpty()) {
-            Series series = fromString(primarySeriesTitle);
+            Series series = Series.fromString3(primarySeriesTitle);
             series.setNumber(primarySeriesBookNr);
             // add to the top as this is the primary series.
             mSeries.add(0, series);
@@ -499,14 +490,14 @@ public class StripInfoBookHandler
     /**
      * Extract the site native id from the url.
      *
-     * @param titleElement element containing the book url
+     * @param titleUrlElement element containing the book url
      * @param bookData     bundle to add to
      */
-    private void processSiteNativeId(final Element titleElement,
+    private void processSiteNativeId(@NonNull final Element titleUrlElement,
                                      @NonNull final Bundle bookData) {
 
         try {
-            String titleUrl = titleElement.childNode(1).attr("href");
+            String titleUrl = titleUrlElement.attr("href");
             // https://www.stripinfo.be/reeks/strip/336348
             // _Hauteville_House_14_De_37ste_parallel
             String idString = titleUrl.substring(titleUrl.lastIndexOf('/') + 1)
@@ -542,17 +533,13 @@ public class StripInfoBookHandler
         // </a>
         // </h1>
         if (seriesElement != null) {
-            // 2019-10-11: "img" is the norm with "a" being the exception.
             Element img = seriesElement.selectFirst("img");
             if (img != null) {
                 return img.attr("alt");
             } else {
                 Element a = seriesElement.selectFirst("a");
                 if (a != null) {
-                    Node aNode = a.childNode(0);
-                    if (aNode != null) {
-                        return aNode.toString();
-                    }
+                    return a.text();
                 }
             }
         }
@@ -601,20 +588,18 @@ public class StripInfoBookHandler
                                     if (nrNode != null) {
                                         number = nrNode.toString().trim();
                                     }
-                                    Node aNode = a.childNode(0);
-                                    if (aNode != null) {
-                                        // the number is not used in the TOC as we don't support
-                                        // linking a TOC entry to another book.
-                                        // So we simply add it to the title as a reference.
-                                        if (number != null) {
-                                            title = number + ' ' + aNode.toString();
-                                        } else {
-                                            title = aNode.toString();
-                                        }
+
+                                    // the number is not used in the TOC as we don't support
+                                    // linking a TOC entry to another book.
+                                    // Instead prepend it to the title as a reference.
+                                    if (number != null) {
+                                        title = number + ' ' + a.text();
+                                    } else {
+                                        title = a.text();
                                     }
                                 }
 
-                                if (title != null) {
+                                if (title != null && !title.isEmpty()) {
                                     TocEntry tocEntry = new TocEntry(mAuthors.get(0), title, "");
                                     tocEntries.add(tocEntry);
                                 }
@@ -642,7 +627,7 @@ public class StripInfoBookHandler
                             @NonNull final Bundle bookData) {
         Element dataElement = td.nextElementSibling();
         if (dataElement.childNodeSize() == 1) {
-            bookData.putString(key, cleanText(dataElement.childNode(0).toString()));
+            bookData.putString(key, cleanText(dataElement.text()));
             return 1;
         }
         return 0;
@@ -664,7 +649,7 @@ public class StripInfoBookHandler
                                   @NonNull final Bundle bookData) {
         Element dataElement = td.nextElementSibling();
         if (dataElement.childNodeSize() == 1) {
-            String text = dataElement.childNode(0).toString().trim();
+            String text = dataElement.text().trim();
 
             // is it a color ?
             if (COLOR_STRINGS.contains(text)) {
@@ -687,26 +672,23 @@ public class StripInfoBookHandler
                               @Author.Type final int currentAuthorType) {
         Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
-            Elements aas = dataElement.select("a");
-            for (int i = 0; i < aas.size(); i++) {
-                Node nameNode = aas.get(i).childNode(0);
-                if (nameNode != null) {
-                    String name = nameNode.toString();
-                    Author currentAuthor = Author.fromString(name);
-                    boolean add = true;
-                    // check if already present
-                    for (Author author : mAuthors) {
-                        if (author.equals(currentAuthor)) {
-                            // merge types.
-                            author.addType(currentAuthorType);
-                            add = false;
-                        }
+            Elements as = dataElement.select("a");
+            for (int i = 0; i < as.size(); i++) {
+                String name = as.get(i).text();
+                Author currentAuthor = Author.fromString(name);
+                boolean add = true;
+                // check if already present
+                for (Author author : mAuthors) {
+                    if (author.equals(currentAuthor)) {
+                        // merge types.
+                        author.addType(currentAuthorType);
+                        add = false;
                     }
+                }
 
-                    if (add) {
-                        currentAuthor.setType(currentAuthorType);
-                        mAuthors.add(currentAuthor);
-                    }
+                if (add) {
+                    currentAuthor.setType(currentAuthorType);
+                    mAuthors.add(currentAuthor);
                 }
             }
             return 1;
@@ -724,83 +706,22 @@ public class StripInfoBookHandler
     private int processSeries(@NonNull final Element td) {
         Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
-            Elements aas = dataElement.select("a");
-            for (int i = 0; i < aas.size(); i++) {
-                Node nameNode = aas.get(i).childNode(0);
-                if (nameNode != null) {
-                    String text = cleanText(nameNode.toString());
-                    Series currentSeries = fromString(text);
-                    // check if already present
-                    for (Series series : mSeries) {
-                        if (series.equals(currentSeries)) {
-                            return 1;
-                        }
+            Elements as = dataElement.select("a");
+            for (int i = 0; i < as.size(); i++) {
+                String text = cleanText(as.get(i).text());
+                Series currentSeries = Series.fromString3(text);
+                // check if already present
+                for (Series series : mSeries) {
+                    if (series.equals(currentSeries)) {
+                        return 1;
                     }
-                    // just add
-                    mSeries.add(currentSeries);
                 }
+                // just add
+                mSeries.add(currentSeries);
             }
             return 1;
         }
         return 0;
-    }
-
-    /**
-     * A site-specific version of {@link Series#fromString(String)}.
-     *
-     * <strong>Note:</strong> we could make this method the default {@link Series#fromString}
-     * but that would add overhead for most sites.
-     * <p>
-     * "Comanche 1"
-     * "Favorietenreeks (II) 13"
-     * "500 nr. 81"
-     *
-     * @param fullTitle string to decode
-     *
-     * @return the Series
-     */
-    @NonNull
-    private Series fromString(@NonNull final String fullTitle) {
-        Series series;
-
-        // Detect "title (middle) number" and "title (number)"
-        Matcher matcher = TEXT1_BR_TEXT2_BR_TEXT3_PATTERN.matcher(fullTitle);
-        if (matcher.find()) {
-            String title = matcher.group(1);
-            String middle = matcher.group(2);
-            String suffix = matcher.group(3);
-
-            if (suffix != null && !suffix.isEmpty()) {
-                // the suffix group is the number.
-                //noinspection ConstantConditions
-                series = Series.fromString(title, suffix);
-
-                // FIXME: see "Cycli" which needs to be folded in this.
-                // Cover a special case for this website.
-                // The middle group is potentially a roman numeral
-                // which should be prefixed to the number.
-                if ("I".equals(middle)) {
-                    series.setNumber("1." + series.getNumber());
-                } else if ("II".equals(middle)) {
-                    series.setNumber("2." + series.getNumber());
-                } else if ("III".equals(middle)) {
-                    series.setNumber("3." + series.getNumber());
-                } else {
-                    // But if it wasn't... add it back to the title including
-                    // the brackets we stripped off initially.
-                    series.setTitle(title + '(' + middle + ')');
-                }
-            } else {
-                // the middle group is the number.
-                //noinspection ConstantConditions
-                series = Series.fromString(title, middle);
-            }
-        } else {
-            // did't match the specific pattern, handle as normal.
-            series = Series.fromString(fullTitle);
-        }
-
-        return series;
     }
 
     /**
@@ -815,19 +736,16 @@ public class StripInfoBookHandler
         if (dataElement != null) {
             Elements aas = dataElement.select("a");
             for (int i = 0; i < aas.size(); i++) {
-                Node nameNode = aas.get(i).childNode(0);
-                if (nameNode != null) {
-                    String name = cleanText(nameNode.toString());
-                    Publisher currentPublisher = Publisher.fromString(name);
-                    // check if already present
-                    for (Publisher publisher : mPublishers) {
-                        if (publisher.equals(currentPublisher)) {
-                            return 1;
-                        }
+                String name = cleanText(aas.get(i).text());
+                Publisher currentPublisher = Publisher.fromString(name);
+                // check if already present
+                for (Publisher publisher : mPublishers) {
+                    if (publisher.equals(currentPublisher)) {
+                        return 1;
                     }
-                    // just add
-                    mPublishers.add(currentPublisher);
                 }
+                // just add
+                mPublishers.add(currentPublisher);
             }
             return 1;
         }

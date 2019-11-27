@@ -241,7 +241,7 @@ public final class TipManager {
                     .getBoolean(mKey, true);
         }
 
-        public void setHasBeenDisplayed(final boolean hasBeenDisplayed) {
+        void setHasBeenDisplayed(final boolean hasBeenDisplayed) {
             mHasBeenDisplayed = hasBeenDisplayed;
         }
 
