@@ -50,7 +50,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -270,7 +269,6 @@ public class EditBookAuthorsActivity
         private final Map<Integer, CompoundButton> mTypeButtons = new HashMap<>();
         /** Database Access. */
         protected DAO mDb;
-        WeakReference<BookChangedListener> mBookChangedListener;
         private EditBookAuthorsActivity mHostActivity;
         private AutoCompleteTextView mFamilyNameView;
         private AutoCompleteTextView mGivenNamesView;
@@ -452,15 +450,6 @@ public class EditBookAuthorsActivity
                     dialog.getWindow().setLayout(width, height);
                 }
             }
-        }
-
-        /**
-         * Call this from {@link #onAttachFragment} in the parent.
-         *
-         * @param listener the object to send the result to.
-         */
-        public void setListener(@NonNull final BookChangedListener listener) {
-            mBookChangedListener = new WeakReference<>(listener);
         }
 
         @Override

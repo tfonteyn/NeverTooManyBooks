@@ -53,7 +53,7 @@
         <item name="nav_bar_end_color">@color/primaryLightColor</item>
 
         <item name="checked_icon_tint">@color/green_a700</item>
-        <item name="completed_icon_tint">@color/amber_a700</item>
+        <item name="completed_icon_tint">@color/cyan_a700</item>
 
         <!-- ============================ -->
         <!-- Theme Color palette -->
@@ -83,7 +83,7 @@
         <item name="nav_bar_end_color">@color/primaryLightColor</item>
 
         <item name="checked_icon_tint">@color/light_green_a700</item>
-        <item name="completed_icon_tint">@color/amber_a700</item>
+        <item name="completed_icon_tint">@color/cyan_a700</item>
 
         <!--  =========================== -->
         <!-- Theme Color palette -->
@@ -113,7 +113,7 @@
         <item name="nav_bar_end_color">@color/primaryLightColor</item>
 
         <item name="checked_icon_tint">@color/green_a700</item>
-        <item name="completed_icon_tint">@color/amber_a700</item>
+        <item name="completed_icon_tint">@color/cyan_a700</item>
 
         <!-- ============================ -->
         <!-- Theme Color palette -->

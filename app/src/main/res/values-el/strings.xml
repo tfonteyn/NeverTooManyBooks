@@ -34,12 +34,10 @@
     <string name="pe_ui_theme_day_night">Ημέρα / Νύχτα</string>
     <string name="pe_ui_theme_dark">Σκούρο</string>
     <string name="pe_ui_theme_light">Φως</string>
-
     <string name="pe_bob_list_rebuild_state_preferred">Χρησιμοποιήστε την προτιμώμενη κατάσταση</string>
     <string name="pe_bob_list_rebuild_state_preserve">Διατηρήστε την τρέχουσα κατάσταση</string>
     <string name="pe_bob_list_rebuild_state_expanded">Επεκτείνετε όλα</string>
     <string name="pe_bob_list_rebuild_state_collapsed">Διπλώστε όλα</string>
-
     <string name="pe_thumbnails_cropper_layer_type_hardware">υλισμικό</string>
     <string name="pe_thumbnails_cropper_layer_type_software">λογισμικού</string>
     <string name="pe_bob_filter_read_yes">Τα βιβλία διαβάζουν</string>
@@ -50,21 +48,16 @@
     <string name="pe_bob_filter_anthology_no">Όλοι εκτός από Ανθολογίες</string>
     <string name="pe_bob_filter_loaned_yes">Βιβλία δανείου</string>
     <string name="pe_bob_filter_loaned_no">Βιβλία διαθέσιμα</string>
-
-
     <string name="pv_bob_header_nr_of_books">Εμφάνιση αριθμού βιβλίων</string>
     <string name="pv_bob_header_level_1">Εμφάνιση επικεφαλίδας πρώτου επιπέδου</string>
     <string name="pv_bob_header_level_2">Εμφάνιση τίτλου δευτέρου επιπέδου</string>
-
     <string name="size_x_small">X-Μικρό</string>
     <string name="size_small">Μικρό</string>
     <string name="size_medium">Μεσαίο</string>
     <string name="size_large">Μεγάλο</string>
     <string name="size_x_large">X-Μεγάλο</string>
     <string name="size_xx_large">2X-Μεγάλο</string>
-
     <string name="pv_scanner_zxing_compatible">Σαρωτής συμβατός με το Zxing</string>
-
     <string name="X_about_help_tap_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
     <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
@@ -72,29 +65,19 @@
     <string name="X_info_reset_tips">Ανά τακτά χρονικά διαστήματα αυτή η εφαρμογή θα εμφανίζει μηνύματα σχετικά με το %1$s.\n Πατήστε το παρακάτω κουμπί για να επαναφέρετε όποια από αυτά τα μυνήματα έχουν απενεργοποιηθεί.</string>
     <string name="X_lbl_available">Διαθέσιμο</string>
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>
-    <string name="X_menu_delete_series">Διαγραφή σειράς…</string>
     <string name="title_edit_author">Επεξεργασία Συγγραφέα</string>
     <string name="title_edit_series">Επεξεργασία Σειράς</string>
-    <string name="X_menu_search_books">Αναζήτηση βιβλίων</string>
-    <string name="X_results_found">Αποτελέσματα βρέθηκαν</string>
-    <string name="X_size">Μέγεθος</string>
     <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
-    <string name="X_unsaved_edits_title">Μη αποθηκευμένες αλλαγές</string>
-    <string name="X_updated">Ενημερωμένο</string>
     <string name="X_use_default_setting">Χρήση προεπιλεγμένης ρύθμισης</string>
     <string name="X_warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
     <string name="hint_empty_author">(Ο συγγραφέας λείπει)</string>
-    <string name="X_warning_missing_title">Ο τίτλος λείπει.</string>
-    <string name="X_warning_missing_title_author">Ο τίτλος ή / και ο συντάκτης λείπει.</string>
-    <string name="X_warning_required_author">Το πεδίο συγγραφέας είναι κενό</string>
     <string name="warning_requires_at_least_1_author">Τουλάχιστον ένας συγγραφέας πρέπει να έχει καθοριστεί.</string>
     <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
-    <string name="X_warning_required_title">Ένας μη κενός τίτλος πρέπει να έχει καθοριστεί</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="lbl_about_translators">&APP_NAME; είναι προιόν προσπάθειας πολλών ανθρώπων και δεν θα είχε τέτοια ευρεία αποδοχή χωρίς την γενναιόδωρη βοήθεια των εθελοντών μεταφραστών (εαν ξεχνάμε κάποιον, παρακαλούμε ενημερώστε μας):</string>
     <string name="acra_resDialogCommentPrompt">Τα σχόλιά σας (ή αφήστε το κενό):</string>
     <string name="acra_resDialogText">Φαίνεται πως το &APP_NAME; σταμάτησε να λειτουργεί. Εαν είναι δυνατό περιγράψτε παρακάτω ό,τι πιστεύετε πως είναι σχετικό και πατήστε ΟΚ για μας στείλετε email με πληροφορίες για την βλάβη. Θα δείτε το e-mail πρωτού αποσταλεί.</string>
-    <string name="X_acra_resNotifText">Παρακαλούμε πατήστε εδώ για λεπτομέρειες</string>
+    <string name="X_tap_for_details">Παρακαλούμε πατήστε εδώ για λεπτομέρειες</string>
     <string name="acra_resReportSendSuccessToast">Ευχαριστούμε!</string>
     <string name="acra_resToastText">Η λειτουργία του &APP_NAME; διακόπηκε. Παρακαλούμε βοηθήστε μας να βελτιώσουμε την εφαρμογή στέλνοντας την αναφορά της διακοπής.</string>
     <string name="and_others">κτλ.</string>
@@ -109,17 +92,14 @@
     <string name="btn_confirm_exit">Έξοδος</string>
     <string name="btn_confirm_merge">Συγχώνευση</string>
     <string name="btn_confirm_new">Νέος</string>
-    <string name="btn_confirm_open">Άνοιγμα</string>
     <string name="btn_confirm_save">Αποθήκευση</string>
-    <string name="btn_confirm_update">Ενημέρωση</string>
-    <string name="btn_confirm_use">Χρήση</string>
+    <string name="X_btn_confirm_update">Ενημέρωση</string>
     <string name="btn_continue_edit">Συνέχεια Επεξεργασίας</string>
     <string name="btn_delete_credentials">Κατάργηση διαπιστευτηρίων</string>
     <string name="btn_disable_message">Απενεργοποίηση μηνυμάτων</string>
     <string name="btn_loan_returned">Έχει επιστραφεί</string>
     <string name="btn_options">Επιλογές</string>
     <string name="btn_reset">Επαναφορά</string>
-    <string name="X_btn_show_results">Εμφάνιση αποτελεσμάτων</string>
     <string name="btn_tell_me_more">Πες μου περισσότερα</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="bytes">%.0fB</string>
@@ -143,7 +123,6 @@
     <string name="error_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$d</string>
     <string name="error_columns_are_blank">Οι στήλες %1$s είναι όλες κενές στη σειρά %2$d</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
-    <string name="X_error_failed_x">Αποτυχία: %1$d</string>
     <string name="error_google_play_store_missing">Το Google Play Store δεν είναι εγκατεστημένο</string>
     <string name="error_if_the_problem_persists">Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη μέσω της επιλογής «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
@@ -200,7 +179,6 @@
     <string name="gr_tq_generic_task_info">Αναγνωριστικό εργασίας %1$d, αναρτημένο στο %2$s</string>
     <string name="gr_tq_import_task_is_already_queued">Μια εργασία εισαγωγής βρίσκεται ήδη στην ουρά και πρέπει να ολοκληρωθεί πριν μια νέα εργασία να μπορεί να ξεκινήσει</string>
     <string name="gr_tq_last_error_e">Τελευταίο σφάλμα: %1$s</string>
-    <string name="gr_tq_legacy_task">Legacy εργασία</string>
     <string name="gr_tq_menu_background_tasks">Εργασίες Παρασκηνίου</string>
     <string name="gr_tq_menu_delete_event">Διαγραφή event</string>
     <string name="gr_tq_menu_delete_task">Διαγραφή Εργασίας</string>
@@ -244,7 +222,6 @@
     <string name="lbl_added_month">Μήνας Πρόσθεσης</string>
     <string name="lbl_added_year">Έτος Πρόσθεσης</string>
     <string name="lbl_advanced_options">Προχωρημένες Επιλογές</string>
-    <string name="lbl_allow_asin">Να επιτρέπεται κωδικός ASIN</string>
     <string name="lbl_anthology">Ανθολογία</string>
     <string name="lbl_author">Συγγραφέας</string>
     <string name="lbl_backup_to_archive">Αντίγραφο ασφαλείας στο Αρχείο</string>
@@ -359,11 +336,9 @@
     <string name="lt_url_text_register">Εγγραφή με LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">Σχετικά με την εφαρμογή</string>
-    <string name="X_menu_add_book">Προσθήκη Βιβλίου…</string>
     <string name="fab_add_book_by_barcode_scan">Σκανάρισμα Barcode</string>
     <string name="fab_add_book_by_isbn">Εισαγωγή κωδικού ISBN</string>
     <string name="fab_add_book_manually">Χειροκίνητη Προσθήκη</string>
-    <string name="X_menu_administration">διαχείριση…</string>
     <string name="menu_amazon_books_by_author">Βιβλία από αυτόν το συγγραφέα</string>
     <string name="menu_amazon_books_by_author_in_series">Βιβλία από συγγραφέα/σειρά</string>
     <string name="menu_amazon_books_in_series">Βιβλία σε αυτή τη σειρά</string>
@@ -421,17 +396,12 @@
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
     <string name="progress_end_cancelled">Ακυρώθηκε</string>
-    <string name="progress_end_cancelled_info">Ακυρώθηκαν - %1$s</string>
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
-    <string name="progress_end_n_books_searched">%1$d Βιβλία αναζητήθηκαν</string>
-    <string name="progress_msg_adding_book">Γίνεται πρόσθεση βιβλίου…</string>
+    <string name="X_progress_end_n_books_searched">%1$d Βιβλία αναζητήθηκαν</string>
     <string name="title_backing_up">Δημιουργείται Αντίγραφο Ασφαλείας…</string>
-    <string name="progress_msg_cancelling">Ακυρώνεται</string>
     <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d εξώφυλλα επεξεργάστηκαν</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν (%2$d λείπουν)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν (%2$d λείπουν, %3$d παρελείφθησαν)</string>
-    <string name="X_progress_msg_export_starting">Εκκίνηση εξαγωγής…</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d λείπουν)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d λείπουν, %3$d παρελείφθησαν)</string>
     <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="title_importing">Γίνεται εισαγωγή…</string>
     <string name="progress_msg_loading">Φορτώνει…</string>
@@ -439,7 +409,6 @@
     <string name="progress_msg_optimizing">Βελτιστοποίηση βάσεων δεδομένων…</string>
     <string name="progress_msg_please_wait">Παρακαλώ περιμένετε…</string>
     <string name="progress_msg_process_booklist_style">Στυλ βιβλίου…</string>
-    <string name="progress_msg_process_cover">Καλύπτει…</string>
     <string name="progress_msg_process_preferences">Προτιμήσεις…</string>
     <string name="progress_msg_rebuilding_search_index">Ανακατασκευή Ευρετηρίου Αναζήτησης…</string>
     <string name="progress_msg_saving_image">Αποθήκευση της εικόνας…</string>
@@ -447,7 +416,6 @@
     <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
     <string name="progress_msg_sending">Αποστολή, παρακαλώ περιμένετε…</string>
     <string name="progress_msg_skip_title">Παράβλεψη - %1$s</string>
-    <string name="progress_msg_starting_search">Έναρξη Αναζήτησης</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
     <string name="progress_msg_upgrading">Γίνεται αναβάθμηση…</string>
     <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
@@ -475,7 +443,6 @@
     <string name="pt_thumbnails_rotate_auto">Περιστρέψτε τις εικόνες</string>
     <string name="pg_camera">φωτογραφική μηχανή</string>
     <string name="pt_ui_language">Γλώσσα</string>
-    <string name="pt_ui_messages_use">Ενημερώστε με</string>
     <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
     <string name="pt_ui_theme">Θέμα</string>
     <string name="pv_bob_books_under_multiple_each_1s">Κάτω από κάθε %1$s</string>
@@ -573,7 +540,6 @@
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
     <string name="warning_cover_copy_failed">Δεν ήταν δυνατή η αντιγραφή εικόνας</string>
     <string name="warning_cover_not_found">Εικόνα δεν βρέθηκε</string>
-    <string name="X_warning_enter_valid_filename">Εισαγάγετε ένα έγκυρο όνομα αρχείου.</string>
     <string name="warning_if_day_set_month_and_year_must_be">Αν προσδιοριστεί ημέρα, τότε πρέπει να προσδιοριστεί επίσης μήνας και έτος.</string>
     <string name="warning_if_month_set_year_must_be">Αν προσδιοριστεί μήνας, τότε πρέπει να προσδιοριστεί και έτος.</string>
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
@@ -584,7 +550,6 @@
     <string name="warning_no_isbn_stored_for_book">Δεν υπάρχει αποθηκευμένο ISBN για το βιβλίο</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>
     <string name="warning_requires_at_least_one_field">Τουλάχιστον ένα πεδίο δεν μπορεί να είναι κενό.</string>
-    <string name="X_warning_select_an_existing_file">Παρακαλούμε επιλέξτε ένα υπάρχον αρχείο</string>
     <string name="warning_select_at_least_1_field">Επιλέξτε τουυλάχιστον ένα πεδία για ενημέρωση.</string>
     <string name="warning_series_already_in_list">Η σειρά βρίσκεται ήδη στη λίστα</string>
     <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
@@ -593,10 +558,8 @@
     <string name="warning_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
     <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη.</string>
     <string name="warning_x_is_not_a_valid_isbn">%1$s δεν είναι έγκυρος κωδικός ISBN</string>
-    <string name="warning_x_is_not_a_valid_isbn_or_asin">%1$s δεν είναι έγκυρος κωδικός ISBN ή ASIN</string>
     <string name="x_of_y">%1$d από %2$d</string>
     <string name="yes">Ναι</string>
-    <string name="X_lbl_other">Αλλα</string>
     <string name="lbl_author_type_translator">Μεταφράστης</string>
     <string name="lbl_author_type_colorist">Ζωγράφος</string>
     <string name="lbl_author_type_editor">Συντάκτης</string>
@@ -611,7 +574,6 @@
     <string name="lbl_author_type_writer">συγγραφέας</string>
     <string name="menu_search_local">Τοπική αναζήτηση</string>
     <string name="progress_msg_n_books_processed">%1$d βιβλία επεξεργασμένα</string>
-    <string name="X_progress_end_n_books_exported">%1$d βιβλία που εξήχθησαν</string>
     <string name="warning_select_an_existing_folder">Επιλέξτε έναν υπάρχοντα φάκελο.</string>
     <string name="lbl_copy_database_blurb">Επιλέξτε έναν κατάλογο για την εξαγωγή σε.</string>
     <string name="info_waiting_for_scanner">Αναμονή για σαρωτή / κάμερα</string>
@@ -648,7 +610,7 @@
     <string name="lbl_data_import_export">Δημιουργία αντιγράφων ασφαλείας &amp; εισαγωγή</string>
     <string name="pg_image_cache">Cache εικόνας</string>
     <string name="lbl_author_type_intro">Εισαγωγή κλπ.</string>
-    <string name="swap">ανταλλάσσω</string>
+    <string name="X_swap">ανταλλάσσω</string>
     <string name="pt_site_settings">Ρυθμίσεις ιστοτόπου</string>
     <string name="btn_email">e-mail</string>
     <string name="warning_requires_site_and_id">Επιλέξτε έναν ιστότοπο και πληκτρολογήστε ένα αναγνωριστικό.</string>

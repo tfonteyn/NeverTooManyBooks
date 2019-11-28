@@ -337,10 +337,6 @@ public class Bookshelf
         return true;
     }
 
-    public boolean isDefault() {
-        return mId == DEFAULT_ID;
-    }
-
     /**
      * Check if this is a regular shelf, or if this one represents our complete library.
      *

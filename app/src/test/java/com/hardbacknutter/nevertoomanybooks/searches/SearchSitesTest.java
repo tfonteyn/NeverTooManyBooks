@@ -63,7 +63,7 @@ class SearchSitesTest
 
     @Test
     void site() {
-        for (SiteList.ListType type : SiteList.ListType.values()) {
+        for (SiteList.Type type : SiteList.Type.values()) {
             List<Site> sites = SiteList.getSites(mContext, type);
             System.out.println(sites);
         }

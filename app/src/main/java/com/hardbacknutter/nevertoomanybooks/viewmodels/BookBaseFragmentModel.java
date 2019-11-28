@@ -424,11 +424,11 @@ public class BookBaseFragmentModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    Context context = App.getLocalizedAppContext();
+                    Context localContext = App.getLocalizedAppContext();
                     switch (message.status) {
                         case Success:
                         case Failed: {
-                            String msg = GoodreadsTasks.handleResult(context, message);
+                            String msg = GoodreadsTasks.handleResult(localContext, message);
                             if (msg != null) {
                                 mUserMessage.setValue(msg);
                             } else {
@@ -438,8 +438,8 @@ public class BookBaseFragmentModel
                             break;
                         }
                         case Cancelled: {
-                            mUserMessage
-                                    .setValue(context.getString(R.string.progress_end_cancelled));
+                            mUserMessage.setValue(
+                                    localContext.getString(R.string.progress_end_cancelled));
                             break;
                         }
                     }

@@ -93,9 +93,9 @@ public class SearchTask
         super(taskId, taskListener);
         mSearchEngine = searchEngine;
 
-        Context context = App.getLocalizedAppContext();
-        mProgressTitle = context.getString(R.string.progress_msg_searching_site,
-                                           context.getString(mSearchEngine.getNameResId()));
+        Context localContext = App.getLocalizedAppContext();
+        String name = localContext.getString(mSearchEngine.getNameResId());
+        mProgressTitle = localContext.getString(R.string.progress_msg_searching_site, name);
     }
 
     /**
@@ -148,13 +148,15 @@ public class SearchTask
     @Override
     @Nullable
     protected Bundle doInBackground(final Void... voids) {
-        Context context = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
+        Thread.currentThread().setName("SearchTask "
+                                       + localContext.getString(mSearchEngine.getNameResId()));
 
         publishProgress(new TaskListener.ProgressMessage(mTaskId, mProgressTitle));
 
         try {
             // can we reach the site ?
-            NetworkUtils.poke(context, mSearchEngine.getUrl(context));
+            NetworkUtils.poke(localContext, mSearchEngine.getUrl(localContext));
 
             Bundle bookData;
 
@@ -164,20 +166,22 @@ public class SearchTask
             if (mSearchEngine instanceof SearchEngine.ByNativeId
                 && mNativeId != null && !mNativeId.isEmpty()) {
                 bookData = ((SearchEngine.ByNativeId) mSearchEngine)
-                        .searchByNativeId(context, mNativeId, mFetchThumbnail);
+                        .searchByNativeId(localContext, mNativeId, mFetchThumbnail);
 
             } else if (mSearchEngine instanceof SearchEngine.ByIsbn
                        && ISBN.isValid(mIsbn)) {
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                        .searchByIsbn(context, mIsbn, mFetchThumbnail);
+                        .searchByIsbn(localContext, mIsbn, mFetchThumbnail);
 
             } else if (mSearchEngine instanceof SearchEngine.ByText) {
                 bookData = ((SearchEngine.ByText) mSearchEngine)
-                        .search(context, mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
+                        .search(localContext, mIsbn, mAuthor, mTitle, mPublisher,
+                                mFetchThumbnail);
 
             } else {
-                throw new IllegalStateException("search engine does not implement any search?"
-                                                + context.getString(mSearchEngine.getNameResId()));
+                String name = localContext.getString(mSearchEngine.getNameResId());
+                throw new IllegalStateException("search engine " + name
+                                                + " does not implement any search?");
             }
 
             if (!bookData.isEmpty()) {
@@ -187,7 +191,7 @@ public class SearchTask
             return bookData;
 
         } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(localContext, TAG, e);
             mException = e;
             return null;
         }

@@ -38,6 +38,8 @@ import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+
 /**
  * Represents a site we will search.
  * Acts as a container for the site's {@link SearchEngine}.
@@ -65,47 +67,65 @@ public final class Site
     @VisibleForTesting
     public static final String PREF_PREFIX = "search.site.";
 
+    /** Name suffix for Cover websites. */
+    private static final String PREF_SUFFIX_COVERS = "Covers";
+    /** Name suffix for Alternative Editions websites. */
+    private static final String PREF_SUFFIX_ALT_ED = "AltEd";
+
     /** Internal ID, bitmask based, not stored in prefs. */
     @SearchSites.Id
     public final int id;
 
-    /** Internal task(thread) name AND user-visible name AND key into prefs. */
+    /** User-visible name. */
     @NonNull
     private final String mName;
+    /** key into prefs. */
+    @NonNull
+    private final String mPreferenceKey;
 
     /** user preference: enable/disable this site. */
-    private boolean mEnabled = true;
+    private boolean mEnabled;
 
     /** the class which implements the search engine for a specific site. */
     private SearchEngine mSearchEngine;
 
-
     /**
-     * Constructor. Use static method instead.
+     * Constructor. Use {@link #createDataSite(int)}.
      *
-     * @param id   Internal ID, bitmask based
-     * @param name user visible name
+     * @param id Internal ID, bitmask based
      */
-    private Site(@SearchSites.Id final int id,
-                 @NonNull final String name) {
-
-        this.id = id;
-        mName = name;
+    private Site(@SearchSites.Id final int id) {
+        this(id, SiteList.Type.Data, true);
     }
 
     /**
-     * Constructor. Use static method instead.
+     * Constructor. Use {@link #createSite(int, SiteList.Type, boolean)}.
      *
      * @param id      Internal ID, bitmask based
-     * @param name    user visible name
+     * @param type    the list type this site will belong to
      * @param enabled flag
      */
-    public Site(@SearchSites.Id final int id,
-                @NonNull final String name,
-                final boolean enabled) {
+    private Site(@SearchSites.Id final int id,
+                 @NonNull final SiteList.Type type,
+                 final boolean enabled) {
         this.id = id;
-        mName = name;
         mEnabled = enabled;
+        mName = SearchSites.getName(id);
+
+        switch (type) {
+            case Data:
+                mPreferenceKey = mName;
+                break;
+            case Covers:
+                mPreferenceKey = mName + "-" + PREF_SUFFIX_COVERS;
+                break;
+            case AltEditions:
+                mPreferenceKey = mName + "-" + PREF_SUFFIX_ALT_ED;
+                break;
+
+            default:
+                throw new UnexpectedValueException(type);
+        }
     }
 
     /**
@@ -115,55 +135,38 @@ public final class Site
      */
     private Site(@NonNull final Parcel in) {
         id = in.readInt();
-        mName = SearchSites.getName(id);
         mEnabled = in.readInt() != 0;
+        //noinspection ConstantConditions
+        mName = in.readString();
+        //noinspection ConstantConditions
+        mPreferenceKey = in.readString();
         // Reminder: this is IPC.. so don't load prefs!
     }
 
     /**
-     * Create a Site.
-     *
-     * @param id      Internal ID, bitmask based
-     * @param enabled flag
-     *
-     * @return site
-     */
-    static Site newSite(@SearchSites.Id final int id,
-                        final boolean enabled) {
-
-        String name = SearchSites.getName(id);
-        return new Site(id, name, enabled);
-    }
-
-    /**
-     * Create a Site.
-     *
-     * @param id         Internal ID, bitmask based
-     * @param nameSuffix suffix for the name (used as a key in preferences)
-     * @param enabled    flag
-     *
-     * @return site
-     */
-    static Site newSite(@SearchSites.Id final int id,
-                        @NonNull final String nameSuffix,
-                        final boolean enabled) {
-
-        String name = SearchSites.getName(id);
-        if (!nameSuffix.isEmpty()) {
-            name += "-" + nameSuffix;
-        }
-        return new Site(id, name, enabled);
-    }
-
-    /**
-     * Create a Site using all defaults.
+     * Create an enabled Data site for temporary usage.
      *
      * @param id Internal ID, bitmask based
      *
-     * @return site
+     * @return instance
      */
-    public static Site newSite(@SearchSites.Id final int id) {
-        return new Site(id, SearchSites.getName(id));
+    public static Site createDataSite(@SearchSites.Id final int id) {
+        return new Site(id);
+    }
+
+    /**
+     * Create a persistent Site.
+     *
+     * @param id      Internal ID, bitmask based
+     * @param type    the list type this site will belong to
+     * @param enabled flag
+     *
+     * @return instance
+     */
+    static Site createSite(@SearchSites.Id final int id,
+                           @NonNull final SiteList.Type type,
+                           final boolean enabled) {
+        return new Site(id, type, enabled);
     }
 
     /**
@@ -180,13 +183,13 @@ public final class Site
     }
 
     void loadFromPrefs(@NonNull final Context context) {
-        String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
+        String lcName = PREF_PREFIX + mPreferenceKey.toLowerCase(Locale.getDefault()) + '.';
         mEnabled = PreferenceManager.getDefaultSharedPreferences(context)
                                     .getBoolean(lcName + "enabled", mEnabled);
     }
 
     void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
-        String lcName = PREF_PREFIX + mName.toLowerCase(Locale.getDefault()) + '.';
+        String lcName = PREF_PREFIX + mPreferenceKey.toLowerCase(Locale.getDefault()) + '.';
         editor.putBoolean(lcName + "enabled", mEnabled);
     }
 
@@ -204,6 +207,8 @@ public final class Site
                               final int flags) {
         dest.writeInt(id);
         dest.writeInt(mEnabled ? 1 : 0);
+        dest.writeString(mName);
+        dest.writeString(mPreferenceKey);
     }
 
     @NonNull
@@ -235,6 +240,7 @@ public final class Site
         return "Site{"
                + "id=" + id
                + ", mName=`" + mName + '`'
+               + ", mPreferenceKey=`" + mPreferenceKey + '`'
                + ", mEnabled=" + mEnabled
                + ", mSearchEngine=" + mSearchEngine
                + '}';

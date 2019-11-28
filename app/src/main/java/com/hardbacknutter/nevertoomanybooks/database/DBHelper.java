@@ -119,27 +119,25 @@ public final class DBHelper
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
             + " (" + DOM_TITLE + DAO.COLLATION + ')',
             };
-
     /** Readers/Writer lock for this database. */
     private static Synchronizer sSynchronizer;
-
     /** Singleton. */
     private static DBHelper sInstance;
 
     /**
      * Constructor.
      *
-     * @param context      the Application Context (as a param, to allow testing)
+     * @param appContext   the Application Context (as a param, to allow future testing)
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
      */
-    private DBHelper(@NonNull final Context context,
+    private DBHelper(@NonNull final Context appContext,
                      @SuppressWarnings("SameParameterValue")
                      @NonNull final SQLiteDatabase.CursorFactory factory,
                      @SuppressWarnings("SameParameterValue")
                      @NonNull final Synchronizer synchronizer) {
 
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+        super(appContext, DATABASE_NAME, factory, DATABASE_VERSION);
         sSynchronizer = synchronizer;
     }
 
@@ -219,8 +217,10 @@ public final class DBHelper
     @SuppressWarnings("unused")
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
+        Context localContext = App.getLocalizedAppContext();
+
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
-        UpgradeMessageManager.setUpgradeAcknowledged();
+        UpgradeMessageManager.setUpgradeAcknowledged(localContext);
 
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
@@ -248,8 +248,6 @@ public final class DBHelper
         // insert the builtin styles so foreign key rules are possible.
         prepareStylesTable(db);
 
-        Context context = App.getLocalizedAppContext();
-
         // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
         syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
                          + '(' + DOM_PK_ID
@@ -257,7 +255,7 @@ public final class DBHelper
                          + ',' + DOM_FK_STYLE
                          + ") VALUES ("
                          + Bookshelf.ALL_BOOKS
-                         + ",'" + context.getString(R.string.bookshelf_all_books)
+                         + ",'" + localContext.getString(R.string.bookshelf_all_books)
                          + "'," + BooklistStyle.DEFAULT_STYLE_ID
                          + ')');
 
@@ -268,7 +266,7 @@ public final class DBHelper
                          + ',' + DOM_FK_STYLE
                          + ") VALUES ("
                          + Bookshelf.DEFAULT_ID
-                         + ",'" + context.getString(R.string.bookshelf_my_books)
+                         + ",'" + localContext.getString(R.string.bookshelf_my_books)
                          + "'," + BooklistStyle.DEFAULT_STYLE_ID
                          + ')');
 

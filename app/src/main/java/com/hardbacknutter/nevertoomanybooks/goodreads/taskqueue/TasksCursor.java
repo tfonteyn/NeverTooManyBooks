@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
@@ -201,7 +200,7 @@ public final class TasksCursor
 
     @NonNull
     @Override
-    public BindableItemCursorAdapter.BindableItem getBindableItem(@NonNull final Context context) {
+    public BindableItemCursorAdapter.BindableItem getBindableItem() {
         if (sTaskCol < 0) {
             sTaskCol = getColumnIndex(DOM_TASK);
         }
@@ -210,7 +209,7 @@ public final class TasksCursor
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
-            task = new LegacyTask(context);
+            task = new LegacyTask();
         }
         task.setId(getId());
         return task;

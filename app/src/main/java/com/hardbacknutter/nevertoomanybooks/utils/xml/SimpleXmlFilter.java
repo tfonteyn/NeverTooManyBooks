@@ -371,9 +371,10 @@ public class SimpleXmlFilter {
 
     public interface XmlListener {
 
-        @SuppressWarnings("EmptyMethod")
-        void onStart(@NonNull SimpleXmlFilter.BuilderContext bc,
-                     @NonNull ElementContext c);
+        default void onStart(@NonNull final SimpleXmlFilter.BuilderContext bc,
+                             @NonNull final ElementContext c) {
+
+        }
 
         void onFinish(@NonNull SimpleXmlFilter.BuilderContext bc,
                       @NonNull ElementContext c);

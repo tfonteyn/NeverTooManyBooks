@@ -223,7 +223,7 @@ public class GoodreadsManager
                 AUTHORIZATION_WEBSITE_URL);
 
         // get the credentials
-        hasCredentials();
+        hasCredentials(App.getAppContext());
     }
 
     /**
@@ -243,7 +243,7 @@ public class GoodreadsManager
      * View a Book on the web site.
      *
      * @param appContext Application context
-     * @param bookId  site native book id to show
+     * @param bookId     site native book id to show
      */
     public static void openWebsite(@NonNull final Context appContext,
                                    final long bookId) {
@@ -346,9 +346,11 @@ public class GoodreadsManager
      * <p>
      * No network access.
      *
+     * @param appContext Application context
+     *
      * @return {@code true} if we have credentials.
      */
-    static boolean hasCredentials() {
+    static boolean hasCredentials(@NonNull final Context appContext) {
 
         if (sAccessToken != null && !sAccessToken.isEmpty()
             && sAccessSecret != null && !sAccessSecret.isEmpty()) {
@@ -357,7 +359,7 @@ public class GoodreadsManager
 
         // Get the stored token values from prefs
         SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(App.getAppContext());
+                .getDefaultSharedPreferences(appContext);
         sAccessToken = prefs.getString(ACCESS_TOKEN, null);
         sAccessSecret = prefs.getString(ACCESS_SECRET, null);
 
@@ -369,7 +371,7 @@ public class GoodreadsManager
     public boolean promptToRegister(@NonNull final Context context,
                                     final boolean required,
                                     @NonNull final String prefSuffix) {
-        if (hasCredentials()) {
+        if (hasCredentials(context)) {
             return false;
         }
 
@@ -859,12 +861,12 @@ public class GoodreadsManager
     }
 
     @Override
-    public boolean isAvailable() {
+    public boolean isAvailable(@NonNull final Context appContext) {
         // hasKey() is only here for when the developer forgot to add the dev key.
         // Checking it avoids confusion and endless debugging elsewhere.
         return hasKey()
                // makes sure we *have* credentials, but does not check them.
-               && hasCredentials();
+               && hasCredentials(appContext);
     }
 
     @NonNull
@@ -948,7 +950,7 @@ public class GoodreadsManager
      * <p>
      * Network access if credentials need to be checked.
      * <p>
-     * It is assumed that {@link #isAvailable()} has already been called.
+     * It is assumed that {@link SearchEngine#isAvailable(Context)} has already been called.
      * Developer reminder: do NOT throw an exception from here.
      */
     @WorkerThread
@@ -959,7 +961,7 @@ public class GoodreadsManager
         }
 
         // If we don't have credentials at all, just leave
-        if (!hasCredentials()) {
+        if (!hasCredentials(App.getAppContext())) {
             return false;
         }
 
@@ -991,15 +993,15 @@ public class GoodreadsManager
      * Request authorization for this application, for the current user,
      * by going to the OAuth web page.
      *
+     * @param appContext Application context
+     *
      * @throws AuthorizationException with GoodReads
      * @throws IOException            on other failures
      */
     @WorkerThread
-    public void requestAuthorization()
+    public void requestAuthorization(@NonNull final Context appContext)
             throws AuthorizationException,
                    IOException {
-
-        Context context = App.getAppContext();
 
         String authUrl;
 
@@ -1029,14 +1031,14 @@ public class GoodreadsManager
 
         // Temporarily save the token; this GoodreadsManager object may be destroyed
         // before the web page returns.
-        PreferenceManager.getDefaultSharedPreferences(context)
+        PreferenceManager.getDefaultSharedPreferences(appContext)
                          .edit()
                          .putString(REQUEST_TOKEN, mConsumer.getToken())
                          .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
                          .apply();
 
         // Open the web page
-        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
+        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
     }
 
     /**

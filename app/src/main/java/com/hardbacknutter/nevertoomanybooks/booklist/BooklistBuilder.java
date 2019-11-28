@@ -84,13 +84,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
@@ -2074,7 +2074,7 @@ public class BooklistBuilder
                               | BuildHelper.FLAG_SORTED
                               | BuildHelper.FLAG_SORT_DESCENDING);
 
-                    addDomain(DOM_BOOK_DATE_PUBLISHED, null,
+                    addDomain(DOM_DATE_PUBLISHED, null,
                               BuildHelper.FLAG_SORTED
                               | BuildHelper.FLAG_SORT_DESCENDING);
                     break;
@@ -2235,10 +2235,8 @@ public class BooklistBuilder
                 BooklistGroup.CompoundKey key = group.getCompoundKey();
                 keyColumn.append("'/")
                          .append(key.getPrefix())
-                         .append("/'||COALESCE(")
-                         .append(key.getExpression())
                          // null becomes an empty String
-                         .append(",'')||");
+                         .append("/'||COALESCE(").append(key.getExpression()).append(",'')||");
 
             }
             int len = keyColumn.length();

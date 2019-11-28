@@ -96,10 +96,12 @@ public interface SearchEngine {
      * It's not supposed to to check credentials.
      * <strong>Should not run network code.</strong>
      *
+     * @param appContext Application context
+     *
      * @return {@code true} if we can consider this site for searching.
      */
     @AnyThread
-    default boolean isAvailable() {
+    default boolean isAvailable(@NonNull final Context appContext) {
         return true;
     }
 

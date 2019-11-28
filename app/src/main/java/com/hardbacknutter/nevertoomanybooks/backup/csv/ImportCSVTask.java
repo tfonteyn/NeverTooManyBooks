@@ -118,20 +118,20 @@ public class ImportCSVTask
     protected ImportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("ImportCSVTask");
 
-        Context localizedAppContext = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
 
-        try (InputStream is = localizedAppContext.getContentResolver().openInputStream(mUri)) {
+        try (InputStream is = localContext.getContentResolver().openInputStream(mUri)) {
             if (is == null) {
                 throw new IOException("InputStream was NULL");
             }
 
-            mImportHelper.addResults(mImporter.doBooks(localizedAppContext, is,
+            mImportHelper.addResults(mImporter.doBooks(localContext, is,
                                                        null, mProgressListener));
 
             return mImportHelper;
 
         } catch (@NonNull final IOException | ImportException e) {
-            Logger.error(localizedAppContext, TAG, e);
+            Logger.error(localContext, TAG, e);
             mException = e;
             return mImportHelper;
         } finally {

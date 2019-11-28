@@ -237,7 +237,7 @@ public class UpdateFieldsFragment
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    SiteList sites = data.getParcelableExtra(SiteList.ListType.Data.getBundleKey());
+                    SiteList sites = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                     if (sites != null) {
                         mUpdateFieldsModel.setSiteList(sites);
                     }
@@ -272,8 +272,8 @@ public class UpdateFieldsFragment
             case R.id.MENU_PREFS_SEARCH_SITES: {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
-                                  (Parcelable) SiteList.ListType.Data)
-                        .putExtra(SiteList.ListType.Data.getBundleKey(),
+                                  (Parcelable) SiteList.Type.Data)
+                        .putExtra(SiteList.Type.Data.getBundleKey(),
                                   mUpdateFieldsModel.getSiteList());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;

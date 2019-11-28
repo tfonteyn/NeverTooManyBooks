@@ -62,6 +62,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
 
@@ -105,7 +106,7 @@ public class CoverBrowserFragment
     /**
      * <strong>WARNING:</strong> LibraryThing is in fact the only site searched for
      * alternative editions!
-     * See {@link CoverBrowserViewModel} GetEditionsTask.
+     * See {@link CoverBrowserViewModel} SearchEditionsTask.
      *
      * @param isbn ISBN of book
      *
@@ -120,6 +121,9 @@ public class CoverBrowserFragment
         return frag;
     }
 
+    /**
+     * ENHANCE: pass in a {@link SiteList.Type#Covers} list / set it on the fly.
+     */
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,13 +133,12 @@ public class CoverBrowserFragment
         mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
 
         mModel = new ViewModelProvider(this).get(CoverBrowserViewModel.class);
-        // ENHANCE: pass in SearchAdminModel.BKEY_COVERS_SITES / set it on the fly.
         //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
 
         mModel.getEditions().observe(this, this::showGallery);
         mModel.getGalleryImage().observe(this, this::setGalleryImage);
-        mModel.getSwitcherImage().observe(this, this::setSwitcherImage);
+        mModel.getSelectedImage().observe(this, this::setSwitcherImage);
 
         if (savedInstanceState != null) {
             ArrayList<String> editions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
@@ -474,7 +477,7 @@ public class CoverBrowserFragment
                         mImageSwitcherView.setVisibility(View.VISIBLE);
                         mStatusTextView.setText(R.string.progress_msg_loading);
                         // start a task to fetch the image
-                        mModel.fetchSwitcherImage(holder.fileInfo);
+                        mModel.fetchSelectedImage(holder.fileInfo);
                     }
                 }
             });

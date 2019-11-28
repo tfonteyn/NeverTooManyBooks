@@ -52,6 +52,7 @@ import androidx.annotation.WorkerThread;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
@@ -437,6 +438,9 @@ public class BooklistAdapter
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("GetBookExtrasTask " + mBookId);
 
+            //We ALWAYS fetch the full set of extras columns from the database.
+            // Performance tests have shown that returning only selected columns makes
+            // no difference with returning the full set.
             try (Cursor cursor = mDb.fetchBookExtrasById(mBookId)) {
                 // Bail out if we don't have a book.
                 if (!cursor.moveToFirst()) {
@@ -621,7 +625,9 @@ public class BooklistAdapter
         /** Book level - Based on style. */
         private final boolean mReadIsUsed;
         /** Book level - Based on style. */
-        private final boolean mLoaneeIsUsed;
+        private final boolean mEditionIsUsed;
+        /** Book level - Based on style. */
+        private final boolean mLendingIsUsed;
         /** Book level - Based on style. */
         private final boolean mSeriesIsUsed;
 
@@ -649,6 +655,8 @@ public class BooklistAdapter
 
         /** The "I've read it" checkbox. */
         private final CompoundButton mReadView;
+        /** The "1th edition" checkbox. */
+        private final CompoundButton mEditionView;
         /** The "on loan" checkbox. */
         private final CompoundButton mOnLoanView;
 
@@ -731,15 +739,26 @@ public class BooklistAdapter
             // always visible
             mTitleView = itemView.findViewById(R.id.title);
 
-            // visibility is independent from actual data, so this is final.
+            // visibility depends on actual data; but if not in use make sure to hide.
             mReadIsUsed = style.isUsed(DBDefinitions.KEY_READ);
             mReadView = itemView.findViewById(R.id.cbx_read);
-            mReadView.setVisibility(mReadIsUsed ? View.VISIBLE : View.GONE);
+            if (!mReadIsUsed) {
+                mReadView.setVisibility(View.GONE);
+            }
 
-            // visibility is independent from actual data, so this is final.
-            mLoaneeIsUsed = style.isUsed(DBDefinitions.KEY_LOANEE);
+            // visibility depends on actual data; but if not in use make sure to hide.
+            mEditionIsUsed = style.isUsed(DBDefinitions.KEY_EDITION_BITMASK);
+            mEditionView = itemView.findViewById(R.id.cbx_first_edition);
+            if (!mEditionIsUsed) {
+                mEditionView.setVisibility(View.GONE);
+            }
+
+            // visibility depends on actual data; but if not in use make sure to hide.
+            mLendingIsUsed = style.isUsed(DBDefinitions.KEY_LOANEE);
             mOnLoanView = itemView.findViewById(R.id.cbx_on_loan);
-            mOnLoanView.setVisibility(mLoaneeIsUsed ? View.VISIBLE : View.GONE);
+            if (!mLendingIsUsed) {
+                mOnLoanView.setVisibility(View.GONE);
+            }
 
             // visibility is independent from actual data, so this is final.
             mCoverIsUsed = style.isUsed(UniqueId.BKEY_IMAGE);
@@ -747,20 +766,20 @@ public class BooklistAdapter
             mCoverView = itemView.findViewById(R.id.coverImage);
             mCoverView.setVisibility(mCoverIsUsed ? View.VISIBLE : View.GONE);
 
-            // visibility depends on actual data; but if not in use at all, we pre-hide them here.
+            // visibility depends on actual data; but if not in use make sure to hide.
             mSeriesIsUsed = style.isUsed(DBDefinitions.KEY_SERIES_TITLE);
             mSeriesNumView = itemView.findViewById(R.id.series_num);
             mSeriesNumLongView = itemView.findViewById(R.id.series_num_long);
-            // hide by default
-            mSeriesNumView.setVisibility(View.GONE);
-            mSeriesNumLongView.setVisibility(View.GONE);
+            if (!mSeriesIsUsed) {
+                mSeriesNumView.setVisibility(View.GONE);
+                mSeriesNumLongView.setVisibility(View.GONE);
+            }
 
             // Lookup all the 'extras' fields and hide them all by default.
             // this prevents white-space showing up and subsequently disappearing.
             mBookshelfIsUsed = style.isUsed(DBDefinitions.KEY_BOOKSHELF_CSV);
             mBookshelvesView = itemView.findViewById(R.id.shelves);
             mBookshelvesView.setVisibility(View.GONE);
-
             mAuthorIsUsed = style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED);
             mAuthorView = itemView.findViewById(R.id.author);
             mAuthorView.setVisibility(View.GONE);
@@ -794,19 +813,30 @@ public class BooklistAdapter
             mTitleView.setText(title);
 
             if (mReadIsUsed && rowData.contains(DBDefinitions.KEY_READ)) {
-                mReadView.setChecked(rowData.getInt(DBDefinitions.KEY_READ) != 0);
+                boolean isSet = rowData.getInt(DBDefinitions.KEY_READ) != 0;
+                //URGENT: if we make them 'gone', then we don't need selectors but can use static icons.
+                mReadView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                mReadView.setChecked(isSet);
             }
 
-            if (mLoaneeIsUsed && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
-                mOnLoanView.setChecked(!rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN));
+            if (mEditionIsUsed && rowData.contains(DBDefinitions.KEY_EDITION_BITMASK)) {
+                boolean isSet = rowData.getInt(DBDefinitions.KEY_EDITION_BITMASK) != 0;
+                mEditionView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                mEditionView.setChecked(isSet);
+            }
+
+            if (mLendingIsUsed && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
+                boolean isSet = !rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN);
+                mOnLoanView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                mOnLoanView.setChecked(isSet);
             }
 
             if (mCoverIsUsed && rowData.contains(DBDefinitions.KEY_BOOK_UUID)) {
-                // store the uuid for use in the onClick
-                mCoverView.setTag(R.id.TAG_UUID, rowData.getString(DBDefinitions.KEY_BOOK_UUID));
-
                 String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
+                // store the uuid for use in the onClick
+                mCoverView.setTag(R.id.TAG_UUID, uuid);
                 // placeHolder is a non-actionable icon.
+                // A background task will be started if needed.
                 boolean isSet = ImageUtils.setImageView(mCoverView, uuid,
                                                         mMaxCoverSize, mMaxCoverSize, true,
                                                         R.drawable.ic_image);
@@ -815,9 +845,11 @@ public class BooklistAdapter
                     mCoverView.setOnClickListener(v -> {
                         FragmentActivity activity = (FragmentActivity) v.getContext();
                         String currentUuid = (String) v.getTag(R.id.TAG_UUID);
-                        ZoomedImageDialogFragment.show(activity.getSupportFragmentManager(),
-                                                       StorageUtils
-                                                               .getCoverFileForUuid(currentUuid));
+                        File imageFile = StorageUtils.getCoverFileForUuid(currentUuid);
+                        if (imageFile.exists()) {
+                            ZoomedImageDialogFragment
+                                    .show(activity.getSupportFragmentManager(), imageFile);
+                        }
                     });
                 }
             }
@@ -865,6 +897,7 @@ public class BooklistAdapter
                 }
             } else {
                 // Start a background task if there are extras to get.
+                // Note that the cover image is already handled in an earlier background task
                 if ((mExtraFieldsUsed & BooklistStyle.EXTRAS_BY_TASK) != 0) {
                     // Fill in the extras field as blank initially.
                     mBookshelvesView.setText("");

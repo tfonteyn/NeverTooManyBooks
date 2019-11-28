@@ -45,9 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter.BuilderContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter.XmlListener;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -92,38 +90,15 @@ public class ReviewsListApiHandler
      * keep it if it is a valid date, and we store it in SQL format using
      * UTC TZ so comparisons work.
      */
-    private final XmlListener mUpdatedListener = new XmlListener() {
-        @Override
-        public void onStart(@NonNull final BuilderContext bc,
-                            @NonNull final ElementContext c) {
-        }
-
-        @Override
-        public void onFinish(@NonNull final BuilderContext bc,
-                             @NonNull final ElementContext c) {
-
+    private final XmlListener mUpdatedListener = (bc, c) ->
             date2Sql(bc.getData(), ReviewField.UPDATED);
-        }
-    };
 
     /**
      * Listener to handle the contents of the date_added field. We only
      * keep it if it is a valid date, and we store it in SQL format using
      * UTC TZ so comparisons work.
      */
-    private final XmlListener mAddedListener = new XmlListener() {
-        @Override
-        public void onStart(@NonNull final BuilderContext bc,
-                            @NonNull final ElementContext c) {
-        }
-
-        @Override
-        public void onFinish(@NonNull final BuilderContext bc,
-                             @NonNull final ElementContext c) {
-
-            date2Sql(bc.getData(), ReviewField.ADDED);
-        }
-    };
+    private final XmlListener mAddedListener = (bc, c) -> date2Sql(bc.getData(), ReviewField.ADDED);
 
     private SimpleXmlFilter mFilters;
 

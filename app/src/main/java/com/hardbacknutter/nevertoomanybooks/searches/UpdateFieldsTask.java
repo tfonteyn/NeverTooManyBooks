@@ -111,10 +111,10 @@ public class UpdateFieldsTask
                 @Override
                 public void onFinished(@NonNull final Bundle bookData,
                                        @Nullable final String searchErrors) {
-                    Context context = App.getLocalizedAppContext();
+                    Context localContext = App.getLocalizedAppContext();
 
                     if (!mIsCancelled && !bookData.isEmpty()) {
-                        processSearchResults(context, bookData);
+                        processSearchResults(localContext, bookData);
                     }
 
                     // This search is complete. Let another search begin.
@@ -414,7 +414,7 @@ public class UpdateFieldsTask
      */
     @Override
     public void run() {
-        Context context = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
         int progressCounter = 0;
 
         try (BookCursor bookCursor = mDb.fetchBooks(mBookIds, mCurrentBookId)) {
@@ -471,7 +471,7 @@ public class UpdateFieldsTask
                     || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
                     //update the progress base message.
                     mSearchCoordinator.setBaseMessage(
-                            context.getString(R.string.progress_msg_skip_title, title));
+                            localContext.getString(R.string.progress_msg_skip_title, title));
                     continue;
                 }
 
@@ -511,7 +511,7 @@ public class UpdateFieldsTask
             mIsCancelled = true;
 
         } catch (@NonNull final Exception e) {
-            Logger.error(context, TAG, e);
+            Logger.error(localContext, TAG, e);
             mException = e;
 
         } finally {

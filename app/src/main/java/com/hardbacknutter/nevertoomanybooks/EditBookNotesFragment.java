@@ -52,8 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 public class EditBookNotesFragment
         extends EditBookBaseFragment<Integer> {
 
-    public static final String TAG = "EditBookNotesFragment";
-
     private View mReadCbx;
     private View mSignedCbx;
     private View mRatingView;

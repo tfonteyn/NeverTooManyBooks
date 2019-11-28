@@ -218,7 +218,7 @@ public class StartupActivity
                 .setIcon(R.drawable.ic_info_outline)
                 .setMessage(Html.fromHtml(upgradeMessage))
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    UpgradeMessageManager.setUpgradeAcknowledged();
+                    UpgradeMessageManager.setUpgradeAcknowledged(this);
                     startNextStage();
                 })
                 .create()

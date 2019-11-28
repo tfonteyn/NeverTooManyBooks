@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -107,7 +106,7 @@ public class EventsCursor
 
     @Override
     @NonNull
-    public BindableItemCursorAdapter.BindableItem getBindableItem(@NonNull final Context context) {
+    public BindableItemCursorAdapter.BindableItem getBindableItem() {
         if (sEventCol < 0) {
             sEventCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT);
         }

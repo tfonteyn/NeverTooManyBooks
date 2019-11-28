@@ -373,6 +373,7 @@ public abstract class BaseActivity
     /**
      * There was a search requested by the user; bring up the advanced form (activity).
      */
+    @SuppressWarnings("SameReturnValue")
     protected boolean onAdvancedSearchRequested() {
         Intent intent = new Intent(this, FTSSearchActivity.class);
         startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);

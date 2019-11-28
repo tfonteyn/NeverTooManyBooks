@@ -469,15 +469,18 @@ public final class StorageUtils {
     /**
      * Export the source File to the destination Uri.
      *
+     *
+     * @param appContext Application context
      * @param source      File
      * @param destination Uri
      *
      * @throws IOException on failure
      */
-    public static void exportFile(@NonNull final File source,
+    public static void exportFile(@NonNull final Context appContext,
+                                  @NonNull final File source,
                                   @NonNull final Uri destination)
             throws IOException {
-        ContentResolver cr = App.getAppContext().getContentResolver();
+        ContentResolver cr = appContext.getContentResolver();
 
         try (InputStream is = new FileInputStream(source);
              OutputStream os = cr.openOutputStream(destination)) {

@@ -43,18 +43,21 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 /**
  * Used when we find an old task in the database which we don't support.
+ *
+ * <strong>Note:</strong> texts are hardcoded here. They are unlikely to ever
+ * be seen by the user and destined to be removed altogether soon-ish.
  */
 public class LegacyTask
         extends Task
         implements BindableItemCursorAdapter.BindableItem {
 
-    private static final long serialVersionUID = 3867130615733279304L;
 
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
+    private static final long serialVersionUID = 2383004279675307840L;
 
-    public LegacyTask(@NonNull final Context context) {
-        super(context.getString(R.string.gr_tq_legacy_task));
+    public LegacyTask() {
+        super("Legacy Task");
     }
 
     @Override
@@ -84,13 +87,6 @@ public class LegacyTask
         return root;
     }
 
-    /**
-     * <strong>Note:</strong> the text is hardcoded here. It's unlikely to ever
-     * be seen by the user and destined to be removed altogether soon-ish.
-     * <p>
-     * <p>
-     * {@inheritDoc}
-     */
     @SuppressLint("SetTextI18n")
     @Override
     public void bindView(@NonNull final View view,

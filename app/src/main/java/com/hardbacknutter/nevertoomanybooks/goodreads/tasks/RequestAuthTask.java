@@ -108,7 +108,7 @@ public class RequestAuthTask
         // This next step can take several seconds....
         if (!grManager.hasValidCredentials()) {
             try {
-                grManager.requestAuthorization();
+                grManager.requestAuthorization(context);
             } catch (@NonNull final IOException e) {
                 Logger.error(context, TAG, e);
                 mException = e;

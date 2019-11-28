@@ -115,27 +115,28 @@ public class BackupTask
     protected ExportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("BackupTask");
 
-        Context localizedAppContext = App.getLocalizedAppContext();
-        Uri uri = Uri.fromFile(ExportHelper.getTempFile(localizedAppContext));
-        try (BackupWriter writer = BackupManager.getWriter(localizedAppContext, uri)) {
+        Context localContext = App.getLocalizedAppContext();
+        Uri uri = Uri.fromFile(ExportHelper.getTempFile(localContext));
+        try (BackupWriter writer = BackupManager.getWriter(localContext, uri)) {
 
-            writer.backup(localizedAppContext, mExportHelper, mProgressListener);
+            writer.backup(localContext, mExportHelper, mProgressListener);
             if (!isCancelled()) {
                 // the export was successful
                 //noinspection ConstantConditions
-                StorageUtils.exportFile(ExportHelper.getTempFile(localizedAppContext),
+                StorageUtils.exportFile(localContext,
+                                        ExportHelper.getTempFile(localContext),
                                         mExportHelper.uri);
 
                 // if the backup was a full one (not a 'since') remember that.
                 if ((mExportHelper.options & ExportHelper.EXPORT_SINCE) == 0) {
-                    BackupManager.setLastFullBackupDate(localizedAppContext);
+                    BackupManager.setLastFullBackupDate(localContext);
                 }
 
             }
             return mExportHelper;
 
         } catch (@NonNull final IOException e) {
-            Logger.error(localizedAppContext, TAG, e);
+            Logger.error(localContext, TAG, e);
             mException = e;
             return mExportHelper;
         } finally {

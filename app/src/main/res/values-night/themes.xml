@@ -43,7 +43,7 @@
         <item name="nav_bar_end_color">@color/primaryLightColor</item>
 
         <item name="checked_icon_tint">@color/green_700</item>
-        <item name="completed_icon_tint">@color/amber_900</item>
+        <item name="completed_icon_tint">@color/cyan_a700</item>
 
         <!--  =========================== -->
         <!-- Theme Color palette -->

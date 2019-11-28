@@ -313,29 +313,29 @@ public class BooklistStyle
      * @param in Parcel to construct the object from
      */
     private BooklistStyle(@NonNull final Parcel in) {
-        this(in, false, null);
+        this(false, null, in);
     }
 
 
     /**
      * Custom Parcelable constructor which allows cloning/new.
      *
-     * @param in      Parcel to construct the object from
      * @param isNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
      *                The new id will be 0, and the uuid will be newly generated.
-     * @param context Current context
-     *                will be {@code null} when doNew==false !
+     * @param context Current context;  will be {@code null} when isNew==false !
+     * @param in      Parcel to construct the object from
      */
-    private BooklistStyle(@NonNull final Parcel in,
-                          final boolean isNew,
-                          @Nullable final Context context) {
+    private BooklistStyle(final boolean isNew,
+                          @Nullable final Context context,
+                          @NonNull final Parcel in) {
         mId = in.readLong();
         mNameResId = in.readInt();
         //noinspection ConstantConditions
         mUuid = in.readString();
         if (isNew) {
-            mUuid = createUniqueName();
+            //noinspection ConstantConditions
+            mUuid = createUniqueName(context);
         }
 
         // only init the prefs once we have a valid uuid
@@ -345,7 +345,6 @@ public class BooklistStyle
         // create new clone ?
         if (isNew) {
             // get a copy of the name first
-            //noinspection ConstantConditions
             setName(getLabel(context));
             // now reset the other identifiers.
             mId = 0;
@@ -621,13 +620,15 @@ public class BooklistStyle
     /**
      * create + set the UUID.
      *
+     * @param appContext Application context
+     *
      * @return the UUID
      */
     @NonNull
-    private String createUniqueName() {
+    private String createUniqueName(@NonNull final Context appContext) {
         mUuid = UUID.randomUUID().toString();
-        App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE)
-           .edit().putString(Prefs.pk_bob_uuid, mUuid).apply();
+        appContext.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
+                  .edit().putString(Prefs.pk_bob_uuid, mUuid).apply();
         return mUuid;
     }
 
@@ -1193,7 +1194,7 @@ public class BooklistStyle
         parcel = Parcel.obtain();
         parcel.unmarshall(bytes, 0, bytes.length);
         parcel.setDataPosition(0);
-        BooklistStyle clone = new BooklistStyle(parcel, true, context);
+        BooklistStyle clone = new BooklistStyle(true, context, parcel);
         parcel.recycle();
 
         return clone;
@@ -1328,9 +1329,9 @@ public class BooklistStyle
      * @return {@code true} if in use
      */
     public boolean isUsed(@NonNull final String key) {
-        // check the groups first; they take priority on 'extras' and even on App.isUsed,
-        //ENHANCE: because we currently don't hide/remove groups based on user preference
-        // visibility. But do we really care?
+        // check the groups first; they take priority on 'extras' and even on App.isUsed because,
+        //ENHANCE: we currently don't hide/remove groups based on user preference visibility.
+        // But do we really care?
         for (BooklistGroup group : getGroups()) {
             if (group.getFormattedDomain().getName().equals(key)) {
                 return true;
@@ -1858,6 +1859,7 @@ public class BooklistStyle
          *
          * @return a collection of all builtin styles.
          */
+        @SuppressWarnings("SameReturnValue")
         @NonNull
         private static Map<String, BooklistStyle> getStyles() {
 

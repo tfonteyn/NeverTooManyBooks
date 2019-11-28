@@ -25,29 +25,26 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
+package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
-public class IsfdbGetEditionsTask
-        extends TaskBase<ArrayList<Edition>> {
-
-    private static final String TAG = "IsfdbGetEditionsTask";
+/**
+ * Fetch alternative edition isbn's.
+ */
+public class SearchEditionsTask
+        extends TaskBase<ArrayList<String>> {
 
     @NonNull
     private final String mIsbn;
@@ -59,26 +56,33 @@ public class IsfdbGetEditionsTask
      * @param taskListener to send results to
      */
     @UiThread
-    public IsfdbGetEditionsTask(@NonNull final String isbn,
-                                @NonNull final TaskListener<ArrayList<Edition>> taskListener) {
-
+    public SearchEditionsTask(@NonNull final String isbn,
+                              @NonNull final TaskListener<ArrayList<String>> taskListener) {
         super(R.id.TASK_ID_SEARCH_EDITIONS, taskListener);
         mIsbn = isbn;
     }
 
     @Override
-    @Nullable
+    @NonNull
     @WorkerThread
-    protected ArrayList<Edition> doInBackground(final Void... params) {
-        Thread.currentThread().setName("IsfdbGetEditionsTask " + mIsbn);
+    protected ArrayList<String> doInBackground(final Void... params) {
+        Thread.currentThread().setName("SearchEditionsTask " + mIsbn);
+
         Context context = App.getAppContext();
-        try {
-            return new IsfdbEditionsHandler(context).fetch(mIsbn);
-        } catch (@NonNull final SocketTimeoutException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "doInBackground", e);
+
+        ArrayList<String> editions = new ArrayList<>();
+        for (Site site : SiteList.getSites(context, SiteList.Type.AltEditions)) {
+            if (site.isEnabled()) {
+                try {
+                    SearchEngine searchEngine = site.getSearchEngine();
+                    if (searchEngine instanceof SearchEngine.AlternativeEditions) {
+                        editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
+                                                .getAlternativeEditions(context, mIsbn));
+                    }
+                } catch (@NonNull final RuntimeException ignore) {
+                }
             }
-            return null;
         }
+        return editions;
     }
 }

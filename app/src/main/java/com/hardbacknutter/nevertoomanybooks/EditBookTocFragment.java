@@ -106,8 +106,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 public class EditBookTocFragment
         extends EditBookBaseFragment {
 
-    public static final String TAG = "EditBookTocFragment";
-
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
@@ -179,11 +177,6 @@ public class EditBookTocFragment
             ConfirmTocDialogFragment.newInstance(bookData, hasOtherEditions)
                                     .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
         }
-
-        @Override
-        public void onProgress(@NonNull final ProgressMessage message) {
-            // ignore
-        }
     };
 
     /**
@@ -193,14 +186,8 @@ public class EditBookTocFragment
     private final TaskListener<ArrayList<Edition>> mIsfdbEditionResultsListener =
             new TaskListener<ArrayList<Edition>>() {
                 public void onFinished(@NonNull final FinishMessage<ArrayList<Edition>> message) {
-                    ArrayList<Edition> editions = message.result;
-                    mIsfdbEditions = editions != null ? editions : new ArrayList<>();
+                    mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
                     searchIsfdb();
-                }
-
-                @Override
-                public void onProgress(@NonNull final ProgressMessage message) {
-                    // ignore
                 }
             };
 
@@ -232,6 +219,7 @@ public class EditBookTocFragment
                     searchIsfdb();
                 }
             };
+
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultiAuthorsView;
     /** Hold the item position in the ist while we're editing an item. */

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -45,26 +46,28 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.AlternativeExecutor;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 public class CoverBrowserViewModel
         extends ViewModel {
@@ -72,7 +75,8 @@ public class CoverBrowserViewModel
     private static final String TAG = "CoverBrowserViewModel";
 
     /** Holder for all active tasks, so we can cancel them if needed. */
-    private final Collection<AsyncTask> mAllTasks = new HashSet<>();
+    @SuppressLint("UseSparseArrays")
+    private final Map<Integer, AsyncTask> mAllTasks = Collections.synchronizedMap(new HashMap<>());
 
     /** List of all alternative editions/isbn for the given ISBN. */
     private final MutableLiveData<ArrayList<String>> mEditions = new MutableLiveData<>();
@@ -80,6 +84,28 @@ public class CoverBrowserViewModel
     private final MutableLiveData<FileInfo> mGalleryImage = new MutableLiveData<>();
 
     private final MutableLiveData<FileInfo> mSwitcherImage = new MutableLiveData<>();
+    private final TaskListener<ArrayList<String>> mEditionTaskListener = message -> {
+        mAllTasks.remove(message.taskId);
+        mEditions.setValue(message.result);
+    };
+
+    private final TaskListener<FileInfo> mImageTaskListener = message -> {
+        mAllTasks.remove(message.taskId);
+
+        switch (message.taskId) {
+            case R.id.TASK_ID_SWITCHER_IMAGE:
+                mSwitcherImage.setValue(message.result);
+                break;
+
+            case R.id.TASK_ID_GALLERY_IMAGE:
+                mGalleryImage.setValue(message.result);
+                break;
+
+            default:
+                throw new UnexpectedValueException(message.taskId);
+        }
+    };
+
     /** ISBN of book to fetch other editions of. */
     private String mBaseIsbn;
     /** Handles downloading, checking and cleanup of files. */
@@ -97,8 +123,11 @@ public class CoverBrowserViewModel
             mBaseIsbn = args.getString(DBDefinitions.KEY_ISBN);
             Objects.requireNonNull(mBaseIsbn, "ISBN must be passed in args");
             // optional
-            SiteList siteList = args.getParcelable(SiteList.ListType.Covers.getBundleKey());
-            mFileManager = new FileManager(context, siteList);
+            SiteList siteList = args.getParcelable(SiteList.Type.Covers.getBundleKey());
+            if (siteList == null) {
+                siteList = SiteList.getList(context, SiteList.Type.Covers);
+            }
+            mFileManager = new FileManager(siteList);
         }
     }
 
@@ -111,49 +140,13 @@ public class CoverBrowserViewModel
         }
     }
 
-    public FileManager getFileManager() {
-        return mFileManager;
-    }
-
-    /**
-     * Keep track of all tasks so we can remove/cancel at will.
-     *
-     * @param task to add
-     * @param <T>  type of task
-     *
-     * @return task for chaining
-     */
-    private <T extends AsyncTask> T addTask(@NonNull final T task) {
-        synchronized (mAllTasks) {
-            mAllTasks.add(task);
-        }
-        return task;
-    }
-
-    /**
-     * Remove a specific task from the set (NOT the queue).
-     * This method should be called *after* a task has notified us it finished.
-     *
-     * @param task to remove
-     * @param <T>  type of task
-     */
-    private <T extends AsyncTask> void removeTask(@Nullable final T task) {
-        if (task != null) {
-            synchronized (mAllTasks) {
-                mAllTasks.remove(task);
-            }
-        }
-    }
-
     /**
      * Cancel all active tasks.
      */
     private void cancelAllTasks() {
         // cancel any active tasks.
-        synchronized (mAllTasks) {
-            for (AsyncTask task : mAllTasks) {
-                task.cancel(true);
-            }
+        for (AsyncTask task : mAllTasks.values()) {
+            task.cancel(true);
         }
     }
 
@@ -161,54 +154,43 @@ public class CoverBrowserViewModel
      * Start a search for alternative editions of the book (using the isbn).
      */
     public void fetchEditions() {
-        addTask(new GetEditionsTask(mBaseIsbn, this)).execute();
+        SearchEditionsTask task = new SearchEditionsTask(mBaseIsbn, mEditionTaskListener);
+        mAllTasks.put(task.getId(), task);
+        task.execute();
     }
 
     public MutableLiveData<ArrayList<String>> getEditions() {
         return mEditions;
     }
 
-    private void onGetEditionsTaskFinished(@NonNull final GetEditionsTask task,
-                                           @Nullable final ArrayList<String> editions) {
-        removeTask(task);
-        mEditions.setValue(editions);
+    public FileManager getFileManager() {
+        return mFileManager;
     }
-
 
     /**
      * @param isbn to search for, <strong>must</strong> be valid.
      */
     public void fetchGalleryImage(@NonNull final String isbn) {
-        addTask(new GetGalleryImageTask(isbn, mFileManager, this))
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        GetGalleryImageTask task = new GetGalleryImageTask(isbn, mFileManager, mImageTaskListener);
+        mAllTasks.put(task.getId(), task);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public MutableLiveData<FileInfo> getGalleryImage() {
         return mGalleryImage;
     }
 
-    private void onGetGalleryImageTaskFinished(@NonNull final GetGalleryImageTask task,
-                                               @NonNull final FileInfo fileInfo) {
-        removeTask(task);
-        mGalleryImage.setValue(fileInfo);
-    }
-
-
-    public void fetchSwitcherImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
+    public void fetchSelectedImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
+        GetSwitcherImageTask task = new GetSwitcherImageTask(fileInfo, mFileManager,
+                                                             mImageTaskListener);
+        mAllTasks.put(task.getId(), task);
         // use the alternative executor, so we get a result back without
         // waiting on the gallery tasks.
-        addTask(new GetSwitcherImageTask(fileInfo, mFileManager, this))
-                .executeOnExecutor(AlternativeExecutor.THREAD_POOL_EXECUTOR);
+        task.executeOnExecutor(AlternativeExecutor.THREAD_POOL_EXECUTOR);
     }
 
-    public MutableLiveData<FileInfo> getSwitcherImage() {
+    public MutableLiveData<FileInfo> getSelectedImage() {
         return mSwitcherImage;
-    }
-
-    private void onGetSwitcherImageTaskFinished(@NonNull final GetSwitcherImageTask task,
-                                                @NonNull final FileInfo fileInfo) {
-        removeTask(task);
-        mSwitcherImage.setValue(fileInfo);
     }
 
     /**
@@ -311,16 +293,10 @@ public class CoverBrowserViewModel
         /**
          * Constructor.
          *
-         * @param appContext Current context
-         * @param siteList    (optional) site list
+         * @param siteList site list
          */
-        FileManager(@NonNull final Context appContext,
-                    @Nullable final SiteList siteList) {
-            if (siteList != null) {
-                mSiteList = siteList;
-            } else {
-                mSiteList = SiteList.getList(appContext, SiteList.ListType.Covers);
-            }
+        FileManager(@NonNull final SiteList siteList) {
+            mSiteList = siteList;
         }
 
         /**
@@ -409,7 +385,7 @@ public class CoverBrowserViewModel
                         SearchEngine engine = site.getSearchEngine();
 
                         boolean isAvailable = engine instanceof SearchEngine.CoverByIsbn
-                                              && engine.isAvailable();
+                                              && engine.isAvailable(appContext);
                         if (isAvailable) {
                             fileInfo = download(appContext, (SearchEngine.CoverByIsbn) engine,
                                                 isbn, size);
@@ -513,78 +489,15 @@ public class CoverBrowserViewModel
     }
 
     /**
-     * Fetch alternative edition isbn's.
-     */
-    private static class GetEditionsTask
-            extends AsyncTask<Void, Void, ArrayList<String>> {
-
-        @NonNull
-        private final String mIsbn;
-        @NonNull
-        private final WeakReference<CoverBrowserViewModel> mTaskListener;
-
-        /**
-         * Constructor.
-         *
-         * @param isbn         to search for
-         * @param taskListener to send results to
-         */
-        @UiThread
-        GetEditionsTask(@NonNull final String isbn,
-                        @NonNull final CoverBrowserViewModel taskListener) {
-            mIsbn = isbn;
-            mTaskListener = new WeakReference<>(taskListener);
-        }
-
-        @Override
-        @NonNull
-        @WorkerThread
-        protected ArrayList<String> doInBackground(final Void... params) {
-            Thread.currentThread().setName("GetEditionsTask " + mIsbn);
-
-            Context appContext = App.getAppContext();
-
-            ArrayList<String> editions = new ArrayList<>();
-            for (Site site : SiteList.getSites(appContext, SiteList.ListType.AltEditions)) {
-                if (site.isEnabled()) {
-                    try {
-                        SearchEngine searchEngine = site.getSearchEngine();
-                        if (searchEngine instanceof SearchEngine.AlternativeEditions) {
-                            editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                                    .getAlternativeEditions(appContext, mIsbn));
-                        }
-                    } catch (@NonNull RuntimeException ignore) {
-                    }
-                }
-            }
-            return editions;
-        }
-
-        @Override
-        @UiThread
-        protected void onPostExecute(@NonNull final ArrayList<String> result) {
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onGetEditionsTaskFinished(this, result);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
-                }
-            }
-        }
-    }
-
-    /**
      * Fetch a thumbnail and stick it into the gallery.
      */
     static class GetGalleryImageTask
-            extends AsyncTask<Void, Void, FileInfo> {
+            extends TaskBase<FileInfo> {
 
         @NonNull
         private final String mIsbn;
         @NonNull
         private final FileManager mFileManager;
-        @NonNull
-        private final WeakReference<CoverBrowserViewModel> mTaskListener;
 
         /**
          * Constructor.
@@ -596,10 +509,10 @@ public class CoverBrowserViewModel
         @UiThread
         GetGalleryImageTask(@NonNull final String isbn,
                             @NonNull final FileManager fileManager,
-                            @NonNull final CoverBrowserViewModel taskListener) {
+                            @NonNull final TaskListener<FileInfo> taskListener) {
+            super(R.id.TASK_ID_GALLERY_IMAGE, taskListener);
             mIsbn = isbn;
             mFileManager = fileManager;
-            mTaskListener = new WeakReference<>(taskListener);
         }
 
         @Override
@@ -607,9 +520,9 @@ public class CoverBrowserViewModel
         @WorkerThread
         protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetGalleryImageTask " + mIsbn);
-            Context appContext = App.getAppContext();
+            Context context = App.getAppContext();
             try {
-                return mFileManager.download(appContext,
+                return mFileManager.download(context,
                                              mIsbn,
                                              // try to get a picture in this order of size.
                                              // Stops at first one found.
@@ -624,46 +537,18 @@ public class CoverBrowserViewModel
             // we failed, but we still need to return the isbn.
             return new FileInfo(mIsbn);
         }
-
-        @Override
-        @UiThread
-        protected void onPostExecute(@NonNull final FileInfo result) {
-            // always callback; even with a bad result.
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onGetGalleryImageTaskFinished(this, result);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
-                }
-            }
-        }
-
-        @Override
-        protected void onCancelled(@NonNull final FileInfo result) {
-            // let the caller clean up.
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onGetGalleryImageTaskFinished(this, result);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onCancelled|" + Logger.WEAK_REFERENCE_DEAD);
-                }
-            }
-        }
     }
 
     /**
      * Fetch a full-size image and stick it into the ImageSwitcher.
      */
     static class GetSwitcherImageTask
-            extends AsyncTask<Void, Void, FileInfo> {
+            extends TaskBase<FileInfo> {
 
         @NonNull
         private final FileInfo mFileInfo;
         @NonNull
         private final FileManager mFileManager;
-        @NonNull
-        private final WeakReference<CoverBrowserViewModel> mTaskListener;
-
 
         /**
          * Constructor.
@@ -675,10 +560,10 @@ public class CoverBrowserViewModel
         @UiThread
         GetSwitcherImageTask(@NonNull final CoverBrowserViewModel.FileInfo fileInfo,
                              @NonNull final FileManager fileManager,
-                             @NonNull final CoverBrowserViewModel taskListener) {
+                             @NonNull final TaskListener<FileInfo> taskListener) {
+            super(R.id.TASK_ID_SWITCHER_IMAGE, taskListener);
             mFileInfo = fileInfo;
             mFileManager = fileManager;
-            mTaskListener = new WeakReference<>(taskListener);
         }
 
         @Override
@@ -686,9 +571,9 @@ public class CoverBrowserViewModel
         @WorkerThread
         protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetSwitcherImageTask " + mFileInfo.isbn);
-            Context appContext = App.getAppContext();
+            Context context = App.getAppContext();
             try {
-                return mFileManager.download(appContext,
+                return mFileManager.download(context,
                                              mFileInfo.isbn,
                                              // try to get a picture in this order of size.
                                              // Stops at first one found.
@@ -702,31 +587,6 @@ public class CoverBrowserViewModel
             }
             // we failed, but we still need to return the isbn.
             return new FileInfo(mFileInfo.isbn);
-        }
-
-        @Override
-        @UiThread
-        protected void onPostExecute(@NonNull final FileInfo result) {
-            // always callback; even with a bad result.
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onGetSwitcherImageTaskFinished(this, result);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
-                }
-            }
-        }
-
-        @Override
-        protected void onCancelled(@NonNull final FileInfo result) {
-            // let the caller clean up.
-            if (mTaskListener.get() != null) {
-                mTaskListener.get().onGetSwitcherImageTaskFinished(this, result);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onCancelled|" + Logger.WEAK_REFERENCE_DEAD);
-                }
-            }
         }
     }
 }

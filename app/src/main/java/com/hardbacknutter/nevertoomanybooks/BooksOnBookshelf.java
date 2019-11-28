@@ -821,9 +821,10 @@ public class BooksOnBookshelf
     @CallSuper
     public void onPause() {
         hideFABMenu();
-        if (mModel.getSearchCriteria().isEmpty()) {
+        //TEST: why did I add the if() ?
+//        if (mModel.getSearchCriteria().isEmpty()) {
             savePosition();
-        }
+//        }
         super.onPause();
     }
 
@@ -1221,10 +1222,10 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-                boolean loaningIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
+                boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
                 boolean isAvailable = mModel.isAvailable(row);
-                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(loaningIsUsed && isAvailable);
-                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(loaningIsUsed && !isAvailable);
+                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(lendingIsUsed && isAvailable);
+                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(lendingIsUsed && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
                     .setVisible(GoodreadsManager.isShowSyncMenus(this));

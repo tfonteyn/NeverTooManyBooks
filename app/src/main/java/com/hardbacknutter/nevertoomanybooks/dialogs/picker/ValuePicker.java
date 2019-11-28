@@ -62,17 +62,15 @@ public class ValuePicker {
     /**
      * Constructor.
      *
-     * @param context          Current context
-     * @param title            (optional) Dialog title
-     * @param message          (optional) Message to display at the top
-     * @param showCancel       set to {@code true} to show an explicit 'cancel' button.
-     * @param onCancelListener (optional) listener for cancel events
+     * @param context    Current context
+     * @param title      (optional) Dialog title
+     * @param message    (optional) Message to display at the top
+     * @param showCancel set to {@code true} to show an explicit 'cancel' button.
      */
     ValuePicker(@NonNull final Context context,
                 @Nullable final CharSequence title,
                 @Nullable final CharSequence message,
-                final boolean showCancel,
-                @Nullable final DialogInterface.OnCancelListener onCancelListener) {
+                final boolean showCancel) {
 
         View root = LayoutInflater.from(context).inflate(R.layout.dialog_popupmenu, null);
 
@@ -85,7 +83,6 @@ public class ValuePicker {
 
         mDialog = new AlertDialog.Builder(context)
                 .setView(root)
-                .setOnCancelListener(onCancelListener)
                 .create();
 
         // optional title

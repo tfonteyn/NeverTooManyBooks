@@ -96,15 +96,15 @@ public class RestoreTask
     protected ImportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("RestoreTask");
 
-        Context localizedAppContext = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.getReader(localizedAppContext,
+        try (BackupReader reader = BackupManager.getReader(localContext,
                                                            mImportHelper.uri)) {
 
-            reader.restore(localizedAppContext, mImportHelper, mProgressListener);
+            reader.restore(localContext, mImportHelper, mProgressListener);
 
         } catch (@NonNull final IOException | ImportException | InvalidArchiveException e) {
-            Logger.error(localizedAppContext, TAG, e);
+            Logger.error(localContext, TAG, e);
             mException = e;
         }
         return mImportHelper;

@@ -355,10 +355,11 @@ public final class LanguageUtils {
 
     /**
      * generate initial language2iso mappings.
+     * @param context Current context
      */
-    public static void createLanguageMappingCache() {
+    public static void createLanguageMappingCache(@NonNull final Context context) {
 
-        SharedPreferences prefs = getLanguageCache(App.getAppContext());
+        SharedPreferences prefs = getLanguageCache(context);
 
         // the one the user is using our app in (can be different from the system one)
         createLanguageMappingCache(prefs, Locale.getDefault());
@@ -399,9 +400,11 @@ public final class LanguageUtils {
         ed.apply();
     }
 
-    /** Convenience method to get the language SharedPreferences file. */
-    private static SharedPreferences getLanguageCache(@NonNull final Context context) {
-        return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
+    /**
+     * Convenience method to get the language SharedPreferences file.
+     */
+    private static SharedPreferences getLanguageCache(@NonNull final Context appContext) {
+        return appContext.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
     }
 
     public static String toDebugString(@NonNull final Context context) {

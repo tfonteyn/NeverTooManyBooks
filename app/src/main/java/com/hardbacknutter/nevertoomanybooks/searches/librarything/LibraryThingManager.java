@@ -50,7 +50,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -410,8 +409,8 @@ public class LibraryThingManager
     }
 
     @Override
-    public boolean isAvailable() {
-        return hasKey(App.getAppContext());
+    public boolean isAvailable(@NonNull final Context appContext) {
+        return hasKey(appContext);
     }
 
     @NonNull

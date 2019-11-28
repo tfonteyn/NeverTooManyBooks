@@ -55,7 +55,9 @@ public interface TaskListener<Result> {
     /**
      * Progress messages.
      */
-    void onProgress(@NonNull ProgressMessage message);
+    default void onProgress(@NonNull ProgressMessage message) {
+        // ignore by default
+    }
 
     /** Possible outcomes as passed in {@link FinishMessage}. */
     enum TaskStatus {

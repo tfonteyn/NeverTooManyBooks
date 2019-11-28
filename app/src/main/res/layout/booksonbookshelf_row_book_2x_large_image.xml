@@ -49,7 +49,7 @@
     <TextView
         android:id="@+id/title"
         style="@style/BooklistBook.BookInfo.Title"
-        app:layout_constraintEnd_toStartOf="@id/cbx_read"
+        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/series_num"
         app:layout_constraintTop_toTopOf="parent"
@@ -57,15 +57,37 @@
         tools:text="@string/lbl_title"
         />
 
-    <CheckBox
-        android:id="@+id/cbx_read"
-        style="@style/Flag.Read"
-        android:contentDescription="@string/lbl_read"
+    <LinearLayout
+        android:id="@+id/icon_sidebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintTop_toTopOf="parent"
-        tools:checked="true"
-        />
+        >
+
+        <CheckBox
+            android:id="@+id/cbx_read"
+            style="@style/Flag.Read"
+            android:contentDescription="@string/lbl_read"
+            tools:checked="true"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_first_edition"
+            style="@style/Flag.FirstEdition"
+            android:contentDescription="@string/lbl_edition_first_edition"
+            tools:checked="true"
+            />
+
+        <CheckBox
+            android:id="@+id/cbx_on_loan"
+            style="@style/Flag.OnLoan"
+            android:contentDescription="@string/lbl_loaned"
+            tools:checked="true"
+            />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/coverImage"
@@ -91,7 +113,7 @@
     <TextView
         android:id="@+id/series_num_long"
         style="@style/BooklistBook.BookInfo.Secondary"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"
@@ -101,7 +123,7 @@
     <TextView
         android:id="@+id/author"
         style="@style/BooklistBook.BookInfo.Secondary"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/series_num_long"
         tools:ignore="SelectableText"
@@ -111,7 +133,7 @@
     <TextView
         android:id="@+id/publisher"
         style="@style/BooklistBook.BookInfo.Secondary"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:ignore="SelectableText"
@@ -121,7 +143,7 @@
     <TextView
         android:id="@+id/isbn"
         style="@style/BooklistBook.BookInfo.Secondary"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/publisher"
         tools:ignore="SelectableText"
@@ -131,7 +153,7 @@
     <TextView
         android:id="@+id/format"
         style="@style/BooklistBook.BookInfo.Secondary"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/isbn"
         tools:ignore="SelectableText"
@@ -139,23 +161,23 @@
         />
 
     <TextView
-        android:id="@+id/shelves"
+        android:id="@+id/location"
         style="@style/BooklistBook.BookInfo.Secondary"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/format"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_bookshelves"
+        tools:text="@string/lbl_location"
         />
 
     <TextView
-        android:id="@+id/location"
+        android:id="@+id/shelves"
         style="@style/BooklistBook.BookInfo.Secondary"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
         app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/shelves"
+        app:layout_constraintTop_toBottomOf="@id/location"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_location"
+        tools:text="@string/lbl_bookshelves"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

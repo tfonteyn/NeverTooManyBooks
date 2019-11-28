@@ -94,7 +94,7 @@ public class MenuPicker<T>
                        @NonNull final Menu menu,
                        @Nullable final T userObject,
                        @NonNull final ContextItemSelected<T> listener) {
-        super(context, title, message, false, null);
+        super(context, title, message, false);
 
         mAdapter = new MenuItemListAdapter(context, menu, menuItem -> {
             if (menuItem.hasSubMenu()) {

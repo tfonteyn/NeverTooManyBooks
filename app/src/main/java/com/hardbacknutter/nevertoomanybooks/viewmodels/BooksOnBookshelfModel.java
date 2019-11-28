@@ -193,11 +193,6 @@ public class BooksOnBookshelfModel
                     // always call back, even if there is no new list.
                     mBuilderResult.setValue(message.result);
                 }
-
-                @Override
-                public void onProgress(@NonNull final ProgressMessage message) {
-                    // ignore
-                }
             };
     /** Current displayed list cursor. */
     @Nullable
@@ -477,6 +472,20 @@ public class BooksOnBookshelfModel
                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
                            false);
 
+
+        if (App.isUsed(DBDefinitions.KEY_EDITION_BITMASK)) {
+            // The edition bitmask
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_EDITION_BITMASK),
+                               false);
+        }
+
+        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            blb.addExtraDomain(DBDefinitions.DOM_LOANEE_AS_BOOLEAN,
+                               DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN,
+                               false);
+        }
+
         /*
          * If we do not use a background task for the extras,
          * then we add the needed extras columns to the main query.
@@ -507,16 +516,14 @@ public class BooksOnBookshelfModel
 //                }
 
             if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
-                blb.addExtraDomain(
-                        DBDefinitions.DOM_BOOK_PUBLISHER,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
-                        false);
+                blb.addExtraDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
+                                   false);
             }
             if (style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
-                blb.addExtraDomain(
-                        DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_DATE_PUBLISHED),
-                        false);
+                blb.addExtraDomain(DBDefinitions.DOM_DATE_PUBLISHED,
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_DATE_PUBLISHED),
+                                   false);
             }
             if (style.isUsed(DBDefinitions.KEY_ISBN)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISBN,
@@ -553,7 +560,6 @@ public class BooksOnBookshelfModel
             //blb.setFilterOnSeriesName(mSearchCriteria.ftsSeries);
             blb.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
         }
-
 
         new GetBookListTask(blb, mCursor, mCurrentPositionedBookId, mRebuildState,
                             mOnGetBookListTaskListener)
@@ -755,11 +761,11 @@ public class BooksOnBookshelfModel
 
                 @Override
                 public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    Context context = App.getLocalizedAppContext();
+                    Context localContext = App.getLocalizedAppContext();
                     switch (message.status) {
                         case Success:
                         case Failed: {
-                            String msg = GoodreadsTasks.handleResult(context, message);
+                            String msg = GoodreadsTasks.handleResult(localContext, message);
                             if (msg != null) {
                                 mUserMessage.setValue(msg);
                             } else {
@@ -770,7 +776,8 @@ public class BooksOnBookshelfModel
                         }
                         case Cancelled: {
                             mUserMessage
-                                    .setValue(context.getString(R.string.progress_end_cancelled));
+                                    .setValue(localContext
+                                                      .getString(R.string.progress_end_cancelled));
                             break;
                         }
                     }

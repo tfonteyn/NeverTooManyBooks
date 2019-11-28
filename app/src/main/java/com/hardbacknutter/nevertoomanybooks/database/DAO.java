@@ -107,7 +107,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_EDITION_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
@@ -141,6 +140,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
@@ -894,14 +894,17 @@ public class DAO
      * <strong>IMPORTANT:</strong> the query can return more then one row if the
      * given-name of the author is empty. But we only return the id of the first row found.
      *
+     *
+     * @param context Current context
      * @param author to find the id of
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
-    public long getAuthorId(@NonNull final Author author,
+    public long getAuthorId(@NonNull final Context context,
+                            @NonNull final Author author,
                             @NonNull final Locale fallbackLocale) {
 
-        Locale authorLocale = author.getLocale(App.getAppContext(), this, fallbackLocale);
+        Locale authorLocale = author.getLocale(context, this, fallbackLocale);
 
         SynchronizedStatement stmt = mStatements.get(STMT_GET_AUTHOR_ID);
         if (stmt == null) {
@@ -2687,15 +2690,6 @@ public class DAO
      */
     @NonNull
     public Cursor fetchBookExtrasById(final long bookId) {
-        //A performance run (in UIThread!) on 983 books showed:
-        // 1. withBookshelves==false; 799ms
-        // 2. withBookshelves==true and complex SQL; 806ms
-        // 3. withBookshelves==true, simpler SQL,
-        // and an extra getBookshelvesByBookId call; 1254ms
-        //
-        // so nothing spectacular between 1/2,
-        // but avoiding the extra fetch of option 3. is worth it.
-
         return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS, new String[]{String.valueOf(bookId)});
     }
 
@@ -4418,7 +4412,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_ISBN)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PUBLISHER)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_TOC_BITMASK)
-                + ',' + TBL_BOOKS.dotAs(DOM_BOOK_DATE_PUBLISHED)
+                + ',' + TBL_BOOKS.dotAs(DOM_DATE_PUBLISHED)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRINT_RUN)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED)
                 + ',' + TBL_BOOKS.dotAs(DOM_BOOK_PRICE_LISTED_CURRENCY)
@@ -4535,8 +4529,8 @@ public class DAO
         @NonNull
         private static String withAllAuthorsAndSeries(@NonNull final String whereClause) {
 
-            Context context = App.getLocalizedAppContext();
-            String andOthersText = context.getString(R.string.and_others);
+            Context localContext = App.getLocalizedAppContext();
+            String andOthersText = localContext.getString(R.string.and_others);
 
             // "a." (TBL_AUTHOR), "b." (TBL_BOOKS), "s." (TBL_SERIES}
             // BUT... here they have double-use:
@@ -5250,7 +5244,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_FORMAT)
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_PUBLISHER)
                 + ',' + TBL_BOOKS.dot(DOM_BOOK_ISBN)
-                + ',' + TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED)
+                + ',' + TBL_BOOKS.dot(DOM_DATE_PUBLISHED)
 
                 + ',' + "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DOM_BOOKSHELF) + ",', ')"
                 + " AS " + DOM_BOOKSHELF

@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
+import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -56,21 +57,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * <br>NEWTHINGS: adding a new search engine:
  * To make it available, follow these steps:
  * <ol>
- * <li>Add an identifier (bit) in this class + add it to {@link #SEARCH_FLAG_MASK}.</li>
- * <li>Add the identifier to {@link Id}</li>
+ * <li>Implement {@link SearchEngine} to create the new engine (class).</li>
+ * <li>Add an identifier (bit) in this class and
+ * add it to {@link #SEARCH_FLAG_MASK} and {@link Id}</li>
  * <li>Add a name for it to {@link #getName}.<br>
  * This should be a hardcoded, single word, no spaces, and will be user visible.<br>
- * It will be used in SharedPreferences so should never be changed.
- * </li>
- * <li>Implement {@link SearchEngine} to create the new engine (class).</li>
- * <li>Add the new engine to {@link #getSearchEngine}</li>
- *
- * <li>Create+add a new {@link Site} instance to the lists in {@link #createSiteList}
+ * It will be used in SharedPreferences so should never be changed.</li>
+ * <li>Add the new SearchEngine to {@link #getSearchEngine}</li>
+ * <li>Add a new {@link Site} instance to the list(s) in {@link #createSiteList}
  * and to {@link #DATA_RELIABILITY_ORDER}</li>
  *
- * <li>Add your new engine to {@link #getSiteUrls}</li>
- * <li>Optional: add to res/xml/preferences.xml if the url should be editable.<br>
- * See the Amazon example in that xml file.</li>
+ * <li>Add the new SearchEngine to {@link #getSiteUrls}</li>
+ * <li>Optional: add a preference fragment if needed.<br>
+ * See the {@link IsfdbPreferencesFragment} example: a class, an xml file, and an entry
+ * in res/xml/preferences.xml.</li>
  * </ol>
  *
  * <strong>Note:</strong> NEVER change the identifiers (bit flag) of the sites,
@@ -85,7 +85,7 @@ public final class SearchSites {
     public static final boolean ENABLE_AMAZON_AWS = false;
 
     /** Site. */
-    public static final int AMAZON = 1 << 1;
+    static final int AMAZON = 1 << 1;
     static final String DATA_RELIABILITY_ORDER;
     /** Site. */
     private static final int GOOGLE_BOOKS = 1;
@@ -107,10 +107,6 @@ public final class SearchSites {
                                         | KB_NL | STRIP_INFO_BE;
     /** Dutch language site. */
     private static final String NLD = "nld";
-    /** Name suffix for Cover websites. */
-    private static final String SUFFIX_COVERS = "Covers";
-    /** Name suffix for Alternative Editions websites. */
-    private static final String SUFFIX_ALT_ED = "AltEd";
 
     static {
         // order is hardcoded based on experience.
@@ -134,14 +130,12 @@ public final class SearchSites {
      * <ol>
      * <li>As the key into the actual preferences.</li>
      * <li>User-visible name in the app settings.</li>
-     * <li>Internal task(thread) name which in some circumstances will be user-visible.</li>
      * </ol>
      * <p>
      * As it's used as a prefs key, it should never be changed.
      * <p>
      * <strong>Note:</strong> the name is also required in the actual {@link SearchEngine}
-     * as a {@code StringRes} but the method here can not use that one without
-     * instantiating which we don't want to do here.
+     * as a {@code StringRes}. The latter can be localized and is purely for display purposes.
      *
      * @param id for the site
      *
@@ -177,7 +171,7 @@ public final class SearchSites {
      *
      * @return instance
      */
-    static SearchEngine getSearchEngine(@SearchSites.Id final int id) {
+    static SearchEngine getSearchEngine(@Id final int id) {
         switch (id) {
             case GOOGLE_BOOKS:
                 return new GoogleBooksManager();
@@ -214,31 +208,31 @@ public final class SearchSites {
      * Get the global search site list. Optionally initialise sites and order.
      *
      * @param context   Current context
-     * @param listType  list to get
+     * @param type      list to get
      * @param loadPrefs set to {@code true} to initialise individual sites and the order
      *
      * @return list
      */
     static SiteList createSiteList(@NonNull final Context context,
-                                   @NonNull final SiteList.ListType listType,
+                                   @NonNull final SiteList.Type type,
                                    final boolean loadPrefs) {
-        SiteList list = new SiteList(listType);
+        SiteList list = new SiteList(type);
 
-        switch (listType) {
+        switch (type) {
             case Data: {
                 if (ENABLE_AMAZON_AWS) {
-                    list.add(Site.newSite(AMAZON, false));
+                    list.add(Site.createSite(AMAZON, type, false));
                 }
-                list.add(Site.newSite(GOODREADS, true));
-                list.add(Site.newSite(GOOGLE_BOOKS, true));
-                list.add(Site.newSite(LIBRARY_THING, true));
-                list.add(Site.newSite(ISFDB, true));
+                list.add(Site.createSite(GOODREADS, type, true));
+                list.add(Site.createSite(GOOGLE_BOOKS, type, true));
+                list.add(Site.createSite(LIBRARY_THING, type, true));
+                list.add(Site.createSite(ISFDB, type, true));
                 // Dutch.
-                list.add(Site.newSite(STRIP_INFO_BE, isLang(NLD)));
+                list.add(Site.createSite(STRIP_INFO_BE, type, isLang(NLD)));
                 // Dutch.
-                list.add(Site.newSite(KB_NL, isLang(NLD)));
+                list.add(Site.createSite(KB_NL, type, isLang(NLD)));
                 // Disabled by default as data from this site is not very complete.
-                list.add(Site.newSite(OPEN_LIBRARY, false));
+                list.add(Site.createSite(OPEN_LIBRARY, type, false));
                 break;
             }
             case Covers: {
@@ -246,22 +240,22 @@ public final class SearchSites {
                  * Default search order for dedicated cover lookup.
                  * These are only used by the {@link CoverBrowserViewModel}.
                  */
-                list.add(Site.newSite(ISFDB, SUFFIX_COVERS, true));
-                list.add(Site.newSite(STRIP_INFO_BE, SUFFIX_COVERS, isLang(NLD)));
-                list.add(Site.newSite(GOOGLE_BOOKS, SUFFIX_COVERS, true));
-                list.add(Site.newSite(GOODREADS, SUFFIX_COVERS, true));
+                list.add(Site.createSite(ISFDB, type, true));
+                list.add(Site.createSite(STRIP_INFO_BE, type, isLang(NLD)));
+                list.add(Site.createSite(GOOGLE_BOOKS, type, true));
+                list.add(Site.createSite(GOODREADS, type, true));
                 if (ENABLE_AMAZON_AWS) {
-                    list.add(Site.newSite(AMAZON, SUFFIX_COVERS, false));
+                    list.add(Site.createSite(AMAZON, type, false));
                 }
-                list.add(Site.newSite(KB_NL, SUFFIX_COVERS, isLang(NLD)));
-                list.add(Site.newSite(LIBRARY_THING, SUFFIX_COVERS, false));
-                list.add(Site.newSite(OPEN_LIBRARY, SUFFIX_COVERS, false));
+                list.add(Site.createSite(KB_NL, type, isLang(NLD)));
+                list.add(Site.createSite(LIBRARY_THING, type, false));
+                list.add(Site.createSite(OPEN_LIBRARY, type, false));
                 break;
             }
 
             case AltEditions: {
-                list.add(Site.newSite(LIBRARY_THING, SUFFIX_ALT_ED, true));
-                list.add(Site.newSite(ISFDB, SUFFIX_ALT_ED, true));
+                list.add(Site.createSite(LIBRARY_THING, type, true));
+                list.add(Site.createSite(ISFDB, type, true));
                 break;
             }
 

@@ -65,7 +65,7 @@ public class FilePicker
                       @Nullable final CharSequence message,
                       @NonNull final List<File> files,
                       @NonNull final PickListener<File> handler) {
-        super(context, title, message, true, null);
+        super(context, title, message, true);
 
         final FileItemListAdapter adapter = new FileItemListAdapter(context, files, item -> {
             dismiss();

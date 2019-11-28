@@ -71,11 +71,6 @@ public class LibraryThingRegistrationActivity
         public void onFinished(@NonNull final FinishMessage<Integer> message) {
             Snackbar.make(mDevKeyView, message.result, Snackbar.LENGTH_LONG).show();
         }
-
-        @Override
-        public void onProgress(@NonNull final ProgressMessage message) {
-            // ignore
-        }
     };
 
     @Override
@@ -144,10 +139,10 @@ public class LibraryThingRegistrationActivity
         protected Integer doInBackground(final Void... params) {
             Thread.currentThread().setName("LT.ValidateKey");
 
-            Context appContext = App.getAppContext();
+            Context context = App.getAppContext();
             try {
                 SearchEngine.CoverByIsbn ltm = new LibraryThingManager();
-                File tmpFile = ltm.getCoverImage(appContext, "0451451783",
+                File tmpFile = ltm.getCoverImage(context, "0451451783",
                                                  SearchEngine.CoverByIsbn.ImageSize.Small);
                 if (tmpFile != null) {
                     tmpFile.deleteOnExit();
@@ -167,7 +162,7 @@ public class LibraryThingRegistrationActivity
                 return R.string.warning_cover_not_found;
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(appContext, TAG, e);
+                Logger.error(context, TAG, e);
                 mException = e;
                 return R.string.error_unexpected_error;
             }

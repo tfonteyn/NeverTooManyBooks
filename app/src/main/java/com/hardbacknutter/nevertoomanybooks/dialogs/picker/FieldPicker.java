@@ -66,7 +66,7 @@ public class FieldPicker<T>
                        @Nullable final CharSequence title,
                        @NonNull final Field<T> field,
                        @NonNull final List<T> list) {
-        super(context, title, null, false, null);
+        super(context, title, null, false);
 
         FieldListAdapter<T> adapter = new FieldListAdapter<>(context, field, list, item -> {
             dismiss();

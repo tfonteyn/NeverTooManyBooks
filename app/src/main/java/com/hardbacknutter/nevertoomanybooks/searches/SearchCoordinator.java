@@ -319,13 +319,13 @@ public class SearchCoordinator
             }
             // don't pass a context to init().
             // We will keep hold of it, so must use the app context.
-            Context context = App.getLocalizedAppContext();
+            Context localContext = App.getLocalizedAppContext();
 
-            if (FormatMapper.isMappingAllowed(context)) {
-                mMappers.add(new FormatMapper(context));
+            if (FormatMapper.isMappingAllowed(localContext)) {
+                mMappers.add(new FormatMapper(localContext));
             }
-            if (ColorMapper.isMappingAllowed(context)) {
-                mMappers.add(new ColorMapper(context));
+            if (ColorMapper.isMappingAllowed(localContext)) {
+                mMappers.add(new ColorMapper(localContext));
             }
 
             if (args != null) {
@@ -342,7 +342,7 @@ public class SearchCoordinator
                 mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
 
                 // use global preference.
-                mSiteList = SiteList.getList(context, SiteList.ListType.Data);
+                mSiteList = SiteList.getList(localContext, SiteList.Type.Data);
             }
         }
     }
@@ -544,7 +544,7 @@ public class SearchCoordinator
                 // Assume it's an ASIN, and just search Amazon
                 mSearchingAsin = true;
                 Collection<Site> amazon = new ArrayList<>();
-                amazon.add(Site.newSite(SearchSites.AMAZON));
+                amazon.add(Site.createDataSite(SearchSites.AMAZON));
                 mIsSearchActive = startSearch(amazon);
             }
         } else {
@@ -692,6 +692,7 @@ public class SearchCoordinator
      *
      * @return {@code true} if enabled
      */
+    @SuppressWarnings("unused")
     public boolean isEnabled(final int siteId) {
         return (mSiteList.getEnabledSites() & siteId) != 0;
     }
@@ -710,7 +711,7 @@ public class SearchCoordinator
         }
 
         SearchEngine searchEngine = site.getSearchEngine();
-        if (!searchEngine.isAvailable()) {
+        if (!searchEngine.isAvailable(App.getAppContext())) {
             return false;
         }
 
@@ -1023,13 +1024,13 @@ public class SearchCoordinator
     private String createSiteError(@StringRes final int siteId,
                                    @NonNull final TaskListener.FinishMessage<Bundle> message) {
 
-        Context context = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
         String siteName = SearchSites.getName(siteId);
         String text;
 
         switch (message.status) {
             case Cancelled:
-                text = context.getString(R.string.progress_end_cancelled);
+                text = localContext.getString(R.string.progress_end_cancelled);
                 break;
 
             case Failed: {
@@ -1049,13 +1050,13 @@ public class SearchCoordinator
                     messageId = R.string.error_unknown;
                 }
 
-                text = context.getString(messageId);
+                text = localContext.getString(messageId);
 
                 if (message.exception != null) {
                     String eMsg;
                     if (message.exception instanceof FormattedMessageException) {
                         eMsg = ((FormattedMessageException) message.exception)
-                                .getLocalizedMessage(context);
+                                .getLocalizedMessage(localContext);
                     } else {
                         eMsg = message.exception.getLocalizedMessage();
                     }
@@ -1072,7 +1073,7 @@ public class SearchCoordinator
                 return "\n";
         }
 
-        return context.getString(R.string.error_search_x_failed_y, siteName, text);
+        return localContext.getString(R.string.error_search_x_failed_y, siteName, text);
     }
 
     /**

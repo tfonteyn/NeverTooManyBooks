@@ -56,12 +56,14 @@ public abstract class TaskBase<Result>
 
     /** id set at construction time, passed back in all messages. */
     protected final int mTaskId;
+
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can check it.
      */
     @Nullable
     protected Exception mException;
+
     @NonNull
     private WeakReference<TaskListener<Result>> mTaskListener;
 

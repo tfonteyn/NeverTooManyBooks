@@ -72,7 +72,7 @@ public class SearchOrderFragment
 
     /** The list we're handling in this fragment (tab). */
     @Nullable
-    private SiteList.ListType mOurListType;
+    private SiteList.Type mOurType;
 
     private SearchAdminModel mModel;
 
@@ -98,8 +98,8 @@ public class SearchOrderFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mOurListType = requireArguments().getParcelable(SearchAdminModel.BKEY_LIST_TYPE);
-        Objects.requireNonNull(mOurListType);
+        mOurType = requireArguments().getParcelable(SearchAdminModel.BKEY_LIST_TYPE);
+        Objects.requireNonNull(mOurType);
 
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
@@ -111,7 +111,7 @@ public class SearchOrderFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        List<Site> list = mModel.getList(getContext(), mOurListType).getSites();
+        List<Site> list = mModel.getList(getContext(), mOurType).getSites();
         mListAdapter = new SearchSiteListAdapter(getContext(), list,
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListView.setAdapter(mListAdapter);
@@ -140,7 +140,7 @@ public class SearchOrderFragment
         switch (item.getItemId()) {
             case R.id.MENU_RESET:
                 //noinspection ConstantConditions
-                mModel.resetList(getContext(), mOurListType);
+                mModel.resetList(getContext(), mOurType);
                 mListAdapter.notifyDataSetChanged();
                 return true;
 

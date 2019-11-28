@@ -181,21 +181,21 @@ class ImportLegacyTask
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager) {
-        Context context = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
         try (DAO db = new DAO()) {
             // Load the Goodreads reviews
-            boolean ok = processReviews(context, db, queueManager);
+            boolean ok = processReviews(localContext, db, queueManager);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
-                GoodreadsManager.setLastSyncDate(context, mStartDate);
+                GoodreadsManager.setLastSyncDate(localContext, mStartDate);
                 QueueManager.getQueueManager().enqueueTask(
-                        new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
+                        new SendBooksLegacyTask(localContext.getString(R.string.gr_title_send_book),
                                                 true),
                         QueueManager.Q_MAIN);
             }
             return ok;
         } catch (@NonNull final CredentialsException e) {
-            throw new RuntimeException(e.getLocalizedMessage(context));
+            throw new RuntimeException(e.getLocalizedMessage(localContext));
         }
     }
 

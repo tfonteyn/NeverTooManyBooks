@@ -102,7 +102,7 @@ public class GoodreadsRegistrationActivity
         // Forget credentials
         View blurb = findViewById(R.id.forget_blurb);
         View removeButton = findViewById(R.id.btn_delete_credentials);
-        if (GoodreadsManager.hasCredentials()) {
+        if (GoodreadsManager.hasCredentials(this)) {
             blurb.setVisibility(View.VISIBLE);
             removeButton.setVisibility(View.VISIBLE);
             removeButton.setOnClickListener(v -> GoodreadsManager.resetCredentials(this));

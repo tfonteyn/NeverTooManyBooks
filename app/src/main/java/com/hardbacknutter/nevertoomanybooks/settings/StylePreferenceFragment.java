@@ -86,6 +86,7 @@ public class StylePreferenceFragment
     /**
      * Hook up specific listeners/preferences.
      */
+    @SuppressWarnings("SameReturnValue")
     private void initListeners() {
         Preference preference;
 

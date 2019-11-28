@@ -100,6 +100,7 @@ public class EditAuthorDialogFragment
         return frag;
     }
 
+    @SuppressWarnings("SameReturnValue")
     protected int getLayoutId() {
         return R.layout.dialog_edit_author;
     }

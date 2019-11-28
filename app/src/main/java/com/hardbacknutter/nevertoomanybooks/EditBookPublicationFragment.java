@@ -49,8 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
 
-    public static final String TAG = "EditBookPublicationFragment";
-
     private View mPagesView;
     private AutoCompleteTextView mFormatView;
     private AutoCompleteTextView mColorView;

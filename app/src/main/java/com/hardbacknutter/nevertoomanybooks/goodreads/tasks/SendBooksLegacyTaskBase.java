@@ -71,8 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 abstract class SendBooksLegacyTaskBase
         extends TQTask {
 
-    private static final String TAG = "SendBooksLegacyTaskBase";
-
     private static final long serialVersionUID = 5950331916209877890L;
 
     /** wait time before declaring network failure. */
@@ -100,14 +98,13 @@ abstract class SendBooksLegacyTaskBase
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager) {
-
-        Context context = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
         try {
-            NetworkUtils.poke(context, GoodreadsManager.BASE_URL);
+            NetworkUtils.poke(localContext, GoodreadsManager.BASE_URL);
 
             GoodreadsManager grManager = new GoodreadsManager();
             if (grManager.hasValidCredentials()) {
-                return send(queueManager, context, grManager);
+                return send(queueManager, localContext, grManager);
             }
         } catch (@NonNull final IOException ignore) {
             // Only wait 5 minutes max on network errors.

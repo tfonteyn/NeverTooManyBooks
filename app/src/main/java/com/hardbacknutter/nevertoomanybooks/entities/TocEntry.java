@@ -254,13 +254,8 @@ public class TocEntry
     /**
      * ENHANCE: The Locale of the TocEntry should be based on either a specific language
      * setting for the TocEntry itself, or on the Locale of the <strong>primary</strong> book.
-     *
-     *
-     * @param context
-     * @param db         Database Access
-     * @param bookLocale Locale to use if the TOCEntry does not have a Locale of its own.
-     *
-     * @return the Locale of the TocEntry
+     * <p>
+     * {@inheritDoc}
      */
     @NonNull
     @Override

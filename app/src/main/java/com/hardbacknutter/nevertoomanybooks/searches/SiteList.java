@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
- * Combines a list of {@link Site} objects with the {@link ListType}.
+ * Combines a list of {@link Site} objects with the {@link Type}.
  */
 public class SiteList
         implements Parcelable {
@@ -67,10 +67,10 @@ public class SiteList
 
     private static final String SEP = ",";
     /** Cached copy of the users preferred site order. */
-    private static final EnumMap<ListType, SiteList> sLists = new EnumMap<>(ListType.class);
+    private static final EnumMap<Type, SiteList> sLists = new EnumMap<>(Type.class);
     /** Type of this list. */
     @NonNull
-    private final ListType mListType;
+    private final Type mType;
     /** The list. */
     @NonNull
     private final ArrayList<Site> mList;
@@ -78,10 +78,10 @@ public class SiteList
     /**
      * Constructor.
      *
-     * @param listType Type of this list.
+     * @param type Type of this list.
      */
-    public SiteList(@NonNull final ListType listType) {
-        mListType = listType;
+    public SiteList(@NonNull final Type type) {
+        mType = type;
         mList = new ArrayList<>();
     }
 
@@ -92,7 +92,7 @@ public class SiteList
      */
     protected SiteList(@NonNull final Parcel in) {
         //noinspection ConstantConditions
-        mListType = in.readParcelable(ListType.class.getClassLoader());
+        mType = in.readParcelable(Type.class.getClassLoader());
         mList = new ArrayList<>();
         in.readTypedList(mList, Site.CREATOR);
     }
@@ -103,7 +103,7 @@ public class SiteList
      * @param list to copy
      */
     private SiteList(@NonNull final SiteList list) {
-        mListType = list.mListType;
+        mType = list.mType;
         //noinspection unchecked
         mList = (ArrayList<Site>) list.mList.clone();
     }
@@ -117,7 +117,7 @@ public class SiteList
      */
     @NonNull
     static List<Site> getDataSitesByReliability(@NonNull final Context context) {
-        return getList(context, ListType.Data)
+        return getList(context, Type.Data)
                 .reorder(SearchSites.DATA_RELIABILITY_ORDER)
                 .getSites();
     }
@@ -127,52 +127,52 @@ public class SiteList
      * Includes enabled <strong>AND</strong> disabled sites.
      *
      * @param appContext Current context
-     * @param listType   type
+     * @param type   type
      *
      * @return the list
      */
     @NonNull
     public static SiteList getList(@NonNull final Context appContext,
-                                   @NonNull final ListType listType) {
+                                   @NonNull final Type type) {
         // already loaded ?
-        SiteList list = sLists.get(listType);
+        SiteList list = sLists.get(type);
         if (list != null) {
             return new SiteList(list);
         }
 
         // create the list according to user preferences.
-        SiteList newList = SearchSites.createSiteList(appContext, listType, true);
+        SiteList newList = SearchSites.createSiteList(appContext, type, true);
 
         // cache the list for reuse
-        sLists.put(listType, newList);
+        sLists.put(type, newList);
 
         return new SiteList(newList);
     }
 
     @NonNull
     public static List<Site> getSites(@NonNull final Context context,
-                                      @NonNull final ListType listType) {
-        return getList(context, listType).getSites();
+                                      @NonNull final Type type) {
+        return getList(context, type).getSites();
     }
 
     /**
      * Reset a list back to the hardcoded defaults.
      *
      * @param appContext Current context
-     * @param listType   type
+     * @param type   type
      *
      * @return the new list
      */
     public static SiteList resetList(@NonNull final Context appContext,
-                                     @NonNull final ListType listType) {
+                                     @NonNull final Type type) {
 
         // create the list with all defaults applied.
-        SiteList newList = SearchSites.createSiteList(appContext, listType, false);
+        SiteList newList = SearchSites.createSiteList(appContext, type, false);
         // overwrite stored user preferences
         newList.update(appContext);
 
         // cache the list for reuse
-        sLists.put(listType, newList);
+        sLists.put(type, newList);
 
         return new SiteList(newList);
     }
@@ -183,14 +183,14 @@ public class SiteList
      * @param appContext Current context
      */
     public void update(@NonNull final Context appContext) {
-        sLists.put(mListType, this);
+        sLists.put(mType, this);
         savePrefs(appContext);
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeParcelable(mListType, flags);
+        dest.writeParcelable(mType, flags);
         dest.writeTypedList(mList);
     }
 
@@ -234,7 +234,7 @@ public class SiteList
      * @return ordered list
      */
     private SiteList reorder(@NonNull final String order) {
-        SiteList orderedList = new SiteList(mListType);
+        SiteList orderedList = new SiteList(mType);
         for (String idStr : order.split(SEP)) {
             int id = Integer.parseInt(idStr);
             for (Site site : mList) {
@@ -282,7 +282,7 @@ public class SiteList
             // and collect the id for the order string
             return String.valueOf(site.id);
         });
-        ed.putString(mListType.getListOrderPreferenceKey(), order);
+        ed.putString(mType.getListOrderPreferenceKey(), order);
         ed.apply();
     }
 
@@ -291,7 +291,7 @@ public class SiteList
             site.loadFromPrefs(appContext);
         }
         String order = PreferenceManager.getDefaultSharedPreferences(appContext)
-                                        .getString(mListType.getListOrderPreferenceKey(), null);
+                                        .getString(mType.getListOrderPreferenceKey(), null);
         if (order != null) {
             SiteList orderedList = reorder(order);
             if (orderedList.mList.size() < mList.size()) {
@@ -324,28 +324,33 @@ public class SiteList
      * <strong>Note:</strong> the order of the enum values is used as the order
      * of the tabs in {@link SearchAdminActivity}.
      */
-    public enum ListType
+    public enum Type
             implements Parcelable {
 
-        Data, Covers, AltEditions;
+        /** generic searches. */
+        Data,
+        /** Covers. */
+        Covers,
+        /** Alternative editions for a given isbn. */
+        AltEditions;
 
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<ListType> CREATOR =
-                new Creator<ListType>() {
+        public static final Creator<Type> CREATOR =
+                new Creator<Type>() {
                     @Override
                     @NonNull
-                    public ListType createFromParcel(@NonNull final Parcel in) {
-                        return ListType.values()[in.readInt()];
+                    public Type createFromParcel(@NonNull final Parcel in) {
+                        return Type.values()[in.readInt()];
                     }
 
                     @Override
                     @NonNull
-                    public ListType[] newArray(int size) {
-                        return new ListType[size];
+                    public Type[] newArray(int size) {
+                        return new Type[size];
                     }
                 };
         private static final String PREFS_ORDER_PREFIX = "search.siteOrder.";
-        private static final String TAG = "ListType";
+        private static final String TAG = "Type";
 
         @Override
         public int describeContents() {

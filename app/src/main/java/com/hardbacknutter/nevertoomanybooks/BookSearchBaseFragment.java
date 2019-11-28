@@ -203,8 +203,8 @@ public abstract class BookSearchBaseFragment
             case R.id.MENU_PREFS_SEARCH_SITES:
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
-                                  (Parcelable) SiteList.ListType.Data)
-                        .putExtra(SiteList.ListType.Data.getBundleKey(),
+                                  (Parcelable) SiteList.Type.Data)
+                        .putExtra(SiteList.Type.Data.getBundleKey(),
                                   mSearchCoordinator.getSiteList());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
@@ -282,7 +282,7 @@ public abstract class BookSearchBaseFragment
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     SiteList siteList = data.getParcelableExtra(
-                            SiteList.ListType.Data.getBundleKey());
+                            SiteList.Type.Data.getBundleKey());
                     if (siteList != null) {
                         mSearchCoordinator.setSiteList(siteList);
                     }

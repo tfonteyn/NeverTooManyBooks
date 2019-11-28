@@ -144,8 +144,6 @@ public interface ItemWithFixableId {
         return fallbackLocale;
     }
 
-    long getId();
-
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).
      * If found, sets the item's id with the id found in the database.

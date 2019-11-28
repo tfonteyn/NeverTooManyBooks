@@ -66,7 +66,8 @@ import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueue
 /**
  * Database layer. Provides all direct database access.
  */
-class TaskQueueDAO {
+class TaskQueueDAO
+        implements AutoCloseable {
 
     private static final String SQL_GET_QUEUE_ID =
             "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + "=?";
@@ -90,6 +91,7 @@ class TaskQueueDAO {
      * Constructor.
      */
     TaskQueueDAO() {
+        // Always use the app context here!
         mTaskQueueDBHelper = new TaskQueueDBHelper(App.getAppContext());
     }
 
@@ -511,6 +513,7 @@ class TaskQueueDAO {
     /**
      * Generic function to close the database.
      */
+    @Override
     public void close() {
         try {
             for (SQLiteStatement s : mStatements) {

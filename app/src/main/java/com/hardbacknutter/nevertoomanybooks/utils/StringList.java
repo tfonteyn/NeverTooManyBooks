@@ -246,6 +246,7 @@ public class StringList<E> {
          *
          * @return the char
          */
+        @SuppressWarnings("SameReturnValue")
         default char getObjectSeparator() {
             return '*';
         }

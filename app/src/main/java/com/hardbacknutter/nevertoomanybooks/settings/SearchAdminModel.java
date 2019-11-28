@@ -51,11 +51,11 @@ public class SearchAdminModel
     public static final String BKEY_LIST_TYPE = TAG + ":type";
 
     /** Contains cloned copies of the lists we're handling. */
-    private Map<SiteList.ListType, SiteList> mListMap;
+    private Map<SiteList.Type, SiteList> mListMap;
 
     /** {@code null} if we're doing all lists. */
     @Nullable
-    private SiteList.ListType mListType;
+    private SiteList.Type mType;
 
     /**
      * Pseudo constructor.
@@ -67,12 +67,12 @@ public class SearchAdminModel
      */
     public void init(@Nullable final Bundle args) {
         if (mListMap == null) {
-            mListMap = new EnumMap<>(SiteList.ListType.class);
+            mListMap = new EnumMap<>(SiteList.Type.class);
             if (args != null) {
-                mListType = args.getParcelable(BKEY_LIST_TYPE);
+                mType = args.getParcelable(BKEY_LIST_TYPE);
 
                 // first see if we got passed in any custom lists.
-                for (SiteList.ListType type : SiteList.ListType.values()) {
+                for (SiteList.Type type : SiteList.Type.values()) {
                     if (!mListMap.containsKey(type)) {
                         SiteList siteList = args.getParcelable(type.getBundleKey());
                         if (siteList != null) {
@@ -85,26 +85,26 @@ public class SearchAdminModel
     }
 
     @Nullable
-    SiteList.ListType getListType() {
-        return mListType;
+    SiteList.Type getType() {
+        return mType;
     }
 
     /**
      * Getter for single tab mode.
      *
      * @param appContext Current context
-     * @param listType   type of list
+     * @param type   type of list
      *
      * @return list matching the single tab.
      */
     @NonNull
     SiteList getList(@NonNull final Context appContext,
-                     @NonNull final SiteList.ListType listType) {
+                     @NonNull final SiteList.Type type) {
 
-        SiteList list = mListMap.get(listType);
+        SiteList list = mListMap.get(type);
         if (list == null) {
-            list = SiteList.getList(appContext, listType);
-            mListMap.put(listType, list);
+            list = SiteList.getList(appContext, type);
+            mListMap.put(type, list);
         }
         return list;
     }
@@ -129,13 +129,13 @@ public class SearchAdminModel
     }
 
     void resetList(@NonNull final Context appContext,
-                   @NonNull final SiteList.ListType listType) {
+                   @NonNull final SiteList.Type type) {
 
-        SiteList newList = SiteList.resetList(appContext, listType);
+        SiteList newList = SiteList.resetList(appContext, type);
 
-        SiteList currentList = mListMap.get(listType);
+        SiteList currentList = mListMap.get(type);
         if (currentList == null) {
-            mListMap.put(listType, newList);
+            mListMap.put(type, newList);
         } else {
             currentList.clearAndAddAll(newList);
         }

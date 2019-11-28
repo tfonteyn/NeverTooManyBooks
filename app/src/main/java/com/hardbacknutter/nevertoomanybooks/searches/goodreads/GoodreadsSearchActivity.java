@@ -105,7 +105,7 @@ public class GoodreadsSearchActivity
      */
     public static void open(@NonNull final Context context,
                             final long bookId) {
-        if (!GoodreadsManager.hasCredentials()) {
+        if (!GoodreadsManager.hasCredentials(context)) {
             context.startActivity(new Intent(context, GoodreadsRegistrationActivity.class));
         }
 
@@ -219,19 +219,8 @@ public class GoodreadsSearchActivity
 
         private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();
         private final MutableLiveData<Boolean> mBookNoLongerExists = new MutableLiveData<>();
-        private final TaskListener<List<GoodreadsWork>> mTaskListener =
-                new TaskListener<List<GoodreadsWork>>() {
-                    @Override
-                    public void onFinished(
-                            @NonNull final FinishMessage<List<GoodreadsWork>> message) {
-                        mWorks.setValue(message.result);
-                    }
-
-                    @Override
-                    public void onProgress(@NonNull final ProgressMessage message) {
-                        // ignore
-                    }
-                };
+        private final TaskListener<List<GoodreadsWork>> mTaskListener = message ->
+                mWorks.setValue(message.result);
 
         /** Database Access. */
         private DAO mDb;

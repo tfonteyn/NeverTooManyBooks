@@ -535,13 +535,8 @@ public class Author
 
     /**
      * ENHANCE: The Locale of the Author should be based on the main language the author writes in.
-     *
-     *
-     * @param context
-     * @param db         Database Access
-     * @param userLocale Locale to use
-     *
-     * @return the Locale of the Author
+     * <p>
+     * {@inheritDoc}
      */
     @NonNull
     @Override
@@ -555,7 +550,7 @@ public class Author
     public long fixId(@NonNull final Context context,
                       @NonNull final DAO db,
                       @NonNull final Locale locale) {
-        mId = db.getAuthorId(this, locale);
+        mId = db.getAuthorId(context, this, locale);
         return mId;
     }
 

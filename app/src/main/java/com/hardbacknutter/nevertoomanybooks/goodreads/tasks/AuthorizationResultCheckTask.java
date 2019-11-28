@@ -73,27 +73,28 @@ public class AuthorizationResultCheckTask
 
     @Override
     protected void onPostExecute(@NonNull final Boolean result) {
-        Context context = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
 
         if (result) {
-            App.showNotification(context.getString(R.string.info_authorized),
-                                 context.getString(R.string.gr_auth_successful));
+            App.showNotification(localContext.getString(R.string.info_authorized),
+                                 localContext.getString(R.string.gr_auth_successful));
 
         } else {
             String msg;
             if (mException instanceof FormattedMessageException) {
-                msg = ((FormattedMessageException) mException).getLocalizedMessage(context);
+                msg = ((FormattedMessageException) mException)
+                        .getLocalizedMessage(localContext);
 
             } else if (mException != null) {
-                msg = context.getString(R.string.gr_auth_error) + ' '
-                      + context.getString(R.string.error_if_the_problem_persists,
-                                          context.getString(R.string.lbl_send_debug_info));
-
+                msg = localContext.getString(R.string.gr_auth_error) + ' '
+                      + localContext.getString(R.string.error_if_the_problem_persists,
+                                               localContext
+                                                       .getString(R.string.lbl_send_debug_info));
             } else {
-                msg = context.getString(R.string.error_site_authentication_failed,
-                                        context.getString(R.string.goodreads));
+                msg = localContext.getString(R.string.error_site_authentication_failed,
+                                             localContext.getString(R.string.goodreads));
             }
-            App.showNotification(context.getString(R.string.info_not_authorized), msg);
+            App.showNotification(localContext.getString(R.string.info_not_authorized), msg);
         }
     }
 }

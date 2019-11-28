@@ -118,7 +118,7 @@ public class BookSearchActivity
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
-                SiteList siteList = data.getParcelableExtra(SiteList.ListType.Data.getBundleKey());
+                SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                 if (siteList != null) {
                     SearchCoordinator model =
                             new ViewModelProvider(this).get(SearchCoordinator.class);

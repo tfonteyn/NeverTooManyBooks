@@ -75,7 +75,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
@@ -86,6 +85,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ_END;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
@@ -735,12 +735,12 @@ public class BooklistGroup
 
             rowKind = new RowKind(DATE_PUBLISHED_YEAR, R.string.lbl_publication_year, "yrp")
                     .setDomain(DOM_RK_DATE_PUBLISHED_YEAR,
-                               DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false));
+                               DAO.SqlColumns.year(TBL_BOOKS.dot(DOM_DATE_PUBLISHED), false));
             ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_PUBLISHED_MONTH, R.string.lbl_publication_month, "mp")
                     .setDomain(DOM_RK_DATE_PUBLISHED_MONTH,
-                               DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_BOOK_DATE_PUBLISHED), false));
+                               DAO.SqlColumns.month(TBL_BOOKS.dot(DOM_DATE_PUBLISHED), false));
             ALL_KINDS.put(rowKind.mId, rowKind);
 
             rowKind = new RowKind(DATE_FIRST_PUB_YEAR, R.string.lbl_first_pub_year, "yfp")

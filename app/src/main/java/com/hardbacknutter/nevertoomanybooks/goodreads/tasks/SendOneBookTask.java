@@ -77,11 +77,11 @@ public class SendOneBookTask
     @WorkerThread
     protected Integer doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendOneBookTask " + mBookId);
-        Context context = App.getLocalizedAppContext();
+        Context localContext = App.getLocalizedAppContext();
 
         GoodreadsManager.ExportResult result = null;
         try {
-            if (!NetworkUtils.isNetworkAvailable(context)) {
+            if (!NetworkUtils.isNetworkAvailable(localContext)) {
                 return R.string.error_network_no_connection;
             }
 
@@ -97,8 +97,8 @@ public class SendOneBookTask
                         return R.string.progress_end_cancelled;
                     }
                     publishProgress(new TaskListener.ProgressMessage(
-                            mTaskId, context.getString(R.string.progress_msg_sending)));
-                    result = grManager.sendOneBook(context, db, bookCursor);
+                            mTaskId, localContext.getString(R.string.progress_msg_sending)));
+                    result = grManager.sendOneBook(localContext, db, bookCursor);
                     if (result == GoodreadsManager.ExportResult.sent) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);
@@ -106,19 +106,19 @@ public class SendOneBookTask
                 }
             }
         } catch (@NonNull final CredentialsException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(localContext, TAG, e);
             result = GoodreadsManager.ExportResult.credentialsError;
             mException = e;
         } catch (@NonNull final BookNotFoundException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(localContext, TAG, e);
             result = GoodreadsManager.ExportResult.notFound;
             mException = e;
         } catch (@NonNull final IOException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(localContext, TAG, e);
             result = GoodreadsManager.ExportResult.ioError;
             mException = e;
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
+            Logger.error(localContext, TAG, e);
             result = GoodreadsManager.ExportResult.error;
             mException = e;
         }

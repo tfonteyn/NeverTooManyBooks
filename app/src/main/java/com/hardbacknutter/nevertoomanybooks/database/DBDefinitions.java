@@ -165,7 +165,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PUBLISHER;
     /** {@link #TBL_BOOKS}. */
-    public static final DomainDefinition DOM_BOOK_DATE_PUBLISHED;
+    public static final DomainDefinition DOM_DATE_PUBLISHED;
     /** {@link #TBL_BOOKS}. */
     public static final DomainDefinition DOM_BOOK_PRINT_RUN;
     /** {@link #TBL_BOOKS}. */
@@ -639,7 +639,7 @@ public final class DBDefinitions {
         DOM_BOOK_PUBLISHER =
                 new DomainDefinition(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT, true)
                         .setDefaultEmptyString();
-        DOM_BOOK_DATE_PUBLISHED =
+        DOM_DATE_PUBLISHED =
                 new DomainDefinition(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE, true)
                         .setDefaultEmptyString();
         DOM_BOOK_PRINT_RUN =
@@ -908,7 +908,7 @@ public final class DBDefinitions {
                              DOM_TITLE_OB,
                              DOM_BOOK_ISBN,
                              DOM_BOOK_PUBLISHER,
-                             DOM_BOOK_DATE_PUBLISHED,
+                             DOM_DATE_PUBLISHED,
                              DOM_DATE_FIRST_PUB,
                              DOM_BOOK_PRINT_RUN,
 

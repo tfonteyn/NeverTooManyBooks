@@ -906,7 +906,7 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "SameReturnValue"})
     public int doPreferences(@NonNull final Context context,
                              @NonNull final Appendable writer)
             throws IOException {

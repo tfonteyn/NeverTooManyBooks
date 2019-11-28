@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * TODO: mock the id's and test them.
+ * FIXME: pretend fixing the id - how to return the actual id of the current author/series?
  * <p>
  * isUniqueById().
  * - 'true' for Author, Bookshelf, TocEntry
@@ -96,7 +96,6 @@ class PruneListTest {
 
         mDb = mock(DAO.class);
 
-        // FIXME: pretend fixing the id - how to return the actual id of the current author/series?
 //        when(mDb.getAuthorId(any(Author.class), any(Locale.class)))
 //                .thenReturn(100L);
 //        when(mDb.getSeriesId(eq(mContext), any(Series.class), any(Locale.class)))

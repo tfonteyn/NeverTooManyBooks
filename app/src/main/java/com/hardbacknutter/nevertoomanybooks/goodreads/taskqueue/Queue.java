@@ -49,8 +49,6 @@ class Queue
     /** Name of this Queue. */
     @NonNull
     private final String mName;
-    /** TaskQueueDAO used internally. */
-    private TaskQueueDAO mTaskQueueDAO;
 
     /** Currently running task. */
     private WeakReference<Task> mTask;
@@ -97,15 +95,14 @@ class Queue
      * Main worker thread logic.
      */
     public void run() {
-        try {
-            mTaskQueueDAO = new TaskQueueDAO();
+        try (TaskQueueDAO taskQueueDAO = new TaskQueueDAO()) {
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
                 Task task;
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
                 synchronized (mManager) {
-                    scheduledTask = mTaskQueueDAO.getNextTask(mName);
+                    scheduledTask = taskQueueDAO.getNextTask(mName);
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
                         mTerminate = true;
@@ -125,7 +122,7 @@ class Queue
                 // If we get here, we have a task, or know that there is one waiting to run.
                 // Just wait for any wait that is longer than a minute.
                 if (task != null) {
-                    runTask(task);
+                    runTask(taskQueueDAO, task);
                 } else {
                     // Not ready, just wait. Allow for possible wake-up calls if something
                     // else gets queued.
@@ -138,9 +135,6 @@ class Queue
             Logger.error(TAG, e);
         } finally {
             try {
-                if (mTaskQueueDAO != null) {
-                    mTaskQueueDAO.getDb().close();
-                }
                 // Just in case (the queue manager does check the queue before doing the delete).
                 synchronized (mManager) {
                     mManager.onQueueTerminating(this);
@@ -153,7 +147,8 @@ class Queue
     /**
      * Run the task then save the results.
      */
-    private void runTask(@NonNull final Task task) {
+    private void runTask(@NonNull final TaskQueueDAO taskQueueDAO,
+                         @NonNull final Task task) {
         boolean result = false;
         boolean requeue = false;
         try {
@@ -169,34 +164,22 @@ class Queue
             }
             Logger.error(TAG, e, "Error running task " + task.getId());
         }
-        handleTaskResult(task, result, requeue);
-    }
 
-    /**
-     * Update the related database record to process the task correctly.
-     *
-     * @param task    Task object
-     * @param result  {@code true} on Save, {@code false} on cancel
-     * @param requeue {@code true} if requeue needed
-     */
-    private void handleTaskResult(@NonNull final Task task,
-                                  final boolean result,
-                                  final boolean requeue) {
+        // Update the related database record to process the task correctly.
         synchronized (mManager) {
-
             if (task.isAborting()) {
-                mTaskQueueDAO.deleteTask(task.getId());
+                taskQueueDAO.deleteTask(task.getId());
             } else if (result) {
-                mTaskQueueDAO.setTaskOk(task);
+                taskQueueDAO.setTaskOk(task);
             } else if (requeue) {
-                mTaskQueueDAO.setTaskRequeue(task);
+                taskQueueDAO.setTaskRequeue(task);
             } else {
                 Exception e = task.getException();
                 String msg = null;
                 if (e != null) {
                     msg = e.getLocalizedMessage();
                 }
-                mTaskQueueDAO.setTaskFail(task, "Unhandled exception while running task: " + msg);
+                taskQueueDAO.setTaskFail(task, "Unhandled exception while running task: " + msg);
             }
             mTask.clear();
             mTask = null;
@@ -212,5 +195,4 @@ class Queue
             return mTask.get();
         }
     }
-
 }

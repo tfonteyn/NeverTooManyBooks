@@ -184,7 +184,6 @@
     <string name="warning_no_matching_book_found">No matching book found</string>
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
     <string name="warning_x_is_not_a_valid_isbn">“%1$s” is not a valid ISBN</string>
-    <string name="warning_x_is_not_a_valid_isbn_or_asin">“%1$s” is not a valid ISBN or ASIN</string>
     <string name="warning_cover_not_found">Cover Not Found</string>
     <string name="warning_cover_copy_failed">Could not copy cover</string>
     <string name="warning_no_editions">No additional edition information available</string>
@@ -360,7 +359,6 @@
     <!-- ####################################################################################### -->
 
     <string name="progress_msg_please_wait">Please wait…</string>
-    <string name="progress_msg_cancelling">Cancelling…</string>
     <string name="progress_msg_loading">Loading…</string>
 
     <!-- During startup. -->
@@ -371,18 +369,15 @@
 
 
     <!-- Search. -->
-    <string name="progress_msg_starting_search">Starting Search…</string>
     <string name="progress_msg_searching">Searching…</string>
     <string name="progress_msg_searching_site">Searching %1$s</string>
 
-    <string name="progress_msg_adding_book">Adding book…</string>
     <!-- Progress dialog message displayed when doing a long network operation to a web site -->
     <string name="progress_msg_connecting">Connecting to web site…</string>
     <!-- Progress dialog message displayed when uploading data to a web site. -->
     <string name="progress_msg_sending">Sending, please wait…</string>
 
     <string name="progress_msg_saving_image">Saving image…</string>
-    <string name="progress_msg_process_cover">Covers…</string>
     <string name="progress_msg_process_preferences">Preferences…</string>
     <string name="progress_msg_process_booklist_style">Booklist Styles…</string>
 
@@ -396,11 +391,11 @@
 
     <!-- Progress message displayed when exporting covers -->
     <string name="progress_msg_n_covers_processed_m_missing">
-        %1$d covers processed (%2$d missing)
+        %1$d covers processed\n(%2$d missing)
     </string>
     <!-- Progress message displayed when exporting covers -->
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">
-        %1$d covers processed (%2$d missing, %3$d skipped)
+        %1$d covers processed\n(%2$d missing, %3$d skipped)
     </string>
 
     <!-- Progress message displayed when importing books/covers.
@@ -420,8 +415,7 @@
     <string name="progress_end_backup_success">Backup success</string>
 
     <string name="progress_end_cancelled">Cancelled</string>
-    <string name="progress_end_cancelled_info">Cancelled - %1$s</string>
-    <string name="progress_end_n_books_searched">%1$d books searched</string>
+    <string name="X_progress_end_n_books_searched">%1$d books searched</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
@@ -636,7 +630,6 @@
     <string name="gr_tq_menu_background_tasks">GoodReads Background Tasks</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Cleanup Old Tasks</string>
     <string name="gr_tq_btn_cleanup_old_events">Cleanup Old Events</string>
-    <string name="gr_tq_legacy_task">Legacy Task</string>
     <string name="gr_tq_task_has_been_queued">Task has been queued</string>
     <string name="gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
     <string name="gr_tq_export_task_is_already_queued">
@@ -722,8 +715,6 @@
     <string name="pe_ui_theme_day_night">Day / Night</string>
     <string name="pe_ui_theme_dark">Dark</string>
     <string name="pe_ui_theme_light">Light</string>
-    <!-- ListPreference - Preferred interface Message display. -->
-    <string name="pt_ui_messages_use">Information messages</string>
     <!-- Preference screen; opens a new screen listing all Fields. -->
     <string name="pg_ui_field_visibility">Field Visibility</string>
 
@@ -1076,10 +1067,8 @@
     <!-- generic confirmation buttons -->
     <string name="btn_confirm_add">Add</string>
     <string name="btn_confirm_new">New</string>
-    <string name="btn_confirm_update">Update</string>
-    <string name="btn_confirm_open">Open</string>
+    <string name="X_btn_confirm_update">Update</string>
     <string name="btn_confirm_save">Save</string>
-    <string name="btn_confirm_use">Use</string>
     <!-- exit the edit activity despite unsaved edits -->
     <string name="btn_confirm_exit">Exit</string>
     <!-- merging two bookshelves -->
@@ -1247,7 +1236,7 @@
     <string name="edit">Edit</string>
     <string name="unknown">Unknown</string>
     <string name="done">Done</string>
-    <string name="swap">Swap</string>
+    <string name="X_swap">Swap</string>
 
     <!-- e.g. indicates nothing was selected; nothing was done. -->
     <string name="none">None</string>
@@ -1333,9 +1322,6 @@
     <string name="lbl_bookshelves_long">Bookshelves</string>
     <string name="lbl_location">Location</string>
     <string name="lbl_location_long">Location of the book</string>
-
-    <!-- checkbox on the 'search by isbn' dialog. Must be short. -->
-    <string name="lbl_allow_asin">Allow ASIN</string>
 
     <!-- checkbox for the TOC edit screen. Should fit on a single line -->
     <string name="lbl_toc_anthology">This is an Anthology</string>
@@ -1467,7 +1453,6 @@
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
-    <string name="X_error_failed_x">Failed: %1$d</string>
 
     <!-- displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
     <string name="X_export_info_success_archive_details">
@@ -1478,16 +1463,7 @@
 
     <string name="X_warning_cover_corrupt">Cover is corrupt</string>
     <string name="X_warning_book_was_deleted_uc">THIS BOOK HAS BEEN DELETED</string>
-    <string name="X_warning_required_author">Author field is blank</string>
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
-    <string name="X_warning_required_title">Title must be specified</string>
-    <string name="X_warning_missing_title_author">The title and/or author is missing.</string>
-    <string name="X_warning_missing_title">The title is missing.</string>
-    <!-- Displayed when a file/save dialog results in an invalid file -->
-    <string name="X_warning_enter_valid_filename">Please enter a valid file name.</string>
-    <!-- Displayed when a file/open dialog results in selecting a non-existent file -->
-    <string name="X_warning_select_an_existing_file">Please select an existing file.</string>
-
 
     <string name="X_info_reset_tips">
         From time to time this application can display optional messages regarding %1$s.\n
@@ -1501,13 +1477,6 @@
         variety of other preferences that will be applied to all your styles when possible.
     </string>
 
-    <!-- When an export starts -->
-    <string name="X_progress_msg_export_starting">Export starting…</string>
-    <!-- Progress message displayed when importing books -->
-    <string name="X_progress_msg_n_covers_processed">%1$d covers processed</string>
-    <!-- progress final message -->
-    <string name="X_progress_end_n_books_exported">%1$d books exported</string>
-
     <!-- Screen title. -->
     <string name="X_title_backup">Backup</string>
     <!-- Screen title. -->
@@ -1519,31 +1488,19 @@
         To scan ISBN bar codes, please tap below to install one of these barcode scanner applications.
     </string>
 
-    <string name="X_menu_delete_series">Delete Series…</string>
-    <string name="X_menu_search_books">Search Books</string>
-    <string name="X_menu_administration">Administration</string>
-    <string name="X_menu_add_book">Add Book…</string>
-
     <string name="X_btn_do_not_show_again">Do not show again</string>
-    <string name="X_btn_show_results">Show Results</string>
 
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
 
-    <string name="X_acra_resNotifText">Please tap here for details</string>
+    <string name="X_tap_for_details">Please tap here for details</string>
 
     <string name="X_lbl_available">Available</string>
-    <string name="X_lbl_other">Other</string>
-    <string name="X_updated">Updated</string>
-    <string name="X_size">Size</string>
 
     <string name="X_gr_auth_check">Goodreads authorization check</string>
 
     <string name="X_anthology_titles">Anthology Titles</string>
-    <string name="X_results_found">Results Found</string>
-    <string name="X_unsaved_edits_title">Unsaved Changes</string>
     <string name="X_use_default_setting">Use default values</string>
     <string name="X_about_help_tap_here">Please tap here to access the online help pages</string>
-
 
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still  ========== -->
@@ -1556,7 +1513,6 @@
     <!-- uncolored, but with a support-color.
          e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Uncolored + support color</string>
-
 
     <string name="lbl_purge_blns">Purge BLNS</string>
     <string name="info_purge_blns_all">Purge all BLNS</string>

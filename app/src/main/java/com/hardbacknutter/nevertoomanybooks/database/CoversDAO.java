@@ -471,6 +471,7 @@ public final class CoversDAO
     public static final class ImageCacheWriterTask
             extends AsyncTask<Void, Void, Void> {
 
+        /** Used to prevent trying to read from the cache while we're writing to it. */
         private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
 
         /** Bitmap to store. */

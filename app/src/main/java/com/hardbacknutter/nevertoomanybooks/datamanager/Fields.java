@@ -526,28 +526,24 @@ public class Fields {
          * Format a string for applying to a View.
          * If the source is {@code null}, implementations should return "" (and log an error)
          *
-         * @param field  The field
          * @param source Input value
          *
          * @return The formatted value.
          */
         @NonNull
-        String format(@NonNull Field<T> field,
-                      @Nullable T source);
+        String format(@Nullable T source);
 
         /**
          * This method is intended to be called from a {@link FieldDataAccessor}.
          * <p>
          * Extract a formatted {@code String} from the displayed version.
          *
-         * @param field  The field
          * @param source The value to be back-translated
          *
          * @return The extracted value
          */
         @NonNull
-        T extract(@NonNull Field<T> field,
-                  @NonNull String source);
+        T extract(@NonNull String source);
     }
 
     /**
@@ -715,6 +711,7 @@ public class Fields {
          *
          * @param view The view to watch
          */
+        @SuppressWarnings("SameReturnValue")
         @SuppressLint("ClickableViewAccessibility")
         void addTouchSignalsDirty(@NonNull final View view) {
             view.setOnTouchListener((v, event) -> {
@@ -741,7 +738,7 @@ public class Fields {
         public String format(@Nullable final T value) {
             if (mFormatter != null) {
                 try {
-                    return mFormatter.format(mField, value);
+                    return mFormatter.format(value);
 
                 } catch (@NonNull final ClassCastException e) {
                     // Due to the way a Book loads data from the database,
@@ -769,7 +766,7 @@ public class Fields {
         @NonNull
         public T extract(@NonNull final String source) {
             if (mFormatter != null) {
-                return mFormatter.extract(mField, source);
+                return mFormatter.extract(source);
             } else {
                 // all non-String field should have formatters.
                 // If we get an Exception here then the developer made a boo-boo.
@@ -1321,8 +1318,7 @@ public class Fields {
          */
         @Override
         @NonNull
-        public String format(@NonNull final Field<String> field,
-                             @Nullable final String source) {
+        public String format(@Nullable final String source) {
             if (source == null || source.isEmpty()) {
                 return "";
             }
@@ -1335,8 +1331,7 @@ public class Fields {
          */
         @Override
         @NonNull
-        public String extract(@NonNull final Field<String> field,
-                              @NonNull final String source) {
+        public String extract(@NonNull final String source) {
             Date d = DateUtils.parseDate(source);
             if (d != null) {
                 return DateUtils.utcSqlDate(d);
@@ -1390,8 +1385,7 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@NonNull final Field<Double> field,
-                             @Nullable final Double source) {
+        public String format(@Nullable final Double source) {
             if (source == null || source.equals(0.0d)) {
                 mRawValue = 0.0d;
                 return "";
@@ -1426,8 +1420,7 @@ public class Fields {
 
         @NonNull
         @Override
-        public Double extract(@NonNull final Field<Double> field,
-                              @NonNull final String source) {
+        public Double extract(@NonNull final String source) {
             return mRawValue;
         }
 
@@ -1468,8 +1461,7 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@NonNull final Field<String> field,
-                             @Nullable final String source) {
+        public String format(@Nullable final String source) {
 
             if (source != null && !source.isEmpty() && !"0".equals(source)) {
                 mRawValue = source;
@@ -1490,8 +1482,7 @@ public class Fields {
 
         @NonNull
         @Override
-        public String extract(@NonNull final Field<String> field,
-                              @NonNull final String source) {
+        public String extract(@NonNull final String source) {
             return mRawValue;
         }
     }
@@ -1508,8 +1499,7 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@NonNull final Field<String> field,
-                             @Nullable final String source) {
+        public String format(@Nullable final String source) {
             if (source == null || source.isEmpty()) {
                 return "";
             }
@@ -1526,8 +1516,7 @@ public class Fields {
          */
         @NonNull
         @Override
-        public String extract(@NonNull final Field<String> field,
-                              @NonNull final String source) {
+        public String extract(@NonNull final String source) {
             return LanguageUtils.getISO3FromDisplayName(App.getAppContext(), source);
         }
     }
@@ -1563,8 +1552,7 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@NonNull final Field<Long> field,
-                             @Nullable final Long source) {
+        public String format(@Nullable final Long source) {
             if (source == null || source == 0) {
                 mRawValue = 0L;
                 return "";
@@ -1576,8 +1564,7 @@ public class Fields {
 
         @NonNull
         @Override
-        public Long extract(@NonNull final Field<Long> field,
-                            @NonNull final String source) {
+        public Long extract(@NonNull final String source) {
             return mRawValue;
         }
     }

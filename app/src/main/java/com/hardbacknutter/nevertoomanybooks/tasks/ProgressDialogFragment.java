@@ -36,7 +36,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -249,28 +248,29 @@ public class ProgressDialogFragment
         }
     }
 
-    /**
-     * Work-around for bug in androidx library.
-     * Currently (2019-08-01) no longer needed as we're no longer retaining this fragment.
-     * Leaving as a reminder for now.
-     * <p>
-     * https://issuetracker.google.com/issues/36929400
-     * <p>
-     * Still not fixed in July 2019
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onDestroyView() {
-        if (getDialog() != null && getRetainInstance()) {
-            getDialog().setDismissMessage(null);
-        }
-        super.onDestroyView();
-    }
+//    /**
+//     * Work-around for bug in androidx library.
+//     * Currently (2019-08-01) no longer needed as we're no longer retaining this fragment.
+//     * Leaving as a reminder for now.
+//     * <p>
+//     * https://issuetracker.google.com/issues/36929400
+//     * <p>
+//     * Still not fixed in Nov 2019
+//     * <p>
+//     * <br>{@inheritDoc}
+//     */
+//    @Override
+//    @CallSuper
+//    public void onDestroyView() {
+//        if (getDialog() != null && getRetainInstance()) {
+//            getDialog().setDismissMessage(null);
+//        }
+//        super.onDestroyView();
+//    }
 
     public interface Cancellable {
 
+        @SuppressWarnings("SameReturnValue")
         boolean cancel(boolean mayInterruptIfRunning);
     }
 }

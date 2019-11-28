@@ -54,7 +54,7 @@ public final class UpgradeMessageManager {
      */
     private static final int[][] UPGRADE_MESSAGES = {
 //            {2, R.string.new_in_101},
-            };
+    };
     private static final Pattern CR_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
 
     /** The message generated for this instance; will be set first time it is generated. */
@@ -102,9 +102,11 @@ public final class UpgradeMessageManager {
 
     /**
      * Should be called after the user acknowledged the upgrade dialog message.
+     *
+     * @param appContext Application context
      */
-    public static void setUpgradeAcknowledged() {
-        PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+    public static void setUpgradeAcknowledged(@NonNull final Context appContext) {
+        PreferenceManager.getDefaultSharedPreferences(appContext)
                          .edit()
                          .putLong(StartupViewModel.PREF_STARTUP_LAST_VERSION, App.getVersion())
                          .apply();

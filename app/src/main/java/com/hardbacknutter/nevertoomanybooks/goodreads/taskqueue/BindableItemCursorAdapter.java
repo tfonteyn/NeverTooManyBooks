@@ -89,7 +89,7 @@ public class BindableItemCursorAdapter
         if (mLastItemViewTypePos == position) {
             item = mLastItemViewTypeEvent;
         } else {
-            item = cursor.getBindableItem(mContext);
+            item = cursor.getBindableItem();
         }
 
         if (convertView == null) {
@@ -151,7 +151,7 @@ public class BindableItemCursorAdapter
 
         BindableItemCursor cursor = (BindableItemCursor) getCursor();
         cursor.moveToPosition(position);
-        BindableItem item = cursor.getBindableItem(mContext);
+        BindableItem item = cursor.getBindableItem();
 
         // Use the class name to generate a layout number
         String s = item.getClass().toString();
@@ -198,6 +198,7 @@ public class BindableItemCursorAdapter
          *
          * @return number of view types that events will return.
          */
+        @SuppressWarnings("SameReturnValue")
         int getBindableItemTypeCount();
 
         /**

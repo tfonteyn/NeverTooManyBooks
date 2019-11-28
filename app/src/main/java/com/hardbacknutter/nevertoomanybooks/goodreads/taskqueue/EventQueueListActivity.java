@@ -56,10 +56,8 @@ public class EventQueueListActivity
     /** Task ID, if provided in intent. */
     private long mTaskId;
 
-    private void showContextMenu(@NonNull final AdapterView<?> parent,
-                                 @NonNull final View v,
+    private void showContextMenu(@NonNull final View v,
                                  @NonNull final BindableItemCursorAdapter.BindableItem item,
-                                 final int position,
                                  final long id) {
         List<ContextDialogItem> items = new ArrayList<>();
         item.addContextMenuItems(this, v, id, items, mDb);
@@ -129,9 +127,9 @@ public class EventQueueListActivity
         // If it owns a hint, display it first
         if (event instanceof TipOwner) {
             TipManager.display(this, ((TipOwner) event).getTip(),
-                               () -> showContextMenu(parent, v, event, position, id));
+                               () -> showContextMenu(v, event, id));
         } else {
-            showContextMenu(parent, v, event, position, id);
+            showContextMenu(v, event, id);
         }
     }
 }

@@ -31,6 +31,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -51,6 +52,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -213,7 +215,7 @@ public final class ImageUtils {
             }
         }
 
-        // 2. Check if the file exists; if it does not set the placeholder icon and exit.
+        // 2. Check if the file exists; if it does not, set the placeholder icon and exit.
         File file = StorageUtils.getCoverFileForUuid(uuid);
         if (!file.exists() || file.length() < MIN_IMAGE_FILE_SIZE) {
             imageView.setImageResource(placeHolder);
@@ -242,12 +244,13 @@ public final class ImageUtils {
             }
         }
 
-        // 4. Just go get the image from the file system.
+        // 4. Finally go get the image from the file system.
         return setImageView(imageView, file, maxWidth, maxHeight, allowUpscaling, placeHolder);
     }
 
     /**
-     * Convenience method for {@link #setImageView(ImageView, Bitmap, int, int, boolean)}.
+     * Load the image bitmap into the destination view.
+     * The file decoding is done in {@link ImageLoader}.
      *
      * @param imageView      The ImageView to load with the file or an appropriate icon
      * @param file           The file of the image
@@ -270,9 +273,10 @@ public final class ImageUtils {
             return false;
 
         } else if (file.length() > MIN_IMAGE_FILE_SIZE) {
-            @Nullable
-            Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
-            return setImageView(imageView, bm, maxWidth, maxHeight, allowUpscaling);
+            new ImageLoader(imageView, file, maxWidth, maxHeight, allowUpscaling)
+                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            // we hope loading will be fine.
+            return true;
 
         } else {
             imageView.setImageResource(R.drawable.ic_broken_image);
@@ -282,7 +286,6 @@ public final class ImageUtils {
 
     /**
      * Load the image bitmap into the destination view.
-     * Scaling is done by Android, enforced by the view itself and the dimensions passed in.
      *
      * @param imageView      The ImageView to load with the bitmap or an appropriate icon
      * @param source         The Bitmap of the image
@@ -311,19 +314,12 @@ public final class ImageUtils {
         imageView.setMaxHeight(maxHeight);
 
         if (source != null) {
-            // upscale only when required and allowed.
+            Bitmap bitmap = source;
+            // upscale only when required and allowed; otherwise let Android decide.
             if (source.getHeight() < maxHeight && allowUpscaling) {
-                Bitmap scaledBitmap;
-                scaledBitmap = createScaledBitmap(source, maxWidth, maxHeight);
-                if (!source.equals(scaledBitmap)) {
-                    // clean up the old one right now to save memory.
-                    source.recycle();
-                    imageView.setImageBitmap(scaledBitmap);
-                    return true;
-                }
+                bitmap = createScaledBitmap(source, maxWidth, maxHeight, true);
             }
-            // if not upscaling, let Android decide on any other scaling as needed.
-            imageView.setImageBitmap(source);
+            imageView.setImageBitmap(bitmap);
             return true;
 
         } else {
@@ -333,24 +329,23 @@ public final class ImageUtils {
     }
 
     /**
-     * Convenience method for {@link #createScaledBitmap(Bitmap, int, int)}.
+     * Convenience method for {@link #createScaledBitmap(Bitmap, int, int, boolean)}.
      *
-     * @param file  The file of the image
-     * @param scale user preferred scale factor
-     *
+     * @param file          The file of the image
+     * @param scale         user preferred scale factor
      * @return the bitmap, or {@code null} if the file failed to decode.
      */
     @Nullable
     @AnyThread
     public static Bitmap createScaledBitmap(@NonNull final File file,
-                                            @ImageUtils.Scale final int scale) {
+                                            @Scale final int scale) {
         @Nullable
         Bitmap bm = BitmapFactory.decodeFile(file.getPath());
         if (bm == null) {
             return null;
         }
         int maxSize = ImageUtils.getMaxImageSize(scale);
-        return createScaledBitmap(bm, maxSize, maxSize);
+        return createScaledBitmap(bm, maxSize, maxSize, true);
     }
 
     /**
@@ -364,11 +359,12 @@ public final class ImageUtils {
      * the source bitmap, the source bitmap is returned and no new bitmap is
      * created.
      *
-     * @param source    The source bitmap.
-     * @param dstWidth  The new bitmap's desired width.
-     * @param dstHeight The new bitmap's desired height.
+     * @param source        The source bitmap.
+     * @param dstWidth      The new bitmap's desired width.
+     * @param dstHeight     The new bitmap's desired height.
+     * @param recycleSource Flag: if set, the source will be recycled if scaling took place
      *
-     * @return The new scaled bitmap or the source bitmap if no scaling is required.
+     * @return The new scaled bitmap or the source bitmap if no scaling was done.
      *
      * @throws IllegalArgumentException if width is <= 0, or height is <= 0
      */
@@ -376,7 +372,8 @@ public final class ImageUtils {
     @AnyThread
     private static Bitmap createScaledBitmap(@NonNull final Bitmap source,
                                              final int dstWidth,
-                                             final int dstHeight) {
+                                             final int dstHeight,
+                                             final boolean recycleSource) {
         Matrix matrix = new Matrix();
         int width = source.getWidth();
         int height = source.getHeight();
@@ -389,7 +386,12 @@ public final class ImageUtils {
             float ratio = (sx < sy) ? sx : sy;
             matrix.setScale(ratio, ratio);
         }
-        return Bitmap.createBitmap(source, 0, 0, width, height, matrix, true);
+        Bitmap scaledBitmap = Bitmap.createBitmap(source, 0, 0, width, height, matrix, true);
+        if (recycleSource && !source.equals(scaledBitmap)) {
+            // clean up the old one right now to save memory.
+            source.recycle();
+        }
+        return scaledBitmap;
     }
 
     /**
@@ -560,8 +562,9 @@ public final class ImageUtils {
 
     /**
      * Given a URL, get an image and return as a byte array.
+     *
      * @param appContext Application context
-     * @param url Image file URL
+     * @param url        Image file URL
      *
      * @return Downloaded {@code byte[]} or {@code null} upon failure
      */
@@ -807,5 +810,53 @@ public final class ImageUtils {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Scale {
 
+    }
+
+
+    /**
+     * Load a Bitmap from a file, and populate the view.
+     */
+    public static class ImageLoader
+            extends AsyncTask<Void, Void, Bitmap> {
+
+        @NonNull
+        private final WeakReference<ImageView> mImageView;
+        @NonNull
+        private final File mFile;
+        private final int mMaxWidth;
+        private final int mMaxHeight;
+        private final boolean mAllowUpscaling;
+
+
+        ImageLoader(@NonNull final ImageView imageView,
+                    @NonNull final File file,
+                    final int maxWidth,
+                    final int maxHeight,
+                    final boolean allowUpscaling) {
+            mImageView = new WeakReference<>(imageView);
+            mFile = file;
+            mMaxWidth = maxWidth;
+            mMaxHeight = maxHeight;
+            mAllowUpscaling = allowUpscaling;
+        }
+
+        @Override
+        @Nullable
+        protected Bitmap doInBackground(final Void... voids) {
+            Bitmap bitmap = BitmapFactory.decodeFile(mFile.getAbsolutePath());
+            // upscale when required and allowed
+            if (bitmap.getHeight() < mMaxHeight && mAllowUpscaling) {
+                bitmap = createScaledBitmap(bitmap, mMaxWidth, mMaxHeight, true);
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(@Nullable final Bitmap bitmap) {
+            if (mImageView.get() != null) {
+                // upscaling, if applicable, was already done.
+                setImageView(mImageView.get(), bitmap, mMaxWidth, mMaxHeight, false);
+            }
+        }
     }
 }

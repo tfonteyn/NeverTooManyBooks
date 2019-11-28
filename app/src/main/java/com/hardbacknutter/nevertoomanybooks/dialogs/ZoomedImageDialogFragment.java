@@ -69,10 +69,7 @@ public class ZoomedImageDialogFragment
      */
     public static void show(@NonNull final FragmentManager fm,
                             @NonNull final File image) {
-        // if there is no file, just silently ignore.
-        if (image.exists()) {
             newInstance(image).show(fm, TAG);
-        }
     }
 
     /**

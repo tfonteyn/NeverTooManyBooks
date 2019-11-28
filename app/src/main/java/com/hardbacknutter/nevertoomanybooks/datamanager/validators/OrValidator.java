@@ -79,13 +79,13 @@ public class OrValidator
         if (lastException != null) {
             throw lastException;
         } else {
-            Context context = App.getLocalizedAppContext();
+            Context localContext = App.getLocalizedAppContext();
             // This should never happen (flw)
-            Logger.warnWithStackTrace(context, TAG, "validate",
+            Logger.warnWithStackTrace(localContext, TAG, "validate",
                                       "no exceptions were thrown in the validator?",
                                       "key=" + key);
             throw new ValidatorException(R.string.vldt_failed_for_x,
-                                         context.getString(errorLabelId));
+                                         localContext.getString(errorLabelId));
         }
     }
 }

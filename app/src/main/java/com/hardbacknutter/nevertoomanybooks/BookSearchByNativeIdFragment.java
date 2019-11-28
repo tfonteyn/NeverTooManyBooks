@@ -113,7 +113,7 @@ public class BookSearchByNativeIdFragment
     protected boolean onSearch() {
         int siteId = SearchSites.getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
         mSearchCoordinator.setNativeIdSearchText(mEntryView.getText().toString().trim());
-        return mSearchCoordinator.searchByNativeId(Site.newSite(siteId));
+        return mSearchCoordinator.searchByNativeId(Site.createDataSite(siteId));
     }
 
     @Override
@@ -151,11 +151,11 @@ public class BookSearchByNativeIdFragment
     private void onSiteSelect(@NonNull final RadioGroup group,
                               final int checkedId) {
 
-        Site site = Site.newSite(SearchSites.getSiteIdFromResId(checkedId));
+        Site site = Site.createDataSite(SearchSites.getSiteIdFromResId(checkedId));
         SearchEngine searchEngine = site.getSearchEngine();
-        if (!searchEngine.isAvailable()) {
+        //noinspection ConstantConditions
+        if (!searchEngine.isAvailable(getContext())) {
             // If the selected site needs registration, prompt the user.
-            //noinspection ConstantConditions
             searchEngine.promptToRegister(getContext(), true, "native_id");
             mRadioGroup.clearCheck();
             return;

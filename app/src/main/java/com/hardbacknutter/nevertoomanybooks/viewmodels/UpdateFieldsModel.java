@@ -172,7 +172,7 @@ public class UpdateFieldsModel
 
             mDb = new DAO();
             // use global preference.
-            mSiteList = SiteList.getList(context, SiteList.ListType.Data);
+            mSiteList = SiteList.getList(context, SiteList.Type.Data);
 
             if (args != null) {
                 //noinspection unchecked
@@ -327,6 +327,7 @@ public class UpdateFieldsModel
         return mUpdateTask;
     }
 
+    @SuppressWarnings("SameReturnValue")
     public boolean startSearch() {
         // add related fields.
         // i.e. if we do the 'list-price' field, we'll also want its currency.

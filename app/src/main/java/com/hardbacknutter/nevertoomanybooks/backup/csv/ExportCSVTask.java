@@ -108,7 +108,7 @@ public class ExportCSVTask
     @NonNull
     @WorkerThread
     protected ExportHelper doInBackground(final Void... params) {
-        Thread.currentThread().setName("ExportTask");
+        Thread.currentThread().setName("ExportCSVTask");
 
         Context context = App.getAppContext();
 
@@ -118,7 +118,8 @@ public class ExportCSVTask
             if (!isCancelled()) {
                 // send to user destination
                 Objects.requireNonNull(mExportHelper.uri);
-                StorageUtils.exportFile(ExportHelper.getTempFile(context), mExportHelper.uri);
+                StorageUtils.exportFile(context, ExportHelper.getTempFile(context),
+                                        mExportHelper.uri);
             }
             return mExportHelper;
 

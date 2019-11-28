@@ -319,19 +319,19 @@ public class StartupViewModel
         @Override
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("BuildLanguageMappingsTask");
-            Context context = App.getLocalizedAppContext();
+            Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getId());
             }
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, context.getString(
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
                     R.string.progress_msg_optimizing)));
             try {
-                LanguageUtils.createLanguageMappingCache();
+                LanguageUtils.createLanguageMappingCache(localContext);
                 return true;
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(localContext, TAG, e);
                 mException = e;
                 return false;
             }
@@ -400,18 +400,18 @@ public class StartupViewModel
         @Override
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("DBCleanerTask");
-            Context context = App.getLocalizedAppContext();
+            Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getId());
             }
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, context.getString(
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
                     R.string.progress_msg_optimizing)));
             try {
                 DBCleaner cleaner = new DBCleaner(mDb);
 
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
-                cleaner.updateLanguages(context);
+                cleaner.updateLanguages(localContext);
                 // clean/correct style UUID's on Bookshelves for deleted styles.
                 cleaner.bookshelves();
 
@@ -420,7 +420,7 @@ public class StartupViewModel
                 return true;
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(localContext, TAG, e);
                 mException = e;
                 return false;
             }
@@ -457,23 +457,23 @@ public class StartupViewModel
         @WorkerThread
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("RebuildFtsTask");
-            Context context = App.getLocalizedAppContext();
+            Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getId());
             }
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, context.getString(
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
                     R.string.progress_msg_rebuilding_search_index)));
             try {
                 mDb.rebuildFts();
-                PreferenceManager.getDefaultSharedPreferences(context)
+                PreferenceManager.getDefaultSharedPreferences(localContext)
                                  .edit()
                                  .remove(PREF_STARTUP_FTS_REBUILD_REQUIRED)
                                  .apply();
                 return true;
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(localContext, TAG, e);
                 mException = e;
                 return false;
             }
@@ -510,26 +510,26 @@ public class StartupViewModel
         @WorkerThread
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("RebuildOrderByTitleColumnsTask");
-            Context context = App.getLocalizedAppContext();
+            Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getId());
             }
             // incorrect progress message, but it's half-true.
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, context.getString(
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
                     R.string.progress_msg_rebuilding_search_index)));
             try {
-                boolean reorder = Prefs.reorderTitleForSorting(context);
-                mDb.rebuildOrderByTitleColumns(context, reorder);
+                boolean reorder = Prefs.reorderTitleForSorting(localContext);
+                mDb.rebuildOrderByTitleColumns(localContext, reorder);
                 return true;
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(localContext, TAG, e);
                 mException = e;
                 return false;
             } finally {
                 // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-                setScheduleOrderByRebuild(context, false);
+                setScheduleOrderByRebuild(localContext, false);
             }
         }
     }
@@ -564,12 +564,12 @@ public class StartupViewModel
         @Override
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("AnalyzeDbTask");
-            Context context = App.getLocalizedAppContext();
+            Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getId());
             }
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, context.getString(
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
                     R.string.progress_msg_optimizing)));
             try {
                 // small hack to make sure we always update the triggers.
@@ -585,7 +585,7 @@ public class StartupViewModel
                 return true;
 
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
+                Logger.error(localContext, TAG, e);
                 mException = e;
                 return false;
             }

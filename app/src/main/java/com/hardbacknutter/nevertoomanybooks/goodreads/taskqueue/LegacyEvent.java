@@ -44,13 +44,16 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 /**
  * Class to wrap events that can not be de-serialized so that the EventsCursor *always*
  * returns a valid Event.
+ *
+ * <strong>Note:</strong> texts are hardcoded here. They are unlikely to ever
+ * be seen by the user and destined to be removed altogether soon-ish.
  */
 public class LegacyEvent
         extends Event {
 
     private static final int TEXT_FIELD_1 = 1;
     private static final int TEXT_FIELD_2 = 2;
-    private static final long serialVersionUID = 3505922919300986308L;
+    private static final long serialVersionUID = 8732289884597976482L;
 
     LegacyEvent() {
         super("Legacy Event");
@@ -78,13 +81,6 @@ public class LegacyEvent
         return root;
     }
 
-    /**
-     * <strong>Note:</strong> the text is hardcoded here. It's unlikely to ever
-     * be seen by the user and destined to be removed altogether soon-ish.
-     * <p>
-     * <p>
-     * {@inheritDoc}
-     */
     @SuppressLint("SetTextI18n")
     @Override
     public void bindView(@NonNull final View view,
