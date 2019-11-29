@@ -240,7 +240,7 @@ class AmazonHandler
     private static final String XML_TITLE = "Title";
     private static final String XML_E_ISBN = "EISBN";
     private static final String XML_EAN = "EAN";
-    private static final String XML_ISBN_OLD = "EAN";
+    private static final String XML_ISBN_OLD = XML_EAN;
     private static final String XML_ASIN = "ASIN";
     private static final String XML_DATE_PUBLISHED = "PublicationDate";
     private static final String XML_PUBLISHER = "Publisher";

@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public class BookSearchByNativeIdFragment
         extends BookSearchBaseFragment {
 
+    /** log tag. */
     public static final String TAG = "BookSearchByNativeId";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("\\d+");
     private static final String BKEY_SITE_RES_ID = TAG + ":siteResId";

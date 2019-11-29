@@ -108,4 +108,7 @@ public class AuthorTypeMapper {
         Logger.warn(TAG, "map", "typeName=`" + typeName + "`");
         return TYPE_UNKNOWN;
     }
+
+    private AuthorTypeMapper() {
+    }
 }

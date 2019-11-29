@@ -85,7 +85,7 @@ public class IsfdbBookHandler
      */
     private static final String DOT = "(&#x2022;|&#8226;|•)";
     /** Character used by the site as string divider/splitter. */
-//    private static final Pattern DOT_PATTERN = Pattern.compile(DOT);
+    // private static final Pattern DOT_PATTERN = Pattern.compile(DOT);
     private static final Pattern YEAR_PATTERN = Pattern.compile(DOT + " \\(([1|2]\\d\\d\\d)\\)");
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
@@ -134,14 +134,14 @@ public class IsfdbBookHandler
         TYPE_MAP.put("MAGAZINE", Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS);
 
         // others, treated as a standard book.
-//        TYPE_MAP.put("novel", 0);
-//        TYPE_MAP.put("NOVEL", 0);
-//
-//        TYPE_MAP.put("chap", 0);
-//        TYPE_MAP.put("CHAPBOOK", 0);
-//
-//        TYPE_MAP.put("non-fic", 0);
-//        TYPE_MAP.put("NONFICTION", 0);
+        // TYPE_MAP.put("novel", 0);
+        // TYPE_MAP.put("NOVEL", 0);
+        //
+        // TYPE_MAP.put("chap", 0);
+        // TYPE_MAP.put("CHAPBOOK", 0);
+        //
+        // TYPE_MAP.put("non-fic", 0);
+        // TYPE_MAP.put("NONFICTION", 0);
     }
 
     /** accumulate all authors for this book. */
@@ -504,7 +504,7 @@ public class IsfdbBookHandler
                     if (as != null) {
                         for (Element a : as) {
                             Author author = Author.fromString(a.text());
-//                            author.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                            // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mAuthors.add(author);
                         }
                     }
@@ -544,7 +544,7 @@ public class IsfdbBookHandler
                     if (as != null) {
                         for (Element a : as) {
                             Publisher publisher = Publisher.fromString(a.text());
-//                            publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                            // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mPublishers.add(publisher);
                         }
                     }
@@ -554,7 +554,7 @@ public class IsfdbBookHandler
                     if (as != null) {
                         for (Element a : as) {
                             Series series = Series.fromString(a.text());
-//                            series.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                            // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mSeries.add(series);
                         }
                     }
@@ -595,14 +595,14 @@ public class IsfdbBookHandler
                     Elements as = li.select("a");
                     if (as != null) {
                         //TODO: if there are multiple art/artists... will this barf ?
-//                        bookData.putString(BookField.BOOK_COVER_ART_TXT, as.text());
+                        // bookData.putString(BookField.BOOK_COVER_ART_TXT, as.text());
 
                         if (as.size() > 1) {
                             // Cover artist
                             Element a = as.get(1);
                             Author author = Author.fromString(a.text());
                             author.setType(Author.TYPE_COVER_ARTIST);
-//                            author.setIsfDbId(stripNumber(a.attr("href"),'?'));
+                            // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
                             mAuthors.add(author);
                         }
                     }
@@ -617,7 +617,7 @@ public class IsfdbBookHandler
                         for (Element a : as) {
                             Author author = Author.fromString(a.text());
                             author.setType(Author.TYPE_EDITOR);
-//                            author.setIsfDbId(stripNumber(a.attr("href"), '?'));
+                            // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mAuthors.add(author);
                         }
                     }
@@ -916,7 +916,6 @@ public class IsfdbBookHandler
         for (Element li : lis) {
 
             /* LI entries, possibilities:
-
             7
             &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?118799">
                 Introduction (The Days of Perky Pat)</a>
@@ -925,19 +924,16 @@ public class IsfdbBookHandler
             &#8226; (1987)
             &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?57">James Tiptree, Jr.</a>
 
-
             11
             &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?53646">Autofac</a>
             &#8226; (1955)
             &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
                 Philip K. Dick</a>
 
-
             <a href="http://www.isfdb.org/cgi-bin/title.cgi?41613">Beyond Lies the Wub</a>
             &#8226; (1952)
             &#8226; short story by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?23">
                 Philip K. Dick</a>
-
 
             <a href="http://www.isfdb.org/cgi-bin/title.cgi?118803">
             Introduction (Beyond Lies the Wub)</a>
@@ -946,7 +942,6 @@ public class IsfdbBookHandler
             &#8226; (1987)
             &#8226; essay by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?69">Roger Zelazny</a>
 
-
             61
             &#8226; <a href="http://www.isfdb.org/cgi-bin/title.cgi?417331">
                 That Thou Art Mindful of Him</a>
@@ -954,7 +949,6 @@ public class IsfdbBookHandler
             &#8226; novelette by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?5">Isaac Asimov</a>
             (variant of <i><a href="http://www.isfdb.org/cgi-bin/title.cgi?50798">
                 —That Thou Art Mindful of Him!</a></i>)
-
 
             A book belonging to a Series will have one content entry with the same title
             as the book, and potentially have the Series/nr in it:
@@ -969,7 +963,6 @@ public class IsfdbBookHandler
             ENHANCE: type of entry: "short story", "novelette", "essay", "novel"
             ENHANCE: if type "novel" -> *that* is the one to use for the first publication year
 
-
             2019-07: translation information seems to be added,
             and a further sub-classification (here: 'juvenile')
 
@@ -980,7 +973,6 @@ public class IsfdbBookHandler
             &#8226; novel by <a href="http://www.isfdb.org/cgi-bin/ea.cgi?29">Robert A. Heinlein</a>
             (trans. of <a href="http://www.isfdb.org/cgi-bin/title.cgi?2233">
                 <i>Citizen of the Galaxy</i></a> 1957)
-
 
             2019-09-26: this has been there for a longer time, but just noticed these:
             ISBN: 90-290-1541-1
@@ -1015,7 +1007,7 @@ public class IsfdbBookHandler
 
                     //  • 4] • (1987) • novel by
                     String nr = a.nextSibling().toString();
-                    int dotIdx = nr.indexOf('•');
+                    int dotIdx = nr.indexOf('\u2022');
                     if (dotIdx != -1) {
                         int closeBrIdx = nr.indexOf(']');
                         if (closeBrIdx > dotIdx) {
@@ -1025,7 +1017,6 @@ public class IsfdbBookHandler
                             }
                         }
                     }
-
                     mSeries.add(series);
                 }
             }

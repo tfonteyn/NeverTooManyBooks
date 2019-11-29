@@ -109,6 +109,8 @@ public abstract class BasePreferenceFragment
     }
 
     /**
+     * Update the summary for the given key.
+     * <p>
      * TODO: implement {@link Preference.SummaryProvider}
      *
      * @param key for preference.
@@ -123,6 +125,8 @@ public abstract class BasePreferenceFragment
 
     /**
      * Get the current string value for a single Preference.
+     *
+     * @param preference to get the value of
      *
      * @return the value string
      */

@@ -263,10 +263,9 @@ public abstract class BookSearchBaseFragment
 
     /**
      * Override to customize which search function is called.
+     *
+     * @return {@code true} if a search was started
      */
-//    protected boolean onSearch() {
-//        return mSearchCoordinator.searchByText();
-//    }
     protected abstract boolean onSearch();
 
     @Override

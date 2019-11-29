@@ -84,6 +84,7 @@ public class BooklistPseudoCursor
         extends AbstractCursor
         implements CursorRowProvider {
 
+    /** log tag. */
     private static final String TAG = "BooklistPseudoCursor";
 
     /** Number of 'pages' a cursor has to 'away' to be considered for purging. */

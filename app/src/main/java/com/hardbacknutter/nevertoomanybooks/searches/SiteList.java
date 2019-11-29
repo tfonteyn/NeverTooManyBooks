@@ -98,7 +98,7 @@ public class SiteList
     }
 
     /**
-     * Copy constructor,
+     * Copy constructor.
      *
      * @param list to copy
      */
@@ -345,7 +345,7 @@ public class SiteList
 
                     @Override
                     @NonNull
-                    public Type[] newArray(int size) {
+                    public Type[] newArray(final int size) {
                         return new Type[size];
                     }
                 };

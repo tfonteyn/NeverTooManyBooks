@@ -71,6 +71,7 @@ public final class Site
     private static final String PREF_SUFFIX_COVERS = "Covers";
     /** Name suffix for Alternative Editions websites. */
     private static final String PREF_SUFFIX_ALT_ED = "AltEd";
+    private static final String ENABLED = "enabled";
 
     /** Internal ID, bitmask based, not stored in prefs. */
     @SearchSites.Id
@@ -185,12 +186,12 @@ public final class Site
     void loadFromPrefs(@NonNull final Context context) {
         String lcName = PREF_PREFIX + mPreferenceKey.toLowerCase(Locale.getDefault()) + '.';
         mEnabled = PreferenceManager.getDefaultSharedPreferences(context)
-                                    .getBoolean(lcName + "enabled", mEnabled);
+                                    .getBoolean(lcName + ENABLED, mEnabled);
     }
 
     void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
         String lcName = PREF_PREFIX + mPreferenceKey.toLowerCase(Locale.getDefault()) + '.';
-        editor.putBoolean(lcName + "enabled", mEnabled);
+        editor.putBoolean(lcName + ENABLED, mEnabled);
     }
 
     @SuppressWarnings("SameReturnValue")

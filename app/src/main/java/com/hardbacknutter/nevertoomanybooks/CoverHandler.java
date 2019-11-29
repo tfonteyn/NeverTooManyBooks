@@ -90,6 +90,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public class CoverHandler {
 
+    /** log tag. */
     private static final String TAG = "CoverHandler";
 
     /** The cropper uses a single file. */

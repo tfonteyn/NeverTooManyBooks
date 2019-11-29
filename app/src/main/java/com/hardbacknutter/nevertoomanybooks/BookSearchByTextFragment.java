@@ -56,12 +56,13 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
+    /** log tag. */
     public static final String TAG = "BookSearchByTextFragment";
 
     /** A list of author names we have already searched for in this session. */
     @NonNull
     private final Collection<String> mRecentAuthorNames = new ArrayList<>();
-
+    /** adapter for the AutoCompleteTextView. */
     private ArrayAdapter<String> mAuthorAdapter;
     /** User input field. */
     private EditText mTitleView;

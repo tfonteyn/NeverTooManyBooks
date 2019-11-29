@@ -646,7 +646,7 @@ public class App
     }
 
     /**
-     * DEBUG
+     * DEBUG.
      *
      * @return {@code true} if the current run is a JUnit test.
      */

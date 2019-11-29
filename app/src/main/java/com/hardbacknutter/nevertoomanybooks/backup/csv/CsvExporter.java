@@ -60,14 +60,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 public class CsvExporter
         implements Exporter {
 
+    /** log tag. */
+    private static final String TAG = "CsvExporter";
+    private static final int BUFFER_SIZE = 32768;
+
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_TOC = "anthology_titles";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_SERIES = "series_details";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_AUTHORS = "author_details";
-    private static final String TAG = "CsvExporter";
-    private static final int BUFFER_SIZE = 32768;
 
     /** Only send progress updates every 200ms. */
     private static final int PROGRESS_UPDATE_INTERVAL = 200;

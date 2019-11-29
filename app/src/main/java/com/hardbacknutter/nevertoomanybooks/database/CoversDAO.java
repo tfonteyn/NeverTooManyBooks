@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public final class CoversDAO
         implements AutoCloseable {
 
+    /** log tag. */
     private static final String TAG = "CoversDAO";
 
     /** Compresses images to 80% to store in the cache. This does not affect the file itself. */

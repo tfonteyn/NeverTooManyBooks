@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class CheckListDialogFragment<T>
         extends DialogFragment {
 
+    /** log tag. */
     public static final String TAG = "CheckListDialogFragment";
 
     /** Argument. */

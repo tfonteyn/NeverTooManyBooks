@@ -100,6 +100,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 public class CsvImporter
         implements Importer {
 
+    /** log tag. */
     private static final String TAG = "CsvImporter";
 
     /** Only send progress updates every 200ms. */

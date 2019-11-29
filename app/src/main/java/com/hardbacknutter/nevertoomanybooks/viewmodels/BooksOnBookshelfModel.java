@@ -76,9 +76,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
-
 /**
  * First attempt to split of into a model for BoB.
  */
@@ -451,7 +448,7 @@ public class BooksOnBookshelfModel
 
         // Always get the Author ID (the name is depending on style).
         blb.addExtraDomain(DBDefinitions.DOM_FK_AUTHOR,
-                           TBL_BOOK_AUTHOR.dot(DOM_FK_AUTHOR),
+                           DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.DOM_FK_AUTHOR),
                            false);
 
         // external site ID's

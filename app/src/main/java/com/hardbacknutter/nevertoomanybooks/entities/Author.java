@@ -201,9 +201,6 @@ public class Author
         TYPES.put(TYPE_COVER_COLORIST, R.string.lbl_author_type_cover_colorist);
     }
 
-    static {
-    }
-
     /** Row ID. */
     private long mId;
     /** Family name(s). */
@@ -619,11 +616,11 @@ public class Author
     }
 
     @IntDef(flag = true,
-            value = {TYPE_UNKNOWN
-                    , TYPE_WRITER
-                    , TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR
-                    , TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_COVER_COLORIST
-                    , TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST})
+            value = {TYPE_UNKNOWN,
+                     TYPE_WRITER,
+                     TYPE_TRANSLATOR, TYPE_INTRODUCTION, TYPE_EDITOR, TYPE_CONTRIBUTOR,
+                     TYPE_COVER_ARTIST, TYPE_COVER_INKING, TYPE_COVER_COLORIST,
+                     TYPE_ARTIST, TYPE_INKING, TYPE_COLORIST})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
 

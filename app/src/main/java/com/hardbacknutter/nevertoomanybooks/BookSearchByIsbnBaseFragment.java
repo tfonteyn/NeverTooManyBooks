@@ -94,7 +94,8 @@ public abstract class BookSearchByIsbnBaseFragment
     /**
      * Search with ISBN.
      * <p>
-     * mIsbnSearchText must be 10 characters (or more) to even consider a search.
+     * @param isbnSearchText isbn text to search for.
+     *                       Must be 10 characters (or more) to even consider a search.
      */
     void prepareSearch(@NonNull final String isbnSearchText) {
         // valid or not, store for later.

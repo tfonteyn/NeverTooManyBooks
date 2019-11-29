@@ -136,6 +136,7 @@ public class BooklistBuilder
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
     @SuppressWarnings("WeakerAccess")
     public static final int PREF_LIST_REBUILD_PREFERRED_STATE = 3;
+    /** log tag. */
     private static final String TAG = "BooklistBuilder";
     /** Counter for BooklistBuilder ID's. Used to create unique table names etc... */
     @NonNull

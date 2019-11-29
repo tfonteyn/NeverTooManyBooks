@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public class CoverBrowserViewModel
         extends ViewModel {
 
+    /** log tag. */
     private static final String TAG = "CoverBrowserViewModel";
 
     /** Holder for all active tasks, so we can cancel them if needed. */

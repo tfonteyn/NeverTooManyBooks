@@ -113,7 +113,7 @@ public class BackupTask
     @NonNull
     @WorkerThread
     protected ExportHelper doInBackground(final Void... params) {
-        Thread.currentThread().setName("BackupTask");
+        Thread.currentThread().setName(TAG);
 
         Context localContext = App.getLocalizedAppContext();
         Uri uri = Uri.fromFile(ExportHelper.getTempFile(localContext));

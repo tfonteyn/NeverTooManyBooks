@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 public class BookSearchByScanFragment
         extends BookSearchByIsbnBaseFragment {
 
+    /** log tag. */
     public static final String TAG = "BookSearchByScanFrag";
 
     /** wait for the scanner; milliseconds. */

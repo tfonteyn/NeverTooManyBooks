@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 public class BookSearchByIsbnFragment
         extends BookSearchByIsbnBaseFragment {
 
+    /** log tag. */
     public static final String TAG = "BookSearchByIsbnFragment";
 
     /** User input field. */

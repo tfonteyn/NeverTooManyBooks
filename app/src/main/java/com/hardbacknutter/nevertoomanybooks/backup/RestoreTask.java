@@ -94,7 +94,7 @@ public class RestoreTask
     @NonNull
     @WorkerThread
     protected ImportHelper doInBackground(final Void... params) {
-        Thread.currentThread().setName("RestoreTask");
+        Thread.currentThread().setName(TAG);
 
         Context localContext = App.getLocalizedAppContext();
         //noinspection ConstantConditions
