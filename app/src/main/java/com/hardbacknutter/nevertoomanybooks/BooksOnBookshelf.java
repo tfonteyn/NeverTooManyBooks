@@ -97,8 +97,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
@@ -115,6 +113,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 public class BooksOnBookshelf
         extends BaseActivity {
 
+    /** log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
     /** This is very important: the number of FAB sub-buttons we're using. */
@@ -177,9 +176,7 @@ public class BooksOnBookshelf
                 }
             };
 
-    /**
-     * ENHANCE: update the modified row without a rebuild
-     */
+    // ENHANCE: update the modified row without a rebuild.
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "onBookChanged"
@@ -823,7 +820,7 @@ public class BooksOnBookshelf
         hideFABMenu();
         //TEST: why did I add the if() ?
 //        if (mModel.getSearchCriteria().isEmpty()) {
-            savePosition();
+        savePosition();
 //        }
         super.onPause();
     }
@@ -1546,30 +1543,6 @@ public class BooksOnBookshelf
                         .edit(row.getString(DBDefinitions.KEY_LOCATION));
                 return true;
             }
-            /* ********************************************************************************** */
-
-            //NEWTHINGS: add new site specific ID: add case
-            case R.id.MENU_VIEW_BOOK_AT_GOODREADS: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
-                return true;
-            }
-            case R.id.MENU_VIEW_BOOK_AT_ISFDB: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_ISFDB));
-                return true;
-            }
-            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
-                return true;
-            }
-            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY: {
-                IsfdbManager.openWebsite(this, row.getLong(DBDefinitions.KEY_EID_OPEN_LIBRARY));
-                return true;
-            }
-            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE: {
-                StripInfoManager.openWebsite(this,
-                                             row.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
-                return true;
-            }
 
             /* ********************************************************************************** */
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
@@ -1587,9 +1560,8 @@ public class BooksOnBookshelf
                 return true;
             }
 
-
             default:
-                return false;
+                return MenuHandler.handleOpenOnWebsiteMenus(this, menuItem, row);
         }
     }
 

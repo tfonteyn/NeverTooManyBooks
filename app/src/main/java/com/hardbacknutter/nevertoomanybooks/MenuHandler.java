@@ -160,24 +160,9 @@ final class MenuHandler {
                         .openWebsite(context, book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
                 return true;
 
+            //NEWTHINGS: add new site specific ID: add case
 
-//            case R.id.SUBMENU_AMAZON_SEARCH: {
-//                // after the user selects the submenu, we make individual items visible/hidden.
-//                SubMenu menu = menuItem.getSubMenu();
-//                boolean hasAuthor = !book.getParcelableArrayList(
-//                        UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
-//                boolean hasSeries = !book.getParcelableArrayList(
-//                        UniqueId.BKEY_SERIES_ARRAY).isEmpty();
-//
-//                menu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
-//                    .setVisible(hasAuthor);
-//                menu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
-//                    .setVisible(hasAuthor && hasSeries);
-//                menu.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
-//                    .setVisible(hasSeries);
-//                // let the normal call flow go on, it will display the submenu
-//                return false;
-//            }
+            /* ********************************************************************************** */
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
                 AmazonManager.openWebsite(context, book.getPrimaryAuthor(context), null);
                 return true;
@@ -190,6 +175,41 @@ final class MenuHandler {
                 AmazonManager.openWebsite(context,
                                           book.getPrimaryAuthor(context), book.getPrimarySeries());
                 return true;
+
+            default:
+                return false;
+        }
+    }
+
+    static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
+                                            @NonNull final MenuItem menuItem,
+                                            @NonNull final CursorMapper row) {
+        switch (menuItem.getItemId()) {
+            case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
+                GoodreadsManager
+                        .openWebsite(context, row.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_ISFDB:
+                IsfdbManager.openWebsite(context, row.getLong(DBDefinitions.KEY_EID_ISFDB));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
+                LibraryThingManager
+                        .openWebsite(context, row.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
+                OpenLibraryManager
+                        .openWebsite(context, row.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
+                StripInfoManager
+                        .openWebsite(context, row.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
+                return true;
+
+            //NEWTHINGS: add new site specific ID: add case
 
             default:
                 return false;
