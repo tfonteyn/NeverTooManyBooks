@@ -27,27 +27,47 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/ROW_ONCLICK_TARGET"
-    style="@style/BooklistBook.Row.Level3"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
     >
 
-    <!-- Smaller text, but with padding so user can still select it
-        Note that the 'drawableEnd' drawable itself is done from code.
-    -->
-    <TextView
-        android:id="@+id/name"
-        style="@style/BooklistBook.Section"
-        android:drawableTint="?attr/completed_icon_tint"
-        android:textIsSelectable="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:drawableEnd="@drawable/ic_lock"
-        tools:text="third level"
+    <CheckBox
+        android:id="@+id/cbx_read"
+        style="@style/Flag.Read"
+        android:contentDescription="@string/lbl_read"
+        android:visibility="gone"
+        tools:checked="true"
+        tools:visibility="visible"
         />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <CheckBox
+        android:id="@+id/cbx_first_edition"
+        style="@style/Flag.FirstEdition"
+        android:contentDescription="@string/lbl_edition_first_edition"
+        android:visibility="gone"
+        tools:checked="true"
+        tools:visibility="visible"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_signed"
+        style="@style/Flag.Signed"
+        android:contentDescription="@string/lbl_signed"
+        android:visibility="gone"
+        tools:checked="true"
+        tools:visibility="visible"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_on_loan"
+        style="@style/Flag.OnLoan"
+        android:contentDescription="@string/lbl_loaned"
+        android:visibility="gone"
+        tools:checked="true"
+        tools:visibility="visible"
+        />
+</LinearLayout>

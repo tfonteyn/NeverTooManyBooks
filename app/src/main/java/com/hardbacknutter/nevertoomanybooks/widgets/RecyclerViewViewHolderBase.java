@@ -83,7 +83,7 @@ public class RecyclerViewViewHolderBase
         super(itemView);
 
         // Don't enable the whole row, so buttons keep working
-        View rd = itemView.findViewById(R.id.ROW_DETAILS);
+        View rd = itemView.findViewById(R.id.ROW_ONCLICK_TARGET);
         // but if we did not define a details row subview, use the row itself anyhow.
         rowDetailsView = rd != null ? rd : itemView;
         rowDetailsView.setFocusable(false);

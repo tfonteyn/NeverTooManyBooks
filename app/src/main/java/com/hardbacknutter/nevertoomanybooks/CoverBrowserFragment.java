@@ -194,10 +194,10 @@ public class CoverBrowserFragment
                 Log.d(TAG, "mImageSwitcherView.onClick|fileSpec=" + fileSpec);
             }
             if (fileSpec != null) {
-                Intent data = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
+                Intent resultData = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
                 //noinspection ConstantConditions
-                getTargetFragment().onActivityResult(getTargetRequestCode(),
-                                                     Activity.RESULT_OK, data);
+                getTargetFragment()
+                        .onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, resultData);
             }
             // close the CoverBrowserFragment
             dismiss();

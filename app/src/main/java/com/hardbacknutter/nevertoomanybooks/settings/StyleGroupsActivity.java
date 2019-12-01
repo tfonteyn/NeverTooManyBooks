@@ -136,8 +136,9 @@ public class StyleGroupsActivity
                     .create()
                     .show();
         } else {
-            Intent data = new Intent().putExtra(UniqueId.BKEY_STYLE, mModel.getStyle());
-            setResult(Activity.RESULT_OK, data);
+            Intent resultData = new Intent()
+                    .putExtra(UniqueId.BKEY_STYLE, mModel.getStyle());
+            setResult(Activity.RESULT_OK, resultData);
             super.onBackPressed();
         }
     }

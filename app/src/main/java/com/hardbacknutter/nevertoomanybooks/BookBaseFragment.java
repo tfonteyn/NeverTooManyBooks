@@ -108,7 +108,8 @@ public abstract class BookBaseFragment
     private void showNeedsGoodreads(@Nullable final Boolean needs) {
         if (needs != null && needs) {
             //noinspection ConstantConditions
-            RequestAuthTask.needsRegistration(getContext(), mBookModel.getGoodreadsTaskListener());
+            RequestAuthTask.needsRegistration(getContext(),
+                                              mBookModel.getGoodreadsTaskListener());
         }
     }
 
@@ -187,14 +188,12 @@ public abstract class BookBaseFragment
             case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    //noinspection unchecked
-                    ArrayList<Long> bookIds =
-                            (ArrayList<Long>) data.getSerializableExtra(UniqueId.BKEY_ID_LIST);
 
-                    if (bookIds != null && bookIds.size() == 1) {
+                    long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
+                    if (newId != 0) {
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.
-                        mBookModel.setBook(bookIds.get(0));
+                        mBookModel.setBook(newId);
                     }
                 }
                 break;

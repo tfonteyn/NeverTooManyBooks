@@ -33,8 +33,49 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border1"
+    tools:showIn="@layout/fragment_booksearch_by_isbn"
     >
+
+    <Button
+        android:id="@+id/altIsbn"
+        style="@style/SwapButton"
+        app:icon="@drawable/ic_autorenew"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:enabled="true"
+        />
+
+    <com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn
+        android:id="@+id/isbn"
+        style="@style/EditText.Isbn.Large"
+        app:layout_constraintEnd_toStartOf="@id/isbn_del"
+        app:layout_constraintStart_toEndOf="@id/altIsbn"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill,LabelFor"
+        tools:text="123456789X123"
+        />
+
+    <Space
+        android:id="@+id/spacer"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/border1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/isbn"
+        />
+
+    <Button
+        android:id="@+id/isbn_del"
+        style="@style/IsbnKeyPadButton.Del"
+        android:contentDescription="@string/menu_delete"
+        app:icon="@drawable/ic_backspace"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
     <Button
         android:id="@+id/key_1"
@@ -43,7 +84,7 @@
         app:layout_constraintBottom_toTopOf="@id/key_4"
         app:layout_constraintEnd_toStartOf="@id/key_2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spacer"
         tools:ignore="HardcodedText"
         />
 
@@ -54,7 +95,7 @@
         app:layout_constraintBottom_toTopOf="@id/key_5"
         app:layout_constraintEnd_toStartOf="@id/key_3"
         app:layout_constraintStart_toEndOf="@id/key_1"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spacer"
         tools:ignore="HardcodedText"
         />
 
@@ -65,7 +106,7 @@
         app:layout_constraintBottom_toTopOf="@id/key_6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/key_2"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spacer"
         tools:ignore="HardcodedText"
         />
 

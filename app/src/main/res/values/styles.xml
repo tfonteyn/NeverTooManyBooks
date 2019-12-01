@@ -213,7 +213,6 @@
     <style name="EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="android:digits">1234567890xX</item>
-        <item name="android:minEms">10</item>
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
         <item name="android:drawableStart">@drawable/ic_check</item>
         <item name="android:drawableTint">?attr/checked_icon_tint</item>
@@ -221,7 +220,8 @@
 
     <style name="EditText.Isbn.Large">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:layout_margin">@dimen/border2</item>
+        <item name="android:layout_marginStart">@dimen/border2</item>
+        <item name="android:layout_marginEnd">@dimen/border2</item>
     </style>
 
     <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
@@ -256,7 +256,7 @@
     <!-- Base style for the isbn search keyboard; not to be used directly in layouts. -->
     <style name="IsbnKeyPadButton" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">75dp</item>
+        <item name="android:layout_height">@dimen/IsbnKeyPadButton_height</item>
         <item name="android:layout_marginStart">@dimen/indent1</item>
         <item name="android:layout_marginEnd">@dimen/indent1</item>
     </style>
@@ -270,7 +270,6 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
-
 
     <style name="IsbnKeyPadButton.Search">
     </style>
@@ -359,7 +358,7 @@
         <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
     </style>
     <!-- Used for a dedicated 'help' TextView associated with a menu option
-         The indent is a calculated value based on the menu item itself:
+         The 48dp indent is a calculated value based on the menu item itself:
             padding + drawablePadding + standard icon size (i.e. 24dp) -->
     <style name="OptionRow.Menu.Blurb">
         <item name="android:paddingStart">48dp</item>
@@ -409,8 +408,8 @@
     <style name="Flag">
         <!-- Using 'Theme.AppCompat' a wrap_content/wrap_content worked fine.
              Since using 'Theme.MaterialComponents' it had to be set to 24/24 (i.e. icon size) -->
-        <item name="android:layout_width">24dp</item>
-        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_width">@dimen/icon_size</item>
+        <item name="android:layout_height">@dimen/icon_size</item>
         <item name="android:enabled">false</item>
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
@@ -432,6 +431,11 @@
     <!-- Indicator a book is a first edition. -->
     <style name="Flag.FirstEdition">
         <item name="android:button">@drawable/ic_selector_first_edition</item>
+    </style>
+
+    <!-- Indicator a book is signed. -->
+    <style name="Flag.Signed">
+        <item name="android:button">@drawable/ic_selector_signed</item>
     </style>
 
     <!-- Indicator a book has been lend out. -->
@@ -486,11 +490,11 @@
     </style>
 
     <style name="BooklistBook.Row.Level2">
-        <!--<item name="android:layout_marginTop">2dp</item>-->
+        <!--        <item name="android:layout_marginTop">@dimen/border0</item>-->
     </style>
 
     <style name="BooklistBook.Row.Level3">
-        <!--<item name="android:layout_marginTop">2dp</item>-->
+        <!--<item name="android:layout_marginTop">@dimen/border0</item>-->
     </style>
 
     <style name="BooklistBook.Row.Book" tools:keep="@style/BooklistBook_Row_Book">
@@ -610,22 +614,12 @@
         <item name="android:inputType">date</item>
     </style>
 
-    <!-- The alternative ISBN number (i.e. 10/13 versus 13/10)
-         not to be used directly in layouts, use the Horiz or Vert sub style -->
-    <style name="AltIsbn">
-        <item name="android:layout_width">wrap_content</item>
+    <style name="SwapButton">
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:visibility">invisible</item>
-        <item name="android:textIsSelectable">false</item>
-    </style>
-
-    <style name="AltIsbn.Horiz">
-        <item name="android:drawableStart">@drawable/ic_swap_horiz</item>
-    </style>
-
-    <style name="AltIsbn.Vert">
-        <item name="android:drawableStart">@drawable/ic_swap_vert</item>
+        <item name="android:layout_width">30dp</item>
+        <item name="android:enabled">false</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:layout_marginEnd">@dimen/indent1</item>
     </style>
 
     <!-- *************************************************************************************** -->

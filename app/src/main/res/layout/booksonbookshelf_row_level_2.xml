@@ -31,21 +31,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/BLB_ROW_DETAILS"
+    android:id="@id/ROW_ONCLICK_TARGET"
     style="@style/BooklistBook.Row.Level2"
     >
-
-    <!-- this is really annoying: setting visibility of the ConstraintLayout to GONE
-         does NOT shrink it to size zero. You're forced to set all widgets inside also.
-         Potentially this could be solved by fiddling with the constraints themselves.
-    -->
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="bullet,name"
-        />
 
     <ImageView
         android:id="@+id/bullet"

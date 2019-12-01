@@ -110,9 +110,7 @@ public class StartupViewModel
 
         @Override
         public void onProgress(@NonNull final ProgressMessage message) {
-            if (message.text != null) {
-                mTaskProgressMessage.setValue(message.text);
-            }
+            mTaskProgressMessage.setValue(message.text);
         }
     };
 

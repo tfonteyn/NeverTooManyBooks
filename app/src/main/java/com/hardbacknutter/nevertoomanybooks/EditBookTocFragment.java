@@ -561,7 +561,7 @@ public class EditBookTocFragment
             Objects.requireNonNull(mTocEntries, "TocEntries must be passed in args");
 
             mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
-            mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS);
+            mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);
         }
 
         @NonNull

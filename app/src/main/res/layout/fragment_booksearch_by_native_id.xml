@@ -127,7 +127,7 @@
             app:layout_constraintTop_toBottomOf="@id/sites_group"
             />
 
-        <!-- input type will be reset by code as needed -->
+        <!-- input type & drawable will be reset by code as needed -->
         <EditText
             android:id="@+id/native_id"
             android:layout_width="0dp"

@@ -57,13 +57,19 @@ import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 
 /**
  * Task to update requested fields by doing a search.
  *
  * <strong>Note:</strong> this is currently a low-level Thread!
  * <p>
- * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFragment}
+ * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsFragment}.
+ * <p>
+ * Fringe case: if a book does <strong>not</strong> have an ISBN, and the list of Sites does
+ * <strong>not</strong> have a Site enabled that supports {@link SearchEngine.ByText}
+ * then (obviously) the book cannot be updated... but we still start the whole process.
+ * TODO: prevent even starting the process in this case (and notify the user *why*).
  */
 public class UpdateFieldsTask
         extends Thread
@@ -82,7 +88,7 @@ public class UpdateFieldsTask
 
     /** Active search manager. */
     private final SearchCoordinator mSearchCoordinator;
-    private final TaskListener<Long> mTaskListener;
+    private final TaskListener<Bundle> mTaskListener;
 
     // Data related to current row being processed
     private final DAO mDb;
@@ -94,12 +100,6 @@ public class UpdateFieldsTask
     private String mCurrentUuid;
     /** The (subset) of fields relevant to the current book. */
     private Map<String, FieldUsage> mCurrentBookFieldUsages;
-    /** List of book ID's to update, {@code null} for all books. */
-    @Nullable
-    private List<Long> mBookIds;
-    /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
-    private boolean mIsCancelled;
-
     /**
      * Called in the main thread for this object when the search for one book has completed.
      * <p>
@@ -117,7 +117,7 @@ public class UpdateFieldsTask
                         processSearchResults(localContext, bookData);
                     }
 
-                    // This search is complete. Let another search begin.
+                    // This search is complete. On to the next book in the list.
                     mSearchLock.lock();
                     try {
                         mOneSearch.signal();
@@ -135,9 +135,15 @@ public class UpdateFieldsTask
 
                 @Override
                 public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
+                    // forward SearchCoordinator progress to the Mode/Fragment
                     mTaskListener.onProgress(message);
                 }
             };
+    /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
+    private boolean mIsCancelled;
+    /** List of book ID's to update, {@code null} for all books. */
+    @Nullable
+    private ArrayList<Long> mBookIds;
 
     @Nullable
     private Exception mException;
@@ -152,7 +158,7 @@ public class UpdateFieldsTask
     public UpdateFieldsTask(@NonNull final DAO db,
                             @NonNull final SiteList searchSites,
                             @NonNull final Map<String, FieldUsage> fields,
-                            @NonNull final TaskListener<Long> taskListener) {
+                            @NonNull final TaskListener<Bundle> taskListener) {
 
         // Set the thread name to something helpful.
         setName("UpdateFieldsTask");
@@ -174,7 +180,7 @@ public class UpdateFieldsTask
      *
      * @param bookIds a list of book ID's to update
      */
-    public void setBookId(@NonNull final List<Long> bookIds) {
+    public void setBookId(@NonNull final ArrayList<Long> bookIds) {
         mBookIds = bookIds;
     }
 
@@ -492,14 +498,15 @@ public class UpdateFieldsTask
                 mSearchCoordinator.setTitleSearchText(title);
                 mSearchCoordinator.setPublisherSearchText(publisher);
                 // Start searching, then wait...
-                mSearchCoordinator.searchByText();
-                mSearchLock.lock();
-                try {
-                    // Wait for the one search to complete.
-                    // After processing the results, it wil call mOneSearch.signal()
-                    mOneSearch.await();
-                } finally {
-                    mSearchLock.unlock();
+                if (mSearchCoordinator.searchByText()) {
+                    mSearchLock.lock();
+                    try {
+                        // Wait for the one search to complete.
+                        // After processing the results, it wil call mOneSearch.signal()
+                        mOneSearch.await();
+                    } finally {
+                        mSearchLock.unlock();
+                    }
                 }
 
                 //update the counter, another one done.
@@ -508,28 +515,46 @@ public class UpdateFieldsTask
             }
 
         } catch (@NonNull final InterruptedException e) {
+            mException = e;
             mIsCancelled = true;
 
         } catch (@NonNull final Exception e) {
-            Logger.error(localContext, TAG, e);
             mException = e;
+            Logger.error(localContext, TAG, e);
 
         } finally {
-            // Tell the SearchCoordinator we're done.
+            // Tell the SearchCoordinator we're done and it should clean up.
             mSearchCoordinator.setBaseMessage(null);
             mSearchCoordinator.cancel(false);
 
+            // Prepare the task result.
+            TaskListener.TaskStatus taskStatus;
             if (mIsCancelled) {
-                mTaskListener.onFinished(new TaskListener.FinishMessage<>(
-                        R.id.TASK_ID_UPDATE_FIELDS, TaskListener.TaskStatus.Cancelled,
-                        mCurrentBookId, mException));
+                taskStatus = TaskListener.TaskStatus.Cancelled;
+            } else if (mException != null) {
+                taskStatus = TaskListener.TaskStatus.Failed;
             } else {
-                mTaskListener.onFinished(new TaskListener.FinishMessage<>(
-                        R.id.TASK_ID_UPDATE_FIELDS,
-                        mException != null ? TaskListener.TaskStatus.Failed
-                                           : TaskListener.TaskStatus.Success,
-                        mCurrentBookId, mException));
+                taskStatus = TaskListener.TaskStatus.Success;
             }
+
+            Bundle data = new Bundle();
+            data.putLong(UpdateFieldsModel.BKEY_LAST_BOOK_ID, mCurrentBookId);
+
+            // all books || a list of books || (single book && ) not cancelled
+            if (mBookIds == null || mBookIds.size() > 1 || !mIsCancelled) {
+                // One or more books were changed.
+                // Technically speaking when doing a list of books, the task might have been
+                // cancelled before the first book was done. We disregard this fringe case.
+                data.putBoolean(UniqueId.BKEY_BOOK_MODIFIED, true);
+
+                // if applicable, pass the first book for reposition the list on screen
+                if (mBookIds != null && !mBookIds.isEmpty()) {
+                    data.putLong(DBDefinitions.KEY_PK_ID, mBookIds.get(0));
+                }
+            }
+
+            mTaskListener.onFinished(new TaskListener.FinishMessage<>(
+                    R.id.TASK_ID_UPDATE_FIELDS, taskStatus, data, mException));
         }
     }
 

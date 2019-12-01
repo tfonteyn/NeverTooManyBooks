@@ -42,6 +42,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
  */
 public final class GoodreadsTasks {
 
+    /** Task 'Results' code. A fake StringRes. */
+    static final int GR_RESULT_CODE_AUTHORIZED = 0;
+    /** Task 'Results' code. A fake StringRes. */
+    static final int GR_RESULT_CODE_AUTHORIZATION_NEEDED = -1;
+    /** Task 'Results' code. A fake StringRes. */
+    static final int GR_RESULT_CODE_AUTHORIZATION_FAILED = -2;
+
+    private GoodreadsTasks() {
+    }
+
     /**
      * When a typical Goodreads AsyncTask finishes, the 'result' will be a {@code StringRes}
      * to display to the user (or an exception),
@@ -60,9 +70,8 @@ public final class GoodreadsTasks {
 
         // if auth failed, either first or second time, complain and bail out.
         if (message.result == GR_RESULT_CODE_AUTHORIZATION_FAILED
-            ||
-            (message.result == GR_RESULT_CODE_AUTHORIZATION_NEEDED
-             && message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
+            || (message.result == GR_RESULT_CODE_AUTHORIZATION_NEEDED
+                && message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
             return context.getString(R.string.error_site_authentication_failed,
                                      context.getString(R.string.goodreads));
         }
@@ -81,7 +90,7 @@ public final class GoodreadsTasks {
             String msg = context.getString(message.result);
             if (message.exception instanceof FormattedMessageException) {
                 msg += ' ' + ((FormattedMessageException) message.exception)
-                                     .getLocalizedMessage(context);
+                        .getLocalizedMessage(context);
 
             } else if (message.exception != null) {
                 msg += ' ' + message.exception.getLocalizedMessage();
@@ -90,14 +99,20 @@ public final class GoodreadsTasks {
         }
     }
 
-    /** Task 'Results' code. A fake StringRes. */
-    static final int GR_RESULT_CODE_AUTHORIZED = 0;
-    /** Task 'Results' code. A fake StringRes. */
-    static final int GR_RESULT_CODE_AUTHORIZATION_NEEDED = -1;
-    /** Task 'Results' code. A fake StringRes. */
-    static final int GR_RESULT_CODE_AUTHORIZATION_FAILED = -2;
-
-    private GoodreadsTasks() {
+    /**
+     * Check the url for certain keywords that would indicate a cover is, or is not, present.
+     *
+     * @param url to check
+     *
+     * @return {@code true} if the url indicates there is an actual image.
+     */
+    public static boolean hasCover(@Nullable final String url) {
+        if (url == null) {
+            return false;
+        }
+        String name = url.toLowerCase(App.getSystemLocale());
+        // these string can be part of an image 'name' indicating there is no cover image.
+        return !name.contains("/nophoto/") && !name.contains("nocover");
     }
 
     public enum Status {
@@ -117,22 +132,6 @@ public final class GoodreadsTasks {
         NoInternet,
         IOError,
         UnexpectedError
-    }
-
-    /**
-     * Check the url for certain keywords that would indicate a cover is, or is not, present.
-     *
-     * @param url to check
-     *
-     * @return {@code true} if the url indicates there is an actual image.
-     */
-    public static boolean hasCover(@Nullable final String url) {
-        if (url == null) {
-            return false;
-        }
-        String name = url.toLowerCase(App.getSystemLocale());
-        // these string can be part of an image 'name' indicating there is no cover image.
-        return !name.contains("/nophoto/") && !name.contains("nocover");
     }
 
 }

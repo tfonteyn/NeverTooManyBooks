@@ -1055,10 +1055,15 @@ public class SearchCoordinator
                 if (message.exception != null) {
                     String eMsg;
                     if (message.exception instanceof FormattedMessageException) {
+                        // by design a FormattedMessageException can be shown to the user
                         eMsg = ((FormattedMessageException) message.exception)
                                 .getLocalizedMessage(localContext);
-                    } else {
+                    } else if (BuildConfig.DEBUG /* always */) {
+                        // but a raw exception should not
                         eMsg = message.exception.getLocalizedMessage();
+                    } else {
+                        // instead ask for feedback
+                        eMsg = localContext.getString(R.string.error_if_the_problem_persists);
                     }
 
                     if (eMsg != null) {

@@ -265,7 +265,7 @@ public class EditBookSeriesActivity
             } else {
                 mSeriesName = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
                 mSeriesIsComplete = savedInstanceState
-                        .getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                        .getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, false);
                 mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
         }

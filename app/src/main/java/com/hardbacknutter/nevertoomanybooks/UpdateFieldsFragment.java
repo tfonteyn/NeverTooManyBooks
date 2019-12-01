@@ -84,38 +84,6 @@ public class UpdateFieldsFragment
     private UpdateFieldsModel mUpdateFieldsModel;
 
     private ProgressDialogFragment mProgressDialog;
-    private final UpdateFieldsModel.UpdateFieldsListener mUpdateFieldsListener =
-            new UpdateFieldsModel.UpdateFieldsListener() {
-                @Override
-                public void onFinished(final boolean wasCancelled,
-                                       @Nullable final Bundle data) {
-                    if (mProgressDialog != null) {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
-                    }
-
-                    if (wasCancelled) {
-                        // This message will likely not be seen
-                        //noinspection ConstantConditions
-                        Snackbar.make(getView(), R.string.progress_end_cancelled,
-                                      Snackbar.LENGTH_LONG).show();
-                    }
-
-                    if (data != null) {
-                        //noinspection ConstantConditions
-                        getActivity().setResult(Activity.RESULT_OK, new Intent().putExtras(data));
-                    }
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                }
-
-                @Override
-                public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
-                    if (mProgressDialog != null) {
-                        mProgressDialog.onProgress(message);
-                    }
-                }
-            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -142,7 +110,11 @@ public class UpdateFieldsFragment
 
         mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
-        mUpdateFieldsModel.init(getContext(), getArguments(), mUpdateFieldsListener);
+        mUpdateFieldsModel.init(getContext(), getArguments());
+        mUpdateFieldsModel.getTaskProgressMessage()
+                          .observe(getViewLifecycleOwner(), this::onTaskProgress);
+        mUpdateFieldsModel.getTaskFinishedMessage()
+                          .observe(getViewLifecycleOwner(), this::onTaskFinished);
 
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
@@ -184,6 +156,37 @@ public class UpdateFieldsFragment
         }
     }
 
+    private void onTaskFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+
+        if (message.status == TaskListener.TaskStatus.Cancelled) {
+            // This message will likely not be seen
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.progress_end_cancelled, Snackbar.LENGTH_LONG).show();
+        }
+
+        if (message.result != null) {
+            // The result will contain:
+            // UpdateFieldsModel.BKEY_LAST_BOOK_ID, long
+            // UniqueId.BKEY_BOOK_MODIFIED, boolean
+            // DBDefinitions.KEY_PK_ID, long (can be absent)
+
+            //noinspection ConstantConditions
+            getActivity().setResult(Activity.RESULT_OK, new Intent().putExtras(message.result));
+        }
+        //noinspection ConstantConditions
+        getActivity().finish();
+    }
+
+    private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
+        // reminder: the taskId wil be the one from the SearchTask.
+        if (mProgressDialog != null) {
+            mProgressDialog.onProgress(message);
+        }
+    }
 
 //    @Override
 //    @CallSuper

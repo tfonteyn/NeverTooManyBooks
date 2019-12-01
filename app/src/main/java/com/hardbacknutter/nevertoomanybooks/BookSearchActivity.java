@@ -82,10 +82,6 @@ public class BookSearchActivity
                                  @IdRes final int containerViewId,
                                  @NonNull final String tag) {
         switch (tag) {
-            case BookSearchByScanFragment.TAG:
-                replaceFragment(containerViewId, BookSearchByScanFragment.class, tag);
-                return;
-
             case BookSearchByIsbnFragment.TAG:
                 replaceFragment(containerViewId, BookSearchByIsbnFragment.class, tag);
                 return;
@@ -133,11 +129,7 @@ public class BookSearchActivity
     @Override
     public void onBackPressed() {
         ResultDataModel model = new ViewModelProvider(this).get(ResultDataModel.class);
-        Intent resultData = model.getActivityResultData();
-        if (resultData.getExtras() != null) {
-            // ok, even if the extras is empty.
-            setResult(Activity.RESULT_OK, resultData);
-        }
+        setResult(Activity.RESULT_OK, model.getActivityResultData());
         super.onBackPressed();
     }
 }

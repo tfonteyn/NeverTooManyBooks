@@ -29,10 +29,11 @@ package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
@@ -42,21 +43,24 @@ public class AltIsbnTextWatcher
     @NonNull
     private final TextView mIsbnView;
     @NonNull
-    private final TextView mAltIsbnView;
+    private final Button mAltIsbnButton;
+
+    @Nullable
+    private String mAltIsbn;
 
     /**
      * Constructor.
      *
-     * @param isbnView    the view to watch
-     * @param altIsbnView the view to update/swap with the alternative ISBN number.
+     * @param isbnView      the view to watch
+     * @param altIsbnButton the view to update/swap with the alternative ISBN number.
      */
     public AltIsbnTextWatcher(@NonNull final TextView isbnView,
-                              @NonNull final TextView altIsbnView) {
+                              @NonNull final Button altIsbnButton) {
         mIsbnView = isbnView;
-        mAltIsbnView = altIsbnView;
+        mAltIsbnButton = altIsbnButton;
 
-        // a click on the text view will swap numbers
-        mAltIsbnView.setOnClickListener(this::onSwapNumbers);
+        // a click will swap numbers
+        mAltIsbnButton.setOnClickListener(view -> mIsbnView.setText(mAltIsbn));
     }
 
     @Override
@@ -77,28 +81,15 @@ public class AltIsbnTextWatcher
 
     @Override
     public void afterTextChanged(@NonNull final Editable s) {
-        String isbn1 = s.toString();
-        int len = isbn1.length();
+        String isbn = s.toString();
+        int len = isbn.length();
         if (len == 10 || len == 13) {
-            String altIsbn = ISBN.isbn2isbn(isbn1);
-            if (!altIsbn.equals(isbn1)) {
-                mAltIsbnView.setText(altIsbn);
-                mAltIsbnView.setVisibility(View.VISIBLE);
+            mAltIsbn = ISBN.isbn2isbn(isbn);
+            if (!mAltIsbn.equals(isbn)) {
+                mAltIsbnButton.setEnabled(true);
             }
         } else {
-            mAltIsbnView.setVisibility(View.INVISIBLE);
+            mAltIsbnButton.setEnabled(false);
         }
-    }
-
-    /**
-     * Swap the content of ISBN and alternative-ISBN texts.
-     *
-     * @param view that was clicked on
-     */
-    private void onSwapNumbers(@SuppressWarnings("unused") @NonNull final View view) {
-        String isbn = mIsbnView.getText().toString().trim();
-        String altIsbn = mAltIsbnView.getText().toString().trim();
-        mIsbnView.setText(altIsbn);
-        mAltIsbnView.setTag(isbn);
     }
 }

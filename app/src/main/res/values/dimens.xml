@@ -43,8 +43,10 @@
     <dimen name="fab_menu_margin">5dp</dimen>
     <dimen name="fab_menu_translationX">-20dp</dimen>
     <!-- calculate offset:  base + (level * offset) -->
-    <dimen name="fab_menu_offset_base">20dp</dimen>
-    <dimen name="fab_menu_offset">60dp</dimen>
+    <dimen name="fab_menu_offset_y_base">20dp</dimen>
+    <dimen name="fab_menu_offset_y">60dp</dimen>
+
+    <dimen name="fab_menu_offset_x">250dp</dimen>
 
     <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
     <dimen name="cover_base_size">30dp</dimen>
@@ -61,6 +63,13 @@
     <dimen name="indent2">8dp</dimen>
     <dimen name="indent3">16dp</dimen>
 
+    <!-- indent an element so it matches up with the text part of a standard size text field
+        which has a drawable at the start/end. -->
+    <dimen name="icon_size">24dp</dimen>
+
+    <!-- indent an element so it matches up with the text of a standard size compound button. -->
+    <dimen name="indent_compound_button">32dp</dimen>
+
     <!-- top margin for the top-level rows; also known as "fat_finger_spacer" -->
     <dimen name="booklist_row_spacer">4dp</dimen>
 
@@ -68,11 +77,11 @@
         paddingIndent = (level-1) * booklist_level_indent -->
     <dimen name="booklist_level_indent">8dp</dimen>
 
-    <!-- indent an element so it matches up with the text of a standard size compound button. -->
-    <dimen name="indent_compound_button">32dp</dimen>
-
     <!-- Default and full height of a standard EditView with default text size inside.
     Used to make other elements the same height. -->
     <dimen name="edit_text_height">48dp</dimen>
+
+    <!-- ISBN keypad button size. -->
+    <dimen name="IsbnKeyPadButton_height">80dp</dimen>
 
 </resources>

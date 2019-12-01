@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
@@ -126,7 +126,7 @@ public class BooksOnBookshelfModel
     /** Database Access. */
     private DAO mDb;
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
-    private TaskListener<Integer> mOnGoodreadsTaskListener;
+    private TaskListener<Integer> mGoodreadsTaskListener;
     /**
      * Flag (potentially) set in {@link BooksOnBookshelf} #onActivityResult.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
@@ -167,10 +167,6 @@ public class BooksOnBookshelfModel
             new TaskListener<BuilderHolder>() {
                 @Override
                 public void onFinished(@NonNull final FinishMessage<BuilderHolder> message) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                        Log.d(TAG, "ENTER|onFinished|" + message);
-                    }
-
                     // Save a flag to say list was loaded at least once successfully (or not)
                     mListHasBeenLoaded = message.status == TaskStatus.Success;
 
@@ -477,6 +473,12 @@ public class BooksOnBookshelfModel
                                false);
         }
 
+        if (App.isUsed(DBDefinitions.KEY_SIGNED)) {
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_SIGNED,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_SIGNED),
+                               false);
+        }
+
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             blb.addExtraDomain(DBDefinitions.DOM_LOANEE_AS_BOOLEAN,
                                DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN,
@@ -753,42 +755,10 @@ public class BooksOnBookshelfModel
     }
 
     public TaskListener<Integer> getGoodreadsTaskListener() {
-        if (mOnGoodreadsTaskListener == null) {
-            mOnGoodreadsTaskListener = new TaskListener<Integer>() {
-
-                @Override
-                public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    Context localContext = App.getLocalizedAppContext();
-                    switch (message.status) {
-                        case Success:
-                        case Failed: {
-                            String msg = GoodreadsTasks.handleResult(localContext, message);
-                            if (msg != null) {
-                                mUserMessage.setValue(msg);
-                            } else {
-                                // Need authorization
-                                mNeedsGoodreads.setValue(true);
-                            }
-                            break;
-                        }
-                        case Cancelled: {
-                            mUserMessage
-                                    .setValue(localContext
-                                                      .getString(R.string.progress_end_cancelled));
-                            break;
-                        }
-                    }
-                }
-
-                @Override
-                public void onProgress(@NonNull final ProgressMessage message) {
-                    if (message.text != null) {
-                        mUserMessage.setValue(message.text);
-                    }
-                }
-            };
+        if (mGoodreadsTaskListener == null) {
+            mGoodreadsTaskListener = new GoodreadsTaskListener(mUserMessage, mNeedsGoodreads);
         }
-        return mOnGoodreadsTaskListener;
+        return mGoodreadsTaskListener;
     }
 
     /**
@@ -932,6 +902,7 @@ public class BooksOnBookshelfModel
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }
 
+        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         public boolean isEmpty() {
             return (ftsKeywords == null || ftsKeywords.isEmpty())
                    && (ftsAuthor == null || ftsAuthor.isEmpty())
@@ -970,7 +941,7 @@ public class BooksOnBookshelfModel
          * @param currentListCursor Current displayed list cursor.
          * @param bookId            Current position in the list.
          * @param listState         Requested list state
-         * @param taskListener      TaskListener
+         * @param taskListener      listener
          */
         @UiThread
         GetBookListTask(@NonNull final BooklistBuilder bookListBuilder,
@@ -1094,7 +1065,7 @@ public class BooksOnBookshelfModel
 
         @AnyThread
         private void cleanup() {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "cleanup", mException);
             }
             if (tempListCursor != null && tempListCursor != mCurrentListCursor) {

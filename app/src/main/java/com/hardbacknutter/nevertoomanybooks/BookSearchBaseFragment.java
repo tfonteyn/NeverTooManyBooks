@@ -70,13 +70,6 @@ public abstract class BookSearchBaseFragment
 
     DAO mDb;
 
-    /** the ViewModel. */
-    ResultDataModel mResultDataModel;
-    SearchCoordinator mSearchCoordinator;
-
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
-
     @NonNull
     private final SearchCoordinator.SearchCoordinatorListener mSearchCoordinatorListener =
             new SearchCoordinator.SearchCoordinatorListener() {
@@ -94,6 +87,8 @@ public abstract class BookSearchBaseFragment
                                 .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .setTitle(R.string.title_search_failed)
                                 .setMessage(searchErrors)
+                                .setPositiveButton(android.R.string.ok,
+                                                   (dialog, which) -> dialog.dismiss())
                                 .create()
                                 .show();
 
@@ -123,6 +118,12 @@ public abstract class BookSearchBaseFragment
                     }
                 }
             };
+    SearchCoordinator mSearchCoordinator;
+
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
+    /** the ViewModel. */
+    private ResultDataModel mResultDataModel;
 
     @Override
     public void onAttach(@NonNull final Context context) {
@@ -280,8 +281,7 @@ public abstract class BookSearchBaseFragment
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    SiteList siteList = data.getParcelableExtra(
-                            SiteList.Type.Data.getBundleKey());
+                    SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                     if (siteList != null) {
                         mSearchCoordinator.setSiteList(siteList);
                     }
@@ -289,11 +289,8 @@ public abstract class BookSearchBaseFragment
                 break;
             }
             case UniqueId.REQ_BOOK_EDIT: {
-                if (resultCode == Activity.RESULT_OK) {
-                    // Created a book? Save the intent
-                    if (data != null) {
-                        mResultDataModel.putExtras(data);
-                    }
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    mResultDataModel.putExtras(data);
                 }
                 break;
             }

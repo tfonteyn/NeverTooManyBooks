@@ -37,14 +37,14 @@
     <CheckBox
         android:id="@id/ROW_CHECKABLE_BTN"
         style="@style/RowButton.Checkable"
-        app:layout_constraintEnd_toStartOf="@id/ROW_DETAILS"
+        app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
         />
 
     <LinearLayout
-        android:id="@id/ROW_DETAILS"
+        android:id="@id/ROW_ONCLICK_TARGET"
         style="@style/RowTextSection"
         android:longClickable="true"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
@@ -80,7 +80,7 @@
         style="@style/RowButton.DragHandle"
         android:contentDescription="@string/hint_btn_drag_handle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ROW_DETAILS"
+        app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"
         />
 

@@ -175,6 +175,9 @@ public class IsfdbEditionsHandler
      */
     private void findEntries(@NonNull final Document doc) {
         Element publications = doc.selectFirst("table.publications");
+        if (publications == null) {
+            return;
+        }
 
         // first edition line is a "tr.table1", 2nd "tr.table0", 3rd "tr.table1" etc...
         String[] selectors = {"tr.table1", "tr.table0"};

@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -67,15 +66,12 @@ public class BookDetailsActivity
         replaceFragment(R.id.main_fragment, BookDetailsFragment.class, BookDetailsFragment.TAG);
     }
 
-    /**
-     * Set the current visible book id as the Activity result data.
-     */
     @Override
     public void onBackPressed() {
         ActivityResultDataModel model = new ViewModelProvider(this)
                 .get(BookBaseFragmentModel.class);
-        Intent resultData = model.getActivityResultData();
-        setResult(Activity.RESULT_OK, resultData);
+        // Set the current visible book id as the Activity result data.
+        setResult(Activity.RESULT_OK, model.getActivityResultData());
         super.onBackPressed();
     }
 

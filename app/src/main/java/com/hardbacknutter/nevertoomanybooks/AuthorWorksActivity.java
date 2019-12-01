@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -59,11 +58,7 @@ public class AuthorWorksActivity
     @Override
     public void onBackPressed() {
         ActivityResultDataModel model = new ViewModelProvider(this).get(AuthorWorksModel.class);
-        Intent resultData = model.getActivityResultData();
-        if (resultData.getExtras() != null) {
-            setResult(Activity.RESULT_OK, resultData);
-        }
-
+        setResult(Activity.RESULT_OK, model.getActivityResultData());
         super.onBackPressed();
     }
 }

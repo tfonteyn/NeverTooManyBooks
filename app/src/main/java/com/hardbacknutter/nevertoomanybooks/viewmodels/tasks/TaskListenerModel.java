@@ -56,6 +56,14 @@ public abstract class TaskListenerModel<Result>
     private final MutableLiveData<TaskListener.ProgressMessage>
             mTaskProgressMessage = new MutableLiveData<>();
 
+    public MutableLiveData<TaskListener.ProgressMessage> getTaskProgressMessage() {
+        return mTaskProgressMessage;
+    }
+
+    public MutableLiveData<TaskListener.FinishMessage<Result>> getTaskFinishedMessage() {
+        return mTaskFinishedMessage;
+    }
+
     private final TaskListener<Result> mTaskListener = new TaskListener<Result>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Result> message) {
@@ -72,11 +80,5 @@ public abstract class TaskListenerModel<Result>
         return mTaskListener;
     }
 
-    public MutableLiveData<TaskListener.ProgressMessage> getTaskProgressMessage() {
-        return mTaskProgressMessage;
-    }
 
-    public MutableLiveData<TaskListener.FinishMessage<Result>> getTaskFinishedMessage() {
-        return mTaskFinishedMessage;
-    }
 }

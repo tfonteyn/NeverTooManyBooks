@@ -417,7 +417,6 @@ public abstract class BaseActivity
 
         // generic actions & logging. Anything specific should be done in a child class.
         switch (requestCode) {
-
             case UniqueId.REQ_NAV_PANEL_SETTINGS:
                 if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT
                                           || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {

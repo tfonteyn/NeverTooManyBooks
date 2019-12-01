@@ -141,24 +141,22 @@ public abstract class EditObjectListActivity<T extends Parcelable>
 
     @Override
     public void onBackPressed() {
-
-        Intent data = mModel.getResultData()
-                            .putExtra(mBKey, mList);
+        Intent resultData = mModel.getResultData()
+                                  .putExtra(mBKey, mList);
 
         String name = mAutoCompleteTextView.getText().toString().trim();
         if (!name.isEmpty()) {
             // if the user had entered a (partial) new name, check if it's ok to leave
             StandardDialogs.unsavedEditsDialog(this, () -> {
-                // If the user clicks 'exit', we finish() the activity.
-                // The list IS saved.
-                setResult(Activity.RESULT_OK, data);
+                setResult(Activity.RESULT_OK, resultData);
                 finish();
             });
-        } else {
-            // no current edit, so we're good to go.
-            setResult(Activity.RESULT_OK, data);
-            finish();
+            return;
         }
+
+        // no current edit, so we're good to go.
+        setResult(Activity.RESULT_OK, resultData);
+        super.onBackPressed();
     }
 
     /**

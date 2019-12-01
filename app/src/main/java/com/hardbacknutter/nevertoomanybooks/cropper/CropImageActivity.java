@@ -491,7 +491,7 @@ public class CropImageActivity
         // Return the cropped image directly or save it to the specified URI.
         Bundle args = getIntent().getExtras();
         if (args != null && (args.getParcelable(BKEY_DATA) != null
-                             || args.getBoolean(BKEY_RETURN_DATA))) {
+                             || args.getBoolean(BKEY_RETURN_DATA, false))) {
 
             Bundle resultExtras = new Bundle();
             resultExtras.putParcelable(BKEY_DATA, croppedImage);

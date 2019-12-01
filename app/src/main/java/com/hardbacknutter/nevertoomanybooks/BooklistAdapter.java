@@ -288,10 +288,11 @@ public class BooklistAdapter
     @Override
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
+
         // tag for the position, so the click-listeners can get it.
-        holder.itemView.setTag(R.id.TAG_POSITION, position);
-        holder.itemView.setOnClickListener(mOnItemClick);
-        holder.itemView.setOnLongClickListener(mOnItemLongClick);
+        holder.onClickTargetView.setTag(R.id.TAG_POSITION, position);
+        holder.onClickTargetView.setOnClickListener(mOnItemClick);
+        holder.onClickTargetView.setOnLongClickListener(mOnItemLongClick);
 
         mCursor.moveToPosition(position);
         CursorMapper row = ((CursorRowProvider) mCursor).getCursorMapper();
@@ -570,6 +571,8 @@ public class BooklistAdapter
 
         /** Absolute position of this row. */
         int absolutePosition;
+        /** The view to install on-click listeners on. Can be the same as the itemView. */
+        View onClickTargetView;
 
         /**
          * Constructor.
@@ -578,6 +581,10 @@ public class BooklistAdapter
          */
         RowViewHolder(@NonNull final View itemView) {
             super(itemView);
+            onClickTargetView = itemView.findViewById(R.id.ROW_ONCLICK_TARGET);
+            if (onClickTargetView == null) {
+                onClickTargetView = itemView;
+            }
         }
 
         /**
@@ -626,6 +633,8 @@ public class BooklistAdapter
         /** Book level - Based on style. */
         private final boolean mReadIsUsed;
         /** Book level - Based on style. */
+        private final boolean mSignedIsUsed;
+        /** Book level - Based on style. */
         private final boolean mEditionIsUsed;
         /** Book level - Based on style. */
         private final boolean mLendingIsUsed;
@@ -656,6 +665,8 @@ public class BooklistAdapter
 
         /** The "I've read it" checkbox. */
         private final CompoundButton mReadView;
+        /** The "signed" checkbox. */
+        private final CompoundButton mSignedView;
         /** The "1th edition" checkbox. */
         private final CompoundButton mEditionView;
         /** The "on loan" checkbox. */
@@ -740,26 +751,21 @@ public class BooklistAdapter
             // always visible
             mTitleView = itemView.findViewById(R.id.title);
 
-            // visibility depends on actual data; but if not in use make sure to hide.
+            // visibility depends on actual data; hidden by default in the layout
             mReadIsUsed = style.isUsed(DBDefinitions.KEY_READ);
             mReadView = itemView.findViewById(R.id.cbx_read);
-            if (!mReadIsUsed) {
-                mReadView.setVisibility(View.GONE);
-            }
 
-            // visibility depends on actual data; but if not in use make sure to hide.
+            // visibility depends on actual data; hidden by default in the layout
+            mSignedIsUsed = style.isUsed(DBDefinitions.KEY_SIGNED);
+            mSignedView = itemView.findViewById(R.id.cbx_signed);
+
+            // visibility depends on actual data; hidden by default in the layout
             mEditionIsUsed = style.isUsed(DBDefinitions.KEY_EDITION_BITMASK);
             mEditionView = itemView.findViewById(R.id.cbx_first_edition);
-            if (!mEditionIsUsed) {
-                mEditionView.setVisibility(View.GONE);
-            }
 
-            // visibility depends on actual data; but if not in use make sure to hide.
+            // visibility depends on actual data; hidden by default in the layout
             mLendingIsUsed = style.isUsed(DBDefinitions.KEY_LOANEE);
             mOnLoanView = itemView.findViewById(R.id.cbx_on_loan);
-            if (!mLendingIsUsed) {
-                mOnLoanView.setVisibility(View.GONE);
-            }
 
             // visibility is independent from actual data, so this is final.
             mCoverIsUsed = style.isUsed(UniqueId.BKEY_IMAGE);
@@ -814,14 +820,21 @@ public class BooklistAdapter
             mTitleView.setText(title);
 
             if (mReadIsUsed && rowData.contains(DBDefinitions.KEY_READ)) {
-                boolean isSet = rowData.getInt(DBDefinitions.KEY_READ) != 0;
+                boolean isSet = rowData.getBoolean(DBDefinitions.KEY_READ);
                 //URGENT: if we make them 'gone', then we don't need selectors but can use static icons.
                 mReadView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mReadView.setChecked(isSet);
             }
 
+            if (mSignedIsUsed && rowData.contains(DBDefinitions.KEY_SIGNED)) {
+                boolean isSet = rowData.getBoolean(DBDefinitions.KEY_SIGNED);
+                mSignedView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                mSignedView.setChecked(isSet);
+            }
+
             if (mEditionIsUsed && rowData.contains(DBDefinitions.KEY_EDITION_BITMASK)) {
-                boolean isSet = rowData.getInt(DBDefinitions.KEY_EDITION_BITMASK) != 0;
+                boolean isSet = (rowData.getInt(DBDefinitions.KEY_EDITION_BITMASK)
+                                 & Book.EDITION_FIRST) != 0;
                 mEditionView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mEditionView.setChecked(isSet);
             }
@@ -1000,15 +1013,6 @@ public class BooklistAdapter
         @NonNull
         final
         TextView mTextView;
-        /** Pointer to the container of all info for this row. */
-        @NonNull
-        private final View mRowDetailsView;
-        /**
-         * (optional) Pointer to the constraint group that controls visibility of all widgets
-         * inside a ViewGroup. Used with ConstraintLayout only.
-         */
-        @Nullable
-        private final View mVisibilityControlView;
 
         /**
          * Constructor.
@@ -1024,10 +1028,7 @@ public class BooklistAdapter
             mSourceCol = columnIndex;
             mNoDataId = noDataId;
 
-            mRowDetailsView = itemView.findViewById(R.id.BLB_ROW_DETAILS);
             mTextView = itemView.findViewById(R.id.name);
-            // optional
-            mVisibilityControlView = mRowDetailsView.findViewById(R.id.group);
         }
 
         @Override
@@ -1037,15 +1038,6 @@ public class BooklistAdapter
 
             setText(rowData.getString(mSourceCol),
                     rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
-        }
-
-        /**
-         * Syntax sugar.
-         *
-         * @return {@code true} if the details view is visible.
-         */
-        public boolean isVisible() {
-            return mRowDetailsView.getVisibility() == View.VISIBLE;
         }
 
         /**
@@ -1071,26 +1063,11 @@ public class BooklistAdapter
          */
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
-            // we used to hide levels > 1 when they had no text.
-            // We're always displaying them now... but maybe this will change later.
-            int visibility = View.VISIBLE;
-
             if (text != null && !text.isEmpty()) {
                 // if we have text, show it.
                 mTextView.setText(text);
             } else {
                 mTextView.setText(mNoDataId);
-            }
-
-            mRowDetailsView.setVisibility(visibility);
-
-            /*
-                this is really annoying: setting visibility of the ConstraintLayout to GONE
-                does NOT shrink it to size zero. You're forced to set all widgets inside also.
-                Potentially this could be solved by fiddling with the constraints more.
-            */
-            if (mVisibilityControlView != null) {
-                mVisibilityControlView.setVisibility(visibility);
             }
         }
     }
@@ -1321,7 +1298,7 @@ public class BooklistAdapter
             super.onBindViewHolder(rowData, style);
 
             Drawable lock = null;
-            if (isVisible() && rowData.getBoolean(mIsLockedSourceCol)) {
+            if (rowData.getBoolean(mIsLockedSourceCol)) {
                 lock = mTextView.getContext().getDrawable(R.drawable.ic_lock);
             }
 

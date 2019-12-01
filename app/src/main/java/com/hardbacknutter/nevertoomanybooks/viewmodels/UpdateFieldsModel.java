@@ -30,120 +30,119 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchTask;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
+/**
+ * Work flow for the {@link TaskListener.FinishMessage}.
+ * <ol>
+ * <li>Fragment tells the {@link UpdateFieldsModel} to start the search</li>
+ * <li>{@link UpdateFieldsModel} starts an {@link UpdateFieldsTask} (a plain Thread)
+ * passing in its {@link TaskListener}</li>
+ * <li>{@link UpdateFieldsTask} hosts a {@link SearchCoordinator}
+ * passing in its {@link SearchCoordinator.SearchCoordinatorListener}</li>
+ * <li>{@link SearchCoordinator} starts/stops {@link SearchTask}
+ * and handles the results from them.</li>
+ * <li>{@link SearchCoordinator} returns its results to the {@link UpdateFieldsTask}</li>
+ * <li>{@link UpdateFieldsTask} loops to do all books</li>
+ * <li>When the {@link UpdateFieldsTask} is all done, it returns its status to the
+ * {@link UpdateFieldsModel}</li>
+ * <li>{@link UpdateFieldsModel} <strong>POSTS</strong> the results to the MutableLiveData</li>
+ * <li>the fragment gets updated and acts on the final status</li>
+ * </ol>
+ * <p>
+ * Work flow for the {@link TaskListener.ProgressMessage}.
+ * <ol>
+ * <li>{@link SearchTask} sends to {@link SearchCoordinator}</li>
+ * <li>{@link SearchCoordinator} sends to {@link UpdateFieldsTask}</li>
+ * <li>{@link UpdateFieldsTask} sends to {@link UpdateFieldsModel}</li>
+ * <li>{@link UpdateFieldsModel} <strong>POSTS</strong> MutableLiveData value</li>
+ * <li>Fragment use a {@link ProgressDialogFragment}</li>
+ * </ol>
+ * <p>
+ * Complicated ? Not really. Cumbersome? Absolutely.
+ */
 public class UpdateFieldsModel
         extends ViewModel {
 
     private static final String TAG = "UpdateFieldsModel";
 
+    public static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
+
     /** which fields to update and how. */
     @NonNull
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
-    private final Handler mHandler = new Handler();
+    private final MutableLiveData<TaskListener.FinishMessage<Bundle>>
+            mTaskFinishedMessage = new MutableLiveData<>();
+    private final MutableLiveData<TaskListener.ProgressMessage>
+            mTaskProgressMessage = new MutableLiveData<>();
     /** Database Access. */
     private DAO mDb;
-    /** Listener for the UpdateFieldsTask. */
-    private final TaskListener<Long> mTaskListener = new TaskListener<Long>() {
-        @Override
-        public void onFinished(@NonNull final FinishMessage<Long> message) {
-            mUpdateTask = null;
-
-            boolean isCancelled = message.status == TaskStatus.Cancelled;
-
-            // the last book id which was handled; can be used to restart the update.
-            mFromBookIdOnwards = message.result;
-
-            if (mBookIds != null && mBookIds.size() == 1 && isCancelled) {
-                // single book cancelled, just quit
-                mHandler.post(() -> {
-                    if (mUpdateFieldsListener.get() != null) {
-                        mUpdateFieldsListener.get().onFinished(true, null);
-                    } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onFinished|" + Logger.WEAK_REFERENCE_DEAD);
-                        }
-                    }
-                });
-                return;
-            }
-
-            Bundle data = new Bundle();
-            // null if we did 'all books'
-            // or the ID's (1 or more) of the (hopefully) updated books
-            data.putSerializable(UniqueId.BKEY_ID_LIST, mBookIds);
-            // One or more books were changed.
-            // Technically speaking when doing a list of books,
-            // the task might have been cancelled before the first
-            // book was done. We disregard this fringe case.
-            data.putBoolean(UniqueId.BKEY_BOOK_MODIFIED, true);
-
-            if (mBookIds != null && !mBookIds.isEmpty()) {
-                // Pass the first book for reposition the list (if applicable)
-                data.putLong(DBDefinitions.KEY_PK_ID, mBookIds.get(0));
-            }
-
-            mHandler.post(() -> {
-                if (mUpdateFieldsListener.get() != null) {
-                    mUpdateFieldsListener.get().onFinished(isCancelled, data);
-                } else {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                        Log.d(TAG, "onFinished|" + Logger.WEAK_REFERENCE_DEAD);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public void onProgress(@NonNull final ProgressMessage message) {
-            mHandler.post(() -> {
-                if (mUpdateFieldsListener.get() != null) {
-                    mUpdateFieldsListener.get().onProgress(message);
-                } else {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                        Log.d(TAG, "onProgress|" + Logger.WEAK_REFERENCE_DEAD);
-                    }
-                }
-            });
-        }
-    };
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
     private ArrayList<Long> mBookIds;
     /** Allows restarting an update task from the given book id onwards. 0 for all. */
     private long mFromBookIdOnwards;
     private UpdateFieldsTask mUpdateTask;
-    private WeakReference<UpdateFieldsListener> mUpdateFieldsListener;
+    /**
+     * Listener for the UpdateFieldsTask.
+     *
+     * <strong>Note:</strong> we must use postValue as we're
+     * getting called from within {@link UpdateFieldsTask} which is a plain Thread.
+     */
+    private final TaskListener<Bundle> mTaskListener = new TaskListener<Bundle>() {
+        @Override
+        public void onFinished(@NonNull final FinishMessage<Bundle> message) {
+            mUpdateTask = null;
+
+            // the last book id which was handled; can be used to restart the update.
+            mFromBookIdOnwards = message.result.getLong(UpdateFieldsModel.BKEY_LAST_BOOK_ID);
+
+            // reminder: the taskId wil be the one from the UpdateFieldsTask.
+            mTaskFinishedMessage.postValue(message);
+        }
+
+        @Override
+        public void onProgress(@NonNull final ProgressMessage message) {
+            // reminder: the taskId wil be the one from the SearchTask.
+            mTaskProgressMessage.postValue(message);
+        }
+    };
     /** Sites to search on. */
     private SiteList mSiteList;
+
+    public MutableLiveData<TaskListener.ProgressMessage> getTaskProgressMessage() {
+        return mTaskProgressMessage;
+    }
+
+    public MutableLiveData<TaskListener.FinishMessage<Bundle>> getTaskFinishedMessage() {
+        return mTaskFinishedMessage;
+    }
 
     @Override
     protected void onCleared() {
@@ -156,6 +155,7 @@ public class UpdateFieldsModel
         }
     }
 
+
     /**
      * Pseudo constructor.
      *
@@ -163,10 +163,7 @@ public class UpdateFieldsModel
      * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
-                     @Nullable final Bundle args,
-                     @NonNull final UpdateFieldsListener updateFieldsListener) {
-
-        mUpdateFieldsListener = new WeakReference<>(updateFieldsListener);
+                     @Nullable final Bundle args) {
 
         if (mSiteList == null) {
 
@@ -217,10 +214,6 @@ public class UpdateFieldsModel
 
     public void setFromBookIdOnwards(final long fromBookIdOnwards) {
         mFromBookIdOnwards = fromBookIdOnwards;
-    }
-
-    public long getLastBookIdDone() {
-        return mFromBookIdOnwards;
     }
 
     /**
@@ -337,8 +330,9 @@ public class UpdateFieldsModel
         mUpdateTask = new UpdateFieldsTask(mDb, mSiteList, mFieldUsages, mTaskListener);
 
         if (mBookIds != null) {
-            //update just these
+            //update just these (1 or more)
             mUpdateTask.setBookId(mBookIds);
+
         } else {
             //update the complete library starting from the given id
             mUpdateTask.setFromBookIdOnwards(mFromBookIdOnwards);
@@ -346,28 +340,5 @@ public class UpdateFieldsModel
 
         mUpdateTask.start();
         return true;
-    }
-
-    /**
-     * Allows other objects get updates on the search.
-     */
-    public interface UpdateFieldsListener {
-
-        /**
-         * Called when all individual search tasks are finished.
-         * <p>
-         * Task cancelled does not mean that nothing was done.
-         * Books *will* be updated until the cancelling happened
-         *
-         * @param wasCancelled if we were cancelled.
-         * @param data         resulting data, can be empty
-         */
-        void onFinished(boolean wasCancelled,
-                        @Nullable Bundle data);
-
-        /**
-         * Progress messages.
-         */
-        void onProgress(@NonNull TaskListener.ProgressMessage message);
     }
 }

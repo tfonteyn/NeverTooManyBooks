@@ -112,7 +112,8 @@ public class EditSeriesDialogFragment
             mIsComplete = mSeries.isComplete();
         } else {
             mName = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
-            mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+            mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE,
+                                                        false);
         }
     }
 

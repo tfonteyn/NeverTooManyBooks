@@ -126,7 +126,7 @@ public class Book
 
     private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
     /** first edition ever of this work/content/story. */
-    private static final int EDITION_FIRST = 1;
+    public static final int EDITION_FIRST = 1;
 
     /*
      * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}.

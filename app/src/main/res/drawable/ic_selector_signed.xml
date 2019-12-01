@@ -27,27 +27,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/ROW_ONCLICK_TARGET"
-    style="@style/BooklistBook.Row.Level3"
-    >
-
-    <!-- Smaller text, but with padding so user can still select it
-        Note that the 'drawableEnd' drawable itself is done from code.
-    -->
-    <TextView
-        android:id="@+id/name"
-        style="@style/BooklistBook.Section"
-        android:drawableTint="?attr/completed_icon_tint"
-        android:textIsSelectable="false"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:drawableEnd="@drawable/ic_lock"
-        tools:text="third level"
-        />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@android:color/transparent" android:state_checked="false" />
+    <item android:drawable="@drawable/ic_gesture" android:state_checked="true" />
+</selector>

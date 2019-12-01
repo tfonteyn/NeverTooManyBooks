@@ -201,7 +201,7 @@ public class BackupInfo {
 
     @SuppressWarnings("unused")
     public boolean hasDatabase() {
-        return mBundle.getBoolean(INFO_HAS_DATABASE);
+        return mBundle.getBoolean(INFO_HAS_DATABASE, false);
     }
 
     /**

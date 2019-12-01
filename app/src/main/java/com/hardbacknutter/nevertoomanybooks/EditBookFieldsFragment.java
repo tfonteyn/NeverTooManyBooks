@@ -35,9 +35,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -84,7 +84,7 @@ public class EditBookFieldsFragment
     private View mBookshelvesView;
 
     private EditText mIsbnView;
-    private TextView mAltIsbnView;
+    private Button mAltIsbnButton;
     private ImageView mCoverImageView;
     private AutoCompleteTextView mGenreView;
 
@@ -99,7 +99,7 @@ public class EditBookFieldsFragment
         mSeriesView = view.findViewById(R.id.series);
         mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
-        mAltIsbnView = view.findViewById(R.id.altIsbn);
+        mAltIsbnButton = view.findViewById(R.id.altIsbn);
         mCoverImageView = view.findViewById(R.id.coverImage);
         mGenreView = view.findViewById(R.id.genre);
         mBookshelvesView = view.findViewById(R.id.bookshelves);
@@ -165,7 +165,7 @@ public class EditBookFieldsFragment
               .setRelatedFields(R.id.lbl_isbn);
         // but we still support visual aids for ISBN codes.
         mIsbnView.addTextChangedListener(new IsbnValidationTextWatcher(mIsbnView));
-        mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnView));
+        mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
 
         fields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
                          UniqueId.BKEY_IMAGE)
@@ -205,53 +205,47 @@ public class EditBookFieldsFragment
 
         switch (requestCode) {
             case REQ_EDIT_AUTHORS: {
-                if (data != null) {
-                    if (resultCode == Activity.RESULT_OK) {
-                        if (data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                            ArrayList<Author> list =
-                                    data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
-                            if (list == null) {
-                                list = new ArrayList<>(0);
-                            }
-                            book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                        ArrayList<Author> list =
+                                data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
+                        if (list == null) {
+                            list = new ArrayList<>(0);
                         }
+                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+                    }
 
-                        if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
-                            mBookModel.setDirty(true);
-                        }
+                    if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
+                        mBookModel.setDirty(true);
+                    }
 
-                        // Some Authors MAY have been modified.
-                        if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE,
-                                                 false)) {
-                            //noinspection ConstantConditions
-                            mBookModel.refreshAuthorList(getContext());
-                        }
+                    // Some Authors MAY have been modified.
+                    if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {
+                        //noinspection ConstantConditions
+                        mBookModel.refreshAuthorList(getContext());
                     }
                 }
                 break;
             }
             case REQ_EDIT_SERIES: {
-                if (data != null) {
-                    if (resultCode == Activity.RESULT_OK) {
-                        if (data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                            ArrayList<Series> list =
-                                    data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
-                            if (list == null) {
-                                list = new ArrayList<>(0);
-                            }
-                            book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                        ArrayList<Series> list =
+                                data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
+                        if (list == null) {
+                            list = new ArrayList<>(0);
                         }
+                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+                    }
 
-                        if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
-                            mBookModel.setDirty(true);
-                        }
+                    if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
+                        mBookModel.setDirty(true);
+                    }
 
-                        // Some Series MAY have been modified.
-                        if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE,
-                                                 false)) {
-                            //noinspection ConstantConditions
-                            mBookModel.refreshSeriesList(getContext());
-                        }
+                    // Some Series MAY have been modified.
+                    if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {
+                        //noinspection ConstantConditions
+                        mBookModel.refreshSeriesList(getContext());
                     }
                 }
                 break;

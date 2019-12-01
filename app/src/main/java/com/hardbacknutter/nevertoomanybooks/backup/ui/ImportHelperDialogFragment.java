@@ -80,7 +80,7 @@ public class ImportHelperDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mArchiveHasValidDates = args.getBoolean(BKEY_ARCHIVE_HAS_VALID_DATES);
+        mArchiveHasValidDates = args.getBoolean(BKEY_ARCHIVE_HAS_VALID_DATES, false);
 
         args = savedInstanceState != null ? savedInstanceState : args;
         mImportHelper = args.getParcelable(BKEY_OPTIONS);

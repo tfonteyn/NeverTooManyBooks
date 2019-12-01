@@ -59,16 +59,16 @@ public class EditBookshelvesActivity
 
     @Override
     public void onBackPressed() {
-        Intent data = new Intent();
+        Intent resultData = new Intent();
 
         EditBookshelvesModel model = new ViewModelProvider(this).get(EditBookshelvesModel.class);
 
         Bookshelf selectedBookshelf = model.getSelectedBookshelf();
         if (selectedBookshelf != null) {
-            data.putExtra(DBDefinitions.KEY_PK_ID, selectedBookshelf.getId());
+            resultData.putExtra(DBDefinitions.KEY_PK_ID, selectedBookshelf.getId());
         }
 
-        setResult(Activity.RESULT_OK, data);
+        setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();
     }
 }

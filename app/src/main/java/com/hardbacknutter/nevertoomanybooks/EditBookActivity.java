@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -69,17 +68,20 @@ public class EditBookActivity
         // delete any orphaned temporary cover file
         StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
 
-        BookBaseFragmentModel model = new ViewModelProvider(this)
-                .get(BookBaseFragmentModel.class);
+        BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
 
         if (model.isDirty()) {
-            // If the user clicks 'exit', we finish() the activity.
-            StandardDialogs.unsavedEditsDialog(this, this::finish);
+            // If the user clicks 'exit', we finish()
+            StandardDialogs.unsavedEditsDialog(this, () -> {
+                // STILL send an OK and result data!
+                // The result data will contain the re-position book id.
+                setResult(Activity.RESULT_OK, model.getActivityResultData());
+                finish();
+            });
             return;
         }
 
-        Intent resultData = model.getActivityResultData();
-        setResult(Activity.RESULT_OK, resultData);
+        setResult(Activity.RESULT_OK, model.getActivityResultData());
         super.onBackPressed();
     }
 }

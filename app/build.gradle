@@ -36,6 +36,15 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 29
 
+    // another site: https://gs.statcounter.com/
+    // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
+    // 2019-11-30 world wide:
+    // 9.0		35.25
+    // 8.1		49.83
+    // 8.0		59.81
+    // 7.0		67.87
+    // 6.0		81.19
+
     //  May 7, 2019.: https://developer.android.com/about/dashboards/
     //  A       API     %
     // 10       29
@@ -135,7 +144,7 @@ dependencies {
     //    implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'org.jsoup:jsoup:1.11.3'
 
-    testImplementation 'org.mockito:mockito-core:3.1.0'
+    testImplementation 'org.mockito:mockito-core:3.2.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
 //    testCompile  "org.json:json:20190722"
     testImplementation  "org.json:json:20190722"

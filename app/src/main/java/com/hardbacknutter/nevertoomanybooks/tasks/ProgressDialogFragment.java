@@ -110,7 +110,7 @@ public class ProgressDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mIsIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE);
+        mIsIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE, false);
 
         args = savedInstanceState != null ? savedInstanceState : args;
         // initial/current message.

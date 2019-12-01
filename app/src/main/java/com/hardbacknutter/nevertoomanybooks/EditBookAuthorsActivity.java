@@ -334,7 +334,8 @@ public class EditBookAuthorsActivity
             } else {
                 mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-                mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+                                                            false);
                 mType = savedInstanceState.getInt(DBDefinitions.KEY_AUTHOR_TYPE);
             }
         }

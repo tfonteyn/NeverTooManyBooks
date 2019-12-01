@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -385,17 +386,15 @@ public class BooksOnBookshelf
         mFabOverlay = findViewById(R.id.fabOverlay);
         // modify FAB_ITEMS if adding more options.
         mFabMenuItems[0] = findViewById(R.id.fab0);
-        mFabMenuItems[0].setOnClickListener(v -> startAddBySearch(BookSearchByScanFragment.TAG));
+        mFabMenuItems[0].setOnClickListener(v -> addBySearchIsbn(true));
         mFabMenuItems[1] = findViewById(R.id.fab1);
-        mFabMenuItems[1].setOnClickListener(v -> startAddBySearch(BookSearchByIsbnFragment.TAG));
+        mFabMenuItems[1].setOnClickListener(v -> addBySearchIsbn(false));
         mFabMenuItems[2] = findViewById(R.id.fab2);
-        mFabMenuItems[2].setOnClickListener(v -> startAddBySearch(BookSearchByTextFragment.TAG));
+        mFabMenuItems[2].setOnClickListener(v -> addBySearch(BookSearchByTextFragment.TAG));
         mFabMenuItems[3] = findViewById(R.id.fab3);
         mFabMenuItems[3].setOnClickListener(v -> startAddManually());
-
         mFabMenuItems[4] = findViewById(R.id.fab4);
-        mFabMenuItems[4]
-                .setOnClickListener(v -> startAddBySearch(BookSearchByNativeIdFragment.TAG));
+        mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
     }
 
     /**
@@ -425,18 +424,33 @@ public class BooksOnBookshelf
             mFabOverlay.setOnClickListener(null);
         }
 
-        // negative -> move them upwards.
-        float base = -getResources().getDimension(R.dimen.fab_menu_offset_base);
-        float offset = -getResources().getDimension(R.dimen.fab_menu_offset);
+        // negative -> move upwards.
+        float base_y = -getResources().getDimension(R.dimen.fab_menu_offset_y_base);
+        float offset_y = -getResources().getDimension(R.dimen.fab_menu_offset_y);
 
+        // negative -> move towards start (i.e. left).
+        float offset_x = -getResources().getDimension(R.dimen.fab_menu_offset_x);
+
+        boolean isLandscape = getResources().getConfiguration().orientation
+                              == Configuration.ORIENTATION_LANDSCAPE;
+
+        // having more then 4 buttons is not really a good UI design
         for (int i = 0; i < mFabMenuItems.length; i++) {
             ExtendedFloatingActionButton fab = mFabMenuItems[i];
             // allow for null items
             if (fab != null) {
                 if (show) {
                     fab.show();
-                    fab.animate().translationY(base + ((i + 1) * offset));
+                    if (isLandscape && i > 3) {
+                        // 4.. are shown on the side
+                        fab.animate().translationY(base_y + (((i - 4) + 1) * offset_y));
+                        fab.animate().translationX(offset_x);
+                    } else {
+                        // 0..3 are shown as normal
+                        fab.animate().translationY(base_y + ((i + 1) * offset_y));
+                    }
                 } else {
+                    fab.animate().translationX(0);
                     fab.animate().translationY(0);
                     fab.hide();
                 }
@@ -625,30 +639,32 @@ public class BooksOnBookshelf
                         mModel.setCurrentPositionedBookId(newId);
                     }
                 }
+                //URGENT: DEBUG
+                if (!mModel.isForceRebuildInOnResume()) {
+                    Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
+                    Snackbar.make(mListView, "dbg intbkl", Snackbar.LENGTH_LONG).show();
+                }
+
                 break;
             }
             case UniqueId.REQ_ADVANCED_LOCAL_SEARCH: {
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
-                        Bundle extras = data.getExtras();
-                        if (extras != null) {
-                            mModel.getSearchCriteria().from(extras, true);
-                            mModel.setForceRebuildInOnResume(true);
-                        }
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    Bundle extras = data.getExtras();
+                    if (extras != null) {
+                        mModel.getSearchCriteria().from(extras, true);
+                        mModel.setForceRebuildInOnResume(true);
                     }
                 }
                 break;
             }
             // from BaseActivity Nav Panel
             case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES: {
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
-                        // the last edited/inserted shelf
-                        long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
-                                                             Bookshelf.DEFAULT_ID);
-                        mModel.setCurrentBookshelf(bookshelfId);
-                        mModel.setForceRebuildInOnResume(true);
-                    }
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    // the last edited/inserted shelf
+                    long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
+                                                         Bookshelf.DEFAULT_ID);
+                    mModel.setCurrentBookshelf(bookshelfId);
+                    mModel.setForceRebuildInOnResume(true);
                 }
                 break;
             }
@@ -672,9 +688,8 @@ public class BooksOnBookshelf
             }
             // from BaseActivity Nav Panel
             case UniqueId.REQ_NAV_PANEL_IMP_EXP: {
-                if (resultCode == Activity.RESULT_OK) {
-
-                    if ((data != null) && data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
                         int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT,
                                                        Options.NOTHING);
                         if (options != 0) {
@@ -691,16 +706,6 @@ public class BooksOnBookshelf
                             mModel.setForceRebuildInOnResume(true);
                         }
                     }
-                    //else if ((data != null) && data.hasExtra(UniqueId.BKEY_EXPORT_RESULT)) {
-                    // int options = data.getIntExtra(UniqueId.BKEY_EXPORT_RESULT, Options.NOTHING);
-                    // nothing to do
-                    //}
-
-//                    if ((data != null) && data.hasExtra(UniqueId.ZZZZ)) {
-//                        // AdminActivity has results of it's own,, but no action needed for them.
-//                        // child-activities results:
-//                        // SearchAdminActivity:
-//                    }
                 }
                 break;
             }
@@ -770,6 +775,7 @@ public class BooksOnBookshelf
         // Update the list of bookshelves + set the current bookshelf.
         boolean bookshelfChanged = populateBookShelfSpinner();
 
+        // This long if/else is to be able to debug/log *why* we're rebuilding
         if (bookshelfChanged) {
             // bookshelf changed, we need a new list
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
@@ -825,9 +831,16 @@ public class BooksOnBookshelf
         super.onPause();
     }
 
-    private void startAddBySearch(@NonNull final String tag) {
+    private void addBySearch(@NonNull final String tag) {
         Intent intent = new Intent(this, BookSearchActivity.class)
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, tag);
+        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+    }
+
+    private void addBySearchIsbn(final boolean scanMode) {
+        Intent intent = new Intent(this, BookSearchActivity.class)
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
+                .putExtra(BookSearchByIsbnFragment.BKEY_SCAN_MODE, scanMode);
         startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
     }
 
@@ -854,9 +867,8 @@ public class BooksOnBookshelf
         int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
         if (layoutPosition != RecyclerView.NO_POSITION) {
-            BooklistAdapter.RowViewHolder holder =
-                    (BooklistAdapter.RowViewHolder)
-                            mListView.findViewHolderForLayoutPosition(layoutPosition);
+            BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
+                    mListView.findViewHolderForLayoutPosition(layoutPosition);
 
             // save position before
             savePosition();

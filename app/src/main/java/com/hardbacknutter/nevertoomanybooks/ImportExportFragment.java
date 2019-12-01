@@ -135,7 +135,7 @@ public class ImportExportFragment
         boolean autoStartBackup = false;
         Bundle args = getArguments();
         if (args != null) {
-            autoStartBackup = args.getBoolean(BKEY_AUTO_START_BACKUP);
+            autoStartBackup = args.getBoolean(BKEY_AUTO_START_BACKUP, false);
         }
 
         mTaskModel = new ViewModelProvider(this).get(TaskModel.class);

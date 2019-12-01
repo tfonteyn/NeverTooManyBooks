@@ -41,6 +41,7 @@
         app:icon="@drawable/ic_find_in_page"
         app:iconGravity="end"
         tools:translationY="-320dp"
+        tools:visibility="visible"
         />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -50,6 +51,7 @@
         app:icon="@drawable/ic_keyboard"
         app:iconGravity="end"
         tools:translationY="-260dp"
+        tools:visibility="visible"
         />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -59,6 +61,7 @@
         app:icon="@drawable/ic_search"
         app:iconGravity="end"
         tools:translationY="-200dp"
+        tools:visibility="visible"
         />
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -68,6 +71,7 @@
         app:icon="@drawable/ic_apps"
         app:iconGravity="end"
         tools:translationY="-140dp"
+        tools:visibility="visible"
         />
 
     <!-- reminder: this is an MaterialButton, and NOT an ImageButton -->
@@ -78,6 +82,7 @@
         app:icon="@drawable/ic_photo_camera"
         app:iconGravity="end"
         tools:translationY="-80dp"
+        tools:visibility="visible"
         />
 
     <!-- reminder: this is an ImageButton -->

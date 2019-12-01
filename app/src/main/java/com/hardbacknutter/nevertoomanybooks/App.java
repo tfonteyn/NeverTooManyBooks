@@ -485,7 +485,7 @@ public class App
      * DEBUG only.
      */
     private static void dumpDayNightMode(@ThemeId final int themeId) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             StringBuilder sb = new StringBuilder();
 
             String varName = "sCurrentThemeId";

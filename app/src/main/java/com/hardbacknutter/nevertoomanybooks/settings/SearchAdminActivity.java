@@ -98,8 +98,9 @@ public class SearchAdminActivity
 
         } else {
             SiteList siteList = mModel.getList(this, mModel.getType());
-            Intent data = new Intent().putExtra(mModel.getType().getBundleKey(), siteList);
-            setResult(Activity.RESULT_OK, data);
+            Intent resultData = new Intent()
+                    .putExtra(mModel.getType().getBundleKey(), siteList);
+            setResult(Activity.RESULT_OK, resultData);
             hasSites = siteList.getEnabledSites() != 0;
         }
 

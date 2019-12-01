@@ -42,8 +42,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListModel;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -51,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -104,7 +102,7 @@ public class BookBaseFragmentModel
     private List<String> mListPriceCurrencies;
 
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
-    private TaskListener<Integer> mOnGoodreadsTaskListener;
+    private TaskListener<Integer> mGoodreadsTaskListener;
 
     @Override
     protected void onCleared() {
@@ -419,40 +417,10 @@ public class BookBaseFragmentModel
     }
 
     public TaskListener<Integer> getGoodreadsTaskListener() {
-        if (mOnGoodreadsTaskListener == null) {
-            mOnGoodreadsTaskListener = new TaskListener<Integer>() {
-
-                @Override
-                public void onFinished(@NonNull final FinishMessage<Integer> message) {
-                    Context localContext = App.getLocalizedAppContext();
-                    switch (message.status) {
-                        case Success:
-                        case Failed: {
-                            String msg = GoodreadsTasks.handleResult(localContext, message);
-                            if (msg != null) {
-                                mUserMessage.setValue(msg);
-                            } else {
-                                // Need authorization
-                                mNeedsGoodreads.setValue(true);
-                            }
-                            break;
-                        }
-                        case Cancelled: {
-                            mUserMessage.setValue(
-                                    localContext.getString(R.string.progress_end_cancelled));
-                            break;
-                        }
-                    }
-                }
-
-                @Override
-                public void onProgress(@NonNull final ProgressMessage message) {
-                    if (message.text != null) {
-                        mUserMessage.setValue(message.text);
-                    }
-                }
-            };
+        if (mGoodreadsTaskListener == null) {
+            mGoodreadsTaskListener = new GoodreadsTaskListener(mUserMessage, mNeedsGoodreads);
         }
-        return mOnGoodreadsTaskListener;
+        return mGoodreadsTaskListener;
     }
+
 }

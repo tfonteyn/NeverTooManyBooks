@@ -38,13 +38,13 @@
         android:id="@id/ROW_DELETE_BTN"
         style="@style/RowButton.Delete"
         android:contentDescription="@string/menu_delete"
-        app:layout_constraintEnd_toStartOf="@id/ROW_DETAILS"
+        app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@id/ROW_DETAILS"
+        android:id="@id/ROW_ONCLICK_TARGET"
         style="@style/RowTextSection"
         android:longClickable="true"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
@@ -88,7 +88,7 @@
         style="@style/RowButton.DragHandle"
         android:contentDescription="@string/hint_btn_drag_handle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ROW_DETAILS"
+        app:layout_constraintStart_toEndOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintTop_toTopOf="parent"
         />
 

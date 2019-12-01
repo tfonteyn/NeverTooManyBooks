@@ -29,17 +29,17 @@
 
 <resources>
 
-    <!-- used by {@link BooklistAdapter} for the row details (book, level 1,2,3) -->
-    <item name="BLB_ROW_DETAILS" type="id" />
-
     <!-- BEGIN used for rows in a {@link RecyclerView} -->
-    <!-- the part of the row that can be made (long)clickable. -->
-    <item name="ROW_DETAILS" type="id" />
-    <!-- the optional delete button -->
+
+    <!-- If present, indicates the part of the row which should have the onclick listeners set.
+         If not present, the listeners are set on the entire row.
+    -->
+    <item name="ROW_ONCLICK_TARGET" type="id" />
+    <!-- optional delete button, should live outside of the onclick target -->
     <item name="ROW_DELETE_BTN" type="id" />
-    <!-- the optional checkable button -->
+    <!-- optional checkable button, should live outside of the onclick target -->
     <item name="ROW_CHECKABLE_BTN" type="id" />
-    <!-- the grabber handle -->
+    <!-- optional grabber handle, should live outside of the onclick target -->
     <item name="ROW_GRABBER_ICON" type="id" />
     <!-- BEGIN used for rows in a {@link RecyclerView} -->
 

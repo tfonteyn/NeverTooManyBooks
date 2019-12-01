@@ -141,17 +141,16 @@ public class PreferredStylesActivity
 
     @Override
     public void onBackPressed() {
-        Intent data = new Intent();
+        Intent resultData = new Intent()
+                .putExtra(UniqueId.BKEY_STYLE_MODIFIED, mModel.isDirty());
 
         // return the currently selected style, so the caller can apply it.
         BooklistStyle selectedStyle = mListAdapter.getSelected();
         if (selectedStyle != null) {
-            data.putExtra(UniqueId.BKEY_STYLE, selectedStyle);
+            resultData.putExtra(UniqueId.BKEY_STYLE, selectedStyle);
         }
 
-        data.putExtra(UniqueId.BKEY_STYLE_MODIFIED, mModel.isDirty());
-
-        setResult(Activity.RESULT_OK, data);
+        setResult(Activity.RESULT_OK, resultData);
         super.onBackPressed();
     }
 

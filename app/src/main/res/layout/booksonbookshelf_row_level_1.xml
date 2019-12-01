@@ -31,21 +31,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/BLB_ROW_DETAILS"
+    android:id="@id/ROW_ONCLICK_TARGET"
     style="@style/BooklistBook.Row.Level1"
     >
-
-    <!-- this is really annoying: setting visibility of the ConstraintLayout to GONE
-         does NOT shrink it to size zero. You're forced to set all widgets inside also.
-         Potentially this could be solved by fiddling with the constraints themselves.
-    -->
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/group"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="name"
-        />
 
     <!-- Large text
          Note that the 'drawableEnd' drawable itself is done from code.
@@ -59,7 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:drawableEnd="@drawable/ic_lock"
-        tools:text="Expandable top level"
+        tools:text="Top level"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

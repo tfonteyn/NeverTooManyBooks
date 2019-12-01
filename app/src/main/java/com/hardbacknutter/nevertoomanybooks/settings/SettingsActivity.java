@@ -240,13 +240,8 @@ public class SettingsActivity
 
     @Override
     public void onBackPressed() {
-
-        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
-        Intent resultData = resultDataModel.getActivityResultData();
-        if (resultData.getExtras() != null) {
-            setResult(Activity.RESULT_OK, resultData);
-        }
-
+        ResultDataModel model = new ViewModelProvider(this).get(ResultDataModel.class);
+        setResult(Activity.RESULT_OK, model.getActivityResultData());
         super.onBackPressed();
     }
 }
