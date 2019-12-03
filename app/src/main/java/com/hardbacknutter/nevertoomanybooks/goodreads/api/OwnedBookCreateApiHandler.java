@@ -86,7 +86,7 @@ public class OwnedBookCreateApiHandler
                        @Nullable final String dateAcquired)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (ISBN.isValid(isbn)) {
+        if (ISBN.isValid(isbn, true)) {
             IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
             long grBookId = isbnToIdApiHandler.isbnToId(isbn);
             create(grBookId, dateAcquired);

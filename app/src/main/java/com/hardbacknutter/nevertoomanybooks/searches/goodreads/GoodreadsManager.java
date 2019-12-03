@@ -642,7 +642,7 @@ public class GoodreadsManager
 
         // wasn't there, see if we can find it using the ISBN instead.
         if (grBookId == 0 && !isbn.isEmpty()) {
-            if (!ISBN.isValid(isbn)) {
+            if (!ISBN.isValid(isbn, true)) {
                 return ExportResult.noIsbn;
             }
 
@@ -926,7 +926,7 @@ public class GoodreadsManager
                                  final boolean fetchThumbnail)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (ISBN.isValid(isbn)) {
+        if (ISBN.isValid(isbn, true)) {
             ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(context, this);
             // Run the search
             return api.get(isbn, fetchThumbnail);

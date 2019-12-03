@@ -36,6 +36,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -77,6 +80,8 @@ public class BookSearchByIsbnFragment
     public static final String TAG = "BookSearchByIsbnFrag";
 
     static final String BKEY_SCAN_MODE = TAG + ":scanMode";
+    static final String BKEY_STRICT_ISBN = TAG + ":strictIsbn";
+    static final String BKEY_ISBN = TAG + ":isbn";
 
     /** wait for the scanner; milliseconds. */
     private static final long SCANNER_WAIT = 1_000;
@@ -95,6 +100,9 @@ public class BookSearchByIsbnFragment
     /** The scanner. */
     @Nullable
     private ScannerViewModel mScannerModel;
+    private boolean mStrictIsbn = true;
+    /** The current ISBN text. */
+    private String mIsbn;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -117,33 +125,26 @@ public class BookSearchByIsbnFragment
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putBoolean(BKEY_SCAN_MODE, mScanMode);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // stop lint being very annoying...
+        Objects.requireNonNull(mIsbnView);
+        Objects.requireNonNull(mAltIsbnButton);
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.title_search_isbn);
 
         Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
+            mStrictIsbn = args.getBoolean(BKEY_STRICT_ISBN, true);
             mScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
+            mIsbnView.setText(args.getString(BKEY_ISBN, ""));
         }
 
         mScannerModel = new ViewModelProvider(this).get(ScannerViewModel.class);
 
         View view = getView();
-
-        // stop lint being very annoying...
-        Objects.requireNonNull(mIsbnView);
-        Objects.requireNonNull(mAltIsbnButton);
-
-        mIsbnView.setText(mSearchCoordinator.getIsbnSearchText());
 
         //noinspection ConstantConditions
         view.findViewById(R.id.key_0).setOnClickListener(v -> mIsbnView.onKey("0"));
@@ -190,10 +191,40 @@ public class BookSearchByIsbnFragment
     }
 
     @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.menu_strict_isbn)
+            .setCheckable(true)
+            .setChecked(mStrictIsbn)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_STRICT_ISBN) {
+            mStrictIsbn = !item.isChecked();
+            item.setChecked(mStrictIsbn);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
         //noinspection ConstantConditions
-        mSearchCoordinator.setIsbnSearchText(mIsbnView.getText().toString().trim());
+        mIsbn = mIsbnView.getText().toString().trim();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(BKEY_ISBN, mIsbn);
+        outState.putBoolean(BKEY_STRICT_ISBN, mStrictIsbn);
+        outState.putBoolean(BKEY_SCAN_MODE, mScanMode);
     }
 
     @Override
@@ -308,19 +339,17 @@ public class BookSearchByIsbnFragment
      *                       Must be 10 characters (or more) to even consider a search.
      */
     private void prepareSearch(@NonNull final String isbnSearchText) {
-        // valid or not, store for later.
-        mSearchCoordinator.setIsbnSearchText(isbnSearchText);
 
-        // Coverts UPC numbers if applicable.
+        // ALWAYS try to convert UPC numbers.
         String isbn = ISBN.upc2isbn(isbnSearchText);
 
         // sanity check
-        if (isbn.length() < 10) {
+        if (mStrictIsbn && isbn.length() < 10) {
             return;
         }
 
-        // not a valid ISBN ?
-        if (!ISBN.isValid(isbn)) {
+        // not a valid ISBN and we're in strict mode ?
+        if (mStrictIsbn && !ISBN.isValid(isbn)) {
             if (mScanMode) {
                 //noinspection ConstantConditions
                 mScannerModel.onInvalidBeep(getContext());
@@ -335,8 +364,12 @@ public class BookSearchByIsbnFragment
             }
             return;
         }
-        // at this point, we have a valid isbn
-        if (mScanMode) {
+
+        // valid or not, this is the ISBN we will be searching for.
+        mIsbn = isbn;
+
+        // at this point, we have a valid isbn (if strict)
+        if (mStrictIsbn && mScanMode) {
             //noinspection ConstantConditions
             mScannerModel.onValidBeep(getContext());
         }
@@ -375,6 +408,7 @@ public class BookSearchByIsbnFragment
 
     @Override
     protected boolean onSearch() {
+        mSearchCoordinator.setIsbnSearchText(mIsbn, mStrictIsbn);
         return mSearchCoordinator.searchByText();
     }
 
@@ -435,6 +469,9 @@ public class BookSearchByIsbnFragment
             // ready or not, go scan
             if (!mScannerModel.isScannerStarted()) {
                 if (!scanner.startActivityForResult(this, UniqueId.REQ_SCAN_BARCODE)) {
+
+                    mScanMode = false;
+
                     // the scanner was loaded, but (still) refuses to start.
                     String msg = getString(R.string.warning_scanner_failed_to_start)
                                  + "\n\n"
@@ -476,6 +513,8 @@ public class BookSearchByIsbnFragment
      * Tell the user, and take them to the preferences to select a scanner.
      */
     private void noScanner() {
+        mScanMode = false;
+
         String msg = getString(R.string.info_bad_scanner) + '\n'
                      + getString(R.string.info_install_scanner_recommendation);
         //noinspection ConstantConditions

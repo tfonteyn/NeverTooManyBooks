@@ -357,7 +357,7 @@ public class EditBookTocFragment
                     mIsfdbTaskModel.setTask(task);
                     task.execute();
 
-                } else if (ISBN.isValid(mIsbn)) {
+                } else if (ISBN.isValid(mIsbn, true)) {
                     //noinspection ConstantConditions
                     Snackbar.make(getView(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();

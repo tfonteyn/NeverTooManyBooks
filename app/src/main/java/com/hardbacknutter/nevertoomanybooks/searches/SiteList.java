@@ -149,6 +149,7 @@ public class SiteList
         return new SiteList(newList);
     }
 
+    @SuppressWarnings("WeakerAccess")
     @NonNull
     public static List<Site> getSites(@NonNull final Context context,
                                       @NonNull final Type type) {

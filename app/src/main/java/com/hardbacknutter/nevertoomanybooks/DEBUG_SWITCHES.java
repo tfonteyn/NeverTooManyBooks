@@ -93,7 +93,8 @@ public final class DEBUG_SWITCHES {
     public static final boolean XML = false;
     /** all things network related. */
     public static final boolean NETWORK = false;
-
+    /** all things ISBN related. */
+    public static final boolean ISBN = false;
 
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.JsoupBase}. */
     public static final boolean JSOUP = false;

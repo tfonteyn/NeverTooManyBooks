@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -269,11 +270,20 @@ public final class SearchSites {
         return list;
     }
 
+    /**
+     * Lookup a site id by the given resource id.
+     *
+     * @param resId to find
+     *
+     * @return site id.
+     *
+     * @throws UnexpectedValueException if a resId is unknown
+     */
     @Id
-    public static int getSiteIdFromResId(@IdRes final int checkedId) {
+    public static int getSiteIdFromResId(@IdRes final int resId) {
         //NEWTHINGS: add new site specific ID:
         // not all sites actually have/need a resource id.
-        switch (checkedId) {
+        switch (resId) {
             case R.id.site_amazon:
                 return AMAZON;
 
@@ -293,13 +303,19 @@ public final class SearchSites {
                 return STRIP_INFO_BE;
 
             default:
-                throw new UnexpectedValueException(checkedId);
+                throw new UnexpectedValueException(resId);
         }
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * Lookup a resource id by the given site id.
+     *
+     * @param siteId to find
+     *
+     * @return resource id, or View.NO_ID if the site has none.
+     */
     @IdRes
-    private static int getResIdFromSiteId(@Id final int siteId) {
+    public static int getResIdFromSiteId(@Id final int siteId) {
         //NEWTHINGS: add new site specific ID:
         switch (siteId) {
             case AMAZON:
@@ -323,7 +339,7 @@ public final class SearchSites {
             case GOOGLE_BOOKS:
             case KB_NL:
             default:
-                throw new UnexpectedValueException(siteId);
+                return View.NO_ID;
         }
     }
 

@@ -82,9 +82,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * {@link SearchCoordinatorListener}.
  * <p>
  * The {@link Site#id} is used as the task id.
- *
- * <strong>Note:</strong> primarily used as a ViewModel by the regular searches.
- * However, {@link UpdateFieldsTask} uses this as a pure object/listener for now.
  */
 public class SearchCoordinator
         extends ViewModel
@@ -131,8 +128,14 @@ public class SearchCoordinator
     private boolean mIsSearchActive;
     /** Flag indicating we're shutting down. */
     private boolean mIsCancelled;
-    /** Indicates original ISBN is really present and valid. */
-    private boolean mHasValidIsbn;
+    /**
+     * Indicates original ISBN/EAN is really present and valid.
+     * Being ISBN or EAN depends on {@link #mStrictIsbn}.
+     */
+    private boolean mHasValidIsbnOrEAN;
+    /** {@code true} for strict ISBN checking, {@code false} for also allowing EAN-13. */
+    private boolean mStrictIsbn = true;
+
     /** Whether of not to fetch thumbnails. */
     private boolean mFetchThumbnail;
     /** Flag indicating searches will be non-concurrent title/author found via ASIN. */
@@ -143,6 +146,7 @@ public class SearchCoordinator
     /** Original ISBN for search. */
     @NonNull
     private String mIsbnSearchText = "";
+
     /** Site native id for search. */
     @NonNull
     private String mNativeIdSearchText = "";
@@ -301,6 +305,8 @@ public class SearchCoordinator
 
     /**
      * Pseudo constructor.
+     * <p>
+     * FIXME: eliminate the listener, and use live-data/observers.
      *
      * @param args     {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      * @param listener to send results to
@@ -401,6 +407,7 @@ public class SearchCoordinator
         if (mWaitingForIsbn) {
             if (hasIsbn(bookData)) {
                 mWaitingForIsbn = false;
+                // replace the search text with the (we hope) exact isbn
                 mIsbnSearchText = bookData.getString(DBDefinitions.KEY_ISBN, "");
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
@@ -411,7 +418,7 @@ public class SearchCoordinator
                 // They will redo the search with the ISBN.
                 startSearch(mSiteList.getSites());
             } else {
-                // Start next one that has not run.
+                // Start next one that has not run yet.
                 startNextSearch();
             }
         }
@@ -446,6 +453,30 @@ public class SearchCoordinator
         mFetchThumbnail = fetchThumbnail;
     }
 
+
+    /**
+     * Search a <strong>single</strong> site with the site specific book id.
+     *
+     * @param site               to search
+     * @param nativeIdSearchText to search for
+     *
+     * @return {@code true} if the search was started.
+     */
+    public boolean searchByNativeId(@NonNull final Site site,
+                                    @NonNull final String nativeIdSearchText) {
+        // sanity check
+        if (nativeIdSearchText.isEmpty()) {
+            throw new IllegalStateException("nativeId was empty");
+        }
+
+        clearSearchText();
+        mNativeIdSearchText = nativeIdSearchText;
+        prepareSearch();
+
+        mIsSearchActive = startSearch(site);
+        return mIsSearchActive;
+    }
+
     public void clearSearchText() {
         mNativeIdSearchText = "";
         mIsbnSearchText = "";
@@ -459,6 +490,11 @@ public class SearchCoordinator
         return mAuthorSearchText;
     }
 
+    /**
+     * Used by {@link #searchByText()}.
+     *
+     * @param authorSearchText to search for
+     */
     public void setAuthorSearchText(@NonNull final String authorSearchText) {
         mAuthorSearchText = authorSearchText;
     }
@@ -468,6 +504,11 @@ public class SearchCoordinator
         return mTitleSearchText;
     }
 
+    /**
+     * Used by {@link #searchByText()}.
+     *
+     * @param titleSearchText to search for
+     */
     public void setTitleSearchText(@NonNull final String titleSearchText) {
         mTitleSearchText = titleSearchText;
     }
@@ -477,54 +518,32 @@ public class SearchCoordinator
         return mPublisherSearchText;
     }
 
+    /**
+     * Used by {@link #searchByText()}.
+     *
+     * @param publisherSearchText to search for
+     */
     public void setPublisherSearchText(@NonNull final String publisherSearchText) {
         mPublisherSearchText = publisherSearchText;
     }
 
-    @NonNull
-    public String getIsbnSearchText() {
-        return mIsbnSearchText;
-    }
-
-    public void setIsbnSearchText(@NonNull final String isbnSearchText) {
-        mIsbnSearchText = isbnSearchText;
-    }
-
-    @NonNull
-    public String getNativeIdSearchText() {
-        return mNativeIdSearchText;
-    }
-
-    public void setNativeIdSearchText(@NonNull final String nativeIdSearchText) {
-        mNativeIdSearchText = nativeIdSearchText;
-    }
-
     /**
-     * Search a single site with the site specific book id.
+     * Used by {@link #searchByText()}.
      *
-     * @param site to search
-     *
-     * @return {@code true} if the search was started.
+     * @param isbnSearchText to search for
+     * @param strictIsbn     Flag: set to {@link false} to allow invalid isbn numbers
+     *                       to be passed to the searches
      */
-    public boolean searchByNativeId(@NonNull final Site site) {
-        // sanity check
-        if (mNativeIdSearchText.isEmpty()) {
-            throw new IllegalStateException("mNativeId was empty");
-        }
-
-        // clear criteria NOT used by this search.
-        mIsbnSearchText = "";
-        mAuthorSearchText = "";
-        mTitleSearchText = "";
-        mPublisherSearchText = "";
-        prepareSearch();
-
-        return startSearch(site);
+    public void setIsbnSearchText(@NonNull final String isbnSearchText,
+                                  final boolean strictIsbn) {
+        mIsbnSearchText = isbnSearchText;
+        mStrictIsbn = strictIsbn;
     }
 
     /**
      * Start a search.
      * At least one of isbn,title,author must be not be empty.
+     * Will optionally use the publisher.
      *
      * @return {@code true} if at least one search was started.
      */
@@ -533,11 +552,17 @@ public class SearchCoordinator
         mNativeIdSearchText = "";
         prepareSearch();
 
-        if (!mIsbnSearchText.isEmpty()) {
+        if (mIsbnSearchText.isEmpty()) {
             // We really want to ensure we get the same book from each, so if the isbn is
-            // not present, search the sites one at a time until we get an isbn
+            // NOT PRESENT, search the sites one at a time until we get an isbn.
+            // This in return will start a new search using that ISBN.
+            mWaitingForIsbn = true;
+            mIsSearchActive = startNextSearch();
+
+        } else {
             mWaitingForIsbn = false;
-            if (mHasValidIsbn) {
+            // searching by text requires a valid ISBN *OR* EAN.
+            if (mHasValidIsbnOrEAN || !mStrictIsbn) {
                 mIsSearchActive = startSearch(mSiteList.getSites());
 
             } else if (SearchSites.ENABLE_AMAZON_AWS) {
@@ -546,12 +571,8 @@ public class SearchCoordinator
                 Collection<Site> amazon = new ArrayList<>();
                 amazon.add(Site.createDataSite(SearchSites.AMAZON));
                 mIsSearchActive = startSearch(amazon);
+
             }
-        } else {
-            // Run one at a time until we find an ISBN. This in return will start
-            // a new search using that ISBN.
-            mWaitingForIsbn = true;
-            mIsSearchActive = startNextSearch();
         }
 
         return mIsSearchActive;
@@ -597,12 +618,7 @@ public class SearchCoordinator
                 && mTitleSearchText.isEmpty()
                 && mIsbnSearchText.isEmpty()
                 && mNativeIdSearchText.isEmpty()) {
-                throw new IllegalArgumentException("Must specify at least one non-empty criteria|"
-                                                   + "|mNativeId=" + mNativeIdSearchText
-                                                   + "|mIsbn=" + mIsbnSearchText
-                                                   + "|mAuthor=" + mAuthorSearchText
-                                                   + "|mTitle=" + mTitleSearchText
-                                                   + "|mPublisher=" + mPublisherSearchText);
+                throw new IllegalArgumentException("empty criteria");
             }
         }
 
@@ -623,13 +639,14 @@ public class SearchCoordinator
         mSearchResults.clear();
         mSearchFinishedMessages.clear();
 
-        mHasValidIsbn = ISBN.isValid(mIsbnSearchText);
+        mHasValidIsbnOrEAN = ISBN.isValid(mIsbnSearchText, mStrictIsbn);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "prepareSearch"
                        + "|mNativeId=" + mNativeIdSearchText
                        + "|mIsbn=" + mIsbnSearchText
-                       + "|mHasValidIsbn=" + mHasValidIsbn
+                       + "|mHasValidIsbnOrEAN=" + mHasValidIsbnOrEAN
+                       + "|mStrictIsbn=" + mStrictIsbn
                        + "|mAuthor=" + mAuthorSearchText
                        + "|mTitle=" + mTitleSearchText
                        + "|mPublisher=" + mPublisherSearchText);
@@ -720,8 +737,13 @@ public class SearchCoordinator
                 (!mNativeIdSearchText.isEmpty()
                  && (searchEngine instanceof SearchEngine.ByNativeId))
                 ||
-                // If have a valid ISBN, ...
-                (mHasValidIsbn && (searchEngine instanceof SearchEngine.ByIsbn))
+                // If we have a valid ISBN, ...
+                (mHasValidIsbnOrEAN && mStrictIsbn
+                 && (searchEngine instanceof SearchEngine.ByIsbn))
+                ||
+                // If we have a generic barcode, ...
+                ((!mIsbnSearchText.isEmpty() && !mStrictIsbn)
+                 && (searchEngine instanceof SearchEngine.ByBarcode))
                 ||
                 // If we have valid text to search on, ...
                 (((!mAuthorSearchText.isEmpty() && !mTitleSearchText.isEmpty())
@@ -753,7 +775,6 @@ public class SearchCoordinator
             Log.d(TAG, "startSearch|site=" + site);
         }
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        mIsSearchActive = true;
         return true;
     }
 
@@ -766,8 +787,8 @@ public class SearchCoordinator
         final Collection<Integer> sites = new ArrayList<>();
 
         // determine the order of the sites which should give us the most reliable data.
-        if (mHasValidIsbn) {
-            // If ISBN was passed, ignore entries with the wrong ISBN,
+        if (mHasValidIsbnOrEAN && mStrictIsbn) {
+            // If an ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final Collection<Integer> uncertain = new ArrayList<>();
             for (Site site : SiteList.getDataSitesByReliability(appContext)) {
@@ -797,7 +818,7 @@ public class SearchCoordinator
             mBookData.putString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
 
         } else {
-            // If ISBN was not passed, then just use the default order
+            // If an ISBN was not passed, then just use the default order
             for (Site site : SiteList.getDataSitesByReliability(appContext)) {
                 sites.add(site.id);
             }

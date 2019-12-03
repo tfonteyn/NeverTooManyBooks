@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.AlternativeExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
@@ -512,6 +513,14 @@ public class CoverBrowserViewModel
                             @NonNull final FileManager fileManager,
                             @NonNull final TaskListener<FileInfo> taskListener) {
             super(R.id.TASK_ID_GALLERY_IMAGE, taskListener);
+
+            // sanity check
+            if (BuildConfig.DEBUG /* always */) {
+                if (!ISBN.isValid(isbn, true)) {
+                    throw new IllegalStateException("isbn must be valid");
+                }
+            }
+
             mIsbn = isbn;
             mFileManager = fileManager;
         }
@@ -565,6 +574,13 @@ public class CoverBrowserViewModel
             super(R.id.TASK_ID_SWITCHER_IMAGE, taskListener);
             mFileInfo = fileInfo;
             mFileManager = fileManager;
+
+            // sanity check
+            if (BuildConfig.DEBUG /* always */) {
+                if (!ISBN.isValid(mFileInfo.isbn, true)) {
+                    throw new IllegalStateException("isbn must be valid");
+                }
+            }
         }
 
         @Override

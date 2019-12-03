@@ -191,15 +191,11 @@ public class IsfdbEditionsHandler
                     if (url != null) {
                         // 4th column: ISBN/Catalog ID
                         String isbnStr = tr.child(4).text();
-                        if (isbnStr.length() < 10) {
+                        int len = isbnStr.length();
+                        if (len < 10 || len > 13) {
                             isbnStr = null;
                         } else {
-                            ISBN isbn = new ISBN(isbnStr);
-                            if (isbn.isValid()) {
-                                isbnStr = isbn.asText();
-                            } else {
-                                isbnStr = null;
-                            }
+                            isbnStr = new ISBN(isbnStr, true).asText();
                         }
                         mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
                     }

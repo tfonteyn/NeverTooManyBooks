@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -194,10 +195,11 @@ public interface SearchEngine {
 
         /**
          * Called by the {@link SearchCoordinator#searchByText}.
-         * The isbn will be <strong>valid</strong>.
          *
          * @param localizedAppContext Localised application context
-         * @param isbn                to search for
+         * @param isbn                to search for, <strong>will</strong> be valid
+         *                            unless the engine implements {@link ByBarcode},
+         *                            in that case it <strong>may</strong> be generic/invalid.
          * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
@@ -211,6 +213,38 @@ public interface SearchEngine {
                             @NonNull final String isbn,
                             final boolean fetchThumbnail)
                 throws CredentialsException, IOException;
+    }
+
+    /**
+     * Optional.
+     * Marker interface to indicate the engine can search generic bar codes,
+     * aside of strict ISBN only.
+     */
+    interface ByBarcode
+            extends ByIsbn {
+
+//        /**
+//         * Called by the {@link SearchCoordinator#searchByText}.
+//         * The barcode should be <strong>valid</strong>; i.e. it's checksum must be correct.
+//         *
+//         * @param localizedAppContext Localised application context
+//         * @param barcode             to search for
+//         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
+//         *
+//         * @return bundle with book data. Can be empty, but never {@code null}.
+//         *
+//         * @throws CredentialsException for sites which require credentials
+//         * @throws IOException          on other failures
+//         */
+//        @WorkerThread
+//        @NonNull
+//        default Bundle searchByBarcode(@NonNull final Context localizedAppContext,
+//                                       @NonNull final String barcode,
+//                                       final boolean fetchThumbnail)
+//                throws CredentialsException, IOException {
+//
+//            return searchByIsbn(localizedAppContext, barcode, fetchThumbnail);
+//        }
     }
 
     /** Optional. */
@@ -292,6 +326,7 @@ public interface SearchEngine {
         default void getCoverImage(@NonNull final Context appContext,
                                    @NonNull final String isbn,
                                    @NonNull final Bundle bookData) {
+
             File file = getCoverImage(appContext, isbn, ImageSize.Large);
             if (hasMultipleSizes()) {
                 if (file == null) {
@@ -332,16 +367,24 @@ public interface SearchEngine {
         @WorkerThread
         default File getCoverImageFallback(@NonNull final Context appContext,
                                            @NonNull final String isbn) {
-
             try {
                 Bundle bookData;
-                if (this instanceof SearchEngine.ByIsbn) {
+                // If we have a valid ISBN, and the engine supports it, we can search.
+                if (ISBN.isValid(isbn)
+                    && this instanceof SearchEngine.ByIsbn) {
                     bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbn, true);
 
+                    // If we have a generic barcode, ...
+                } else if (!isbn.isEmpty()
+                           && this instanceof SearchEngine.ByBarcode) {
+                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbn, true);
+
+                    // If we have valid text to search on, ...
                 } else if (this instanceof SearchEngine.ByText) {
                     bookData = ((SearchEngine.ByText) this)
                             .search(appContext, isbn, "", "", "", true);
                 } else {
+                    // just fail, don't throw here; this is a fallback method allowed to fail.
                     return null;
                 }
 

@@ -78,14 +78,15 @@ public class SearchTask
 
     /**
      * Constructor. Will search according to passed parameters.
-     * <p>
-     * 1. native id
-     * 2. ISBN
-     * 3. text
-     * <p>
+     * <ol>
+     * <li>native id</li>
+     * <li>valid ISBN</li>
+     * <li>generic barcode</li>
+     * <li>text</li>
+     * </ol>
      *
      * @param taskId       identifier
-     * @param searchEngine the search site manager
+     * @param searchEngine the search site engine
      */
     SearchTask(final int taskId,
                @NonNull final SearchEngine searchEngine,
@@ -101,41 +102,36 @@ public class SearchTask
     /**
      * @param nativeId to search for
      */
-    void setNativeId(@Nullable final String nativeId) {
-        // trims might not be needed, but heck.
-        mNativeId = nativeId != null ? nativeId.trim() : "";
+    void setNativeId(@NonNull final String nativeId) {
+        mNativeId = nativeId;
     }
 
     /**
      * @param isbn to search for
      */
     void setIsbn(@NonNull final String isbn) {
-        // trims might not be needed, but heck.
-        mIsbn = isbn.trim();
+        mIsbn = isbn;
     }
 
     /**
      * @param author to search for
      */
     void setAuthor(@NonNull final String author) {
-        // trims might not be needed, but heck.
-        mAuthor = author.trim();
+        mAuthor = author;
     }
 
     /**
      * @param title to search for
      */
     void setTitle(@NonNull final String title) {
-        // trims might not be needed, but heck.
-        mTitle = title.trim();
+        mTitle = title;
     }
 
     /**
      * @param publisher to search for
      */
     void setPublisher(@NonNull final String publisher) {
-        // trims might not be needed, but heck.
-        mPublisher = publisher.trim();
+        mPublisher = publisher;
     }
 
     /**
@@ -160,19 +156,25 @@ public class SearchTask
 
             Bundle bookData;
 
-            // A native id takes highest priority.
-            // An ISBN is next.
-            // If neither is present, search by keywords.
-            if (mSearchEngine instanceof SearchEngine.ByNativeId
-                && mNativeId != null && !mNativeId.isEmpty()) {
+            // if we have a native id, and the engine supports it, we can search.
+            if (mNativeId != null && !mNativeId.isEmpty()
+                && mSearchEngine instanceof SearchEngine.ByNativeId) {
                 bookData = ((SearchEngine.ByNativeId) mSearchEngine)
                         .searchByNativeId(localContext, mNativeId, mFetchThumbnail);
 
-            } else if (mSearchEngine instanceof SearchEngine.ByIsbn
-                       && ISBN.isValid(mIsbn)) {
+                // If we have a valid ISBN, ...
+            } else if (ISBN.isValid(mIsbn)
+                       && mSearchEngine instanceof SearchEngine.ByIsbn) {
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
                         .searchByIsbn(localContext, mIsbn, mFetchThumbnail);
 
+                // If we have a generic barcode, ...
+            } else if (mIsbn != null && !mIsbn.isEmpty()
+                       && mSearchEngine instanceof SearchEngine.ByBarcode) {
+                bookData = ((SearchEngine.ByIsbn) mSearchEngine)
+                        .searchByIsbn(localContext, mIsbn, mFetchThumbnail);
+
+                // If we have other text to search on, ...
             } else if (mSearchEngine instanceof SearchEngine.ByText) {
                 bookData = ((SearchEngine.ByText) mSearchEngine)
                         .search(localContext, mIsbn, mAuthor, mTitle, mPublisher,

@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
@@ -234,27 +233,16 @@ public class LibraryThingManager
     @Override
     public ArrayList<String> getAlternativeEditions(@NonNull final Context appContext,
                                                     @NonNull final String isbn) {
-
         // the resulting data we'll return
-        ArrayList<String> editions = new ArrayList<>();
-
-        // sanity check
-        if (!ISBN.isValid(isbn)) {
-            return editions;
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
-            Log.d(TAG, "getAlternativeEditions|isbn=" + isbn);
-        }
-
-        // add the original isbn, as there might be more images at the time this search is done.
-        editions.add(isbn);
+        ArrayList<String> isbnList = new ArrayList<>();
+        // add the original isbn
+        isbnList.add(isbn);
 
         // Base path for an Editions search
         String url = String.format(EDITIONS_URL, isbn);
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        LibraryThingEditionHandler handler = new LibraryThingEditionHandler(editions);
+        LibraryThingEditionHandler handler = new LibraryThingEditionHandler(isbnList);
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();
@@ -269,11 +257,7 @@ public class LibraryThingManager
                 Log.d(TAG, "getAlternativeEditions|e=" + e);
             }
         }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
-            Log.d(TAG, "getAlternativeEditions|editions=" + editions);
-        }
-        return editions;
+        return isbnList;
     }
 
     @Override
@@ -370,12 +354,6 @@ public class LibraryThingManager
     public File getCoverImage(@NonNull final Context appContext,
                               @NonNull final String isbn,
                               @Nullable final ImageSize size) {
-
-        // sanity check
-        if (!ISBN.isValid(isbn)) {
-            return null;
-        }
-
         String sizeParam;
         if (size == null) {
             sizeParam = "large";

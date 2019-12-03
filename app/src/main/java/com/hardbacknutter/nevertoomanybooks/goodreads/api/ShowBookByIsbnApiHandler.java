@@ -83,7 +83,7 @@ public class ShowBookByIsbnApiHandler
                       final boolean fetchThumbnail)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (!ISBN.isValid(isbn)) {
+        if (!ISBN.isValid(isbn, true)) {
             throw new BookNotFoundException(isbn);
         }
 

@@ -118,6 +118,7 @@ public abstract class BookSearchBaseFragment
                     }
                 }
             };
+
     SearchCoordinator mSearchCoordinator;
 
     @Nullable
@@ -142,11 +143,11 @@ public abstract class BookSearchBaseFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mSearchCoordinator = new ViewModelProvider(this).get(SearchCoordinator.class);
+        // Activity scope!
+        mSearchCoordinator = new ViewModelProvider(mHostActivity).get(SearchCoordinator.class);
         mSearchCoordinator.init(requireArguments(), mSearchCoordinatorListener);
 
-        //noinspection ConstantConditions
-        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mResultDataModel = new ViewModelProvider(mHostActivity).get(ResultDataModel.class);
 
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);

@@ -234,7 +234,11 @@ public class IsfdbManager
     public ArrayList<String> getAlternativeEditions(@NonNull final Context appContext,
                                                     @NonNull final String isbn) {
 
+        // the resulting data we'll return
         ArrayList<String> isbnList = new ArrayList<>();
+        // add the original isbn
+        isbnList.add(isbn);
+
         ArrayList<Edition> editions;
         try {
             editions = new IsfdbEditionsHandler(appContext).fetch(isbn);

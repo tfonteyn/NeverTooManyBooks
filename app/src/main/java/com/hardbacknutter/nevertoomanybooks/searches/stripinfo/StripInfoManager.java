@@ -49,7 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 public class StripInfoManager
         implements SearchEngine,
                    SearchEngine.ByNativeId,
-                   SearchEngine.ByIsbn {
+                   SearchEngine.ByIsbn,
+                   SearchEngine.ByBarcode {
 
     /** This is a Dutch language website. */
     public static final Locale SITE_LOCALE = new Locale("nl", "BE");

@@ -85,16 +85,16 @@ class ISBNTest {
     @Test
     void isValid() {
         for (String[] isbnPair : valid) {
-            assertTrue(ISBN.isValid(isbnPair[0]));
-            assertTrue(ISBN.isValid(isbnPair[1]));
+            assertTrue(ISBN.isValid(isbnPair[0], true));
+            assertTrue(ISBN.isValid(isbnPair[1], true));
         }
     }
 
     @Test
     void isInvalid() {
         for (String[] isbnPair : invalid) {
-            assertFalse(ISBN.isValid(isbnPair[0]));
-            assertFalse(ISBN.isValid(isbnPair[1]));
+            assertFalse(ISBN.isValid(isbnPair[0], true));
+            assertFalse(ISBN.isValid(isbnPair[1], true));
         }
     }
 

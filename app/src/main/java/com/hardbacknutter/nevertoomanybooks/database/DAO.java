@@ -1810,15 +1810,18 @@ public class DAO
     }
 
     /**
-     * @param isbn to search for (10 or 13)
-     * @param both set to {@code true} to search for both isbn 10 and 13.
+     * @param isbn to search for
+     * @param both Flag: {@code true} to search for both isbn 10 and 13;
+     *             To do this, the ISBN must be valid.
+     *             {@code false} to just search on a matching string, i.e. the isbn does not
+     *             have to be valid, just equal.
      *
      * @return book id, or 0 if not found
      */
     public long getBookIdFromIsbn(@NonNull final String isbn,
                                   final boolean both) {
         SynchronizedStatement stmt;
-        if (both && ISBN.isValid(isbn)) {
+        if (both && ISBN.isValid(isbn, true)) {
             stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_2);
             if (stmt == null) {
                 stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_2, SqlGet.BOOK_ID_BY_ISBN2);

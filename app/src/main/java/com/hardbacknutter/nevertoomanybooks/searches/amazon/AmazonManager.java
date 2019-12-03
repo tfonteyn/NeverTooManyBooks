@@ -64,7 +64,8 @@ public final class AmazonManager
         implements SearchEngine,
                    SearchEngine.ByText,
                    SearchEngine.ByNativeId,
-                   SearchEngine.ByIsbn {
+                   SearchEngine.ByIsbn,
+                   SearchEngine.ByBarcode {
 
     private static final String TAG = "AmazonManager";
 

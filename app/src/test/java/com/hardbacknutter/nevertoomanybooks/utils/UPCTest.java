@@ -52,7 +52,7 @@ class UPCTest {
     @Test
     void isValid() {
         for (String[] upcPair : upc) {
-            ISBN isbn = new ISBN(upcPair[0]);
+            ISBN isbn = new ISBN(upcPair[0], true);
             assertTrue(isbn.isUpc());
             assertTrue(isbn.isValid());
             assertEquals(upcPair[1], isbn.asText());

@@ -48,7 +48,6 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
@@ -153,24 +152,14 @@ public class KbNlManager
      * <p>
      * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
      * <p>
-     * Get a cover image.
      *
-     * @param appContext Application context
-     * @param isbn       to search for
-     * @param size       of image to get.
-     *
-     * @return found/saved File, or {@code null} when none found (or any other failure)
+     * {@inheritDoc}
      */
     @Nullable
     @Override
     public File getCoverImage(@NonNull final Context appContext,
                               @NonNull final String isbn,
                               @Nullable final ImageSize size) {
-        // sanity check
-        if (!ISBN.isValid(isbn)) {
-            return null;
-        }
-
         String sizeSuffix;
         if (size == null) {
             sizeSuffix = "large";

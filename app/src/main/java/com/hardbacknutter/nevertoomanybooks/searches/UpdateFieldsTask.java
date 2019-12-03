@@ -100,6 +100,8 @@ public class UpdateFieldsTask
     private String mCurrentUuid;
     /** The (subset) of fields relevant to the current book. */
     private Map<String, FieldUsage> mCurrentBookFieldUsages;
+    /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
+    private boolean mIsCancelled;
     /**
      * Called in the main thread for this object when the search for one book has completed.
      * <p>
@@ -139,8 +141,6 @@ public class UpdateFieldsTask
                     mTaskListener.onProgress(message);
                 }
             };
-    /** Indicates the user has requested a cancel. Up to the subclass to decide what to do. */
-    private boolean mIsCancelled;
     /** List of book ID's to update, {@code null} for all books. */
     @Nullable
     private ArrayList<Long> mBookIds;
@@ -416,7 +416,8 @@ public class UpdateFieldsTask
     }
 
     /**
-     * Executed in main task thread.
+     * Started from main thread.
+     * The SearchCoordinator tasks will be started from <strong>THIS</strong> thread.
      */
     @Override
     public void run() {
@@ -489,14 +490,17 @@ public class UpdateFieldsTask
                 }
 
                 boolean wantCoverImage = mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_IMAGE);
-                // optional
-                String publisher = mOriginalBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
-
                 mSearchCoordinator.setFetchThumbnail(wantCoverImage);
-                mSearchCoordinator.setIsbnSearchText(isbn);
+
+                // theoretically generic codes could be allowed, but this process is
+                // not under strict user-control, so let's be paranoid.
+                mSearchCoordinator.setIsbnSearchText(isbn, true);
                 mSearchCoordinator.setAuthorSearchText(author);
                 mSearchCoordinator.setTitleSearchText(title);
+                // optional
+                String publisher = mOriginalBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
                 mSearchCoordinator.setPublisherSearchText(publisher);
+
                 // Start searching, then wait...
                 if (mSearchCoordinator.searchByText()) {
                     mSearchLock.lock();

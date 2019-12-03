@@ -57,12 +57,17 @@ public class BookSearchByNativeIdFragment
     public static final String TAG = "BookSearchByNativeId";
     private static final Pattern DIGITS_PATTERN = Pattern.compile("\\d+");
     private static final String BKEY_SITE_RES_ID = TAG + ":siteResId";
+    private static final String BKEY_NATIVE_ID = TAG + ":nativeId";
 
     /** User input field. */
-    private EditText mEntryView;
+    private EditText mNativeIdView;
     private Button mSearchBtn;
 
     private RadioGroup mRadioGroup;
+    /** The currently selected radio button for onPause/onSaveInstanceState. */
+    private int mCheckedSiteResId = View.NO_ID;
+    /** The current native id text for onPause/onSaveInstanceState. */
+    private String mNativeId;
 
     @Override
     @Nullable
@@ -71,7 +76,7 @@ public class BookSearchByNativeIdFragment
                              @Nullable final Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_booksearch_by_native_id, container, false);
-        mEntryView = view.findViewById(R.id.native_id);
+        mNativeIdView = view.findViewById(R.id.native_id);
         mSearchBtn = view.findViewById(R.id.btn_search);
         mRadioGroup = view.findViewById(R.id.sites_group);
         return view;
@@ -84,24 +89,56 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_native_id);
 
-        if (savedInstanceState != null) {
-            int siteResId = savedInstanceState.getInt(BKEY_SITE_RES_ID, View.NO_ID);
-            if (siteResId != View.NO_ID) {
-                RadioButton btn = mRadioGroup.findViewById(siteResId);
-                btn.setChecked(true);
-                mEntryView.setEnabled(true);
-            }
+//       View root = getView();
+//
+//       int visibleSites = 0;
+//        RadioButton singleVisibleBtn = null;
+//        //noinspection ConstantConditions
+//        for (Site site : SiteList.getSites(getContext(), SiteList.Type.Data)) {
+//            int resId = SearchSites.getResIdFromSiteId(site.id);
+//            if (resId != View.NO_ID) {
+//                //noinspection ConstantConditions
+//                RadioButton btn = root.findViewById(resId);
+//                if (btn != null) {
+//                    btn.setVisibility(site.isEnabled() ? View.VISIBLE : View.GONE);
+//                    if (site.isEnabled()) {
+//                        visibleSites++;
+//                        singleVisibleBtn = btn;
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (visibleSites == 0) {
+//            Snackbar.make(mNativeIdView, "Please enable at least one site blah blah...",
+//                          Snackbar.LENGTH_LONG).show();
+//            getActivity().finish();
+//
+//        } else if (visibleSites == 1) {
+//            singleVisibleBtn.setChecked(true);
+//            mNativeIdView.setEnabled(true);
+//        }
 
+        Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
+        if (args != null) {
+            int checkedId = args.getInt(BKEY_SITE_RES_ID, View.NO_ID);
+            if (checkedId != View.NO_ID) {
+                RadioButton btn = mRadioGroup.findViewById(checkedId);
+                if (btn.getVisibility() == View.VISIBLE) {
+                    btn.setChecked(true);
+                    mNativeIdView.setEnabled(true);
+                    mNativeIdView.setText(args.getString(BKEY_NATIVE_ID, ""));
+                }
+            }
         }
-        mEntryView.setText(mSearchCoordinator.getNativeIdSearchText());
 
         mRadioGroup.setOnCheckedChangeListener(this::onSiteSelect);
 
         mSearchBtn.setOnClickListener(v -> {
             //sanity check
-            if (mEntryView.getText().toString().trim().isEmpty()
+            if (mNativeIdView.getText().toString().trim().isEmpty()
                 || mRadioGroup.getCheckedRadioButtonId() == View.NO_ID) {
-                Snackbar.make(mEntryView, R.string.warning_requires_site_and_id,
+                Snackbar.make(mNativeIdView, R.string.warning_requires_site_and_id,
                               Snackbar.LENGTH_LONG).show();
                 return;
             }
@@ -113,8 +150,8 @@ public class BookSearchByNativeIdFragment
     @Override
     protected boolean onSearch() {
         int siteId = SearchSites.getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
-        mSearchCoordinator.setNativeIdSearchText(mEntryView.getText().toString().trim());
-        return mSearchCoordinator.searchByNativeId(Site.createDataSite(siteId));
+        String nativeId = mNativeIdView.getText().toString().trim();
+        return mSearchCoordinator.searchByNativeId(Site.createDataSite(siteId), nativeId);
     }
 
     @Override
@@ -128,24 +165,22 @@ public class BookSearchByNativeIdFragment
     @Override
     void clearPreviousSearchCriteria() {
         super.clearPreviousSearchCriteria();
-        mEntryView.setText("");
+        mNativeIdView.setText("");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        int checkedId = mRadioGroup.getCheckedRadioButtonId();
-        if (checkedId != View.NO_ID) {
-            mSearchCoordinator.setNativeIdSearchText(mEntryView.getText().toString().trim());
-        }
+        mCheckedSiteResId = mRadioGroup.getCheckedRadioButtonId();
+        mNativeId = mNativeIdView.getText().toString().trim();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        int checkedId = mRadioGroup.getCheckedRadioButtonId();
-        if (checkedId != View.NO_ID) {
-            outState.putInt(BKEY_SITE_RES_ID, checkedId);
+        if (mCheckedSiteResId != View.NO_ID) {
+            outState.putInt(BKEY_SITE_RES_ID, mCheckedSiteResId);
+            outState.putString(BKEY_NATIVE_ID, mNativeId);
         }
     }
 
@@ -162,7 +197,7 @@ public class BookSearchByNativeIdFragment
             return;
         }
 
-        //NEWTHINGS: add new site specific ID:
+        //NEWTHINGS: add new site specific ID: split by Long/String value
         switch (checkedId) {
             // 'long' id
             case R.id.site_goodreads:
@@ -170,25 +205,25 @@ public class BookSearchByNativeIdFragment
             case R.id.site_library_thing:
             case R.id.site_strip_info_be:
                 // if the user switched from a text input, clean the input
-                if ((mEntryView.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
-                    String text = mEntryView.getText().toString().trim();
+                if ((mNativeIdView.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
+                    String text = mNativeIdView.getText().toString().trim();
                     if (!DIGITS_PATTERN.matcher(text).matches()) {
-                        mEntryView.setText("");
+                        mNativeIdView.setText("");
                     }
                 }
                 // display a (sort of) numeric keyboard icon
-                mEntryView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                mNativeIdView.setInputType(InputType.TYPE_CLASS_NUMBER);
+                mNativeIdView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         R.drawable.ic_apps, 0, 0, 0);
                 break;
 
             // 'String' id
             case R.id.site_amazon:
             case R.id.site_open_library:
-                mEntryView.setInputType(InputType.TYPE_CLASS_TEXT
-                                        | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                mNativeIdView.setInputType(InputType.TYPE_CLASS_TEXT
+                                           | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
                 // display an alphanumeric keyboard icon
-                mEntryView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                mNativeIdView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         R.drawable.ic_keyboard, 0, 0, 0);
                 break;
 
@@ -196,6 +231,6 @@ public class BookSearchByNativeIdFragment
                 throw new UnexpectedValueException(checkedId);
         }
 
-        mEntryView.setEnabled(true);
+        mNativeIdView.setEnabled(true);
     }
 }

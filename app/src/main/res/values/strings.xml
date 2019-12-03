@@ -1524,5 +1524,6 @@
     <string name="lbl_site_book_id">Website book ID:</string>
     <string name="lbl_select_website">Select a website:</string>
     <string name="scan">Scan barcode</string>
+    <string name="menu_strict_isbn">Strict ISBN</string>
 
 </resources>

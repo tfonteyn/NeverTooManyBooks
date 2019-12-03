@@ -38,6 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * Every product on Amazon has its own ASIN, a unique code used to identify it.
  * For books, the ASIN is the same as the ISBN-10 number, but for all other products a new ASIN
  * is created when the item is uploaded to their catalogue.
+ *
+ * <a href="https://www.amazon.com/gp/seller/asin-upc-isbn-info.html">
+ *     https://www.amazon.com/gp/seller/asin-upc-isbn-info.html</a>
  */
 public class ASIN {
 
@@ -46,13 +49,13 @@ public class ASIN {
      */
     public static boolean isValidAsin(@NonNull String asin) {
 
-        // Book ASIN codes are always 10 characters.
+        // ASIN codes are always 10 characters.
         if (asin.length() != 10) {
             return false;
         }
 
         // An Book ASIN is basically an ISBN-10.
-        if (ISBN.isValid(asin)) {
+        if (ISBN.isValid(asin, true)) {
             return true;
         }
 

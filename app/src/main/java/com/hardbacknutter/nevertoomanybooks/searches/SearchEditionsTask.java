@@ -36,9 +36,11 @@ import androidx.annotation.WorkerThread;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 /**
  * Fetch alternative edition isbn's.
@@ -52,13 +54,21 @@ public class SearchEditionsTask
     /**
      * Constructor.
      *
-     * @param isbn         to search for
+     * @param isbn         to search for, <strong>must</strong> be valid.
      * @param taskListener to send results to
      */
     @UiThread
     public SearchEditionsTask(@NonNull final String isbn,
                               @NonNull final TaskListener<ArrayList<String>> taskListener) {
         super(R.id.TASK_ID_SEARCH_EDITIONS, taskListener);
+
+        // sanity check
+        if (BuildConfig.DEBUG /* always */) {
+            if (!ISBN.isValid(isbn)) {
+                throw new IllegalStateException("isbn must be valid");
+            }
+        }
+
         mIsbn = isbn;
     }
 
