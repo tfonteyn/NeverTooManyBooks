@@ -1283,7 +1283,7 @@ public class Fields {
                         imageFile = StorageUtils.getCoverFileForUuid(uuid);
                     }
                     ImageUtils.setImageView(view, imageFile, mMaxWidth, mMaxHeight, true,
-                                            R.drawable.ic_add_a_photo);
+                                            R.drawable.ic_add_a_photo, false);
                 } else {
                     // we should not actually get here; the uuid should always be non-null
                     view.setImageResource(R.drawable.ic_add_a_photo);

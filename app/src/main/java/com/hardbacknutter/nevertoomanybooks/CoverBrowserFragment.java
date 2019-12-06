@@ -104,9 +104,7 @@ public class CoverBrowserFragment
     private CoverBrowserViewModel.FileInfo mSwitcherImageFileInfo;
 
     /**
-     * <strong>WARNING:</strong> LibraryThing is in fact the only site searched for
-     * alternative editions!
-     * See {@link CoverBrowserViewModel} SearchEditionsTask.
+     * Constructor.
      *
      * @param isbn ISBN of book
      *
@@ -437,7 +435,7 @@ public class CoverBrowserFragment
             // See if file is present.
             if (imageFile != null && imageFile.exists()) {
                 ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true,
-                                        R.drawable.ic_image);
+                                        R.drawable.ic_image, false);
 
             } else {
                 // Not present; use a placeholder.
@@ -466,9 +464,9 @@ public class CoverBrowserFragment
                     //noinspection ConstantConditions
                     if (holder.fileInfo.size.equals(SearchEngine.CoverByIsbn.ImageSize.Large)) {
                         // no need to search, just load it.
-                        ImageUtils.setImageView(holder.imageView,
-                                                new File(fileSpec),
-                                                mWidth, mHeight, true, R.drawable.ic_image);
+                        ImageUtils.setImageView(holder.imageView, new File(fileSpec),
+                                                mWidth, mHeight, true,
+                                                R.drawable.ic_image, false);
                     } else {
                         // see if we can get a larger image.
 

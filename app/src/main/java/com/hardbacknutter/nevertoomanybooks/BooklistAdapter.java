@@ -821,7 +821,7 @@ public class BooklistAdapter
 
             if (mReadIsUsed && rowData.contains(DBDefinitions.KEY_READ)) {
                 boolean isSet = rowData.getBoolean(DBDefinitions.KEY_READ);
-                //URGENT: if we make them 'gone', then we don't need selectors but can use static icons.
+                //URGENT: if we make them 'gone', we don't need selectors but can use static icons.
                 mReadView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mReadView.setChecked(isSet);
             }
@@ -849,11 +849,8 @@ public class BooklistAdapter
                 String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
                 // store the uuid for use in the onClick
                 mCoverView.setTag(R.id.TAG_UUID, uuid);
-                // placeHolder is a non-actionable icon.
-                // A background task will be started if needed.
                 boolean isSet = ImageUtils.setImageView(mCoverView, uuid,
-                                                        mMaxCoverSize, mMaxCoverSize, true,
-                                                        R.drawable.ic_image);
+                                                        mMaxCoverSize, mMaxCoverSize);
                 if (isSet) {
                     //Allow zooming by clicking on the image
                     mCoverView.setOnClickListener(v -> {

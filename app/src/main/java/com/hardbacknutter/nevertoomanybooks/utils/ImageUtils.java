@@ -34,6 +34,7 @@ import android.graphics.Matrix;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.AnyThread;
@@ -71,11 +72,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 // scroll to Pratchett (175 books) on 1st line, expand, scroll to end.
 //////////////////////////////////////////////////////////////////////////// test 1
 // no cache
-// ImageUtils.fileChecks=175|ImageUtils.fileChecks=2065
-// ImageUtils.fileChecks=175|ImageUtils.fileTicks=2094
+// fileChecks=175|fileChecks=2065
+// fileChecks=175|fileTicks=2094
 //
 // from cache
-// ImageUtils.cacheChecks=175|ImageUtils.cacheTicks=2305
+// cacheChecks=175|cacheTicks=2305
 //
 // ==> without rescaling code (leaving it to Android) ==> no point in using a cache.
 ////////////////////////////////////////////////////////////////////////////
@@ -83,10 +84,10 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 //////////////////////////////////////////////////////////////////////////// test 2
 // writing to cache with REAL scaling
-// ImageUtils.fileChecks=175|ImageUtils.fileTicks=2678
+// fileChecks=175|fileTicks=2678
 
 // using cache
-// ImageUtils.cacheChecks=175|ImageUtils.cacheTicks=1585
+// cacheChecks=175|cacheTicks=1585
 //
 // ==> so during the writing, its slower.... but afterwards, 50% faster compared to test 1
 ////////////////////////////////////////////////////////////////////////////
@@ -143,23 +144,23 @@ public final class ImageUtils {
      *
      * @return amount in pixels
      */
-    public static int getMaxImageSize(@ImageUtils.Scale final int scale) {
+    public static int getMaxImageSize(@Scale final int scale) {
         int scaleFactor;
         switch (scale) {
-            case ImageUtils.SCALE_LARGE:
+            case SCALE_LARGE:
                 scaleFactor = 5;
                 break;
-            case ImageUtils.SCALE_X_LARGE:
+            case SCALE_X_LARGE:
                 scaleFactor = 8;
                 break;
-            case ImageUtils.SCALE_2X_LARGE:
+            case SCALE_2X_LARGE:
                 scaleFactor = 12;
                 break;
 
-            case ImageUtils.SCALE_NOT_DISPLAYED:
-            case ImageUtils.SCALE_X_SMALL:
-            case ImageUtils.SCALE_SMALL:
-            case ImageUtils.SCALE_MEDIUM:
+            case SCALE_NOT_DISPLAYED:
+            case SCALE_X_SMALL:
+            case SCALE_SMALL:
+            case SCALE_MEDIUM:
             default:
                 scaleFactor = scale;
                 break;
@@ -180,15 +181,15 @@ public final class ImageUtils {
     }
 
     /**
-     * Load the image file into the destination view.
+     * Load the image file into the destination ImageView.
      * Handles checking & storing in the cache.
+     * <p>
+     * Images and placeholder will always be scaled to a fixed size.
      *
-     * @param imageView      View to populate
-     * @param uuid           UUID of book
-     * @param maxWidth       Max width of resulting image
-     * @param maxHeight      Max height of resulting image
-     * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
-     * @param placeHolder    drawable to use if the file does not exist
+     * @param imageView View to populate
+     * @param uuid      UUID of book
+     * @param maxWidth  Max width of resulting image
+     * @param maxHeight Max height of resulting image
      *
      * @return {@code true} if the uuid/placeholder was displayed.
      */
@@ -196,9 +197,7 @@ public final class ImageUtils {
     public static boolean setImageView(@NonNull final ImageView imageView,
                                        @NonNull final String uuid,
                                        final int maxWidth,
-                                       final int maxHeight,
-                                       final boolean allowUpscaling,
-                                       @DrawableRes final int placeHolder) {
+                                       final int maxHeight) {
 
         // 1. If caching is used, and we don't have cache building happening, check it.
         if (imagesAreCached(imageView.getContext())
@@ -208,8 +207,7 @@ public final class ImageUtils {
             cacheChecks.incrementAndGet();
             Bitmap bm = CoversDAO.getImage(uuid, maxWidth, maxHeight);
             if (bm != null) {
-                boolean isSet = ImageUtils.setImageView(imageView, bm,
-                                                        maxWidth, maxHeight, allowUpscaling);
+                boolean isSet = setImageView(imageView, bm, maxWidth, maxHeight, true);
                 cacheTicks.addAndGet(System.nanoTime() - tick);
                 return isSet;
             }
@@ -218,7 +216,7 @@ public final class ImageUtils {
         // 2. Check if the file exists; if it does not, set the placeholder icon and exit.
         File file = StorageUtils.getCoverFileForUuid(uuid);
         if (!file.exists() || file.length() < MIN_IMAGE_FILE_SIZE) {
-            imageView.setImageResource(placeHolder);
+            setImagePlaceholder(imageView, maxWidth, maxHeight, R.drawable.ic_image, true);
             return false;
         }
 
@@ -239,25 +237,28 @@ public final class ImageUtils {
                 return true;
 
             } else {
-                imageView.setImageResource(R.drawable.ic_broken_image);
+                setImagePlaceholder(imageView, maxWidth, maxHeight,
+                                    R.drawable.ic_broken_image, true);
                 return false;
             }
         }
 
         // 4. Finally go get the image from the file system.
-        return setImageView(imageView, file, maxWidth, maxHeight, allowUpscaling, placeHolder);
+        return setImageView(imageView, file, maxWidth, maxHeight, true,
+                            R.drawable.ic_image, true);
     }
 
     /**
-     * Load the image bitmap into the destination view.
-     * The file decoding is done in {@link ImageLoader}.
+     * Load the image bitmap into the destination ImageView.
+     * This method is meant to be used for ImageView's on a details screen.
      *
-     * @param imageView      The ImageView to load with the file or an appropriate icon
-     * @param file           The file of the image
-     * @param maxWidth       Maximum desired width of the image
-     * @param maxHeight      Maximum desired height of the image
-     * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
-     * @param placeHolder    drawable to use if the file does not exist
+     * @param imageView         The ImageView to load with the file or an appropriate icon
+     * @param file              The file of the image
+     * @param maxWidth          Maximum desired width of the image
+     * @param maxHeight         Maximum desired height of the image
+     * @param allowUpscaling    use the maximum h/w also as the minimum; thereby forcing upscaling.
+     * @param placeholder       drawable to use if the file does not exist
+     * @param resizePlaceholder if set, the placeholder will forcibly be sized to a 1:(3/4) ratio.
      *
      * @return {@code true} if the file/placeholder was displayed.
      */
@@ -267,9 +268,10 @@ public final class ImageUtils {
                                        final int maxWidth,
                                        final int maxHeight,
                                        final boolean allowUpscaling,
-                                       @DrawableRes final int placeHolder) {
+                                       @DrawableRes final int placeholder,
+                                       final boolean resizePlaceholder) {
         if (!file.exists()) {
-            imageView.setImageResource(placeHolder);
+            setImagePlaceholder(imageView, maxWidth, maxHeight, placeholder, resizePlaceholder);
             return false;
 
         } else if (file.length() > MIN_IMAGE_FILE_SIZE) {
@@ -279,9 +281,34 @@ public final class ImageUtils {
             return true;
 
         } else {
-            imageView.setImageResource(R.drawable.ic_broken_image);
+            setImagePlaceholder(imageView, maxWidth, maxHeight,
+                                R.drawable.ic_broken_image, resizePlaceholder);
             return false;
         }
+    }
+
+    /**
+     * Set a placeholder drawable in the view.
+     *
+     * @param imageView   The ImageView to load with the placeholder
+     * @param maxWidth    Maximum desired width of the image
+     * @param maxHeight   Maximum desired height of the image
+     * @param placeholder drawable to use
+     * @param resize      if set, the View will forcibly be sized to a 1:(3/4) ratio.
+     */
+    @UiThread
+    private static void setImagePlaceholder(@NonNull final ImageView imageView,
+                                            final int maxWidth,
+                                            final int maxHeight,
+                                            @DrawableRes final int placeholder,
+                                            final boolean resize) {
+        if (resize) {
+            ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+            lp.height = maxHeight;
+            lp.width = (int) (maxWidth * 0.75);
+            imageView.setLayoutParams(lp);
+        }
+        imageView.setImageResource(placeholder);
     }
 
     /**
@@ -323,7 +350,7 @@ public final class ImageUtils {
             return true;
 
         } else {
-            imageView.setImageResource(R.drawable.ic_broken_image);
+            setImagePlaceholder(imageView, maxWidth, maxHeight, R.drawable.ic_broken_image, false);
             return false;
         }
     }
@@ -331,8 +358,9 @@ public final class ImageUtils {
     /**
      * Convenience method for {@link #createScaledBitmap(Bitmap, int, int, boolean)}.
      *
-     * @param file          The file of the image
-     * @param scale         user preferred scale factor
+     * @param file  The file of the image
+     * @param scale user preferred scale factor
+     *
      * @return the bitmap, or {@code null} if the file failed to decode.
      */
     @Nullable
@@ -344,7 +372,7 @@ public final class ImageUtils {
         if (bm == null) {
             return null;
         }
-        int maxSize = ImageUtils.getMaxImageSize(scale);
+        int maxSize = getMaxImageSize(scale);
         return createScaledBitmap(bm, maxSize, maxSize, true);
     }
 

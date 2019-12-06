@@ -114,8 +114,8 @@ public class ZoomedImageDialogFragment
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 
         ImageUtils.setImageView(mImageView, mImageFile,
-                                metrics.widthPixels, metrics.heightPixels,
-                                true, R.drawable.ic_broken_image);
+                                metrics.widthPixels, metrics.heightPixels, true,
+                                R.drawable.ic_broken_image, false);
 
         mImageView.setOnClickListener(v -> dismiss());
     }
