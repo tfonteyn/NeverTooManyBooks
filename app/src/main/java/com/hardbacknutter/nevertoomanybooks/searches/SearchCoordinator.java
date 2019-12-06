@@ -639,7 +639,11 @@ public class SearchCoordinator
         mSearchResults.clear();
         mSearchFinishedMessages.clear();
 
-        mHasValidIsbnOrEAN = new ISBN(mIsbnSearchText, mStrictIsbn).isValid();
+        if (mIsbnSearchText.isEmpty()) {
+            mHasValidIsbnOrEAN = false;
+        } else {
+            mHasValidIsbnOrEAN = new ISBN(mIsbnSearchText, mStrictIsbn).isValid();
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "prepareSearch"

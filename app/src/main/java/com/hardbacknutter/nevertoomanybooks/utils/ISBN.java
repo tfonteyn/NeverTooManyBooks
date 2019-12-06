@@ -501,39 +501,35 @@ public class ISBN {
             throws NumberFormatException {
         // don't test the type here, this test is used to determine the type!
 
-
         if (digits == null) {
             return Type.INVALID;
         }
 
-        switch (digits.size()) {
-            case 13:
-                if (calculateEan13Checksum(digits) == digits.get(digits.size() - 1)) {
-                    // check if it starts with 978 or 979
-                    if (digits.size() == 13
-                        && digits.get(0) == 9
-                        && digits.get(1) == 7
-                        && (digits.get(2) == 8 || digits.get(2) == 9)) {
-                        return Type.ISBN13;
-                    } else {
-                        return Type.EAN13;
-                    }
-                }
-                break;
+        int size = digits.size();
 
-            case 10:
-                if (calculateIsbn10Checksum(digits) == digits.get(digits.size() - 1)) {
-                    return Type.ISBN10;
-                }
-                break;
+        if (size == 10) {
+            if (calculateIsbn10Checksum(digits) == digits.get(digits.size() - 1)) {
+                return Type.ISBN10;
+            }
 
-            default:
-                // a UPC_A barcode might be longer than 12 characters due to allowed extensions.
-                // But only 12 characters are 'the' UPC_A code.
-                if (calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
-                    return Type.UPC_A;
+        } else if (size == 13) {
+            if (calculateEan13Checksum(digits) == digits.get(digits.size() - 1)) {
+                // check if it starts with 978 or 979
+                if (digits.size() == 13
+                    && digits.get(0) == 9
+                    && digits.get(1) == 7
+                    && (digits.get(2) == 8 || digits.get(2) == 9)) {
+                    return Type.ISBN13;
+                } else {
+                    return Type.EAN13;
                 }
-                break;
+            }
+        } else if (digits.size() > 11) {
+            // a UPC_A barcode might be longer than 12 characters due to allowed extensions.
+            // But only 12 characters are 'the' UPC_A code.
+            if (calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
+                return Type.UPC_A;
+            }
         }
 
         return Type.INVALID;
