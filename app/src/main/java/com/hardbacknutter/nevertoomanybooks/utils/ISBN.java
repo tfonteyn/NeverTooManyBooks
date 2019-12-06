@@ -44,8 +44,10 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 
 /**
- * Represents an ISBN-10, ISBN-13 or EAN-13 code.
- * Accepts UPC numbers if they can be converted to ISBN.
+ * This class name is a bit of a misnomer by now.
+ * It represents an ISBN-10, ISBN-13, EAN-13 or UPC_A code.
+ * UPC_A numbers are converted to ISB-10 if possible.
+ *
  * <p>
  * See <a href="http://en.wikipedia.org/wiki/International_Standard_Book_Number">
  * http://en.wikipedia.org/wiki/International_Standard_Book_Number</a>
@@ -73,21 +75,26 @@ public class ISBN {
 
     private static final String TAG = "ISBN";
 
-    private static final String ERROR_UNABLE_TO_CONVERT = "Unable to convert invalid ISBN";
-
+    private static final String ERROR_WRONG_SIZE =
+            "Wrong size: ";
+    private static final String ERROR_UNABLE_TO_CONVERT =
+            "Unable to convert type: %1$s to %2$s";
+    private static final String ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10 =
+            "X can only be at the end of an ISBN-10";
+    private static final String ERROR_INVALID_CHARACTER = "Invalid character: ";
     /**
      * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">
      * https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside</a>
      * <p>
-     * The extended barcode combined with the UPC vendor prefix can be used to
+     * The extended barcode combined with the UPC_A vendor prefix can be used to
      * reconstruct the ISBN.
      * Example:
      * Del Rey edition of Larry Niven's _World of Ptavvs_,
      * which says it's "Ninth Printing: September 1982" on the copyright page.
      * There is no ISBN/EAN barcode on the inside cover.
-     * The back cover has an extended UPC code "0 70999 00225 5 30054".
+     * The back cover has an extended UPC_A code "0 70999 00225 5 30054".
      * <p>
-     * "070999" in the first part of the UPC means that the ISBN starts with "0-345"
+     * "070999" in the first part of the UPC_A means that the ISBN starts with "0-345"
      * see <a href="https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map">
      * https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map</a>
      * making it a Ballantine book
@@ -97,7 +104,7 @@ public class ISBN {
      * The ISBN check digit is omitted from the bar code but can be calculated;
      * in this case it's 8
      * <p>
-     * UPC Prefix -- ISBN Prefix mapping file (may not be complete)
+     * UPC_A Prefix -- ISBN Prefix mapping file (may not be complete)
      */
     private static final Map<String, String> UPC_2_ISBN_PREFIX = new HashMap<>();
     /** Remove '-' and space chars. */
@@ -142,149 +149,144 @@ public class ISBN {
         UPC_2_ISBN_PREFIX.put("099769", "0451");
     }
 
-    /** {@code true} if this should be a strict ISBN number (and not an EAN-13 */
-    private final boolean mStrictIsbn;
-
-    /** kept for faster conversion between 10/13 formats. */
-    @Nullable
-    private List<Integer> mDigits;
-
-    private boolean mIsUpc;
-
-    /**
-     * Constructor.
-     * <p>
-     * Accepts (and removes) ' ' and '-' characters.
-     *
-     * @param s the isbn string, 10 or 13, or the old UPC
-     */
-    public ISBN(@NonNull final String s) {
-        this(s, true);
-    }
-
-    /**
-     * Constructor.
-     * <p>
-     * Accepts (and removes) ' ' and '-' characters.
-     *
-     * @param isbnStr the isbn string, 10 or 13, or the old UPC
-     * @param strict  Flag: {@code true} to strictly test ISBN-13 codes,
-     *                {@code false} to just check EAN-13. Ignored if there are only 10 digits.
-     */
-    public ISBN(@NonNull final String isbnStr,
-                final boolean strict) {
-        mStrictIsbn = strict;
-
-        List<Integer> digits;
-        // regular ISBN 10/13
-        try {
-            digits = isbnToDigits(isbnStr);
-            if (isValid(digits)) {
-                mDigits = digits;
-                return;
-            }
-        } catch (@NonNull final NumberFormatException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISBN) {
-                Log.d(TAG, "s=" + isbnStr, e);
-            }
-        }
-
-        // old UPC
-        try {
-            digits = upcToDigits(isbnStr);
-            if (isValid(digits)) {
-                mIsUpc = true;
-                mDigits = digits;
-            }
-        } catch (@NonNull final NumberFormatException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISBN) {
-                Log.d(TAG, "s=" + isbnStr, e);
-            }
-        }
-    }
-
-    /**
-     * Validate an ISBN.
-     *
-     * @param isbn to check
-     *
-     * @return {@code true} if valid
-     */
-    public static boolean isValid(@Nullable final String isbn) {
-        return isValid(isbn, true);
-    }
-
-    /**
-     * Validate an ISBN.
-     *
-     * @param isbnStr to check
-     * @param strict  Flag: {@code true} to strictly test ISBN-13 codes,
-     *                {@code false} to just check EAN-13. Ignored if there are only 10 digits.
-     *
-     * @return {@code true} if valid
-     */
-    public static boolean isValid(@Nullable final String isbnStr,
-                                  final boolean strict) {
-        if (isbnStr == null || isbnStr.isEmpty()) {
-            return false;
-        }
-        try {
-            return new ISBN(isbnStr, strict).isValid();
-        } catch (@NonNull final NumberFormatException e) {
-            return false;
-        }
-    }
-
-    /**
-     * (try to) convert a UPC number to a real ISBN.
-     *
-     * @param upcStr UPC, isbn. Can be blank
-     *
-     * @return either the valid ISBN equivalent, or the input string if conversion failed.
-     */
+    /** The type of code, determined at creation time. */
     @NonNull
-    public static String upc2isbn(@NonNull final String upcStr) {
-        if (upcStr.isEmpty()) {
-            return upcStr;
-        }
+    private final Type mType;
+    /** the code as a pure text string. {@code null} for invalid codes. */
+    @Nullable
+    private final String mAsText;
+    /** kept for faster conversion between formats. {@code null} for invalid codes. */
+    @Nullable
+    private final List<Integer> mDigits;
 
+    /**
+     * Constructor.
+     * <p>
+     * Accepts (and removes) ' ' and '-' characters.
+     *
+     * @param str        string to digest
+     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     */
+    public ISBN(@NonNull final CharSequence str,
+                final boolean strictIsbn) {
+
+        String cleanStr = WHITESPACE_PATTERN.matcher(str).replaceAll("");
+
+        List<Integer> digits = null;
+        Type type = null;
+
+        // Determine the digits and the type.
         try {
-            ISBN isbn = new ISBN(upcStr, true);
-            if (isbn.isUpc()) {
-                // if it's a UPC, convert to isbn 10 and return
-                return isbn.to10();
+            digits = toDigits(cleanStr);
+            type = getType(digits);
+            if (type == Type.UPC_A) {
+                // is this UPC_A convertible to ISBN ?
+                String isbnPrefix = UPC_2_ISBN_PREFIX.get(cleanStr.substring(0, 6));
+                if (isbnPrefix != null) {
+                    // yes, convert to ISBN-10
+                    digits = toDigits(isbnPrefix + cleanStr.substring(12));
+                    digits.add(calculateIsbn10Checksum(digits));
+                    type = Type.ISBN10;
+                }
             }
-        } catch (@NonNull final NumberFormatException | StringIndexOutOfBoundsException ignore) {
+
+        } catch (@NonNull final NumberFormatException e) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISBN) {
+                Log.d(TAG, "str=" + str, e);
+            }
         }
 
-        // it's not UPC, just return as-is.
-        return upcStr;
+        // are we limited to ISBN?
+        if (strictIsbn) {
+            if (type != Type.ISBN10 && type != Type.ISBN13) {
+                type = Type.INVALID;
+            }
+        }
+
+        if (type == null || type == Type.INVALID) {
+            mDigits = null;
+            mAsText = null;
+            mType = Type.INVALID;
+
+        } else {
+            mDigits = digits;
+            mAsText = concat(mDigits);
+            mType = type;
+        }
     }
 
     /**
-     * Check if two ISBN codes are matching.
+     * Constructor.
      *
-     * @param isbnStr1  first code
-     * @param isbnStr2  second code
-     * @param strict Flag: {@code true} to strictly test ISBN-13 codes,
-     *               {@code false} to just check EAN-13. Ignored if there are only 10 digits.
+     * <ul>Accepts:
+     * <li>ISBN-10</li>
+     * <li>ISBN-13</li>
+     * <li>EAN-13</li>
+     * <li>generic UPC_A</li>
+     * </ul>
+     * <p>
+     * Accepts (and removes) ' ' and '-' characters.
+     *
+     * @param str the string to digest
+     */
+    @Nullable
+    public static ISBN create(@Nullable final String str) {
+        if (str == null || str.isEmpty()) {
+            return null;
+        }
+        return new ISBN(str, false);
+    }
+
+    /**
+     * Constructor.
+     *
+     * <ul>Accepts:
+     * <li>ISBN-10</li>
+     * <li>ISBN-13</li>
+     * <li>UPC_A <strong>if convertible to ISBN-10</strong></li>
+     * </ul>
+     * <ul>Rejects as invalid:
+     * <li>EAN-13</li>
+     * <li>generic UPC_A</li>
+     * </ul>
+     * <p>
+     * Accepts (and removes) ' ' and '-' characters.
+     *
+     * @param isbnStr the string to digest
+     *
+     * @return instance, or {@code null} if the given isbnStr was {@code null} or empty.
+     */
+    @Nullable
+    public static ISBN createISBN(@Nullable final String isbnStr) {
+        if (isbnStr == null || isbnStr.isEmpty()) {
+            return null;
+        }
+        return new ISBN(isbnStr, true);
+    }
+
+    /**
+     * Check if two codes are matching.
+     *
+     * @param isbnStr1   first code
+     * @param isbnStr2   second code
+     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
      *
      * @return {@code true} if the 2 codes match.
      */
     public static boolean matches(@Nullable final String isbnStr1,
                                   @Nullable final String isbnStr2,
-                                  final boolean strict) {
+                                  final boolean strictIsbn) {
         if (isbnStr1 == null || isbnStr2 == null) {
             return false;
         }
 
-        // Full ISBN check needed ...if either one is invalid, we consider them different
-        ISBN o1 = new ISBN(isbnStr1, strict);
+        // Full check needed ...if either one is invalid, we consider them different
+        ISBN o1 = new ISBN(isbnStr1, strictIsbn);
         if (!o1.isValid()) {
             return false;
         }
 
-        ISBN o2 = new ISBN(isbnStr2, strict);
+        ISBN o2 = new ISBN(isbnStr2, strictIsbn);
         if (!o2.isValid()) {
             return false;
         }
@@ -293,227 +295,380 @@ public class ISBN {
     }
 
     /**
-     * Changes format from 10->13 or 13->10.
-     * <p>
-     * If the isbn was invalid, simply returns the input string.
+     * Convenience method to check validity of an ISBN when there is no need to keep the object.
      *
-     * @param isbnStr to transform
+     * @param isbnStr to check
      *
-     * @return transformed isbn
+     * @return validity
      */
-    @NonNull
-    public static String isbn2isbn(@NonNull final String isbnStr) {
-        try {
-            ISBN isbn = new ISBN(isbnStr, true);
-            if (isbn.is10()) {
-                return isbn.to13();
-            } else {
-                return isbn.to10();
-            }
-        } catch (@NonNull final NumberFormatException ignore) {
+    public static boolean isValidIsbn(@Nullable final String isbnStr) {
+        if (isbnStr == null || isbnStr.isEmpty()) {
+            return false;
         }
-
-        // might be invalid, but let the caller deal with that.
-        return isbnStr;
+        ISBN isbn = ISBN.createISBN(isbnStr);
+        return isbn != null && isbn.isValid();
     }
 
     /**
-     * Check if this is a valid
-     * ISBN-10 / ISBN-13 (strict==true) / EAN-13 (strict==false).
+     * Check if we have a valid code. Does not check for a specific type.
      *
      * @return validity
      */
     public boolean isValid() {
-        return isValid(mDigits);
+        return mType != Type.INVALID;
+    }
+
+    @VisibleForTesting
+    boolean isType(@NonNull final Type type) {
+        if (type == Type.EAN13) {
+            // ISBN 13 is a sub-type of EAN13
+            return mType == Type.EAN13 || mType == Type.ISBN13;
+        }
+        return mType == type;
+    }
+
+    public boolean isIsbn10Compat() {
+        //noinspection ConstantConditions
+        return mType == Type.ISBN10 || (mType == Type.ISBN13 && mAsText.startsWith("978"));
     }
 
     /**
-     * Check if the passed digits form a valid
-     * ISBN-10 / ISBN-13 (strict==true) / EAN-13 (strict==false).
+     * Get the code as a text string based on the original type. No conversions are done.
+     *
+     * @return string, or {@code null} if the code type is {@link Type#INVALID}
+     */
+    @Nullable
+    public String asText() {
+        return mAsText;
+    }
+
+    /**
+     * Get the ISBN as a text string converted to the given type.
+     *
+     * <strong>WARNING:</strong> when converting an ISBN-13 to ISBN-10,
+     * you must call {@link #isIsbn10Compat()} prior to avoid this method throwing an exception.
+     *
+     * @param type to convert to
+     *
+     * @return string, or {@code null} if the code type is {@link Type#INVALID}
+     *
+     * @throws NumberFormatException on failure
+     */
+    @Nullable
+    public String asText(@NonNull final Type type)
+            throws NumberFormatException {
+
+        if (mType == Type.INVALID) {
+            return null;
+        }
+
+        switch (type) {
+            case ISBN13: {
+                // already in ISBN-13 format?
+                if (mType == Type.ISBN13) {
+                    return mAsText;
+                }
+
+                // Must be ISBN10 or we cannot convert
+                if (mType != Type.ISBN10) {
+                    throw new NumberFormatException(
+                            String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+                }
+
+                List<Integer> digits = new ArrayList<>();
+                // standard prefix 978
+                digits.add(9);
+                digits.add(7);
+                digits.add(8);
+
+                // copy the first 9 digits
+                for (int i = 0; i < 9; i++) {
+                    //noinspection ConstantConditions
+                    digits.add(mDigits.get(i));
+                }
+                // and add the new checksum
+                digits.add(calculateEan13Checksum(digits));
+
+                return concat(digits);
+            }
+            case ISBN10: {
+                // already in ISBN-10 format?
+                if (mType == Type.ISBN10) {
+                    return mAsText;
+                }
+
+                // must be ISBN13 *AND* compatible with converting to ISBN10
+                //noinspection ConstantConditions
+                if (mType != Type.ISBN13 && mAsText.startsWith("978")) {
+                    throw new NumberFormatException(
+                            String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+                }
+
+                // drop the first 3 digits, and copy the next 9.
+                List<Integer> digits = new ArrayList<>();
+                for (int i = 3; i < 12; i++) {
+                    //noinspection ConstantConditions
+                    digits.add(mDigits.get(i));
+                }
+                // and add the new checksum
+                digits.add(calculateIsbn10Checksum(digits));
+
+                return concat(digits);
+            }
+
+            case EAN13:
+                // No conversion
+                if (mType == Type.EAN13) {
+                    return mAsText;
+                } else {
+                    throw new NumberFormatException(
+                            String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+                }
+
+            case UPC_A:
+                // No conversion
+                if (mType == Type.UPC_A) {
+                    return mAsText;
+                } else {
+                    throw new NumberFormatException(
+                            String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+                }
+
+            case INVALID:
+            default:
+                throw new NumberFormatException(
+                        String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+        }
+    }
+
+
+    /**
+     * Converts a string containing digits 0..9 and 10 == 'X'/'x' to a list of digits.
+     * It enforces that the X character is only present at the end of a 10 character string.
+     * <p>
+     * This method does NOT check on a specific length (except as above) and whether
+     * the actual digits form a valid code.
+     *
+     * @param str to convert
+     *
+     * @return list of digits
+     *
+     * @throws NumberFormatException on failure
+     */
+    @NonNull
+    private List<Integer> toDigits(@NonNull final CharSequence str)
+            throws NumberFormatException {
+        // the digit '10' is represented as 'X'
+        boolean foundX = false;
+
+        List<Integer> digits = new ArrayList<>();
+
+        for (int i = 0; i < str.length(); i++) {
+            final char c = str.charAt(i);
+            int digit;
+            if (Character.isDigit(c)) {
+                if (foundX) {
+                    throw new NumberFormatException(ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10);
+                }
+                digit = Integer.parseInt(Character.toString(c));
+
+            } else if (Character.toUpperCase(c) == 'X' && digits.size() == 9) {
+                if (foundX) {
+                    throw new NumberFormatException(ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10);
+                }
+                // 'X'
+                digit = 10;
+                foundX = true;
+
+            } else {
+                throw new NumberFormatException(ERROR_INVALID_CHARACTER + c);
+            }
+
+            digits.add(digit);
+        }
+        return digits;
+    }
+
+    /**
+     * Check if the passed digits form a valid code.
      *
      * @param digits to check
      *
-     * @return validity
+     * @return type
      */
-    private boolean isValid(@Nullable final List<Integer> digits) {
+    @NonNull
+    private Type getType(@Nullable final List<Integer> digits)
+            throws NumberFormatException {
+        // don't test the type here, this test is used to determine the type!
+
+
         if (digits == null) {
-            return false;
-        }
-        int len = digits.size();
-        if (len != 10 && len != 13) {
-            return false;
+            return Type.INVALID;
         }
 
-        if (mStrictIsbn && len == 13) {
-            // Currently (2019), the only possible prefix elements for ISBNs are 978 and 979
-            if (digits.get(0) != 9
-                || digits.get(1) != 7 ||
-                (digits.get(2) != 8 && digits.get(2) != 9)) {
-                return false;
-            }
+        switch (digits.size()) {
+            case 13:
+                if (calculateEan13Checksum(digits) == digits.get(digits.size() - 1)) {
+                    // check if it starts with 978 or 979
+                    if (digits.size() == 13
+                        && digits.get(0) == 9
+                        && digits.get(1) == 7
+                        && (digits.get(2) == 8 || digits.get(2) == 9)) {
+                        return Type.ISBN13;
+                    } else {
+                        return Type.EAN13;
+                    }
+                }
+                break;
+
+            case 10:
+                if (calculateIsbn10Checksum(digits) == digits.get(digits.size() - 1)) {
+                    return Type.ISBN10;
+                }
+                break;
+
+            default:
+                // a UPC_A barcode might be longer than 12 characters due to allowed extensions.
+                // But only 12 characters are 'the' UPC_A code.
+                if (calculateUpcAChecksum(digits.subList(0, 12)) == digits.get(11)) {
+                    return Type.UPC_A;
+                }
+                break;
         }
 
-        return getCheckDigit(digits) == digits.get(digits.size() - 1);
-    }
-
-    public boolean is10() {
-        return mDigits != null && (mDigits.size() == 10) && isValid();
-    }
-
-    public boolean is13() {
-        return mDigits != null && (mDigits.size() == 13) && isValid();
-    }
-
-    @SuppressWarnings("WeakerAccess")
-    public boolean isUpc() {
-        return mIsUpc;
-    }
-
-    /**
-     * use the internal stored digits to construct a valid ISBN-10.
-     *
-     * @return a valid ISBN-10
-     *
-     * @throws NumberFormatException if conversion fails
-     */
-    @NonNull
-    @VisibleForTesting
-    String to10()
-            throws NumberFormatException {
-        if (mDigits == null || !isValid()) {
-            throw new NumberFormatException(ERROR_UNABLE_TO_CONVERT);
-        }
-
-        // already in ISBN-10 format, just return
-        if (is10()) {
-            return concat(mDigits);
-        }
-
-        // need to convert from ISBN-13, drop the first 3 digits, and copy the next 9.
-        List<Integer> digits = new ArrayList<>();
-        for (int i = 3; i < 12; i++) {
-            digits.add(mDigits.get(i));
-        }
-        // and add the new checksum
-        digits.add(getCheckDigit(digits));
-
-        return concat(digits);
-    }
-
-    /**
-     * use the internal stored digits to construct a valid ISBN-13.
-     *
-     * @return a valid ISBN-13
-     *
-     * @throws NumberFormatException if conversion fails
-     */
-    @NonNull
-    @VisibleForTesting
-    String to13()
-            throws NumberFormatException {
-        if (mDigits == null || !isValid()) {
-            throw new NumberFormatException(ERROR_UNABLE_TO_CONVERT);
-        }
-
-        // already in ISBN-13 format, just return
-        if (is13()) {
-            return concat(mDigits);
-        }
-
-        List<Integer> digits = new ArrayList<>();
-        // standard prefix 978
-        digits.add(9);
-        digits.add(7);
-        digits.add(8);
-
-        // copy the first 9 digits
-        for (int i = 0; i < 9; i++) {
-            digits.add(mDigits.get(i));
-        }
-
-        // and add the new checksum
-        digits.add(getCheckDigit(digits));
-
-        return concat(digits);
+        return Type.INVALID;
     }
 
     /**
      * Calculate the check-digit (checksum) for the given digits.
-     * This calculation is valid for ISBN-10/13 and EAN-13 codes.
+     * This calculation is valid for ISBN-10 only
      *
-     * @param digits list with the digits, either 13 (or 12) or 10 (or 9)
+     * @param digits list with the digits, either 10 or 9
      *
      * @return the check digit.
      *
-     * @throws NumberFormatException if the digits list has an incorrect length
+     * @throws NumberFormatException on failure
      */
-    private int getCheckDigit(@NonNull final List<Integer> digits)
+    private int calculateIsbn10Checksum(@NonNull final List<Integer> digits)
             throws NumberFormatException {
+        int len = digits.size();
+        if (len < 9 || len > 10) {
+            throw new NumberFormatException(ERROR_WRONG_SIZE + len);
+        }
+        int sum = 0;
+        // 1. Take the first 9 digits of the 10-digit ISBN.
+        // 2. Multiply each number in turn, from left to right by a number.
+        //    The first, leftmost, digit of the nine is multiplied by 10,
+        //    then working from left to right, each successive digit is
+        //    multiplied by one less than the one before.
+        //    So the second digit is multiplied by 9, the third by 8,
+        //    and so on to the ninth which is multiplied by 2.
+        //
+        // 3. Add all of the 9 products.
+        int multiplier = 10;
+        for (int dig = 1; dig < 10; dig++) {
+            sum += digits.get(dig - 1) * multiplier;
+            multiplier--;
+        }
 
-        switch (digits.size()) {
-            case 9:
-            case 10: {
-                // 1. Take the first 9 digits of the 10-digit ISBN.
-                // 2. Multiply each number in turn, from left to right by a number.
-                //    The first, leftmost, digit of the nine is multiplied by 10,
-                //    then working from left to right, each successive digit is
-                //    multiplied by one less than the one before.
-                //    So the second digit is multiplied by 9, the third by 8,
-                //    and so on to the ninth which is multiplied by 2.
-                //
-                // 3. Add all of the 9 products.
-                int sum = 0;
-                int multiplier = 10;
-                for (int dig = 1; dig < 10; dig++) {
-                    sum += digits.get(dig - 1) * multiplier;
-                    multiplier--;
-                }
-
-                // 4. Do a modulo 11 division on the sum.
-                int modulo = sum % 11;
-                if (modulo == 0) {
-                    return 0;
-                } else {
-                    return 11 - modulo;
-                }
-            }
-            case 12:
-            case 13: {
-                // 1. Take the first 12 digits of the 13-digit ISBN
-                // 2. Multiply each number in turn, from left to right by a number.
-                //    The first, leftmost, digit is multiplied by 1, the second by 3,
-                //    the third by 1 again, the fourth by 3 again, and so on to
-                //    the eleventh which is multiplied by 1 and the twelfth by 3.
-                //
-                // 3. Add all of the 12 products.
-                int sum = 0;
-                for (int dig = 1; dig < 13; dig += 2) {
-                    sum += digits.get(dig - 1);
-                }
-                for (int dig = 2; dig < 13; dig += 2) {
-                    sum += digits.get(dig - 1) * 3;
-                }
-
-                // 4. Do a modulo 10 division on the sum.
-                int modulo = sum % 10;
-
-                if (modulo == 0) {
-                    // If it's a zero, then the check digit is zero.
-                    return 0;
-                } else {
-                    // Otherwise subtract the remainder from 10.
-                    return 10 - modulo;
-                }
-            }
-            default:
-                throw new NumberFormatException("ISBN incorrect length: " + digits.size());
+        // 4. Do a modulo 11 division on the sum.
+        int modulo = sum % 11;
+        if (modulo == 0) {
+            return 0;
+        } else {
+            return 11 - modulo;
         }
     }
 
     /**
-     * @param digits the isbn number as digits (10 or 13)
+     * Calculate the check-digit (checksum) for the given digits.
+     * This calculation is valid for EAN-13 / ISBN-13 only
      *
-     * @return the ISBN number as a string (10 or 13)
+     * @param digits list with the digits, either 13 or 12
+     *
+     * @return the check digit.
+     *
+     * @throws NumberFormatException on failure
+     */
+    private int calculateEan13Checksum(@NonNull final List<Integer> digits)
+            throws NumberFormatException {
+        int len = digits.size();
+        if (len < 12 || len > 13) {
+            throw new NumberFormatException(ERROR_WRONG_SIZE + len);
+        }
+        int sum = 0;
+        // 1. Take the first 12 digits of the 13-digit EAN/ISBN
+        // 2. Multiply each number in turn, from left to right by a number.
+        //    The first, leftmost, digit is multiplied by 1, the second by 3,
+        //    the third by 1 again, the fourth by 3 again, and so on to
+        //    the eleventh which is multiplied by 1 and the twelfth by 3.
+        //
+        // 3. Add all of the 12 products.
+
+        for (int dig = 1; dig < 13; dig += 2) {
+            sum += digits.get(dig - 1);
+        }
+        for (int dig = 2; dig < 13; dig += 2) {
+            sum += digits.get(dig - 1) * 3;
+        }
+
+        // 4. Do a modulo 10 division on the sum.
+        int modulo = sum % 10;
+
+        if (modulo == 0) {
+            // If it's a zero, then the check digit is zero.
+            return 0;
+        } else {
+            // Otherwise subtract the remainder from 10.
+            return 10 - modulo;
+        }
+    }
+
+    /**
+     * Calculate the check-digit (checksum) for the given digits.
+     * This calculation is valid for UPC_A-12 only
+     *
+     * @param digits list with the digits, either 12 or 11
+     *
+     * @return the check digit.
+     *
+     * @throws NumberFormatException on failure
+     */
+    private int calculateUpcAChecksum(@NonNull final List<Integer> digits)
+            throws NumberFormatException {
+        int len = digits.size();
+        if (len < 11 || len > 12) {
+            throw new NumberFormatException(ERROR_WRONG_SIZE + len);
+        }
+        int sum = 0;
+        // 1. Take the first 11 digits of the 12-digit UPC_A
+        // 2. Sum the digits at odd-numbered positions (first, third, fifth,..., eleventh).
+        // Multiply the result by 3.
+        for (int dig = 1; dig < 12; dig += 2) {
+            sum += digits.get(dig - 1) * 3;
+        }
+        // 3. Add the digit sum at even-numbered positions (second, fourth, sixth,..., tenth)
+        // to the result.
+        for (int dig = 2; dig < 12; dig += 2) {
+            sum += digits.get(dig - 1);
+        }
+
+        // 4. Do a modulo 10 division on the sum.
+        int modulo = sum % 10;
+
+        if (modulo == 0) {
+            // If it's a zero, then the check digit is zero.
+            return 0;
+        } else {
+            // Otherwise subtract the remainder from 10.
+            return 10 - modulo;
+        }
+    }
+
+    /**
+     * @param digits the list of digits
+     *
+     * @return the code as a string.
      */
     private String concat(@NonNull final Iterable<Integer> digits) {
         StringBuilder sb = new StringBuilder();
@@ -527,110 +682,14 @@ public class ISBN {
         return sb.toString();
     }
 
-    /**
-     * Get the ISBN as a text string.
-     *
-     * @return string, or {@code null} if the code is not valid.
-     */
-    @Nullable
-    public String asText() {
-        if (mDigits == null || !isValid()) {
-            return null;
-        }
-        return concat(mDigits);
-    }
-
     @Override
     @NonNull
     public String toString() {
         return "ISBN{"
-               + "mDigits=" + mDigits
-               + ", mStrictIsbn=" + mStrictIsbn
-               + ", mIsUpc=" + mIsUpc
+               + "mType=" + mType
+               + ", mAsText=" + mAsText
+               + ", mDigits=" + mDigits
                + '}';
-    }
-
-    /**
-     * This method does NOT check if the actual digits form a valid ISBN.
-     * <p>
-     * Allows and ignore '-' and space characters.
-     *
-     * @param isbnStr to convert
-     *
-     * @return list of digits
-     *
-     * @throws NumberFormatException if conversion fails
-     */
-    @NonNull
-    private List<Integer> isbnToDigits(@NonNull final CharSequence isbnStr)
-            throws NumberFormatException {
-        // the digit '10' represented as 'X' in an isbn indicates we got to the end
-        boolean foundX = false;
-
-        List<Integer> digits = new ArrayList<>();
-
-        for (int i = 0; i < isbnStr.length(); i++) {
-            final char c = isbnStr.charAt(i);
-            int digit;
-            if (Character.isDigit(c)) {
-                if (foundX) {
-                    // X can only be at end of an ISBN10
-                    throw new NumberFormatException();
-                }
-                digit = Integer.parseInt(Character.toString(c));
-
-            } else if (Character.toUpperCase(c) == 'X' && digits.size() == 9) {
-                if (foundX) {
-                    // X can only be at end of an ISBN10
-                    throw new NumberFormatException();
-                }
-                // 'X'
-                digit = 10;
-                foundX = true;
-
-            } else if (c == '-' || c == ' ') {
-                continue;
-
-            } else {
-                // Invalid character
-                throw new NumberFormatException();
-            }
-
-            // Check if too long
-            if (digits.size() >= 13) {
-                throw new NumberFormatException();
-            }
-            digits.add(digit);
-        }
-        return digits;
-    }
-
-    /**
-     * @param upcStr UPC code, example: "070999 00225 530054", "00225" (price) and "5"
-     *               will be discarded to construct the isbn.
-     *
-     * @return list of digits or empty on failure
-     *
-     * @throws NumberFormatException           on failure to analyse the string
-     * @throws StringIndexOutOfBoundsException theoretically we should not get this, as we *should*
-     *                                         not pass a string which is to short. But...
-     */
-    @NonNull
-    private List<Integer> upcToDigits(@NonNull final CharSequence upcStr)
-            throws NumberFormatException, StringIndexOutOfBoundsException {
-
-        String upc = WHITESPACE_PATTERN.matcher(upcStr).replaceAll("");
-
-        String isbnPrefix = UPC_2_ISBN_PREFIX.get(upc.substring(0, 6));
-        if (isbnPrefix == null) {
-            return new ArrayList<>();
-        }
-
-        List<Integer> digits = isbnToDigits(isbnPrefix + upc.substring(12));
-
-        // and add the new checksum
-        digits.add(getCheckDigit(digits));
-        return digits;
     }
 
     @Override
@@ -662,12 +721,12 @@ public class ISBN {
         ISBN cmp = (ISBN) obj;
 
         // If either is invalid, no match
-        if (mDigits == null || !isValid()
-            || cmp.mDigits == null || !cmp.isValid()) {
+        if (mType == Type.INVALID || cmp.isType(Type.INVALID)) {
             return false;
         }
 
         // same length ? they should match exactly
+        //noinspection ConstantConditions
         if (mDigits.size() == cmp.mDigits.size()) {
             return Objects.equals(mDigits, cmp.mDigits);
         }
@@ -677,24 +736,34 @@ public class ISBN {
         // ISBN13: skip the first 3 character, and don't include the checksum.
         // ISBN10: don't include the checksum.
         if (mDigits.size() == 10) {
-            return digitsMatch(mDigits, 0, cmp.mDigits, 3);
+            return digitsMatch(9, mDigits, 0, cmp.mDigits, 3);
         } else {
-            return digitsMatch(mDigits, 3, cmp.mDigits, 0);
+            return digitsMatch(9, mDigits, 3, cmp.mDigits, 0);
         }
     }
 
     /**
-     * Check if all digits are the same.
+     * Check if all relevant digits are the same.
      */
-    private boolean digitsMatch(@NonNull final List<Integer> digits1,
+    private boolean digitsMatch(@SuppressWarnings("SameParameterValue") final int length,
+                                @NonNull final List<Integer> digits1,
                                 int posFrom1,
                                 @NonNull final List<Integer> digits2,
                                 int posFrom2) {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < length; i++) {
             if (!digits1.get(posFrom1++).equals(digits2.get(posFrom2++))) {
                 return false;
             }
         }
         return true;
+    }
+
+    public enum Type {
+        ISBN10,
+        EAN13,
+        /** ISBN-13 is a subtype of EAN-13. See {@link #isType(Type)}. */
+        ISBN13,
+        UPC_A,
+        INVALID
     }
 }

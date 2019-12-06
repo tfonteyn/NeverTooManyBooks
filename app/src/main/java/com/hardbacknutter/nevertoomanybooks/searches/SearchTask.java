@@ -163,7 +163,7 @@ public class SearchTask
                         .searchByNativeId(localContext, mNativeId, mFetchThumbnail);
 
                 // If we have a valid ISBN, ...
-            } else if (ISBN.isValid(mIsbn)
+            } else if (ISBN.isValidIsbn(mIsbn)
                        && mSearchEngine instanceof SearchEngine.ByIsbn) {
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
                         .searchByIsbn(localContext, mIsbn, mFetchThumbnail);

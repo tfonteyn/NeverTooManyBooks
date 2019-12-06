@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/scan"
-            app:icon="@drawable/ic_photo_camera"
+            app:icon="@drawable/ic_barcode"
             app:iconGravity="textStart"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

@@ -39,23 +39,38 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 /**
  * Makes the start-drawable visible or invisible depending on validity of the ISBN entered.
  * <p>
- * Usage: {@code  mIsbnView.addTextChangedListener(new IsbnValidationTextWatcher(mIsbnView)); }
+ * Usage:
+ * {@code
+ * IsbnValidationTextWatcher watcher = new IsbnValidationTextWatcher(mTextView, strictIsbn);
+ * mTextView.addTextChangedListener(watcher);
+ * }
  */
 public class IsbnValidationTextWatcher
         implements TextWatcher {
 
     @NonNull
-    private final TextView mIsbnView;
+    private final TextView mTextView;
+
+    private boolean mStrictIsbn;
 
     /**
      * Constructor.
      *
-     * @param isbnView the view to watch
+     * @param textView   the view to watch
+     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
      */
-    public IsbnValidationTextWatcher(@NonNull final TextView isbnView) {
-        mIsbnView = isbnView;
+    public IsbnValidationTextWatcher(@NonNull final TextView textView,
+                                     final boolean strictIsbn) {
+        mTextView = textView;
+        mStrictIsbn = strictIsbn;
         // validate text which is already present at this point
-        validate(mIsbnView.getText().toString().trim());
+        validate(mTextView.getText().toString().trim());
+    }
+
+    public void setStrictIsbn(final boolean strictIsbn) {
+        mStrictIsbn = strictIsbn;
+        // validate text which is already present at this point
+        validate(mTextView.getText().toString().trim());
     }
 
     @Override
@@ -79,10 +94,16 @@ public class IsbnValidationTextWatcher
         validate(s.toString());
     }
 
-    public void validate(@NonNull final String isbn) {
-        int len = isbn.length();
-        boolean valid = (len == 10 || len == 13) && ISBN.isValid(isbn);
-        Drawable[] ds = mIsbnView.getCompoundDrawablesRelative();
+    public void validate(@NonNull final String codeStr) {
+        int len = codeStr.length();
+        boolean valid = false;
+        if (len == 10 || len == 13
+            || (len == 12 && !mStrictIsbn)) {
+            ISBN isbn = new ISBN(codeStr, mStrictIsbn);
+            valid = isbn.isValid();
+        }
+
+        Drawable[] ds = mTextView.getCompoundDrawablesRelative();
         if (ds[0] != null) {
             ds[0].setAlpha(valid ? 255 : 0);
         }

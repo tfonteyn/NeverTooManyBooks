@@ -352,36 +352,36 @@ public class EditBookTocFragment
                     //noinspection ConstantConditions
                     Snackbar.make(getView(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
-                    IsfdbGetBookTask task = new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),
-                                                                 mIsfdbBookResultsListener);
+                    IsfdbGetBookTask task =
+                            new IsfdbGetBookTask(isfdbId, isAddSeriesFromToc(),
+                                                 mIsfdbBookResultsListener);
                     mIsfdbTaskModel.setTask(task);
                     task.execute();
+                    return true;
+                }
 
-                } else if (ISBN.isValid(mIsbn, true)) {
+                ISBN isbn = ISBN.createISBN(mIsbn);
+                if (isbn != null && isbn.isValid()) {
                     //noinspection ConstantConditions
                     Snackbar.make(getView(), R.string.progress_msg_connecting,
                                   Snackbar.LENGTH_LONG).show();
-                    searchIsfdb(mIsbn);
-
-                } else {
                     //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.warning_requires_isbn,
-                                  Snackbar.LENGTH_LONG).show();
+                    IsfdbGetEditionsTask task =
+                            new IsfdbGetEditionsTask(isbn.asText(),
+                                                     mIsfdbEditionResultsListener);
+                    mIsfdbTaskModel.setTask(task);
+                    task.execute();
+                    return true;
                 }
-                return true;
+
+                //noinspection ConstantConditions
+                Snackbar.make(getView(), R.string.warning_requires_isbn,
+                              Snackbar.LENGTH_LONG).show();
+                return false;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    /**
-     * @param isbn an Already validated isbn.
-     */
-    private void searchIsfdb(@NonNull final String isbn) {
-        IsfdbGetEditionsTask task = new IsfdbGetEditionsTask(isbn, mIsfdbEditionResultsListener);
-        mIsfdbTaskModel.setTask(task);
-        task.execute();
     }
 
     @Override

@@ -359,32 +359,30 @@ public interface SearchEngine {
          * {@code null} returned.
          *
          * @param appContext Application context
-         * @param isbn       to search for, <strong>must</strong> be valid.
+         * @param isbnStr       to search for, <strong>must</strong> be valid.
          *
          * @return found/saved File, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
         default File getCoverImageFallback(@NonNull final Context appContext,
-                                           @NonNull final String isbn) {
+                                           @NonNull final String isbnStr) {
             try {
                 Bundle bookData;
                 // If we have a valid ISBN, and the engine supports it, we can search.
-                if (ISBN.isValid(isbn)
-                    && this instanceof SearchEngine.ByIsbn) {
-                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbn, true);
+                if (ISBN.isValidIsbn(isbnStr) && this instanceof SearchEngine.ByIsbn) {
+                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbnStr, true);
 
                     // If we have a generic barcode, ...
-                } else if (!isbn.isEmpty()
-                           && this instanceof SearchEngine.ByBarcode) {
-                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbn, true);
+                } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByBarcode) {
+                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbnStr, true);
 
                     // If we have valid text to search on, ...
-                } else if (this instanceof SearchEngine.ByText) {
+                } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByText) {
                     bookData = ((SearchEngine.ByText) this)
-                            .search(appContext, isbn, "", "", "", true);
+                            .search(appContext, isbnStr, "", "", "", true);
                 } else {
-                    // just fail, don't throw here; this is a fallback method allowed to fail.
+                    // don't throw here; this is a fallback method allowed to fail.
                     return null;
                 }
 

@@ -601,8 +601,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:visibility">invisible</item>
-        <item name="android:layout_margin">@dimen/fab_menu_margin</item>
-        <item name="android:translationX">@dimen/fab_menu_translationX</item>
+        <item name="android:layout_margin">@dimen/fab_margin</item>
     </style>
 
     <!-- An EditText where the user can enter a date manually (i.e. android system). -->
@@ -614,7 +613,7 @@
         <item name="android:inputType">date</item>
     </style>
 
-    <style name="SwapButton">
+    <style name="IconButton">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">30dp</item>
         <item name="android:enabled">false</item>

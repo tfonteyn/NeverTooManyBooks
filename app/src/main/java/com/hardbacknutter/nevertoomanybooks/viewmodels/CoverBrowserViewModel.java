@@ -504,24 +504,25 @@ public class CoverBrowserViewModel
         /**
          * Constructor.
          *
-         * @param isbn         to search for, <strong>must</strong> be valid.
+         * @param isbnStr      to search for, <strong>must</strong> be valid.
          * @param fileManager  for downloads
          * @param taskListener to send results to
          */
         @UiThread
-        GetGalleryImageTask(@NonNull final String isbn,
+        GetGalleryImageTask(@NonNull final String isbnStr,
                             @NonNull final FileManager fileManager,
                             @NonNull final TaskListener<FileInfo> taskListener) {
             super(R.id.TASK_ID_GALLERY_IMAGE, taskListener);
 
             // sanity check
             if (BuildConfig.DEBUG /* always */) {
-                if (!ISBN.isValid(isbn, true)) {
+                ISBN isbn = ISBN.createISBN(isbnStr);
+                if (isbn == null || !isbn.isValid()) {
                     throw new IllegalStateException("isbn must be valid");
                 }
             }
 
-            mIsbn = isbn;
+            mIsbn = isbnStr;
             mFileManager = fileManager;
         }
 
@@ -572,15 +573,17 @@ public class CoverBrowserViewModel
                              @NonNull final FileManager fileManager,
                              @NonNull final TaskListener<FileInfo> taskListener) {
             super(R.id.TASK_ID_SWITCHER_IMAGE, taskListener);
-            mFileInfo = fileInfo;
-            mFileManager = fileManager;
 
             // sanity check
             if (BuildConfig.DEBUG /* always */) {
-                if (!ISBN.isValid(mFileInfo.isbn, true)) {
+                ISBN isbn = ISBN.createISBN(fileInfo.isbn);
+                if (isbn == null || !isbn.isValid()) {
                     throw new IllegalStateException("isbn must be valid");
                 }
             }
+
+            mFileInfo = fileInfo;
+            mFileManager = fileManager;
         }
 
         @Override

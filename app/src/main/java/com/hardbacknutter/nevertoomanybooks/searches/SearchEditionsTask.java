@@ -54,22 +54,21 @@ public class SearchEditionsTask
     /**
      * Constructor.
      *
-     * @param isbn         to search for, <strong>must</strong> be valid.
+     * @param isbnStr         to search for, <strong>must</strong> be valid.
      * @param taskListener to send results to
      */
     @UiThread
-    public SearchEditionsTask(@NonNull final String isbn,
+    public SearchEditionsTask(@NonNull final String isbnStr,
                               @NonNull final TaskListener<ArrayList<String>> taskListener) {
         super(R.id.TASK_ID_SEARCH_EDITIONS, taskListener);
 
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
-            if (!ISBN.isValid(isbn)) {
+            if (ISBN.isValidIsbn(isbnStr)) {
                 throw new IllegalStateException("isbn must be valid");
             }
         }
-
-        mIsbn = isbn;
+        mIsbn = isbnStr;
     }
 
     @Override

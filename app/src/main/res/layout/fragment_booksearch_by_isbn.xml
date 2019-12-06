@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/border2"
             android:text="@string/scan"
-            app:icon="@drawable/ic_photo_camera"
+            app:icon="@drawable/ic_barcode"
             app:iconGravity="textStart"
             app:layout_constraintEnd_toEndOf="@id/isbn_keypad"
             app:layout_constraintStart_toStartOf="@id/isbn_keypad"

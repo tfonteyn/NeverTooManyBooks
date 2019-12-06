@@ -29,11 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,27 +47,20 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
-import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn;
 import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 
 /**
- * The input field is not being limited in length. This is to allow entering UPC numbers.
+ * The input field is not being limited in length. This is to allow entering UPC_A numbers.
  */
 public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
@@ -82,11 +71,6 @@ public class BookSearchByIsbnFragment
     static final String BKEY_SCAN_MODE = TAG + ":scanMode";
     static final String BKEY_STRICT_ISBN = TAG + ":strictIsbn";
     static final String BKEY_ISBN = TAG + ":isbn";
-
-    /** wait for the scanner; milliseconds. */
-    private static final long SCANNER_WAIT = 1_000;
-    /** repeat waiting for the scanner 3 times before reporting failure. */
-    private static final int SCANNER_RETRY = 3;
 
     /** User input field. */
     @Nullable
@@ -100,9 +84,13 @@ public class BookSearchByIsbnFragment
     /** The scanner. */
     @Nullable
     private ScannerViewModel mScannerModel;
-    private boolean mStrictIsbn = true;
+
     /** The current ISBN text. */
     private String mIsbn;
+    /** manage the validation check next to the field. */
+    private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
+    /** Set to {@code true} limits to using ISBN-10/13. Otherwise we also allow UPC/EAN codes. */
+    private boolean mStrictIsbn = true;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -120,7 +108,7 @@ public class BookSearchByIsbnFragment
 
         View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
         mIsbnView = view.findViewById(R.id.isbn);
-        mAltIsbnButton = view.findViewById(R.id.altIsbn);
+        mAltIsbnButton = view.findViewById(R.id.btn_altIsbn);
         return view;
     }
 
@@ -142,7 +130,7 @@ public class BookSearchByIsbnFragment
             mIsbnView.setText(args.getString(BKEY_ISBN, ""));
         }
 
-        mScannerModel = new ViewModelProvider(this).get(ScannerViewModel.class);
+        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
 
         View view = getView();
 
@@ -166,22 +154,20 @@ public class BookSearchByIsbnFragment
             return true;
         });
 
-        mIsbnView.addTextChangedListener(new IsbnValidationTextWatcher(mIsbnView));
+        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, mStrictIsbn);
+        mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
         mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
 
-        view.findViewById(R.id.btn_scan).setOnClickListener(v -> {
-            mScanMode = true;
-            startScan();
-        });
+        view.findViewById(R.id.btn_scan).setOnClickListener(
+                v -> mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE));
 
-        view.findViewById(R.id.btn_search).setOnClickListener(v -> {
-            //noinspection ConstantConditions
-            prepareSearch(mIsbnView.getText().toString().trim());
-        });
+        //noinspection ConstantConditions
+        view.findViewById(R.id.btn_search)
+            .setOnClickListener(v -> prepareSearch(mIsbnView.getText().toString().trim()));
 
         // auto-start scanner first time.
         if (mScanMode && mScannerModel.isFirstStart()) {
-            startScan();
+            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
         }
 
 //        if (savedInstanceState == null) {
@@ -206,6 +192,7 @@ public class BookSearchByIsbnFragment
         if (item.getItemId() == R.id.MENU_STRICT_ISBN) {
             mStrictIsbn = !item.isChecked();
             item.setChecked(mStrictIsbn);
+            mIsbnValidationTextWatcher.setStrictIsbn(mStrictIsbn);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -232,7 +219,8 @@ public class BookSearchByIsbnFragment
         super.onCancelled();
 
         if (mScanMode) {
-            startScan();
+            //noinspection ConstantConditions
+            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
         }
     }
 
@@ -246,37 +234,27 @@ public class BookSearchByIsbnFragment
         }
 
         switch (requestCode) {
+            case UniqueId.REQ_BOOK_EDIT: {
+                // first do the common action when the user has saved the data for the book.
+                super.onActivityResult(requestCode, resultCode, data);
+                // go scan next book until the user cancels scanning.
+                if (mScanMode) {
+                    //noinspection ConstantConditions
+                    mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                }
+                break;
+            }
             case UniqueId.REQ_SCAN_BARCODE: {
                 //noinspection ConstantConditions
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
-
                     if (BuildConfig.DEBUG) {
-                        // detect emulator for testing
-                        if (Build.PRODUCT.startsWith("sdk")) {
-                            // when used, the file must be in the root external app dir.
-                            //noinspection ConstantConditions
-                            File file = new File(StorageUtils.getRootDir(getContext()),
-                                                 "barcode.jpg");
-                            if (file.exists()) {
-                                Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
-                                if (data != null
-                                    && data.getExtras() != null
-                                    && data.getExtras().containsKey("data")) {
-                                    data.putExtra("data", dummy);
-                                } else {
-                                    try {
-                                        StorageUtils.copyFile(file, CameraHelper.getDefaultFile());
-                                    } catch (@NonNull final IOException e) {
-                                        Log.d(TAG, "onActivityResult", e);
-                                    }
-                                }
-                            }
-                        }
+                        //noinspection ConstantConditions
+                        mScannerModel.fakeBarcodeScan(getContext(), data);
                     }
-                    Scanner scanner = mScannerModel.getScanner();
+
                     //noinspection ConstantConditions
-                    String barCode = scanner.getBarcode(data);
+                    String barCode = mScannerModel.getScanner().getBarcode(data);
                     if (barCode != null) {
                         //noinspection ConstantConditions
                         mIsbnView.setText(barCode);
@@ -288,21 +266,27 @@ public class BookSearchByIsbnFragment
                 mScanMode = false;
                 return;
             }
-            case UniqueId.REQ_BOOK_EDIT: {
-                // first do the common action when the user has saved the data for the book.
-                super.onActivityResult(requestCode, resultCode, data);
-                // go scan next book until the user cancels scanning.
-                if (mScanMode) {
-                    startScan();
+            case UniqueId.REQ_SETTINGS: {
+                // Settings initiated from the local menu or dialog box.
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    // update the search sites list.
+                    SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
+                    if (siteList != null) {
+                        SearchCoordinator model =
+                                new ViewModelProvider(this).get(SearchCoordinator.class);
+                        model.setSiteList(siteList);
+                    }
+
+                    // init the scanner if it was changed.
+                    if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
+                        //noinspection ConstantConditions
+                        mScannerModel.resetScanner();
+                    }
                 }
-                break;
-            }
-            case UniqueId.REQ_NAV_PANEL_SETTINGS: {
-                // Make sure the scanner gets re-initialised.
+
                 if (mScanMode) {
                     //noinspection ConstantConditions
-                    mScannerModel.setScanner(null);
-                    startScan();
+                    mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
                 }
                 break;
             }
@@ -310,7 +294,8 @@ public class BookSearchByIsbnFragment
                 if (mScanMode) {
                     if (resultCode == Activity.RESULT_OK) {
                         // go scan next book until the user cancels scanning.
-                        startScan();
+                        //noinspection ConstantConditions
+                        mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
                     } else {
                         mScanMode = false;
                     }
@@ -340,42 +325,38 @@ public class BookSearchByIsbnFragment
      */
     private void prepareSearch(@NonNull final String isbnSearchText) {
 
-        // ALWAYS try to convert UPC numbers.
-        String isbn = ISBN.upc2isbn(isbnSearchText);
+        ISBN code = new ISBN(isbnSearchText, mStrictIsbn);
 
-        // sanity check
-        if (mStrictIsbn && isbn.length() < 10) {
-            return;
-        }
-
-        // not a valid ISBN and we're in strict mode ?
-        if (mStrictIsbn && !ISBN.isValid(isbn)) {
+        // not a valid code ?
+        if (!code.isValid()) {
             if (mScanMode) {
                 //noinspection ConstantConditions
                 mScannerModel.onInvalidBeep(getContext());
             }
 
-            String msg = getString(R.string.warning_x_is_not_a_valid_isbn, isbn);
             //noinspection ConstantConditions
-            Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mIsbnView,
+                          getString(R.string.warning_x_is_not_a_valid_code, isbnSearchText),
+                          Snackbar.LENGTH_LONG).show();
 
             if (mScanMode) {
-                startScan();
+                //noinspection ConstantConditions
+                mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
             }
             return;
         }
 
-        // valid or not, this is the ISBN we will be searching for.
-        mIsbn = isbn;
+        // at this point, we have a valid code
+        mIsbn = code.asText();
 
-        // at this point, we have a valid isbn (if strict)
         if (mStrictIsbn && mScanMode) {
             //noinspection ConstantConditions
             mScannerModel.onValidBeep(getContext());
         }
 
         // See if ISBN already exists in our database, if not then start the search.
-        final long existingId = mDb.getBookIdFromIsbn(isbn, true);
+        //noinspection ConstantConditions
+        final long existingId = mDb.getBookIdFromIsbn(mIsbn);
         if (existingId != 0) {
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
@@ -388,7 +369,8 @@ public class BookSearchByIsbnFragment
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                         clearPreviousSearchCriteria();
                         if (mScanMode) {
-                            startScan();
+                            //noinspection ConstantConditions
+                            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
                         }
                     })
                     // User wants to review the existing book
@@ -427,109 +409,9 @@ public class BookSearchByIsbnFragment
             clearPreviousSearchCriteria();
         } else {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_no_matching_book_found,
+            Snackbar.make(mIsbnView, R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();
         }
     }
 
-    /**
-     * Start scanner activity.
-     */
-    private void startScan() {
-        //noinspection ConstantConditions
-        Scanner scanner = mScannerModel.getScanner();
-        try {
-            if (scanner == null) {
-                scanner = ScannerManager.getScanner(mHostActivity);
-                if (scanner == null) {
-                    noScanner();
-                    return;
-                }
-                mScannerModel.setScanner(scanner);
-            }
-
-            // this is really for the Google barcode library which is loaded on first access.
-            // We're very conservative/paranoid here, as we already triggered a load during startup.
-            int retry = SCANNER_RETRY;
-            while (!scanner.isOperational() && retry > 0) {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.info_waiting_for_scanner,
-                              Snackbar.LENGTH_LONG).show();
-
-                try {
-                    Thread.sleep(SCANNER_WAIT);
-                } catch (@NonNull final InterruptedException ignore) {
-                }
-                if (scanner.isOperational()) {
-                    break;
-                }
-                retry--;
-            }
-
-            // ready or not, go scan
-            if (!mScannerModel.isScannerStarted()) {
-                if (!scanner.startActivityForResult(this, UniqueId.REQ_SCAN_BARCODE)) {
-
-                    mScanMode = false;
-
-                    // the scanner was loaded, but (still) refuses to start.
-                    String msg = getString(R.string.warning_scanner_failed_to_start)
-                                 + "\n\n"
-                                 + getString(R.string.warning_scanner_retry_install);
-
-                    //noinspection ConstantConditions
-                    new AlertDialog.Builder(getContext())
-                            .setIconAttribute(android.R.attr.alertDialogIcon)
-                            .setTitle(R.string.pg_barcode_scanner)
-                            .setMessage(msg)
-                            .setNeutralButton(R.string.lbl_settings, (dialog, which) -> {
-                                Intent intent = new Intent(mHostActivity, SettingsActivity.class)
-                                        .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                                  Prefs.psk_barcode_scanner);
-
-                                mHostActivity.startActivityForResult(
-                                        intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
-                            })
-                            .setPositiveButton(R.string.retry, (d, w) -> {
-                                // yes, nothing to do.
-                                // Closing this dialog should bring up the scanner again
-                            })
-                            .create()
-                            .show();
-                    return;
-                }
-                mScannerModel.setScannerStarted(true);
-            }
-
-        } catch (@NonNull final RuntimeException e) {
-            //noinspection ConstantConditions
-            Logger.error(getContext(), TAG, e);
-            noScanner();
-        }
-    }
-
-    /**
-     * None of the scanners was available or working correctly.
-     * Tell the user, and take them to the preferences to select a scanner.
-     */
-    private void noScanner() {
-        mScanMode = false;
-
-        String msg = getString(R.string.info_bad_scanner) + '\n'
-                     + getString(R.string.info_install_scanner_recommendation);
-        //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
-                .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.pg_barcode_scanner)
-                .setMessage(msg)
-                .setOnDismissListener(d -> {
-                    Intent intent = new Intent(mHostActivity, SettingsActivity.class)
-                            .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                      Prefs.psk_barcode_scanner);
-
-                    mHostActivity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
-                })
-                .create()
-                .show();
-    }
 }

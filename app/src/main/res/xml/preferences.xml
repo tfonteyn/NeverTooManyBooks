@@ -151,7 +151,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_scanning_preferred_scanner"
             android:entryValues="@array/pv_scanning_preferred_scanner"
-            android:icon="@drawable/ic_scanner"
+            android:icon="@drawable/ic_barcode"
             android:key="scanner.preferred"
             android:title="@string/pt_scanning_preferred_scanner" />
 

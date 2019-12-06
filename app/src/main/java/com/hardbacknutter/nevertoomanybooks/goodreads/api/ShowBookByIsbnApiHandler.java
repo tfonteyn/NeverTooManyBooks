@@ -69,7 +69,7 @@ public class ShowBookByIsbnApiHandler
     /**
      * Perform a search and handle the results.
      *
-     * @param isbn           ISBN to search for
+     * @param isbnStr        ISBN to search for
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      *
      * @return the Bundle of book data.
@@ -79,15 +79,17 @@ public class ShowBookByIsbnApiHandler
      * @throws IOException           on other failures
      */
     @NonNull
-    public Bundle get(@NonNull final String isbn,
+    public Bundle get(@NonNull final String isbnStr,
                       final boolean fetchThumbnail)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (!ISBN.isValid(isbn, true)) {
-            throw new BookNotFoundException(isbn);
-        }
+        ISBN isbn = ISBN.createISBN(isbnStr);
+        if (isbn != null && isbn.isValid()) {
+            String url = String.format(URL, isbn.asText(), mManager.getDevKey());
+            return getBookData(url, fetchThumbnail);
 
-        String url = String.format(URL, isbn, mManager.getDevKey());
-        return getBookData(url, fetchThumbnail);
+        } else {
+            throw new BookNotFoundException(isbnStr);
+        }
     }
 }

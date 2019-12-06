@@ -42,7 +42,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -337,7 +336,7 @@ public class CoverHandler {
     private void refreshImageView() {
         boolean isSet = ImageUtils.setImageView(mCoverView, getCoverFile(),
                                                 mMaxWidth, mMaxHeight, true,
-                                                R.drawable.ic_add_a_photo);
+                                                R.drawable.ic_add_a_photo, false);
         mBook.putBoolean(UniqueId.BKEY_IMAGE, isSet);
     }
 
@@ -401,18 +400,19 @@ public class CoverHandler {
      * and present to the user to choose one.
      */
     private void startCoverBrowser() {
-        // this is essential, as we only get alternative editions from LibraryThing for now.
+        // getting alternative editions is limited to LibraryThing and ISFDB for now.
+        // Remind the user that LT is rather essential.
         if (!LibraryThingManager.hasKey(mContext)) {
-            LibraryThingManager.alertRegistrationNeeded(mContext, true, "cover_browser");
+            LibraryThingManager.alertRegistrationNeeded(mContext, false, "cover_browser");
             return;
         }
 
-        String isbn = mIsbnView.getText().toString().trim();
-        if (ISBN.isValid(isbn)) {
+        ISBN isbn = ISBN.createISBN(mIsbnView.getText().toString());
+        if (isbn != null && isbn.isValid()) {
+            //noinspection ConstantConditions
+            mCoverBrowser = CoverBrowserFragment.newInstance(isbn.asText());
             // we must use the same fragment manager as the hosting fragment...
-            FragmentManager fm = mFragment.getParentFragmentManager();
-            mCoverBrowser = CoverBrowserFragment.newInstance(isbn);
-            mCoverBrowser.show(fm, CoverBrowserFragment.TAG);
+            mCoverBrowser.show(mFragment.getParentFragmentManager(), CoverBrowserFragment.TAG);
             // ... as we will communicate between the two fragments directly
             mCoverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
 

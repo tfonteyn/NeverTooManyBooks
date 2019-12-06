@@ -439,7 +439,6 @@ public class EditBookAuthorsActivity
         public void onStart() {
             super.onStart();
 
-            //FIXME: large screens will look bad
             if (getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
                 // force the dialog to be big enough

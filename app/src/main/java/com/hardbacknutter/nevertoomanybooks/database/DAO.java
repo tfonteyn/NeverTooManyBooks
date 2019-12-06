@@ -894,9 +894,8 @@ public class DAO
      * <strong>IMPORTANT:</strong> the query can return more then one row if the
      * given-name of the author is empty. But we only return the id of the first row found.
      *
-     *
      * @param context Current context
-     * @param author to find the id of
+     * @param author  to find the id of
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
@@ -1810,36 +1809,35 @@ public class DAO
     }
 
     /**
-     * @param isbn to search for
-     * @param both Flag: {@code true} to search for both isbn 10 and 13;
-     *             To do this, the ISBN must be valid.
-     *             {@code false} to just search on a matching string, i.e. the isbn does not
-     *             have to be valid, just equal.
+     * @param isbnStr to search for
      *
      * @return book id, or 0 if not found
      */
-    public long getBookIdFromIsbn(@NonNull final String isbn,
-                                  final boolean both) {
+    public long getBookIdFromIsbn(@NonNull final String isbnStr) {
         SynchronizedStatement stmt;
-        if (both && ISBN.isValid(isbn, true)) {
+        ISBN isbn = ISBN.createISBN(isbnStr);
+        // if the string is an ISBN-10 or ISBN-13, we search on both formats
+        if (isbn != null && isbn.isIsbn10Compat()) {
             stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_2);
             if (stmt == null) {
                 stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_2, SqlGet.BOOK_ID_BY_ISBN2);
             }
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                stmt.bindString(1, isbn);
-                stmt.bindString(2, ISBN.isbn2isbn(isbn));
+                stmt.bindString(1, isbn.asText(ISBN.Type.ISBN10));
+                stmt.bindString(2, isbn.asText(ISBN.Type.ISBN13));
                 return stmt.simpleQueryForLongOrZero();
             }
+
         } else {
+            // otherwise just on the string as-is.
             stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_1);
             if (stmt == null) {
                 stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_1, SqlGet.BOOK_ID_BY_ISBN);
             }
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                stmt.bindString(1, isbn);
+                stmt.bindString(1, isbnStr);
                 return stmt.simpleQueryForLongOrZero();
             }
         }

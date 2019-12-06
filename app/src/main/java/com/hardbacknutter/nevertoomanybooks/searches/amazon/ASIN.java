@@ -55,11 +55,10 @@ public class ASIN {
         }
 
         // An Book ASIN is basically an ISBN-10.
-        if (ISBN.isValid(asin, true)) {
+        if (ISBN.isValidIsbn(asin)) {
             return true;
         }
 
-        // TODO: should we even check this ?
         boolean foundAlpha = false;
         asin = asin.toUpperCase(Locale.ENGLISH).trim();
         for (int i = 0; i < asin.length(); i++) {

@@ -214,7 +214,7 @@ public class EditBookFragment
         if (book.getId() == 0) {
             String isbn = book.getString(DBDefinitions.KEY_ISBN);
             // Check if the book already exists
-            if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn, true) > 0))) {
+            if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn) > 0))) {
                 //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)

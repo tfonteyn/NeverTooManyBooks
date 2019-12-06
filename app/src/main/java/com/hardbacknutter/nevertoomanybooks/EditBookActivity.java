@@ -28,21 +28,26 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 /**
  * The hosting activity for editing a book.
  */
 public class EditBookActivity
         extends BaseActivity {
+
+    private static final String TAG = "EditBookActivity";
 
     @Override
     protected int getLayoutId() {
@@ -56,6 +61,41 @@ public class EditBookActivity
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
 
         replaceFragment(R.id.main_fragment, EditBookFragment.class, EditBookFragment.TAG);
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
+        }
+
+        // Settings initiated from the navigation panel.
+        if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+//                // update the search sites list.
+//                SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
+//                if (siteList != null) {
+//                    SearchCoordinator model =
+//                            new ViewModelProvider(this).get(SearchCoordinator.class);
+//                    model.setSiteList(siteList);
+//                }
+
+                // Reset the scanner if it was changed.
+                // Note this creates the scanner model even if it did not exist before.
+                // Other then using memory, this is fine.
+                // We assume if the user explicitly went to settings to change the scanner
+                // they want to use it.
+                if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
+                    ScannerViewModel model =
+                            new ViewModelProvider(this).get(ScannerViewModel.class);
+                    model.resetScanner();
+                }
+            }
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**

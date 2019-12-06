@@ -42,14 +42,11 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 /**
- * Searches the internet for book details based on:
- * - manually provided or scanned ISBN.
- * - Author/Title.
- * - Specific web site book id (Native id).
- * <p>
- * - update fields for a book or set of books.
+ * The hosting activity for searching for a book;
+ * including (searching for and) updating fields for a book or set of books.
  */
 public class BookSearchActivity
         extends BaseActivity {
@@ -111,6 +108,7 @@ public class BookSearchActivity
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
+        // Settings initiated from the navigation panel.
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
@@ -119,6 +117,17 @@ public class BookSearchActivity
                     SearchCoordinator model =
                             new ViewModelProvider(this).get(SearchCoordinator.class);
                     model.setSiteList(siteList);
+                }
+
+                // Reset the scanner if it was changed.
+                // Note this creates the scanner model even if it did not exist before.
+                // Other then using memory, this is fine.
+                // We assume if the user explicitly went to settings to change the scanner
+                // they want to use it.
+                if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
+                    ScannerViewModel model =
+                            new ViewModelProvider(this).get(ScannerViewModel.class);
+                    model.resetScanner();
                 }
             }
         }

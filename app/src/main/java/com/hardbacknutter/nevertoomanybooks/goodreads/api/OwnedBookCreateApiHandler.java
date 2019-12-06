@@ -73,7 +73,7 @@ public class OwnedBookCreateApiHandler
 
 
     /**
-     * @param isbn         the book
+     * @param isbnStr      the book
      * @param dateAcquired (optional)
      *
      * @return the Goodreads book ID
@@ -82,18 +82,20 @@ public class OwnedBookCreateApiHandler
      * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
      * @throws IOException           on other failures
      */
-    public long create(@NonNull final String isbn,
+    public long create(@NonNull final String isbnStr,
                        @Nullable final String dateAcquired)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        if (ISBN.isValid(isbn, true)) {
+        ISBN isbn = ISBN.createISBN(isbnStr);
+        if (isbn != null && isbn.isValid()) {
             IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
-            long grBookId = isbnToIdApiHandler.isbnToId(isbn);
+            //noinspection ConstantConditions
+            long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
             create(grBookId, dateAcquired);
             return grBookId;
 
         } else {
-            throw new BookNotFoundException(isbn);
+            throw new BookNotFoundException(isbnStr);
         }
     }
 

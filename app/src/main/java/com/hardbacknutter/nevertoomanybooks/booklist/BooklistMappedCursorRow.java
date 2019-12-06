@@ -136,9 +136,11 @@ public class BooklistMappedCursorRow {
 
         //FIXME: from BoB, click book. Move sideways book to book
         // (up to BooklistPseudoCursor#CURSOR_SIZE times) then go Back to BoB
+        // Not fixing for now, as BooklistPseudoCursor should get replaced with
+        // https://developer.android.com/topic/libraries/architecture/paging.html
 
+        // the bug:
         // ==> https://github.com/eleybourn/Book-Catalogue/issues/504
-
         // android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
         // at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
         // at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)

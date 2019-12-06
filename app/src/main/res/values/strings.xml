@@ -183,7 +183,7 @@
     <string name="warning_series_already_in_list">Series is already in the list</string>
     <string name="warning_no_matching_book_found">No matching book found</string>
     <string name="warning_no_isbn_stored_for_book">No ISBN stored for book</string>
-    <string name="warning_x_is_not_a_valid_isbn">“%1$s” is not a valid ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">“%1$s” is not a valid code</string>
     <string name="warning_cover_not_found">Cover Not Found</string>
     <string name="warning_cover_copy_failed">Could not copy cover</string>
     <string name="warning_no_editions">No additional edition information available</string>

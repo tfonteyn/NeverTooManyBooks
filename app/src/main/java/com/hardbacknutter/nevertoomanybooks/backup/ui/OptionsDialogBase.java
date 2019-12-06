@@ -124,7 +124,6 @@ public abstract class OptionsDialogBase<T extends Options>
     public void onStart() {
         super.onStart();
 
-        //FIXME: large screens will look bad
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // force the dialog to be big enough
             Dialog dialog = getDialog();

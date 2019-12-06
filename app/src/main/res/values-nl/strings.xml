@@ -568,7 +568,7 @@
     <string name="warning_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als u nu afsluit gaan die verloren.</string>
     <string name="warning_unsaved_edits2">De door u gemaakte veranderingen zijn niet opgeslagen. Wilt u toch doorgaan?</string>
     <string name="warning_x_already_exists">%1$s bestaat al.</string>
-    <string name="warning_x_is_not_a_valid_isbn">%1$s is geen geldige ISBN</string>
+    <string name="warning_x_is_not_a_valid_code">„%1$s” is geen geldige code</string>
     <string name="x_of_y">%1$d van %2$d</string>
     <string name="yes">Ja</string>
     <string name="lbl_author_type_translator">Vertaler</string>

@@ -27,20 +27,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import java.util.Arrays;
-import java.util.regex.Pattern;
+import androidx.annotation.NonNull;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ISBNTest {
-
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[ \\-]");
 
     /**
      * Valid ISBN 10,13 digits
@@ -73,131 +73,221 @@ class ISBNTest {
             {"91-6334-994-7", "9789163349943"},
             };
 
-    private String[][] valid;
-    private String[][] invalid;
+    /**
+     * UPC codes which can be translated to ISBN-10.
+     */
+    private final String[][] upcIsbnFinals = {
+            {"0-70999-00225-5 30054", "0345300548"}
+    };
 
-    @BeforeEach
-    void setUp() {
-        valid = Arrays.stream(validFinals).map(String[]::clone).toArray(String[][]::new);
-        invalid = Arrays.stream(invalidFinals).map(String[]::clone).toArray(String[][]::new);
+    /**
+     * Generic UPC_A codes
+     */
+    private final String[][] upcAFinals = {
+            {"7 12345 67890 4", "712345678904"}
+    };
+
+    /**
+     * Generic EAN-13 codes.
+     */
+    private final String[][] eanFinals = {
+            {"5410983535003", "5410983535003"}
+    };
+
+    private String[][] createValidIsbnList() {
+        return Arrays.stream(validFinals).map(String[]::clone).toArray(String[][]::new);
     }
 
-    @Test
-    void isValid() {
-        for (String[] isbnPair : valid) {
-            assertTrue(ISBN.isValid(isbnPair[0], true));
-            assertTrue(ISBN.isValid(isbnPair[1], true));
-        }
+    private String[][] createInvalidIsbnList() {
+        return Arrays.stream(invalidFinals).map(String[]::clone).toArray(String[][]::new);
     }
 
-    @Test
-    void isInvalid() {
-        for (String[] isbnPair : invalid) {
-            assertFalse(ISBN.isValid(isbnPair[0], true));
-            assertFalse(ISBN.isValid(isbnPair[1], true));
-        }
+    private String[][] createIsbnUpcList() {
+        return Arrays.stream(upcIsbnFinals).map(String[]::clone).toArray(String[][]::new);
     }
 
-    @Test
-    void is10() {
-        for (String[] isbnPair : valid) {
-            ISBN isbn0 = new ISBN(isbnPair[0]);
-            ISBN isbn1 = new ISBN(isbnPair[1]);
-            assertTrue(isbn0.is10());
-            assertFalse(isbn1.is10());
-        }
-        for (String[] isbnPair : invalid) {
-            ISBN isbn0 = new ISBN(isbnPair[0]);
-            ISBN isbn1 = new ISBN(isbnPair[1]);
-            assertFalse(isbn0.is10());
-            assertFalse(isbn1.is10());
-        }
+    private String[][] createUpcAList() {
+        return Arrays.stream(upcAFinals).map(String[]::clone).toArray(String[][]::new);
     }
 
-    @Test
-    void is13() {
-        for (String[] isbnPair : valid) {
-            ISBN isbn0 = new ISBN(isbnPair[0]);
-            ISBN isbn1 = new ISBN(isbnPair[1]);
-            assertFalse(isbn0.is13());
-            assertTrue(isbn1.is13());
-        }
-        for (String[] isbnPair : invalid) {
-            ISBN isbn0 = new ISBN(isbnPair[0]);
-            ISBN isbn1 = new ISBN(isbnPair[1]);
-            assertFalse(isbn0.is13());
-            assertFalse(isbn1.is13());
-        }
+    private String[][] createEanList() {
+        return Arrays.stream(eanFinals).map(String[]::clone).toArray(String[][]::new);
     }
 
-    @Test
-    void swap() {
-        for (String[] isbnPair : valid) {
-            assertEquals(WHITESPACE_PATTERN.matcher(isbnPair[1]).replaceAll(""),
-                         ISBN.isbn2isbn(isbnPair[0]));
 
-            assertEquals(WHITESPACE_PATTERN.matcher(isbnPair[0]).replaceAll(""),
-                         ISBN.isbn2isbn(isbnPair[1]));
+    @Test
+    void isbn_isValid() {
+        for (String[] isbnPair : createValidIsbnList()) {
+            ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+
+            assertNotNull(isbn0);
+            assertNotNull(isbn1);
+            assertTrue(isbn0.isValid());
+            assertTrue(isbn1.isValid());
         }
     }
 
     @Test
-    void swap1013() {
-        for (String[] isbnPair : valid) {
-            ISBN isbn10 = new ISBN(isbnPair[0]);
-            ISBN isbn13 = new ISBN(isbnPair[1]);
-            assertEquals(isbn10.to13(), isbn13.to13());
-            assertEquals(isbn10.to10(), isbn13.to10());
+    void isbn_isInvalid() {
+        for (String[] isbnPair : createInvalidIsbnList()) {
+            ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+
+            assertNotNull(isbn0);
+            assertNotNull(isbn1);
+            assertFalse(isbn0.isValid());
+            assertFalse(isbn1.isValid());
         }
     }
 
     @Test
-    void matchesValidValid() {
-        for (String[] isbnPair : valid) {
+    void isbn_is10() {
+        for (String[] isbnPair : createValidIsbnList()) {
+            ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+
+            assertNotNull(isbn0);
+            assertNotNull(isbn1);
+            assertTrue(isbn0.isType(ISBN.Type.ISBN10));
+            assertFalse(isbn1.isType(ISBN.Type.ISBN10));
+        }
+        for (String[] isbnPair : createInvalidIsbnList()) {
+            ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+
+            assertNotNull(isbn0);
+            assertNotNull(isbn1);
+            assertFalse(isbn0.isType(ISBN.Type.ISBN10));
+            assertFalse(isbn1.isType(ISBN.Type.ISBN10));
+        }
+    }
+
+    @Test
+    void isbn_is13() {
+        for (String[] isbnPair : createValidIsbnList()) {
+            ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+
+            assertNotNull(isbn0);
+            assertNotNull(isbn1);
+            assertFalse(isbn0.isType(ISBN.Type.ISBN13));
+            assertTrue(isbn1.isType(ISBN.Type.ISBN13));
+        }
+        for (String[] isbnPair : createInvalidIsbnList()) {
+            ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
+
+            assertNotNull(isbn0);
+            assertNotNull(isbn1);
+            assertFalse(isbn0.isType(ISBN.Type.ISBN13));
+            assertFalse(isbn1.isType(ISBN.Type.ISBN13));
+        }
+    }
+
+    @Test
+    void isbn_swap1013() {
+        for (String[] isbnPair : createValidIsbnList()) {
+            ISBN isbn10 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn13 = ISBN.createISBN(isbnPair[1]);
+            assertNotNull(isbn10);
+            assertNotNull(isbn13);
+            try {
+                assertEquals(isbn10.asText(ISBN.Type.ISBN13), isbn13.asText(ISBN.Type.ISBN13));
+                assertEquals(isbn10.asText(ISBN.Type.ISBN10), isbn13.asText(ISBN.Type.ISBN10));
+            } catch (@NonNull final NumberFormatException e) {
+                fail(e);
+            }
+        }
+    }
+
+    @Test
+    void isbn_matchesValidValid() {
+        for (String[] isbnPair : createValidIsbnList()) {
             assertTrue(ISBN.matches(isbnPair[0], isbnPair[1], true),
                        "isbnPair=" + Arrays.toString(isbnPair));
         }
     }
 
     @Test
-    void matchesInvalidInvalid() {
-        for (String[] isbnPair : invalid) {
+    void isbn_matchesInvalidInvalid() {
+        for (String[] isbnPair : createInvalidIsbnList()) {
             assertFalse(ISBN.matches(isbnPair[0], isbnPair[1], true),
                         "isbnPair=" + Arrays.toString(isbnPair));
         }
     }
 
     @Test
-    void matchesValidInvalid() {
+    void isbn_matchesValidInvalid() {
+        String[][] valid = createValidIsbnList();
+        String[][] invalid = createInvalidIsbnList();
         for (int i = 0; i < invalid.length; i++) {
             assertFalse(ISBN.matches(valid[i][0], invalid[i][1], true));
         }
     }
 
     @Test
-    void equalsValidValid() {
+    void isbn_equalsValidValid() {
+        String[][] valid = Arrays.stream(validFinals).map(String[]::clone).toArray(String[][]::new);
         for (String[] isbnPair : valid) {
-            ISBN isbn0 = new ISBN(isbnPair[0]);
-            ISBN isbn1 = new ISBN(isbnPair[1]);
+            ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
             assertEquals(isbn0, isbn1);
         }
     }
 
     @Test
-    void equalsInvalidInvalid() {
-        for (String[] isbnPair : invalid) {
-            ISBN isbn0 = new ISBN(isbnPair[0]);
-            ISBN isbn1 = new ISBN(isbnPair[1]);
+    void isbn_equalsInvalidInvalid() {
+        for (String[] isbnPair : createInvalidIsbnList()) {
+            ISBN isbn0 = ISBN.createISBN(isbnPair[0]);
+            ISBN isbn1 = ISBN.createISBN(isbnPair[1]);
             assertNotEquals(isbn0, isbn1);
         }
     }
 
     @Test
-    void equalsValidInvalid() {
+    void isbn_equalsValidInvalid() {
+        String[][] valid = createValidIsbnList();
+        String[][] invalid = createInvalidIsbnList();
+
         for (int i = 0; i < invalid.length; i++) {
-            ISBN isbn0 = new ISBN(valid[i][0]);
-            ISBN isbn1 = new ISBN(invalid[i][1]);
+            ISBN isbn0 = ISBN.createISBN(valid[i][0]);
+            ISBN isbn1 = ISBN.createISBN(invalid[i][1]);
             assertNotEquals(isbn0, isbn1);
+        }
+    }
+
+
+    @Test
+    void upc2isbn() {
+        for (String[] upcPair : createIsbnUpcList()) {
+            ISBN isbn = ISBN.create(upcPair[0]);
+            assertNotNull(isbn);
+            assertTrue(isbn.isType(ISBN.Type.ISBN10));
+            assertTrue(isbn.isValid());
+            assertEquals(upcPair[1], isbn.asText());
+        }
+    }
+
+    @Test
+    void upcA_isValid() {
+        for (String[] upcPair : createUpcAList()) {
+            ISBN upc = ISBN.create(upcPair[0]);
+            assertNotNull(upc);
+            assertTrue(upc.isType(ISBN.Type.UPC_A));
+            assertTrue(upc.isValid());
+            assertEquals(upcPair[1], upc.asText());
+        }
+    }
+
+    @Test
+    void ean13_isValid() {
+        for (String[] eanPair : createEanList()) {
+            ISBN ean = ISBN.create(eanPair[0]);
+            assertNotNull(ean);
+            assertTrue(ean.isType(ISBN.Type.EAN13));
+            assertTrue(ean.isValid());
+            assertEquals(eanPair[1], ean.asText());
         }
     }
 }

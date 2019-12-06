@@ -46,8 +46,10 @@ public final class UniqueId {
     public static final int REQ_NAV_PANEL_IMP_EXP = 1_003;
     /** Request code: navigation panel. */
     public static final int REQ_NAV_PANEL_GOODREADS = 1_004;
-    /** Request code: navigation panel. */
+    /** Request code: navigation panel call to bring up the Settings. */
     public static final int REQ_NAV_PANEL_SETTINGS = 1_010;
+    /** Request code: <strong>non</strong>-navigation panel call to bring up the Settings. */
+    public static final int REQ_SETTINGS = 1_011;
 
     /** Request code: edit a Style. */
     public static final int REQ_EDIT_STYLE = 1_100;
@@ -235,6 +237,9 @@ public final class UniqueId {
      * setResult
      */
     public static final String BKEY_BOOK_MODIFIED = "bookModified";
+
+
+    public static final String BKEY_SHOULD_INIT_SCANNER = "initScanner";
 
     private UniqueId() {
     }

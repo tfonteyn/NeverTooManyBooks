@@ -220,6 +220,7 @@ public class GlobalPreferenceFragment
                         ScannerManager.setDefaultScanner(context);
                     }
                 });
+                mResultDataModel.putExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, true);
                 break;
 
             default:

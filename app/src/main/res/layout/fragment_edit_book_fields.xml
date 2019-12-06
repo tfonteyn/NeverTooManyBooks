@@ -100,8 +100,8 @@
             />
 
         <Button
-            android:id="@+id/altIsbn"
-            style="@style/SwapButton"
+            android:id="@+id/btn_altIsbn"
+            style="@style/IconButton"
             app:icon="@drawable/ic_autorenew"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
@@ -113,11 +113,22 @@
         <EditText
             android:id="@+id/isbn"
             style="@style/EditText.Isbn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/altIsbn"
+            app:layout_constraintEnd_toStartOf="@id/btn_scan"
+            app:layout_constraintStart_toEndOf="@id/btn_altIsbn"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             tools:ignore="Autofill"
             tools:text="123456789X123"
+            />
+
+        <Button
+            android:id="@+id/btn_scan"
+            style="@style/IconButton"
+            android:enabled="true"
+            app:icon="@drawable/ic_barcode"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
+            app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+            app:layout_constraintEnd_toEndOf="parent"
             />
 
         <TextView

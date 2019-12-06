@@ -190,12 +190,10 @@ public class IsfdbEditionsHandler
                     String url = edLink.attr("href");
                     if (url != null) {
                         // 4th column: ISBN/Catalog ID
-                        String isbnStr = tr.child(4).text();
-                        int len = isbnStr.length();
-                        if (len < 10 || len > 13) {
-                            isbnStr = null;
-                        } else {
-                            isbnStr = new ISBN(isbnStr, true).asText();
+                        String isbnStr = null;
+                        ISBN isbn = ISBN.createISBN(tr.child(4).text());
+                        if (isbn != null && isbn.isValid()) {
+                            isbnStr = isbn.asText();
                         }
                         mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
                     }

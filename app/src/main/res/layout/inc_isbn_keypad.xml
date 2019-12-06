@@ -37,8 +37,8 @@
     >
 
     <Button
-        android:id="@+id/altIsbn"
-        style="@style/SwapButton"
+        android:id="@+id/btn_altIsbn"
+        style="@style/IconButton"
         app:icon="@drawable/ic_autorenew"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
@@ -51,7 +51,7 @@
         android:id="@+id/isbn"
         style="@style/EditText.Isbn.Large"
         app:layout_constraintEnd_toStartOf="@id/isbn_del"
-        app:layout_constraintStart_toEndOf="@id/altIsbn"
+        app:layout_constraintStart_toEndOf="@id/btn_altIsbn"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="Autofill,LabelFor"
         tools:text="123456789X123"

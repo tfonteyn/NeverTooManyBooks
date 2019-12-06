@@ -32,6 +32,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
@@ -42,6 +45,7 @@ import android.widget.ImageView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -60,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 
@@ -85,8 +90,22 @@ public class EditBookFieldsFragment
 
     private EditText mIsbnView;
     private Button mAltIsbnButton;
+    private Button mScanIsbnButton;
     private ImageView mCoverImageView;
     private AutoCompleteTextView mGenreView;
+
+    /** manage the validation check next to the ISBN field. */
+    private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
+    /**
+     * Set to {@code true} limits to using ISBN-10/13.
+     * Otherwise we also allow UPC/EAN codes.
+     * This is used for validation only, and not enforced.
+     */
+    private boolean mStrictIsbn = true;
+
+    /** The scanner. */
+    @Nullable
+    private ScannerViewModel mScannerModel;
 
     @Override
     @Nullable
@@ -99,12 +118,25 @@ public class EditBookFieldsFragment
         mSeriesView = view.findViewById(R.id.series);
         mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
-        mAltIsbnButton = view.findViewById(R.id.altIsbn);
+        mAltIsbnButton = view.findViewById(R.id.btn_altIsbn);
+        mScanIsbnButton = view.findViewById(R.id.btn_scan);
         mCoverImageView = view.findViewById(R.id.coverImage);
         mGenreView = view.findViewById(R.id.genre);
         mBookshelvesView = view.findViewById(R.id.bookshelves);
 
         return view;
+    }
+
+    @CallSuper
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // do other stuff here that might affect the view.
+
+        // Fix the focus order for the views
+        //noinspection ConstantConditions
+        FocusFixer.fix(getView());
     }
 
     /**
@@ -163,9 +195,11 @@ public class EditBookFieldsFragment
         // Not using a EditIsbn custom View, as we want to be able to enter non-isbn codes here.
         fields.addString(R.id.isbn, mIsbnView, DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
-        // but we still support visual aids for ISBN codes.
-        mIsbnView.addTextChangedListener(new IsbnValidationTextWatcher(mIsbnView));
+        // but we still support visual aids for ISBN and other codes.
+        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, true);
+        mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
         mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
+        mScanIsbnButton.setOnClickListener(v -> onScanBarcode());
 
         fields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
                          UniqueId.BKEY_IMAGE)
@@ -193,83 +227,34 @@ public class EditBookFieldsFragment
                             () -> mBookModel.getEditableBookshelvesList());
     }
 
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
+    private void onScanBarcode() {
+        if (mScannerModel == null) {
+            //noinspection ConstantConditions
+            mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
         }
-        Book book = mBookModel.getBook();
-
-        switch (requestCode) {
-            case REQ_EDIT_AUTHORS: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                        ArrayList<Author> list =
-                                data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
-                        if (list == null) {
-                            list = new ArrayList<>(0);
-                        }
-                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-                    }
-
-                    if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
-                        mBookModel.setDirty(true);
-                    }
-
-                    // Some Authors MAY have been modified.
-                    if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {
-                        //noinspection ConstantConditions
-                        mBookModel.refreshAuthorList(getContext());
-                    }
-                }
-                break;
-            }
-            case REQ_EDIT_SERIES: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                        ArrayList<Series> list =
-                                data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
-                        if (list == null) {
-                            list = new ArrayList<>(0);
-                        }
-                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-                    }
-
-                    if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
-                        mBookModel.setDirty(true);
-                    }
-
-                    // Some Series MAY have been modified.
-                    if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {
-                        //noinspection ConstantConditions
-                        mBookModel.refreshSeriesList(getContext());
-                    }
-                }
-                break;
-            }
-            default: {
-                // handle any cover image request codes
-                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
-                    super.onActivityResult(requestCode, resultCode, data);
-                }
-                break;
-            }
-        }
+        mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
     }
 
-    @CallSuper
     @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.menu_strict_isbn)
+            .setCheckable(true)
+            .setChecked(mStrictIsbn)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
-        // do other stuff here that might affect the view.
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
-        // Fix the focus order for the views
-        //noinspection ConstantConditions
-        FocusFixer.fix(getView());
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_STRICT_ISBN) {
+            mStrictIsbn = !item.isChecked();
+            item.setChecked(mStrictIsbn);
+            mIsbnValidationTextWatcher.setStrictIsbn(mStrictIsbn);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -382,5 +367,92 @@ public class EditBookFieldsFragment
         //     }
         // }
         // getFields().getField(R.id.bookshelves).setValue(value);
+    }
+
+    @Override
+    @CallSuper
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
+        }
+        Book book = mBookModel.getBook();
+
+        switch (requestCode) {
+            case REQ_EDIT_AUTHORS: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
+                        ArrayList<Author> list =
+                                data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
+                        if (list == null) {
+                            list = new ArrayList<>(0);
+                        }
+                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+                    }
+
+                    if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
+                        mBookModel.setDirty(true);
+                    }
+
+                    // Some Authors MAY have been modified.
+                    if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {
+                        //noinspection ConstantConditions
+                        mBookModel.refreshAuthorList(getContext());
+                    }
+                }
+                break;
+            }
+            case REQ_EDIT_SERIES: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
+                        ArrayList<Series> list =
+                                data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
+                        if (list == null) {
+                            list = new ArrayList<>(0);
+                        }
+                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+                    }
+
+                    if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
+                        mBookModel.setDirty(true);
+                    }
+
+                    // Some Series MAY have been modified.
+                    if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {
+                        //noinspection ConstantConditions
+                        mBookModel.refreshSeriesList(getContext());
+                    }
+                }
+                break;
+            }
+            case UniqueId.REQ_SCAN_BARCODE: {
+                //noinspection ConstantConditions
+                mScannerModel.setScannerStarted(false);
+                if (resultCode == Activity.RESULT_OK) {
+                    if (BuildConfig.DEBUG) {
+                        //noinspection ConstantConditions
+                        mScannerModel.fakeBarcodeScan(getContext(), data);
+                    }
+
+                    //noinspection ConstantConditions
+                    String barCode = mScannerModel.getScanner().getBarcode(data);
+                    if (barCode != null) {
+                        mBookModel.getBook().put(DBDefinitions.KEY_ISBN, barCode);
+                        return;
+                    }
+                }
+
+                return;
+            }
+
+            default: {
+                // handle any cover image request codes
+                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
+                    super.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+            }
+        }
     }
 }
