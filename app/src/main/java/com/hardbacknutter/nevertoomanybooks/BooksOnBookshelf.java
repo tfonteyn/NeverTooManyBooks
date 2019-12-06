@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -424,30 +423,32 @@ public class BooksOnBookshelf
             mFabOverlay.setOnClickListener(null);
         }
 
-        // negative -> move upwards.
-        float base_y = -getResources().getDimension(R.dimen.fab_menu_offset_y_base);
-        float offset_y = -getResources().getDimension(R.dimen.fab_menu_offset_y);
+        float baseY = getResources().getDimension(R.dimen.fab_menu_translationY_base);
+        float deltaY = getResources().getDimension(R.dimen.fab_menu_translationY_delta);
 
-        // negative -> move towards start (i.e. left).
-        float offset_x = -getResources().getDimension(R.dimen.fab_menu_offset_x);
+        float baseX = getResources().getDimension(R.dimen.fab_menu_translationX);
+        float deltaX = getResources().getDimension(R.dimen.fab_menu_translationX_delta);
 
-        boolean isLandscape = getResources().getConfiguration().orientation
-                              == Configuration.ORIENTATION_LANDSCAPE;
+        // Test for split-screen layouts (or really small devices?)
+        // Having more then 4 FAB buttons is not really a good UI design
+        // But this just about fits our 5...
+        //TODO: use resource qualifiers instead.
+        boolean smallScreen = getResources().getConfiguration().screenHeightDp < 400;
 
-        // having more then 4 buttons is not really a good UI design
         for (int i = 0; i < mFabMenuItems.length; i++) {
             ExtendedFloatingActionButton fab = mFabMenuItems[i];
             // allow for null items
             if (fab != null) {
                 if (show) {
                     fab.show();
-                    if (isLandscape && i > 3) {
-                        // 4.. are shown on the side
-                        fab.animate().translationY(base_y + (((i - 4) + 1) * offset_y));
-                        fab.animate().translationX(offset_x);
+                    if (!smallScreen) {
+                        // on top of base FAB
+                        fab.animate().translationX(baseX);
+                        fab.animate().translationY(baseY + ((i + 1) * deltaY));
                     } else {
-                        // 0..3 are shown as normal
-                        fab.animate().translationY(base_y + ((i + 1) * offset_y));
+                        // to the left of FAB and up
+                        fab.animate().translationX(baseX + deltaX);
+                        fab.animate().translationY(i * deltaY);
                     }
                 } else {
                     fab.animate().translationX(0);

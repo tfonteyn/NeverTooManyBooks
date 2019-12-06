@@ -38,15 +38,19 @@
     <!-- Application icon size on the nav panel and startup splash-->
     <dimen name="app_icon">100dp</dimen>
 
-    <!-- Spacing around a FAB. -->
+    <!-- Spacing around the FAB. -->
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="fab_menu_margin">5dp</dimen>
-    <dimen name="fab_menu_translationX">-20dp</dimen>
-    <!-- calculate offset:  base + (level * offset) -->
-    <dimen name="fab_menu_offset_y_base">20dp</dimen>
-    <dimen name="fab_menu_offset_y">60dp</dimen>
 
-    <dimen name="fab_menu_offset_x">250dp</dimen>
+    <!-- offset to the left, as compared to the base FAB button -->
+    <dimen name="fab_menu_translationX">-20dp</dimen>
+    <!-- added to the offset when using small screens -->
+    <dimen name="fab_menu_translationX_delta">-60dp</dimen>
+
+    <!-- offset upwards, as compared to the base FAB button -->
+    <dimen name="fab_menu_translationY_base">-10dp</dimen>
+    <!-- offset + (level * delta) -->
+    <dimen name="fab_menu_translationY_delta">-60dp</dimen>
+
 
     <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
     <dimen name="cover_base_size">30dp</dimen>

@@ -40,7 +40,8 @@
         android:text="@string/fab_add_book_by_native_id"
         app:icon="@drawable/ic_find_in_page"
         app:iconGravity="end"
-        tools:translationY="-320dp"
+        tools:translationX="@dimen/fab_menu_translationX"
+        tools:translationY="-310dp"
         tools:visibility="visible"
         />
 
@@ -50,7 +51,8 @@
         android:text="@string/fab_add_book_manually"
         app:icon="@drawable/ic_keyboard"
         app:iconGravity="end"
-        tools:translationY="-260dp"
+        tools:translationX="@dimen/fab_menu_translationX"
+        tools:translationY="-250dp"
         tools:visibility="visible"
         />
 
@@ -60,7 +62,8 @@
         android:text="@string/fab_add_book_by_internet_search"
         app:icon="@drawable/ic_search"
         app:iconGravity="end"
-        tools:translationY="-200dp"
+        tools:translationX="@dimen/fab_menu_translationX"
+        tools:translationY="-190dp"
         tools:visibility="visible"
         />
 
@@ -70,7 +73,8 @@
         android:text="@string/fab_add_book_by_isbn"
         app:icon="@drawable/ic_apps"
         app:iconGravity="end"
-        tools:translationY="-140dp"
+        tools:translationX="@dimen/fab_menu_translationX"
+        tools:translationY="-130dp"
         tools:visibility="visible"
         />
 
@@ -81,7 +85,8 @@
         android:text="@string/fab_add_book_by_barcode_scan"
         app:icon="@drawable/ic_photo_camera"
         app:iconGravity="end"
-        tools:translationY="-80dp"
+        tools:translationX="@dimen/fab_menu_translationX"
+        tools:translationY="-70dp"
         tools:visibility="visible"
         />
 
