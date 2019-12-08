@@ -113,7 +113,7 @@ public class CoverBrowserFragment
     @NonNull
     public static CoverBrowserFragment newInstance(@NonNull final String isbn) {
         CoverBrowserFragment frag = new CoverBrowserFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(1);
         args.putString(DBDefinitions.KEY_ISBN, isbn);
         frag.setArguments(args);
         return frag;

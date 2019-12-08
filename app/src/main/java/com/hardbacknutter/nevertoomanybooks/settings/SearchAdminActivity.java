@@ -141,7 +141,7 @@ public class SearchAdminActivity
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-            Bundle args = new Bundle();
+            Bundle args = new Bundle(1);
             args.putParcelable(SearchAdminModel.BKEY_LIST_TYPE, toType(position));
             Fragment fragment = new SearchOrderFragment();
             fragment.setArguments(args);

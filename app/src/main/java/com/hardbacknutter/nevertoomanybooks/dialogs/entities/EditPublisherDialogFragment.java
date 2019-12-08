@@ -86,7 +86,7 @@ public class EditPublisherDialogFragment
     public static EditPublisherDialogFragment newInstance(@NonNull final Publisher publisher) {
 
         EditPublisherDialogFragment frag = new EditPublisherDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(1);
         args.putParcelable(DBDefinitions.KEY_PUBLISHER, publisher);
         frag.setArguments(args);
         return frag;

@@ -99,7 +99,7 @@ public class CheckListDialogFragment<T>
             @NonNull final CheckListEditorListGetter<T> listGetter) {
 
         CheckListDialogFragment<T> frag = new CheckListDialogFragment<>();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(3);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
         args.putParcelableArrayList(BKEY_CHECK_LIST, listGetter.getList());

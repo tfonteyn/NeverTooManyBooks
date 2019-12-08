@@ -88,7 +88,7 @@ public class StylePickerDialogFragment
                                    final boolean all) {
 
         StylePickerDialogFragment smf = new StylePickerDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(2);
         args.putParcelable(UniqueId.BKEY_STYLE, currentStyle);
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
         smf.setArguments(args);

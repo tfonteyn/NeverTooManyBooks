@@ -298,7 +298,7 @@ public class EditBookAuthorsActivity
          */
         static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
             EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
-            Bundle args = new Bundle();
+            Bundle args = new Bundle(1);
             args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
             frag.setArguments(args);
             return frag;

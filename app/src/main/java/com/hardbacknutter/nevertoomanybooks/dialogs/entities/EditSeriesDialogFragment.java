@@ -92,7 +92,7 @@ public class EditSeriesDialogFragment
      */
     public static EditSeriesDialogFragment newInstance(@NonNull final Series series) {
         EditSeriesDialogFragment frag = new EditSeriesDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(1);
         args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
         frag.setArguments(args);
         return frag;

@@ -94,7 +94,7 @@ public class EditAuthorDialogFragment
      */
     public static EditAuthorDialogFragment newInstance(@NonNull final Author author) {
         EditAuthorDialogFragment frag = new EditAuthorDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(1);
         args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
         frag.setArguments(args);
         return frag;

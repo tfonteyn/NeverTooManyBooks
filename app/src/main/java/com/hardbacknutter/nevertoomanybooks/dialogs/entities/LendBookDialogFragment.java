@@ -105,7 +105,7 @@ public class LendBookDialogFragment
                                                      final long authorId,
                                                      @NonNull final String title) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(3);
         args.putLong(DBDefinitions.KEY_PK_ID, bookId);
         args.putLong(DBDefinitions.KEY_FK_AUTHOR, authorId);
         args.putString(DBDefinitions.KEY_TITLE, title);
@@ -124,7 +124,7 @@ public class LendBookDialogFragment
     public static LendBookDialogFragment newInstance(@NonNull final Context context,
                                                      @NonNull final Book book) {
         LendBookDialogFragment frag = new LendBookDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(3);
         args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
         args.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor(context));
         args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));

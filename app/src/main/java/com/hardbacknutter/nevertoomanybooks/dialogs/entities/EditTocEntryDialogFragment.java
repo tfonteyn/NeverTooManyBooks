@@ -96,7 +96,7 @@ public class EditTocEntryDialogFragment
     public static EditTocEntryDialogFragment newInstance(@NonNull final TocEntry tocEntry,
                                                          final boolean hasMultipleAuthors) {
         EditTocEntryDialogFragment frag = new EditTocEntryDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(2);
         args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
         args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
         frag.setArguments(args);

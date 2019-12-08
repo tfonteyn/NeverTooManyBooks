@@ -238,7 +238,7 @@ public class EditBookSeriesActivity
          */
         static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
             EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
-            Bundle args = new Bundle();
+            Bundle args = new Bundle(1);
             args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
             frag.setArguments(args);
             return frag;

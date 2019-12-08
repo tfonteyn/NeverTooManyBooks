@@ -86,7 +86,7 @@ public class EditBookshelfDialogFragment
      */
     public static EditBookshelfDialogFragment newInstance(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment frag = new EditBookshelfDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(1);
         args.putParcelable(DBDefinitions.KEY_FK_BOOKSHELF, bookshelf);
         frag.setArguments(args);
         return frag;

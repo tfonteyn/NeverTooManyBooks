@@ -97,7 +97,7 @@ public class ProgressDialogFragment
                                                      final boolean isIndeterminate,
                                                      final int maxValue) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(3);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, titleId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         args.putInt(BKEY_MAX, maxValue);

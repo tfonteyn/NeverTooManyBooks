@@ -81,7 +81,7 @@ public class ZoomedImageDialogFragment
      */
     private static ZoomedImageDialogFragment newInstance(@NonNull final File image) {
         ZoomedImageDialogFragment frag = new ZoomedImageDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(1);
         args.putString(UniqueId.BKEY_FILE_SPEC, image.getPath());
         frag.setArguments(args);
         return frag;

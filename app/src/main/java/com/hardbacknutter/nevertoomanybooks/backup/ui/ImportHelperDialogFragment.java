@@ -68,7 +68,7 @@ public class ImportHelperDialogFragment
     public static ImportHelperDialogFragment newInstance(@NonNull final Options importHelper,
                                                          final boolean archiveHasValidDates) {
         ImportHelperDialogFragment frag = new ImportHelperDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(2);
         args.putParcelable(BKEY_OPTIONS, importHelper);
         args.putBoolean(BKEY_ARCHIVE_HAS_VALID_DATES, archiveHasValidDates);
         frag.setArguments(args);

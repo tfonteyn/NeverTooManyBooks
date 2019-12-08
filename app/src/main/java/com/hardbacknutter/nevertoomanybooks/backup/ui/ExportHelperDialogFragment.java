@@ -67,7 +67,7 @@ public class ExportHelperDialogFragment
     @NonNull
     public static ExportHelperDialogFragment newInstance(@NonNull final Options options) {
         ExportHelperDialogFragment frag = new ExportHelperDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(1);
         args.putParcelable(BKEY_OPTIONS, options);
         frag.setArguments(args);
         return frag;

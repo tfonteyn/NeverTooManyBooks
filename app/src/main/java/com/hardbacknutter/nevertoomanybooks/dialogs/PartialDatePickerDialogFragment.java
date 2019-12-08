@@ -135,7 +135,7 @@ public class PartialDatePickerDialogFragment
         }
 
         PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
-        Bundle args = new Bundle();
+        Bundle args = new Bundle(3);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
         args.putString(PartialDatePickerDialogFragment.BKEY_DATE, date);
