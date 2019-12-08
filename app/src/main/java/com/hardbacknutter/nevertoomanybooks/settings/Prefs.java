@@ -181,7 +181,6 @@ public final class Prefs {
     @NonNull
     public static Set<String> toStringSet(@IntRange(from = 0, to = 0xFFFF)
                                           @NonNull final Integer bitmask) {
-        // sanity check.
         if (bitmask < 0) {
             throw new IllegalArgumentException("bitmask=" + bitmask);
         }

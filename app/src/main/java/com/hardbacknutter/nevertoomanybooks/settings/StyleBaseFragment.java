@@ -77,7 +77,9 @@ public abstract class StyleBaseFragment
         if (mStyle == null) {
             // we're doing the global preferences
             mStyle = new BooklistStyle();
-            Log.d(TAG, "onCreatePreferences|we're doing the global preferences");
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "onCreatePreferences|we're doing the global preferences");
+            }
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {

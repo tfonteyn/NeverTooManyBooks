@@ -53,6 +53,18 @@ public class IntStringFilter
     private final TableDefinition mTable;
     private final DomainDefinition mDomain;
 
+    /**
+     * Constructor.
+     * Default value is {@code P_NOT_USED}.
+     *
+     * @param labelId      string resource id to use as a display label
+     * @param key          of the preference
+     * @param uuid         the style ID
+     * @param isPersistent {@code true} to have the value persisted.
+     *                     {@code false} for in-memory only.
+     * @param table        to use by the expression
+     * @param domain       to use by the expression
+     */
     IntStringFilter(@StringRes final int labelId,
                     @NonNull final String key,
                     @NonNull final String uuid,

@@ -50,10 +50,10 @@ public class DateValidator
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply if the field is empty
+     * @param defValue Default to apply if the field is empty
      */
-    public DateValidator(@NonNull final String defaultValue) {
-        mDefaultValue = defaultValue;
+    public DateValidator(@NonNull final String defValue) {
+        mDefaultValue = defValue;
     }
 
     @Override

@@ -143,11 +143,13 @@ public abstract class BasePreferenceFragment
             StringBuilder text = new StringBuilder();
             for (String s : msp.getValues()) {
                 int index = msp.findIndexOfValue(s);
-                if (index == -1) {
+                if (index >= 0) {
+                    text.append(msp.getEntries()[index]).append('\n');
+
+                } else {
                     // This re-surfaces sometimes after a careless dev. change.
-                    //noinspection ConstantConditions
                     Logger.warnWithStackTrace(
-                            getContext(), TAG,
+                            preference.getContext(), TAG,
                             "MultiSelectListPreference:"
                             + "\n s=" + s
                             + "\n key=" + msp.getKey()
@@ -156,14 +158,14 @@ public abstract class BasePreferenceFragment
                             + "\n entryValues="
                             + TextUtils.join(",", Arrays.asList(msp.getEntryValues()))
                             + "\n values=" + msp.getValues());
-                } else {
-                    text.append(msp.getEntries()[index]).append('\n');
                 }
+
             }
             if (text.length() > 0) {
                 return text;
             } else {
-                return getString(R.string.hint_empty_field);
+                // the preference has no values set; but that is a VALID setting and will be used.
+                return preference.getContext().getString(R.string.none);
             }
         } else {
             return "";

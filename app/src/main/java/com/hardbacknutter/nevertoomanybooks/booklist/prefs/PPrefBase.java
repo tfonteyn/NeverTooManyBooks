@@ -58,7 +58,7 @@ public abstract class PPrefBase<T>
      * Copy of the style uuid this Preference belongs to.
      * Convenience only and not locally preserved.
      * Must be set in the constructor.
-     *
+     * <p>
      * When set to the empty string, the global preferences will be used.
      */
     @NonNull
@@ -77,16 +77,16 @@ public abstract class PPrefBase<T>
      * @param key          key of preference
      * @param uuid         of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param defaultValue in memory default
+     * @param defValue     in memory default
      */
     PPrefBase(@NonNull final String key,
               @NonNull final String uuid,
               final boolean isPersistent,
-              @NonNull final T defaultValue) {
+              @NonNull final T defValue) {
         mKey = key;
         mUuid = uuid;
         mIsPersistent = isPersistent;
-        mDefaultValue = defaultValue;
+        mDefaultValue = defValue;
     }
 
     /**
@@ -95,7 +95,7 @@ public abstract class PPrefBase<T>
      * @return preferences
      */
     @NonNull
-    SharedPreferences getPrefs() {
+    protected SharedPreferences getPrefs() {
         if (mUuid.isEmpty()) {
             return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
         } else {

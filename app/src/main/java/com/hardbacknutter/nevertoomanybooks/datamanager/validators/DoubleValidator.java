@@ -61,10 +61,10 @@ public class DoubleValidator
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply if the field is empty
+     * @param defValue Default to apply if the field is empty
      */
-    public DoubleValidator(final double defaultValue) {
-        mDefaultValue = defaultValue;
+    public DoubleValidator(final double defValue) {
+        mDefaultValue = defValue;
     }
 
     @Override

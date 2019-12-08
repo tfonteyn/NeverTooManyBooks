@@ -57,13 +57,13 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      * @param key          key of preference
      * @param uuid         of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param defaultValue in memory default
+     * @param defValue     in memory default
      */
     PCollectionBase(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent,
-                    @NonNull final T defaultValue) {
-        super(key, uuid, isPersistent, defaultValue);
+                    @NonNull final T defValue) {
+        super(key, uuid, isPersistent, defValue);
     }
 
     @Override

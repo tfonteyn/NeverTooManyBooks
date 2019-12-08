@@ -41,7 +41,8 @@ public class PString
         extends PPrefBase<String> {
 
     /**
-     * Constructor. Uses the global setting as the default value, or "" if none.
+     * Constructor. Uses the global setting as the default value,
+     * or {@code ""} if there is no global default.
      *
      * @param key          key of preference
      * @param uuid         of the style

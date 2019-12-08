@@ -47,6 +47,13 @@ public class WildcardFilter
 
     private final String mCriteria;
 
+    /**
+     * Constructor.
+     *
+     * @param table    to use by the expression
+     * @param domain   to use by the expression
+     * @param criteria to use by the expression
+     */
     public WildcardFilter(@NonNull final TableDefinition table,
                           @NonNull final DomainDefinition domain,
                           @NonNull final String criteria) {

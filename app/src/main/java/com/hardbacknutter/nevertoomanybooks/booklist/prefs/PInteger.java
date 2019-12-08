@@ -45,7 +45,8 @@ public class PInteger
         implements PInt {
 
     /**
-     * Constructor. Uses the global setting as the default value, or 0 if none.
+     * Constructor. Uses the global setting as the default value,
+     * or {@code 0} if there is no global default.
      *
      * @param key          key of preference
      * @param uuid         of the style
@@ -59,18 +60,18 @@ public class PInteger
 
     /**
      * Constructor. Uses the global setting as the default value,
-     * or the passed default if no global default.
+     * or the passed default if there is no global default.
      *
      * @param key          key of preference
      * @param uuid         of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param defaultValue in memory default
+     * @param defValue     in memory default
      */
     public PInteger(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent,
-                    @NonNull final Integer defaultValue) {
-        super(key, uuid, isPersistent, getPrefInteger(key, defaultValue));
+                    @NonNull final Integer defValue) {
+        super(key, uuid, isPersistent, getPrefInteger(key, defValue));
     }
 
     /**

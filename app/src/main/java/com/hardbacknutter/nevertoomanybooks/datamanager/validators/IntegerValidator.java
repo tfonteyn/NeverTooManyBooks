@@ -54,10 +54,10 @@ public class IntegerValidator
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply if the field is empty
+     * @param defValue Default to apply if the field is empty
      */
-    public IntegerValidator(final int defaultValue) {
-        mDefaultValue = defaultValue;
+    public IntegerValidator(final int defValue) {
+        mDefaultValue = defValue;
     }
 
     @Override

@@ -47,16 +47,31 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 public class BooleanFilter
         extends IntStringFilter {
 
+    /**
+     * Constructor.
+     *
+     * @param labelId      string resource id to use as a display label
+     * @param key          of the preference
+     * @param uuid         the style ID
+     * @param isPersistent {@code true} to have the value persisted.
+     *                     {@code false} for in-memory only.
+     * @param table        to use by the expression
+     * @param domain       to use by the expression
+     */
     public BooleanFilter(@StringRes final int labelId,
                          @NonNull final String key,
                          @NonNull final String uuid,
                          final boolean isPersistent,
-                         @SuppressWarnings("SameParameterValue") @NonNull
-                         final TableDefinition table,
+                         @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                          @NonNull final DomainDefinition domain) {
         super(labelId, key, uuid, isPersistent, table, domain);
     }
 
+    /**
+     * syntax sugar.
+     *
+     * @param value to set
+     */
     public void set(final boolean value) {
         set(value ? 1 : 0);
     }

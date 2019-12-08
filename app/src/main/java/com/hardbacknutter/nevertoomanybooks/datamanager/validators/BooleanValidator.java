@@ -47,10 +47,10 @@ public class BooleanValidator
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply
+     * @param defValue Default to apply
      */
-    public BooleanValidator(final boolean defaultValue) {
-        mDefaultValue = defaultValue;
+    public BooleanValidator(final boolean defValue) {
+        mDefaultValue = defValue;
     }
 
     @Override

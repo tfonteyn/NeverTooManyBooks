@@ -44,7 +44,8 @@ public class PBoolean
         extends PPrefBase<Boolean> {
 
     /**
-     * Constructor. Uses the global setting as the default value, or false if none.
+     * Constructor. Uses the global setting as the default value,
+     * or {@code false} if there is no global default.
      *
      * @param key          key of preference
      * @param uuid         of the style
@@ -58,18 +59,18 @@ public class PBoolean
 
     /**
      * Constructor. Uses the global setting as the default value,
-     * or the passed default if no global default.
+     * or the passed default if there is no global default.
      *
      * @param key          key of preference
      * @param uuid         of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param defaultValue in memory default
+     * @param defValue     in memory default
      */
     public PBoolean(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent,
-                    @NonNull final Boolean defaultValue) {
-        super(key, uuid, isPersistent, getPrefBoolean(key, defaultValue));
+                    @NonNull final Boolean defValue) {
+        super(key, uuid, isPersistent, getPrefBoolean(key, defValue));
     }
 
     /**

@@ -45,10 +45,10 @@ public class DefaultFieldValidator
     /**
      * Constructor with default value.
      *
-     * @param defaultValue Default to apply if the field is empty
+     * @param defValue Default to apply if the field is empty
      */
-    DefaultFieldValidator(@NonNull final String defaultValue) {
-        mDefaultValue = defaultValue;
+    DefaultFieldValidator(@NonNull final String defValue) {
+        mDefaultValue = defValue;
     }
 
     /**

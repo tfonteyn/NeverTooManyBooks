@@ -50,6 +50,13 @@ public class ListOfValuesFilter<T>
     @NonNull
     private final String mCriteria;
 
+    /**
+     * Constructor.
+     *
+     * @param table  to use by the expression
+     * @param domain to use by the expression
+     * @param list   of values
+     */
     public ListOfValuesFilter(@NonNull final TableDefinition table,
                               @NonNull final DomainDefinition domain,
                               @NonNull final Iterable<T> list) {
