@@ -104,7 +104,7 @@ public final class TerminatorConnection
                                 @NonNull final String urlStr)
             throws IOException {
         // redirect MUST BE SET TO TRUE here.
-        this(appContext, urlStr, true);
+        this(appContext, urlStr, CONNECT_TIMEOUT_MS, READ_TIMEOUT_MS, true);
     }
 
     /**
@@ -119,13 +119,15 @@ public final class TerminatorConnection
     @WorkerThread
     private TerminatorConnection(@NonNull final Context appContext,
                                  @NonNull final String urlStr,
+                                 final int connectTimeoutMs,
+                                 final int readTimeoutMs,
                                  final boolean redirect)
             throws IOException {
 
         final URL url = new URL(urlStr);
 
         // lets make sure name resolution and basic site access works.
-        NetworkUtils.poke(appContext, urlStr);
+        NetworkUtils.poke(appContext, urlStr, connectTimeoutMs);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "Constructor|url=\"" + url + '\"');
@@ -142,10 +144,10 @@ public final class TerminatorConnection
             throw e;
         }
 
-        mCon.setInstanceFollowRedirects(redirect);
         mCon.setUseCaches(false);
-        mCon.setConnectTimeout(CONNECT_TIMEOUT_MS);
-        mCon.setReadTimeout(READ_TIMEOUT_MS);
+        mCon.setInstanceFollowRedirects(redirect);
+        mCon.setConnectTimeout(connectTimeoutMs);
+        mCon.setReadTimeout(readTimeoutMs);
     }
 
     /**

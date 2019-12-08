@@ -100,7 +100,9 @@ abstract class SendBooksLegacyTaskBase
     public boolean run(@NonNull final QueueManager queueManager) {
         Context localContext = App.getLocalizedAppContext();
         try {
-            NetworkUtils.poke(localContext, GoodreadsManager.BASE_URL);
+            NetworkUtils.poke(localContext,
+                              GoodreadsManager.BASE_URL,
+                              GoodreadsManager.SOCKET_TIMEOUT_MS);
 
             GoodreadsManager grManager = new GoodreadsManager();
             if (grManager.hasValidCredentials()) {

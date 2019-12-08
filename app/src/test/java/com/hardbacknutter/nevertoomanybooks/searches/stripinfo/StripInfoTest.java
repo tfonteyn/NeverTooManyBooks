@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -75,7 +76,9 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(mContext, doc);
+        SearchEngine searchEngine = new StripInfoManager();
+        StripInfoBookHandler stripInfoBookHandler =
+                new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
 
@@ -142,7 +145,9 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(mContext, doc);
+        SearchEngine searchEngine = new StripInfoManager();
+        StripInfoBookHandler stripInfoBookHandler =
+                new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
 
@@ -208,7 +213,9 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(mContext, doc);
+        SearchEngine searchEngine = new StripInfoManager();
+        StripInfoBookHandler stripInfoBookHandler =
+                new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
 
@@ -281,7 +288,9 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(mContext, doc);
+        SearchEngine searchEngine = new StripInfoManager();
+        StripInfoBookHandler stripInfoBookHandler =
+                new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
 
@@ -351,7 +360,9 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(mContext, doc);
+        SearchEngine searchEngine = new StripInfoManager();
+        StripInfoBookHandler stripInfoBookHandler =
+                new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
 
@@ -416,7 +427,9 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        StripInfoBookHandler stripInfoBookHandler = new StripInfoBookHandler(mContext, doc);
+        SearchEngine searchEngine = new StripInfoManager();
+        StripInfoBookHandler stripInfoBookHandler =
+                new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         Bundle bookData = null;
         try {

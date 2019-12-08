@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
@@ -62,8 +63,6 @@ public class StripInfoBookHandler
 
     public static final String FILENAME_SUFFIX = "_SI";
 
-    /** connect-timeout. Default is 5_000. */
-    private static final int CONNECT_TIMEOUT = 10_000;
     /** read-timeout. Default is 10_000. */
     private static final int READ_TIMEOUT = 60_000;
     /** log tag. */
@@ -103,9 +102,10 @@ public class StripInfoBookHandler
      *
      * @param localizedAppContext Localised application context
      */
-    StripInfoBookHandler(@NonNull final Context localizedAppContext) {
+    StripInfoBookHandler(@NonNull final Context localizedAppContext,
+                         @NonNull final SearchEngine searchEngine) {
         super();
-        initSite();
+        initSite(searchEngine);
         mLocalizedAppContext = localizedAppContext;
     }
 
@@ -117,17 +117,18 @@ public class StripInfoBookHandler
      */
     @VisibleForTesting
     StripInfoBookHandler(@NonNull final Context localizedAppContext,
+                         @NonNull final SearchEngine searchEngine,
                          @NonNull final Document doc) {
         super(doc);
-        initSite();
+        initSite(searchEngine);
         mLocalizedAppContext = localizedAppContext;
     }
 
     /**
      * Set some site specific parameters.
      */
-    private void initSite() {
-        setConnectTimeout(CONNECT_TIMEOUT);
+    private void initSite(@NonNull final SearchEngine searchEngine) {
+        setConnectTimeout(searchEngine.getConnectTimeoutMs());
         setReadTimeout(READ_TIMEOUT);
     }
 
@@ -255,6 +256,7 @@ public class StripInfoBookHandler
 
                         switch (label) {
                             case "Scenario":
+                            case "Naar":
                                 i += processAuthor(td, Author.TYPE_WRITER);
                                 break;
 
@@ -321,7 +323,7 @@ public class StripInfoBookHandler
                                 break;
 
                             case "Barcode":
-                                i += processText(td, StripInfoField.EAN13, bookData);
+                                i += processText(td, StripInfoField.BARCODE, bookData);
                                 break;
 
                             case "":
@@ -813,8 +815,8 @@ public class StripInfoBookHandler
      */
     public static final class StripInfoField {
 
-        /** The barcode (i.e. the EAN code) is not always an ISBN. */
-        public static final String EAN13 = "__ean13";
+        /** The barcode (e.g. the EAN code) is not always an ISBN. */
+        public static final String BARCODE = "__barcode";
 
         private StripInfoField() {
         }

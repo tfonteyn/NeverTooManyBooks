@@ -61,6 +61,9 @@ public class StripInfoManager
     /** base urls. */
     public static final String BASE_URL = "https://stripinfo.be";
 
+    /** connect-timeout. */
+    private static final int SOCKET_TIMEOUT_MS = 7_000;
+
     /**
      * View a Book on the web site.
      *
@@ -73,11 +76,17 @@ public class StripInfoManager
         appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
+    @Override
+    public int getConnectTimeoutMs() {
+        return SOCKET_TIMEOUT_MS;
+    }
+
     @NonNull
     @Override
     public String getUrl(@NonNull final Context appContext) {
         return BASE_URL;
     }
+
 
     @NonNull
     @Override
@@ -85,7 +94,7 @@ public class StripInfoManager
                                @NonNull final String isbn,
                                final boolean fetchThumbnail)
             throws IOException {
-        return new StripInfoBookHandler(localizedAppContext)
+        return new StripInfoBookHandler(localizedAppContext, this)
                 .fetch(isbn, new Bundle(), fetchThumbnail);
     }
 
@@ -95,7 +104,7 @@ public class StripInfoManager
                                    @NonNull final String nativeId,
                                    final boolean fetchThumbnail)
             throws IOException {
-        return new StripInfoBookHandler(localizedAppContext)
+        return new StripInfoBookHandler(localizedAppContext, this)
                 .fetchByNativeId(nativeId, new Bundle(), fetchThumbnail);
     }
 

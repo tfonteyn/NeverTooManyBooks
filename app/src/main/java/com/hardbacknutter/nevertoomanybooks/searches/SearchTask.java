@@ -152,7 +152,9 @@ public class SearchTask
 
         try {
             // can we reach the site ?
-            NetworkUtils.poke(localContext, mSearchEngine.getUrl(localContext));
+            NetworkUtils.poke(localContext,
+                              mSearchEngine.getUrl(localContext),
+                              mSearchEngine.getConnectTimeoutMs());
 
             Bundle bookData;
 

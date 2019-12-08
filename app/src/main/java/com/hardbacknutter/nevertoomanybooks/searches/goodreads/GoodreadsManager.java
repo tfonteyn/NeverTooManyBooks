@@ -101,6 +101,7 @@ public class GoodreadsManager
                    SearchEngine.ByText,
                    SearchEngine.CoverByIsbn {
 
+
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
     /** Can only send requests at a throttled speed. */

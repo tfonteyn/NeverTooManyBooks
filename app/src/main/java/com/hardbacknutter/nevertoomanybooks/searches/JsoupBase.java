@@ -160,9 +160,15 @@ public abstract class JsoupBase {
 
                 if (mConnectTimeout > 0) {
                     con.setConnectTimeout(mConnectTimeout);
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "loadPage|mConnectTimeout=" + mConnectTimeout);
+                    }
                 }
                 if (mReadTimeout > 0) {
                     con.setReadTimeout(mReadTimeout);
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "loadPage|mReadTimeout=" + mReadTimeout);
+                    }
                 }
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {

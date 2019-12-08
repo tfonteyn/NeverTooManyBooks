@@ -69,6 +69,14 @@ public interface SearchEngine {
     String TAG = "SearchEngine";
 
     /**
+     * Default timeout we allow for a connection to work.
+     * Initial tests show that the sites we use, connect in less than 200ms.
+     * <p>
+     * Override {@link #getConnectTimeoutMs} if you want a SearchEngine to be configurable.
+     */
+    int SOCKET_TIMEOUT_MS = 1500;
+
+    /**
      * Get the resource id for the human-readable name of the site.
      *
      * @return the resource id
@@ -88,6 +96,10 @@ public interface SearchEngine {
     @NonNull
     String getUrl(@NonNull Context appContext);
 
+
+    default int getConnectTimeoutMs() {
+        return SOCKET_TIMEOUT_MS;
+    }
 
     /**
      * Generic test to be implemented by individual site search managers to check if
@@ -359,7 +371,7 @@ public interface SearchEngine {
          * {@code null} returned.
          *
          * @param appContext Application context
-         * @param isbnStr       to search for, <strong>must</strong> be valid.
+         * @param isbnStr    to search for, <strong>must</strong> be valid.
          *
          * @return found/saved File, or {@code null} when none found (or any other failure)
          */

@@ -51,11 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public final class NetworkUtils {
 
     private static final String TAG = "NetworkUtils";
-    /**
-     * timeout we allow for a connection to work.
-     * Initial tests show the sites we use, connect in less than 200ms.
-     */
-    private static final int SOCKET_TIMEOUT_MS = 1500;
+
     private static final Pattern SLASH_PATTERN = Pattern.compile("//");
 
     private NetworkUtils() {
@@ -125,14 +121,16 @@ public final class NetworkUtils {
      * Any path after the hostname will be ignored.
      * If a port is specified.. it's ignored. Only ports 80/443 are used.
      *
-     * @param appContext Application context
-     * @param urlStr     url to check,
+     * @param appContext  Application context
+     * @param urlStr      url to check
+     * @param timeoutInMs socket connect timeout in milliseconds
      *
      * @throws IOException if we cannot reach the site, or if the network itself is unavailable
      */
     @WorkerThread
     public static void poke(@NonNull final Context appContext,
-                            @NonNull final String urlStr)
+                            @NonNull final String urlStr,
+                            final int timeoutInMs)
             throws IOException {
 
         if (!isNetworkAvailable(appContext)) {
@@ -145,7 +143,7 @@ public final class NetworkUtils {
         String host = SLASH_PATTERN.split(url)[1].split("/")[0];
 
         Socket sock = new Socket();
-        sock.connect(new InetSocketAddress(host, port), SOCKET_TIMEOUT_MS);
+        sock.connect(new InetSocketAddress(host, port), timeoutInMs);
         sock.close();
     }
 }
