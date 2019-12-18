@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * Global String constants.
@@ -78,9 +77,9 @@ public final class UniqueId {
     /** Request code: ask the CoverBrowserFragment to get an alternative edition cover. */
     public static final int REQ_ACTION_COVER_BROWSER = 3_001;
     /** Request code: use internal routines for cropping images. */
-    public static final int REQ_CROP_IMAGE_INTERNAL = 3_002;
+    public static final int REQ_CROP_IMAGE = 3_002;
     /** Request code: start an intent for an external application to do the cropping. */
-    public static final int REQ_CROP_IMAGE_EXTERNAL = 3_003;
+    public static final int REQ_EDIT_IMAGE = 3_003;
     /** Request code: start an intent to get an image from the Camera. */
     public static final int REQ_ACTION_IMAGE_CAPTURE = 3_004;
     /** Request code: start an intent to get an image from the an app that provides content. */
@@ -114,18 +113,31 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_TEXT = "searchText";
 
     /**
-     * Single fileSpecs or uri.
-     * <p>
-     * <br>type: {@code String}
+     * User Visibility flag / flag that we want covers.
+     * <br>type: {@code boolean}
+     *
+     * <strong>Note:</strong> do not change the string. It's a key in the preferences.
      */
-    public static final String BKEY_FILE_SPEC = "fileSpec";
+    public static final String BKEY_THUMBNAIL = "thumbnail";
 
     /**
+     * Book front and back-cover file specs.
+     */
+    public static final String[] BKEY_FILE_SPEC = new String[2];
+    /**
      * List of fileSpecs or uri.
+     * The key represents the single (front) cover.
      * <p>
      * <br>type: {@code ArrayList<String>}
      */
     public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
+
+    static {
+        // front cover
+        BKEY_FILE_SPEC[0] = "fileSpec:0";
+        // back cover
+        BKEY_FILE_SPEC[1] = "fileSpec:1";
+    }
 
     /**
      * The title to be used by generic Dialogs.
@@ -156,19 +168,6 @@ public final class UniqueId {
      */
     public static final String BKEY_ID_LIST = "idList";
 
-    /**
-     * <ol>3 uses.
-     * <li>Indicate if we 'have' a thumbnail in which case {@link StorageUtils#getTempCoverFile()}
-     * will point to that image.</li>
-     * <li>Flag to indicate we 'want' a thumbnail when downloading book information
-     * from search sites.</li>
-     * <li>User Visibility flag</li>
-     * </ol>
-     * <br>type: {@code boolean}
-     *
-     * <strong>Note:</strong> do not change the string. It's a key in the preferences.
-     */
-    public static final String BKEY_IMAGE = "thumbnail";
 
     /**
      * A BooklistStyle.

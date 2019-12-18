@@ -170,6 +170,8 @@ public class CoverBrowserViewModel
     }
 
     /**
+     * Start a task to fetch a Gallery image.
+     *
      * @param isbn to search for, <strong>must</strong> be valid.
      */
     public void fetchGalleryImage(@NonNull final String isbn) {
@@ -182,6 +184,11 @@ public class CoverBrowserViewModel
         return mGalleryImage;
     }
 
+    /**
+     * Start a task to get the ImageSwitcher image; i.e. the full size image.
+     *
+     * @param fileInfo of the selected image
+     */
     public void fetchSelectedImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
         GetSwitcherImageTask task = new GetSwitcherImageTask(fileInfo, mFileManager,
                                                              mImageTaskListener);

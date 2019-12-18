@@ -45,7 +45,7 @@ public class PString
      * or {@code ""} if there is no global default.
      *
      * @param key          key of preference
-     * @param uuid         of the style
+     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      */
     public PString(@NonNull final String key,

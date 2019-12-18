@@ -303,7 +303,6 @@ public abstract class BaseActivity
      * @param itemId  menu item resource id
      * @param visible flag
      */
-    @SuppressWarnings("SameParameterValue")
     protected void setNavigationItemVisibility(@IdRes final int itemId,
                                                final boolean visible) {
         if (mNavigationView != null) {

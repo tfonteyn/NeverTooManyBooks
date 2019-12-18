@@ -153,10 +153,12 @@ public class DBCleaner {
 
     /**
      * Validates the style versus Bookshelf. No dry-run.
+     *
+     * @param context Current context
      */
-    public void bookshelves() {
+    public void bookshelves(@NonNull final Context context) {
         for (Bookshelf bookshelf : mDb.getBookshelves()) {
-            bookshelf.validateStyle(mDb);
+            bookshelf.validateStyle(context, mDb);
         }
     }
 

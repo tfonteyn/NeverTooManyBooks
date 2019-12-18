@@ -129,9 +129,10 @@ public class ExportHelper
         mResults.booksProcessed += results.booksProcessed;
         mResults.booksExported += results.booksExported;
 
-        mResults.coversProcessed += results.coversProcessed;
+        mResults.coversSkipped += results.coversSkipped;
         mResults.coversExported += results.coversExported;
-        mResults.coversMissing += results.coversMissing;
+        mResults.coversMissing[0] += results.coversMissing[0];
+        mResults.coversMissing[1] += results.coversMissing[1];
 
         mResults.styles += results.styles;
     }

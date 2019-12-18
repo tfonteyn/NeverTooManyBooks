@@ -121,10 +121,12 @@ class ImportLegacyTask
     /**
      * Constructor.
      *
+     * @param context     Current context
      * @param description for the task
      * @param isSync      Flag indicating this job is a sync job
      */
-    ImportLegacyTask(@NonNull final String description,
+    ImportLegacyTask(@NonNull final Context context,
+                     @NonNull final String description,
                      final boolean isSync) {
 
         super(description);
@@ -134,7 +136,7 @@ class ImportLegacyTask
         // If it's a sync job, then find date of last successful sync and only apply
         // records from after that date. If no other job, then get all.
         if (mIsSync) {
-            Date lastSync = GoodreadsManager.getLastSyncDate();
+            Date lastSync = GoodreadsManager.getLastSyncDate(context);
             if (lastSync == null) {
                 mUpdatesAfter = null;
             } else {
@@ -436,11 +438,16 @@ class ImportLegacyTask
         long id = db.insertBook(context, book);
 
         if (id > 0) {
-            if (book.getBoolean(UniqueId.BKEY_IMAGE)) {
-                File downloadedFile = StorageUtils.getTempCoverFile();
-                File destination = StorageUtils.getCoverFileForUuid(db.getBookUuid(id));
-                StorageUtils.renameFile(downloadedFile, destination);
+            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                String fileSpec = book.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
+                if (!fileSpec.isEmpty()) {
+                    File downloadedFile = new File(fileSpec);
+                    File destination = StorageUtils.getCoverFileForUuid(context,
+                                                                        db.getBookUuid(id), cIdx);
+                    StorageUtils.renameFile(downloadedFile, destination);
+                }
             }
+
         }
     }
 
@@ -626,7 +633,7 @@ class ImportLegacyTask
                 bsName = translateBookshelf(db, bsName);
 
                 if (bsName != null && !bsName.isEmpty()) {
-                    bsList.add(new Bookshelf(bsName, BooklistStyle.getDefaultStyle(db)));
+                    bsList.add(new Bookshelf(bsName, BooklistStyle.getDefaultStyle(context, db)));
                 }
             }
             //TEST see above
@@ -666,10 +673,7 @@ class ImportLegacyTask
                                                        GoodreadsManager.FILENAME_SUFFIX,
                                                        sizeSuffix);
                 if (fileSpec != null) {
-                    ArrayList<String> imageList = new ArrayList<>();
-                    imageList.add(fileSpec);
-                    bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
-                    ImageUtils.cleanupImages(bookData);
+                    bookData.putString(UniqueId.BKEY_FILE_SPEC[0], fileSpec);
                 }
             }
         }

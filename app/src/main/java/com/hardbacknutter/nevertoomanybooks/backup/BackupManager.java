@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  */
 public final class BackupManager {
 
+    /** log tag. */
     private static final String TAG = "BackupManager";
 
     /** Last full backup date. */

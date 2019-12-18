@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
@@ -90,7 +92,7 @@ public class GoodreadsWork {
     public String smallImageUrl;
 
     @Nullable
-    private byte[] imageBytes;
+    private byte[] mImageBytes;
     private WeakReference<ImageView> mImageView;
 
     /**
@@ -103,7 +105,7 @@ public class GoodreadsWork {
     @UiThread
     public void fillImageView(@NonNull final ImageView imageView) {
         synchronized (this) {
-            if (imageBytes == null) {
+            if (mImageBytes == null) {
                 // Image not retrieved yet, so clear any existing image
                 imageView.setImageBitmap(null);
                 // Save the view so we know where the image is going to be displayed
@@ -115,8 +117,16 @@ public class GoodreadsWork {
                 imageView.setTag(R.id.TAG_GR_WORK, this);
 
             } else {
-                // We already have an image, so just expand it.
-                imageView.setImageBitmap(ImageUtils.getBitmap(imageBytes));
+                // We already have an image (but it could be empty!), so just expand it.
+                if (mImageBytes.length != 0) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
+                                                                  mImageBytes.length,
+                                                                  new BitmapFactory.Options());
+                    imageView.setImageBitmap(bitmap);
+                } else {
+                    imageView.setImageBitmap(null);
+                }
+
                 // Clear the work in the View, in case some other job was running
                 imageView.setTag(R.id.TAG_GR_WORK, null);
             }
@@ -139,14 +149,22 @@ public class GoodreadsWork {
      */
     @UiThread
     private void onGetImageTaskFinished(@NonNull final byte[] bytes) {
-        imageBytes = bytes;
+        mImageBytes = bytes;
 
         final ImageView imageView = mImageView.get();
         if (imageView != null) {
-            synchronized (mImageView) {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (imageView) {
                 // Make sure our view is still associated with us
                 if (this.equals(imageView.getTag(R.id.TAG_GR_WORK))) {
-                    imageView.setImageBitmap(ImageUtils.getBitmap(imageBytes));
+                    if (mImageBytes.length != 0) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
+                                                                      mImageBytes.length,
+                                                                      new BitmapFactory.Options());
+                        imageView.setImageBitmap(bitmap);
+                    } else {
+                        imageView.setImageBitmap(null);
+                    }
                 }
             }
         }

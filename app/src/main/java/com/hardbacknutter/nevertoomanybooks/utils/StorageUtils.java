@@ -33,6 +33,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -49,7 +50,7 @@ import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -231,24 +232,34 @@ public final class StorageUtils {
     /**
      * return the cover for the given uuid. We'll attempt to find a jpg or a png.
      * If no file found, a jpg place holder is returned.
+     * Keep in mind that internally we always use PNG compression (except for the cache).
+     * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
      *
-     * @param uuid of the book, must be valid.
+     * The index only gets appended to the name if it's > 0.
+     *
+     * @param context Current context
+     * @param uuid    UUID of the book
+     * @param cIdx    0..n image index
      *
      * @return The File object for existing files, or a new jpg placeholder.
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
     @NonNull
-    public static File getCoverFileForUuid(@NonNull final String uuid)
+    public static File getCoverFileForUuid(@NonNull final Context context,
+                                           @NonNull final String uuid,
+                                           final int cIdx)
             throws ExternalStorageException {
-        final File coverDir = getCoverDir(App.getAppContext());
+        final File coverDir = getCoverDir(context);
 
-        final File jpg = new File(coverDir, uuid + ".jpg");
+        String name = uuid + (cIdx > 0 ? "_" + cIdx : "");
+
+        final File jpg = new File(coverDir, name + ".jpg");
         if (jpg.exists()) {
             return jpg;
         }
         // could be a png
-        final File png = new File(coverDir, uuid + ".png");
+        final File png = new File(coverDir, name + ".png");
         if (png.exists()) {
             return png;
         }
@@ -257,35 +268,53 @@ public final class StorageUtils {
         return jpg;
     }
 
-
     /**
-     * Get a 'standard' temporary file for the <strong>current</strong> cover being processed.
-     * Used for example for new books, images downloaded from the internet,...
+     * Get a temporary file for a cover being processed.
      *
-     * @return the 'standard' temporary file name for a cover.
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
-     */
-    public static File getTempCoverFile()
-            throws ExternalStorageException {
-        return new File(getCacheDir(App.getAppContext()), "tmp.jpg");
-    }
-
-    /**
-     * Get a specific file for a temporary cover being processed when the single 'standard'
-     * file is not enough.
-     *
-     * @param name for the file.
+     * @param context Current context
+     * @param name    for the file.
      *
      * @return a temp cover file spec.
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
      */
-    public static File getTempCoverFile(@NonNull final String name)
+    public static File getTempCoverFile(@NonNull final Context context,
+                                        @NonNull final String name)
             throws ExternalStorageException {
-        return new File(getCacheDir(App.getAppContext()), "tmp" + name + ".jpg");
+        return new File(getCacheDir(context), "tmp" + name + ".jpg");
     }
 
+    /**
+     * Given a InputStream, write it to a file.
+     * We first write to a temporary file, so an existing 'out' file is not destroyed
+     * if the stream somehow fails.
+     *
+     * @param context Current context
+     * @param is      InputStream to read
+     * @param file    File to write to
+     *
+     * @return File written to (the one passed in), or {@code null} if writing failed.
+     */
+    public static File saveInputStreamToFile(@NonNull final Context context,
+                                             @Nullable final InputStream is,
+                                             @NonNull final File file) {
+        Objects.requireNonNull(is, "no InputStream");
+
+        File tmpFile = getTempCoverFile(context, "is");
+        try (OutputStream os = new FileOutputStream(tmpFile)) {
+            if (copy(is, os) > 0) {
+                // All OK, rename to real output file
+                renameFile(tmpFile, file);
+                return file;
+            }
+        } catch (@NonNull final IOException ignore) {
+            // ignore
+        } finally {
+            deleteFile(tmpFile);
+        }
+
+        return null;
+    }
 
     /**
      * Count size + (optional) Cleanup any purgeable files.
@@ -345,36 +374,6 @@ public final class StorageUtils {
     }
 
     /**
-     * Given a InputStream, write it to a file.
-     * We first write to a temporary file, so an existing 'out' file is not destroyed
-     * if the stream somehow fails.
-     *
-     * @param is   InputStream to read
-     * @param file File to write to
-     *
-     * @return number of bytes read; can be 0 if the stream was empty.
-     *
-     * @throws IOException on failures
-     */
-    public static int saveInputStreamToFile(@Nullable final InputStream is,
-                                            @NonNull final File file)
-            throws IOException {
-        Objects.requireNonNull(is, "no InputStream");
-
-        File tmpFile = getTempCoverFile("is");
-        try {
-            OutputStream os = new FileOutputStream(tmpFile);
-            int total = copy(is, os);
-            os.close();
-            // All OK, so rename to real output file
-            renameFile(tmpFile, file);
-            return total;
-        } finally {
-            deleteFile(tmpFile);
-        }
-    }
-
-    /**
      * Convenience wrapper for {@link File#delete()}.
      *
      * @param file to delete
@@ -386,6 +385,11 @@ public final class StorageUtils {
                 file.delete();
             } catch (@NonNull final SecurityException e) {
                 Logger.error(TAG, e);
+
+            } catch (@NonNull final RuntimeException e) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "failed to delete file=" + file, e);
+                }
             }
         }
     }
@@ -407,7 +411,10 @@ public final class StorageUtils {
                 //noinspection ResultOfMethodCallIgnored
                 source.renameTo(destination);
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(TAG, e);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "failed to rename source=" + source
+                               + "TO destination" + destination, e);
+                }
             }
         }
         return destination.exists();
@@ -469,18 +476,17 @@ public final class StorageUtils {
     /**
      * Export the source File to the destination Uri.
      *
-     *
-     * @param appContext Application context
+     * @param context     Application context
      * @param source      File
      * @param destination Uri
      *
      * @throws IOException on failure
      */
-    public static void exportFile(@NonNull final Context appContext,
+    public static void exportFile(@NonNull final Context context,
                                   @NonNull final File source,
                                   @NonNull final Uri destination)
             throws IOException {
-        ContentResolver cr = appContext.getContentResolver();
+        ContentResolver cr = context.getContentResolver();
 
         try (InputStream is = new FileInputStream(source);
              OutputStream os = cr.openOutputStream(destination)) {

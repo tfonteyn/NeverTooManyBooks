@@ -132,7 +132,7 @@
     <string name="error_if_the_problem_persists">Если проблема не устранена, обратитесь в службу поддержки через опцию «%1$s» внизу страницы настроек.</string>
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_network_timeout">Нет ответа, пожалуйста, попробуйте еще раз</string>
-    <string name="error_no_external_crop_app">Заявка на обрезку изображений не найдена</string>
+    <string name="error_no_image_editor">Редактор изображений не найден</string>
     <string name="error_network_no_connection">Интернет соединение отсутствует.</string>
     <string name="error_not_available">%1$s недоступен</string>
     <string name="error_search_failed_network">Пожалуйста, откройте «Настройки» и проверьте настройки сети и поиска на сайте.\nТакже проверьте настройки сети вашего устройства</string>
@@ -404,8 +404,8 @@
     <string name="X_progress_end_n_books_searched">%1$d книг искалось</string>
     <string name="title_backing_up">Делаю бэкап…</string>
     <string name="progress_msg_connecting">Соединение с сайтом…</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d отсутствует)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d обложек обработана\n(%2$d отсутствует, %3$d пропущена)</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d обложек обработана\n(%2$d/%3$d отсутствует, %4$d пропущена)</string>
     <string name="progress_msg_finding_editions">Поиск изданий…</string>
     <string name="title_importing">Импорт…</string>
     <string name="progress_msg_loading">Загрузка…</string>
@@ -441,7 +441,6 @@
     <string name="pt_thumbnail_cropper_layer_type">Обрезать «Layer Type»</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
-    <string name="pt_thumbnails_external_cropper">Использовать внешний редактор рисунков</string>
     <string name="pt_thumbnails_rotate_auto">Повернуть фотографии</string>
     <string name="pg_camera">камера</string>
     <string name="pt_ui_language">язык</string>

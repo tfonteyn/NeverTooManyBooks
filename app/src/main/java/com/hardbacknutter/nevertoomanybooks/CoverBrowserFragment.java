@@ -33,6 +33,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -74,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
  * Uses setTargetFragment/getTargetFragment and returns result to {@link Fragment#onActivityResult}.
  * <p>
  * ENHANCE: allow configuring search-sites on the fly
- * ENHANCE: For each edition, try to get TWO images from a different site each.
+ * ENHANCE: currently supports only a front-cover. Add back-cover support
  */
 public class CoverBrowserFragment
         extends DialogFragment {
@@ -83,7 +84,9 @@ public class CoverBrowserFragment
 
     /** {@code ArrayList<String>} with edition isbn's. */
     private static final String BKEY_EDITION_LIST = TAG + ":editions";
-    private static final String BKEY_SWITCHER_FILE = TAG + ":coverImage";
+    /** returns the result/selected cover to use. */
+    static final String BKEY_SELECTED_COVER = TAG + ":cover";
+    private static final String BKEY_COVER_FILE_INFO = TAG + ":coverFileInfo";
 
     /** Populated by {@link #showGallery} AND savedInstanceState. */
     @NonNull
@@ -145,7 +148,7 @@ public class CoverBrowserFragment
                 mAlternativeEditions.clear();
                 mAlternativeEditions.addAll(editions);
             }
-            mSwitcherImageFileInfo = savedInstanceState.getParcelable(BKEY_SWITCHER_FILE);
+            mSwitcherImageFileInfo = savedInstanceState.getParcelable(BKEY_COVER_FILE_INFO);
         }
     }
 
@@ -192,7 +195,7 @@ public class CoverBrowserFragment
                 Log.d(TAG, "mImageSwitcherView.onClick|fileSpec=" + fileSpec);
             }
             if (fileSpec != null) {
-                Intent resultData = new Intent().putExtra(UniqueId.BKEY_FILE_SPEC, fileSpec);
+                Intent resultData = new Intent().putExtra(BKEY_SELECTED_COVER, fileSpec);
                 //noinspection ConstantConditions
                 getTargetFragment()
                         .onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, resultData);
@@ -227,7 +230,7 @@ public class CoverBrowserFragment
             outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
         }
         if (mSwitcherImageFileInfo != null) {
-            outState.putParcelable(BKEY_SWITCHER_FILE, mSwitcherImageFileInfo);
+            outState.putParcelable(BKEY_COVER_FILE_INFO, mSwitcherImageFileInfo);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
@@ -279,7 +282,6 @@ public class CoverBrowserFragment
 
         // Show help message
         mStatusTextView.setText(R.string.info_tap_on_thumb);
-
     }
 
     /**
@@ -339,13 +341,14 @@ public class CoverBrowserFragment
         if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
             // Load the temp file and apply to the switcher
             File file = new File(fileInfo.fileSpec);
-            if (file.exists() && file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
-
+            if (file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
                 // store the path. It will be send back to the caller.
                 mImageSwitcherView.setTag(R.id.TAG_FILE_SPEC, file.getAbsolutePath());
 
+                //noinspection ConstantConditions
                 @Nullable
-                Bitmap bm = ImageUtils.createScaledBitmap(file, ImageUtils.SCALE_X_LARGE);
+                Bitmap bm = ImageUtils.createScaledBitmap(getContext(), file,
+                                                          ImageUtils.SCALE_X_LARGE);
                 if (bm != null) {
                     mImageSwitcherView.setImageDrawable(new BitmapDrawable(getResources(), bm));
                     mImageSwitcherView.setVisibility(View.VISIBLE);
@@ -392,9 +395,10 @@ public class CoverBrowserFragment
          */
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@ImageUtils.Scale final int scale) {
-            int maxSize = ImageUtils.getMaxImageSize(scale);
-            mWidth = maxSize;
+            //noinspection ConstantConditions
+            int maxSize = ImageUtils.getMaxImageSize(getContext(), scale);
             mHeight = maxSize;
+            mWidth = maxSize;
         }
 
         @Override
@@ -403,6 +407,7 @@ public class CoverBrowserFragment
                                          final int viewType) {
 
             ImageView imageView = new ImageView(parent.getContext());
+            // Deliberately keep sizes fixed (square) to prevent gallery constantly changing size.
             imageView.setLayoutParams(new ViewGroup.LayoutParams(mWidth, mHeight));
             imageView.setBackgroundResource(R.drawable.border);
             return new Holder(imageView);
@@ -433,10 +438,9 @@ public class CoverBrowserFragment
             }
 
             // See if file is present.
-            if (imageFile != null && imageFile.exists()) {
-                ImageUtils.setImageView(holder.imageView, imageFile, mWidth, mHeight, true,
-                                        R.drawable.ic_image, false);
-
+            if (imageFile != null && imageFile.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
+                new ImageUtils.ImageLoader(holder.imageView, imageFile, mWidth, mHeight, true)
+                        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
                 // Not present; use a placeholder.
                 holder.imageView.setImageResource(R.drawable.ic_image);
@@ -463,12 +467,12 @@ public class CoverBrowserFragment
                 if (fileSpec != null && !fileSpec.isEmpty()) {
                     //noinspection ConstantConditions
                     if (holder.fileInfo.size.equals(SearchEngine.CoverByIsbn.ImageSize.Large)) {
-                        // no need to search, just load it.
-                        ImageUtils.setImageView(holder.imageView, new File(fileSpec),
-                                                mWidth, mHeight, true,
-                                                R.drawable.ic_image, false);
+                        // we know the file is valid, so just display it
+                        new ImageUtils.ImageLoader(holder.imageView, new File(fileSpec),
+                                                   mWidth, mHeight, true)
+                                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     } else {
-                        // see if we can get a larger image.
+                        // check for a larger image.
 
                         // set & show the placeholder.
                         mImageSwitcherView.setImageResource(R.drawable.ic_image);

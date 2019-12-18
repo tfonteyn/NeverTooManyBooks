@@ -58,9 +58,9 @@
         />
 
     <Space
-        android:id="@+id/spacer"
+        android:id="@+id/keypadSpacer"
         android:layout_width="0dp"
-        android:layout_height="@dimen/border1"
+        android:layout_height="@dimen/border2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/isbn"
@@ -84,7 +84,7 @@
         app:layout_constraintBottom_toTopOf="@id/key_4"
         app:layout_constraintEnd_toStartOf="@id/key_2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spacer"
+        app:layout_constraintTop_toBottomOf="@id/keypadSpacer"
         tools:ignore="HardcodedText"
         />
 
@@ -95,7 +95,7 @@
         app:layout_constraintBottom_toTopOf="@id/key_5"
         app:layout_constraintEnd_toStartOf="@id/key_3"
         app:layout_constraintStart_toEndOf="@id/key_1"
-        app:layout_constraintTop_toBottomOf="@id/spacer"
+        app:layout_constraintTop_toBottomOf="@id/keypadSpacer"
         tools:ignore="HardcodedText"
         />
 
@@ -106,7 +106,7 @@
         app:layout_constraintBottom_toTopOf="@id/key_6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/key_2"
-        app:layout_constraintTop_toBottomOf="@id/spacer"
+        app:layout_constraintTop_toBottomOf="@id/keypadSpacer"
         tools:ignore="HardcodedText"
         />
 

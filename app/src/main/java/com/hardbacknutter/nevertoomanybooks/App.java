@@ -40,7 +40,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
@@ -55,10 +54,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.core.content.FileProvider;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
@@ -657,26 +654,6 @@ public class App
             }
         }
         return false;
-    }
-
-    /**
-     * Get a FileProvider URI for the given file.
-     * <p>
-     * The string matches the Manifest entry:
-     * {@code
-     * android:authorities="${packageName}.GenericFileProvider"
-     * }
-     *
-     * @param context Current context
-     * @param file    to uri-fy
-     *
-     * @return the uri
-     */
-    public static Uri getUriForFile(@NonNull final Context context,
-                                    @NonNull final File file) {
-        return FileProvider.getUriForFile(context,
-                                          context.getPackageName() + ".GenericFileProvider",
-                                          file);
     }
 
     /**

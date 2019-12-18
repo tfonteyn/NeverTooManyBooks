@@ -64,7 +64,7 @@ public class SearchEditionsTask
 
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
-            if (ISBN.isValidIsbn(isbnStr)) {
+            if (!ISBN.isValidIsbn(isbnStr)) {
                 throw new IllegalStateException("isbn must be valid");
             }
         }
@@ -76,7 +76,6 @@ public class SearchEditionsTask
     @WorkerThread
     protected ArrayList<String> doInBackground(final Void... params) {
         Thread.currentThread().setName("SearchEditionsTask " + mIsbn);
-
         Context context = App.getAppContext();
 
         ArrayList<String> editions = new ArrayList<>();

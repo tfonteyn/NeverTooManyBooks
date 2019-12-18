@@ -56,22 +56,24 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
 /**
- * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsTask}.
+ * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsModel}.
  * <p>
  * TODO: re-introduce remembering the last id done, and restarting from that id onwards.
  * See {@link UpdateFieldsModel} mFromBookIdOnwards
+ *
+ * TEST: full testing needed
  */
 public class UpdateFieldsFragment
         extends Fragment {
@@ -81,6 +83,7 @@ public class UpdateFieldsFragment
     /** the ViewGroup where we'll add the list of fields. */
     private ViewGroup mFieldListView;
 
+    /** The extended SearchCoordinator. */
     private UpdateFieldsModel mUpdateFieldsModel;
 
     private ProgressDialogFragment mProgressDialog;
@@ -111,16 +114,21 @@ public class UpdateFieldsFragment
         mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
         mUpdateFieldsModel.init(getContext(), getArguments());
-        mUpdateFieldsModel.getTaskProgressMessage()
+        mUpdateFieldsModel.getSearchCoordinatorProgressMessage()
                           .observe(getViewLifecycleOwner(), this::onTaskProgress);
-        mUpdateFieldsModel.getTaskFinishedMessage()
+
+        // INDIVIDUAL searches; i.e. for each book.
+        mUpdateFieldsModel.getSearchCoordinatorFinishedMessage()
+                          .observe(getViewLifecycleOwner(), this::onTaskFinished);
+        // The update task itself; i.e. the end result.
+        mUpdateFieldsModel.getAllUpdatesFinishedMessage()
                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
 
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             // reconnect after a fragment restart
-            mProgressDialog.setCancellable(mUpdateFieldsModel.getTask());
+            mProgressDialog.setCancellable(mUpdateFieldsModel);
         }
 
         // optional activity title
@@ -136,9 +144,8 @@ public class UpdateFieldsFragment
         FloatingActionButton fabButton = activity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_cloud_download);
         fabButton.setVisibility(View.VISIBLE);
-        fabButton.setOnClickListener(v -> startUpdate());
+        fabButton.setOnClickListener(v -> prepareUpdate());
 
-        mUpdateFieldsModel.initFields();
         populateFields();
 
         if (savedInstanceState == null) {
@@ -153,38 +160,6 @@ public class UpdateFieldsFragment
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.error_network_no_connection,
                           Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onTaskFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-
-        if (message.status == TaskListener.TaskStatus.Cancelled) {
-            // This message will likely not be seen
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.progress_end_cancelled, Snackbar.LENGTH_LONG).show();
-        }
-
-        if (message.result != null) {
-            // The result will contain:
-            // UpdateFieldsModel.BKEY_LAST_BOOK_ID, long
-            // UniqueId.BKEY_BOOK_MODIFIED, boolean
-            // DBDefinitions.KEY_PK_ID, long (can be absent)
-
-            //noinspection ConstantConditions
-            getActivity().setResult(Activity.RESULT_OK, new Intent().putExtras(message.result));
-        }
-        //noinspection ConstantConditions
-        getActivity().finish();
-    }
-
-    private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
-        // reminder: the taskId wil be the one from the SearchTask.
-        if (mProgressDialog != null) {
-            mProgressDialog.onProgress(message);
         }
     }
 
@@ -204,7 +179,7 @@ public class UpdateFieldsFragment
      * Display the list of fields.
      */
     private void populateFields() {
-        for (FieldUsage usage : mUpdateFieldsModel.getFieldUsages().values()) {
+        for (FieldUsage usage : mUpdateFieldsModel.getFieldUsages()) {
             View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
                                                    mFieldListView, false);
 
@@ -307,9 +282,10 @@ public class UpdateFieldsFragment
     }
 
     /**
-     * After confirmation, start the process.
+     * Do some basic checks; let the user confirm how to handle thumbnails;
+     * and start the update process.
      */
-    private void startUpdate() {
+    private void prepareUpdate() {
         // sanity check
         if (!hasSelections()) {
             //noinspection ConstantConditions
@@ -327,7 +303,7 @@ public class UpdateFieldsFragment
         }
 
         // If the user has selected thumbnails...
-        final FieldUsage covers = mUpdateFieldsModel.getFieldUsage(UniqueId.BKEY_IMAGE);
+        final FieldUsage covers = mUpdateFieldsModel.getFieldUsage(UniqueId.BKEY_THUMBNAIL);
         if (covers != null && covers.getUsage().equals(Overwrite)) {
             // check if the user really wants to overwrite all covers
             new AlertDialog.Builder(getContext())
@@ -337,30 +313,76 @@ public class UpdateFieldsFragment
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                     .setNeutralButton(R.string.no, (dialog, which) -> {
                         covers.setUsage(CopyIfBlank);
-                        mUpdateFieldsModel.putFieldUsage(UniqueId.BKEY_IMAGE, covers);
-                        startSearch();
+                        mUpdateFieldsModel.putFieldUsage(UniqueId.BKEY_THUMBNAIL, covers);
+                        startUpdate();
                     })
                     .setPositiveButton(R.string.yes, (dialog, which) -> {
                         covers.setUsage(Overwrite);
-                        mUpdateFieldsModel.putFieldUsage(UniqueId.BKEY_IMAGE, covers);
-                        startSearch();
+                        mUpdateFieldsModel.putFieldUsage(UniqueId.BKEY_THUMBNAIL, covers);
+                        startUpdate();
                     })
                     .create()
                     .show();
             return;
         }
 
-        startSearch();
+        startUpdate();
     }
 
-    private void startSearch() {
-        // Start the lookup in a background search task.
-        if (mUpdateFieldsModel.startSearch()) {
-            // we started at least one search.
+    private void startUpdate() {
+        //noinspection ConstantConditions
+        if (mUpdateFieldsModel.startSearch(getContext())) {
             mProgressDialog = ProgressDialogFragment
                     .newInstance(R.string.progress_msg_searching, true, 0);
             mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
-            mProgressDialog.setCancellable(mUpdateFieldsModel.getTask());
+            mProgressDialog.setCancellable(mUpdateFieldsModel);
+        }
+    }
+
+    private void onTaskFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
+        switch (message.taskId) {
+            case R.id.TASK_ID_SEARCH_COORDINATOR: {
+                //noinspection ConstantConditions
+                mUpdateFieldsModel.processSearchResults(getContext(), message.result);
+                break;
+            }
+
+            case R.id.TASK_ID_UPDATE_FIELDS: {
+                if (mProgressDialog != null) {
+                    mProgressDialog.dismiss();
+                    mProgressDialog = null;
+                }
+
+                if (message.status == TaskListener.TaskStatus.Cancelled) {
+                    // This message will likely not be seen as we'll finish after.
+                    //noinspection ConstantConditions
+                    Snackbar.make(getView(), R.string.progress_end_cancelled, Snackbar.LENGTH_LONG)
+                            .show();
+                }
+
+                if (message.result != null) {
+                    // The result will contain:
+                    // UpdateFieldsModel.BKEY_LAST_BOOK_ID, long
+                    // UniqueId.BKEY_BOOK_MODIFIED, boolean
+                    // DBDefinitions.KEY_PK_ID, long (can be absent)
+                    Intent data = new Intent().putExtras(message.result);
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, data);
+                }
+
+                //noinspection ConstantConditions
+                getActivity().finish();
+                break;
+            }
+
+            default:
+                throw new UnexpectedValueException(message.taskId);
+        }
+    }
+
+    private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.onProgress(message);
         }
     }
 }

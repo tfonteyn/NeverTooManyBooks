@@ -34,26 +34,20 @@
     style="@style/BooklistBook.Row"
     >
 
-    <TextView
-        android:id="@+id/series_num"
-        style="@style/BooklistBook.BookInfo.Secondary"
-        android:layout_width="wrap_content"
-        app:layout_constraintBaseline_toBaselineOf="@id/title"
-        app:layout_constraintEnd_toStartOf="@id/title"
+    <ImageView
+        android:id="@+id/coverImage0"
+        style="@style/CoverImage"
+        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/indent2"
+        android:contentDescription="@string/lbl_cover"
+        android:scaleType="centerInside"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="###"
-        />
-
-    <TextView
-        android:id="@+id/title"
-        style="@style/BooklistBook.BookInfo.Title"
-        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/series_num"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
-        tools:text="@string/lbl_title"
+        tools:layout_height="@dimen/tools_cover_2x_large_height"
+        tools:layout_width="@dimen/tools_cover_2x_large_width"
+        tools:src="@drawable/ic_image"
         />
 
     <include
@@ -62,30 +56,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/title"
         app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <ImageView
-        android:id="@+id/coverImage"
-        style="@style/CoverImage"
-        android:layout_width="0dp"
-        android:contentDescription="@string/lbl_cover"
-        android:scaleType="centerInside"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        tools:layout_height="270dp"
-        tools:layout_width="180dp"
-        tools:src="@drawable/ic_image"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@id/ROW_ONCLICK_TARGET"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-        app:layout_constraintStart_toEndOf="@id/coverImage"
-        app:layout_constraintTop_toBottomOf="@id/title"
+        android:layout_marginStart="@dimen/indent2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/coverImage0"
         >
 
         <TextView
@@ -98,14 +80,35 @@
             tools:text="series_num_long"
             />
 
+        <TextView
+            android:id="@+id/series_num"
+            style="@style/BooklistBook.BookInfo.Secondary"
+            android:layout_width="wrap_content"
+            app:layout_constraintBaseline_toBaselineOf="@id/title"
+            app:layout_constraintEnd_toStartOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="SelectableText"
+            tools:text="###"
+            />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/BooklistBook.BookInfo.Title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/series_num"
+            app:layout_constraintTop_toBottomOf="@id/series_num_long"
+            tools:ignore="SelectableText"
+            tools:text="@string/lbl_title"
+            />
+
         <Space
             android:id="@+id/spacer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border1"
+            android:layout_height="@dimen/border1"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/series_num_long"
+            app:layout_constraintTop_toBottomOf="@id/title"
             />
 
         <include layout="@layout/booksonbookshelf_row_inc_extras" />

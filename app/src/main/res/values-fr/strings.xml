@@ -135,7 +135,7 @@
     <string name="error_if_the_problem_persists">Si le problème persiste, contactez le support technique via l\'option «%1$s» en bas de la page de paramètres.</string>
     <string name="error_import_failed">Restauration échouée</string>
     <string name="error_network_timeout">Pas de réponse, veuillez réessayer</string>
-    <string name="error_no_external_crop_app">Une application pour rogner des images n\'a pas été trouvée</string>
+    <string name="error_no_image_editor">Aucun éditeur d\'image trouvé</string>
     <string name="error_network_no_connection">Pas de connexion Internet disponible.</string>
     <string name="error_not_available">%1$s indisponible</string>
     <string name="error_search_failed_network">Ouvrez les paramètres et vérifiez les préférences de votre réseau et de votre site de recherche.\nVérifiez également les paramètres réseau de votre appareil</string>
@@ -411,8 +411,8 @@
     <string name="X_progress_end_n_books_searched">%1$d livres recherchés</string>
     <string name="title_backing_up">Sauvegarde de…</string>
     <string name="progress_msg_connecting">Connection au site…</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d couvertures traitées\n(%2$d manquante)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d couvertures traitées\n(%2$d manquantes, %3$d ignorées)</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d couvertures traitées\n(%2$d/%3$d manquante)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d couvertures traitées\n(%2$d/%3$d manquantes, %4$d ignorées)</string>
     <string name="progress_msg_finding_editions">Éditions en cours de recherche…</string>
     <string name="title_importing">Importer…</string>
     <string name="progress_msg_loading">Chargement…</string>
@@ -450,7 +450,6 @@
     <string name="pt_thumbnail_cropper_layer_type">Recadrage «Layer Type»</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez «Logiciel» pour plus sûr mais plus lentement, ou forcez «Matériel» pour moins sûr, mais plus rapide.</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
-    <string name="pt_thumbnails_external_cropper">Recadrage d\'image avec un outil externe</string>
     <string name="pt_thumbnails_rotate_auto">Faire pivoter les images</string>
     <string name="pg_camera">Caméra</string>
     <string name="pt_ui_language">Langue</string>

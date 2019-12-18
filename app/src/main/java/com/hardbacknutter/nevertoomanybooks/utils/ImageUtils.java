@@ -32,7 +32,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -55,14 +54,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -72,11 +67,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 // scroll to Pratchett (175 books) on 1st line, expand, scroll to end.
 //////////////////////////////////////////////////////////////////////////// test 1
 // no cache
-// fileChecks=175|fileChecks=2065
-// fileChecks=175|fileTicks=2094
+// cacheWrites=175|cacheWrites=2065
+// cacheWrites=175|cacheWriteTicks=2094
 //
 // from cache
-// cacheChecks=175|cacheTicks=2305
+// cacheReads=175|cacheReadTicks=2305
 //
 // ==> without rescaling code (leaving it to Android) ==> no point in using a cache.
 ////////////////////////////////////////////////////////////////////////////
@@ -84,10 +79,10 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 //////////////////////////////////////////////////////////////////////////// test 2
 // writing to cache with REAL scaling
-// fileChecks=175|fileTicks=2678
+// cacheWrites=175|cacheWriteTicks=2678
 
 // using cache
-// cacheChecks=175|cacheTicks=1585
+// cacheReads=175|cacheReadTicks=1585
 //
 // ==> so during the writing, its slower.... but afterwards, 50% faster compared to test 1
 ////////////////////////////////////////////////////////////////////////////
@@ -121,12 +116,12 @@ public final class ImageUtils {
     public static final int SCALE_X_LARGE = 5;
     /** Thumbnail Scaling. */
     public static final int SCALE_2X_LARGE = 6;
-    // temp debug
-    public static final AtomicLong cacheTicks = new AtomicLong();
-    public static final AtomicLong fileTicks = new AtomicLong();
-    public static final AtomicInteger cacheChecks = new AtomicInteger();
-    public static final AtomicInteger fileChecks = new AtomicInteger();
+    /** scaling factor for each SCALE_* option. */
+    private static final int[] SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12};
+
+    /** Log tag. */
     private static final String TAG = "ImageUtils";
+
     private static final int BUFFER_SIZE = 32768;
 
     /** network: if at first we don't succeed... */
@@ -144,30 +139,10 @@ public final class ImageUtils {
      *
      * @return amount in pixels
      */
-    public static int getMaxImageSize(@Scale final int scale) {
-        int scaleFactor;
-        switch (scale) {
-            case SCALE_LARGE:
-                scaleFactor = 5;
-                break;
-            case SCALE_X_LARGE:
-                scaleFactor = 8;
-                break;
-            case SCALE_2X_LARGE:
-                scaleFactor = 12;
-                break;
-
-            case SCALE_NOT_DISPLAYED:
-            case SCALE_X_SMALL:
-            case SCALE_SMALL:
-            case SCALE_MEDIUM:
-            default:
-                scaleFactor = scale;
-                break;
-        }
-
-        return scaleFactor * (int) App.getAppContext()
-                                      .getResources().getDimension(R.dimen.cover_base_size);
+    public static int getMaxImageSize(@NonNull final Context context,
+                                      @Scale final int scale) {
+        return SCALE_FACTOR[scale]
+               * (int) context.getResources().getDimension(R.dimen.cover_base_size);
     }
 
     /**
@@ -181,134 +156,80 @@ public final class ImageUtils {
     }
 
     /**
-     * Load the image file into the destination ImageView.
+     * Set a placeholder drawable in the view.
+     *
+     * @param view        The ImageView to load with the placeholder
+     * @param placeholder drawable to use
+     * @param resize      if set, the View will forcibly be sized to a 1:(3/4) ratio.
+     * @param maxHeight   Maximum desired height of the image
+     */
+    @UiThread
+    public static void setPlaceholder(@NonNull final ImageView view,
+                                      @DrawableRes final int placeholder,
+                                      final boolean resize,
+                                      final int maxHeight) {
+        if (resize) {
+            ViewGroup.LayoutParams lp = view.getLayoutParams();
+            lp.height = maxHeight;
+            lp.width = (int) (maxHeight * 0.75);
+            view.setLayoutParams(lp);
+        }
+        view.setImageResource(placeholder);
+    }
+
+    /**
+     * Load the image owned by the UUID/cIdx into the destination ImageView.
      * Handles checking & storing in the cache.
      * <p>
      * Images and placeholder will always be scaled to a fixed size.
      *
-     * @param imageView View to populate
-     * @param uuid      UUID of book
+     * @param view      View to populate
+     * @param uuid      UUID of the book
+     * @param cIdx      0..n image index
      * @param maxWidth  Max width of resulting image
      * @param maxHeight Max height of resulting image
      *
-     * @return {@code true} if the uuid/placeholder was displayed.
+     * @return {@code true} if the image was displayed. {@code false} if a place holder was used.
      */
     @UiThread
-    public static boolean setImageView(@NonNull final ImageView imageView,
+    public static boolean setImageView(@NonNull final ImageView view,
                                        @NonNull final String uuid,
+                                       final int cIdx,
                                        final int maxWidth,
                                        final int maxHeight) {
 
+        Context context = view.getContext();
+
         // 1. If caching is used, and we don't have cache building happening, check it.
-        if (imagesAreCached(imageView.getContext())
-            && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
-
-            long tick = System.nanoTime();
-            cacheChecks.incrementAndGet();
-            Bitmap bm = CoversDAO.getImage(uuid, maxWidth, maxHeight);
-            if (bm != null) {
-                boolean isSet = setImageView(imageView, bm, maxWidth, maxHeight, true);
-                cacheTicks.addAndGet(System.nanoTime() - tick);
-                return isSet;
-            }
-        }
-
-        // 2. Check if the file exists; if it does not, set the placeholder icon and exit.
-        File file = StorageUtils.getCoverFileForUuid(uuid);
-        if (!file.exists() || file.length() < MIN_IMAGE_FILE_SIZE) {
-            setImagePlaceholder(imageView, maxWidth, maxHeight, R.drawable.ic_image, true);
-            return false;
-        }
-
-        // 3. If caching is used, go get the image from the file system and send it to the cache.
-        if (imagesAreCached(imageView.getContext())) {
-            long tick = System.nanoTime();
-            fileChecks.incrementAndGet();
-            imageView.setMaxWidth(maxWidth);
-            imageView.setMaxHeight(maxHeight);
-            Bitmap bm = forceScaleBitmap(file.getAbsolutePath(), maxWidth, maxHeight, true);
-            if (bm != null) {
-                // display
-                imageView.setImageBitmap(bm);
-                // and send to the cache
-                new CoversDAO.ImageCacheWriterTask(uuid, maxWidth, maxHeight, bm)
-                        .execute();
-                fileTicks.addAndGet(System.nanoTime() - tick);
+        if (imagesAreCached(context) && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
+            Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, maxWidth, maxHeight);
+            if (bitmap != null) {
+                setImageView(view, bitmap, maxWidth, maxHeight, true);
                 return true;
-
-            } else {
-                setImagePlaceholder(imageView, maxWidth, maxHeight,
-                                    R.drawable.ic_broken_image, true);
-                return false;
             }
         }
 
-        // 4. Finally go get the image from the file system.
-        return setImageView(imageView, file, maxWidth, maxHeight, true,
-                            R.drawable.ic_image, true);
-    }
-
-    /**
-     * Load the image bitmap into the destination ImageView.
-     * This method is meant to be used for ImageView's on a details screen.
-     *
-     * @param imageView         The ImageView to load with the file or an appropriate icon
-     * @param file              The file of the image
-     * @param maxWidth          Maximum desired width of the image
-     * @param maxHeight         Maximum desired height of the image
-     * @param allowUpscaling    use the maximum h/w also as the minimum; thereby forcing upscaling.
-     * @param placeholder       drawable to use if the file does not exist
-     * @param resizePlaceholder if set, the placeholder will forcibly be sized to a 1:(3/4) ratio.
-     *
-     * @return {@code true} if the file/placeholder was displayed.
-     */
-    @UiThread
-    public static boolean setImageView(@NonNull final ImageView imageView,
-                                       @NonNull final File file,
-                                       final int maxWidth,
-                                       final int maxHeight,
-                                       final boolean allowUpscaling,
-                                       @DrawableRes final int placeholder,
-                                       final boolean resizePlaceholder) {
-        if (!file.exists()) {
-            setImagePlaceholder(imageView, maxWidth, maxHeight, placeholder, resizePlaceholder);
+        // 2. Cache did not have it, or we were not allowed to check.
+        // Check if the file exists; if it does not, set the placeholder icon and exit.
+        File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+        if (file.length() < MIN_IMAGE_FILE_SIZE) {
+            setPlaceholder(view, R.drawable.ic_image, true, maxHeight);
             return false;
+        }
 
-        } else if (file.length() > MIN_IMAGE_FILE_SIZE) {
-            new ImageLoader(imageView, file, maxWidth, maxHeight, allowUpscaling)
+        // Once we get here, we know the file is valid
+
+        // 3. If caching is used, go get the image from the file system AND send it to the cache.
+        if (imagesAreCached(context)) {
+            new CacheLoader(view, uuid, cIdx, file, maxWidth, maxHeight)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            // we hope loading will be fine.
             return true;
-
         } else {
-            setImagePlaceholder(imageView, maxWidth, maxHeight,
-                                R.drawable.ic_broken_image, resizePlaceholder);
-            return false;
+            // Cache not used, we know the file is valid, go get it.
+            new ImageLoader(view, file, maxWidth, maxHeight, true)
+                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            return true;
         }
-    }
-
-    /**
-     * Set a placeholder drawable in the view.
-     *
-     * @param imageView   The ImageView to load with the placeholder
-     * @param maxWidth    Maximum desired width of the image
-     * @param maxHeight   Maximum desired height of the image
-     * @param placeholder drawable to use
-     * @param resize      if set, the View will forcibly be sized to a 1:(3/4) ratio.
-     */
-    @UiThread
-    private static void setImagePlaceholder(@NonNull final ImageView imageView,
-                                            final int maxWidth,
-                                            final int maxHeight,
-                                            @DrawableRes final int placeholder,
-                                            final boolean resize) {
-        if (resize) {
-            ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-            lp.height = maxHeight;
-            lp.width = (int) (maxWidth * 0.75);
-            imageView.setLayoutParams(lp);
-        }
-        imageView.setImageResource(placeholder);
     }
 
     /**
@@ -319,61 +240,55 @@ public final class ImageUtils {
      * @param maxWidth       Maximum desired width of the image
      * @param maxHeight      Maximum desired height of the image
      * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
-     *
-     * @return {@code true} if the Bitmap was displayed.
      */
     @UiThread
-    private static boolean setImageView(@NonNull final ImageView imageView,
-                                        @Nullable final Bitmap source,
-                                        final int maxWidth,
-                                        final int maxHeight,
-                                        final boolean allowUpscaling) {
+    private static void setImageView(@NonNull final ImageView imageView,
+                                     @NonNull final Bitmap source,
+                                     final int maxWidth,
+                                     final int maxHeight,
+                                     final boolean allowUpscaling) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Log.d(TAG, "setImageView"
                        + "|maxWidth=" + maxWidth
                        + "|maxHeight=" + maxHeight
                        + "|allowUpscaling=" + allowUpscaling
-                       + (source != null ? "|bm.width=" + source.getWidth() : "no bm")
-                       + (source != null ? "|bm.height=" + source.getHeight() : "no bm"));
+                       + "|bm.width=" + source.getWidth()
+                       + "|bm.height=" + source.getHeight());
         }
 
         imageView.setMaxWidth(maxWidth);
         imageView.setMaxHeight(maxHeight);
 
-        if (source != null) {
-            Bitmap bitmap = source;
-            // upscale only when required and allowed; otherwise let Android decide.
-            if (source.getHeight() < maxHeight && allowUpscaling) {
-                bitmap = createScaledBitmap(source, maxWidth, maxHeight, true);
-            }
-            imageView.setImageBitmap(bitmap);
-            return true;
-
-        } else {
-            setImagePlaceholder(imageView, maxWidth, maxHeight, R.drawable.ic_broken_image, false);
-            return false;
+        Bitmap bitmap = source;
+        // upscale only when required and allowed; otherwise let Android decide.
+        if (source.getHeight() < maxHeight && allowUpscaling) {
+            bitmap = createScaledBitmap(source, maxWidth, maxHeight);
         }
+
+        imageView.setImageBitmap(bitmap);
     }
 
     /**
-     * Convenience method for {@link #createScaledBitmap(Bitmap, int, int, boolean)}.
+     * Convenience method for {@link #createScaledBitmap(Bitmap, int, int)}.
      *
-     * @param file  The file of the image
-     * @param scale user preferred scale factor
+     * @param context Current context
+     * @param file    The file of the image
+     * @param scale   user preferred scale factor
      *
      * @return the bitmap, or {@code null} if the file failed to decode.
      */
     @Nullable
     @AnyThread
-    public static Bitmap createScaledBitmap(@NonNull final File file,
+    public static Bitmap createScaledBitmap(@NonNull final Context context,
+                                            @NonNull final File file,
                                             @Scale final int scale) {
         @Nullable
         Bitmap bm = BitmapFactory.decodeFile(file.getPath());
         if (bm == null) {
             return null;
         }
-        int maxSize = getMaxImageSize(scale);
-        return createScaledBitmap(bm, maxSize, maxSize, true);
+        int maxSize = getMaxImageSize(context, scale);
+        return createScaledBitmap(bm, maxSize, maxSize);
     }
 
     /**
@@ -387,10 +302,9 @@ public final class ImageUtils {
      * the source bitmap, the source bitmap is returned and no new bitmap is
      * created.
      *
-     * @param source        The source bitmap.
-     * @param dstWidth      The new bitmap's desired width.
-     * @param dstHeight     The new bitmap's desired height.
-     * @param recycleSource Flag: if set, the source will be recycled if scaling took place
+     * @param source    The source bitmap.
+     * @param dstWidth  The new bitmap's desired width.
+     * @param dstHeight The new bitmap's desired height.
      *
      * @return The new scaled bitmap or the source bitmap if no scaling was done.
      *
@@ -400,8 +314,7 @@ public final class ImageUtils {
     @AnyThread
     private static Bitmap createScaledBitmap(@NonNull final Bitmap source,
                                              final int dstWidth,
-                                             final int dstHeight,
-                                             final boolean recycleSource) {
+                                             final int dstHeight) {
         Matrix matrix = new Matrix();
         int width = source.getWidth();
         int height = source.getHeight();
@@ -415,7 +328,7 @@ public final class ImageUtils {
             matrix.setScale(ratio, ratio);
         }
         Bitmap scaledBitmap = Bitmap.createBitmap(source, 0, 0, width, height, matrix, true);
-        if (recycleSource && !source.equals(scaledBitmap)) {
+        if (!source.equals(scaledBitmap)) {
             // clean up the old one right now to save memory.
             source.recycle();
         }
@@ -537,19 +450,19 @@ public final class ImageUtils {
     }
 
     /**
-     * Given a URL, get an image and save to a file.
+     * Given a URL, get an image and save to a file. Called/run in a background task.
      *
-     * @param appContext Application context
-     * @param url        Image file URL
-     * @param name       for the file.
-     * @param suffix     suffix denoting the origin of the url
-     * @param size       (optional) extra suffix denoting the size of the image.
+     * @param context Application context
+     * @param url     Image file URL
+     * @param name    for the file.
+     * @param suffix  suffix denoting the origin of the url
+     * @param size    (optional) extra suffix denoting the size of the image.
      *
      * @return Downloaded fileSpec, or {@code null} on failure
      */
     @Nullable
     @WorkerThread
-    public static String saveImage(@NonNull final Context appContext,
+    public static String saveImage(@NonNull final Context context,
                                    @NonNull final String url,
                                    @NonNull final String name,
                                    @NonNull final String suffix,
@@ -560,15 +473,14 @@ public final class ImageUtils {
 
         String fullName = name + suffix;
         if (size != null) {
-            fullName += '_' + size;
+            fullName += "_s" + size;
         }
-        File file = StorageUtils.getTempCoverFile(fullName);
+        File file = StorageUtils.getTempCoverFile(context, fullName);
 
         while (retry > 0) {
-            int bytesRead;
-            try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url)) {
-                bytesRead = StorageUtils.saveInputStreamToFile(con.getInputStream(), file);
-                return bytesRead > 0 ? file.getAbsolutePath() : null;
+            try (TerminatorConnection con = TerminatorConnection.openConnection(context, url)) {
+                file = StorageUtils.saveInputStreamToFile(context, con.getInputStream(), file);
+                return file != null ? file.getAbsolutePath() : null;
 
             } catch (@NonNull final IOException e) {
                 retry--;
@@ -589,23 +501,23 @@ public final class ImageUtils {
     }
 
     /**
-     * Given a URL, get an image and return as a byte array.
+     * Given a URL, get an image and return as a byte array. Called/run in a background task.
      *
-     * @param appContext Application context
-     * @param url        Image file URL
+     * @param context Application context
+     * @param url     Image file URL
      *
      * @return Downloaded {@code byte[]} or {@code null} upon failure
      */
     @Nullable
     @WorkerThread
-    public static byte[] getBytes(@NonNull final Context appContext,
+    public static byte[] getBytes(@NonNull final Context context,
                                   @NonNull final String url) {
 
         // If the site drops connection, we retry once.
         int retry = NR_OF_TRIES;
 
         while (retry > 0) {
-            try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url);
+            try (TerminatorConnection con = TerminatorConnection.openConnection(context, url);
                  ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 // Save the output to a byte output stream
                 byte[] buffer = new byte[BUFFER_SIZE];
@@ -634,64 +546,15 @@ public final class ImageUtils {
     }
 
     /**
-     * Given byte array that represents an image (jpg, png etc), return as a bitmap.
-     *
-     * @param bytes Raw byte data
-     *
-     * @return bitmap
-     */
-    @Nullable
-    @AnyThread
-    public static Bitmap getBitmap(@NonNull final byte[] bytes) {
-        if (bytes.length == 0) {
-            return null;
-        }
-
-        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length,
-                                                      new BitmapFactory.Options());
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
-            Log.d(TAG, "getBitmap"
-                       + "|Array " + bytes.length + " bytes"
-                       + "|bitmap " + bitmap.getHeight() + 'x' + bitmap.getWidth());
-        }
-        return bitmap;
-    }
-
-    /**
-     * Read {@link UniqueId#BKEY_FILE_SPEC_ARRAY}.
-     * If there are images, pick the largest one, rename it, and delete the others.
-     * Finally, remove the key and set {@link UniqueId#BKEY_IMAGE} to true
-     */
-    @AnyThread
-    public static void cleanupImages(@Nullable final Bundle /* in/out */ bookData) {
-        if (bookData == null) {
-            return;
-        }
-
-        ArrayList<String> imageList = bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-        if (imageList == null || imageList.isEmpty()) {
-            return;
-        }
-
-        String coverName = cleanupImages(imageList);
-
-        // Finally, cleanup the data
-        bookData.remove(UniqueId.BKEY_FILE_SPEC_ARRAY);
-        // and indicate we got a file with the default name (or not).
-        bookData.putBoolean(UniqueId.BKEY_IMAGE, coverName != null);
-    }
-
-    /**
-     * If there are images, pick the largest one, rename it, and delete the others.
+     * If there are images, pick the largest one, and delete the others.
      *
      * @param imageList a list of images
      *
-     * @return name of cover found (it will be in the covers directory), or {@code null} for none.
+     * @return name of cover found, or {@code null} for none.
      */
     @AnyThread
     @Nullable
-    private static String cleanupImages(@NonNull final ArrayList<String> imageList) {
+    public static String cleanupImages(@NonNull final ArrayList<String> imageList) {
 
         long bestFileSize = -1;
         int bestFileIndex = -1;
@@ -717,33 +580,31 @@ public final class ImageUtils {
         }
 
         // Delete all but the best one. Note there *may* be no best one,
-        // so all would be deleted. We do this first in case the list
-        // contains a file with the same name as the target of our rename.
+        // so all would be deleted.
         for (int i = 0; i < imageList.size(); i++) {
             if (i != bestFileIndex) {
                 StorageUtils.deleteFile(new File(imageList.get(i)));
             }
         }
-        // Get the best file (if present) and rename it.
-        File downloadedFile = null;
+
         if (bestFileIndex >= 0) {
-            File source = new File(imageList.get(bestFileIndex));
-            downloadedFile = StorageUtils.getTempCoverFile();
-            StorageUtils.renameFile(source, downloadedFile);
+            return imageList.get(bestFileIndex);
         }
 
-        return downloadedFile != null ? downloadedFile.getName() : null;
+        return null;
     }
 
     /**
      * Rotate the image. Reads from the passed file, and writes the result back to it.
      *
-     * @param file  to read/write
-     * @param angle rotate by the specified amount
+     * @param context Current context
+     * @param file    to read/write
+     * @param angle   rotate by the specified amount
      *
      * @return {@code true} on success
      */
-    public static boolean rotate(@NonNull final File file,
+    public static boolean rotate(@NonNull final Context context,
+                                 @NonNull final File file,
                                  final long angle) {
         if (!file.exists()) {
             return false;
@@ -756,41 +617,33 @@ public final class ImageUtils {
 
         // We load the file and first scale it up.
         // Keep in mind this means it could be up- or downscaled from the original !
-        int maxImageSize = getMaxImageSize(SCALE_2X_LARGE);
+        int maxSize = ImageUtils.getMaxImageSize(context, SCALE_2X_LARGE);
 
         // we'll try it twice with a gc in between
         int attempts = 2;
         while (true) {
             try {
-                Bitmap bm = forceScaleBitmap(file.getPath(),
-                                             maxImageSize, maxImageSize, true);
+                Bitmap bm = forceScaleBitmap(file.getPath(), maxSize, maxSize, true);
                 if (bm == null) {
                     return false;
                 }
 
                 Matrix matrix = new Matrix();
-
-                // alternative code sets the pivot point.
-                // matrix.setRotate(angle, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
                 matrix.postRotate(angle);
                 Bitmap rotatedBitmap = Bitmap.createBitmap(bm, 0, 0,
                                                            bm.getWidth(), bm.getHeight(),
                                                            matrix, true);
-                // if rotation worked, clean up the old one right now to save memory.
                 if (rotatedBitmap != bm) {
+                    // clean up the old one right now to save memory.
                     bm.recycle();
+                    // Write back to the file
+                    try (OutputStream os = new FileOutputStream(file.getAbsoluteFile())) {
+                        rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    }
+                    return true;
                 }
 
-                // Write back to the file
-                try (OutputStream os = new FileOutputStream(file.getAbsoluteFile())) {
-                    rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-
-                } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                    Logger.error(TAG, e);
-                    return false;
-                }
-
-                return true;
+                return false;
 
             } catch (@NonNull final OutOfMemoryError e) {
                 attempts--;
@@ -799,6 +652,11 @@ public final class ImageUtils {
                 } else {
                     throw new RuntimeException(e);
                 }
+            } catch (@NonNull final IOException e) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "", e);
+                }
+                return false;
             }
         }
     }
@@ -812,9 +670,8 @@ public final class ImageUtils {
      *
      * @return the rotated bitmap.
      */
-    @SuppressWarnings("WeakerAccess")
-    public static Bitmap rotate(@NonNull final Bitmap bm,
-                                final int angle) {
+    static Bitmap rotate(@NonNull final Bitmap bm,
+                         final int angle) {
         // sanity check
         if (angle == 0) {
             return bm;
@@ -831,6 +688,7 @@ public final class ImageUtils {
         } else {
             return bm;
         }
+
     }
 
     @IntDef({SCALE_NOT_DISPLAYED, SCALE_X_SMALL, SCALE_SMALL, SCALE_MEDIUM,
@@ -855,12 +713,18 @@ public final class ImageUtils {
         private final int mMaxHeight;
         private final boolean mAllowUpscaling;
 
-
-        ImageLoader(@NonNull final ImageView imageView,
-                    @NonNull final File file,
-                    final int maxWidth,
-                    final int maxHeight,
-                    final boolean allowUpscaling) {
+        /**
+         * @param imageView      to populate
+         * @param file           to load, must be valid
+         * @param maxWidth       Maximum desired width of the image
+         * @param maxHeight      Maximum desired height of the image
+         * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
+         */
+        public ImageLoader(@NonNull final ImageView imageView,
+                           @NonNull final File file,
+                           final int maxWidth,
+                           final int maxHeight,
+                           final boolean allowUpscaling) {
             mImageView = new WeakReference<>(imageView);
             mFile = file;
             mMaxWidth = maxWidth;
@@ -873,8 +737,8 @@ public final class ImageUtils {
         protected Bitmap doInBackground(final Void... voids) {
             Bitmap bitmap = BitmapFactory.decodeFile(mFile.getAbsolutePath());
             // upscale when required and allowed
-            if (bitmap.getHeight() < mMaxHeight && mAllowUpscaling) {
-                bitmap = createScaledBitmap(bitmap, mMaxWidth, mMaxHeight, true);
+            if (bitmap != null && bitmap.getHeight() < mMaxHeight && mAllowUpscaling) {
+                bitmap = createScaledBitmap(bitmap, mMaxWidth, mMaxHeight);
             }
             return bitmap;
         }
@@ -882,8 +746,76 @@ public final class ImageUtils {
         @Override
         protected void onPostExecute(@Nullable final Bitmap bitmap) {
             if (mImageView.get() != null) {
-                // upscaling, if applicable, was already done.
-                setImageView(mImageView.get(), bitmap, mMaxWidth, mMaxHeight, false);
+                // upscaling, if applicable, was already done in the background task.
+                if (bitmap != null) {
+                    setImageView(mImageView.get(), bitmap, mMaxWidth, mMaxHeight, false);
+                } else {
+                    setPlaceholder(mImageView.get(), R.drawable.ic_broken_image, true,
+                                   mMaxHeight);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load a Bitmap from a file, and populate the view.
+     */
+    public static class CacheLoader
+            extends AsyncTask<Void, Void, Bitmap> {
+
+        @NonNull
+        private final WeakReference<ImageView> mImageView;
+        private final String mUuid;
+        private final int mCIdx;
+        @NonNull
+        private final File mFile;
+        private final int mMaxWidth;
+        private final int mMaxHeight;
+
+        /**
+         * @param view      to populate
+         * @param uuid      UUID of the book
+         * @param cIdx      0..n image index
+         * @param file      to load, must be valid
+         * @param maxWidth  Maximum desired width of the image
+         * @param maxHeight Maximum desired height of the image
+         */
+        CacheLoader(@NonNull final ImageView view,
+                    final String uuid,
+                    final int cIdx,
+                    @NonNull final File file,
+                    final int maxWidth,
+                    final int maxHeight) {
+            mImageView = new WeakReference<>(view);
+            mUuid = uuid;
+            mCIdx = cIdx;
+            mFile = file;
+            mMaxWidth = maxWidth;
+            mMaxHeight = maxHeight;
+        }
+
+        @Override
+        @Nullable
+        protected Bitmap doInBackground(final Void... voids) {
+            return forceScaleBitmap(mFile.getAbsolutePath(), mMaxWidth, mMaxHeight, true);
+        }
+
+        @Override
+        protected void onPostExecute(@Nullable final Bitmap bitmap) {
+            if (mImageView.get() != null) {
+                ImageView view = mImageView.get();
+                // upscaling, if applicable, was already done in the background task.
+                if (bitmap != null) {
+                    // display
+                    view.setMaxWidth(mMaxWidth);
+                    view.setMaxHeight(mMaxHeight);
+                    view.setImageBitmap(bitmap);
+                    // and send to the cache
+                    new CoversDAO.ImageCacheWriterTask(mUuid, mCIdx, mMaxWidth, mMaxHeight, bitmap)
+                            .execute();
+                } else {
+                    setPlaceholder(view, R.drawable.ic_broken_image, true, mMaxHeight);
+                }
             }
         }
     }

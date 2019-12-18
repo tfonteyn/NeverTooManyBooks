@@ -66,15 +66,14 @@ public interface Exporter
         public int booksProcessed;
         /** #books we exported. */
         public int booksExported;
-        /**
-         * The total #covers that were considered for exporting.
-         * This is the sum of exported + missing + skipped.
-         */
-        public int coversProcessed;
+
+        /** #books that did not have a front-cover / back-cover . */
+        public final int[] coversMissing = new int[2];
         /** #covers exported. */
         public int coversExported;
-        /** #books that did not have a cover. */
-        public int coversMissing;
+        /** #covers that were skipped. */
+        public int coversSkipped;
+
         /** #styles we exported. */
         public int styles;
 
@@ -84,9 +83,10 @@ public interface Exporter
             return "Results{"
                    + "booksProcessed=" + booksProcessed
                    + ", booksExported=" + booksExported
-                   + ", coversProcessed=" + coversProcessed
+                   + ", coversSkipped=" + coversSkipped
                    + ", coversExported=" + coversExported
-                   + ", coversMissing=" + coversMissing
+                   + ", coversMissing[0]=" + coversMissing[0]
+                   + ", coversMissing[1]=" + coversMissing[1]
                    + ", styles=" + styles
                    + '}';
         }

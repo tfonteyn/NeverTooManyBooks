@@ -543,6 +543,10 @@
         <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
 
+    <style name="SnackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:maxLines">2</item>
+    </style>
+
     <!-- error. -->
     <style name="ErrorMessage">
         <item name="android:layout_height">wrap_content</item>

@@ -33,6 +33,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -53,12 +54,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -90,17 +92,31 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 public class BookDetailsFragment
         extends BookBaseFragment {
 
+    /** log tag. */
     public static final String TAG = "BookDetailsFragment";
 
-    /** Size of the cover image to use. ENHANCE: add to global prefs */
-    @ImageUtils.Scale
-    private static final int IMAGE_SCALE = ImageUtils.SCALE_LARGE;
+    /** the covers. */
+    private final ImageView[] mCoverView = new ImageView[2];
+    /** Handles cover replacement, rotation, etc. */
+    private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+        if (data != null) {
+            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
+            } else {
+                // we don't expect/implement any others.
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "bookId=" + bookId
+                               + "|fieldsChanged=" + fieldsChanged);
+                }
+            }
+        }
+    };
 
     /** The views. */
     private CompoundButton mIsAnthologyCbx;
     private CompoundButton mReadCheckbox;
     private CompoundButton mSignedCbx;
-    private ImageView mCoverImageView;
     private RatingBar mRatingView;
     private TextView mAuthorView;
     private TextView mSeriesView;
@@ -134,34 +150,14 @@ public class BookDetailsFragment
     private LinearLayout mTocView;
     /** The scroll view encompassing the entire fragment page. */
     private NestedScrollView mTopScrollView;
-    /** Handles cover replacement, rotation, etc. */
-    private CoverHandler mCoverHandler;
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
     /** Contains the flattened booklist for next/previous paging. */
     private BookDetailsFragmentModel mBookDetailsFragmentModel;
-    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
-        if (data != null) {
-            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
-            } else {
-                // we don't expect/implement any others.
-                //noinspection ConstantConditions
-                Logger.warnWithStackTrace(getContext(), TAG, "bookId=" + bookId,
-                                          "fieldsChanged=" + fieldsChanged);
-            }
-        }
-    };
-    /** Hosting activity to handle FAB/result/touches. */
-    private FragmentActivity mHostActivity;
-
-    @Override
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        mHostActivity = (FragmentActivity) context;
-    }
+    /** Track on which cover view the context menu was used. */
+    private int mContextMenuOpenIndex = -1;
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -191,7 +187,6 @@ public class BookDetailsFragment
         mTitleView = view.findViewById(R.id.title);
         mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
-        mCoverImageView = view.findViewById(R.id.coverImage);
         mGenreView = view.findViewById(R.id.genre);
         mPagesView = view.findViewById(R.id.pages);
         mFormatView = view.findViewById(R.id.format);
@@ -213,6 +208,9 @@ public class BookDetailsFragment
         mTocView = view.findViewById(R.id.toc);
         mTocButton = view.findViewById(R.id.toc_button);
 
+        mCoverView[0] = view.findViewById(R.id.coverImage0);
+        mCoverView[1] = view.findViewById(R.id.coverImage1);
+
         return view;
     }
 
@@ -229,12 +227,6 @@ public class BookDetailsFragment
 
         mBookDetailsFragmentModel.init(mBookModel.getDb(), getArguments(),
                                        mBookModel.getBook().getId());
-
-        mCoverHandler = new CoverHandler(this, mBookModel.getDb(),
-                                         mBookModel.getBook(),
-                                         mIsbnView,
-                                         mCoverImageView,
-                                         IMAGE_SCALE);
 
         FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_edit);
@@ -324,12 +316,19 @@ public class BookDetailsFragment
                 }
                 break;
 
-            default:
+            default: {
+                boolean handled = false;
                 // handle any cover image request codes
-                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
+                if (mContextMenuOpenIndex >= 0) {
+                    handled = mCoverHandler[mContextMenuOpenIndex]
+                            .onActivityResult(requestCode, resultCode, data);
+                }
+
+                if (!handled) {
                     super.onActivityResult(requestCode, resultCode, data);
                 }
                 break;
+            }
         }
     }
 
@@ -406,10 +405,6 @@ public class BookDetailsFragment
         fields.addMonetary(R.id.price_listed, mPriceListedView, "", DBDefinitions.KEY_PRICE_LISTED)
               .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
-        fields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
-                         UniqueId.BKEY_IMAGE)
-              .setScale(IMAGE_SCALE);
-
         // Personal fields
         fields.addString(R.id.date_acquired, mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
               .setFormatter(dateFormatter)
@@ -453,7 +448,7 @@ public class BookDetailsFragment
               .setRelatedFields(R.id.lbl_bookshelves);
 
         // defined, but fetched manually
-        fields.addString(R.id.loaned_to, mLoanedToView, "", DBDefinitions.KEY_LOANEE);
+//        fields.addString(R.id.loaned_to, mLoanedToView, "", DBDefinitions.KEY_LOANEE);
     }
 
     /**
@@ -475,6 +470,9 @@ public class BookDetailsFragment
         populateLoanedToField(mBookModel.getLoanee());
         populateToc();
 
+        setupCoverViews(0, ImageUtils.SCALE_LARGE);
+        setupCoverViews(1, ImageUtils.SCALE_SMALL);
+
         // hide unwanted and empty fields
         showOrHideFields(true);
 
@@ -495,6 +493,33 @@ public class BookDetailsFragment
                                   R.id.lbl_read_start,
                                   R.id.lbl_read_end,
                                   R.id.lbl_location);
+    }
+
+    private void setupCoverViews(final int cIdx,
+                                 @ImageUtils.Scale final int scale) {
+
+        mCoverHandler[cIdx] = new CoverHandler(this, mProgressBar,
+                                               mBookModel.getBook(), mIsbnView, cIdx,
+                                               mCoverView[cIdx], scale);
+        mCoverHandler[cIdx].setImage();
+
+        // Allow zooming by clicking on the image;
+        // If there is no actual image, bring up the context menu instead.
+        mCoverView[cIdx].setOnClickListener(v -> {
+            File image = mCoverHandler[cIdx].getCoverFile();
+            if (image.exists()) {
+                ZoomedImageDialogFragment.show(getParentFragmentManager(), image);
+            } else {
+                mContextMenuOpenIndex = cIdx;
+                mCoverHandler[cIdx].onCreateContextMenu();
+            }
+        });
+
+        mCoverView[cIdx].setOnLongClickListener(v -> {
+            mContextMenuOpenIndex = cIdx;
+            mCoverHandler[cIdx].onCreateContextMenu();
+            return true;
+        });
     }
 
     @Override
@@ -549,7 +574,7 @@ public class BookDetailsFragment
                 List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
-                    mBookModel.deleteBook();
+                    mBookModel.deleteBook(getContext());
 
                     Intent resultData = mBookModel.getActivityResultData();
                     mHostActivity.setResult(Activity.RESULT_OK, resultData);
@@ -725,9 +750,9 @@ public class BookDetailsFragment
      * @param loanee the one who shall not be mentioned.
      */
     private void populateLoanedToField(@Nullable final String loanee) {
-        Field<String> field = getFields().getField(R.id.loaned_to);
+//        Field<String> field = getFields().getField(R.id.loaned_to);
         if (loanee != null && !loanee.isEmpty()) {
-            field.setValue(getString(R.string.lbl_loaned_to_name, loanee));
+            mLoanedToView.setText(getString(R.string.lbl_loaned_to_name, loanee));
             mLoanedToView.setVisibility(View.VISIBLE);
             mLoanedToView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 /**
@@ -749,7 +774,7 @@ public class BookDetailsFragment
             });
         } else {
             mLoanedToView.setVisibility(View.GONE);
-            field.setValue("");
+            mLoanedToView.setText("");
         }
     }
 

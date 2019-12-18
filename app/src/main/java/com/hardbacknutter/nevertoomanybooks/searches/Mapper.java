@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -43,7 +44,9 @@ public interface Mapper {
     /**
      * The current value is read from the bundle, and replaced by the mapped value if found.
      *
+     * @param context  Current context
      * @param bookData with {@link #getKey} entry to map
      */
-    void map(@NonNull final Bundle bookData);
+    void map(@NonNull final Context context,
+             @NonNull final Bundle bookData);
 }

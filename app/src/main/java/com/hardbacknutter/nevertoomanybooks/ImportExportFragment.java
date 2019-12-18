@@ -749,10 +749,14 @@ public class ImportExportFragment
             msg.append("\n• ")
                .append(getString(R.string.progress_msg_n_books_processed, results.booksExported));
         }
-        if (results.coversExported > 0 || results.coversMissing > 0) {
+        if (results.coversExported > 0
+            || results.coversMissing[0] > 0
+            || results.coversMissing[1] > 0) {
             msg.append("\n• ")
                .append(getString(R.string.progress_msg_n_covers_processed_m_missing,
-                                 results.coversExported, results.coversMissing));
+                                 results.coversExported,
+                                 results.coversMissing[0],
+                                 results.coversMissing[1]));
         }
 
         if ((exportHelper.options & Options.BOOK_LIST_STYLES) != 0) {

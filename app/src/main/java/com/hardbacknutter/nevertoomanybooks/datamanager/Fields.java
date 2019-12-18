@@ -54,7 +54,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -72,10 +71,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * This is the class that manages data and views for an Activity; access to the data that
@@ -170,6 +167,7 @@ public class Fields {
      * Add a field to this collection.
      *
      * @param fieldId         Layout ID
+     * @param fieldView       View to use
      * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
      *                        Set to "" to suppress all access.
      * @param visibilityGroup Group name to determine visibility.
@@ -189,8 +187,9 @@ public class Fields {
     /**
      * Add a Boolean field to this collection.
      *
-     * @param fieldId Layout ID
-     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param fieldId   Layout ID
+     * @param fieldView View to use
+     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
@@ -212,8 +211,9 @@ public class Fields {
     /**
      * Add a Long field to this collection.
      *
-     * @param fieldId Layout ID
-     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param fieldId   Layout ID
+     * @param fieldView View to use
+     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
@@ -236,8 +236,9 @@ public class Fields {
     /**
      * Add a Float field to this collection.
      *
-     * @param fieldId Layout ID
-     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param fieldId   Layout ID
+     * @param fieldView View to use
+     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
@@ -260,8 +261,9 @@ public class Fields {
     /**
      * Add a Monetary field to this collection.
      *
-     * @param fieldId Layout ID
-     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param fieldId   Layout ID
+     * @param fieldView View to use
+     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
@@ -283,8 +285,9 @@ public class Fields {
     /**
      * Add a Monetary field to this collection.
      *
-     * @param fieldId Layout ID
-     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param fieldId   Layout ID
+     * @param fieldView View to use
+     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
@@ -301,7 +304,8 @@ public class Fields {
     /**
      * Return the Field associated with the passed layout ID.
      *
-     * @param <T> type of Field value.
+     * @param <T>     type of Field value.
+     * @param fieldId Layout ID
      *
      * @return Associated Field.
      *
@@ -1212,98 +1216,6 @@ public class Fields {
     }
 
     /**
-     * ImageView accessor. Uses the UUID to load the image into the view.
-     * Sets a tag {@link R.id#TAG_UUID} on the view with the UUID.
-     * <p>
-     * Does not use a {@link FieldFormatter}.
-     */
-    private static class ImageViewAccessor
-            extends BaseDataAccessor<String> {
-
-        private int mMaxWidth;
-        private int mMaxHeight;
-
-        /**
-         * Constructor.
-         * Sets the scale to the default {@link ImageUtils#SCALE_MEDIUM}.
-         * Override with {@link #setScale(int)}.
-         */
-        @SuppressWarnings("SameParameterValue")
-        ImageViewAccessor(@NonNull final Field<String> field) {
-            super(field);
-            setScale(ImageUtils.SCALE_MEDIUM);
-        }
-
-        public void setScale(@ImageUtils.Scale final int scale) {
-            int maxSize = ImageUtils.getMaxImageSize(scale);
-            mMaxHeight = maxSize;
-            mMaxWidth = maxSize;
-        }
-
-        @Override
-        public void getValueAndPut(@NonNull final DataManager target) {
-            // not applicable; do NOT put the uuid into the target!
-        }
-
-        @Override
-        public boolean isEmpty() {
-            // should really get the view, and check if it has a bitmap; but this will do for now.
-            return getValue().isEmpty();
-        }
-
-        /**
-         * Not really used, but returning the uuid makes sense (as opposed to returning the bitmap).
-         *
-         * @return the UUID
-         */
-        @NonNull
-        @Override
-        public String getValue() {
-            //noinspection ConstantConditions
-            return (String) mView.get().getTag(R.id.TAG_UUID);
-        }
-
-        /**
-         * Populates the view and sets the UUID (incoming value) as a tag on the view.
-         *
-         * @param uuid the book UUID
-         */
-        @Override
-        public void setValue(@Nullable final String uuid) {
-            //noinspection ConstantConditions
-            ImageView view = (ImageView) mView.get();
-            if (view != null) {
-
-                if (uuid != null) {
-                    File imageFile;
-                    if (uuid.isEmpty()) {
-                        imageFile = StorageUtils.getTempCoverFile();
-                    } else {
-                        view.setTag(R.id.TAG_UUID, uuid);
-                        imageFile = StorageUtils.getCoverFileForUuid(uuid);
-                    }
-                    ImageUtils.setImageView(view, imageFile, mMaxWidth, mMaxHeight, true,
-                                            R.drawable.ic_add_a_photo, false);
-                } else {
-                    // we should not actually get here; the uuid should always be non-null
-                    view.setImageResource(R.drawable.ic_add_a_photo);
-                }
-            }
-        }
-
-        @Override
-        public void setValue(@NonNull final Bundle source) {
-            setValue(source.getString(mField.getKey(), ""));
-        }
-
-        @Override
-        public void setValue(@NonNull final DataManager source) {
-            setValue(source.getString(mField.getKey()));
-        }
-    }
-
-
-    /**
      * FieldFormatter for 'date' fields.
      * <ul>
      * <li>Multiple fields: <strong>yes</strong></li>
@@ -1698,10 +1610,6 @@ public class Fields {
             } else if (view instanceof TextView) {
                 accessor = new TextViewAccessor<>(this);
 
-            } else if (view instanceof ImageView) {
-                //noinspection unchecked
-                accessor = new ImageViewAccessor((Field<String>) this);
-
             } else if (view instanceof RatingBar) {
                 //noinspection unchecked
                 accessor = new RatingBarAccessor((Field<Float>) this);
@@ -1778,21 +1686,6 @@ public class Fields {
                 ((EditTextAccessor) mFieldDataAccessor).setDecimalInput();
             } else if (BuildConfig.DEBUG /* always */) {
                 throw new IllegalStateException("Field is not an EditText");
-            }
-            return this;
-        }
-
-        /**
-         * Set scaling (only applicable to ImageView based fields).
-         *
-         * @return field (for chaining)
-         */
-        @NonNull
-        public Field<T> setScale(@ImageUtils.Scale final int scale) {
-            if (mFieldDataAccessor instanceof ImageViewAccessor) {
-                ((ImageViewAccessor) mFieldDataAccessor).setScale(scale);
-            } else if (BuildConfig.DEBUG /* always */) {
-                throw new IllegalStateException("Field is not an ImageView");
             }
             return this;
         }

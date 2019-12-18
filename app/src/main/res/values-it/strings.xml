@@ -133,7 +133,7 @@
     <string name="error_if_the_problem_persists">Se il problema persiste, contattare l\'assistenza tramite l\'opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
     <string name="error_import_failed">Importazione fallita.</string>
     <string name="error_network_timeout">Nessuna risposta, per favore riprova</string>
-    <string name="error_no_external_crop_app">Non è stata trovata un\'applicazione per il ritaglio delle immagini</string>
+    <string name="error_no_image_editor">Nessun editor di immagini trovato</string>
     <string name="error_network_no_connection">Nessuna connessione disponibile.</string>
     <string name="error_not_available">%1$s non disponibile</string>
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo</string>
@@ -406,8 +406,8 @@
     <string name="X_progress_end_n_books_searched">%1$d libri cercati</string>
     <string name="title_backing_up">Creazione backup in corso…</string>
     <string name="progress_msg_connecting">Collegamento al sito web…</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d mancanti)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate\n(%2$d mancanti, %3$d saltate)</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate\n(%2$d/%3$d mancanti, %4$d saltate)</string>
     <string name="progress_msg_finding_editions">Ricerca edizioni…</string>
     <string name="title_importing">Importazione in corso…</string>
     <string name="progress_msg_loading">Caricamento…</string>
@@ -445,7 +445,6 @@
     <string name="pt_thumbnail_cropper_layer_type">Ritaglia «Layer Type»</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Lasciare questa impostazione al valore predefinito a meno che non si verifichino arresti anomali durante il ritaglio delle immagini. Prova il «software» per «hardware» più sicuro ma più lento o forzato per meno sicuro, ma più veloce.</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Area di ritaglio predefinita uguale all\'intera immagine</string>
-    <string name="pt_thumbnails_external_cropper">Usa un programma esterno per il ritaglio delle immagini</string>
     <string name="pt_thumbnails_rotate_auto">Ruota le immagini</string>
     <string name="pg_camera">Telecamera</string>
     <string name="pt_ui_language">Lingua</string>

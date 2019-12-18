@@ -68,12 +68,14 @@ public class PreferredStylesViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO();
-            mList = new ArrayList<>(BooklistStyle.Helper.getStyles(mDb, true).values());
+            mList = new ArrayList<>(BooklistStyle.Helper.getStyles(context, mDb, true).values());
 
             mInitialStyleId = args.getLong(UniqueId.BKEY_STYLE_ID, 0);
             if (mInitialStyleId == 0) {
@@ -184,9 +186,9 @@ public class PreferredStylesViewModel
         mList.remove(style);
     }
 
-    public void saveMenuOrder() {
+    public void saveMenuOrder(@NonNull final Context context) {
         mIsDirty = true;
-        BooklistStyle.Helper.saveMenuOrder(mList);
+        BooklistStyle.Helper.saveMenuOrder(context, mList);
     }
 
     public void purgeBLNS(final long id) {

@@ -156,6 +156,8 @@ public class OpenLibraryManager
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_OL";
+    /** The search keys in the json object we support: ISBN, native id. */
+    private static final String SUPPORTED_KEYS = "ISBN,OLID";
 
     /**
      * View a Book on the web site.
@@ -442,8 +444,7 @@ public class OpenLibraryManager
         if (it.hasNext()) {
             String topLevelKey = it.next();
             String[] data = topLevelKey.split(":");
-            if (data.length == 2 &&
-                "ISBN,OLID".contains(data[0])
+            if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])
             ) {
                 return handleBook(bookData, data[1], fetchThumbnail,
                                   jsonObject.getJSONObject(topLevelKey));

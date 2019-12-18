@@ -350,7 +350,6 @@ class GoogleBooksEntryHandler
             } else if (mInRetailPriceTag) {
                 // future use ?
                 mInRetailPriceTag = false;
-
             }
         }
     }

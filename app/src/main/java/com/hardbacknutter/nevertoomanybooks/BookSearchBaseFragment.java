@@ -63,64 +63,12 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 public abstract class BookSearchBaseFragment
         extends Fragment {
 
+    /** log tag. */
     private static final String TAG = "BookSearchBaseFrag";
-
-    /** hosting activity. */
-    FragmentActivity mHostActivity;
-
     DAO mDb;
-
-    @NonNull
-    private final SearchCoordinator.SearchCoordinatorListener mSearchCoordinatorListener =
-            new SearchCoordinator.SearchCoordinatorListener() {
-                @Override
-                public void onFinished(@NonNull final Bundle bookData,
-                                       @Nullable final String searchErrors) {
-                    if (mProgressDialog != null) {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
-                    }
-
-                    if (searchErrors != null) {
-                        //noinspection ConstantConditions
-                        new AlertDialog.Builder(getContext())
-                                .setIconAttribute(android.R.attr.alertDialogIcon)
-                                .setTitle(R.string.title_search_failed)
-                                .setMessage(searchErrors)
-                                .setPositiveButton(android.R.string.ok,
-                                                   (dialog, which) -> dialog.dismiss())
-                                .create()
-                                .show();
-
-                    } else if (!bookData.isEmpty()) {
-                        onSearchResults(bookData);
-
-                    } else {
-                        //noinspection ConstantConditions
-                        Snackbar.make(getView(), R.string.warning_no_matching_book_found,
-                                      Snackbar.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onCancelled() {
-                    if (mProgressDialog != null) {
-                        mProgressDialog.dismiss();
-                        mProgressDialog = null;
-                    }
-                    BookSearchBaseFragment.this.onCancelled();
-                }
-
-                @Override
-                public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
-                    if (mProgressDialog != null) {
-                        mProgressDialog.onProgress(message);
-                    }
-                }
-            };
-
     SearchCoordinator mSearchCoordinator;
-
+    /** hosting activity. */
+    private FragmentActivity mHostActivity;
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** the ViewModel. */
@@ -145,7 +93,12 @@ public abstract class BookSearchBaseFragment
 
         // Activity scope!
         mSearchCoordinator = new ViewModelProvider(mHostActivity).get(SearchCoordinator.class);
-        mSearchCoordinator.init(requireArguments(), mSearchCoordinatorListener);
+        //noinspection ConstantConditions
+        mSearchCoordinator.init(getContext(), requireArguments());
+        mSearchCoordinator.getSearchCoordinatorProgressMessage()
+                          .observe(getViewLifecycleOwner(), this::onSearchProgress);
+        mSearchCoordinator.getSearchCoordinatorFinishedMessage()
+                          .observe(getViewLifecycleOwner(), this::onSearchFinished);
 
         mResultDataModel = new ViewModelProvider(mHostActivity).get(ResultDataModel.class);
 
@@ -157,7 +110,6 @@ public abstract class BookSearchBaseFragment
         }
 
         // Warn the user, but don't abort.
-        //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.error_network_no_connection, Snackbar.LENGTH_LONG)
@@ -218,8 +170,46 @@ public abstract class BookSearchBaseFragment
 
     abstract void onSearchResults(@NonNull Bundle bookData);
 
+    private void onSearchFinished(@NonNull final TaskListener.FinishMessage<Bundle> message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+
+        if (message.status == TaskListener.TaskStatus.Cancelled) {
+            onSearchCancelled();
+            return;
+        }
+
+        String searchErrors = message.result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
+        if (searchErrors != null) {
+            //noinspection ConstantConditions
+            new AlertDialog.Builder(getContext())
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.title_search_failed)
+                    .setMessage(searchErrors)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .create()
+                    .show();
+
+        } else if (!message.result.isEmpty()) {
+            onSearchResults(message.result);
+
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.warning_no_matching_book_found,
+                          Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onSearchProgress(@NonNull final TaskListener.ProgressMessage message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.onProgress(message);
+        }
+    }
+
     @CallSuper
-    void onCancelled() {
+    void onSearchCancelled() {
         //noinspection ConstantConditions
         Snackbar.make(getView(), R.string.progress_end_cancelled, Snackbar.LENGTH_LONG).show();
     }

@@ -57,6 +57,7 @@ public abstract class BasePreferenceFragment
         extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    /** log tag. */
     private static final String TAG = "BasePreferenceFragment";
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */

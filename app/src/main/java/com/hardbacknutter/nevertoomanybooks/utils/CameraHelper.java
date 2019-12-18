@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -43,15 +44,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
 
     private static final String TAG = "CameraHelper";
 
-    /** We use a single temporary file. */
+    /**
+     * We use a single temporary file.
+     * Note we might not always clean it up.
+     * We just make sure an orphaned file is deleted before taking a new picture.
+     * But as it's in the cache directory, Android can clean it when it wants.
+     */
     private static final String CAMERA_FILENAME = "Camera";
+
     /** rotation angle to apply after a picture was taken. */
     private int mRotationAngle;
     /** by default, we tell the camera to give us full-size pictures. */
@@ -60,12 +66,23 @@ public class CameraHelper {
     /**
      * DEBUG only.
      *
+     * @param context Current context
+     *
      * @return the default camera file.
      */
-    public static File getDefaultFile() {
-        return StorageUtils.getTempCoverFile(CAMERA_FILENAME);
+    public static File getCameraFile(@NonNull final Context context) {
+        return StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
     }
 
+    public static void deleteTempFile(@NonNull final Context context) {
+        StorageUtils.deleteFile(StorageUtils.getTempCoverFile(context, CAMERA_FILENAME));
+    }
+
+    /**
+     * Apply a rotation after acquiring a picture.
+     *
+     * @param rotationAngle to apply
+     */
     public void setRotationAngle(final int rotationAngle) {
         mRotationAngle = rotationAngle;
     }
@@ -76,16 +93,19 @@ public class CameraHelper {
 
     /**
      * Start the camera to get an image.
+     *
+     * @param requestCode set/returned with the activity result
      */
     public void startCamera(@NonNull final Fragment fragment,
                             final int requestCode) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (mUseFullSize) {
-            File file = StorageUtils.getTempCoverFile(CAMERA_FILENAME);
+            //noinspection ConstantConditions
+            File file = StorageUtils.getTempCoverFile(fragment.getContext(), CAMERA_FILENAME);
+            // delete any orphaned file.
             StorageUtils.deleteFile(file);
 
-            //noinspection ConstantConditions
-            Uri uri = App.getUriForFile(fragment.getContext(), file);
+            Uri uri = GenericFileProvider.getUriForFile(fragment.getContext(), file);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
         fragment.startActivityForResult(intent, requestCode);
@@ -94,17 +114,19 @@ public class CameraHelper {
     /**
      * Get the bitmap with optional rotation.
      *
-     * @param data intent to read from,
-     *             or {@code null} if you <strong>know there will be a full-sized file</strong>
+     * @param data intent to read from, or {@code null}
+     *             if you <strong>know there will be a full-sized file</strong>
      *
      * @return bitmap or {@code null}
      */
     @Nullable
-    public Bitmap getBitmap(@Nullable final Intent data) {
+    public Bitmap getBitmap(@NonNull final Context context,
+                            @Nullable final Intent data) {
         Bitmap bm;
         if (mUseFullSize) {
-            String cameraFile = StorageUtils.getTempCoverFile(CAMERA_FILENAME).getAbsolutePath();
-            bm = BitmapFactory.decodeFile(cameraFile);
+            String fileSpec = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME)
+                                          .getAbsolutePath();
+            bm = BitmapFactory.decodeFile(fileSpec);
         } else {
             Objects.requireNonNull(data);
             bm = data.getParcelableExtra("data");
@@ -119,19 +141,21 @@ public class CameraHelper {
     /**
      * Get the file with optional rotation.
      *
-     * @param data intent to read from,
-     *             or {@code null} if you <strong>know there will be a full-sized file</strong>
+     * @param data    intent to read from, or {@code null}
+     *                if you <strong>know there will be a full-sized file</strong>
      *
      * @return file or {@code null}
      */
     @Nullable
-    public File getFile(@Nullable final Intent data) {
+    public File getFile(@NonNull final Context context,
+                        @Nullable final Intent data) {
+
         File file;
         if (mUseFullSize) {
-            file = StorageUtils.getTempCoverFile(CAMERA_FILENAME);
+            file = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
             if (file.exists()) {
                 if (mRotationAngle != 0) {
-                    ImageUtils.rotate(file, mRotationAngle);
+                    ImageUtils.rotate(context, file, mRotationAngle);
                 }
                 return file;
             }
@@ -144,7 +168,7 @@ public class CameraHelper {
                     bm = ImageUtils.rotate(bm, mRotationAngle);
                 }
 
-                file = StorageUtils.getTempCoverFile(CAMERA_FILENAME);
+                file = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
                 try (OutputStream os = new FileOutputStream(file.getAbsoluteFile())) {
                     bm.compress(Bitmap.CompressFormat.PNG, 100, os);
                     return file;

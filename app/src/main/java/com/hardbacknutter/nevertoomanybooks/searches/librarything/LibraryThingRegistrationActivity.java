@@ -138,18 +138,17 @@ public class LibraryThingRegistrationActivity
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
             Thread.currentThread().setName("LT.ValidateKey");
-
             Context context = App.getAppContext();
+
             try {
                 SearchEngine.CoverByIsbn ltm = new LibraryThingManager();
-                File tmpFile = ltm.getCoverImage(context, "0451451783",
-                                                 SearchEngine.CoverByIsbn.ImageSize.Small);
-                if (tmpFile != null) {
-                    tmpFile.deleteOnExit();
-                    long length = tmpFile.length();
-                    StorageUtils.deleteFile(tmpFile);
+                File file = ltm.getCoverImage(context, "0451451783",
+                                              SearchEngine.CoverByIsbn.ImageSize.Small);
+                if (file != null) {
+                    long fileLen = file.length();
+                    StorageUtils.deleteFile(file);
 
-                    if (length > ImageUtils.MIN_IMAGE_FILE_SIZE) {
+                    if (fileLen > ImageUtils.MIN_IMAGE_FILE_SIZE) {
                         return R.string.lt_key_is_correct;
                     } else {
                         return R.string.lt_key_is_incorrect;

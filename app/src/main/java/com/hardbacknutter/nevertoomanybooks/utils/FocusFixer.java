@@ -39,7 +39,7 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 /**
  * Ensure that next up/down/left/right View is visible.
@@ -122,9 +122,11 @@ public final class FocusFixer {
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            // Log, but ignore. This is a non-critical feature that prevents crashes
-            // when the 'next' key is pressed and some views have been hidden.
-            Logger.error(rootView.getContext(), TAG, e);
+            if (BuildConfig.DEBUG /* always */) {
+                // Log, but ignore. This is a non-critical feature that prevents crashes
+                // when the 'next' key is pressed and some views have been hidden.
+                Log.d(TAG, "rootView=" + rootView, e);
+            }
         }
     }
 

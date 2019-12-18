@@ -59,7 +59,7 @@ public class IntStringFilter
      *
      * @param labelId      string resource id to use as a display label
      * @param key          of the preference
-     * @param uuid         the style ID
+     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
      * @param table        to use by the expression

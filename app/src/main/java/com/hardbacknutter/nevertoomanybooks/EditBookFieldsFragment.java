@@ -47,6 +47,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -55,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -63,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
@@ -74,14 +75,20 @@ import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 public class EditBookFieldsFragment
         extends EditBookBaseFragment<Bookshelf> {
 
+    /** log tag. */
     public static final String TAG = "EditBookFieldsFragment";
 
     private static final int REQ_EDIT_AUTHORS = 0;
     private static final int REQ_EDIT_SERIES = 1;
 
+    /** the covers. */
+    private final ImageView[] mCoverView = new ImageView[2];
     /** Handles cover replacement, rotation, etc. */
-    private CoverHandler mCoverHandler;
+    private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+    /** Track on which cover view the context menu was used. */
+    private int mContextMenuOpenIndex = -1;
 
+    /** The views. */
     private View mTitleView;
     private View mAuthorView;
     private View mSeriesView;
@@ -91,7 +98,7 @@ public class EditBookFieldsFragment
     private EditText mIsbnView;
     private Button mAltIsbnButton;
     private Button mScanIsbnButton;
-    private ImageView mCoverImageView;
+
     private AutoCompleteTextView mGenreView;
 
     /** manage the validation check next to the ISBN field. */
@@ -118,11 +125,14 @@ public class EditBookFieldsFragment
         mSeriesView = view.findViewById(R.id.series);
         mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
-        mAltIsbnButton = view.findViewById(R.id.btn_altIsbn);
-        mScanIsbnButton = view.findViewById(R.id.btn_scan);
-        mCoverImageView = view.findViewById(R.id.coverImage);
         mGenreView = view.findViewById(R.id.genre);
         mBookshelvesView = view.findViewById(R.id.bookshelves);
+
+        mAltIsbnButton = view.findViewById(R.id.btn_altIsbn);
+        mScanIsbnButton = view.findViewById(R.id.btn_scan);
+
+        mCoverView[0] = view.findViewById(R.id.coverImage0);
+        mCoverView[1] = view.findViewById(R.id.coverImage1);
 
         return view;
     }
@@ -132,7 +142,8 @@ public class EditBookFieldsFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // do other stuff here that might affect the view.
+        //noinspection ConstantConditions
+        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
 
         // Fix the focus order for the views
         //noinspection ConstantConditions
@@ -156,7 +167,7 @@ public class EditBookFieldsFragment
         fields.addString(R.id.title, mTitleView, DBDefinitions.KEY_TITLE);
 
         // defined, but fetched/stored manually
-        // Storing the list back into the book is handled by onCheckListEditorSave
+        // Storing the list back into the book is handled by onActivityResult
         fields.addString(R.id.author, mAuthorView, "", DBDefinitions.KEY_FK_AUTHOR);
         mAuthorView.setOnClickListener(v -> {
             String title = fields.getField(R.id.title).getValue().toString();
@@ -172,7 +183,7 @@ public class EditBookFieldsFragment
         });
 
         // defined, but fetched/stored manually
-        // Storing the list back into the book is handled by onCheckListEditorSave
+        // Storing the list back into the book is handled by onActivityResult
         fields.addString(R.id.series, mSeriesView, "", DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
         mSeriesView.setOnClickListener(v -> {
@@ -192,22 +203,16 @@ public class EditBookFieldsFragment
         fields.addString(R.id.description, mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
 
-        // Not using a EditIsbn custom View, as we want to be able to enter non-isbn codes here.
+        // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
         fields.addString(R.id.isbn, mIsbnView, DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
         // but we still support visual aids for ISBN and other codes.
         mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, true);
         mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
         mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
-        mScanIsbnButton.setOnClickListener(v -> onScanBarcode());
-
-        fields.addString(R.id.coverImage, mCoverImageView, DBDefinitions.KEY_BOOK_UUID,
-                         UniqueId.BKEY_IMAGE)
-              .setScale(ImageUtils.SCALE_MEDIUM);
-        mCoverHandler = new CoverHandler(this, mBookModel.getDb(), book,
-                                         mIsbnView,
-                                         mCoverImageView,
-                                         ImageUtils.SCALE_MEDIUM);
+        //noinspection ConstantConditions
+        mScanIsbnButton.setOnClickListener(
+                v -> mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE));
 
         Field<String> field;
 
@@ -225,14 +230,6 @@ public class EditBookFieldsFragment
                 .setRelatedFields(R.id.lbl_bookshelves);
         initCheckListEditor(field, mBookshelvesView, R.string.lbl_bookshelves_long,
                             () -> mBookModel.getEditableBookshelvesList());
-    }
-
-    private void onScanBarcode() {
-        if (mScannerModel == null) {
-            //noinspection ConstantConditions
-            mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
-        }
-        mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
     }
 
     @Override
@@ -259,11 +256,10 @@ public class EditBookFieldsFragment
 
     @Override
     protected void onLoadFieldsFromBook() {
-        // if the book has no cover, make sure the temp cover is deleted.
-        if (!mBookModel.getBook().getBoolean(UniqueId.BKEY_IMAGE)) {
-            StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
-        }
         super.onLoadFieldsFromBook();
+
+        setupCoverView(0, ImageUtils.SCALE_MEDIUM);
+        setupCoverView(1, ImageUtils.SCALE_MEDIUM);
 
         populateAuthorListField();
         populateSeriesListField();
@@ -271,6 +267,34 @@ public class EditBookFieldsFragment
 
         // hide unwanted fields
         showOrHideFields(false);
+    }
+
+    private void setupCoverView(final int cIdx,
+                                @SuppressWarnings("SameParameterValue")
+                                @ImageUtils.Scale final int scale) {
+
+        mCoverHandler[cIdx] = new CoverHandler(this, mProgressBar,
+                                               mBookModel.getBook(), mIsbnView, cIdx,
+                                               mCoverView[cIdx], scale);
+        mCoverHandler[cIdx].setImage();
+
+        // Allow zooming by clicking on the image;
+        // If there is no actual image, bring up the context menu instead.
+        mCoverView[cIdx].setOnClickListener(v -> {
+            File image = mCoverHandler[cIdx].getCoverFile();
+            if (image.exists()) {
+                ZoomedImageDialogFragment.show(getParentFragmentManager(), image);
+            } else {
+                mContextMenuOpenIndex = cIdx;
+                mCoverHandler[cIdx].onCreateContextMenu();
+            }
+        });
+
+        mCoverView[cIdx].setOnLongClickListener(v -> {
+            mContextMenuOpenIndex = cIdx;
+            mCoverHandler[cIdx].onCreateContextMenu();
+            return true;
+        });
     }
 
     /**
@@ -436,7 +460,7 @@ public class EditBookFieldsFragment
                     }
 
                     //noinspection ConstantConditions
-                    String barCode = mScannerModel.getScanner().getBarcode(data);
+                    String barCode = mScannerModel.getScanner().getBarcode(getContext(), data);
                     if (barCode != null) {
                         mBookModel.getBook().put(DBDefinitions.KEY_ISBN, barCode);
                         return;
@@ -447,8 +471,15 @@ public class EditBookFieldsFragment
             }
 
             default: {
+                boolean handled = false;
                 // handle any cover image request codes
-                if (!mCoverHandler.onActivityResult(requestCode, resultCode, data)) {
+                if (mContextMenuOpenIndex != -1) {
+                    handled = mCoverHandler[mContextMenuOpenIndex]
+                            .onActivityResult(requestCode, resultCode, data);
+                    mContextMenuOpenIndex = -1;
+                }
+
+                if (!handled) {
                     super.onActivityResult(requestCode, resultCode, data);
                 }
                 break;

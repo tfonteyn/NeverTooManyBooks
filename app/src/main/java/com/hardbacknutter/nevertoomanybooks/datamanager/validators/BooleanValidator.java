@@ -27,10 +27,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -55,7 +56,8 @@ public class BooleanValidator
 
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager dataManager,
+    public void validate(@NonNull final Context context,
+                         @NonNull final DataManager dataManager,
                          @NonNull final String key,
                          final int errorLabelId)
             throws ValidatorException {
@@ -69,7 +71,7 @@ public class BooleanValidator
             ParseUtils.toBoolean(o);
         } catch (@NonNull final NumberFormatException e) {
             throw new ValidatorException(R.string.vldt_boolean_expected_for_x,
-                                         App.getLocalizedAppContext().getString(errorLabelId));
+                                         context.getString(errorLabelId));
         }
     }
 }

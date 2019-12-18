@@ -39,10 +39,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -72,14 +71,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * Class to co-ordinate multiple {@link SearchTask}.
  * <p>
  * It maintains its own internal list of tasks {@link #mActiveTasks} and as tasks finish,
  * it processes the data. Once all tasks are complete, it reports back using the
- * {@link SearchCoordinatorListener}.
+ * {@link MutableLiveData}.
  * <p>
  * The {@link Site#id} is used as the task id.
  */
@@ -90,13 +88,15 @@ public class SearchCoordinator
     /** log tag. */
     private static final String TAG = "SearchCoordinator";
 
+    public static final String BKEY_SEARCH_ERROR = TAG + ":error";
+
     /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
-
+    protected final MutableLiveData<TaskListener.ProgressMessage>
+            mSearchCoordinatorProgressMessage = new MutableLiveData<>();
     /** List of Tasks being managed by *this* object. */
     @NonNull
     private final Collection<SearchTask> mActiveTasks = new HashSet<>();
-
     /**
      * Results from the search tasks.
      * <p>
@@ -114,12 +114,11 @@ public class SearchCoordinator
     @NonNull
     private final Map<Integer, TaskListener.ProgressMessage> mSearchProgressMessages
             = Collections.synchronizedMap(new HashMap<>());
-
+    private final MutableLiveData<TaskListener.FinishMessage<Bundle>>
+            mSearchCoordinatorFinishedMessage = new MutableLiveData<>();
     /** Mappers to apply. */
     @NonNull
     private final Collection<Mapper> mMappers = new ArrayList<>();
-    @Nullable
-    private WeakReference<SearchCoordinatorListener> mSearchSearchCoordinatorListener;
     /** Sites to search on. If this list is empty, all searches will return {@code false}. */
     private SiteList mSiteList;
     /** Base message for progress updates. */
@@ -135,18 +134,13 @@ public class SearchCoordinator
     private boolean mHasValidIsbnOrEAN;
     /** {@code true} for strict ISBN checking, {@code false} for also allowing EAN-13. */
     private boolean mStrictIsbn = true;
-
     /** Whether of not to fetch thumbnails. */
     private boolean mFetchThumbnail;
-    /** Flag indicating searches will be non-concurrent title/author found via ASIN. */
-    private boolean mSearchingAsin;
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
     private boolean mWaitingForIsbn;
-
     /** Original ISBN for search. */
     @NonNull
     private String mIsbnSearchText = "";
-
     /** Site native id for search. */
     @NonNull
     private String mNativeIdSearchText = "";
@@ -159,13 +153,11 @@ public class SearchCoordinator
     /** Original publisher for search. */
     @NonNull
     private String mPublisherSearchText = "";
-
     /** Accumulated book data. */
     private Bundle mBookData;
     private long mSearchStartTime;
     private Map<Integer, Long> mSearchTasksStartTime;
     private Map<Integer, Long> mSearchTasksEndTime;
-
     /** Listen for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
         @Override
@@ -173,110 +165,60 @@ public class SearchCoordinator
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 mSearchTasksEndTime.put(message.taskId, System.nanoTime());
             }
+            Context localizedContext = App.getLocalizedAppContext();
 
-            switch (message.status) {
-                case Cancelled:
-                case Failed:
-                    // Store for later
-                    if (message.exception != null) {
-                        mSearchFinishedMessages.put(message.taskId, message);
-                    }
-                    break;
+            // process the outcome and queue another task as needed.
+            int tasksActive = onSearchTaskFinished(localizedContext, message);
 
-                case Success:
-                    // Store for later
-                    mSearchResults.put(message.taskId, message.result);
-                    break;
-            }
-
-            // clear obsolete progress status
-            synchronized (mSearchProgressMessages) {
-                mSearchProgressMessages.remove(message.taskId);
-            }
-            // and update our listener.
-            if (mSearchSearchCoordinatorListener.get() != null) {
-                mSearchSearchCoordinatorListener.get().onProgress(accumulateProgress());
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "mSearchTaskListener.onFinished|" + Logger.WEAK_REFERENCE_DEAD);
-                }
-            }
-
-            // queue another task as needed.
-            onSearchTaskFinished(message.result);
-
-            int tasksActive;
-            // Remove the finished task from our list
-            synchronized (mActiveTasks) {
-                for (SearchTask searchTask : mActiveTasks) {
-                    if (searchTask.getId() == message.taskId) {
-                        mActiveTasks.remove(searchTask);
-                        break;
-                    }
-                }
-
-                tasksActive = mActiveTasks.size();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "mSearchTaskListener.onFinished|finished="
-                               + SearchSites.getName(message.taskId));
-                    for (SearchTask searchTask : mActiveTasks) {
-                        Log.d(TAG, "mSearchTaskListener.onFinished|running="
-                                   + SearchSites.getName(searchTask.getId()));
-                    }
-                }
-            }
             // no more tasks ? Then send the results back to our creator.
             if (tasksActive == 0) {
                 long processTime = System.nanoTime();
 
-                accumulateResults(App.getAppContext());
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    for (Map.Entry<Integer, Long> entry : mSearchTasksStartTime.entrySet()) {
-                        String name = SearchSites.getName(entry.getKey());
-                        long start = entry.getValue();
-                        Long end = mSearchTasksEndTime.get(entry.getKey());
-                        if (end != null) {
-                            Log.d(TAG, String.format(Locale.UK,
-                                                     "mSearchTaskListener.onFinished"
-                                                     + "|taskId=%20s:%10d ms",
-                                                     name, (end - start) / TO_MILLIS));
-                        } else {
-                            Log.d(TAG, String.format(Locale.UK,
-                                                     "mSearchTaskListener.onFinished"
-                                                     + "|task=%20s|never finished",
-                                                     name));
-                        }
-                    }
-
-                    Log.d(TAG, String.format(Locale.UK,
-                                             "mSearchTaskListener.onFinished"
-                                             + "|total search time: %10d ms",
-                                             (processTime - mSearchStartTime) / TO_MILLIS));
-                    Log.d(TAG, String.format(Locale.UK,
-                                             "mSearchTaskListener.onFinished"
-                                             + "|processing time: %10d ms",
-                                             (System.nanoTime() - processTime) / TO_MILLIS));
-                }
-
-                // All done, deliver the data.
                 mIsSearchActive = false;
-                String searchErrors = accumulateErrors();
+                accumulateResults(localizedContext);
+                String searchErrors = accumulateErrors(localizedContext);
 
-                Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|wasCancelled=" + mIsCancelled
-                           + "|searchErrors=" + searchErrors);
+                if (searchErrors != null && !searchErrors.isEmpty()) {
+                    mBookData.putString(BKEY_SEARCH_ERROR, searchErrors);
+                }
+                FinishMessage<Bundle> scFinished = new FinishMessage<>(
+                        R.id.TASK_ID_SEARCH_COORDINATOR,
+                        (mIsCancelled ? TaskStatus.Cancelled : TaskStatus.Success),
+                        mBookData, null);
 
-                if (mSearchSearchCoordinatorListener.get() != null) {
-                    if (mIsCancelled) {
-                        mSearchSearchCoordinatorListener.get().onCancelled();
-                    } else {
-                        mSearchSearchCoordinatorListener.get().onFinished(mBookData, searchErrors);
-                    }
-                } else {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                        Log.d(TAG, "onFinished|" + Logger.WEAK_REFERENCE_DEAD);
+                mSearchCoordinatorFinishedMessage.setValue(scFinished);
+
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "mSearchTaskListener.onFinished"
+                               + "|wasCancelled=" + mIsCancelled
+                               + "|searchErrors=" + searchErrors);
+
+                    if (DEBUG_SWITCHES.TIMERS) {
+                        for (Map.Entry<Integer, Long> entry : mSearchTasksStartTime.entrySet()) {
+                            String name = SearchSites.getName(entry.getKey());
+                            long start = entry.getValue();
+                            Long end = mSearchTasksEndTime.get(entry.getKey());
+                            if (end != null) {
+                                Log.d(TAG, String.format(Locale.UK,
+                                                         "mSearchTaskListener.onFinished"
+                                                         + "|taskId=%20s:%10d ms",
+                                                         name, (end - start) / TO_MILLIS));
+                            } else {
+                                Log.d(TAG, String.format(Locale.UK,
+                                                         "mSearchTaskListener.onFinished"
+                                                         + "|task=%20s|never finished",
+                                                         name));
+                            }
+                        }
+
+                        Log.d(TAG, String.format(Locale.UK,
+                                                 "mSearchTaskListener.onFinished"
+                                                 + "|total search time: %10d ms",
+                                                 (processTime - mSearchStartTime) / TO_MILLIS));
+                        Log.d(TAG, String.format(Locale.UK,
+                                                 "mSearchTaskListener.onFinished"
+                                                 + "|processing time: %10d ms",
+                                                 (System.nanoTime() - processTime) / TO_MILLIS));
                     }
                 }
             }
@@ -288,15 +230,19 @@ public class SearchCoordinator
                 mSearchProgressMessages.put(message.taskId, message);
             }
             // forward the accumulated progress
-            if (mSearchSearchCoordinatorListener.get() != null) {
-                mSearchSearchCoordinatorListener.get().onProgress(accumulateProgress());
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onFinished|" + Logger.WEAK_REFERENCE_DEAD);
-                }
-            }
+            mSearchCoordinatorProgressMessage.setValue(accumulateProgress());
         }
     };
+
+    public MutableLiveData<TaskListener.ProgressMessage>
+    getSearchCoordinatorProgressMessage() {
+        return mSearchCoordinatorProgressMessage;
+    }
+
+    public MutableLiveData<TaskListener.FinishMessage<Bundle>>
+    getSearchCoordinatorFinishedMessage() {
+        return mSearchCoordinatorFinishedMessage;
+    }
 
     @Override
     protected void onCleared() {
@@ -305,17 +251,13 @@ public class SearchCoordinator
 
     /**
      * Pseudo constructor.
-     * <p>
-     * FIXME: eliminate the listener, and use live-data/observers.
      *
-     * @param args     {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-     * @param listener to send results to
+     * @param context Localized context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     @SuppressLint("UseSparseArrays")
-    public void init(@Nullable final Bundle args,
-                     @NonNull final SearchCoordinatorListener listener) {
-
-        mSearchSearchCoordinatorListener = new WeakReference<>(listener);
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args) {
 
         if (mSiteList == null) {
 
@@ -323,19 +265,16 @@ public class SearchCoordinator
                 mSearchTasksStartTime = new HashMap<>();
                 mSearchTasksEndTime = new HashMap<>();
             }
-            // don't pass a context to init().
-            // We will keep hold of it, so must use the app context.
-            Context localContext = App.getLocalizedAppContext();
 
-            if (FormatMapper.isMappingAllowed(localContext)) {
-                mMappers.add(new FormatMapper(localContext));
+            if (FormatMapper.isMappingAllowed(context)) {
+                mMappers.add(new FormatMapper());
             }
-            if (ColorMapper.isMappingAllowed(localContext)) {
-                mMappers.add(new ColorMapper(localContext));
+            if (ColorMapper.isMappingAllowed(context)) {
+                mMappers.add(new ColorMapper());
             }
 
             if (args != null) {
-                mFetchThumbnail = App.isUsed(UniqueId.BKEY_IMAGE);
+                mFetchThumbnail = App.isUsed(UniqueId.BKEY_THUMBNAIL);
 
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 
@@ -348,7 +287,7 @@ public class SearchCoordinator
                 mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
 
                 // use global preference.
-                mSiteList = SiteList.getList(localContext, SiteList.Type.Data);
+                mSiteList = SiteList.getList(context, SiteList.Type.Data);
             }
         }
     }
@@ -377,51 +316,80 @@ public class SearchCoordinator
         return true;
     }
 
-
-    private void onSearchTaskFinished(@NonNull final Bundle bookData) {
-        // If we searched AMAZON for an Asin, then see what we found
-        if (mSearchingAsin) {
-            mSearchingAsin = false;
-            // clear the ASIN
-            mIsbnSearchText = "";
-            if (hasIsbn(bookData)) {
-                // We got an ISBN, so pretend we were searching for an ISBN
-                // and fall through to the next block.
-                mWaitingForIsbn = true;
-            } else {
-                // See if we got author/title
-                mAuthorSearchText = bookData.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
-                mTitleSearchText = bookData.getString(DBDefinitions.KEY_TITLE, "");
-                if (!mAuthorSearchText.isEmpty() && !mTitleSearchText.isEmpty()) {
-                    // We got them, so pretend we are searching by author/title now,
-                    // and waiting for an ISBN...
-                    mWaitingForIsbn = true;
+    /**
+     * Process the message and start another task if required.
+     *
+     * @param context Localized context
+     * @param message to process
+     *
+     * @return number of active tasks
+     */
+    private int onSearchTaskFinished(@NonNull final Context context,
+                                     @NonNull final TaskListener.FinishMessage<Bundle> message) {
+        switch (message.status) {
+            case Cancelled:
+            case Failed:
+                // Store for later
+                if (message.exception != null) {
+                    mSearchFinishedMessages.put(message.taskId, message);
                 }
-            }
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                Log.d(TAG, "onSearchTaskFinished|was SearchingAsin"
-                           + "|mWaitingForIsbn=" + mWaitingForIsbn);
-            }
+                break;
+
+            case Success:
+                // Store for later
+                mSearchResults.put(message.taskId, message.result);
+                break;
         }
 
+        // clear obsolete progress status
+        synchronized (mSearchProgressMessages) {
+            mSearchProgressMessages.remove(message.taskId);
+        }
+        // and update our listener.
+        mSearchCoordinatorProgressMessage.setValue(accumulateProgress());
+
         if (mWaitingForIsbn) {
-            if (hasIsbn(bookData)) {
+            if (hasIsbn(message.result)) {
                 mWaitingForIsbn = false;
                 // replace the search text with the (we hope) exact isbn
-                mIsbnSearchText = bookData.getString(DBDefinitions.KEY_ISBN, "");
+                mIsbnSearchText = message.result.getString(DBDefinitions.KEY_ISBN, "");
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "onSearchTaskFinished|isbn=" + mIsbnSearchText);
                 }
 
                 // Start the others...even if they have run before.
-                // They will redo the search with the ISBN.
-                startSearch(mSiteList.getSites());
+                // They will redo the search WITH the ISBN.
+                startSearch(context, mSiteList.getSites());
             } else {
                 // Start next one that has not run yet.
-                startNextSearch();
+                startNextSearch(context);
             }
         }
+
+        int tasksActive;
+        // Remove the finished task from our list
+        synchronized (mActiveTasks) {
+            for (SearchTask searchTask : mActiveTasks) {
+                if (searchTask.getId() == message.taskId) {
+                    mActiveTasks.remove(searchTask);
+                    break;
+                }
+            }
+
+            tasksActive = mActiveTasks.size();
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
+                Log.d(TAG, "mSearchTaskListener.onFinished|finished="
+                           + SearchSites.getName(message.taskId));
+                for (SearchTask searchTask : mActiveTasks) {
+                    Log.d(TAG, "mSearchTaskListener.onFinished|running="
+                               + SearchSites.getName(searchTask.getId()));
+                }
+            }
+        }
+
+        return tasksActive;
     }
 
 
@@ -457,12 +425,14 @@ public class SearchCoordinator
     /**
      * Search a <strong>single</strong> site with the site specific book id.
      *
+     * @param context            Current context
      * @param site               to search
      * @param nativeIdSearchText to search for
      *
      * @return {@code true} if the search was started.
      */
-    public boolean searchByNativeId(@NonNull final Site site,
+    public boolean searchByNativeId(@NonNull final Context context,
+                                    @NonNull final Site site,
                                     @NonNull final String nativeIdSearchText) {
         // sanity check
         if (nativeIdSearchText.isEmpty()) {
@@ -471,9 +441,9 @@ public class SearchCoordinator
 
         clearSearchText();
         mNativeIdSearchText = nativeIdSearchText;
-        prepareSearch();
+        prepareSearch(context);
 
-        mIsSearchActive = startSearch(site);
+        mIsSearchActive = startSearch(context, site);
         return mIsSearchActive;
     }
 
@@ -491,7 +461,7 @@ public class SearchCoordinator
     }
 
     /**
-     * Used by {@link #searchByText()}.
+     * Used by {@link #searchByText}.
      *
      * @param authorSearchText to search for
      */
@@ -505,7 +475,7 @@ public class SearchCoordinator
     }
 
     /**
-     * Used by {@link #searchByText()}.
+     * Used by {@link #searchByText}.
      *
      * @param titleSearchText to search for
      */
@@ -519,7 +489,7 @@ public class SearchCoordinator
     }
 
     /**
-     * Used by {@link #searchByText()}.
+     * Used by {@link #searchByText}.
      *
      * @param publisherSearchText to search for
      */
@@ -528,7 +498,7 @@ public class SearchCoordinator
     }
 
     /**
-     * Used by {@link #searchByText()}.
+     * Used by {@link #searchByText}.
      *
      * @param isbnSearchText to search for
      * @param strictIsbn     Flag: set to {@link false} to allow invalid isbn numbers
@@ -542,43 +512,42 @@ public class SearchCoordinator
 
     /**
      * Start a search.
-     * At least one of isbn,title,author must be not be empty.
-     * Will optionally use the publisher.
+     * <p>
+     * If there is a valid ISBN/EAN code, we start a concurrent search on all sites.
+     * When all sites are searched, we're done.
+     * <p>
+     * Otherwise, we start a serial search using author/title (and optional publisher)
+     * until we find an ISBN or until we searched all sites.
+     * Once/if an ISBN is found, the serial search is abandoned, and a new concurrent search
+     * is started on all sites using the ISBN.
+     *
+     * @param context Current context
      *
      * @return {@code true} if at least one search was started.
      */
-    public boolean searchByText() {
+    public boolean searchByText(@NonNull final Context context) {
         // clear criteria NOT used by this search.
         mNativeIdSearchText = "";
-        prepareSearch();
+        prepareSearch(context);
 
-        if (mIsbnSearchText.isEmpty()) {
-            // We really want to ensure we get the same book from each, so if the isbn is
-            // NOT PRESENT, search the sites one at a time until we get an isbn.
-            // This in return will start a new search using that ISBN.
-            mWaitingForIsbn = true;
-            mIsSearchActive = startNextSearch();
-
-        } else {
+        if (!mIsbnSearchText.isEmpty()) {
             mWaitingForIsbn = false;
             // searching by text requires a valid ISBN *OR* EAN.
             if (mHasValidIsbnOrEAN || !mStrictIsbn) {
-                mIsSearchActive = startSearch(mSiteList.getSites());
-
-            } else if (SearchSites.ENABLE_AMAZON_AWS) {
-                // Assume it's an ASIN, and just search Amazon
-                mSearchingAsin = true;
-                Collection<Site> amazon = new ArrayList<>();
-                amazon.add(Site.createDataSite(SearchSites.AMAZON));
-                mIsSearchActive = startSearch(amazon);
-
+                mIsSearchActive = startSearch(context, mSiteList.getSites());
             }
+
+        } else {
+            // We really want to ensure we get the same book from each, so if the isbn is
+            // NOT PRESENT, search the sites one at a time until we get an isbn.
+            mWaitingForIsbn = true;
+            mIsSearchActive = startNextSearch(context);
         }
 
         return mIsSearchActive;
     }
 
-    void setBaseMessage(@Nullable final String baseMessage) {
+    protected void setBaseMessage(@Nullable final String baseMessage) {
         mBaseMessage = baseMessage;
     }
 
@@ -595,17 +564,31 @@ public class SearchCoordinator
     }
 
     /**
+     * Check if the given site is enabled.
+     *
+     * @param siteId to check
+     *
+     * @return {@code true} if enabled
+     */
+    @SuppressWarnings("unused")
+    public boolean isEnabled(final int siteId) {
+        return (mSiteList.getEnabledSites() & siteId) != 0;
+    }
+
+    /**
      * Called after the search criteria are ready, and before starting the actual search.
      * Clears a number of parameters so we can start the search with a clean slate.
+     *
+     * @param context Current context
      */
-    private void prepareSearch() {
+    private void prepareSearch(@NonNull final Context context) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             mSearchStartTime = System.nanoTime();
         }
 
         // Developer sanity checks
         if (BuildConfig.DEBUG /* always */) {
-            if (!NetworkUtils.isNetworkAvailable(App.getAppContext())) {
+            if (!NetworkUtils.isNetworkAvailable(context)) {
                 throw new IllegalStateException("network should be checked before starting search");
             }
 
@@ -624,16 +607,8 @@ public class SearchCoordinator
 
         // reset flags
         mWaitingForIsbn = false;
-        mSearchingAsin = false;
         mIsCancelled = false;
         mIsSearchActive = false;
-
-        if (mFetchThumbnail) {
-            // each site might have a cover, but when accumulating all covers found,
-            // we rename the 'best' to the standard name. So make sure to
-            // delete any orphaned temporary cover file
-            StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
-        }
 
         mBookData = new Bundle();
         mSearchResults.clear();
@@ -665,15 +640,17 @@ public class SearchCoordinator
     /**
      * Start a single task.
      *
+     * @param context Localized context
+     *
      * @return {@code true} if a search was started, {@code false} if not
      */
-    private boolean startNextSearch() {
+    private boolean startNextSearch(@NonNull final Context context) {
         // if mSiteList is empty, we return false.
         for (Site site : mSiteList.getSites()) {
             if (site.isEnabled()) {
                 // If the site has not been searched yet, search it
                 if (!mSearchResults.containsKey(site.id)) {
-                    return startSearch(site);
+                    return startSearch(context, site);
                 }
             }
         }
@@ -686,18 +663,20 @@ public class SearchCoordinator
      * <strong>Note:</strong> we explicitly pass in the searchSites instead of using the global
      * so we can force an Amazon-only search (ASIN based) when needed.
      *
-     * @param sites to search, see {@link SearchSites#SEARCH_FLAG_MASK}
+     * @param context Localized context
+     * @param sites   to search, see {@link SearchSites#SEARCH_FLAG_MASK}
      *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
-    private boolean startSearch(@NonNull final Iterable<Site> sites) {
+    private boolean startSearch(@NonNull final Context context,
+                                @NonNull final Iterable<Site> sites) {
         // if currentSearchSites is empty, we return false.
         boolean atLeastOneStarted = false;
         for (Site site : sites) {
             if (site.isEnabled()) {
                 // If the site has not been searched yet, search it
                 if (!mSearchResults.containsKey(site.id)) {
-                    if (startSearch(site)) {
+                    if (startSearch(context, site)) {
                         atLeastOneStarted = true;
                     }
                 }
@@ -707,32 +686,22 @@ public class SearchCoordinator
     }
 
     /**
-     * Check if the given site is enabled.
-     *
-     * @param siteId to check
-     *
-     * @return {@code true} if enabled
-     */
-    @SuppressWarnings("unused")
-    public boolean isEnabled(final int siteId) {
-        return (mSiteList.getEnabledSites() & siteId) != 0;
-    }
-
-    /**
      * Start specific search.
      *
-     * @param site to search
+     * @param context Localized context
+     * @param site    to search
      *
      * @return {@code true} if the search was started.
      */
-    private boolean startSearch(@NonNull final Site site) {
+    private boolean startSearch(@NonNull final Context context,
+                                @NonNull final Site site) {
         // refuse new searches if we're shutting down.
         if (mIsCancelled) {
             return false;
         }
 
         SearchEngine searchEngine = site.getSearchEngine();
-        if (!searchEngine.isAvailable(App.getAppContext())) {
+        if (!searchEngine.isAvailable(context)) {
             return false;
         }
 
@@ -758,7 +727,8 @@ public class SearchCoordinator
             return false;
         }
 
-        SearchTask task = new SearchTask(site.id, searchEngine, mSearchTaskListener);
+        SearchTask task = new SearchTask(context, site.id, searchEngine,
+                                         mSearchTaskListener);
 
         task.setFetchThumbnail(mFetchThumbnail);
 
@@ -784,8 +754,10 @@ public class SearchCoordinator
 
     /**
      * Accumulate data from all sites.
+     *
+     * @param context Localized context
      */
-    private void accumulateResults(@NonNull final Context appContext) {
+    private void accumulateResults(@NonNull final Context context) {
         // This list will be the actual order of the result we apply, based on the
         // actual results and the default order.
         final Collection<Integer> sites = new ArrayList<>();
@@ -795,7 +767,7 @@ public class SearchCoordinator
             // If an ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final Collection<Integer> uncertain = new ArrayList<>();
-            for (Site site : SiteList.getDataSitesByReliability(appContext)) {
+            for (Site site : SiteList.getDataSitesByReliability(context)) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
@@ -823,12 +795,12 @@ public class SearchCoordinator
 
         } else {
             // If an ISBN was not passed, then just use the default order
-            for (Site site : SiteList.getDataSitesByReliability(appContext)) {
+            for (Site site : SiteList.getDataSitesByReliability(context)) {
                 sites.add(site.id);
             }
         }
 
-        // Merge the data we have. We do this in a fixed order rather than as the threads finish.
+        // Merge the data we have in the order as decided upon above.
         for (int siteId : sites) {
             accumulateSiteData(siteId);
         }
@@ -855,19 +827,29 @@ public class SearchCoordinator
 
         // run the mappers
         for (Mapper mapper : mMappers) {
-            mapper.map(mBookData);
+            mapper.map(context, mBookData);
         }
 
-        // If there are thumbnails present, pick the biggest, delete others and rename.
-        ImageUtils.cleanupImages(mBookData);
+        // Pick the best front cover (if any) and clean/delete all others.
+        ArrayList<String> imageList = mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+        if (imageList != null && !imageList.isEmpty()) {
+            String coverName = ImageUtils.cleanupImages(imageList);
+            if (coverName != null) {
+                mBookData.putString(UniqueId.BKEY_FILE_SPEC[0], coverName);
+            }
+        }
+        mBookData.remove(UniqueId.BKEY_FILE_SPEC_ARRAY);
 
-        // If we did not get an ISBN, use the originally we searched for.
+        //FIXME: there is only one (potential) back-cover coming from StripInfo.
+        // it's stored in UniqueId.BKEY_FILE_SPEC[1]
+
+        // If we did not get an ISBN, use the one we originally searched for.
         String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
         if (isbn == null || isbn.isEmpty()) {
             mBookData.putString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
         }
 
-        // If we did not get an title, use the originally we searched for.
+        // If we did not get an title, use the one we originally searched for.
         String title = mBookData.getString(DBDefinitions.KEY_TITLE);
         if (title == null || title.isEmpty()) {
             mBookData.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
@@ -1020,15 +1002,17 @@ public class SearchCoordinator
      * Called when all is said and done. Collects all individual website errors (if any)
      * into a single user-formatted message.
      *
+     * @param context Localized context
+     *
      * @return the error message
      */
-    private String accumulateErrors() {
+    private String accumulateErrors(@NonNull final Context context) {
         String errorMessage = null;
         if (!mSearchFinishedMessages.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, TaskListener.FinishMessage<Bundle>>
                     error : mSearchFinishedMessages.entrySet()) {
-                String siteError = createSiteError(error.getKey(), error.getValue());
+                String siteError = createSiteError(context, error.getKey(), error.getValue());
                 sb.append(siteError).append('\n');
             }
             errorMessage = sb.toString();
@@ -1041,21 +1025,22 @@ public class SearchCoordinator
     /**
      * Prepare an error message to show after the task finishes.
      *
+     * @param context Localized context
      * @param siteId  the site id
      * @param message to digest
      *
      * @return user-friendly error message for the given site
      */
-    private String createSiteError(@StringRes final int siteId,
+    private String createSiteError(@NonNull final Context context,
+                                   @StringRes final int siteId,
                                    @NonNull final TaskListener.FinishMessage<Bundle> message) {
 
-        Context localContext = App.getLocalizedAppContext();
         String siteName = SearchSites.getName(siteId);
         String text;
 
         switch (message.status) {
             case Cancelled:
-                text = localContext.getString(R.string.progress_end_cancelled);
+                text = context.getString(R.string.progress_end_cancelled);
                 break;
 
             case Failed: {
@@ -1075,20 +1060,20 @@ public class SearchCoordinator
                     messageId = R.string.error_unknown;
                 }
 
-                text = localContext.getString(messageId);
+                text = context.getString(messageId);
 
                 if (message.exception != null) {
                     String eMsg;
                     if (message.exception instanceof FormattedMessageException) {
                         // by design a FormattedMessageException can be shown to the user
                         eMsg = ((FormattedMessageException) message.exception)
-                                .getLocalizedMessage(localContext);
+                                .getLocalizedMessage(context);
                     } else if (BuildConfig.DEBUG /* always */) {
                         // but a raw exception should not
                         eMsg = message.exception.getLocalizedMessage();
                     } else {
                         // instead ask for feedback
-                        eMsg = localContext.getString(R.string.error_if_the_problem_persists);
+                        eMsg = context.getString(R.string.error_if_the_problem_persists);
                     }
 
                     if (eMsg != null) {
@@ -1103,7 +1088,7 @@ public class SearchCoordinator
                 return "\n";
         }
 
-        return localContext.getString(R.string.error_search_x_failed_y, siteName, text);
+        return context.getString(R.string.error_search_x_failed_y, siteName, text);
     }
 
     /**

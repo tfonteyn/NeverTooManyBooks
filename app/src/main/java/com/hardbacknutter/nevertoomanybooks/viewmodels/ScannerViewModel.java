@@ -71,10 +71,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * {@code
  *      private ScannerViewModel mScannerModel;
  *      ...
- *      private void onScanBarcode() {
- *          if (mScannerModel == null) {
- *              mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
- *          }
+ *      public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+ *          mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
+ *      }
+ *      ...
+ *      void doScan() {
  *          mScannerModel.scan(this);
  *      }
  *      ...
@@ -131,7 +132,7 @@ public class ScannerViewModel
                     data.putExtra("data", dummy);
                 } else {
                     try {
-                        StorageUtils.copyFile(file, CameraHelper.getDefaultFile());
+                        StorageUtils.copyFile(file, CameraHelper.getCameraFile(context));
                     } catch (@NonNull final IOException e) {
                         Log.d(TAG, "onActivityResult", e);
                     }

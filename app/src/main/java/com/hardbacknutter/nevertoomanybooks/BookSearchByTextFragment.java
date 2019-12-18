@@ -232,7 +232,8 @@ public class BookSearchByTextFragment
         mSearchCoordinator.setAuthorSearchText(mAuthorView.getText().toString().trim());
         mSearchCoordinator.setTitleSearchText(mTitleView.getText().toString().trim());
         mSearchCoordinator.setPublisherSearchText(mPublisherView.getText().toString().trim());
-        return mSearchCoordinator.searchByText();
+        //noinspection ConstantConditions
+        return mSearchCoordinator.searchByText(getContext());
     }
 
     @Override

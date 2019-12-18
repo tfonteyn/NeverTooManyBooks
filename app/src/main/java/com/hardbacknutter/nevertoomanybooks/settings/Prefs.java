@@ -79,7 +79,8 @@ public final class Prefs {
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
-    public static final String pk_image_cropper_external = "image.cropper.external";
+    public static final String pk_camera_image_action = "camera.image.action";
+
     public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
     public static final String pk_image_cache_resized = "image.cache.resized";
     public static final String pk_bob_levels_rebuild_state = "style.booklist.levels.rebuild.state";

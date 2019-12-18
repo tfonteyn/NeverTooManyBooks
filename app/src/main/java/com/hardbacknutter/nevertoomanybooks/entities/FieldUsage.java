@@ -46,7 +46,7 @@ public class FieldUsage {
     @NonNull
     public final String fieldId;
     /** Is the field capable of appending extra data. */
-    private final boolean mAllowAppend;
+    private final boolean mCanAppend;
     /** label to show to the user. */
     @StringRes
     private final int mNameStringId;
@@ -60,24 +60,37 @@ public class FieldUsage {
      * @param fieldId      key
      * @param nameStringId label to show to the user.
      * @param usage        how to use this field.
-     * @param allowAppend  {@code true} if this field is capable of appending extra data.
+     * @param canAppend    {@code true} if this field is capable of appending extra data.
      */
     public FieldUsage(@NonNull final String fieldId,
                       @StringRes final int nameStringId,
                       @NonNull final Usage usage,
-                      final boolean allowAppend) {
+                      final boolean canAppend) {
         this.fieldId = fieldId;
         mNameStringId = nameStringId;
         mUsage = usage;
-        mAllowAppend = allowAppend;
+        mCanAppend = canAppend;
+    }
+
+    /**
+     * Constructor for a related field depending on the given primaryField.
+     *
+     * @param fieldId      key
+     * @param nameStringId label to show to the user.
+     * @param primaryField to which this new field relates to.
+     */
+    public FieldUsage(@NonNull final String fieldId,
+                      @StringRes final int nameStringId,
+                      @NonNull final FieldUsage primaryField) {
+        this.fieldId = fieldId;
+        mNameStringId = nameStringId;
+
+        mUsage = primaryField.mUsage;
+        mCanAppend = primaryField.mCanAppend;
     }
 
     public boolean isWanted() {
         return mUsage != Usage.Skip;
-    }
-
-    public boolean canAppend() {
-        return mAllowAppend;
     }
 
     @NonNull
@@ -103,10 +116,10 @@ public class FieldUsage {
      * Cycle to the next Usage stage.
      * <p>
      * if (canAppend): Skip -> CopyIfBlank -> Append -> Overwrite -> Skip
-     * else       : Skip -> CopyIfBlank -> Overwrite -> Skip
+     * else          : Skip -> CopyIfBlank -> Overwrite -> Skip
      */
     public void nextState() {
-        mUsage = mUsage.nextState(mAllowAppend);
+        mUsage = mUsage.nextState(mCanAppend);
     }
 
     @Override
@@ -114,7 +127,7 @@ public class FieldUsage {
     public String toString() {
         return "FieldUsage{"
                + "fieldId='" + fieldId + '\''
-               + ", mAllowAppend=" + mAllowAppend
+               + ", mCanAppend=" + mCanAppend
                + ", mNameStringId=" + App.getAppContext().getString(mNameStringId)
                + ", mUsage=" + mUsage
                + '}';

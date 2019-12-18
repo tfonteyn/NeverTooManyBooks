@@ -132,7 +132,7 @@
     <string name="error_if_the_problem_persists">Sorun devam ederse, ayarlar sayfasının altındaki “%1$s” seçeneğiyle desteğe başvurun.</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_network_timeout">Cevapsız. Tekrar deneyin.</string>
-    <string name="error_no_external_crop_app">Görüntüleri kırpmak için bir uygulama bulunamadı</string>
+    <string name="error_no_image_editor">Resim editörü bulunamadı</string>
     <string name="error_network_no_connection">Ağ bağlantısı yok.</string>
     <string name="error_not_available">%1$s kullanılamıyor</string>
     <string name="error_search_failed_network">Lütfen Ayarlar\'ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
@@ -404,8 +404,8 @@
     <string name="X_progress_end_n_books_searched">%1$d kitap arandı</string>
     <string name="title_backing_up">Yedekleniyor…</string>
     <string name="progress_msg_connecting">Ağ sayfasına bağlanılıyor…</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d bulunamadı)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi\n(%2$d bulunamadı, %3$d atlandı)</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı, %4$d atlandı)</string>
     <string name="progress_msg_finding_editions">Sürümler bulunuyor…</string>
     <string name="title_importing">İçe aktarılıyor…</string>
     <string name="progress_msg_loading">Yükleniyor…</string>
@@ -441,7 +441,6 @@
     <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp “Layer Type”</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için “Donanım” için “Yazılım” deneyin, ancak daha hızlı</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
-    <string name="pt_thumbnails_external_cropper">Başka resim kırpıcı kullan</string>
     <string name="pt_thumbnails_rotate_auto">Fotoğrafları döndür</string>
     <string name="pg_camera">Kamera</string>
     <string name="pt_ui_language">Dil</string>

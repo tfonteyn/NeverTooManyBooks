@@ -67,6 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * DB Helper for Covers DB. It uses the Application Context.
  * This class is used as singleton, as it's needed for multiple concurrent threads.
  * <p>
+ * Images are stored as JPEG, at 80% quality. This does not affect the file itself.
+ * <p>
  * In the initial pass, the covers database has a single table whose members are accessed
  * via unique 'file names'.
  * <p>
@@ -84,7 +86,7 @@ public final class CoversDAO
     /** log tag. */
     private static final String TAG = "CoversDAO";
 
-    /** Compresses images to 80% to store in the cache. This does not affect the file itself. */
+    /** Compresses images to 80% to store in the cache. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;
 
     /** DB name. */
@@ -202,21 +204,25 @@ public final class CoversDAO
      * <p>
      * <strong>Note:</strong> Any changes to the resulting name MUST be reflected in {@link #delete}
      *
-     * @param uuid      used to construct the cacheId
+     * @param uuid      UUID of the book
+     * @param cIdx      0..n image index
      * @param maxWidth  used to construct the cacheId
      * @param maxHeight used to construct the cacheId
      */
     @NonNull
     private static String constructCacheId(@NonNull final String uuid,
+                                           final int cIdx,
                                            final int maxWidth,
                                            final int maxHeight) {
-        return uuid + '.' + maxWidth + 'x' + maxHeight;
+        return uuid + '.' + cIdx + '.' + maxWidth + 'x' + maxHeight;
     }
 
     /**
      * Get a cached image.
      *
-     * @param uuid      of the image
+     * @param context   Current context
+     * @param uuid      UUID of the book
+     * @param cIdx      0..n image index
      * @param maxWidth  used to construct the cacheId
      * @param maxHeight used to construct the cacheId
      *
@@ -224,7 +230,9 @@ public final class CoversDAO
      */
     @Nullable
     @AnyThread
-    public static Bitmap getImage(@NonNull final String uuid,
+    public static Bitmap getImage(@NonNull final Context context,
+                                  @NonNull final String uuid,
+                                  final int cIdx,
                                   final int maxWidth,
                                   final int maxHeight) {
         // safely initialise if needed
@@ -233,9 +241,9 @@ public final class CoversDAO
                 return null;
             }
 
-            File file = StorageUtils.getCoverFileForUuid(uuid);
+            File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
             String dateStr = DateUtils.utcSqlDateTime(new Date(file.lastModified()));
-            String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
+            String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
             try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE,
                                                     new String[]{cacheId, dateStr})) {
                 if (cursor.moveToFirst()) {
@@ -267,7 +275,7 @@ public final class CoversDAO
                 return;
             }
             sSyncedDb.delete(TBL_IMAGE.getName(),
-                             // starts with the uuid, remove all sizes
+                             // starts with the uuid, remove all sizes and indexes
                              DOM_CACHE_ID + " LIKE ?", new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
@@ -311,14 +319,16 @@ public final class CoversDAO
             sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
         } catch (@NonNull final RuntimeException e) {
             // Assume exception means DB corrupt. Don't care, it's only a cache.
-            Logger.error(TAG, e, "Failed to open covers db");
-            App.getAppContext().deleteDatabase(COVERS_DATABASE_NAME);
-
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "Failed to open covers db", e);
+            }
             // retry...
             try {
+                App.getAppContext().deleteDatabase(COVERS_DATABASE_NAME);
+
                 sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
             } catch (@NonNull final RuntimeException e2) {
-                // If we fail after creating a new DB, just give up.
+                // If we fail after creating a new DB, log and give up.
                 Logger.error(TAG, e2, "Covers database unavailable");
             }
         }
@@ -352,9 +362,16 @@ public final class CoversDAO
      * Compresses to {@link #IMAGE_QUALITY_PERCENTAGE} first.
      * <p>
      * This will either insert or update a row in the database.
+     *
+     * @param uuid      UUID of the book
+     * @param cIdx      0..n image index
+     * @param bitmap    to save
+     * @param maxWidth  used to construct the cacheId
+     * @param maxHeight used to construct the cacheId
      */
     @WorkerThread
     private void saveFile(@NonNull final String uuid,
+                          final int cIdx,
                           @NonNull final Bitmap bitmap,
                           final int maxWidth,
                           final int maxHeight) {
@@ -378,7 +395,7 @@ public final class CoversDAO
 
         byte[] image = out.toByteArray();
 
-        String cacheId = constructCacheId(uuid, maxWidth, maxHeight);
+        String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
         ContentValues cv = new ContentValues();
         cv.put(DOM_CACHE_ID.getName(), cacheId);
         cv.put(DOM_IMAGE.getName(), image);
@@ -480,6 +497,7 @@ public final class CoversDAO
         /** Book UUID. */
         @NonNull
         private final String mUuid;
+        private final int mIndex;
         private final int mMaxWidth;
         private final int mMaxHeight;
 
@@ -487,15 +505,18 @@ public final class CoversDAO
          * Create a task that will compress the passed bitmap and write it to the database,
          * it will also be recycled if flag is set.
          *
-         * @param uuid   the book UUID, i.e. the filename for the cover
+         * @param uuid   UUID of the book
+         * @param cIdx   0..n image index
          * @param source Raw bitmap to store
          */
         @UiThread
         public ImageCacheWriterTask(@NonNull final String uuid,
+                                    final int cIdx,
                                     final int maxWidth,
                                     final int maxHeight,
                                     @NonNull final Bitmap source) {
             mUuid = uuid;
+            mIndex = cIdx;
             mMaxWidth = maxWidth;
             mMaxHeight = maxHeight;
             mBitmap = source;
@@ -517,7 +538,7 @@ public final class CoversDAO
             RUNNING_TASKS.incrementAndGet();
 
             try (CoversDAO coversDBAdapter = getInstance()) {
-                coversDBAdapter.saveFile(mUuid, mBitmap, mMaxWidth, mMaxHeight);
+                coversDBAdapter.saveFile(mUuid, mIndex, mBitmap, mMaxWidth, mMaxHeight);
             }
 
             RUNNING_TASKS.decrementAndGet();

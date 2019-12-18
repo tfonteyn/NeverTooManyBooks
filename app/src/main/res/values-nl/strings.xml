@@ -133,7 +133,7 @@
     <string name="error_if_the_problem_persists">Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
-    <string name="error_no_external_crop_app">Een toepassing voor het bijsnijden van afbeeldingen werd niet gevonden</string>
+    <string name="error_no_image_editor">Geen foto-editor gevonden</string>
     <string name="error_network_no_connection">Geen Internet verbinding beschikbaar.</string>
     <string name="error_not_available">%1$s is niet beschikbaar</string>
     <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren.\nControleer ook de netwerkinstellingen van uw apparaat</string>
@@ -411,8 +411,8 @@
     <string name="X_progress_end_n_books_searched">%1$d boeken gezocht</string>
     <string name="title_backing_up">Aan \'t Back-uppen…</string>
     <string name="progress_msg_connecting">Website contacteren…</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d missend)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d boekomslagen verwerkt\n(%2$d missend, %3$d overgeslagen)</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend, %4$d overgeslagen)</string>
     <string name="progress_msg_finding_editions">Zoeken naar uitgaven…</string>
     <string name="title_importing">Importeren…</string>
     <string name="progress_msg_loading">Bezig met laden…</string>
@@ -450,7 +450,6 @@
     <string name="pt_thumbnail_cropper_layer_type">Bijsnijden „Layer Type”</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Gebruik de aanbevolen optie, tenzij de applicatie problemen geeft tijdens het bijsnijden van een afbeelding. Gebruik „Software” voor veiliger maar trager, of forceer „Hardware” voor sneller, maar misschien minder stabiel.</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
-    <string name="pt_thumbnails_external_cropper">Gebruik een externe app voor bijsnijden afbeelding</string>
     <string name="pt_thumbnails_rotate_auto">Roteer afbeeldingen</string>
     <string name="pg_camera">Camera</string>
     <string name="pt_ui_language">Taal</string>

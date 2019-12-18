@@ -34,7 +34,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -60,14 +59,15 @@ public class OrValidator
     }
 
     @Override
-    public void validate(@NonNull final DataManager dataManager,
+    public void validate(@NonNull final Context context,
+                         @NonNull final DataManager dataManager,
                          @NonNull final String key,
                          final int errorLabelId)
             throws ValidatorException {
         ValidatorException lastException = null;
         for (DataValidator validator : this) {
             try {
-                validator.validate(dataManager, key, errorLabelId);
+                validator.validate(context, dataManager, key, errorLabelId);
                 // as soon as one is reporting 'ok', we're done.
                 return;
             } catch (@NonNull final ValidatorException e) {
@@ -79,13 +79,12 @@ public class OrValidator
         if (lastException != null) {
             throw lastException;
         } else {
-            Context localContext = App.getLocalizedAppContext();
             // This should never happen (flw)
-            Logger.warnWithStackTrace(localContext, TAG, "validate",
+            Logger.warnWithStackTrace(context, TAG, "validate",
                                       "no exceptions were thrown in the validator?",
                                       "key=" + key);
             throw new ValidatorException(R.string.vldt_failed_for_x,
-                                         localContext.getString(errorLabelId));
+                                         context.getString(errorLabelId));
         }
     }
 }

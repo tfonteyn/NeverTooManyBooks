@@ -44,6 +44,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Date;
@@ -298,7 +299,9 @@ public class DAO
 
     // curiosity... check when the JDK loads this class.
     static {
-        Log.d(TAG, "DAO static init");
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "DAO static init");
+        }
     }
 
     /** a cache for statements, where they are pre-compiled. */
@@ -310,12 +313,12 @@ public class DAO
      * Constructor.
      * <p>
      * <strong>Note:</strong> don't be tempted to turn this into a singleton...
-     * this class is not fully thread safe (in contrast to the covers dba which is).
+     * this class is not fully thread safe (in contrast to the covers dao which is).
      */
     public DAO() {
         // the SQLiteOpenHelper
         if (sDbHelper == null) {
-            sDbHelper = DBHelper.getInstance(CURSOR_FACTORY, SYNCHRONIZER);
+            sDbHelper = DBHelper.getInstance(App.getAppContext(), CURSOR_FACTORY, SYNCHRONIZER);
         }
 
         // Get the DB wrapper
@@ -1075,12 +1078,19 @@ public class DAO
      * while entering/correcting a book collection.
      */
     public void purge() {
-        // Note: purging TocEntry's is automatic due to foreign key cascading.
-        // i.e. a TocEntry is linked directly with authors; and linked with books via a link table.
-        purgeAuthors();
-        purgeSeries();
+        try {
+            // Note: purging TocEntry's is automatic due to foreign key cascading.
+            // i.e. a TocEntry is linked directly with authors;
+            // and linked with books via a link table.
+            purgeAuthors();
+            purgeSeries();
 
-        analyze();
+            analyze();
+
+        } catch (@NonNull final RuntimeException e) {
+            // log to file, this is bad.
+            Logger.error(TAG, e);
+        }
     }
 
     /**
@@ -1379,7 +1389,7 @@ public class DAO
     /**
      * Check that a book with the passed UUID exists and return the id of the book, or zero.
      *
-     * @param uuid of book
+     * @param uuid UUID of the book
      *
      * @return id of the book, or 0 'new' if not found
      */
@@ -1489,18 +1499,22 @@ public class DAO
     }
 
     /**
-     * @param bookId of the book.
+     * Delete the given book (and its covers).
+     *
+     * @param context Current context
+     * @param bookId  of the book.
      *
      * @return the number of rows affected
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteBook(final long bookId) {
+    public int deleteBook(@NonNull final Context context,
+                          final long bookId) {
         String uuid = null;
         try {
             // need the UUID to delete the thumbnail.
             uuid = getBookUuid(bookId);
         } catch (@NonNull final SQLiteDoneException e) {
-            Logger.error(TAG, e, "Failed to get book UUID");
+            Logger.error(context, TAG, e, "Failed to get book UUID");
         }
 
         int rowsAffected = 0;
@@ -1516,11 +1530,11 @@ public class DAO
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (rowsAffected > 0) {
-                deleteThumbnail(uuid);
+                deleteThumbnail(context, uuid);
             }
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e, "Failed to delete book");
+            Logger.error(context, TAG, e, "Failed to delete book");
         } finally {
             sSyncedDb.endTransaction(txLock);
         }
@@ -1531,16 +1545,20 @@ public class DAO
     /**
      * Given a book's uuid, delete the thumbnail (if any).
      *
-     * @param uuid of the book
+     * @param context Current context
+     * @param uuid    UUID of the book
      */
-    private void deleteThumbnail(@Nullable final String uuid) {
-        if (uuid != null) {
+    private void deleteThumbnail(@NonNull final Context context,
+                                 @Nullable final String uuid) {
+        if (uuid != null && !uuid.isEmpty()) {
             // remove from file system
-            StorageUtils.deleteFile(StorageUtils.getCoverFileForUuid(uuid));
-            // remove from cache
-            if (!uuid.isEmpty()) {
-                CoversDAO.delete(uuid);
+            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                File thumb = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+                StorageUtils.deleteFile(thumb);
             }
+
+            // remove from cache
+            CoversDAO.delete(uuid);
         }
     }
 
@@ -2220,7 +2238,7 @@ public class DAO
             }
 
             // validate the style first
-            long styleId = bookshelf.getStyle(this).getId();
+            long styleId = bookshelf.getStyle(context, this).getId();
 
             if (bookshelf.fixId(context, this, Locale.getDefault()) == 0) {
                 insertBookshelf(bookshelf, styleId);
@@ -2953,7 +2971,7 @@ public class DAO
     /**
      * Get the id of a {@link BooklistStyle} with matching UUID.
      *
-     * @param uuid to find
+     * @param uuid UUID of the style to find
      *
      * @return id
      */
@@ -4530,8 +4548,7 @@ public class DAO
         @NonNull
         private static String withAllAuthorsAndSeries(@NonNull final String whereClause) {
 
-            Context localContext = App.getLocalizedAppContext();
-            String andOthersText = localContext.getString(R.string.and_others);
+            String andOthersText = App.getLocalizedAppContext().getString(R.string.and_others);
 
             // "a." (TBL_AUTHOR), "b." (TBL_BOOKS), "s." (TBL_SERIES}
             // BUT... here they have double-use:

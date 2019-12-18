@@ -27,9 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -40,7 +41,8 @@ public class BlankValidator
         implements DataValidator {
 
     @Override
-    public void validate(@NonNull final DataManager dataManager,
+    public void validate(@NonNull final Context context,
+                         @NonNull final DataManager dataManager,
                          @NonNull final String key,
                          final int errorLabelId)
             throws ValidatorException {
@@ -52,6 +54,6 @@ public class BlankValidator
             return;
         }
         throw new ValidatorException(R.string.vldt_blank_required_for_x,
-                                     App.getLocalizedAppContext().getString(errorLabelId));
+                                     context.getString(errorLabelId));
     }
 }

@@ -171,7 +171,7 @@ public class BooklistGroup
      * Constructor.
      *
      * @param id                 of group to create
-     * @param uuid               of the style
+     * @param uuid               UUID of the style
      * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      */
     private BooklistGroup(@RowKind.Id final int id,
@@ -204,7 +204,7 @@ public class BooklistGroup
      * subclasses as necessary.
      *
      * @param id                 of group to create
-     * @param uuid               of the style
+     * @param uuid               UUID of the style
      * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      *
      * @return a group based on the passed in kind
@@ -228,7 +228,7 @@ public class BooklistGroup
     /**
      * Get a list of BooklistGroups, one for each defined RowKind.
      *
-     * @param uuid               of the style
+     * @param uuid               UUID of the style
      * @param isUserDefinedStyle {@code true} if the group properties should be persisted
      *
      * @return the list
@@ -383,7 +383,7 @@ public class BooklistGroup
         /**
          * Constructor.
          *
-         * @param uuid               the UUID of the style
+         * @param uuid               UUID of the style
          * @param isUserDefinedStyle Flag to indicate this is a user style or a builtin style
          */
         BooklistSeriesGroup(@NonNull final String uuid,
@@ -492,7 +492,7 @@ public class BooklistGroup
         /**
          * Constructor.
          *
-         * @param uuid               the UUID of the style
+         * @param uuid               UUID of the style
          * @param isUserDefinedStyle Flag to indicate this is a user style or a builtin style
          */
         BooklistAuthorGroup(@NonNull final String uuid,

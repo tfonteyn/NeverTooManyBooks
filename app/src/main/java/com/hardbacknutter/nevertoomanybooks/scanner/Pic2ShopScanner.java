@@ -99,7 +99,8 @@ public class Pic2ShopScanner
 
     @Override
     @Nullable
-    public String getBarcode(@Nullable final Intent data) {
+    public String getBarcode(@NonNull final Context context,
+                             @Nullable final Intent data) {
         Objects.requireNonNull(data);
 
         String barcode = data.getStringExtra(BARCODE);

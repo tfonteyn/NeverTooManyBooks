@@ -57,13 +57,13 @@
 
                 <Spinner
                     android:id="@+id/bookshelf_name"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    tools:entries="@array/dummy_bookshelves"
                     />
 
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
-
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/content_frame"
@@ -72,71 +72,136 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             >
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/list_header"
+            <include layout="@layout/booksonbookshelf_inc_header" />
+
+            <!-- Using the standard RecyclerView with reflection. -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@android:id/list"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:background="?attr/colorControlHighlight"
+                android:layout_height="0dp"
+
+                app:fastScrollEnabled="true"
+                app:fastScrollHorizontalThumbDrawable="@drawable/fast_scroll_thumb"
+                app:fastScrollHorizontalTrackDrawable="@drawable/fast_scroll_track"
+                app:fastScrollVerticalThumbDrawable="@drawable/fast_scroll_thumb"
+                app:fastScrollVerticalTrackDrawable="@drawable/fast_scroll_track"
+
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                >
+                app:layout_constraintTop_toBottomOf="@id/list_header"
 
-                <TextView
-                    android:id="@+id/style_name"
-                    style="@style/BooklistBook.Header.Text"
-                    android:textIsSelectable="true"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="style name"
-                    />
+                tools:listitem="@layout/booksonbookshelf_row_book"
+                />
 
-                <TextView
-                    android:id="@+id/search_text"
-                    style="@style/BooklistBook.Header.Text"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/style_name"
-                    tools:text="the optional search text"
-                    tools:visibility="visible"
-                    />
+            <!-- Using the custom CFSRecyclerView -->
+            <!--    <com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView-->
+            <!--        android:id="@android:id/list"-->
+            <!--        android:layout_width="0dp"-->
+            <!--        android:layout_height="0dp"-->
 
-                <TextView
-                    android:id="@+id/book_count"
-                    style="@style/BooklistBook.Header.Text.Small"
-                    android:layout_marginBottom="@dimen/border2"
-                    android:textIsSelectable="false"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/search_text"
-                    tools:text="@string/info_displaying_n_books_in_m_entries"
-                    />
+            <!--        app:cfsEnabled="true"-->
+            <!--        app:cfsHorizontalThumbDrawable="@drawable/fast_scroll_thumb"-->
+            <!--        app:cfsHorizontalTrackDrawable="@drawable/fast_scroll_track"-->
+            <!--        app:cfsVerticalThumbDrawable="@drawable/fast_scroll_thumb"-->
+            <!--        app:cfsVerticalTrackDrawable="@drawable/fast_scroll_track"-->
+            <!--        app:cfsOverlayDrawable="@drawable/fast_scroll_overlay"-->
 
-                <TextView
-                    android:id="@+id/level_1_text"
-                    style="@style/BooklistBook.Header.Text.Small"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/book_count"
-                    tools:ignore="SelectableText"
-                    tools:text="level 1 text"
-                    />
+            <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--        app:layout_constraintEnd_toEndOf="parent"-->
+            <!--        app:layout_constraintStart_toStartOf="parent"-->
+            <!--        app:layout_constraintTop_toBottomOf="@id/list_header"-->
+            <!--        app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
-                <TextView
-                    android:id="@+id/level_2_text"
-                    style="@style/BooklistBook.Header.Text.Small"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/level_1_text"
-                    tools:ignore="SelectableText"
-                    tools:text="level 2 text"
-                    />
+            <!--        tools:listitem="@layout/booksonbookshelf_row_book"-->
+            <!--        />-->
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <include layout="@layout/booksonbookshelf_inc_body" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <include layout="@layout/booksonbookshelf_inc_fab_menu" />
+        <!-- used to intercept click events when the FAB menu is showing. -->
+        <View
+            android:id="@+id/fabOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:elevation="@dimen/progressZ"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab4"
+            style="@style/FABMenu"
+            android:text="@string/fab_add_book_by_native_id"
+            app:icon="@drawable/ic_find_in_page"
+            app:iconGravity="end"
+            tools:translationX="@dimen/fab_menu_translationX"
+            tools:translationY="-310dp"
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab3"
+            style="@style/FABMenu"
+            android:text="@string/fab_add_book_manually"
+            app:icon="@drawable/ic_keyboard"
+            app:iconGravity="end"
+            tools:translationX="@dimen/fab_menu_translationX"
+            tools:translationY="-250dp"
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab2"
+            style="@style/FABMenu"
+            android:text="@string/fab_add_book_by_internet_search"
+            app:icon="@drawable/ic_search"
+            app:iconGravity="end"
+            tools:translationX="@dimen/fab_menu_translationX"
+            tools:translationY="-190dp"
+            tools:visibility="visible"
+            />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab1"
+            style="@style/FABMenu"
+            android:text="@string/fab_add_book_by_isbn"
+            app:icon="@drawable/ic_apps"
+            app:iconGravity="end"
+            tools:translationX="@dimen/fab_menu_translationX"
+            tools:translationY="-130dp"
+            tools:visibility="visible"
+            />
+
+        <!-- reminder: this is an MaterialButton, and NOT an ImageButton -->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab0"
+            style="@style/FABMenu"
+            android:text="@string/fab_add_book_by_barcode_scan"
+            app:icon="@drawable/ic_photo_camera"
+            app:iconGravity="end"
+            tools:translationX="@dimen/fab_menu_translationX"
+            tools:translationY="-70dp"
+            tools:visibility="visible"
+            />
+
+        <!-- reminder: this is an ImageButton -->
+        <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
+            android:id="@+id/fab"
+            style="@style/FAB"
+            android:src="@drawable/ic_add"
+            />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -78,6 +78,7 @@ public interface SearchEngine {
 
     /**
      * Get the resource id for the human-readable name of the site.
+     * Only to be used for displaying!
      *
      * @return the resource id
      */

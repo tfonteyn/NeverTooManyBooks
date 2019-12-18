@@ -41,6 +41,15 @@
             android:key="camera.image.autorotate"
             android:title="@string/pt_thumbnails_rotate_auto" />
 
+        <!-- default 0 == do nothing -->
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/pe_camera_next_action"
+            android:entryValues="@array/pv_camera_next_action"
+            android:icon="@drawable/ic_tune"
+            android:key="camera.image.action"
+            android:title="@string/pt_camera_next_action" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -53,14 +62,6 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_apps"
-            android:key="image.cropper.external"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_thumbnails_external_cropper" />
 
     </PreferenceCategory>
 

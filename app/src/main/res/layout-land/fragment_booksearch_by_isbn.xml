@@ -53,6 +53,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/scan"
+            android:layout_marginStart="@dimen/indent3"
+            android:layout_marginTop="@dimen/border1"
             app:icon="@drawable/ic_barcode"
             app:iconGravity="textStart"
             app:layout_constraintStart_toStartOf="parent"

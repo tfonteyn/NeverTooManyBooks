@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.UpdateFieldsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
@@ -84,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.TaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -94,7 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * This class is called by {@link EditBookFragment} and displays the Content Tab.
  * <p>
- * Doesn't use {@link UpdateFieldsTask}
+ * Doesn't use {@link UpdateFieldsModel}
  * <p>
  * The ISFDB direct interaction should however be seen as temporary as this class should not
  * have to know about any specific search web site.
@@ -461,7 +461,7 @@ public class EditBookTocFragment
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT:
-                editEntry(mList.get(position), position);
+                editEntry(tocEntry, position);
                 return true;
 
             case R.id.MENU_DELETE:

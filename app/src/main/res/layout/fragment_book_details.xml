@@ -75,7 +75,7 @@
             android:id="@+id/title"
             style="@style/Text.Large.BookTitle"
             android:layout_width="0dp"
-            app:layout_constraintEnd_toStartOf="@id/coverImage"
+            app:layout_constraintEnd_toStartOf="@id/coverImage0"
             app:layout_constraintStart_toEndOf="@id/cbx_read"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="SelectableText"
@@ -83,14 +83,26 @@
             />
 
         <ImageView
-            android:id="@+id/coverImage"
+            android:id="@+id/coverImage0"
             style="@style/CoverImage"
             android:layout_margin="@dimen/border1"
             android:contentDescription="@string/lbl_cover"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
-            tools:layout_height="172dp"
-            tools:layout_width="114dp"
+            tools:layout_height="@dimen/tools_cover_large_height"
+            tools:layout_width="@dimen/tools_cover_large_width"
+            tools:src="@drawable/ic_image"
+            />
+
+        <ImageView
+            android:id="@+id/coverImage1"
+            style="@style/CoverImage"
+            android:layout_margin="@dimen/border1"
+            android:contentDescription="@string/lbl_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/coverImage0"
+            tools:layout_height="@dimen/tools_cover_small_height"
+            tools:layout_width="@dimen/tools_cover_small_width"
             tools:src="@drawable/ic_image"
             />
 
@@ -98,7 +110,7 @@
             android:id="@+id/author"
             style="@style/Text"
             android:layout_width="0dp"
-            app:layout_constraintEnd_toStartOf="@id/coverImage"
+            app:layout_constraintEnd_toStartOf="@id/coverImage0"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:ignore="SelectableText"
@@ -193,7 +205,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="coverImage,pages,format,isbn,language"
+            app:constraint_referenced_ids="coverImage0,pages,format,isbn,language"
             />
 
         <!-- Series -->
@@ -209,7 +221,7 @@
             android:id="@+id/series"
             style="@style/Text"
             android:layout_width="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/coverImage1"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
             tools:ignore="SelectableText"
@@ -598,7 +610,7 @@
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_description"
             tools:text="@tools:sample/lorem/random"
+            tools:ignore="SelectableText"
             />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

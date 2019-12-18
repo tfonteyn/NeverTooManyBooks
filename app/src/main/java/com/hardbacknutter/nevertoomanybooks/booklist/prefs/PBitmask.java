@@ -50,18 +50,18 @@ public class PBitmask
 
     /**
      * Constructor. Uses the global setting as the default value,
-     * or the passed default if no global default.
+     * or the passed default if there is no global default.
      *
      * @param key          key of preference
-     * @param uuid         of the style
+     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param defaultValue in memory default
+     * @param defValue     in memory default
      */
     public PBitmask(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent,
-                    final int defaultValue) {
-        super(key, uuid, isPersistent, getMultiSelectListPreference(key, defaultValue));
+                    @NonNull final Integer defValue) {
+        super(key, uuid, isPersistent, getMultiSelectListPreference(key, defValue));
     }
 
     /**
@@ -71,10 +71,11 @@ public class PBitmask
      * @param key      The name of the preference to retrieve.
      * @param defValue Value to return if this preference does not exist.
      *
-     * @return int (stored as StringSet) global preference
+     * @return Integer (stored as StringSet) global preference
      */
+    @NonNull
     private static Integer getMultiSelectListPreference(@NonNull final String key,
-                                                        final int defValue) {
+                                                        @NonNull final Integer defValue) {
         Set<String> value = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
                                              .getStringSet(key, null);
         if (value == null || value.isEmpty()) {
@@ -120,6 +121,8 @@ public class PBitmask
 
     /**
      * Reads a {@code Set<String>} from storage, and converts it to an Integer bitmask.
+     *
+     * @return bitmask, or the default value
      */
     @NonNull
     @Override
@@ -134,8 +137,6 @@ public class PBitmask
                 if (value == null || value.isEmpty()) {
                     return mDefaultValue;
                 }
-            } else if (value.isEmpty()) {
-                return 0;
             }
             return Prefs.toInteger(value);
         }

@@ -248,7 +248,7 @@ public class BooklistStyle
      * All extra fields in an <strong>ordered</strong> map.
      * <p>
      * <strong>IMPORTANT:</strong> The key in the Map is the DOMAIN name
-     * e.g. UniqueId.BKEY_IMAGE, DBDefinitions.KEY_AUTHOR_FORMATTED, DBDefinitions.KEY_FORMAT ...
+     * e.g. DBDefinitions.KEY_AUTHOR_FORMATTED, DBDefinitions.KEY_FORMAT ...
      */
     private Map<String, PBoolean> mAllExtras;
     /**
@@ -274,7 +274,7 @@ public class BooklistStyle
      * Constructor for system-defined styles.
      *
      * @param id       a negative int
-     * @param uuid     the hardcoded UUID for the builtin style.
+     * @param uuid     UUID for the builtin style.
      * @param nameId   the resource id for the name
      * @param groupIds a list of groups to attach to this style
      */
@@ -298,7 +298,7 @@ public class BooklistStyle
      * Real new styles are created by cloning an existing style.
      *
      * @param id   the row id of the style
-     * @param uuid the UUID of the style
+     * @param uuid UUID of the style
      */
     public BooklistStyle(final long id,
                          @NonNull final String uuid) {
@@ -373,15 +373,17 @@ public class BooklistStyle
     /**
      * Get the global default style, or if that fails, the builtin default style..
      *
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      *
      * @return the style.
      */
     @NonNull
-    public static BooklistStyle getDefaultStyle(@NonNull final DAO db) {
+    public static BooklistStyle getDefaultStyle(@NonNull final Context context,
+                                                @NonNull final DAO db) {
 
         // read the global user default, or if not present the hardcoded default.
-        String uuid = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+        String uuid = PreferenceManager.getDefaultSharedPreferences(context)
                                        .getString(PREF_BL_STYLE_CURRENT_DEFAULT,
                                                   Builtin.DEFAULT_STYLE_UUID);
         // hard-coded default ?
@@ -390,7 +392,7 @@ public class BooklistStyle
         }
 
         // check that the style really/still exists!
-        BooklistStyle style = Helper.getStyles(db, true).get(uuid);
+        BooklistStyle style = Helper.getStyles(context, db, true).get(uuid);
 
         if (style == null) {
             return Builtin.DEFAULT;
@@ -401,13 +403,15 @@ public class BooklistStyle
     /**
      * Get the specified style.
      *
-     * @param db   Database Access
-     * @param uuid of the style to get.
+     * @param context Current context
+     * @param db      Database Access
+     * @param uuid    UUID of the style
      *
      * @return the style, <strong>or the default style if not found</strong>
      */
     @NonNull
-    public static BooklistStyle getStyle(@NonNull final DAO db,
+    public static BooklistStyle getStyle(@NonNull final Context context,
+                                         @NonNull final DAO db,
                                          @NonNull final String uuid) {
         BooklistStyle style = Helper.getUserStyles(db).get(uuid);
         if (style != null) {
@@ -419,7 +423,7 @@ public class BooklistStyle
             return style;
         }
 
-        return getDefaultStyle(db);
+        return getDefaultStyle(context, db);
     }
 
     /**
@@ -520,7 +524,7 @@ public class BooklistStyle
         // all extra details for book-rows.
         mAllExtras = new LinkedHashMap<>();
 
-        mAllExtras.put(UniqueId.BKEY_IMAGE,
+        mAllExtras.put(UniqueId.BKEY_THUMBNAIL,
                        new PBoolean(Prefs.pk_bob_show_thumbnails, mUuid, isUserDefined(), true));
 
         mAllExtras.put(DBDefinitions.KEY_BOOKSHELF,
@@ -768,11 +772,14 @@ public class BooklistStyle
     /**
      * update the preferences of this style based on the values of the passed preferences.
      * Preferences we don't have will be not be added.
+     *
+     * @param appContext Application context
+     * @param newPrefs   to apply
      */
-    public void updatePreferences(@NonNull final Context context,
+    public void updatePreferences(@NonNull final Context appContext,
                                   @NonNull final Map<String, PPref> newPrefs) {
-        SharedPreferences.Editor ed = context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
-                                             .edit();
+        SharedPreferences.Editor ed = appContext.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
+                                                .edit();
         updatePreferences(ed, newPrefs);
         ed.apply();
     }
@@ -898,12 +905,10 @@ public class BooklistStyle
      */
     @ImageUtils.Scale
     public int getThumbnailScale() {
-        //noinspection ConstantConditions
-        if (!isUsed(UniqueId.BKEY_IMAGE) || mAllExtras.get(UniqueId.BKEY_IMAGE).isFalse()) {
-            return ImageUtils.SCALE_NOT_DISPLAYED;
+        if (isExtraUsed(UniqueId.BKEY_THUMBNAIL)) {
+            return mThumbnailScale.get();
         }
-
-        return mThumbnailScale.get();
+        return ImageUtils.SCALE_NOT_DISPLAYED;
     }
 
     /**
@@ -920,7 +925,9 @@ public class BooklistStyle
     }
 
     /**
-     * @return all groups assigned to this style.
+     * Get the groups assigned to this style.
+     *
+     * @return group list
      */
     @NonNull
     public List<BooklistGroup> getGroups() {
@@ -1084,7 +1091,7 @@ public class BooklistStyle
         List<String> labels = new ArrayList<>();
 
         //noinspection ConstantConditions
-        if (mAllExtras.get(UniqueId.BKEY_IMAGE).isTrue()) {
+        if (mAllExtras.get(UniqueId.BKEY_THUMBNAIL).isTrue()) {
             labels.add(context.getString(R.string.pt_bob_thumbnails_show));
         }
         //noinspection ConstantConditions
@@ -1131,7 +1138,7 @@ public class BooklistStyle
         int extras = 0;
 
         //noinspection ConstantConditions
-        if (mAllExtras.get(UniqueId.BKEY_IMAGE).isTrue()) {
+        if (mAllExtras.get(UniqueId.BKEY_THUMBNAIL).isTrue()) {
             extras |= EXTRAS_THUMBNAIL;
         }
 
@@ -1322,28 +1329,37 @@ public class BooklistStyle
     }
 
     /**
-     * Check if a particular 'Extra' field, or a particular group (the display-domain), is in use.
+     * Check if the given field is in use as the display-domain or in general.
      *
      * @param key to check
      *
      * @return {@code true} if in use
      */
     public boolean isUsed(@NonNull final String key) {
-        // check the groups first; they take priority on 'extras' and even on App.isUsed because,
         //ENHANCE: we currently don't hide/remove groups based on user preference visibility.
-        // But do we really care?
         for (BooklistGroup group : getGroups()) {
             if (group.getFormattedDomain().getName().equals(key)) {
                 return true;
             }
         }
+
+        // Convenience fallback
+        return App.isUsed(key);
+    }
+
+    /**
+     * Check if the given 'Extra' field is in use.
+     *
+     * @param key to check
+     *
+     * @return {@code true} if in use
+     */
+    public boolean isExtraUsed(@NonNull final String key) {
         if (mAllExtras.containsKey(key)) {
             //noinspection ConstantConditions
             return App.isUsed(key) && mAllExtras.get(key).isTrue();
         }
-
-        // Convenience fallback
-        return App.isUsed(key);
+        return false;
     }
 
     /**
@@ -1426,7 +1442,7 @@ public class BooklistStyle
         /**
          * Constructor.
          *
-         * @param uuid          the UUID of the style
+         * @param uuid          UUID of the style
          * @param isUserDefined Flag to indicate this is a user style or a builtin style
          */
         PStyleGroups(@NonNull final String uuid,
@@ -1589,13 +1605,15 @@ public class BooklistStyle
          * Get an ordered Map with all the styles.
          * The preferred styles are at the front of the list.
          *
-         * @param db  Database Access
-         * @param all if {@code true} then also return the non-preferred styles
+         * @param context Current context
+         * @param db      Database Access
+         * @param all     if {@code true} then also return the non-preferred styles
          *
          * @return ordered list
          */
         @NonNull
-        public static Map<String, BooklistStyle> getStyles(@NonNull final DAO db,
+        public static Map<String, BooklistStyle> getStyles(@NonNull final Context context,
+                                                           @NonNull final DAO db,
                                                            final boolean all) {
             // Get all styles: user
             Map<String, BooklistStyle> allStyles = getUserStyles(db);
@@ -1603,7 +1621,7 @@ public class BooklistStyle
             allStyles.putAll(Builtin.getStyles());
 
             // filter, so the list only shows the preferred ones.
-            Map<String, BooklistStyle> styles = filterPreferredStyles(allStyles);
+            Map<String, BooklistStyle> styles = filterPreferredStyles(context, allStyles);
 
             // but if we want all, add the missing styles to the end of the list
             if (all) {
@@ -1622,18 +1640,21 @@ public class BooklistStyle
          * Filter the specified styles so it contains only the preferred styles.
          * If none were preferred, returns the incoming list.
          *
+         *
+         * @param context Current context
          * @param allStyles a list of styles
          *
          * @return ordered list.
          */
         @NonNull
         private static Map<String, BooklistStyle> filterPreferredStyles(
+                @NonNull final Context context,
                 @NonNull final Map<String, BooklistStyle> allStyles) {
 
             Map<String, BooklistStyle> resultingStyles = new LinkedHashMap<>();
 
             // first check the saved and ordered list
-            for (String uuid : getMenuOrder()) {
+            for (String uuid : getMenuOrder(context)) {
                 BooklistStyle style = allStyles.get(uuid);
                 if (style != null) {
                     // catch mismatches in any imported bad-data.
@@ -1662,12 +1683,14 @@ public class BooklistStyle
         /**
          * Get the UUIDs of the preferred styles from user preferences.
          *
+         * @param context Current context
+         *
          * @return set of UUIDs
          */
         @NonNull
-        private static Set<String> getMenuOrder() {
+        private static Set<String> getMenuOrder(@NonNull final Context context) {
             Set<String> uuidSet = new LinkedHashSet<>();
-            String itemsStr = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+            String itemsStr = PreferenceManager.getDefaultSharedPreferences(context)
                                                .getString(PREF_BL_PREFERRED_STYLES, null);
 
             if (itemsStr != null && !itemsStr.isEmpty()) {
@@ -1684,10 +1707,12 @@ public class BooklistStyle
         /**
          * Internal single-point of writing the preferred styles menu order.
          *
-         * @param uuidSet of style UUIDs
+         * @param context Current context
+         * @param uuidSet a set of style UUIDs
          */
-        private static void setMenuOrder(@NonNull final Iterable<String> uuidSet) {
-            PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+        private static void setMenuOrder(@NonNull final Context context,
+                                         @NonNull final Iterable<String> uuidSet) {
+            PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
                              .putString(PREF_BL_PREFERRED_STYLES, TextUtils.join(",", uuidSet))
                              .apply();
@@ -1696,12 +1721,14 @@ public class BooklistStyle
         /**
          * Add a style (its uuid) to the menu list of preferred styles.
          *
-         * @param style to add.
+         * @param context Current context
+         * @param style   to add.
          */
-        public static void addPreferredStyle(@NonNull final BooklistStyle style) {
-            Set<String> list = getMenuOrder();
+        public static void addPreferredStyle(@NonNull final Context context,
+                                             @NonNull final BooklistStyle style) {
+            Set<String> list = getMenuOrder(context);
             list.add(style.getUuid());
-            setMenuOrder(list);
+            setMenuOrder(context, list);
         }
 
         /**
@@ -1709,16 +1736,18 @@ public class BooklistStyle
          * <p>
          * This list contains the ID's for user-defined *AND* system-styles.
          *
-         * @param styles full list of preferred styles to save 'in order'
+         * @param context Current context
+         * @param styles  full list of preferred styles to save 'in order'
          */
-        public static void saveMenuOrder(@NonNull final Iterable<BooklistStyle> styles) {
+        public static void saveMenuOrder(@NonNull final Context context,
+                                         @NonNull final Iterable<BooklistStyle> styles) {
             Collection<String> list = new LinkedHashSet<>();
             for (BooklistStyle style : styles) {
                 if (style.isPreferred()) {
                     list.add(style.getUuid());
                 }
             }
-            setMenuOrder(list);
+            setMenuOrder(context, list);
         }
     }
 
@@ -1891,7 +1920,7 @@ public class BooklistStyle
                                       BooklistGroup.RowKind.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setTextScale(FONT_SCALE_SMALL);
-            style.setShowExtra(UniqueId.BKEY_IMAGE, false);
+            style.setShowExtra(UniqueId.BKEY_THUMBNAIL, false);
 
             // Title
             style = new BooklistStyle(TITLE_FIRST_LETTER_ID,

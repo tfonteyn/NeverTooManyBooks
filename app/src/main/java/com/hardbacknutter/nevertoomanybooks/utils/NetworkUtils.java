@@ -61,20 +61,20 @@ public final class NetworkUtils {
      * Check if we have network access; taking into account whether the user permits
      * metered (i.e. pay-per-usage) networks or not.
      *
-     * @param appContext Application context
+     * @param context Application context
      *
      * @return {@code true} if the application can access the internet
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @AnyThread
-    public static boolean isNetworkAvailable(@NonNull final Context appContext) {
+    public static boolean isNetworkAvailable(@NonNull final Context context) {
 
         if (BuildConfig.DEBUG && App.isJUnitTest()) {
             return true;
         }
 
         ConnectivityManager connMgr =
-                (ConnectivityManager) appContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connMgr != null) {
             Network network = connMgr.getActiveNetwork();
             if (network != null) {
@@ -98,8 +98,7 @@ public final class NetworkUtils {
                     }
 
                     return hasInternet && isValidated
-                           && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork(
-                            appContext));
+                           && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork(context));
 
                 }
             }

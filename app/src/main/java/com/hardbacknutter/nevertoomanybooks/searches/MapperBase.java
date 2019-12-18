@@ -42,25 +42,15 @@ public abstract class MapperBase
     /** map to translate site book format terminology with our own. */
     static final Map<String, Integer> MAPPER = new HashMap<>();
 
-    protected final Context mContext;
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     */
-    MapperBase(@NonNull final Context context) {
-        mContext = context;
-    }
-
     @Override
-    public void map(@NonNull final Bundle bookData) {
+    public void map(@NonNull final Context context,
+                    @NonNull final Bundle bookData) {
 
         String value = bookData.getString(getKey());
         if (value != null && !value.isEmpty()) {
 
             Integer resId = MAPPER.get(value.toLowerCase(Locale.getDefault()));
-            value = resId != null ? mContext.getString(resId) : value;
+            value = resId != null ? context.getString(resId) : value;
 
             bookData.putString(getKey(), value);
         }

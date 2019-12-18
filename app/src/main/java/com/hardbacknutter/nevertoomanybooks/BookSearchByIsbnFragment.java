@@ -215,8 +215,8 @@ public class BookSearchByIsbnFragment
     }
 
     @Override
-    void onCancelled() {
-        super.onCancelled();
+    void onSearchCancelled() {
+        super.onSearchCancelled();
 
         if (mScanMode) {
             //noinspection ConstantConditions
@@ -254,7 +254,7 @@ public class BookSearchByIsbnFragment
                     }
 
                     //noinspection ConstantConditions
-                    String barCode = mScannerModel.getScanner().getBarcode(data);
+                    String barCode = mScannerModel.getScanner().getBarcode(getContext(), data);
                     if (barCode != null) {
                         //noinspection ConstantConditions
                         mIsbnView.setText(barCode);
@@ -391,7 +391,8 @@ public class BookSearchByIsbnFragment
     @Override
     protected boolean onSearch() {
         mSearchCoordinator.setIsbnSearchText(mIsbn, mStrictIsbn);
-        return mSearchCoordinator.searchByText();
+        //noinspection ConstantConditions
+        return mSearchCoordinator.searchByText(getContext());
     }
 
     @Override

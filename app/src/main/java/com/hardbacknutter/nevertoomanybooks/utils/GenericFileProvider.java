@@ -25,38 +25,41 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches;
+package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
+import androidx.core.content.FileProvider;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import java.io.File;
+
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 /**
- * System wide book color representation. Color is mainly meant for comics.
+ * <a href="https://developer.android.com/reference/androidx/core/content/FileProvider">
+ * https://developer.android.com/reference/androidx/core/content/FileProvider</a>
  */
-public final class ColorMapper
-        extends MapperBase {
+public class GenericFileProvider
+        extends FileProvider {
 
-    // use all lowercase keys!
-    static {
-        // stripinfo.be
-        MAPPER.put("kleur", R.string.book_color_full_color);
-        MAPPER.put("zwart/wit", R.string.book_color_uncolored);
-        MAPPER.put("Zwart/wit met steunkleur", R.string.book_color_support_color);
-    }
-
-    @Override
-    public String getKey() {
-        return DBDefinitions.KEY_COLOR;
-    }
-
-    static boolean isMappingAllowed(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_search_reformat_color, false);
+    /**
+     * Get a FileProvider URI for the given file.
+     * <p>
+     * The string matches the Manifest entry:
+     * {@code
+     * android:authorities="${packageName}.GenericFileProvider "
+     * }
+     *
+     * @param context Current context
+     * @param file    to uri-fy
+     *
+     * @return the uri
+     */
+    public static Uri getUriForFile(@NonNull final Context context,
+                                    @NonNull final File file) {
+        return getUriForFile(context, BuildConfig.APPLICATION_ID + ".GenericFileProvider",
+                             file);
     }
 }

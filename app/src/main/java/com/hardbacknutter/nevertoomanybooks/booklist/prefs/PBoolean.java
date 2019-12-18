@@ -48,7 +48,7 @@ public class PBoolean
      * or {@code false} if there is no global default.
      *
      * @param key          key of preference
-     * @param uuid         of the style
+     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      */
     public PBoolean(@NonNull final String key,
@@ -62,7 +62,7 @@ public class PBoolean
      * or the passed default if there is no global default.
      *
      * @param key          key of preference
-     * @param uuid         of the style
+     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      * @param defValue     in memory default
      */

@@ -351,12 +351,7 @@ public class CsvImporter
 
     @Override
     public void close() {
-        try {
-            // do some cleaning
-            mDb.purge();
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e);
-        }
+        mDb.purge();
         mDb.close();
     }
 

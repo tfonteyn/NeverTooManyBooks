@@ -127,35 +127,37 @@ public final class DBHelper
     /**
      * Constructor.
      *
-     * @param appContext   the Application Context (as a param, to allow future testing)
+     * @param context      to use for locating paths to the database
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
      */
-    private DBHelper(@NonNull final Context appContext,
+    private DBHelper(@NonNull final Context context,
                      @SuppressWarnings("SameParameterValue")
                      @NonNull final SQLiteDatabase.CursorFactory factory,
                      @SuppressWarnings("SameParameterValue")
                      @NonNull final Synchronizer synchronizer) {
 
-        super(appContext, DATABASE_NAME, factory, DATABASE_VERSION);
+        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
         sSynchronizer = synchronizer;
     }
 
     /**
      * Get the singleton instance.
      *
+     * @param context      Current context
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
      *
      * @return the instance
      */
-    public static DBHelper getInstance(@SuppressWarnings("SameParameterValue")
+    public static DBHelper getInstance(@NonNull final Context context,
+                                       @SuppressWarnings("SameParameterValue")
                                        @NonNull final SQLiteDatabase.CursorFactory factory,
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final Synchronizer synchronizer) {
         if (sInstance == null) {
             // ALWAYS use the app context here!
-            sInstance = new DBHelper(App.getAppContext(), factory, synchronizer);
+            sInstance = new DBHelper(context.getApplicationContext(), factory, synchronizer);
         }
         return sInstance;
     }

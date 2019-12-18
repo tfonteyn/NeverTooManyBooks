@@ -69,7 +69,7 @@ android {
                     'proguard-rules.pro'
         }
         debug {
-            versionNameSuffix "-debug_" + new Date().format('yyyy-MM-dd_HH:mm')
+            versionNameSuffix "_" + new Date().format('yyyy-MM-dd_HH:mm')
         }
         beta {
             initWith release
@@ -107,6 +107,8 @@ android {
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/ASL2.0'
         exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/README.md'
+        exclude 'META-INF/CHANGES'
     }
 }
 
@@ -119,9 +121,9 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta2'
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.0-alpha03'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-rc02'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-rc03'
     implementation 'androidx.core:core:1.2.0-rc01'
-    implementation 'androidx.fragment:fragment:1.2.0-rc02'
+    implementation 'androidx.fragment:fragment:1.2.0-rc03'
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'

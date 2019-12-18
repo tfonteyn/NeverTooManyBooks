@@ -28,11 +28,13 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -41,6 +43,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -72,10 +75,116 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 public abstract class BookBaseFragment
         extends Fragment {
 
+    /** log tag. */
     private static final String TAG = "BookBaseFragment";
+
+    /** simple indeterminate progress spinner to show while doing lengthy work. */
+    ProgressBar mProgressBar;
+    /** Hosting activity to handle FAB/result/touches. Avoids excessive casting/checking. */
+    FragmentActivity mHostActivity;
 
     /** The book. Must be in the Activity scope. */
     BookBaseFragmentModel mBookModel;
+
+    @Override
+    public void onAttach(@NonNull final Context context) {
+        super.onAttach(context);
+        mHostActivity = (FragmentActivity) context;
+    }
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Mandatory
+        setHasOptionsMenu(true);
+    }
+
+    /**
+     * Registers the {@link Book} as a ViewModel, and load/create the its data as needed.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        mProgressBar = mHostActivity.findViewById(R.id.progressBar);
+
+        mBookModel = new ViewModelProvider(mHostActivity).get(BookBaseFragmentModel.class);
+        mBookModel.init(getArguments());
+        mBookModel.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
+        mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), this::showNeedsGoodreads);
+
+        initFields();
+    }
+
+    /**
+     * Trigger the Fragment to load its Fields from the Book.
+     * <p>
+     * <br>{@inheritDoc}
+     */
+    @Override
+    @CallSuper
+    public void onResume() {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
+            Log.d(TAG, "ENTER|onResume");
+        }
+        super.onResume();
+        if (mHostActivity instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) mHostActivity;
+            if (activity.isGoingToRecreate()) {
+                return;
+            }
+        }
+
+        // set the View member as the Views will be (re)created each time.
+        //noinspection ConstantConditions
+        getFields().setParentView(getView());
+        // and load the content into the views
+        loadFields();
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
+            Log.d(TAG, "EXIT|onResume");
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
+            Log.d(TAG, "EXIT|onPause");
+        }
+    }
+
+    @Override
+    @CallSuper
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        Book book = mBookModel.getBook();
+
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_UPDATE_FROM_INTERNET:
+                ArrayList<Long> bookIds = new ArrayList<>();
+                bookIds.add(book.getId());
+                Intent intentUpdateFields =
+                        new Intent(getContext(), BookSearchActivity.class)
+                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
+                                .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                                // pass the title for displaying to the user
+                                .putExtra(DBDefinitions.KEY_TITLE,
+                                          book.getString(DBDefinitions.KEY_TITLE))
+                                // pass the author for displaying to the user
+                                .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                                          book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                startActivityForResult(intentUpdateFields,
+                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     /**
      * Set the activity title depending on View or Edit mode.
@@ -83,8 +192,7 @@ public abstract class BookBaseFragment
     private void setActivityTitle() {
         Book book = mBookModel.getBook();
 
-        @SuppressWarnings("ConstantConditions")
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) mHostActivity).getSupportActionBar();
         if (actionBar != null) {
             if (book.getId() > 0) {
                 // VIEW or EDIT existing book
@@ -206,99 +314,6 @@ public abstract class BookBaseFragment
                 }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
-        }
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
-
-    /**
-     * Registers the {@link Book} as a ViewModel, and load/create the its data as needed.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        //noinspection ConstantConditions
-        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
-        mBookModel.init(getArguments());
-        mBookModel.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
-        mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), this::showNeedsGoodreads);
-
-        initFields();
-    }
-
-    /**
-     * Trigger the Fragment to load its Fields from the Book.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    @CallSuper
-    public void onResume() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "ENTER|onResume");
-        }
-        super.onResume();
-        if (getActivity() instanceof BaseActivity) {
-            BaseActivity activity = (BaseActivity) getActivity();
-            if (activity.isGoingToRecreate()) {
-                return;
-            }
-        }
-
-        // set the View member as the Views will be (re)created each time.
-        //noinspection ConstantConditions
-        getFields().setParentView(getView());
-        // and load the content into the views
-        loadFields();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "EXIT|onResume");
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "EXIT|onPause");
-        }
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        Book book = mBookModel.getBook();
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_UPDATE_FROM_INTERNET:
-                ArrayList<Long> bookIds = new ArrayList<>();
-                bookIds.add(book.getId());
-                Intent intentUpdateFields =
-                        new Intent(getContext(), BookSearchActivity.class)
-                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                                .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
-                                // pass the title for displaying to the user
-                                .putExtra(DBDefinitions.KEY_TITLE,
-                                          book.getString(DBDefinitions.KEY_TITLE))
-                                // pass the author for displaying to the user
-                                .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                          book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
-                startActivityForResult(intentUpdateFields,
-                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 

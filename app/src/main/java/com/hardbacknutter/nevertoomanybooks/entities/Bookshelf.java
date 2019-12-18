@@ -181,12 +181,12 @@ public class Bookshelf
             } else if (useAll) {
                 // Caller wants "AllBooks" (instead of the default Bookshelf)
                 return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
-                                     BooklistStyle.getDefaultStyle(db));
+                                     BooklistStyle.getDefaultStyle(context, db));
             }
         }
 
         return new Bookshelf(DEFAULT_ID, context.getString(R.string.bookshelf_my_books),
-                             BooklistStyle.getDefaultStyle(db));
+                             BooklistStyle.getDefaultStyle(context, db));
     }
 
     /**
@@ -228,7 +228,6 @@ public class Bookshelf
     }
 
 
-
     @Override
     public String getLabel(@NonNull final Context context) {
         return mName;
@@ -253,7 +252,7 @@ public class Bookshelf
         style.setDefault(context);
 
         mStyleUuid = style.getUuid();
-        long styleId = getStyle(db).getId();
+        long styleId = getStyle(context, db).getId();
         db.updateOrInsertBookshelf(context, this, styleId);
     }
 
@@ -265,9 +264,10 @@ public class Bookshelf
      * @return the style associated with this bookshelf.
      */
     @NonNull
-    public BooklistStyle getStyle(@NonNull final DAO db) {
+    public BooklistStyle getStyle(@NonNull final Context context,
+                                  @NonNull final DAO db) {
 
-        BooklistStyle style = BooklistStyle.getStyle(db, mStyleUuid);
+        BooklistStyle style = BooklistStyle.getStyle(context, db, mStyleUuid);
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;
@@ -286,13 +286,15 @@ public class Bookshelf
     /**
      * Check the current style and if it had to be corrected, update this shelf in the database.
      *
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      */
-    public void validateStyle(@NonNull final DAO db) {
+    public void validateStyle(@NonNull final Context context,
+                              @NonNull final DAO db) {
         String uuid = mStyleUuid;
-        if (!uuid.equals(getStyle(db).getUuid())) {
-            long styleId = getStyle(db).getId();
-            db.updateBookshelf(this, styleId);
+        BooklistStyle style = getStyle(context, db);
+        if (!uuid.equals(style.getUuid())) {
+            db.updateBookshelf(this, style.getId());
         }
     }
 

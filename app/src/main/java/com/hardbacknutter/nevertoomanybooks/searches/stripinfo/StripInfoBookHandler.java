@@ -227,7 +227,7 @@ public class StripInfoBookHandler
      * @return Bundle with book data, can be empty, but never {@code null}
      */
     Bundle parseDoc(@NonNull final Bundle bookData,
-                    @SuppressWarnings("SameParameterValue") final boolean fetchThumbnail) {
+                    final boolean fetchThumbnail) {
 
         // extracted from the page header.
         String primarySeriesTitle = extractPrimarySeriesTitle();
@@ -392,14 +392,10 @@ public class StripInfoBookHandler
         }
 
         if (fetchThumbnail) {
-            Element coverElement = mDoc.selectFirst("a.stripThumb");
-            if (coverElement != null) {
-                String coverUrl = coverElement.attr("data-ajax-url");
-                // if the site has no image: https://www.stripinfo.be/image.php?i=0
-                if (coverUrl != null && !coverUrl.isEmpty() && !coverUrl.endsWith("i=0")) {
-                    fetchCover(coverUrl, bookData);
-                }
-            }
+            // front cover
+            fetchCoverFromElement("a.stripThumb", 0, bookData);
+            // back cover
+            fetchCoverFromElement("a.belowImage", 1, bookData);
         }
 
         return bookData;
@@ -418,7 +414,7 @@ public class StripInfoBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     Bundle parseMultiResult(@NonNull final Bundle bookData,
-                            @SuppressWarnings("SameParameterValue") final boolean fetchThumbnail)
+                            final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
         Elements sections = mDoc.select("section.c6");
@@ -453,6 +449,19 @@ public class StripInfoBookHandler
         return bookData;
     }
 
+    private void fetchCoverFromElement(@NonNull final String elementQuery,
+                                       final int cIdx,
+                                       @NonNull final Bundle bookData) {
+        Element coverElement = mDoc.selectFirst(elementQuery);
+        if (coverElement != null) {
+            String coverUrl = coverElement.attr("data-ajax-url");
+            // if the site has no image: https://www.stripinfo.be/image.php?i=0
+            if (coverUrl != null && !coverUrl.isEmpty() && !coverUrl.endsWith("i=0")) {
+                fetchCover(coverUrl, bookData, cIdx);
+            }
+        }
+    }
+
     /**
      * Fetch the cover from the url. Uses the ISBN (if any) from the bookData bundle.
      * <p>
@@ -469,23 +478,31 @@ public class StripInfoBookHandler
      *
      * @param coverUrl fully qualified url
      * @param bookData destination bundle
+     * @param cIdx     0..n image index
      */
     private void fetchCover(@NonNull final String coverUrl,
-                            @NonNull final Bundle /* in/out */ bookData) {
+                            @NonNull final Bundle /* in/out */ bookData,
+                            final int cIdx) {
+
         // do not use the isbn we searched for, use the one we found even if empty!
         String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
         // download
         String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, coverUrl,
-                                               isbn, FILENAME_SUFFIX, null);
+                                               isbn, FILENAME_SUFFIX + cIdx, null);
 
         if (fileSpec != null) {
-            ArrayList<String> imageList =
-                    bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-            if (imageList == null) {
-                imageList = new ArrayList<>();
+            if (cIdx == 0) {
+                String key = UniqueId.BKEY_FILE_SPEC_ARRAY;
+                ArrayList<String> imageList = bookData.getStringArrayList(key);
+                if (imageList == null) {
+                    imageList = new ArrayList<>();
+                }
+                imageList.add(fileSpec);
+                bookData.putStringArrayList(key, imageList);
+
+            } else {
+                bookData.putString(UniqueId.BKEY_FILE_SPEC[1], fileSpec);
             }
-            imageList.add(fileSpec);
-            bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
         }
     }
 
@@ -493,7 +510,7 @@ public class StripInfoBookHandler
      * Extract the site native id from the url.
      *
      * @param titleUrlElement element containing the book url
-     * @param bookData     bundle to add to
+     * @param bookData        bundle to add to
      */
     private void processSiteNativeId(@NonNull final Element titleUrlElement,
                                      @NonNull final Bundle bookData) {

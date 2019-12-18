@@ -51,7 +51,7 @@ public class PIntList
      * Constructor.
      *
      * @param key          key of preference
-     * @param uuid         of the style
+     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
      */
     public PIntList(@NonNull final String key,

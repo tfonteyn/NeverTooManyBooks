@@ -91,7 +91,8 @@ public class ImportTask
                 }
 
                 QueueManager.getQueueManager().enqueueTask(
-                        new ImportLegacyTask(mTaskDescription, mIsSync), QueueManager.Q_MAIN);
+                        new ImportLegacyTask(context, mTaskDescription, mIsSync),
+                        QueueManager.Q_MAIN);
                 return R.string.gr_tq_task_has_been_queued;
             }
             return msg;

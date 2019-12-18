@@ -113,10 +113,7 @@
     <string name="error_columns_are_blank">Columns “%1$s” are all blank at row %2$d.</string>
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
 
-    <string name="error_no_external_crop_app">
-        An application for trimming images was not found.
-    </string>
-
+    <string name="error_no_image_editor">No picture editor found.</string>
 
     <!-- The user selected a file to import that was not recognised as a valid archive. -->
     <string name="error_import_invalid_archive">The file selected is not recognized.</string>
@@ -391,11 +388,11 @@
 
     <!-- Progress message displayed when exporting covers -->
     <string name="progress_msg_n_covers_processed_m_missing">
-        %1$d covers processed\n(%2$d missing)
+        %1$d covers processed\n(%2$d/%3$d missing)
     </string>
     <!-- Progress message displayed when exporting covers -->
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">
-        %1$d covers processed\n(%2$d missing, %3$d skipped)
+        %1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)
     </string>
 
     <!-- Progress message displayed when importing books/covers.
@@ -699,8 +696,6 @@
     <!-- == Global preference settings == -->
     <!-- ####################################################################################### -->
 
-    <!-- The defaults for MultiSelect fields, i.e. select nothing -->
-    <string-array name="empty_array" />
     <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
     <string name="pe_use_recommended_option">Use the recommended option</string>
 
@@ -771,11 +766,9 @@
     <string name="pg_thumbnails">Thumbnails</string>
     <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
     <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
-    <!-- SwitchPreference - use an external app. (Intent) to handle cropping-->
-    <string name="pt_thumbnails_external_cropper">Use an external image crop app</string>
 
     <!-- Preference Category -->
-    <string name="pg_image_cache">Images cache</string>
+    <string name="pg_image_cache">Image cache</string>
     <!-- SwitchPreference - Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_thumbnails_cache_resized">Resized images are cached</string>
     <string name="pe_thumbnails_cache_resized_each_time">
@@ -1525,5 +1518,11 @@
     <string name="lbl_select_website">Select a website:</string>
     <string name="scan">Scan barcode</string>
     <string name="menu_strict_isbn">Strict ISBN</string>
+    <string name="unused">unused</string>
+    <string name="info_bitmask_preference">
+        Select 0 or more options and tap “OK” to apply them,
+        or tap “%1$s” to disregard all of them.
+    </string>
+    <string name="pt_camera_next_action">Action after taking a picture</string>
 
 </resources>

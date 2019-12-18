@@ -97,7 +97,7 @@ public class PreferredStylesActivity
         @Override
         public void onChanged() {
             // we save the order after each change.
-            mModel.saveMenuOrder();
+            mModel.saveMenuOrder(PreferredStylesActivity.this);
         }
     };
 
@@ -111,7 +111,7 @@ public class PreferredStylesActivity
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        mModel.init(Objects.requireNonNull(getIntent().getExtras()));
+        mModel.init(this, Objects.requireNonNull(getIntent().getExtras()));
 
         mListView = findViewById(R.id.stylesList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);

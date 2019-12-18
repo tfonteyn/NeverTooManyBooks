@@ -27,11 +27,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
@@ -42,7 +43,8 @@ public class NonBlankValidator
         implements DataValidator {
 
     @Override
-    public void validate(@NonNull final DataManager dataManager,
+    public void validate(@NonNull final Context context,
+                         @NonNull final DataManager dataManager,
                          @NonNull final String key,
                          final int errorLabelId)
             throws ValidatorException {
@@ -50,16 +52,16 @@ public class NonBlankValidator
         Object o = dataManager.get(key);
         if (o == null) {
             throw new ValidatorException(R.string.vldt_non_blank_required_for_x,
-                                         App.getLocalizedAppContext().getString(errorLabelId));
+                                         context.getString(errorLabelId));
 
         } else if ((o instanceof String) && (dataManager.getString(key).trim().isEmpty())) {
             throw new ValidatorException(R.string.vldt_non_blank_required_for_x,
-                                         App.getLocalizedAppContext().getString(errorLabelId));
+                                         context.getString(errorLabelId));
 
-        } else if ((o instanceof ArrayList) && (dataManager.getParcelableArrayList(key)
-                                                           .isEmpty())) {
+        } else if ((o instanceof ArrayList)
+                   && (dataManager.getParcelableArrayList(key).isEmpty())) {
             throw new ValidatorException(R.string.vldt_non_blank_required_for_x,
-                                         App.getLocalizedAppContext().getString(errorLabelId));
+                                         context.getString(errorLabelId));
         }
     }
 }

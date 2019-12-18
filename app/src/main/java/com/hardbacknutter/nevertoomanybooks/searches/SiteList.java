@@ -126,13 +126,13 @@ public class SiteList
      * Get the global search site list in the preferred order.
      * Includes enabled <strong>AND</strong> disabled sites.
      *
-     * @param appContext Current context
+     * @param context Current context
      * @param type   type
      *
      * @return the list
      */
     @NonNull
-    public static SiteList getList(@NonNull final Context appContext,
+    public static SiteList getList(@NonNull final Context context,
                                    @NonNull final Type type) {
         // already loaded ?
         SiteList list = sLists.get(type);
@@ -141,7 +141,7 @@ public class SiteList
         }
 
         // create the list according to user preferences.
-        SiteList newList = SearchSites.createSiteList(appContext, type, true);
+        SiteList newList = SearchSites.createSiteList(context, type, true);
 
         // cache the list for reuse
         sLists.put(type, newList);

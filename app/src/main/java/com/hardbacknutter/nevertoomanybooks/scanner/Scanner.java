@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.scanner;
 
+import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
@@ -62,11 +63,12 @@ public interface Scanner {
     }
 
     /**
-     *
-     * @param data the intent as coming from {@link  Fragment#onActivityResult}
+     * @param context Current context
+     * @param data    the intent as coming from {@link  Fragment#onActivityResult}
      *
      * @return the barcode from the resulting intent of a scan action; or {@code null}
      */
     @Nullable
-    String getBarcode(@Nullable Intent data);
+    String getBarcode(@NonNull Context context,
+                      @Nullable Intent data);
 }

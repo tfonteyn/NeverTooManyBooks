@@ -66,6 +66,7 @@ public class BookCursor
     /** Populated on first use. */
     @Nullable
     private TableInfo mTableInfo;
+    /** database reference so we can get table/column info. */
     @Nullable
     private DAO mDb;
 

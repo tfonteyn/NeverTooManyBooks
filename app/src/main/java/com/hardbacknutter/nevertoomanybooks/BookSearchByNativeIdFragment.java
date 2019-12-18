@@ -151,7 +151,9 @@ public class BookSearchByNativeIdFragment
     protected boolean onSearch() {
         int siteId = SearchSites.getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
         String nativeId = mNativeIdView.getText().toString().trim();
-        return mSearchCoordinator.searchByNativeId(Site.createDataSite(siteId), nativeId);
+        //noinspection ConstantConditions
+        return mSearchCoordinator.searchByNativeId(getContext(),
+                                                   Site.createDataSite(siteId), nativeId);
     }
 
     @Override

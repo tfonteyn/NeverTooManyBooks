@@ -565,12 +565,7 @@ public class XmlImporter
 
     @Override
     public void close() {
-        try {
-            // now do some cleaning
-            mDb.purge();
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e);
-        }
+        mDb.purge();
         mDb.close();
     }
 
@@ -980,7 +975,7 @@ public class XmlImporter
             }
             // add to the menu of preferred styles if needed.
             if (mStyle.isPreferred()) {
-                BooklistStyle.Helper.addPreferredStyle(mStyle);
+                BooklistStyle.Helper.addPreferredStyle(mContext, mStyle);
             }
 
             // the prefs are written on the fly, but we still need the db entry saved.

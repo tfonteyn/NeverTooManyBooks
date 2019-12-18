@@ -76,7 +76,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KIND;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_SELECTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_PRIMARY_SERIES_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_ROOT_KEY;
@@ -420,12 +419,9 @@ public class BooklistBuilder
      * Clear and build the temporary list of books.
      * Criteria must be set before calling this method with one or more of the setCriteria calls.
      *
-     * @param listState        State to display
-     * @param currentPosBookId The book id around which the list is positioned.
-     *                         Will be remembered so we can scroll back to it.
+     * @param listState State to display
      */
-    public void build(@BooklistBuilder.ListRebuildMode final int listState,
-                      final long currentPosBookId) {
+    public void build(@BooklistBuilder.ListRebuildMode final int listState) {
         final long t00 = System.nanoTime();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -477,14 +473,6 @@ public class BooklistBuilder
 
         // We want the UUID for the book so we can get thumbnails
         helper.addDomain(DOM_BOOK_UUID, TBL_BOOKS.dot(DOM_BOOK_UUID), BuildHelper.FLAG_NONE);
-
-        // If we have a book id to remember, then add the DOM_BL_NODE_SELECTED field,
-        // and setup the expression.
-        if (currentPosBookId != 0) {
-            helper.addDomain(DOM_BL_NODE_SELECTED,
-                             TBL_BOOKS.dot(DOM_PK_ID) + '=' + currentPosBookId,
-                             BuildHelper.FLAG_NONE);
-        }
 
         for (BooklistGroup group : mStyle.getGroups()) {
             helper.addGroup(group);
@@ -582,30 +570,30 @@ public class BooklistBuilder
             final long t10_stateTable_analyzed = System.nanoTime();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "build|" +
-                           String.format(Locale.UK, ""
-                                                    + "\ntable created         : %10d"
-                                                    + "\nbase sql              : %10d"
-                                                    + "\njoins                 : %10d"
-                                                    + "\nwhere clause          : %10d"
-                                                    + "\norder-by clause       : %10d"
-                                                    + "\nbase insert executed  : %10d"
-                                                    + "\ntable analyzed        : %10d"
-                                                    + "\nstateTable build      : %10d"
-                                                    + "\nstateTable idx created: %10d"
-                                                    + "\nstateTable_analyzed   : %10d",
+                Log.d(TAG, "build|"
+                           + String.format(Locale.UK, ""
+                                                      + "\ntable created         : %10d"
+                                                      + "\nbase sql              : %10d"
+                                                      + "\njoins                 : %10d"
+                                                      + "\nwhere clause          : %10d"
+                                                      + "\norder-by clause       : %10d"
+                                                      + "\nbase insert executed  : %10d"
+                                                      + "\ntable analyzed        : %10d"
+                                                      + "\nstateTable build      : %10d"
+                                                      + "\nstateTable idx created: %10d"
+                                                      + "\nstateTable_analyzed   : %10d",
 
-                                         t01_table_created - t00,
-                                         t02_build_base_sql - t01_table_created,
-                                         t03_build_join - t02_build_base_sql,
-                                         t04_build_where - t03_build_join,
-                                         t05_build_order_by - t04_build_where,
-                                         t06_base_insert_done - t05_build_order_by,
-                                         t07_listTable_analyzed - t06_base_insert_done,
+                                           t01_table_created - t00,
+                                           t02_build_base_sql - t01_table_created,
+                                           t03_build_join - t02_build_base_sql,
+                                           t04_build_where - t03_build_join,
+                                           t05_build_order_by - t04_build_where,
+                                           t06_base_insert_done - t05_build_order_by,
+                                           t07_listTable_analyzed - t06_base_insert_done,
 
-                                         t08_stateTable_build - t07_listTable_analyzed,
-                                         t09_stateTable_idx_created - t08_stateTable_build,
-                                         t10_stateTable_analyzed - t09_stateTable_idx_created));
+                                           t08_stateTable_build - t07_listTable_analyzed,
+                                           t09_stateTable_idx_created - t08_stateTable_build,
+                                           t10_stateTable_analyzed - t09_stateTable_idx_created));
             }
             mSyncedDb.setTransactionSuccessful();
 
@@ -763,16 +751,15 @@ public class BooklistBuilder
         String baseSql = "INSERT INTO " + mRowStateTable
                          + " (" + DOM_FK_BOOK_BL_ROW_ID
                          + ',' + DOM_BL_ROOT_KEY
-
                          + ',' + DOM_BL_NODE_LEVEL
                          + ',' + DOM_BL_NODE_KIND
 
                          + ',' + DOM_BL_NODE_VISIBLE
                          + ',' + DOM_BL_NODE_EXPANDED
                          + ')'
-                         + " SELECT DISTINCT " + mListTable.dot(DOM_PK_ID)
+                         + " SELECT DISTINCT "
+                         + mListTable.dot(DOM_PK_ID)
                          + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
-
                          + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
                          + ',' + mListTable.dot(DOM_BL_NODE_KIND)
                          + "\n";
@@ -801,9 +788,11 @@ public class BooklistBuilder
             }
             case PREF_LIST_REBUILD_ALWAYS_COLLAPSED: {
                 String sql = baseSql
-                             // DOM_BL_NODE_VISIBLE: level 1 visible and all others invisible.
+                             // DOM_BL_NODE_VISIBLE:
                              + ",CASE"
+                             // level 1 visible
                              + " WHEN " + DOM_BL_NODE_LEVEL + "=1 THEN 1"
+                             // and all other levels invisible.
                              + " ELSE 0"
                              + " END"
                              // 'AS' for SQL readability/debug only
@@ -831,22 +820,8 @@ public class BooklistBuilder
                 // requires statements without parameters.
                 String sql =
                         baseSql
-                        // SELECT DISTINCT bl._id, bl.root_key, bl.level,bl.kind
-                        // ,CASE
-                        // WHEN bl.level = 1 THEN 1
-                        // WHEN bl_ns.root_key IS NULL THEN 0
-                        // ELSE 1
-                        // END AS visible
-                        //
-                        // ,CASE WHEN bl_ns.root_key IS NULL THEN 0
-                        // ELSE bl_ns.expanded END AS expanded
-                        // FROM book_list_tmp_1 bl LEFT OUTER JOIN book_list_node_settings bl_ns
-                        // ON bl_ns.bookshelf=2 AND bl_ns.style=-1
-                        // AND bl.level=bl_ns.level
-                        // AND bl.root_key=bl_ns.root_key
-                        // ORDER BY bl._id
 
-                        // *all* rows in TBL_BOOK_LIST_NODE_STATE are to be considered visible!
+                        // *all* rows in TBL_BOOK_LIST_NODE_STATE are considered visible!
                         // ergo, all others are invisible but level 1 is always visible.
 
                         // DOM_BL_NODE_VISIBLE
@@ -1022,7 +997,7 @@ public class BooklistBuilder
                      + " WHERE " + DOM_BL_NODE_LEVEL + "=1" + " AND " + DOM_PK_ID + "<=?"
                      + " ORDER BY " + DOM_PK_ID + " DESC LIMIT 1";
 
-        // rows start at 1, but positions at 0
+        // rowId's start at 1, but positions at 0
         long rowId = row.absolutePosition + 1;
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(rowId)})) {
@@ -1034,8 +1009,7 @@ public class BooklistBuilder
                 // If root node is not the node we are checking,
                 // and root node is not expanded, expand it.
                 if (rootId != rowId && !rootIsExpanded) {
-                    // rows start at 1, but positions at 0
-                    expandNode(rootId - 1, NodeState.Expand);
+                    expandNode(rootId, NodeState.Expand);
                 }
             }
         }
@@ -1094,7 +1068,7 @@ public class BooklistBuilder
      * Expand or collapse <strong>all</strong> nodes.
      *
      * @param topLevel the desired top-level which must be kept visible
-     * @param expand   the state to apply to levels 'below' the top-level
+     * @param expand   the state to apply to levels 'below' the topLevel (level > topLevel)
      */
     public void expandNodes(@IntRange(from = 1) final int topLevel,
                             final boolean expand) {
@@ -1131,20 +1105,13 @@ public class BooklistBuilder
     /**
      * Expand, collapse or toggle the status of the node at the specified absolute position.
      *
-     * @param position   of the node in the list
+     * @param rowId      of the node in the list
      * @param nodeStatus one of {@link NodeState}
      *
      * @return {@code true} if the new state is expanded, {@code false} if collapsed.
      */
-    public boolean expandNode(final long position,
+    public boolean expandNode(final long rowId,
                               @NonNull final NodeState nodeStatus) {
-
-        // row position starts at 0, ID's start at 1...
-        final long rowId = position + 1;
-        // current state of the row
-        boolean rowIsExpanded;
-        // level of the row
-        int rowLevel;
 
         // future state of the affected rows.
         boolean expand;
@@ -1160,12 +1127,15 @@ public class BooklistBuilder
                          + " FROM " + mRowStateTable.ref()
                          + " WHERE " + mRowStateTable.dot(DOM_PK_ID) + "=?";
 
+            int rowLevel;
+            boolean rowIsExpanded;
+
             try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(rowId)})) {
                 if (cursor.moveToFirst()) {
                     rowLevel = cursor.getInt(0);
                     rowIsExpanded = cursor.getInt(1) != 0;
                 } else {
-                    throw new IllegalStateException("no row found for position=" + position);
+                    throw new IllegalStateException("rowId not found: " + rowId);
                 }
             }
 
@@ -1227,7 +1197,7 @@ public class BooklistBuilder
 
     /**
      * Save the state for all nodes to permanent storage.
-     * We only store expanded/visible nodes.
+     * We only store visible nodes and their expansion state.
      */
     private void preserveAllNodes() {
         SyncLock txLock = null;
@@ -1236,7 +1206,7 @@ public class BooklistBuilder
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-            // delete *all* rows for the current bookshelf
+            // delete *all* rows (i.e. all styles) for the current bookshelf.
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(mNodesDeleteBaseSql)) {
                 stmt.bindLong(1, mBookshelf.getId());
                 int rowsDeleted = stmt.executeUpdateDelete();
@@ -1246,7 +1216,7 @@ public class BooklistBuilder
                                + "|rowsDeleted=" + rowsDeleted);
                 }
             }
-            // Read all nodes, and send them to the permanent table.
+            // Read all visible nodes, and send them to the permanent table.
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(getNodesInsertSql())) {
                 stmt.bindLong(1, mBookshelf.getId());
                 stmt.bindLong(2, mStyle.getId());
@@ -1287,12 +1257,12 @@ public class BooklistBuilder
 //            TBL_BOOK_LIST_NODE_STATE
 //                    .dumpTable(mSyncedDb, "preserveNodes", 0, 1000, "before delete");
 
-            // delete the given rows for the current bookshelf and root-key
+            // delete the given rows for the current bookshelf
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                     mNodesDeleteBaseSql + " AND " + DOM_BL_ROOT_KEY + " IN ("
                     + " SELECT DISTINCT " + DOM_BL_ROOT_KEY
                     + " FROM " + mRowStateTable
-                    + " WHERE " + DOM_PK_ID + ">=?" + " AND " + DOM_PK_ID + "<?"
+                    + " WHERE " + DOM_PK_ID + ">=? AND " + DOM_PK_ID + "<?"
                     + ")")) {
                 stmt.bindLong(1, mBookshelf.getId());
 
@@ -1313,8 +1283,7 @@ public class BooklistBuilder
 
             // Read all nodes below the given node, and send them to the permanent table.
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    getNodesInsertSql()
-                    + " AND " + DOM_PK_ID + ">=?" + " AND " + DOM_PK_ID + "<?")) {
+                    getNodesInsertSql() + " AND " + DOM_PK_ID + ">=? AND " + DOM_PK_ID + "<?")) {
                 int p = 0;
                 stmt.bindLong(++p, mBookshelf.getId());
                 stmt.bindLong(++p, mStyle.getId());
@@ -2480,7 +2449,7 @@ public class BooklistBuilder
         }
 
         /**
-         * Expand or collapse all nodes <strong>between</strong> given rows and
+         * Expand or collapse all nodes <strong>between</strong> the given row and
          * the next row at the same level.
          *
          * @param expand   state to set
@@ -2507,7 +2476,7 @@ public class BooklistBuilder
         }
 
         /**
-         * Find the next row ('after' the given row) at the given level (or lower)
+         * Find the next row ('after' the given row) at the given level (or lower).
          *
          * @param startRowId from where to start looking
          * @param rowLevel   level to look for
@@ -2553,7 +2522,7 @@ public class BooklistBuilder
          */
         private void updateNode(final long rowId,
                                 final boolean expand,
-                                @SuppressWarnings("SameParameterValue") final boolean visible) {
+                                final boolean visible) {
             SynchronizedStatement stmt = mStatementManager.get(STMT_UPD_SINGLE_NODE);
             if (stmt == null) {
                 stmt = mStatementManager.add(
@@ -2570,7 +2539,6 @@ public class BooklistBuilder
                 stmt.bindBoolean(2, visible);
                 stmt.bindLong(3, rowId);
                 rowsUpdated = stmt.executeUpdateDelete();
-
             }
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                 Log.d(TAG, "updateNodes"

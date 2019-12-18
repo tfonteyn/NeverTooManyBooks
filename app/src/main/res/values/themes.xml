@@ -44,6 +44,8 @@
     <!-- ================ -->
     <style name="AppTheme.DayNight" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
+        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
+
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
@@ -74,6 +76,8 @@
     <!-- =========== -->
     <style name="AppTheme.Dark" parent="Theme.MaterialComponents.NoActionBar">
 
+        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
+
         <!-- ==================== -->
         <!-- Application specific -->
         <!-- ==================== -->
@@ -103,6 +107,8 @@
     <!-- Light theme. -->
     <!-- ============ -->
     <style name="AppTheme.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
+
+        <item name="snackbarTextViewStyle">@style/SnackbarText</item>
 
         <!-- ==================== -->
         <!-- Application specific -->

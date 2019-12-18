@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
@@ -54,13 +56,16 @@ public class DefaultFieldValidator
     /**
      * Gets the current value, and if {@code null} or empty,
      * replaces it with the mDefaultValue value.
-     *  @param dataManager The DataManager object
-     * @param key         key for the data to validate
+     *
+     * @param context      Current context
+     * @param dataManager  The DataManager object
+     * @param key          key for the data to validate
      * @param errorLabelId not used.
      */
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager dataManager,
+    public void validate(@NonNull final Context context,
+                         @NonNull final DataManager dataManager,
                          @NonNull final String key,
                          final int errorLabelId) {
 

@@ -37,7 +37,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -105,8 +104,7 @@ public class EditBookActivity
      */
     @Override
     public void onBackPressed() {
-        // delete any orphaned temporary cover file
-        StorageUtils.deleteFile(StorageUtils.getTempCoverFile());
+        CoverHandler.deleteOrphanedCoverFiles(this);
 
         BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
 

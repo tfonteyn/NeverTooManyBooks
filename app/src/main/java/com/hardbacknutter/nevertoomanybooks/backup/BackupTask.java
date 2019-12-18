@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class BackupTask
         extends TaskBase<ExportHelper> {
 
+    /** log tag. */
     private static final String TAG = "BackupTask";
 
     /** what and how to export. */
@@ -100,13 +101,13 @@ public class BackupTask
     @UiThread
     @Override
     protected void onCancelled(@NonNull final ExportHelper result) {
-        cleanup();
+        cleanup(App.getAppContext());
         super.onCancelled(result);
     }
 
     @AnyThread
-    private void cleanup() {
-        StorageUtils.deleteFile(ExportHelper.getTempFile(App.getAppContext()));
+    private void cleanup(@NonNull final Context context) {
+        StorageUtils.deleteFile(ExportHelper.getTempFile(context));
     }
 
     @Override
@@ -140,7 +141,7 @@ public class BackupTask
             mException = e;
             return mExportHelper;
         } finally {
-            cleanup();
+            cleanup(localContext);
         }
     }
 

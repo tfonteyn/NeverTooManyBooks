@@ -199,8 +199,8 @@ public class EditBookFragment
 
         Book book = mBookModel.getBook();
         // Now validate the book data
-        if (!book.validate()) {
-            //noinspection ConstantConditions
+        //noinspection ConstantConditions
+        if (!book.validate(getContext())) {
             new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setTitle(R.string.vldt_failure)
@@ -215,7 +215,6 @@ public class EditBookFragment
             String isbn = book.getString(DBDefinitions.KEY_ISBN);
             // Check if the book already exists
             if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn) > 0))) {
-                //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.title_duplicate_book)

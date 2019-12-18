@@ -36,60 +36,94 @@
     <TextView
         android:id="@+id/author"
         style="@style/BooklistBook.BookInfo.Secondary"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spacer"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_author"
+        tools:visibility="visible"
         />
 
     <TextView
         android:id="@+id/publisher"
         style="@style/BooklistBook.BookInfo.Secondary"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_publisher"
+        tools:visibility="visible"
         />
 
     <TextView
         android:id="@+id/isbn"
         style="@style/BooklistBook.BookInfo.Secondary"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/publisher"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_isbn"
+        tools:visibility="visible"
         />
 
     <TextView
         android:id="@+id/format"
         style="@style/BooklistBook.BookInfo.Secondary"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/isbn"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_format"
+        tools:visibility="visible"
         />
 
     <TextView
         android:id="@+id/location"
         style="@style/BooklistBook.BookInfo.Secondary"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/format"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_location"
+        tools:visibility="visible"
         />
 
     <TextView
         android:id="@+id/shelves"
         style="@style/BooklistBook.BookInfo.Secondary"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_bookshelves"
+        tools:visibility="visible"
+        />
+
+    <!--
+        This spacer is made visible *ONLY* if:
+        - a cover is shown (even if empty)
+        AND
+        - there are less then 2 extras (as above) shown.
+
+        We do this to make sure the user can click on a row without being limited to (maybe)
+        a single line of text. The latter is ok if we don't show an image, but without an
+        image there would be to much white- and non-clickable space.
+     -->
+    <Space
+        android:id="@+id/noExtrasSpacer"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/shelves"
+        tools:visibility="visible"
         />
 </merge>

@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -213,34 +214,34 @@ public class StartupViewModel
         if (mStartupTasksShouldBeStarted) {
             int taskId = 0;
             // start these unconditionally
-            startTask(new BuildLanguageMappingsTask(++taskId, mTaskListener));
-            startTask(new PreloadGoogleScanner(++taskId, mTaskListener));
+            startTask(new BuildLanguageMappingsTask(++taskId, mTaskListener), false);
+            startTask(new PreloadGoogleScanner(++taskId, mTaskListener), true);
 
             // this is not critical, once every so often is fine
             if (mDoPeriodicAction) {
                 // cleaner must be started after the language mapper task.
-                startTask(new DBCleanerTask(++taskId, mDb, mTaskListener));
+                startTask(new DBCleanerTask(++taskId, mDb, mTaskListener), false);
             }
 
             // on demand only
             if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED,
                                              false)) {
-                startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener));
+                startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener), false);
             }
 
             // on demand only
             if (PreferenceManager.getDefaultSharedPreferences(context)
                                  .getBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED,
                                              false)) {
-                startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener));
+                startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener), false);
             }
 
             // shouldn't be needed every single time.
             if (mDoPeriodicAction) {
                 // analyse db should always be started as the last task.
                 startTask(new AnalyzeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(context),
-                                            mTaskListener));
+                                            mTaskListener), false);
             }
 
             // Clear the flag
@@ -256,10 +257,15 @@ public class StartupViewModel
         }
     }
 
-    private void startTask(@NonNull final TaskBase<Boolean> task) {
+    private void startTask(@NonNull final TaskBase<Boolean> task,
+                           final boolean inParallel) {
         synchronized (mAllTasks) {
             mAllTasks.add(task.getId());
-            task.execute();
+            if (inParallel) {
+                task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                task.execute();
+            }
         }
     }
 
@@ -411,7 +417,7 @@ public class StartupViewModel
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
                 cleaner.updateLanguages(localContext);
                 // clean/correct style UUID's on Bookshelves for deleted styles.
-                cleaner.bookshelves();
+                cleaner.bookshelves(localContext);
 
                 // check & log, but don't update yet... need more testing
                 cleaner.maybeUpdate(true);

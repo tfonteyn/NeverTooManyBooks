@@ -105,11 +105,9 @@ public class CropImageActivity
     private static final String BKEY_CIRCLE_CROP = TAG + ":circleCrop";
     private static final String BKEY_NO_FACE_DETECTION = TAG + ":noFaceDetection";
 
-    /** used to calculate free space on Shared Storage, 400kb per picture is a GUESS. */
-    private static final long ESTIMATED_PICTURE_SIZE = 400_000L;
+    /** used to calculate free space on Shared Storage, 100kb per picture is an overestimation. */
+    private static final long ESTIMATED_PICTURE_SIZE = 100_000L;
 
-    /** only used with mOptionOutputUri. */
-    private final Bitmap.CompressFormat defaultCompressFormat = Bitmap.CompressFormat.JPEG;
     private final Handler mHandler = new Handler();
     /** Whether the "save" button is already clicked. */
     boolean mIsSaving;
@@ -294,7 +292,7 @@ public class CropImageActivity
 
         super.onCreate(savedInstanceState);
 
-        mImageView = findViewById(R.id.coverImage);
+        mImageView = findViewById(R.id.coverImage0);
 
         int msgId = checkStorage();
         // tell user if needed.
@@ -512,10 +510,9 @@ public class CropImageActivity
             setResult(Activity.RESULT_OK);
         } else {
             Intent data = new Intent(mOptionOutputUri.toString());
-            try (OutputStream outputStream = getContentResolver()
-                    .openOutputStream(mOptionOutputUri)) {
-                if (outputStream != null) {
-                    croppedImage.compress(defaultCompressFormat, 75, outputStream);
+            try (OutputStream os = getContentResolver().openOutputStream(mOptionOutputUri)) {
+                if (os != null) {
+                    croppedImage.compress(Bitmap.CompressFormat.PNG, 100, os);
                 }
                 // we saved the image
                 setResult(Activity.RESULT_OK, data);

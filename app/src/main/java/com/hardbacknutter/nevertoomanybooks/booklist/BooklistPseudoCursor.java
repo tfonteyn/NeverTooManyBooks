@@ -41,7 +41,6 @@ import java.util.Hashtable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
  * TODO: https://developer.android.com/topic/libraries/architecture/paging.html
@@ -387,14 +386,6 @@ public class BooklistPseudoCursor
                            + "|cursorId=" + cursorId
                            + "|mActiveCursor=" + mActiveCursor);
             }
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG, "onMove"
-                       + "|ImageUtils.cacheChecks=" + ImageUtils.cacheChecks
-                       + "|ImageUtils.cacheTicks=" + (ImageUtils.cacheTicks.get() / TO_MILLIS)
-                       + "|ImageUtils.fileChecks=" + ImageUtils.fileChecks
-                       + "|ImageUtils.fileTicks=" + (ImageUtils.fileTicks.get() / TO_MILLIS));
         }
         return true;
     }

@@ -75,15 +75,6 @@ public final class FormatMapper
         MAPPER.put("hardback", R.string.book_format_hardcover);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     */
-    FormatMapper(@NonNull final Context context) {
-        super(context);
-    }
-
     static boolean isMappingAllowed(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_search_reformat_format, false);

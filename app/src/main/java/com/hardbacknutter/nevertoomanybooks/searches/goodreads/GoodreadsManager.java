@@ -294,12 +294,14 @@ public class GoodreadsManager
     /**
      * Get the date at which the last Goodreads synchronization was run.
      *
+     * @param context Current context
+     *
      * @return Last date
      */
     @Nullable
-    public static Date getLastSyncDate() {
+    public static Date getLastSyncDate(@NonNull final Context context) {
         return DateUtils.parseDate(
-                PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
+                PreferenceManager.getDefaultSharedPreferences(context)
                                  .getString(PREFS_LAST_SYNC_DATE, null));
     }
 
@@ -995,13 +997,13 @@ public class GoodreadsManager
      * Request authorization for this application, for the current user,
      * by going to the OAuth web page.
      *
-     * @param appContext Application context
+     * @param context Application context
      *
      * @throws AuthorizationException with GoodReads
      * @throws IOException            on other failures
      */
     @WorkerThread
-    public void requestAuthorization(@NonNull final Context appContext)
+    public void requestAuthorization(@NonNull final Context context)
             throws AuthorizationException,
                    IOException {
 
@@ -1026,38 +1028,39 @@ public class GoodreadsManager
 
         // Some urls come back without a scheme, add it to make a valid URL for the parser
         if (!authUrl.startsWith("http://") && !authUrl.startsWith("https://")) {
-            Logger.warn(TAG, "requestAuthorization",
+            Logger.warn(context, TAG, "requestAuthorization",
                         "no scheme for authUrl=" + authUrl);
             authUrl = "http://" + authUrl;
         }
 
         // Temporarily save the token; this GoodreadsManager object may be destroyed
         // before the web page returns.
-        PreferenceManager.getDefaultSharedPreferences(appContext)
+        PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
                          .putString(REQUEST_TOKEN, mConsumer.getToken())
                          .putString(REQUEST_SECRET, mConsumer.getTokenSecret())
                          .apply();
 
         // Open the web page
-        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(authUrl)));
     }
 
     /**
      * Called by the callback activity, @link AuthorizationResultCheckTask,
      * when a request has been authorized by the user.
      *
+     * @param context Application context
+     *
      * @throws AuthorizationException with GoodReads
      * @throws IOException            on other failures
      */
     @WorkerThread
-    public void handleAuthenticationAfterAuthorization()
+    public void handleAuthenticationAfterAuthorization(@NonNull final Context context)
             throws AuthorizationException,
                    IOException {
 
         // Get the temporarily saved request tokens.
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(App.getAppContext());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String requestToken = prefs.getString(REQUEST_TOKEN, null);
         String requestSecret = prefs.getString(REQUEST_SECRET, null);
 

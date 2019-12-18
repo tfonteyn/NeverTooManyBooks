@@ -80,17 +80,16 @@
             android:authorities="${packageName}.SearchSuggestionProvider"
             android:exported="false" />
 
-        <!-- The authorities value must match: App.java/getUriForFile -->
+        <!-- The authorities value must match: GenericFileProvider.java/getUriForFile -->
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${packageName}.GenericFileProvider"
+            android:name="com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider"
+            android:authorities="${applicationId}.GenericFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
         <!--
             This is the activity that will appear in the app launcher
 

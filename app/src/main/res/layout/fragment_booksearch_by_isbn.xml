@@ -57,6 +57,15 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
+        <Space
+            android:id="@+id/scanBtnSpacer"
+            android:layout_width="0dp"
+            android:layout_height="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_scan"
+            />
+
         <include
             android:id="@+id/isbn_keypad"
             layout="@layout/inc_isbn_keypad"
@@ -64,7 +73,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_scan"
+            app:layout_constraintTop_toBottomOf="@id/scanBtnSpacer"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

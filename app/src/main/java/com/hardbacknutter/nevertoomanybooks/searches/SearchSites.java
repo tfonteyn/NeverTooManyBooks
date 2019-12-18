@@ -85,11 +85,13 @@ public final class SearchSites {
      */
     public static final boolean ENABLE_AMAZON_AWS = false;
 
-    /** Site. */
-    static final int AMAZON = 1 << 1;
+
     static final String DATA_RELIABILITY_ORDER;
+
     /** Site. */
     private static final int GOOGLE_BOOKS = 1;
+    /** Site. */
+    private static final int AMAZON = 1 << 1;
     /** Site. */
     private static final int LIBRARY_THING = 1 << 2;
     /** Site. */
@@ -102,10 +104,12 @@ public final class SearchSites {
     private static final int KB_NL = 1 << 6;
     /** Site: Dutch language (and to an extend French) comics. */
     private static final int STRIP_INFO_BE = 1 << 7;
+
+
     /** Mask including all search sources. */
-    static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON | LIBRARY_THING | GOODREADS
-                                        | ISFDB | OPEN_LIBRARY
-                                        | KB_NL | STRIP_INFO_BE;
+    public static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON | LIBRARY_THING | GOODREADS
+                                               | ISFDB | OPEN_LIBRARY
+                                               | KB_NL | STRIP_INFO_BE;
     /** Dutch language site. */
     private static final String NLD = "nld";
 

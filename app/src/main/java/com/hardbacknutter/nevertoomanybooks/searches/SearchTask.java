@@ -85,18 +85,19 @@ public class SearchTask
      * <li>text</li>
      * </ol>
      *
+     * @param context      Localized context
      * @param taskId       identifier
      * @param searchEngine the search site engine
      */
-    SearchTask(final int taskId,
+    SearchTask(@NonNull final Context context,
+               final int taskId,
                @NonNull final SearchEngine searchEngine,
                @NonNull final TaskListener<Bundle> taskListener) {
         super(taskId, taskListener);
         mSearchEngine = searchEngine;
 
-        Context localContext = App.getLocalizedAppContext();
-        String name = localContext.getString(mSearchEngine.getNameResId());
-        mProgressTitle = localContext.getString(R.string.progress_msg_searching_site, name);
+        String name = context.getString(mSearchEngine.getNameResId());
+        mProgressTitle = context.getString(R.string.progress_msg_searching_site, name);
     }
 
     /**

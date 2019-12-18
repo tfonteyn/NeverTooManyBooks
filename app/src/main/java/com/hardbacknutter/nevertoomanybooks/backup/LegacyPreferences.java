@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
@@ -40,6 +41,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -53,10 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 public final class LegacyPreferences {
 
-    private static final String TAG = "LegacyPreferences";
-
     /** Legacy preferences name. */
     public static final String PREF_LEGACY_PREFS = "bookCatalogue";
+    private static final String TAG = "LegacyPreferences";
 
     private LegacyPreferences() {
     }
@@ -161,10 +162,6 @@ public final class LegacyPreferences {
 
                     case "App.CropFrameWholeImage":
                         ed.putBoolean(Prefs.pk_image_cropper_frame_whole, (Boolean) oldValue);
-                        break;
-
-                    case "App.UseExternalImageCropper":
-                        ed.putBoolean(Prefs.pk_image_cropper_external, (Boolean) oldValue);
                         break;
 
                     case "BookList.Global.CacheThumbnails":
@@ -274,19 +271,19 @@ public final class LegacyPreferences {
 
                     // skip obsolete keys
                     case "App.OpenBookReadOnly":
-                    case "StartupActivity.FAuthorSeriesFixupRequired":
-                    case "start_in_my_books":
                     case "App.includeClassicView":
                     case "App.DisableBackgroundImage":
+                    case "App.BooklistGenerationMode":
+                    case "App.UseExternalImageCropper":
+                    case "App.BooklistStyle":
                     case "BookList.Global.FlatBackground":
                     case "BookList.Global.BackgroundThumbnails":
+                    case "StartupActivity.FAuthorSeriesFixupRequired":
+                    case "start_in_my_books":
                     case "state_current_group_count":
                     case "state_sort":
                     case "state_bookshelf":
-                    case "App.BooklistStyle":
                     case "HintManager.Hint.hint_amazon_links_blurb":
-                    case "App.BooklistGenerationMode":
-
                         // skip keys that make no sense to copy
                     case "UpgradeMessages.LastMessage":
                     case "Startup.FtsRebuildRequired":
@@ -349,7 +346,9 @@ public final class LegacyPreferences {
 
             } catch (@NonNull final RuntimeException e) {
                 // to bad... skip that key, not fatal, use default.
-                Logger.error(context, TAG, e, "key=" + entry.getKey());
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "key=" + entry.getKey(), e);
+                }
             }
         }
         ed.apply();

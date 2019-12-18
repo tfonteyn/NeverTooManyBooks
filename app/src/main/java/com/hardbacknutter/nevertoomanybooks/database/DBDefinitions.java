@@ -359,8 +359,6 @@ public final class DBDefinitions {
     public static final DomainDefinition DOM_BL_NODE_EXPANDED;
     /** {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder} is node visible. */
     public static final DomainDefinition DOM_BL_NODE_VISIBLE;
-    /** {@link BooklistBuilder} the 'selected' book, i.e. the one to scroll back into view. */
-    public static final DomainDefinition DOM_BL_NODE_SELECTED;
 
     /* ======================================================================================
      *  Keys used as domain names and as Bundle keys.
@@ -470,8 +468,6 @@ public final class DBDefinitions {
     public static final String KEY_BL_NODE_KIND = "kind";
     public static final String KEY_BL_NODE_VISIBLE = "visible";
     public static final String KEY_BL_NODE_EXPANDED = "expanded";
-
-    public static final String KEY_BL_NODE_SELECTED = "selected";
 
     /**
      * Prefix name of BOOK_LIST-related tables.
@@ -870,9 +866,6 @@ public final class DBDefinitions {
                         .setDefault(0);
         DOM_BL_NODE_EXPANDED =
                 new DomainDefinition(KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
-                        .setDefault(0);
-        DOM_BL_NODE_SELECTED =
-                new DomainDefinition(KEY_BL_NODE_SELECTED, ColumnInfo.TYPE_BOOLEAN)
                         .setDefault(0);
 
         /* ======================================================================================

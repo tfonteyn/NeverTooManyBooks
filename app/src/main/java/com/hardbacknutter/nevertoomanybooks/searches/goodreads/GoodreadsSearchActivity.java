@@ -327,7 +327,7 @@ public class GoodreadsSearchActivity
         Holder(@NonNull final View itemView) {
             super(itemView);
 
-            coverView = itemView.findViewById(R.id.coverImage);
+            coverView = itemView.findViewById(R.id.coverImage0);
             authorView = itemView.findViewById(R.id.author);
             titleView = itemView.findViewById(R.id.title);
         }

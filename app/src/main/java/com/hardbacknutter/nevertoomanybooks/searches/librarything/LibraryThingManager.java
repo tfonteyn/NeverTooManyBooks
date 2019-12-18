@@ -144,7 +144,7 @@ public class LibraryThingManager
      */
     public static void openWebsite(@NonNull final Context appContext,
                                    final long bookId) {
-        String url = BASE_URL + String.format(WORK_URL, bookId);
+        String url = String.format(WORK_URL, bookId);
         appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 

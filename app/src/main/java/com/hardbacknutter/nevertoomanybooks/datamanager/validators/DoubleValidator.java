@@ -27,12 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
+import android.content.Context;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -40,9 +41,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 /**
  * Validator to apply a default value and validate as Double.
  * Float, Integer, Long are casted to Double.
- *
+ * <p>
  * {@code null} or empty string become 0d.
- *
+ * <p>
  * All locales are taken into account for parsing.
  */
 public class DoubleValidator
@@ -69,7 +70,8 @@ public class DoubleValidator
 
     @Override
     @CallSuper
-    public void validate(@NonNull final DataManager dataManager,
+    public void validate(@NonNull final Context context,
+                         @NonNull final DataManager dataManager,
                          @NonNull final String key,
                          final int errorLabelId)
             throws ValidatorException {
@@ -97,8 +99,7 @@ public class DoubleValidator
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(R.string.vldt_real_expected_for_x,
-                                                 App.getLocalizedAppContext()
-                                                    .getString(errorLabelId));
+                                                 context.getString(errorLabelId));
                 }
             }
         }

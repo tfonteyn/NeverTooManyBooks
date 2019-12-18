@@ -52,7 +52,7 @@ public class BooleanFilter
      *
      * @param labelId      string resource id to use as a display label
      * @param key          of the preference
-     * @param uuid         the style ID
+     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
      * @param table        to use by the expression
@@ -62,7 +62,8 @@ public class BooleanFilter
                          @NonNull final String key,
                          @NonNull final String uuid,
                          final boolean isPersistent,
-                         @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
+                         @SuppressWarnings("SameParameterValue") @NonNull
+                         final TableDefinition table,
                          @NonNull final DomainDefinition domain) {
         super(labelId, key, uuid, isPersistent, table, domain);
     }

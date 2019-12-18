@@ -561,9 +561,11 @@ public class DataManager {
      * {@link ValidatorException} are added to {@link #mValidationExceptions}
      * Use {@link #getValidationExceptionMessage} for the results.
      *
+     * @param context Current context
+     *
      * @return {@code true} if all validation passed.
      */
-    public boolean validate() {
+    public boolean validate(@NonNull final Context context) {
 
         boolean isOk = true;
         mValidationExceptions.clear();
@@ -572,7 +574,7 @@ public class DataManager {
             try {
                 String key = entry.getKey();
                 //noinspection ConstantConditions
-                entry.getValue().validate(this, key, mValidatorErrorIdMap.get(key));
+                entry.getValue().validate(context, this, key, mValidatorErrorIdMap.get(key));
             } catch (@NonNull final ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;

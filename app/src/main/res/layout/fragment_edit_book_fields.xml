@@ -43,15 +43,28 @@
         >
 
         <ImageView
-            android:id="@+id/coverImage"
+            android:id="@+id/coverImage0"
+            style="@style/CoverImage"
+            android:contentDescription="@string/lbl_cover"
+            android:focusable="true"
+            app:layout_constraintEnd_toStartOf="@id/coverImage1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_height="@dimen/tools_cover_medium_height"
+            tools:layout_width="@dimen/tools_cover_medium_width"
+            tools:src="@drawable/ic_image"
+            />
+
+        <ImageView
+            android:id="@+id/coverImage1"
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover"
             android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="115dp"
-            tools:layout_width="76dp"
+            tools:layout_height="@dimen/tools_cover_medium_height"
+            tools:layout_width="@dimen/tools_cover_medium_width"
             tools:src="@drawable/ic_image"
             />
 
@@ -61,7 +74,7 @@
             android:labelFor="@id/author"
             android:text="@string/lbl_author"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coverImage"
+            app:layout_constraintTop_toBottomOf="@id/coverImage0"
             />
 
         <Button
@@ -112,7 +125,7 @@
 
         <EditText
             android:id="@+id/isbn"
-            style="@style/EditText.Isbn"
+            style="@style/EditText.Isbn.Large"
             app:layout_constraintEnd_toStartOf="@id/btn_scan"
             app:layout_constraintStart_toEndOf="@id/btn_altIsbn"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"

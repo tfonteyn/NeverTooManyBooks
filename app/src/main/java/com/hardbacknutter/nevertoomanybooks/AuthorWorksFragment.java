@@ -228,7 +228,7 @@ public class AuthorWorksFragment
                         //noinspection ConstantConditions
                         StandardDialogs.deleteBookAlert(getContext(), item.getTitle(),
                                                         item.getAuthors(), () -> {
-                                    mModel.delTocEntry(item);
+                                    mModel.delTocEntry(getContext(), item);
                                     mAdapter.notifyItemRemoved(position);
                                 });
                         return true;
@@ -236,7 +236,7 @@ public class AuthorWorksFragment
                     case Toc:
                         //noinspection ConstantConditions
                         StandardDialogs.deleteTocEntryAlert(getContext(), item, () -> {
-                            mModel.delTocEntry(item);
+                            mModel.delTocEntry(getContext(), item);
                             mAdapter.notifyItemRemoved(position);
                         });
                         return true;

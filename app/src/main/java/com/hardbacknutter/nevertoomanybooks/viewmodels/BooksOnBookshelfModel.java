@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -314,10 +313,17 @@ public class BooksOnBookshelfModel
         mCurrentBookshelf = mDb.getBookshelf(id);
     }
 
+    /**
+     * Get the style of the current bookshelf.
+     *
+     * @param context Current context
+     *
+     * @return style
+     */
     @NonNull
-    public BooklistStyle getCurrentStyle() {
+    public BooklistStyle getCurrentStyle(@NonNull final Context context) {
         Objects.requireNonNull(mCurrentBookshelf);
-        return mCurrentBookshelf.getStyle(mDb);
+        return mCurrentBookshelf.getStyle(context, mDb);
     }
 
     /**
@@ -419,7 +425,7 @@ public class BooksOnBookshelfModel
     public void initBookList(@NonNull final Context context) {
         Objects.requireNonNull(mCurrentBookshelf);
 
-        BooklistStyle style = mCurrentBookshelf.getStyle(mDb);
+        BooklistStyle style = mCurrentBookshelf.getStyle(context, mDb);
 
         // get a new builder and add the required extra domains
         BooklistBuilder blb = new BooklistBuilder(style);
@@ -466,20 +472,20 @@ public class BooksOnBookshelfModel
                            false);
 
 
-        if (App.isUsed(DBDefinitions.KEY_EDITION_BITMASK)) {
+        if (style.isUsed(DBDefinitions.KEY_EDITION_BITMASK)) {
             // The edition bitmask
             blb.addExtraDomain(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_EDITION_BITMASK),
                                false);
         }
 
-        if (App.isUsed(DBDefinitions.KEY_SIGNED)) {
+        if (style.isUsed(DBDefinitions.KEY_SIGNED)) {
             blb.addExtraDomain(DBDefinitions.DOM_BOOK_SIGNED,
                                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_SIGNED),
                                false);
         }
 
-        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+        if (style.isUsed(DBDefinitions.KEY_LOANEE)) {
             blb.addExtraDomain(DBDefinitions.DOM_LOANEE_AS_BOOLEAN,
                                DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN,
                                false);
@@ -493,13 +499,13 @@ public class BooksOnBookshelfModel
          * Hence this is a preference <strong>per style</strong>.
          */
         if (!style.useTaskForExtras()) {
-            if (style.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
+            if (style.isExtraUsed(DBDefinitions.KEY_BOOKSHELF)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
                                    BOOKSHELVES_CSV_SOURCE_EXPRESSION, false);
             }
 
             // we fetch ONLY the primary author
-            if (style.isUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+            if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
                 blb.addExtraDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
                                    style.showAuthorGivenNameFirst(context)
                                    ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
@@ -507,34 +513,34 @@ public class BooksOnBookshelfModel
                                    false);
             }
             // and for now, don't get the author type.
-//                if (style.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+//                if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
 //                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
 //                                      DBDefinitions.TBL_BOOK_AUTHOR
 //                                              .dot(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK),
 //                                      false);
 //                }
 
-            if (style.isUsed(DBDefinitions.KEY_PUBLISHER)) {
+            if (style.isExtraUsed(DBDefinitions.KEY_PUBLISHER)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
                                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
                                    false);
             }
-            if (style.isUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
+            if (style.isExtraUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
                 blb.addExtraDomain(DBDefinitions.DOM_DATE_PUBLISHED,
                                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_DATE_PUBLISHED),
                                    false);
             }
-            if (style.isUsed(DBDefinitions.KEY_ISBN)) {
+            if (style.isExtraUsed(DBDefinitions.KEY_ISBN)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISBN,
                                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISBN),
                                    false);
             }
-            if (style.isUsed(DBDefinitions.KEY_FORMAT)) {
+            if (style.isExtraUsed(DBDefinitions.KEY_FORMAT)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_FORMAT,
                                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_FORMAT),
                                    false);
             }
-            if (style.isUsed(DBDefinitions.KEY_LOCATION)) {
+            if (style.isExtraUsed(DBDefinitions.KEY_LOCATION)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_LOCATION,
                                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LOCATION),
                                    false);
@@ -939,14 +945,14 @@ public class BooksOnBookshelfModel
          *
          * @param bookListBuilder   the builder
          * @param currentListCursor Current displayed list cursor.
-         * @param bookId            Current position in the list.
+         * @param currentPosBookId  Current position in the list.
          * @param listState         Requested list state
          * @param taskListener      listener
          */
         @UiThread
         GetBookListTask(@NonNull final BooklistBuilder bookListBuilder,
                         @Nullable final BooklistPseudoCursor currentListCursor,
-                        final long bookId,
+                        final long currentPosBookId,
                         @BooklistBuilder.ListRebuildMode final int listState,
                         final TaskListener<BuilderHolder> taskListener) {
             super(R.id.TASK_ID_GET_BOOKLIST, taskListener);
@@ -955,7 +961,7 @@ public class BooksOnBookshelfModel
             mCurrentListCursor = currentListCursor;
 
             // input/output fields for the task.
-            mHolder = new BuilderHolder(bookId, listState);
+            mHolder = new BuilderHolder(currentPosBookId, listState);
         }
 
 
@@ -968,7 +974,7 @@ public class BooksOnBookshelfModel
             Thread.currentThread().setName("GetBookListTask");
             try {
                 // Build the underlying data
-                mBuilder.build(mHolder.listState, mHolder.currentPosBookId);
+                mBuilder.build(mHolder.listState);
                 // preserve this state
                 mHolder.listState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
 

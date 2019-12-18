@@ -127,7 +127,7 @@
     <string name="error_if_the_problem_persists">Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη μέσω της επιλογής «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_network_timeout">Δεν υπάρχει απάντηση, δοκιμάστε ξανά</string>
-    <string name="error_no_external_crop_app">Δεν βρέθηκε μια εφαρμογή για την αποκοπή εικόνων</string>
+    <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων</string>
     <string name="error_network_no_connection">Δεν υπάρχει διαθέσιμη σύνδεση internet.</string>
     <string name="error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
     <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου. Ελέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας</string>
@@ -400,8 +400,8 @@
     <string name="X_progress_end_n_books_searched">%1$d Βιβλία αναζητήθηκαν</string>
     <string name="title_backing_up">Δημιουργείται Αντίγραφο Ασφαλείας…</string>
     <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d λείπουν)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d λείπουν, %3$d παρελείφθησαν)</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν, %4$d παρελείφθησαν)</string>
     <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="title_importing">Γίνεται εισαγωγή…</string>
     <string name="progress_msg_loading">Φορτώνει…</string>
@@ -439,7 +439,6 @@
     <string name="pt_thumbnail_cropper_layer_type">Περικοπή μικρογραφίας «Layer Type»</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το «Λογισμικό» για ασφαλέστερο αλλά πιο αργό ή για «υλισμικό» για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Η προεπιλεγμένη περικοπή πλαισίου είναι ολόκληρη η εικόνα</string>
-    <string name="pt_thumbnails_external_cropper">Χρήση εξωτερικού κόπτη εικόνων</string>
     <string name="pt_thumbnails_rotate_auto">Περιστρέψτε τις εικόνες</string>
     <string name="pg_camera">φωτογραφική μηχανή</string>
     <string name="pt_ui_language">Γλώσσα</string>

@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public final class DebugReport {
@@ -232,7 +233,7 @@ public final class DebugReport {
             for (String fileSpec : files) {
                 File file = new File(fileSpec);
                 if (file.exists() && file.length() > 0) {
-                    Uri uri = App.getUriForFile(context, file);
+                    Uri uri = GenericFileProvider.getUriForFile(context, file);
                     uriList.add(uri);
                 }
             }

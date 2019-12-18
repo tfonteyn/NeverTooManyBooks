@@ -32,17 +32,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BooklistBook.Row"
+    android:layout_height="wrap_content"
     >
 
-    <!-- tools sizes are set to scale==LARGE -->
     <ImageView
-        android:id="@+id/coverImage"
+        android:id="@+id/coverImage0"
         style="@style/CoverImage"
         android:contentDescription="@string/lbl_cover"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_height="90dp"
-        tools:layout_width="60dp"
+        tools:layout_height="@dimen/tools_cover_medium_height"
+        tools:layout_width="@dimen/tools_cover_medium_width"
         tools:src="@drawable/ic_image"
         />
 
@@ -62,7 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent2"
         app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
-        app:layout_constraintStart_toEndOf="@id/coverImage"
+        app:layout_constraintStart_toEndOf="@id/coverImage0"
         app:layout_constraintTop_toTopOf="parent"
         >
 
@@ -103,8 +103,7 @@
         <Space
             android:id="@+id/spacer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border1"
+            android:layout_height="@dimen/border1"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"

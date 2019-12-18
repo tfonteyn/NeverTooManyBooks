@@ -58,10 +58,11 @@ public class AuthorizationResultCheckTask
     @Override
     protected Boolean doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.AuthorizationResultCheckTask");
+        Context context = App.getAppContext();
 
         GoodreadsManager grManager = new GoodreadsManager();
         try {
-            grManager.handleAuthenticationAfterAuthorization();
+            grManager.handleAuthenticationAfterAuthorization(context);
             if (grManager.hasValidCredentials()) {
                 return true;
             }

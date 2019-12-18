@@ -105,7 +105,7 @@ public interface Importer
                    + "booksProcessed=" + booksProcessed
                    + ", booksCreated=" + booksCreated
                    + ", booksUpdated=" + booksUpdated
-                   + ", coversProcessed=" + coversProcessed
+                   + ", coversSkipped=" + coversProcessed
                    + ", coversCreated=" + coversCreated
                    + ", coversUpdated=" + coversUpdated
                    + ", styles=" + styles

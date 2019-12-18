@@ -103,7 +103,8 @@ public final class ZxingScanner
 
     @Nullable
     @Override
-    public String getBarcode(@Nullable final Intent data) {
+    public String getBarcode(@NonNull final Context context,
+                             @Nullable final Intent data) {
         Objects.requireNonNull(data);
         return data.getStringExtra(SCAN_RESULT);
     }

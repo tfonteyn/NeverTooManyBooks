@@ -133,7 +133,7 @@
     <string name="error_if_the_problem_persists">Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną za pomocą opcji „%1$s” u dołu strony ustawień.</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="error_network_timeout">Brak odpowiedzi. Spróbuj ponownie.</string>
-    <string name="error_no_external_crop_app">Nie znaleziono aplikacji do przycinania obrazów</string>
+    <string name="error_no_image_editor">Nie znaleziono edytora zdjęć</string>
     <string name="error_network_no_connection">Połączenie internetowe nie jest dostępne.</string>
     <string name="error_not_available">%1$s jest niedostępny</string>
     <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia</string>
@@ -405,8 +405,8 @@
     <string name="X_progress_end_n_books_searched">%1$d książek przeszukano</string>
     <string name="title_backing_up">Tworzenie kopii zapasowej…</string>
     <string name="progress_msg_connecting">Łączenie ze stroną internetową…</string>
-    <string name="progress_msg_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Obejmuje przetworzonych %1$d\n(brak %2$d, pominięto %3$d)</string>
+    <string name="progress_msg_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d/%3$d)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Obejmuje przetworzonych %1$d\n(brak %2$d/%3$d, pominięto %4$d)</string>
     <string name="progress_msg_finding_editions">Szukanie wydań…</string>
     <string name="title_importing">Importowanie…</string>
     <string name="progress_msg_loading">Pobieram…</string>
@@ -442,7 +442,6 @@
     <string name="pt_thumbnail_cropper_layer_type">przytnij obraz „Layer Type”</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Pozostaw to ustawienie na „Użyj domyślnych”, chyba że wystąpią awarie podczas kadrowania zdjęć. Wypróbuj „Oprogramowanie”, aby być bezpieczniejszym, ale wolniejszym lub wymusić „Sprzęt”, aby był mniej bezpieczny, ale szybszy</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Domyślna ramka przycinania to cały obraz</string>
-    <string name="pt_thumbnails_external_cropper">Użyj zewnętrznego przycinacza obrazu</string>
     <string name="pt_thumbnails_rotate_auto">Obracaj zdjęcia</string>
     <string name="pg_camera">Aparat fotograficzny</string>
     <string name="pt_ui_language">Język</string>

@@ -130,7 +130,8 @@ public class AuthorWorksModel
         return mDb.getBookIdsByTocEntry(item.getId());
     }
 
-    public void delTocEntry(@NonNull final TocEntry item) {
+    public void delTocEntry(@NonNull final Context context,
+                            @NonNull final TocEntry item) {
         Objects.requireNonNull(mTocEntries);
         switch (item.getType()) {
             case Toc:
@@ -140,7 +141,7 @@ public class AuthorWorksModel
                 break;
 
             case Book:
-                if (mDb.deleteBook(item.getId()) == 1) {
+                if (mDb.deleteBook(context, item.getId()) == 1) {
                     mTocEntries.remove(item);
                     mResultData.putExtra(UniqueId.BKEY_BOOK_DELETED, true);
                 }

@@ -92,12 +92,12 @@ public class ExportCSVTask
     @Override
     @UiThread
     protected void onCancelled(@NonNull final ExportHelper result) {
-        cleanup();
+        cleanup(App.getAppContext());
         super.onCancelled(result);
     }
 
-    private void cleanup() {
-        StorageUtils.deleteFile(ExportHelper.getTempFile(App.getAppContext()));
+    private void cleanup(@NonNull final Context context) {
+        StorageUtils.deleteFile(ExportHelper.getTempFile(context));
         try {
             mExporter.close();
         } catch (@NonNull final IOException ignore) {
@@ -109,7 +109,6 @@ public class ExportCSVTask
     @WorkerThread
     protected ExportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("ExportCSVTask");
-
         Context context = App.getAppContext();
 
         try (OutputStream os = new FileOutputStream(ExportHelper.getTempFile(context))) {
@@ -128,7 +127,7 @@ public class ExportCSVTask
             mException = e;
             return mExportHelper;
         } finally {
-            cleanup();
+            cleanup(context);
         }
     }
 

@@ -27,8 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -45,7 +45,6 @@ import java.io.File;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
@@ -55,6 +54,7 @@ public class ZoomedImageDialogFragment
         extends DialogFragment {
 
     private static final String TAG = "ZoomedImageDialogFragment";
+    private static final String BKEY_IMAGE_PATH = TAG + ":path";
 
     /** File to display. */
     private File mImageFile;
@@ -65,11 +65,11 @@ public class ZoomedImageDialogFragment
      * Syntax sugar for newInstance.
      *
      * @param fm    FragmentManager
-     * @param image to display
+     * @param image to display, must be valid.
      */
     public static void show(@NonNull final FragmentManager fm,
                             @NonNull final File image) {
-            newInstance(image).show(fm, TAG);
+        newInstance(image).show(fm, TAG);
     }
 
     /**
@@ -82,7 +82,7 @@ public class ZoomedImageDialogFragment
     private static ZoomedImageDialogFragment newInstance(@NonNull final File image) {
         ZoomedImageDialogFragment frag = new ZoomedImageDialogFragment();
         Bundle args = new Bundle(1);
-        args.putString(UniqueId.BKEY_FILE_SPEC, image.getPath());
+        args.putString(BKEY_IMAGE_PATH, image.getPath());
         frag.setArguments(args);
         return frag;
     }
@@ -92,8 +92,8 @@ public class ZoomedImageDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        String fileSpec = args.getString(UniqueId.BKEY_FILE_SPEC);
-        Objects.requireNonNull(fileSpec, "fileSpec must be passed in args");
+        String fileSpec = args.getString(BKEY_IMAGE_PATH);
+        Objects.requireNonNull(fileSpec, "image path must be passed in args");
         mImageFile = new File(fileSpec);
     }
 
@@ -102,22 +102,9 @@ public class ZoomedImageDialogFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.dialog_zoomed_image, container);
-        mImageView = root.findViewById(R.id.coverImage);
-        return root;
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-
-        ImageUtils.setImageView(mImageView, mImageFile,
-                                metrics.widthPixels, metrics.heightPixels, true,
-                                R.drawable.ic_broken_image, false);
-
+        mImageView = root.findViewById(R.id.coverImage0);
         mImageView.setOnClickListener(v -> dismiss());
+        return root;
     }
 
     @Override
@@ -131,5 +118,11 @@ public class ZoomedImageDialogFragment
             //noinspection ConstantConditions
             dialog.getWindow().setLayout(width, height);
         }
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+
+        new ImageUtils.ImageLoader(mImageView, mImageFile,
+                                   metrics.widthPixels, metrics.heightPixels, true)
+                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }

@@ -217,10 +217,14 @@ public class BookBaseFragmentModel
             long id = mDb.insertBook(context, mBook);
             if (id > 0) {
                 // if the user added a cover to the new book, make it permanent
-                if (mBook.getBoolean(UniqueId.BKEY_IMAGE)) {
-                    File downloadedFile = StorageUtils.getTempCoverFile();
-                    File destination = StorageUtils.getCoverFileForUuid(mDb.getBookUuid(id));
-                    StorageUtils.renameFile(downloadedFile, destination);
+                for (int cIdx = 0; cIdx < 2; cIdx++) {
+                    String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
+                    if (!fileSpec.isEmpty()) {
+                        File downloadedFile = new File(fileSpec);
+                        File destination = StorageUtils
+                                .getCoverFileForUuid(context, mDb.getBookUuid(id), cIdx);
+                        StorageUtils.renameFile(downloadedFile, destination);
+                    }
                 }
             }
         } else {
@@ -231,8 +235,8 @@ public class BookBaseFragmentModel
         mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
     }
 
-    public void deleteBook() {
-        mDb.deleteBook(mBook.getId());
+    public void deleteBook(@NonNull final Context context) {
+        mDb.deleteBook(context, mBook.getId());
         mResultData.putExtra(UniqueId.BKEY_BOOK_DELETED, true);
         mBook = null;
     }

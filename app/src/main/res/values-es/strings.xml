@@ -134,7 +134,7 @@
     <string name="error_if_the_problem_persists">Si el problema persiste, comuníquese con el soporte a través de la opción «%1$s» en la parte inferior de la página de configuración.</string>
     <string name="error_import_failed">La importación falló.</string>
     <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
-    <string name="error_no_external_crop_app">No se encontró una aplicación para recortar imágenes</string>
+    <string name="error_no_image_editor">No se encontró editor de imágenes</string>
     <string name="error_network_no_connection">No hay conexión a internet.</string>
     <string name="error_not_available">%1$s no disponible</string>
     <string name="error_search_failed_network">Abra la Configuración y verifique su red y las preferencias de Buscar en el sitio.\nCompruebe también la configuración de red de su dispositivo</string>
@@ -407,8 +407,8 @@
     <string name="X_progress_end_n_books_searched">%1$d libros encontrados</string>
     <string name="title_backing_up">Copiando…</string>
     <string name="progress_msg_connecting">Conectando con el sitio web…</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d faltantes)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas\n(%2$d faltantes, %3$d omitidas)</string>
+    <string name="progress_msg_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas\n(%2$d/%3$d faltantes, %4$d omitidas)</string>
     <string name="progress_msg_finding_editions">Buscando ediciones…</string>
     <string name="title_importing">Importando…</string>
     <string name="progress_msg_loading">Cargando…</string>
@@ -446,7 +446,6 @@
     <string name="pt_thumbnail_cropper_layer_type">Recortar «Layer Type»</string>
     <string name="pt_thumbnail_cropper_layer_type_summary">Deje esta configuración en el valor predeterminado a menos que experimente bloqueos al recortar imágenes. Pruebe «Software» para un método más seguro pero más lento o fuerce «Hardware» para que sea menos seguro, pero más rápido</string>
     <string name="pt_thumbnails_crop_frame_is_whole_image">Por defecto, la imagen se guarda completa</string>
-    <string name="pt_thumbnails_external_cropper">Utilizar recortador de imágenes externo</string>
     <string name="pt_thumbnails_rotate_auto">Girar imágenes</string>
     <string name="pg_camera">Cámara</string>
     <string name="pt_ui_language">Idioma</string>

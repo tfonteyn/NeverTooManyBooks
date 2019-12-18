@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public abstract class BackupWriterAbstract
         implements BackupWriter {
 
+    /** log tag. */
     private static final String TAG = "BackupWriterAbstract";
 
     private static final int BUFFER_SIZE = 32768;
@@ -131,7 +132,7 @@ public abstract class BackupWriterAbstract
             if (!mProgressListener.isCancelled() && incCovers) {
                 mProgressListener.onProgress(0, context.getString(R.string.progress_msg_searching));
                 // the progress bar will NOT be updated.
-                doCovers(true);
+                doCovers(context, true);
                 // set as temporary max, but keep in mind the position itself is still 0
                 mProgressListener.setMax(exportResults.coversExported);
             }
@@ -187,7 +188,7 @@ public abstract class BackupWriterAbstract
             // do covers last
             if (!mProgressListener.isCancelled() && incCovers) {
                 // the progress bar will be updated.
-                doCovers(false);
+                doCovers(context, false);
                 entitiesWritten |= Options.COVERS;
             }
 
@@ -302,43 +303,49 @@ public abstract class BackupWriterAbstract
      *
      * <strong>Note:</strong> We update the count during <strong>dryRun</strong> only.
      *
-     * @param dryRun when {@code true}, no writing is done, we only count them.
-     *               when {@code false}, we write, but do not count.
+     * @param context Current context
+     * @param dryRun  when {@code true}, no writing is done, we only count them.
+     *                when {@code false}, we write, but do not count.
      *
      * @throws IOException on failure
      */
-    private void doCovers(final boolean dryRun)
+    private void doCovers(@NonNull final Context context,
+                          final boolean dryRun)
             throws IOException {
+
         long timeFrom = mExportHelper.getTimeFrom();
 
-        int coversExported = 0;
-        int missing = 0;
+        int exported = 0;
         int skipped = 0;
+        int[] missing = new int[2];
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
             final int uuidCol = cursor.getColumnIndex(DBDefinitions.KEY_BOOK_UUID);
             while (cursor.moveToNext() && !mProgressListener.isCancelled()) {
                 String uuid = cursor.getString(uuidCol);
-                File cover = StorageUtils.getCoverFileForUuid(uuid);
-                if (cover.exists()) {
-                    if (cover.exists() && (timeFrom < cover.lastModified())) {
-                        if (!dryRun) {
-                            putFile(cover.getName(), cover);
+                for (int cIdx = 0; cIdx < 2; cIdx++) {
+                    File cover = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+                    if (cover.exists()) {
+                        if (cover.exists() && (timeFrom < cover.lastModified())) {
+                            if (!dryRun) {
+                                putFile(cover.getName(), cover);
+                            }
+                            exported++;
+                        } else {
+                            skipped++;
                         }
-                        coversExported++;
                     } else {
-                        skipped++;
+                        missing[cIdx]++;
                     }
-                } else {
-                    missing++;
                 }
                 if (!dryRun) {
                     String message;
                     if (skipped == 0) {
-                        message = String.format(mProgress_msg_covers, coversExported, missing);
+                        message = String.format(mProgress_msg_covers, exported,
+                                                missing[0], missing[1]);
                     } else {
                         message = String.format(mProgress_msg_covers_skip,
-                                                coversExported, missing, skipped);
+                                                exported, missing[0], missing[1], skipped);
                     }
                     mProgressListener.onProgressStep(1, message);
                 }
@@ -347,15 +354,17 @@ public abstract class BackupWriterAbstract
 
         if (dryRun) {
             Exporter.Results results = mExportHelper.getResults();
-            results.coversExported += coversExported;
-            results.coversMissing += missing;
-            results.coversProcessed += coversExported + missing + skipped;
+            results.coversExported += exported;
+            results.coversMissing[0] += missing[0];
+            results.coversMissing[1] += missing[1];
+            results.coversSkipped += skipped;
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
             Log.d(TAG, "doCovers"
-                       + "|written=" + coversExported
-                       + "|missing=" + missing
+                       + "|written=" + exported
+                       + "|missing[0]=" + missing[0]
+                       + "|missing[1]=" + missing[1]
                        + "|skipped=" + skipped);
         }
     }

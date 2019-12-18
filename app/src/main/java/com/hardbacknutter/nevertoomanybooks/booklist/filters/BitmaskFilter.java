@@ -41,8 +41,8 @@ public class BitmaskFilter
         extends PBitmask
         implements Filter<Integer> {
 
-    /** Convenience definition. */
-    private static final Integer P_NOT_USED = 0;
+    /** See {@link com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference}. */
+    private static final String ACTIVE = ".active";
 
     @StringRes
     private final int mLabelId;
@@ -51,13 +51,16 @@ public class BitmaskFilter
     private final DomainDefinition mDomain;
 
     /**
-     * Constructor. Uses the global setting as the default value,
-     * or the passed default if no global default.
+     * Constructor.
+     * Default value is {@code 0}, i.e. no bits set.
      *
+     * @param labelId      string resource id to use as a display label
      * @param key          of the preference
-     * @param uuid         the style ID
+     * @param uuid         UUID of the style
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
+     * @param table        to use by the expression
+     * @param domain       to use by the expression
      */
     public BitmaskFilter(@StringRes final int labelId,
                          @NonNull final String key,
@@ -66,21 +69,31 @@ public class BitmaskFilter
                          @SuppressWarnings("SameParameterValue") @NonNull
                          final TableDefinition table,
                          @NonNull final DomainDefinition domain) {
-        super(key, uuid, isPersistent, P_NOT_USED);
+        super(key, uuid, isPersistent, 0);
         mLabelId = labelId;
         mTable = table;
         mDomain = domain;
     }
 
     /**
-     * @return Filter expression, or {@code null} if not active
+     * If the bitmask has <strong>at least one bit set</strong>,
+     * the filter looks for values having <strong>those</strong> bits set;
+     * other bits being ignored.
+     * If the bitmask is {@code == 0}, the filter looks for values {@code == 0} only.
+     *
+     * @return filter SQL expression, or {@code null} if not active.
      */
     @Override
     @Nullable
     public String getExpression() {
-        Integer value = get();
-        if (!P_NOT_USED.equals(value)) {
-            return mTable.dot(mDomain) + '=' + value;
+        if (isActive()) {
+            int value = get();
+            if (value > 0) {
+                return "((" + mTable.dot(mDomain) + " & " + get() + ") <> 0)";
+            } else {
+                return "(" + mTable.dot(mDomain) + "=0)";
+
+            }
         }
         return null;
     }
@@ -91,14 +104,9 @@ public class BitmaskFilter
         return context.getString(mLabelId);
     }
 
-    /**
-     * syntax sugar.
-     *
-     * @return {@code true} if this filter is active
-     */
     @Override
     public boolean isActive() {
-        return !P_NOT_USED.equals(get());
+        return getPrefs().getBoolean(getKey() + ACTIVE, false);
     }
 
     @Override
@@ -108,6 +116,7 @@ public class BitmaskFilter
                + "table=" + mTable.getName()
                + ", domain=" + mDomain
                + ", mLabelId=" + mLabelId
+               + ", isActive=" + isActive()
                + ", " + super.toString()
                + "}\n";
     }

@@ -72,6 +72,7 @@ public class IsfdbGetEditionsTask
     protected ArrayList<Edition> doInBackground(final Void... params) {
         Thread.currentThread().setName("IsfdbGetEditionsTask " + mIsbn);
         Context context = App.getAppContext();
+
         try {
             return new IsfdbEditionsHandler(context).fetch(mIsbn);
         } catch (@NonNull final SocketTimeoutException e) {
