@@ -32,6 +32,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent;
 
 /**
  * ViewModel to keep hold of a pass-through task listener.
@@ -50,16 +51,22 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public abstract class TaskListenerModel<Result>
         extends ViewModel {
 
+    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
     private final MutableLiveData<TaskListener.FinishMessage<Result>>
-            mTaskFinishedMessage = new MutableLiveData<>();
+            mTaskFinishedMessage = new SingleLiveEvent<>();
 
+    /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
     private final MutableLiveData<TaskListener.ProgressMessage>
             mTaskProgressMessage = new MutableLiveData<>();
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<TaskListener.ProgressMessage> getTaskProgressMessage() {
         return mTaskProgressMessage;
     }
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<TaskListener.FinishMessage<Result>> getTaskFinishedMessage() {
         return mTaskFinishedMessage;
     }
@@ -76,6 +83,7 @@ public abstract class TaskListenerModel<Result>
         }
     };
 
+    @NonNull
     public TaskListener<Result> getTaskListener() {
         return mTaskListener;
     }

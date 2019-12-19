@@ -118,6 +118,7 @@ public class EditBookshelvesModel
         return mList.get(position);
     }
 
+    /** Observable. */
     @NonNull
     public MutableLiveData<Integer> getSelectedPosition() {
         return mSelectedPosition;

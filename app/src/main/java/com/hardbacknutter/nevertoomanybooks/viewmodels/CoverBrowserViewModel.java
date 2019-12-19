@@ -161,10 +161,13 @@ public class CoverBrowserViewModel
         task.execute();
     }
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<ArrayList<String>> getEditions() {
         return mEditions;
     }
 
+    @NonNull
     public FileManager getFileManager() {
         return mFileManager;
     }
@@ -180,6 +183,8 @@ public class CoverBrowserViewModel
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<FileInfo> getGalleryImage() {
         return mGalleryImage;
     }
@@ -198,6 +203,8 @@ public class CoverBrowserViewModel
         task.executeOnExecutor(AlternativeExecutor.THREAD_POOL_EXECUTOR);
     }
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<FileInfo> getSelectedImage() {
         return mSwitcherImage;
     }

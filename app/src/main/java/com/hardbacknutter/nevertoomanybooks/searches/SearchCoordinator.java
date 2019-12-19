@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent;
 
 /**
  * Class to co-ordinate multiple {@link SearchTask}.
@@ -92,8 +93,7 @@ public class SearchCoordinator
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
-    protected final MutableLiveData<TaskListener.ProgressMessage>
-            mSearchCoordinatorProgressMessage = new MutableLiveData<>();
+
     /** List of Tasks being managed by *this* object. */
     @NonNull
     private final Collection<SearchTask> mActiveTasks = new HashSet<>();
@@ -114,8 +114,14 @@ public class SearchCoordinator
     @NonNull
     private final Map<Integer, TaskListener.ProgressMessage> mSearchProgressMessages
             = Collections.synchronizedMap(new HashMap<>());
+
+    /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
+    protected final MutableLiveData<TaskListener.ProgressMessage>
+            mSearchCoordinatorProgressMessage = new MutableLiveData<>();
+    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
     private final MutableLiveData<TaskListener.FinishMessage<Bundle>>
-            mSearchCoordinatorFinishedMessage = new MutableLiveData<>();
+            mSearchCoordinatorFinishedMessage = new SingleLiveEvent<>();
+
     /** Mappers to apply. */
     @NonNull
     private final Collection<Mapper> mMappers = new ArrayList<>();
@@ -158,6 +164,7 @@ public class SearchCoordinator
     private long mSearchStartTime;
     private Map<Integer, Long> mSearchTasksStartTime;
     private Map<Integer, Long> mSearchTasksEndTime;
+
     /** Listen for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
         @Override
@@ -234,11 +241,15 @@ public class SearchCoordinator
         }
     };
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<TaskListener.ProgressMessage>
     getSearchCoordinatorProgressMessage() {
         return mSearchCoordinatorProgressMessage;
     }
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<TaskListener.FinishMessage<Bundle>>
     getSearchCoordinatorFinishedMessage() {
         return mSearchCoordinatorFinishedMessage;

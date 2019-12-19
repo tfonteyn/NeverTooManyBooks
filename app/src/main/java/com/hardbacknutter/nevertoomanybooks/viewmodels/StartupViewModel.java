@@ -90,6 +90,7 @@ public class StartupViewModel
 
     private final MutableLiveData<Boolean> mTaskFinished = new MutableLiveData<>(false);
     private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
+    /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
     private final MutableLiveData<String> mTaskProgressMessage = new MutableLiveData<>();
 
     private final TaskListener<Boolean> mTaskListener = new TaskListener<Boolean>() {
@@ -149,6 +150,7 @@ public class StartupViewModel
      *
      * @return {@code true} if all tasks are finished.
      */
+    @NonNull
     public MutableLiveData<Boolean> getTaskFinished() {
         return mTaskFinished;
     }
@@ -158,6 +160,7 @@ public class StartupViewModel
      *
      * @return exception, or {@code null} for none.
      */
+    @NonNull
     public MutableLiveData<Exception> getTaskException() {
         return mTaskException;
     }
@@ -167,6 +170,7 @@ public class StartupViewModel
      *
      * @return message
      */
+    @NonNull
     public MutableLiveData<String> getTaskProgressMessage() {
         return mTaskProgressMessage;
     }

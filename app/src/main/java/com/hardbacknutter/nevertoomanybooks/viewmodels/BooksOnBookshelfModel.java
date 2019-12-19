@@ -584,6 +584,7 @@ public class BooksOnBookshelfModel
      *
      * @return a BuilderHolder with result fields populated.
      */
+    @NonNull
     public MutableLiveData<BuilderHolder> getBooklist() {
         return mBuilderResult;
     }
@@ -752,14 +753,19 @@ public class BooksOnBookshelfModel
         return false;
     }
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<String> getUserMessage() {
         return mUserMessage;
     }
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<Boolean> getNeedsGoodreads() {
         return mNeedsGoodreads;
     }
 
+    @NonNull
     public TaskListener<Integer> getGoodreadsTaskListener() {
         if (mGoodreadsTaskListener == null) {
             mGoodreadsTaskListener = new GoodreadsTaskListener(mUserMessage, mNeedsGoodreads);

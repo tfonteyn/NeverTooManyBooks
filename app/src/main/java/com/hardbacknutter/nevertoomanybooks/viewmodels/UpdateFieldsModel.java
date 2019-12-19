@@ -67,6 +67,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Ove
 public class UpdateFieldsModel
         extends SearchCoordinator {
 
+    /** Log tag. */
     private static final String TAG = "UpdateFieldsModel";
 
     private static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
@@ -74,8 +75,11 @@ public class UpdateFieldsModel
     /** which fields to update and how. */
     @NonNull
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
+
+    /** Using SingleLiveEvent to prevent multiple delivery after for example a device rotation. */
     private final MutableLiveData<TaskListener.FinishMessage<Bundle>>
-            mTaskFinishedMessage = new MutableLiveData<>();
+            mTaskFinishedMessage = new SingleLiveEvent<>();
+
     /** Database Access. */
     private DAO mDb;
     /** Book ID's to fetch. {@code null} for all books. */
@@ -110,6 +114,8 @@ public class UpdateFieldsModel
     private int mCurrentCursorCount;
     private BookCursor mCurrentCursor;
 
+    /** Observable. */
+    @NonNull
     public MutableLiveData<TaskListener.FinishMessage<Bundle>> getAllUpdatesFinishedMessage() {
         return mTaskFinishedMessage;
     }

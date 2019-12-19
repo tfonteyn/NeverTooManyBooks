@@ -231,10 +231,14 @@ public class GoodreadsSearchActivity
         private String mTitleText;
         private String mSearchText;
 
+        /** Observable. */
+        @NonNull
         public MutableLiveData<List<GoodreadsWork>> getWorks() {
             return mWorks;
         }
 
+        /** Observable. */
+        @NonNull
         MutableLiveData<Boolean> getBookNoLongerExists() {
             return mBookNoLongerExists;
         }
