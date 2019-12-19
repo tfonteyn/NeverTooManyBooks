@@ -517,6 +517,9 @@ public class XmlExporter
                       @NonNull final ProgressListener progressListener)
             throws IOException {
 
+        // suffix for progress messages.
+        String xml = " (xml)";
+
         boolean incStyles = (mExportHelper.options & Options.BOOK_LIST_STYLES) != 0;
         boolean incPrefs = (mExportHelper.options & Options.PREFERENCES) != 0;
 
@@ -528,33 +531,34 @@ public class XmlExporter
                .append(">\n");
 
             if (!progressListener.isCancelled()) {
-                progressListener.onProgressStep(1, context.getString(R.string.lbl_bookshelves));
+                progressListener
+                        .onProgressStep(1, context.getString(R.string.lbl_bookshelves) + xml);
                 doBookshelves(out, progressListener);
             }
 
             if (!progressListener.isCancelled()) {
-                progressListener.onProgressStep(1, context.getString(R.string.lbl_author));
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_author) + xml);
                 doAuthors(out, progressListener);
             }
 
             if (!progressListener.isCancelled()) {
-                progressListener.onProgressStep(1, context.getString(R.string.lbl_series));
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_series) + xml);
                 doSeries(out, progressListener);
             }
 
             if (!progressListener.isCancelled()) {
-                progressListener.onProgressStep(1, context.getString(R.string.lbl_book));
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_books) + xml);
                 doBooks(out, progressListener);
             }
 
             if (!progressListener.isCancelled() && incStyles) {
-                progressListener.onProgressStep(1, context.getString(R.string.lbl_styles));
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_styles) + xml);
                 doStyles(out);
                 doStyles2(out, progressListener);
             }
 
             if (!progressListener.isCancelled() && incPrefs) {
-                progressListener.onProgressStep(1, context.getString(R.string.lbl_settings));
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_settings) + xml);
                 doPreferences(context, out);
             }
 
