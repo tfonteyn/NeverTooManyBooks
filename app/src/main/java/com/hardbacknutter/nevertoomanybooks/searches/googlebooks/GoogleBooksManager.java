@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
 /**
- * FIXME: migrate to new googlebooks API.
+ * FIXME: migrate to new googlebooks API or drop Google altogether?
  *
  * The url's and xml formats used here are deprecated (but still works fine)
  * https://developers.google.com/gdata/docs/directory

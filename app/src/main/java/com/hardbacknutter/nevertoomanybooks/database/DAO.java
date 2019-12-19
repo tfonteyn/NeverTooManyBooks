@@ -2632,6 +2632,8 @@ public class DAO
     /**
      * Return a {@link BookCursor} for the given list of {@link Book} ID's.
      * The caller can retrieve columns as needed.
+     * <p>
+     * Full Author and Series are added.
      *
      * @param bookIds           List of book ID's to update, {@code null} for all books.
      * @param fromBookIdOnwards the lowest book id to start from.

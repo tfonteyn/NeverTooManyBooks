@@ -829,7 +829,6 @@ public class BooklistAdapter
 
             if (mReadIsUsed && rowData.contains(DBDefinitions.KEY_READ)) {
                 boolean isSet = rowData.getBoolean(DBDefinitions.KEY_READ);
-                //URGENT: if we make them 'gone', we don't need selectors but can use static icons.
                 mReadView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mReadView.setChecked(isSet);
             }

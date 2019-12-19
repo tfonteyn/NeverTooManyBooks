@@ -640,7 +640,7 @@ public class BooksOnBookshelf
                         mModel.setCurrentPositionedBookId(newId);
                     }
                 }
-                //URGENT: temporary debug
+                //URGENT: temporary debug: first fix the list level display issue, next fix the rebuild.
                 if (!mModel.isForceRebuildInOnResume()) {
                     Log.d(TAG, "ENTER|onActivityResult"
                                + "|requestCode=" + requestCode
@@ -806,7 +806,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|reusing existing list");
             }
 
-            //URGENT: temporary debug
+            //URGENT: temporary debug: first fix the list level display issue, next fix the rebuild.
             initBookList();
 //            //noinspection ConstantConditions
 //            displayList(mModel.getBuilder().getNewListCursor(), mModel.getCurrentTargetRows());
