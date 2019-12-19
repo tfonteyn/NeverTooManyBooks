@@ -35,6 +35,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -169,9 +170,7 @@ public class IsfdbEditionsHandler
     /**
      * Search/scrape for the selectors to build the edition list.
      *
-     * TODO: currently fetches the list odd rows first, followed by all even rows.
-     *
-     * @param doc       to parse
+     * @param doc to parse
      */
     private void findEntries(@NonNull final Document doc) {
         Element publications = doc.selectFirst("table.publications");
@@ -180,25 +179,39 @@ public class IsfdbEditionsHandler
         }
 
         // first edition line is a "tr.table1", 2nd "tr.table0", 3rd "tr.table1" etc...
-        String[] selectors = {"tr.table1", "tr.table0"};
-        for (String selector : selectors) {
-            Elements entries = publications.select(selector);
-            for (Element tr : entries) {
-                // 1th column: Title ==the book link
-                Element edLink = tr.child(0).select("a").first();
-                if (edLink != null) {
-                    String url = edLink.attr("href");
-                    if (url != null) {
-                        // 4th column: ISBN/Catalog ID
-                        String isbnStr = null;
-                        ISBN isbn = ISBN.createISBN(tr.child(4).text());
-                        if (isbn != null && isbn.isValid()) {
-                            isbnStr = isbn.asText();
-                        }
-                        mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
+        Elements oddEntries = publications.select("tr.table1");
+        Elements evenEntries = publications.select("tr.table0");
+        // combine them in a sorted list
+        Collection<Element> entries = new Elements();
+        int i = 0;
+        while (i < oddEntries.size() && i < evenEntries.size()) {
+            entries.add(oddEntries.get(i));
+            entries.add(evenEntries.get(i));
+            i++;
+        }
+        // either odd or even list might have another element.
+        if (i < oddEntries.size()) {
+            entries.add(oddEntries.get(i));
+        } else if (i < evenEntries.size()) {
+            entries.add(evenEntries.get(i));
+        }
+
+        for (Element tr : entries) {
+            // 1th column: Title ==the book link
+            Element edLink = tr.child(0).select("a").first();
+            if (edLink != null) {
+                String url = edLink.attr("href");
+                if (url != null) {
+                    // 4th column: ISBN/Catalog ID
+                    String isbnStr = null;
+                    ISBN isbn = ISBN.createISBN(tr.child(4).text());
+                    if (isbn != null && isbn.isValid()) {
+                        isbnStr = isbn.asText();
                     }
+                    mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
                 }
             }
         }
+
     }
 }

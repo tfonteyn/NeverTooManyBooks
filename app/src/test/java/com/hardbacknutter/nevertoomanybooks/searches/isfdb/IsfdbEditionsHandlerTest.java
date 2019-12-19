@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -70,7 +70,7 @@ class IsfdbEditionsHandlerTest
         // we've set the doc, so no internet download will be done.
         ArrayList<Edition> editions = isfdbEditionsHandler.parseDoc();
 
-        assertFalse(editions.isEmpty());
+        assertEquals(24, editions.size());
 
         System.out.println(editions);
     }
