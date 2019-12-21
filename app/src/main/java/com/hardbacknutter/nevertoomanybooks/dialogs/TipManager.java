@@ -27,10 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.method.LinkMovementMethod;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -42,8 +42,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -66,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
  */
 public final class TipManager {
 
+    /** log tag. */
     private static final String TAG = "TipManager";
 
     /** Preferences prefix. */
@@ -74,8 +74,7 @@ public final class TipManager {
     public static final String PREF_TIP = PREF_PREFIX + "tip.";
 
     /** All tips managed by this class. */
-    @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, Tip> ALL = new HashMap<>();
+    private static final SparseArray<Tip> ALL = new SparseArray<>();
 
     static {
         ALL.put(R.string.tip_booklist_style_menu,
@@ -133,8 +132,8 @@ public final class TipManager {
         // remove all. This has the benefit of removing any obsolete keys.
         reset(context, PREF_TIP);
 
-        for (Tip h : ALL.values()) {
-            h.setHasBeenDisplayed(false);
+        for (int t = 0; t < ALL.size(); t++) {
+            ALL.valueAt(t).mHasBeenDisplayed = false;
         }
     }
 
@@ -148,10 +147,9 @@ public final class TipManager {
                              @NonNull final String prefix) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor ed = prefs.edit();
+        Locale locale = App.getSystemLocale();
         for (String key : prefs.getAll().keySet()) {
-            if (key.toLowerCase(App.getSystemLocale())
-                   .startsWith(prefix.toLowerCase(
-                           App.getSystemLocale()))) {
+            if (key.toLowerCase(locale).startsWith(prefix.toLowerCase(locale))) {
                 ed.remove(key);
             }
         }
@@ -203,6 +201,7 @@ public final class TipManager {
         /** Preferences key suffix specific to this tip. */
         @NonNull
         private final String mKey;
+        /** Layout for this Tip. */
         private final int mLayoutId;
 
         /** Indicates that this tip was displayed already in this instance of the app. */
@@ -221,6 +220,7 @@ public final class TipManager {
         /**
          * Constructor. Using the specified layout instead of a standard string.
          *
+         * @param key      Preferences key suffix specific to this tip
          * @param layoutId to use
          */
         @SuppressWarnings("SameParameterValue")
@@ -234,15 +234,13 @@ public final class TipManager {
          * Check if this tip should be shown.
          *
          * @param context Current context
+         *
+         * @return {@code true} if this Tip should be displayed
          */
         private boolean shouldBeShown(@NonNull final Context context) {
             return !mHasBeenDisplayed && PreferenceManager
                     .getDefaultSharedPreferences(context)
                     .getBoolean(mKey, true);
-        }
-
-        void setHasBeenDisplayed(final boolean hasBeenDisplayed) {
-            mHasBeenDisplayed = hasBeenDisplayed;
         }
 
         /**
@@ -265,9 +263,8 @@ public final class TipManager {
             final TextView messageView = root.findViewById(R.id.content);
             if (messageView != null) {
                 String tipText = context.getString(stringId, args);
-                // allow links
+                // allow links, start a browser (or whatever)
                 messageView.setText(LinkifyUtils.fromHtml(tipText));
-                // clicking a link, start a browser (or whatever)
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 
