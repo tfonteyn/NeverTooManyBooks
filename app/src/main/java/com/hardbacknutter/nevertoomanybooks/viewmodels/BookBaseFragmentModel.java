@@ -64,6 +64,8 @@ public class BookBaseFragmentModel
         extends ViewModel
         implements ActivityResultDataModel {
 
+    private static final String TAG = "BookBaseFragmentModel";
+
     private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
@@ -121,7 +123,7 @@ public class BookBaseFragmentModel
     public void init(@Nullable final Bundle args) {
 
         if (mDb == null) {
-            mDb = new DAO();
+            mDb = new DAO(TAG);
 
             if (args != null) {
                 // load the book data

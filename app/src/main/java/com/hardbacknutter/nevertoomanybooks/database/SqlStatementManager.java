@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.util.Log;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -79,13 +83,17 @@ public class SqlStatementManager
     /** The underlying database. */
     @Nullable
     private final SynchronizedDb mSyncedDb;
+    private final String mInstanceName;
 
     SqlStatementManager() {
         mSyncedDb = null;
+        mInstanceName = "";
     }
 
-    public SqlStatementManager(@Nullable final SynchronizedDb db) {
+    public SqlStatementManager(@Nullable final SynchronizedDb db,
+                               final String name) {
         mSyncedDb = db;
+        mInstanceName = name;
     }
 
     /**
@@ -133,7 +141,12 @@ public class SqlStatementManager
         if (old != null) {
             old.close();
         }
-        SynchronizedStatement stmt = db.compileStatement(sql);
+        SynchronizedStatement stmt;
+        final long t = System.nanoTime();
+        stmt = db.compileStatement(sql);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            Log.d(TAG + "|" + mInstanceName, "compileStatement (ns) t=" + (System.nanoTime() - t));
+        }
         mStatements.put(name, stmt);
         return stmt;
     }
@@ -189,7 +202,7 @@ public class SqlStatementManager
     protected void finalize()
             throws Throwable {
         if (!mStatements.isEmpty()) {
-            Logger.warn(TAG, "finalize|calling close()");
+            Logger.warn(TAG + "|" + mInstanceName, "finalize|calling close()");
             close();
         }
         super.finalize();

@@ -169,7 +169,7 @@ public class CsvExporter
         long lastUpdate = 0;
         final StringBuilder row = new StringBuilder();
 
-        try (DAO db = new DAO();
+        try (DAO db = new DAO(TAG);
              BookCursor bookCursor = db.fetchBooksForExport(mExportHelper.getDateFrom());
              OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {

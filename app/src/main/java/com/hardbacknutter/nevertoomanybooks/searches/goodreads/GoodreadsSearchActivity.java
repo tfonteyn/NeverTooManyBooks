@@ -81,6 +81,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 public class GoodreadsSearchActivity
         extends BaseActivity {
 
+    private static final String TAG = "GoodreadsSearchActivity";
+
     private final List<GoodreadsWork> mWorks = new ArrayList<>();
 
     private TextView mIsbnView;
@@ -258,7 +260,7 @@ public class GoodreadsSearchActivity
         public void init(@NonNull final Bundle args,
                          @Nullable final Bundle savedInstanceState) {
             if (mDb == null) {
-                mDb = new DAO();
+                mDb = new DAO(TAG);
 
                 mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
                 if (mBookId > 0) {

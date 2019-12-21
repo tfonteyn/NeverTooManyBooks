@@ -96,7 +96,7 @@ public class EditBookshelfDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DAO();
+        mDb = new DAO(TAG);
 
         mBookshelf = requireArguments().getParcelable(DBDefinitions.KEY_FK_BOOKSHELF);
         Objects.requireNonNull(mBookshelf, "Bookshelf must be passed in args");

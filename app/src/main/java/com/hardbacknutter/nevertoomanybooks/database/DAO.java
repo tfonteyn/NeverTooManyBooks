@@ -290,6 +290,7 @@ public class DAO
     /** any non-word character. */
     private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
     private static final Pattern ASCII_REGEX = Pattern.compile("[^\\p{ASCII}]");
+    /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
     private static final String _DELETE_FROM_ = "DELETE FROM ";
     /** Actual SQLiteOpenHelper. */
@@ -297,15 +298,10 @@ public class DAO
     /** Synchronization wrapper around the real database. */
     private static SynchronizedDb sSyncedDb;
 
-    // curiosity... check when the JDK loads this class.
-    static {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "DAO static init");
-        }
-    }
-
     /** a cache for statements, where they are pre-compiled. */
     private final SqlStatementManager mStatements;
+    @NonNull
+    private final String mInstanceName;
     /** used by finalize so close does not get called twice. */
     private boolean mCloseWasCalled;
 
@@ -314,8 +310,15 @@ public class DAO
      * <p>
      * <strong>Note:</strong> don't be tempted to turn this into a singleton...
      * this class is not fully thread safe (in contrast to the covers dao which is).
+     *
+     * @param name of this DAO for logging.
      */
-    public DAO() {
+    public DAO(@NonNull final String name) {
+        mInstanceName = name;
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "DAO=" + mInstanceName + "|Constructor");
+        }
+
         // the SQLiteOpenHelper
         if (sDbHelper == null) {
             sDbHelper = DBHelper.getInstance(App.getAppContext(), CURSOR_FACTORY, SYNCHRONIZER);
@@ -327,7 +330,7 @@ public class DAO
         }
 
         // statements are instance based/managed
-        mStatements = new SqlStatementManager(sSyncedDb);
+        mStatements = new SqlStatementManager(sSyncedDb, "DAO=" + mInstanceName);
     }
 
     /**
@@ -592,6 +595,9 @@ public class DAO
      */
     @Override
     public void close() {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "DAO=" + mInstanceName + "|close");
+        }
         if (mStatements != null) {
             // the close() will perform a clear, ready to be re-used.
             mStatements.close();
@@ -607,6 +613,10 @@ public class DAO
     @CallSuper
     protected void finalize()
             throws Throwable {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "DAO=" + mInstanceName + "|finalize");
+        }
+
         if (!mCloseWasCalled) {
             Logger.warn(TAG, "finalize|calling close()");
             close();
@@ -2058,15 +2068,6 @@ public class DAO
             } catch (@NonNull final SQLiteConstraintException e) {
                 // ignore and reset the position counter.
                 position--;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
-                    Log.d(TAG, "updateOrInsertTOC", e);
-                }
-            }
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_TOC) {
-                Log.d(TAG, "updateOrInsertTOC"
-                           + "\n     bookId   : " + bookId
-                           + "\n     authorId : " + author.getId()
-                           + "\n     position : " + position);
             }
         }
     }
@@ -4186,7 +4187,8 @@ public class DAO
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG, "rebuildFts|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+            Log.d(TAG, "rebuildFts"
+                       + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
         }
     }
 

@@ -45,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 public class PreferredStylesViewModel
         extends ViewModel {
 
+    private static final String TAG = "PreferredStylesViewMode";
+
     /** Database Access. */
     private DAO mDb;
 
@@ -74,7 +76,7 @@ public class PreferredStylesViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (mDb == null) {
-            mDb = new DAO();
+            mDb = new DAO(TAG);
             mList = new ArrayList<>(BooklistStyle.Helper.getStyles(context, mDb, true).values());
 
             mInitialStyleId = args.getLong(UniqueId.BKEY_STYLE_ID, 0);

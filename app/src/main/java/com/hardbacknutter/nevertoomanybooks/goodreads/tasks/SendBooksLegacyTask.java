@@ -53,6 +53,8 @@ class SendBooksLegacyTask
 
     private static final long serialVersionUID = -1933000305276643875L;
 
+    private static final String TAG = "SendBooksLegacyTask";
+
     /**
      * Flag indicating if we should only send UPDATED books to Goodreads;
      * {@code false} == all books.
@@ -121,7 +123,7 @@ class SendBooksLegacyTask
                            @NonNull final Context context,
                            @NonNull final GoodreadsManager grManager) {
 
-        try (DAO db = new DAO();
+        try (DAO db = new DAO(TAG);
              BookCursor bookCursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
 
             mTotalBooks = bookCursor.getCount() + mCount;

@@ -46,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 class SendOneBookLegacyTask
         extends SendBooksLegacyTaskBase {
 
+    private static final String TAG = "SendOneBookLegacyTask";
+
     private static final long serialVersionUID = 2715001057868693159L;
 
     /** id of book to send. */
@@ -76,7 +78,7 @@ class SendOneBookLegacyTask
                            @NonNull final Context context,
                            @NonNull final GoodreadsManager grManager) {
 
-        try (DAO db = new DAO();
+        try (DAO db = new DAO(TAG);
              BookCursor bookCursor = db.fetchBookForExportToGoodreads(mBookId)) {
             while (bookCursor.moveToNext()) {
                 if (!sendOneBook(queueManager, context, grManager, db, bookCursor)) {

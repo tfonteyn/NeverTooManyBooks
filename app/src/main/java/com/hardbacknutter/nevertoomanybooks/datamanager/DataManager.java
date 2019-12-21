@@ -403,7 +403,7 @@ public class DataManager {
     }
 
     /**
-     * Get a String value.
+     * Get a String value. Non-String values will be casted to String.
      *
      * @param key Key of data object
      *

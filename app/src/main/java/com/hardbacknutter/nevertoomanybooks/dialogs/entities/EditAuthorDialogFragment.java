@@ -110,7 +110,7 @@ public class EditAuthorDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DAO();
+        mDb = new DAO(TAG);
 
         mAuthor = requireArguments().getParcelable(DBDefinitions.KEY_FK_AUTHOR);
         Objects.requireNonNull(mAuthor, "Author must be passed in args");

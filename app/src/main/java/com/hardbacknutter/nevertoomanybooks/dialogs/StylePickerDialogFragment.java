@@ -159,7 +159,7 @@ public class StylePickerDialogFragment
      * Fetch the styles from the database.
      */
     private void loadStyles() {
-        try (DAO db = new DAO()) {
+        try (DAO db = new DAO(TAG)) {
             mBooklistStyles.clear();
             //noinspection ConstantConditions
             mBooklistStyles.addAll(BooklistStyle.Helper.getStyles(getContext(), db,

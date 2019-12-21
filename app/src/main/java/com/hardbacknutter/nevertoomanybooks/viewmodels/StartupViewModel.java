@@ -207,7 +207,7 @@ public class StartupViewModel
         Logger.cycleLogs(context);
 
         try {
-            mDb = new DAO();
+            mDb = new DAO(TAG);
 
         } catch (@NonNull final DBHelper.UpgradeException e) {
             Logger.error(TAG, e, "startTasks");

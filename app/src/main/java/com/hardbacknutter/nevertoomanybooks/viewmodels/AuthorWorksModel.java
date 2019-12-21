@@ -52,6 +52,8 @@ public class AuthorWorksModel
         extends ViewModel
         implements ActivityResultDataModel {
 
+    private static final String TAG = "AuthorWorksModel";
+
     /** Database Access. */
     private DAO mDb;
 
@@ -92,7 +94,7 @@ public class AuthorWorksModel
     public void init(@NonNull final Bundle args) {
 
         if (mDb == null) {
-            mDb = new DAO();
+            mDb = new DAO(TAG);
 
             long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             if (authorId == 0) {

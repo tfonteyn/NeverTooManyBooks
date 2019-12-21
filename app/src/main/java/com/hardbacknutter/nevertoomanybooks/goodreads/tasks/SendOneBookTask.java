@@ -90,7 +90,7 @@ public class SendOneBookTask
                 return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_NEEDED;
             }
 
-            try (DAO db = new DAO();
+            try (DAO db = new DAO(TAG);
                  BookCursor bookCursor = db.fetchBookForExportToGoodreads(mBookId)) {
                 if (bookCursor.moveToFirst()) {
                     if (isCancelled()) {

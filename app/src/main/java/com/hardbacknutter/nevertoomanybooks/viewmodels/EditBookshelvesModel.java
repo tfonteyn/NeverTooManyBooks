@@ -76,7 +76,7 @@ public class EditBookshelvesModel
     public void init(@Nullable final Bundle args) {
 
         if (mDb == null) {
-            mDb = new DAO();
+            mDb = new DAO(TAG);
             mList = mDb.getBookshelves();
             if (args != null) {
                 mInitialBookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);

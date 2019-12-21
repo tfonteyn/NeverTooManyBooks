@@ -318,7 +318,7 @@ public class EditBookAuthorsActivity
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            mDb = new DAO();
+            mDb = new DAO(TAG);
 
             mAuthorTypeIsUsed = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE);
 

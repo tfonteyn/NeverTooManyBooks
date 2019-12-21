@@ -87,7 +87,7 @@ public abstract class BackupWriterAbstract
      * @param context Current context
      */
     protected BackupWriterAbstract(@NonNull final Context context) {
-        mDb = new DAO();
+        mDb = new DAO(TAG);
         mProgress_msg_covers = context.getString(
                 R.string.progress_msg_n_covers_processed_m_missing);
         mProgress_msg_covers_skip = context.getString(

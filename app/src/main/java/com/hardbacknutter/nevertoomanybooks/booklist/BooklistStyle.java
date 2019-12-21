@@ -114,6 +114,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class BooklistStyle
         implements Parcelable, Entity {
 
+    private static final String TAG = "BooklistStyle";
+
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
             new Creator<BooklistStyle>() {
@@ -473,7 +475,7 @@ public class BooklistStyle
                                          @NonNull final String name) {
 
         // try user-defined first - users can clone a builtin style and use the identical name.
-        try (DAO db = new DAO()) {
+        try (DAO db = new DAO(TAG)) {
             for (BooklistStyle style : Helper.getUserStyles(db).values()) {
                 if (style.getLabel(context).equals(name)) {
                     return style;

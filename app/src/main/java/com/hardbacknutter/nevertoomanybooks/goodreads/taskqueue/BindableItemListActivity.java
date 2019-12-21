@@ -45,6 +45,8 @@ abstract class BindableItemListActivity
         extends BaseActivity
         implements BindableItemBinder {
 
+    private static final String TAG = "BindableItemListAct";
+
     /** Database Access. */
     DAO mDb;
 
@@ -74,7 +76,7 @@ abstract class BindableItemListActivity
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        mDb = new DAO();
+        mDb = new DAO(TAG);
         super.onCreate(savedInstanceState);
 
         // The View for the list.

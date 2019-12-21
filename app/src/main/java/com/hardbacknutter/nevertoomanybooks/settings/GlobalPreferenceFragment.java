@@ -282,7 +282,7 @@ public class GlobalPreferenceFragment
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    try (DAO db = new DAO()) {
+                    try (DAO db = new DAO(TAG)) {
                         db.purgeNodeStates();
                     }
                 })

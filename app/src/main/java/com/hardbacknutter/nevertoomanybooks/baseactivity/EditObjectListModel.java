@@ -88,7 +88,7 @@ public class EditObjectListModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (mDb == null) {
-            mDb = new DAO();
+            mDb = new DAO(TAG);
 
             // Look for id and title
             mRowId = args.getLong(DBDefinitions.KEY_PK_ID);

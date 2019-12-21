@@ -129,7 +129,7 @@ public class XmlImporter
      */
     public XmlImporter(@Nullable final Locale locale) {
         mLocale = locale;
-        mDb = new DAO();
+        mDb = new DAO(TAG);
     }
 
     /**

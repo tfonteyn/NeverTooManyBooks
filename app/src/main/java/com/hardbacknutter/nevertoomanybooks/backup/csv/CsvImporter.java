@@ -155,7 +155,7 @@ public class CsvImporter
         mProgress_msg_n_created_m_updated =
                 context.getString(R.string.progress_msg_n_created_m_updated);
 
-        mDb = new DAO();
+        mDb = new DAO(TAG);
         mSettings = settings;
     }
 

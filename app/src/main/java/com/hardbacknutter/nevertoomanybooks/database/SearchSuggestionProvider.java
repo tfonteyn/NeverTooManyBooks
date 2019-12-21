@@ -61,6 +61,8 @@ public class SearchSuggestionProvider
     /** Required. This mode bit configures the suggestions database to record recent queries. */
     public static final int MODE = DATABASE_MODE_QUERIES;
 
+    private static final String TAG = "SearchSuggestionProv";
+
     /** Database Access. */
     @Nullable
     private DAO mDb;
@@ -82,7 +84,7 @@ public class SearchSuggestionProvider
             return null;
         }
         if (mDb == null) {
-            mDb = new DAO();
+            mDb = new DAO(TAG);
         }
         return mDb.fetchSearchSuggestions(selectionArgs[0]);
     }

@@ -184,7 +184,7 @@ class ImportLegacyTask
     @Override
     public boolean run(@NonNull final QueueManager queueManager) {
         Context localContext = App.getLocalizedAppContext();
-        try (DAO db = new DAO()) {
+        try (DAO db = new DAO(TAG)) {
             // Load the Goodreads reviews
             boolean ok = processReviews(localContext, db, queueManager);
             // If it's a sync job, then start the 'send' part and save last syn date

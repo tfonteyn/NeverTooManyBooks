@@ -89,7 +89,7 @@ public abstract class BackupReaderAbstract
      * @param context Current context
      */
     protected BackupReaderAbstract(@NonNull final Context context) {
-        mDb = new DAO();
+        mDb = new DAO(TAG);
 
         mContentResolver = context.getContentResolver();
 

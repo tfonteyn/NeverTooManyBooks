@@ -101,7 +101,7 @@ public class FlattenedBooklist
 
         mSyncedDb = db.getUnderlyingDatabase();
         mTable = table;
-        mStatements = new SqlStatementManager(mSyncedDb);
+        mStatements = new SqlStatementManager(mSyncedDb, TAG);
     }
 
     /**

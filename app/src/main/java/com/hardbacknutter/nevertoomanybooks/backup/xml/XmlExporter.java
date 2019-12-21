@@ -137,7 +137,7 @@ public class XmlExporter
      * We always use the passed in OutputStream.
      */
     public XmlExporter() {
-        mDb = new DAO();
+        mDb = new DAO(TAG);
         mExportHelper = new ExportHelper(ExportHelper.ALL, null);
         // no validation of settings obv.
     }
@@ -156,7 +156,7 @@ public class XmlExporter
      * @param exportHelper ExportHelper
      */
     public XmlExporter(@NonNull final ExportHelper exportHelper) {
-        mDb = new DAO();
+        mDb = new DAO(TAG);
         mExportHelper = exportHelper;
         mExportHelper.validate();
     }

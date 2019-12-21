@@ -102,7 +102,7 @@ public class EditSeriesDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DAO();
+        mDb = new DAO(TAG);
 
         mSeries = requireArguments().getParcelable(DBDefinitions.KEY_FK_SERIES);
         Objects.requireNonNull(mSeries, "Series must be passed in args");

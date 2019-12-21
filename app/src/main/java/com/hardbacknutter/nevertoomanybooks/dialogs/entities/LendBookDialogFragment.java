@@ -136,7 +136,7 @@ public class LendBookDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DAO();
+        mDb = new DAO(TAG);
 
         Bundle args = requireArguments();
         mBookId = args.getLong(DBDefinitions.KEY_PK_ID);

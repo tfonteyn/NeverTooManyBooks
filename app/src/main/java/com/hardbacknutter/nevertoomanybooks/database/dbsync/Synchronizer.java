@@ -62,7 +62,9 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
  */
 public class Synchronizer {
 
+    /** Log tag. */
     private static final String TAG = "Synchronizer";
+    /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
 
     /** Main lock for synchronization. */
