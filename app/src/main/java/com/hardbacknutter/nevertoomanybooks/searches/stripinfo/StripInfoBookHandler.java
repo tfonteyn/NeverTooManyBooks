@@ -35,8 +35,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.SocketTimeoutException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -87,32 +95,49 @@ public class StripInfoBookHandler
      * (dutch for: Searching for...)
      */
     private static final String MULTI_RESULT_PAGE_TITLE = "Zoeken naar";
+
+    /** The site specific 'no cover' image. Correct 2019-12-19. */
+    private static final int NO_COVER_FILE_LEN = 15779;
+    /** The site specific 'no cover' image. Correct 2019-12-19. */
+    private static final byte[] NO_COVER_MD5 = {
+            (byte) 0xa1, (byte) 0x30, (byte) 0x43, (byte) 0x10,
+            (byte) 0x09, (byte) 0x16, (byte) 0xd8, (byte) 0x93,
+            (byte) 0xe4, (byte) 0xb5, (byte) 0x32, (byte) 0xcf,
+            (byte) 0x3d, (byte) 0x7d, (byte) 0xa9, (byte) 0x37};
+
+    /** JSoup selector to get book url tags. */
+    private static final String A_HREF_STRIP = "a[href*=/strip/]";
+
     /** accumulate all Authors for this book. */
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all Series for this book. */
     private final ArrayList<Series> mSeries = new ArrayList<>();
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
+    /** cached ApplicationContext. */
     @NonNull
-    private final Context mLocalizedAppContext;
+    private final Context mContext;
+    /** ISBN of the book we want. Only kept for logging reference. */
     private String mIsbn;
 
     /**
      * Constructor.
      *
      * @param localizedAppContext Localised application context
+     * @param searchEngine        the SearchEngine (to get configuration params)
      */
     StripInfoBookHandler(@NonNull final Context localizedAppContext,
                          @NonNull final SearchEngine searchEngine) {
         super();
         initSite(searchEngine);
-        mLocalizedAppContext = localizedAppContext;
+        mContext = localizedAppContext;
     }
 
     /**
      * Constructor for mocking.
      *
      * @param localizedAppContext Localised application context
+     * @param searchEngine        the SearchEngine (to get configuration params)
      * @param doc                 the pre-loaded Jsoup document.
      */
     @VisibleForTesting
@@ -121,11 +146,13 @@ public class StripInfoBookHandler
                          @NonNull final Document doc) {
         super(doc);
         initSite(searchEngine);
-        mLocalizedAppContext = localizedAppContext;
+        mContext = localizedAppContext;
     }
 
     /**
      * Set some site specific parameters.
+     *
+     * @param searchEngine the SearchEngine
      */
     private void initSite(@NonNull final SearchEngine searchEngine) {
         setConnectTimeout(searchEngine.getConnectTimeoutMs());
@@ -152,7 +179,7 @@ public class StripInfoBookHandler
         mIsbn = isbn;
 
         String path = StripInfoManager.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
-        if (loadPage(mLocalizedAppContext, path) == null) {
+        if (loadPage(mContext, path) == null) {
             return bookData;
         }
 
@@ -165,6 +192,8 @@ public class StripInfoBookHandler
     }
 
     /**
+     * Get the book using the site native book id.
+     *
      * @param nativeId       to search
      * @param bookData       to populate
      * @param fetchThumbnail whether to get thumbnails as well
@@ -180,7 +209,7 @@ public class StripInfoBookHandler
             throws SocketTimeoutException {
 
         String path = StripInfoManager.BASE_URL + String.format(BOOK_BY_NATIVE_ID, nativeId);
-        if (loadPage(mLocalizedAppContext, path) == null) {
+        if (loadPage(mContext, path) == null) {
             return bookData;
         }
 
@@ -205,7 +234,7 @@ public class StripInfoBookHandler
                        final boolean fetchThumbnail)
             throws SocketTimeoutException {
 
-        if (loadPage(mLocalizedAppContext, path) == null) {
+        if (loadPage(mContext, path) == null) {
             return bookData;
         }
 
@@ -243,7 +272,7 @@ public class StripInfoBookHandler
                 if (titleHeader != null) {
                     primarySeriesBookNr = titleHeader.textNodes().get(0).text().trim();
 
-                    Element titleUrlElement = titleHeader.selectFirst("a[href*=/strip/]");
+                    Element titleUrlElement = titleHeader.selectFirst(A_HREF_STRIP);
                     bookData.putString(DBDefinitions.KEY_TITLE, cleanText(titleUrlElement.text()));
                     // extract the site native id from the url
                     processSiteNativeId(titleUrlElement, bookData);
@@ -309,7 +338,7 @@ public class StripInfoBookHandler
                                 if (lang != null && !lang.isEmpty()) {
                                     // the language is a 'DisplayName' so convert to iso first.
                                     lang = LanguageUtils
-                                            .getISO3FromDisplayName(mLocalizedAppContext, lang);
+                                            .getISO3FromDisplayName(mContext, lang);
                                     bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
                                 }
                                 break;
@@ -401,7 +430,6 @@ public class StripInfoBookHandler
         return bookData;
     }
 
-
     /**
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retries.
@@ -426,7 +454,7 @@ public class StripInfoBookHandler
                 // The book:
                 // <a href="https://stripinfo.be/reeks/strip/1652
                 //      _Het_narrenschip_2_Pluvior_627">Pluvior 627</a>
-                Element url = section.selectFirst("a[href*=/strip/]");
+                Element url = section.selectFirst(A_HREF_STRIP);
                 if (url != null) {
                     String href = url.attr("href");
                     mDoc = null;
@@ -487,10 +515,35 @@ public class StripInfoBookHandler
         // do not use the isbn we searched for, use the one we found even if empty!
         String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
         // download
-        String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, coverUrl,
+        String fileSpec = ImageUtils.saveImage(mContext, coverUrl,
                                                isbn, FILENAME_SUFFIX + cIdx, null);
 
         if (fileSpec != null) {
+            // Some back covers will return the "no cover available" image regardless.
+            // Sadly, we need to check explicitly after the download.
+            File file = new File(fileSpec);
+            long fileLen = file.length();
+            if (fileLen == NO_COVER_FILE_LEN) {
+                try {
+                    MessageDigest md = MessageDigest.getInstance("MD5");
+                    try (InputStream is = new FileInputStream(file)) {
+                        try (DigestInputStream dis = new DigestInputStream(is, md)) {
+                            // read and discard. 15k can be read in one go obviously.
+                            //noinspection ResultOfMethodCallIgnored
+                            dis.read(new byte[NO_COVER_FILE_LEN + 1]);
+                        }
+                    }
+                    byte[] digest = md.digest();
+                    if (Arrays.equals(digest, NO_COVER_MD5)) {
+                        //noinspection ResultOfMethodCallIgnored
+                        file.delete();
+                        return;
+                    }
+                } catch (NoSuchAlgorithmException | IOException ignore) {
+                    // ignore
+                }
+            }
+
             if (cIdx == 0) {
                 String key = UniqueId.BKEY_FILE_SPEC_ARRAY;
                 ArrayList<String> imageList = bookData.getStringArrayList(key);
@@ -526,7 +579,7 @@ public class StripInfoBookHandler
                 bookData.putLong(DBDefinitions.KEY_EID_STRIP_INFO_BE, bookId);
             }
         } catch (@NonNull final NumberFormatException ignore) {
-
+            // ignore
         }
     }
 
@@ -580,6 +633,8 @@ public class StripInfoBookHandler
      * (All of which referencing the 'titles' table)
      * <p>
      * This is not practical in the scope of this application.
+     *
+     * @return toc list
      */
     @Nullable
     private ArrayList<TocEntry> processAnthology() {
@@ -601,7 +656,7 @@ public class StripInfoBookHandler
                                 String number = null;
                                 String title = null;
 
-                                Element a = entry.selectFirst("a[href*=/strip/]");
+                                Element a = entry.selectFirst(A_HREF_STRIP);
                                 if (a != null) {
                                     Node nrNode = a.previousSibling();
                                     if (nrNode != null) {
