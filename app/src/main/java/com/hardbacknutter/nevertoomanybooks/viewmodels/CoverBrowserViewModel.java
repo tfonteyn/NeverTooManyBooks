@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public class CoverBrowserViewModel
         extends ViewModel {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "CoverBrowserViewModel";
 
     /** Holder for all active tasks, so we can cancel them if needed. */
@@ -395,7 +395,7 @@ public class CoverBrowserViewModel
                     mFiles.remove(key);
                 }
 
-                for (Site site : mSiteList.getSites()) {
+                for (Site site : mSiteList.getSites(true)) {
                     // Should we search this site ?
                     if ((currentSearchSites & site.id) != 0) {
                         SearchEngine engine = site.getSearchEngine();

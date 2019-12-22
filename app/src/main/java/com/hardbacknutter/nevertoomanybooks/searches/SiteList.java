@@ -110,6 +110,7 @@ public class SiteList
 
     /**
      * Get the (cached) list with user preferences for the data sites, ordered by reliability.
+     * Includes enabled <strong>AND</strong> disabled sites.
      *
      * @param context Current context
      *
@@ -119,7 +120,7 @@ public class SiteList
     static List<Site> getDataSitesByReliability(@NonNull final Context context) {
         return getList(context, Type.Data)
                 .reorder(SearchSites.DATA_RELIABILITY_ORDER)
-                .getSites();
+                .getSites(false);
     }
 
     /**
@@ -127,7 +128,7 @@ public class SiteList
      * Includes enabled <strong>AND</strong> disabled sites.
      *
      * @param context Current context
-     * @param type   type
+     * @param type    type
      *
      * @return the list
      */
@@ -149,18 +150,11 @@ public class SiteList
         return new SiteList(newList);
     }
 
-    @SuppressWarnings("WeakerAccess")
-    @NonNull
-    public static List<Site> getSites(@NonNull final Context context,
-                                      @NonNull final Type type) {
-        return getList(context, type).getSites();
-    }
-
     /**
      * Reset a list back to the hardcoded defaults.
      *
      * @param appContext Current context
-     * @param type   type
+     * @param type       type
      *
      * @return the new list
      */
@@ -309,9 +303,30 @@ public class SiteList
         }
     }
 
+    /**
+     * Get the sites list in the preferred order.
+     *
+     * @param enabledOnly Flag to indicate we want enabled sites only
+     *
+     * @return the list
+     */
     @NonNull
-    public List<Site> getSites() {
-        return mList;
+    public List<Site> getSites(final boolean enabledOnly) {
+        if (!enabledOnly) {
+            return mList;
+        }
+        // someday...
+//        if (Build.VERSION.SDK_INT >= 24) {
+//            return mList.stream().filter(Site::isEnabled).collect(Collectors.toList());
+//        } else {
+        List<Site> filteredList = new ArrayList<>();
+        for (Site site : mList) {
+            if (site.isEnabled()) {
+                filteredList.add(site);
+            }
+        }
+        return filteredList;
+//        }
     }
 
     public void clearAndAddAll(@NonNull final SiteList newList) {

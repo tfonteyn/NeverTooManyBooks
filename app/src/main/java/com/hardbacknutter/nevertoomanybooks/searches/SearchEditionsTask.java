@@ -34,6 +34,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -54,7 +55,7 @@ public class SearchEditionsTask
     /**
      * Constructor.
      *
-     * @param isbnStr         to search for, <strong>must</strong> be valid.
+     * @param isbnStr      to search for, <strong>must</strong> be valid.
      * @param taskListener to send results to
      */
     @UiThread
@@ -79,17 +80,19 @@ public class SearchEditionsTask
         Context context = App.getAppContext();
 
         ArrayList<String> editions = new ArrayList<>();
-        for (Site site : SiteList.getSites(context, SiteList.Type.AltEditions)) {
-            if (site.isEnabled()) {
-                try {
-                    SearchEngine searchEngine = site.getSearchEngine();
-                    if (searchEngine instanceof SearchEngine.AlternativeEditions) {
-                        editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
-                                                .getAlternativeEditions(context, mIsbn));
-                    }
-                } catch (@NonNull final RuntimeException ignore) {
+
+        List<Site> sites = SiteList.getList(context, SiteList.Type.AltEditions)
+                                   .getSites(true);
+        for (Site site : sites) {
+            try {
+                SearchEngine searchEngine = site.getSearchEngine();
+                if (searchEngine instanceof SearchEngine.AlternativeEditions) {
+                    editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
+                                            .getAlternativeEditions(context, mIsbn));
                 }
+            } catch (@NonNull final RuntimeException ignore) {
             }
+
         }
         return editions;
     }

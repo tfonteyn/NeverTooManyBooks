@@ -111,7 +111,8 @@ public class SearchOrderFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
-        List<Site> list = mModel.getList(getContext(), mOurType).getSites();
+        // Get all sites; enabled AND disabled.
+        List<Site> list = mModel.getList(getContext(), mOurType).getSites(false);
         mListAdapter = new SearchSiteListAdapter(getContext(), list,
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListView.setAdapter(mListAdapter);
