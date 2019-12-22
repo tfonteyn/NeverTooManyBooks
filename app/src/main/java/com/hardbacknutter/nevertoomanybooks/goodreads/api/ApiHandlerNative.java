@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
  */
 abstract class ApiHandlerNative {
 
+    /** Log tag. */
     private static final String TAG = "ApiHandlerNative";
 
     /** initial connection time to websites timeout. */
@@ -248,7 +249,7 @@ abstract class ApiHandlerNative {
             case HttpURLConnection.HTTP_UNAUTHORIZED:
                 request.disconnect();
                 GoodreadsManager.sHasValidCredentials = false;
-                throw new CredentialsException(R.string.goodreads);
+                throw new CredentialsException(R.string.site_goodreads);
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 request.disconnect();
@@ -337,7 +338,7 @@ abstract class ApiHandlerNative {
             case HttpURLConnection.HTTP_UNAUTHORIZED:
                 request.disconnect();
                 GoodreadsManager.sHasValidCredentials = false;
-                throw new CredentialsException(R.string.goodreads);
+                throw new CredentialsException(R.string.site_goodreads);
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 request.disconnect();

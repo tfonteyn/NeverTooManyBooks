@@ -61,7 +61,7 @@ public class IsbnToIdApiHandler
             throws CredentialsException {
         super(grManager);
         if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.goodreads);
+            throw new CredentialsException(R.string.site_goodreads);
         }
     }
 

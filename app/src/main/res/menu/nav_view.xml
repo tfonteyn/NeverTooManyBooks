@@ -62,7 +62,7 @@
     <item
         android:id="@+id/nav_goodreads"
         android:icon="@drawable/ic_goodreads"
-        android:title="@string/goodreads"
+        android:title="@string/site_goodreads"
         android:visible="false"
         tools:visible="true" />
 

@@ -104,31 +104,31 @@
                 android:id="@id/MENU_VIEW_BOOK_AT_GOODREADS"
                 android:icon="@drawable/ic_link"
                 android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_GOODREADS"
-                android:title="@string/goodreads" />
+                android:title="@string/site_goodreads" />
 
             <item
                 android:id="@id/MENU_VIEW_BOOK_AT_LIBRARY_THING"
                 android:icon="@drawable/ic_link"
                 android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING"
-                android:title="@string/library_thing" />
+                android:title="@string/site_library_thing" />
 
             <item
                 android:id="@id/MENU_VIEW_BOOK_AT_STRIP_INFO_BE"
                 android:icon="@drawable/ic_link"
                 android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE"
-                android:title="@string/stripinfo" />
+                android:title="@string/site_stripinfo" />
 
             <item
                 android:id="@id/MENU_VIEW_BOOK_AT_ISFDB"
                 android:icon="@drawable/ic_link"
                 android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_ISFDB"
-                android:title="@string/isfdb" />
+                android:title="@string/site_isfdb" />
 
             <item
                 android:id="@id/MENU_VIEW_BOOK_AT_OPEN_LIBRARY"
                 android:icon="@drawable/ic_link"
                 android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY"
-                android:title="@string/open_library" />
+                android:title="@string/site_open_library" />
         </menu>
     </item>
 

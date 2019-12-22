@@ -116,6 +116,6 @@ public class StripInfoManager
     @StringRes
     @Override
     public int getNameResId() {
-        return R.string.stripinfo;
+        return R.string.site_stripinfo;
     }
 }

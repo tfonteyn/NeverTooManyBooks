@@ -70,18 +70,19 @@
         <item name="android:inputType">textCapWords</item>
     </style>
 
-
     <!-- The price (listed, paid, ... ) fields. -->
     <style name="priceTextEntry" parent="@style/EditText">
         <item name="android:inputType">numberDecimal</item>
     </style>
 
-
     <!-- Generic single-line fields not listed above-->
-    <style name="simpleTextEntry" parent="@style/EditText">
+    <style name="genericTextEntry" parent="@style/EditText">
         <item name="android:inputType">textCapWords</item>
     </style>
-
+    <!-- Generic single-line fields not listed above-->
+    <style name="genericNumberEntry" parent="@style/EditText">
+        <item name="android:inputType">number</item>
+    </style>
     <!-- Generic AutoComplete fields not listed above -->
     <style name="autoCompleteTextEntry" parent="@style/EditText.AutoComplete">
         <item name="android:inputType">textCapWords</item>

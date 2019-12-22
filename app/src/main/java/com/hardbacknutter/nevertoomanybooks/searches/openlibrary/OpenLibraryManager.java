@@ -105,7 +105,7 @@ public class OpenLibraryManager
 
     public static final String BASE_URL = "https://openlibrary.org";
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "OpenLibraryManager";
 
     /**
@@ -300,7 +300,7 @@ public class OpenLibraryManager
     @StringRes
     @Override
     public int getNameResId() {
-        return R.string.open_library;
+        return R.string.site_open_library;
     }
 
     /**

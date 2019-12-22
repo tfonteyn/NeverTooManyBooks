@@ -255,7 +255,7 @@ public abstract class ShowBookApiHandler
             throws CredentialsException {
         super(grManager);
         if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.goodreads);
+            throw new CredentialsException(R.string.site_goodreads);
         }
 
         mEBookString = localizedAppContext.getString(R.string.book_format_ebook);

@@ -68,18 +68,18 @@
     <string name="lbl_isbn" translatable="false">ISBN</string>
 
     <!-- External sites / trademarks  -->
-    <string name="goodreads" translatable="false">Goodreads</string>
-    <string name="library_thing" translatable="false">LibraryThing</string>
-    <string name="open_library" translatable="false">OpenLibrary</string>
-    <string name="isfdb" translatable="false">ISFDB</string>
-    <string name="KBNL" translatable="false">KBNL</string>
-    <string name="stripinfo" translatable="false">stripinfo.be</string>
+    <string name="site_goodreads" translatable="false">Goodreads</string>
+    <string name="site_library_thing" translatable="false">LibraryThing</string>
+    <string name="site_open_library" translatable="false">OpenLibrary</string>
+    <string name="site_isfdb" translatable="false">ISFDB</string>
+    <string name="site_KBNL" translatable="false">KBNL</string>
+    <string name="site_stripinfo" translatable="false">stripinfo.be</string>
 
-    <string name="amazon" translatable="false">Amazon</string>
+    <string name="site_amazon" translatable="false">Amazon</string>
     <!-- specific for a submenu title -->
     <string name="amazon_ellipsis" translatable="false">Amazon…</string>
 
-    <string name="google_books" translatable="false">Google Books</string>
+    <string name="site_google_books" translatable="false">Google Books</string>
     <string name="google_play_services" translatable="false">Google Play Services</string>
 
     <!-- Scanner names -->

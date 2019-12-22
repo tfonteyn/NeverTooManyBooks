@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class LibraryThingRegistrationActivity
         extends BaseActivity {
 
+    /** Log tag. */
     private static final String TAG = "LibraryThingReg";
 
     private EditText mDevKeyView;
@@ -81,7 +82,7 @@ public class LibraryThingRegistrationActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.library_thing);
+        setTitle(R.string.site_library_thing);
 
         // LT Registration Link.
         findViewById(R.id.register_url).setOnClickListener(

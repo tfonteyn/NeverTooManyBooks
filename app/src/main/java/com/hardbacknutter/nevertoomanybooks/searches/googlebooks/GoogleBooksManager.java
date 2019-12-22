@@ -169,7 +169,7 @@ public final class GoogleBooksManager
     @StringRes
     @Override
     public int getNameResId() {
-        return R.string.google_books;
+        return R.string.site_google_books;
     }
 
     /**

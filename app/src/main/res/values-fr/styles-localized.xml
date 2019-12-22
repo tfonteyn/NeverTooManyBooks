@@ -30,7 +30,7 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Generic single-line fields not listed above-->
-    <style name="simpleTextEntry" parent="@style/EditText">
+    <style name="genericTextEntry" parent="@style/EditText">
         <item name="android:inputType">textCapSentences</item>
     </style>
 

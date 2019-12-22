@@ -73,7 +73,7 @@ public final class GoodreadsTasks {
             || (message.result == GR_RESULT_CODE_AUTHORIZATION_NEEDED
                 && message.taskId == R.id.TASK_ID_GR_REQUEST_AUTH)) {
             return context.getString(R.string.error_site_authentication_failed,
-                                     context.getString(R.string.goodreads));
+                                     context.getString(R.string.site_goodreads));
         }
 
 

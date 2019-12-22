@@ -73,7 +73,7 @@
                 android:id="@+id/site_amazon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/amazon"
+                android:text="@string/site_amazon"
                 android:visibility="gone"
                 tools:visibility="visible"
                 />
@@ -82,14 +82,14 @@
                 android:id="@+id/site_goodreads"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/goodreads"
+                android:text="@string/site_goodreads"
                 />
 
             <RadioButton
                 android:id="@+id/site_isfdb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/isfdb"
+                android:text="@string/site_isfdb"
                 />
 
             <!-- fully functional, but the data returned by LT (on its own!) is rather lacking
@@ -99,7 +99,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                android:text="@string/library_thing"
+                android:text="@string/site_library_thing"
                 tools:visibility="visible"
                 />
 
@@ -107,14 +107,14 @@
                 android:id="@+id/site_open_library"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/open_library"
+                android:text="@string/site_open_library"
                 />
 
             <RadioButton
                 android:id="@+id/site_strip_info_be"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/stripinfo"
+                android:text="@string/site_stripinfo"
                 />
         </RadioGroup>
 

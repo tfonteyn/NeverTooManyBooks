@@ -212,7 +212,7 @@
             android:icon="@drawable/ic_find_in_page"
             android:key="psk_search_site_amazon"
             android:summary="@string/pt_site_settings"
-            android:title="@string/amazon">
+            android:title="@string/site_amazon">
 
         </Preference>
 
@@ -221,7 +221,7 @@
             android:icon="@drawable/ic_find_in_page"
             android:key="psk_search_site_isfdb"
             android:summary="@string/pt_site_settings"
-            android:title="@string/isfdb">
+            android:title="@string/site_isfdb">
 
         </Preference>
 
@@ -232,13 +232,13 @@
         <Preference
             android:icon="@drawable/ic_goodreads"
             android:key="psk_credentials_goodreads"
-            android:title="@string/goodreads">
+            android:title="@string/site_goodreads">
         </Preference>
 
         <Preference
             android:icon="@drawable/ic_librarything"
             android:key="psk_credentials_library_thing"
-            android:title="@string/library_thing">
+            android:title="@string/site_library_thing">
         </Preference>
     </PreferenceCategory>
 

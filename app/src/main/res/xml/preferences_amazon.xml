@@ -30,14 +30,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/amazon">
+        android:title="@string/site_amazon">
 
         <EditTextPreference
             android:defaultValue="https://www.amazon.com"
             android:icon="@drawable/ic_link"
             android:inputType="textUri"
             android:key="amazon.host.url"
-            android:title="@string/amazon" />
+            android:title="@string/site_amazon" />
 
     </PreferenceCategory>
 

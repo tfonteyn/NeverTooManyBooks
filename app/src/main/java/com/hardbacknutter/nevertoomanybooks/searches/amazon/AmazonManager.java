@@ -235,6 +235,6 @@ public final class AmazonManager
     @StringRes
     @Override
     public int getNameResId() {
-        return R.string.amazon;
+        return R.string.site_amazon;
     }
 }

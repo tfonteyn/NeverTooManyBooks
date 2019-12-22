@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 public class GoodreadsSearchActivity
         extends BaseActivity {
 
+    /** Log tag. */
     private static final String TAG = "GoodreadsSearchActivity";
 
     private final List<GoodreadsWork> mWorks = new ArrayList<>();
@@ -125,7 +126,8 @@ public class GoodreadsSearchActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(getString(R.string.progress_msg_searching_site, getString(R.string.goodreads)));
+        setTitle(getString(R.string.progress_msg_searching_site,
+                           getString(R.string.site_goodreads)));
 
         mModel = new ViewModelProvider(this).get(GrSearchViewModel.class);
         mModel.init(Objects.requireNonNull(getIntent().getExtras()), savedInstanceState);

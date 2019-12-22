@@ -83,7 +83,7 @@ public class GoodreadsRegistrationActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.goodreads);
+        setTitle(R.string.site_goodreads);
 
         // Goodreads Reg Link
         TextView register = findViewById(R.id.goodreads_url);

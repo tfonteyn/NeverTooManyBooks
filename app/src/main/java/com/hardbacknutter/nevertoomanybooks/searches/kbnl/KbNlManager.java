@@ -201,6 +201,6 @@ public class KbNlManager
     @StringRes
     @Override
     public int getNameResId() {
-        return R.string.KBNL;
+        return R.string.site_KBNL;
     }
 }

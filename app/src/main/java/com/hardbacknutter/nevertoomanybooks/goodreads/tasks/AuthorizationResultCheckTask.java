@@ -93,7 +93,7 @@ public class AuthorizationResultCheckTask
                                                        .getString(R.string.lbl_send_debug_info));
             } else {
                 msg = localContext.getString(R.string.error_site_authentication_failed,
-                                             localContext.getString(R.string.goodreads));
+                                             localContext.getString(R.string.site_goodreads));
             }
             App.showNotification(localContext.getString(R.string.info_not_authorized), msg);
         }
