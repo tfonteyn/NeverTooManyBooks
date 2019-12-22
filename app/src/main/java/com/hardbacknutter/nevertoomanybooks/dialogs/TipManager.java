@@ -65,13 +65,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
  */
 public final class TipManager {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "TipManager";
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "tips.";
     /** Preferences prefix for all tips. */
-    public static final String PREF_TIP = PREF_PREFIX + "tip.";
+    private static final String PREF_TIP = PREF_PREFIX + "tip.";
 
     /** All tips managed by this class. */
     private static final SparseArray<Tip> ALL = new SparseArray<>();

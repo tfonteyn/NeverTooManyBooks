@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
@@ -40,12 +39,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -56,10 +51,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public final class LegacyPreferences {
 
     /** Legacy preferences name. */
-    public static final String PREF_LEGACY_PREFS = "bookCatalogue";
-    private static final String TAG = "LegacyPreferences";
+    private static final String PREF_LEGACY_PREFS = "bookCatalogue";
 
     private LegacyPreferences() {
+    }
+
+    public static SharedPreferences getPrefs(@NonNull final Context context) {
+        return context
+                .getSharedPreferences(LegacyPreferences.PREF_LEGACY_PREFS, Context.MODE_PRIVATE);
     }
 
     /**
@@ -74,8 +73,7 @@ public final class LegacyPreferences {
     public static void migrateLegacyPreferences(@NonNull final Context context) {
 
         SharedPreferences oldPrefs = context.getSharedPreferences(
-                PREF_LEGACY_PREFS,
-                Context.MODE_PRIVATE);
+                PREF_LEGACY_PREFS, Context.MODE_PRIVATE);
 
         Map<String, ?> oldMap = oldPrefs.getAll();
         if (oldMap.isEmpty()) {
@@ -90,8 +88,6 @@ public final class LegacyPreferences {
         // write to default prefs
         SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
                                                        .edit();
-
-        String styleName;
 
         // note that strings could be empty. Check if needed
         for (Map.Entry<String, ?> entry : oldMap.entrySet()) {
@@ -250,105 +246,39 @@ public final class LegacyPreferences {
                         }
                         break;
 
-                    case "BooksOnBookshelf.LIST_STYLE":
+                    case "BooksOnBookshelf.LIST_STYLE": {
                         String e = (String) oldValue;
-                        styleName = e.substring(0, e.length() - 2);
+                        String styleName = e.substring(0, e.length() - 2);
                         ed.putString(BooklistStyle.PREF_BL_STYLE_CURRENT_DEFAULT,
                                      BooklistStyle.getStyle(context, styleName).getUuid());
                         break;
-
-                    case "BooklistStyles.Menu.Items":
+                    }
+                    case "BooklistStyles.Menu.Items": {
                         // using a set to eliminate duplicates
                         Collection<String> uuidSet = new LinkedHashSet<>();
                         String[] styles = ((String) oldValue).split(",");
                         for (String style : styles) {
-                            styleName = style.substring(0, style.length() - 2);
+                            String styleName = style.substring(0, style.length() - 2);
                             uuidSet.add(BooklistStyle.getStyle(context, styleName).getUuid());
                         }
                         ed.putString(BooklistStyle.PREF_BL_PREFERRED_STYLES,
                                      TextUtils.join(",", uuidSet));
                         break;
-
-                    // skip obsolete keys
-                    case "App.OpenBookReadOnly":
-                    case "App.includeClassicView":
-                    case "App.DisableBackgroundImage":
-                    case "App.BooklistGenerationMode":
-                    case "App.UseExternalImageCropper":
-                    case "App.BooklistStyle":
-                    case "BookList.Global.FlatBackground":
-                    case "BookList.Global.BackgroundThumbnails":
-                    case "StartupActivity.FAuthorSeriesFixupRequired":
-                    case "start_in_my_books":
-                    case "state_current_group_count":
-                    case "state_sort":
-                    case "state_bookshelf":
-                    case "HintManager.Hint.hint_amazon_links_blurb":
-                        // skip keys that make no sense to copy
-                    case "UpgradeMessages.LastMessage":
-                    case "Startup.FtsRebuildRequired":
-                    case "Startup.StartCount":
-                    case "state_opened":
-                    case "BooksOnBookshelf.TOP_ROW":
-                    case "BooksOnBookshelf.TOP_ROW_TOP":
-                        break;
-
+                    }
                     default:
                         if (entry.getKey().startsWith("GoodReads")) {
                             String tmp1 = (String) oldValue;
                             if (!tmp1.isEmpty()) {
-                                ed.putString(entry.getKey().replace("GoodReads.",
-                                                                    GoodreadsManager.PREF_PREFIX),
-                                             tmp1);
+                                String key = entry.getKey().replace("GoodReads.",
+                                                                    GoodreadsManager.PREF_PREFIX);
+                                ed.putString(key, tmp1);
                             }
-
-                        } else if (entry.getKey().startsWith("HintManager.Hint.hint_")) {
-                            ed.putBoolean(
-                                    entry.getKey().replace("HintManager.Hint.hint_",
-                                                           TipManager.PREF_TIP),
-                                    (Boolean) oldValue);
-
-                        } else if (entry.getKey().startsWith("HintManager.Hint.")) {
-                            ed.putBoolean(entry.getKey().replace("HintManager.Hint.",
-                                                                 TipManager.PREF_TIP),
-                                          (Boolean) oldValue);
-
-                        } else if (entry.getKey().startsWith("lt_hide_alert_")) {
-                            ed.putString(entry.getKey()
-                                              .replace("lt_hide_alert_",
-                                                       LibraryThingManager.PREFS_HIDE_ALERT),
-                                         (String) oldValue);
-
-                        } else if (entry.getKey().startsWith("field_visibility_")) {
-                            //noinspection SwitchStatementWithTooFewBranches
-                            switch (entry.getKey()) {
-                                // remove these as obsolete
-                                case "field_visibility_series_num":
-                                    break;
-
-                                default:
-                                    // move everything else
-                                    ed.putBoolean(entry.getKey()
-                                                       .replace("field_visibility_",
-                                                                App.PREFS_FIELD_VISIBILITY),
-                                                  (Boolean) oldValue);
-                                    break;
-                            }
-
-                        } else if (!entry.getKey().startsWith("state_current_group")
-                                   && !entry.getKey().startsWith("Backup")) {
-                            Logger.warn(context, TAG, "migrateLegacyPreferences",
-                                        "unknown key=" + entry.getKey(),
-                                        "value=" + oldValue);
                         }
                         break;
                 }
 
-            } catch (@NonNull final RuntimeException e) {
+            } catch (@NonNull final RuntimeException ignore) {
                 // to bad... skip that key, not fatal, use default.
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "key=" + entry.getKey(), e);
-                }
             }
         }
         ed.apply();

@@ -33,7 +33,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
@@ -64,8 +63,7 @@ public final class Site
             };
 
     /** Preferences prefix. */
-    @VisibleForTesting
-    public static final String PREF_PREFIX = "search.site.";
+    private static final String PREF_PREFIX = "search.site.";
 
     /** Name suffix for Cover websites. */
     private static final String PREF_SUFFIX_COVERS = "Covers";

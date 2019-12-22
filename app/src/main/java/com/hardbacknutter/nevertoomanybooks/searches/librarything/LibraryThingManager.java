@@ -79,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  * &apikey={DEVKEY}&isbn={ISBN}
  *
  * <p>
- * xml see {@link SearchCoordinator#searchByText} header
+ * xml see {@link SearchCoordinator#search} header
  * <p>
  * ENHANCE: extend the use of LibraryThing:
  * - Lookup title using keywords: http://www.librarything.com/api/thingTitle/hand oberon
@@ -107,7 +107,7 @@ public class LibraryThingManager
     public static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";
 
     /** Preference that controls display of alert about LibraryThing. */
-    public static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
+    private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_LT";
@@ -174,7 +174,7 @@ public class LibraryThingManager
 
         if (showAlert) {
             Intent intent = new Intent(context, LibraryThingRegistrationActivity.class);
-            StandardDialogs.registrationDialog(context, R.string.library_thing,
+            StandardDialogs.registrationDialog(context, R.string.site_library_thing,
                                                intent, required, prefName);
         }
 
@@ -405,6 +405,6 @@ public class LibraryThingManager
     @StringRes
     @Override
     public int getNameResId() {
-        return R.string.library_thing;
+        return R.string.site_library_thing;
     }
 }

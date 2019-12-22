@@ -48,14 +48,19 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * The preference key names here are the ones that define USER settings.
+ * Upper-case preference keys are internal only.
+ * <p>
+ * The lower-case pl* preference key names are the ones that define USER settings.
  * See {@link com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity} and children.
  * <p>
  * These keys *MUST* be kept in sync with "res/xml/preferences*.xml"
- * <p>
- * Application internal settings are done where they are needed/used.
  */
 public final class Prefs {
+
+    /** Number of app startup's between offers to backup. */
+    public static final int STARTUP_BACKUP_COUNTDOWN = 5;
+    /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
+    public static final String PREF_STARTUP_BACKUP_COUNTDOWN = "startup.backupCountdown";
 
     /**
      * Unique name. This is a stored in our preference file (with the same name)
@@ -129,6 +134,7 @@ public final class Prefs {
     public static final String pk_bob_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     public static final String pk_bob_filter_editions = "style.booklist.filter.editions";
+
     /** Global settings - PreferenceScreen/PreferenceCategory Key. */
     static final String psk_search_site_order = "psk_search_site_order";
     /** Global settings - Purge action. */
@@ -150,6 +156,7 @@ public final class Prefs {
     static final String pk_reformat_titles_sort = "reformat.titles.sort";
     /** Global settings - Purge action. */
     static final String psk_purge_blns = "psk_purge_blns";
+    /** Log tag. */
     private static final String TAG = "Prefs";
     private static final String pk_reformat_titles_display = "reformat.titles.display";
 

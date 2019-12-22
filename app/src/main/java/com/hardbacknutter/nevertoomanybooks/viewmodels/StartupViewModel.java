@@ -65,25 +65,21 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 public class StartupViewModel
         extends ViewModel {
 
+    /** Log tag. */
     private static final String TAG = "StartupViewModel";
-
     private static final String PREF_PREFIX = "startup.";
 
-    /** the 'LastVersion' i.e. the version which was installed before the current one. */
-    public static final String PREF_STARTUP_LAST_VERSION = PREF_PREFIX + "lastVersion";
     /** Number of times the app has been started. */
     private static final String PREF_STARTUP_COUNT = PREF_PREFIX + "startCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
-    private static final String PREF_STARTUP_COUNTDOWN = PREF_PREFIX + "startCountdown";
+    private static final String PREF_MAINTENANCE_COUNTDOWN = PREF_PREFIX + "startCountdown";
     /** Flag to indicate FTS rebuild is required at startup. */
     private static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = PREF_PREFIX + "rebuild.fts";
     /** Flag to indicate OrderBy columns must be rebuild at startup. */
     private static final String PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED =
             PREF_PREFIX + "rebuild.ob.title";
-
-    /** Number of app startup's between offers to backup. */
-    private static final int PROMPT_WAIT_BACKUP = 5;
-
+    /** Number of app startup's between some periodic action. */
+    private static final int MAINTENANCE_COUNTDOWN = 5;
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
     private final Collection<Integer> mAllTasks = new HashSet<>(6);
@@ -120,19 +116,31 @@ public class StartupViewModel
     private DAO mDb;
     /** Flag to ensure tasks are only ever started once. */
     private boolean mStartupTasksShouldBeStarted = true;
+
+    /** Flag we need to prompt the user to make a backup after startup. */
+    private boolean mProposeBackup;
     /** Flag indicating a backup is required after startup. */
     private boolean mBackupRequired;
 
-    private boolean mDoPeriodicAction;
+    /** Triggers periodic maintenance tasks. */
+    private boolean mDoMaintenance;
 
-    /** Set the flag to indicate an FTS rebuild is required. */
+    /**
+     * Set the flag to indicate an FTS rebuild is required.
+     *
+     * @param context Current context
+     */
     @SuppressWarnings("unused")
     public static void setScheduleFtsRebuild(@NonNull final Context context) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
     }
 
-    /** Set or remove the flag to indicate an OrderBy column rebuild is required. */
+    /**
+     * Set or remove the flag to indicate an OrderBy column rebuild is required.
+     *
+     * @param context Current context
+     */
     public static void setScheduleOrderByRebuild(@NonNull final Context context,
                                                  final boolean flag) {
         SharedPreferences.Editor ed = PreferenceManager
@@ -183,12 +191,39 @@ public class StartupViewModel
         }
     }
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param context Current context
+     */
+    public void init(@NonNull final Context context) {
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        int maintenanceCountdown = prefs.getInt(PREF_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
+        int backupCountdown = prefs
+                .getInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN, Prefs.STARTUP_BACKUP_COUNTDOWN);
+
+        prefs.edit()
+             .putInt(PREF_MAINTENANCE_COUNTDOWN,
+                     maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN : maintenanceCountdown - 1)
+             .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
+                     backupCountdown == 0 ? Prefs.STARTUP_BACKUP_COUNTDOWN : backupCountdown - 1)
+
+             // The number of times the app was opened.
+             .putInt(PREF_STARTUP_COUNT, prefs.getInt(PREF_STARTUP_COUNT, 0) + 1)
+             .apply();
+
+        mDoMaintenance = maintenanceCountdown == 0;
+        mProposeBackup = backupCountdown == 0;
+    }
+
     public boolean isStartupTasksShouldBeStarted() {
         return mStartupTasksShouldBeStarted;
     }
 
-    public boolean isDoPeriodicAction() {
-        return mDoPeriodicAction;
+    public boolean isProposeBackup() {
+        return mProposeBackup;
     }
 
     public boolean isBackupRequired() {
@@ -201,6 +236,8 @@ public class StartupViewModel
 
     /**
      * We use the standard AsyncTask execute, so tasks are run serially.
+     *
+     * @param context Current context
      */
     public void startTasks(@NonNull final Context context) {
 
@@ -222,7 +259,7 @@ public class StartupViewModel
             startTask(new PreloadGoogleScanner(++taskId, mTaskListener), true);
 
             // this is not critical, once every so often is fine
-            if (mDoPeriodicAction) {
+            if (mDoMaintenance) {
                 // cleaner must be started after the language mapper task.
                 startTask(new DBCleanerTask(++taskId, mDb, mTaskListener), false);
             }
@@ -242,7 +279,7 @@ public class StartupViewModel
             }
 
             // shouldn't be needed every single time.
-            if (mDoPeriodicAction) {
+            if (mDoMaintenance) {
                 // analyse db should always be started as the last task.
                 startTask(new AnalyzeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(context),
                                             mTaskListener), false);
@@ -271,38 +308,6 @@ public class StartupViewModel
                 task.execute();
             }
         }
-    }
-
-    /**
-     * Pseudo constructor.
-     *
-     * @param context Current context
-     */
-    public void init(@NonNull final Context context) {
-        mDoPeriodicAction = decreaseStartupCounters(context);
-    }
-
-    /**
-     * Decrease and store the number of times the app was opened.
-     * Used periodic actions.
-     *
-     * @return {@code true} when counter reached 0
-     */
-    private boolean decreaseStartupCounters(@NonNull final Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int opened = prefs.getInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
-        int startCount = prefs.getInt(PREF_STARTUP_COUNT, 0) + 1;
-
-        final SharedPreferences.Editor ed = prefs.edit();
-        if (opened == 0) {
-            ed.putInt(PREF_STARTUP_COUNTDOWN, PROMPT_WAIT_BACKUP);
-        } else {
-            ed.putInt(PREF_STARTUP_COUNTDOWN, opened - 1);
-        }
-        ed.putInt(PREF_STARTUP_COUNT, startCount)
-          .apply();
-
-        return opened == 0;
     }
 
     /**

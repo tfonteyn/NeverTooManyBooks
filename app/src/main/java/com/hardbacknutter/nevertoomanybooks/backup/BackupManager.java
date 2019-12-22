@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.tararchive.TarBackupContainer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
@@ -50,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  */
 public final class BackupManager {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BackupManager";
 
     /** Last full backup date. */
@@ -139,13 +140,28 @@ public final class BackupManager {
         return hasValidDates;
     }
 
+    /**
+     * Store the date of the last full backup ('now') and reset the startup prompt-counter.
+     *
+     * @param context Current context
+     */
     static void setLastFullBackupDate(@NonNull final Context context) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(PREF_LAST_FULL_BACKUP_DATE, DateUtils.utcSqlDateTimeForToday())
+                         .putString(PREF_LAST_FULL_BACKUP_DATE,
+                                    DateUtils.utcSqlDateTimeForToday())
+                         .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
+                                 Prefs.STARTUP_BACKUP_COUNTDOWN)
                          .apply();
     }
 
+    /**
+     * Get the last time we made a full backup.
+     *
+     * @param context Current context
+     *
+     * @return SQL datetime-string, for the UTC timezone.
+     */
     static String getLastFullBackupDate(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getString(PREF_LAST_FULL_BACKUP_DATE, null);

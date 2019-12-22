@@ -247,8 +247,7 @@ public abstract class BackupReaderAbstract
                         if (incPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
                             // read them into the 'old' prefs. Migration is done at a later stage.
-                            SharedPreferences legacyPrefs = context.getSharedPreferences(
-                                    LegacyPreferences.PREF_LEGACY_PREFS, Context.MODE_PRIVATE);
+                            SharedPreferences legacyPrefs = LegacyPreferences.getPrefs(context);
                             try (XmlImporter importer = new XmlImporter(null)) {
                                 importer.doPreferences(entity, legacyPrefs, progressListener);
                             }

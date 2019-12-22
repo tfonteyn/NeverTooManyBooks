@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 public class StartupActivity
         extends AppCompatActivity {
 
+    /** Log tag. */
     private static final String TAG = "StartupActivity";
 
     /** Indicates the upgrade message has been shown. */
@@ -234,7 +235,7 @@ public class StartupActivity
      */
     private void backupRequired() {
         mModel.setBackupRequired(false);
-        if (mModel.isDoPeriodicAction()) {
+        if (mModel.isProposeBackup()) {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.ic_help_outline)
                     .setTitle(R.string.app_name)
