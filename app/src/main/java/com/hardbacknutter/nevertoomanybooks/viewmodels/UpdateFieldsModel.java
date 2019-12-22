@@ -31,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -108,7 +110,7 @@ public class UpdateFieldsModel
      * Tracks between {@link #startSearch(Context)}
      * and {@link #processSearchResults(Context, Bundle)}.
      */
-    private Map<String, FieldUsage> mCurrentBookFieldUsages;
+    private Map<String, FieldUsage> mCurrentFieldUsages;
 
     private int mCurrentProgressCounter;
     private int mCurrentCursorCount;
@@ -145,7 +147,7 @@ public class UpdateFieldsModel
 
         if (mDb == null) {
 
-            mDb = new DAO();
+            mDb = new DAO(TAG);
             // use global preference.
             setSiteList(SiteList.getList(context, SiteList.Type.Data));
 
@@ -195,11 +197,11 @@ public class UpdateFieldsModel
         addField(DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
         //NEWTHINGS: add new site specific ID: add a field
-        addField(DBDefinitions.KEY_EID_ISFDB, R.string.isfdb, Overwrite);
-        addField(DBDefinitions.KEY_EID_GOODREADS_BOOK, R.string.goodreads, Overwrite);
-        addField(DBDefinitions.KEY_EID_LIBRARY_THING, R.string.library_thing, Overwrite);
-        addField(DBDefinitions.KEY_EID_OPEN_LIBRARY, R.string.open_library, Overwrite);
-        addField(DBDefinitions.KEY_EID_STRIP_INFO_BE, R.string.stripinfo, Overwrite);
+        addField(DBDefinitions.KEY_EID_ISFDB, R.string.site_isfdb, Overwrite);
+        addField(DBDefinitions.KEY_EID_GOODREADS_BOOK, R.string.site_goodreads, Overwrite);
+        addField(DBDefinitions.KEY_EID_LIBRARY_THING, R.string.site_library_thing, Overwrite);
+        addField(DBDefinitions.KEY_EID_OPEN_LIBRARY, R.string.site_open_library, Overwrite);
+        addField(DBDefinitions.KEY_EID_STRIP_INFO_BE, R.string.site_stripinfo, Overwrite);
     }
 
     @NonNull
@@ -328,19 +330,10 @@ public class UpdateFieldsModel
      * @return {@code true} if a search was started.
      */
     private boolean nextBook(@NonNull final Context context) {
+
         try {
-            String isbn;
-            String title;
-            String author;
-
-            boolean skip;
-            do {
-                skip = false;
-
-                if (!mCurrentCursor.moveToNext() || mIsCancelled) {
-                    postSearch(null);
-                    return false;
-                }
+            // loop/skip until we start a search for a book.
+            while (mCurrentCursor.moveToNext() && !mIsCancelled) {
 
                 mCurrentProgressCounter++;
 
@@ -375,53 +368,81 @@ public class UpdateFieldsModel
                 mCurrentBookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
                                                         mDb.getTocEntryByBook(mCurrentBookId));
 
+                // Check which fields this book needs.
+                mCurrentFieldUsages = filter(context, mFieldUsages, mCurrentBookData);
+
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
                 // Make sure the searchable fields are not NULL
-                isbn = mCurrentBookData.getString(DBDefinitions.KEY_ISBN, "");
-                title = mCurrentBookData.getString(DBDefinitions.KEY_TITLE, "");
-                author = mCurrentBookData
-                        .getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, "");
+                String isbn = mCurrentBookData.getString(DBDefinitions.KEY_ISBN, "");
+                String title = mCurrentBookData.getString(DBDefinitions.KEY_TITLE, "");
 
-                // Check which fields this book needs.
-                mCurrentBookFieldUsages = filter(context, mFieldUsages, mCurrentBookData);
-                // if no data required, skip to next book
-                if (mCurrentBookFieldUsages.isEmpty()
-                    || isbn.isEmpty() && (author.isEmpty() || title.isEmpty())) {
-                    setBaseMessage(context.getString(R.string.progress_msg_skip_title, title));
-                    skip = true;
+                // does this book NEED data?
+                if (!mCurrentFieldUsages.isEmpty()) {
+
+                    boolean canSearch = false;
+
+                    if (!isbn.isEmpty()) {
+                        setIsbnSearchText(isbn, true);
+                        canSearch = true;
+                    }
+
+                    String author = mCurrentBookData
+                            .getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, "");
+                    if (!author.isEmpty() && !title.isEmpty()) {
+                        setAuthorSearchText(author);
+                        setTitleSearchText(title);
+                        canSearch = true;
+                    }
+
+                    // Collect native ids we can use
+                    SparseArray<String> nativeIds = new SparseArray<>();
+                    for (String key : DBDefinitions.NATIVE_ID_KEYS) {
+                        Object o = mCurrentBookData.get(key);
+                        if (o != null) {
+                            String value = o.toString().trim();
+                            if (!value.isEmpty() && !"0".equals(value)) {
+                                nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
+                            }
+                        }
+                    }
+                    if (nativeIds.size() > 0) {
+                        setNativeIdSearchText(nativeIds);
+                        canSearch = true;
+                    }
+
+                    if (canSearch) {
+                        // optional
+                        setPublisherSearchText(mCurrentBookData.getString(
+                                DBDefinitions.KEY_PUBLISHER, ""));
+
+                        boolean fetchThumbnail = false;
+                        for (int cIdx = 0; cIdx < 2; cIdx++) {
+                            fetchThumbnail |= mCurrentFieldUsages
+                                    .containsKey(UniqueId.BKEY_FILE_SPEC[cIdx]);
+                        }
+                        setFetchThumbnail(fetchThumbnail);
+
+                        // Update the progress base message.
+                        if (!title.isEmpty()) {
+                            setBaseMessage(title);
+                        } else {
+                            setBaseMessage(isbn);
+                        }
+                        // Start searching
+                        return search(context);
+                    }
                 }
 
-            } while (skip);
-
-
-            // at this point we know we want a search,update the progress base message.
-            if (!title.isEmpty()) {
-                setBaseMessage(title);
-            } else {
-                setBaseMessage(isbn);
+                // no data needed, or no search-data available.
+                setBaseMessage(context.getString(R.string.progress_msg_skip_title, title));
             }
-
-            boolean wantCoverImage =
-                    mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_FILE_SPEC[0])
-                    || mCurrentBookFieldUsages.containsKey(UniqueId.BKEY_FILE_SPEC[1]);
-            setFetchThumbnail(wantCoverImage);
-
-            // theoretically generic codes could be allowed, but this process is
-            // not under strict user-control, so let's be paranoid.
-            setIsbnSearchText(isbn, true);
-            setAuthorSearchText(author);
-            setTitleSearchText(title);
-            // optional
-            String publisher = mCurrentBookData.getString(DBDefinitions.KEY_PUBLISHER, "");
-            setPublisherSearchText(publisher);
-
-            // Start searching
-            return searchByText(context);
-
         } catch (@NonNull final Exception e) {
             postSearch(e);
             return false;
         }
+
+        postSearch(null);
+        return false;
     }
 
     /**
@@ -434,8 +455,8 @@ public class UpdateFieldsModel
             Collection<String> toRemove = new ArrayList<>();
             for (String key : bookData.keySet()) {
                 //noinspection ConstantConditions
-                if (!mCurrentBookFieldUsages.containsKey(key)
-                    || !mCurrentBookFieldUsages.get(key).isWanted()) {
+                if (!mCurrentFieldUsages.containsKey(key)
+                    || !mCurrentFieldUsages.get(key).isWanted()) {
                     toRemove.add(key);
                 }
             }
@@ -445,7 +466,7 @@ public class UpdateFieldsModel
             }
 
             // For each field, process it according the usage.
-            for (FieldUsage usage : mCurrentBookFieldUsages.values()) {
+            for (FieldUsage usage : mCurrentFieldUsages.values()) {
                 if (bookData.containsKey(usage.fieldId)) {
                     // Handle thumbnail specially
                     if (usage.fieldId.equals(UniqueId.BKEY_FILE_SPEC[0])) {

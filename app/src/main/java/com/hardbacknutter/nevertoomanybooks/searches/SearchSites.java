@@ -40,6 +40,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksManager;
@@ -88,24 +89,28 @@ public final class SearchSites {
     static final String DATA_RELIABILITY_ORDER;
 
     /** Site. */
-    private static final int GOOGLE_BOOKS = 1;
+    @SuppressWarnings("WeakerAccess")
+    public static final int GOOGLE_BOOKS = 1;
     /** Site. */
-    private static final int AMAZON = 1 << 1;
+    @SuppressWarnings("WeakerAccess")
+    public static final int AMAZON = 1 << 1;
     /** Site. */
-    private static final int LIBRARY_THING = 1 << 2;
+    public static final int LIBRARY_THING = 1 << 2;
     /** Site. */
-    private static final int GOODREADS = 1 << 3;
+    public static final int GOODREADS = 1 << 3;
     /** Site: Speculative Fiction only. i.e. Science-Fiction/Fantasy etc... */
-    private static final int ISFDB = 1 << 4;
+    public static final int ISFDB = 1 << 4;
     /** Site. */
-    private static final int OPEN_LIBRARY = 1 << 5;
+    public static final int OPEN_LIBRARY = 1 << 5;
     /** Site: Dutch language books & comics. */
-    private static final int KB_NL = 1 << 6;
+    @SuppressWarnings("WeakerAccess")
+    public static final int KB_NL = 1 << 6;
     /** Site: Dutch language (and to an extend French) comics. */
-    private static final int STRIP_INFO_BE = 1 << 7;
+    public static final int STRIP_INFO_BE = 1 << 7;
 
 
     /** Mask including all search sources. */
+    @SuppressWarnings("WeakerAccess")
     public static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON | LIBRARY_THING | GOODREADS
                                                | ISFDB | OPEN_LIBRARY
                                                | KB_NL | STRIP_INFO_BE;
@@ -280,28 +285,33 @@ public final class SearchSites {
      *
      * @return site id.
      *
-     * @throws UnexpectedValueException if a resId is unknown
+     * @throws UnexpectedValueException if the resId is unknown
      */
     @Id
     public static int getSiteIdFromResId(@IdRes final int resId) {
         //NEWTHINGS: add new site specific ID:
-        // not all sites actually have/need a resource id.
+        // not all sites actually have/need a resource/menu id.
         switch (resId) {
             case R.id.site_amazon:
                 return AMAZON;
 
+            case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
             case R.id.site_goodreads:
                 return GOODREADS;
 
+            case R.id.MENU_VIEW_BOOK_AT_ISFDB:
             case R.id.site_isfdb:
                 return ISFDB;
 
+            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
             case R.id.site_library_thing:
                 return LIBRARY_THING;
 
+            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
             case R.id.site_open_library:
                 return OPEN_LIBRARY;
 
+            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
             case R.id.site_strip_info_be:
                 return STRIP_INFO_BE;
 
@@ -311,38 +321,35 @@ public final class SearchSites {
     }
 
     /**
-     * Lookup a resource id by the given site id.
+     * Lookup a site id by the given {@link DBDefinitions} key.
      *
-     * @param siteId to find
+     * @param key to find
      *
-     * @return resource id, or View.NO_ID if the site has none.
+     * @return site id.
+     *
+     * @throws UnexpectedValueException if the key is unknown
      */
-    @IdRes
-    public static int getResIdFromSiteId(@Id final int siteId) {
-        //NEWTHINGS: add new site specific ID:
-        switch (siteId) {
-            case AMAZON:
-                return R.id.site_amazon;
+    @Id
+    public static int getSiteIdFromDBDefinitions(@NonNull final String key) {
+        //NEWTHINGS: add new site specific ID: all native keys should be listed
+        switch (key) {
+            case DBDefinitions.KEY_EID_GOODREADS_BOOK:
+                return GOODREADS;
 
-            case GOODREADS:
-                return R.id.site_goodreads;
+            case DBDefinitions.KEY_EID_ISFDB:
+                return ISFDB;
 
-            case ISFDB:
-                return R.id.site_isfdb;
+            case DBDefinitions.KEY_EID_LIBRARY_THING:
+                return LIBRARY_THING;
 
-            case LIBRARY_THING:
-                return R.id.site_library_thing;
+            case DBDefinitions.KEY_EID_OPEN_LIBRARY:
+                return OPEN_LIBRARY;
 
-            case OPEN_LIBRARY:
-                return R.id.site_open_library;
+            case DBDefinitions.KEY_EID_STRIP_INFO_BE:
+                return STRIP_INFO_BE;
 
-            case STRIP_INFO_BE:
-                return R.id.site_strip_info_be;
-
-            case GOOGLE_BOOKS:
-            case KB_NL:
             default:
-                return View.NO_ID;
+                throw new UnexpectedValueException(key);
         }
     }
 
@@ -382,6 +389,7 @@ public final class SearchSites {
         return iso.equals(App.getSystemLocale().getISO3Language())
                || iso.equals(Locale.getDefault().getISO3Language());
     }
+
 
     @IntDef(flag = true, value = {
             GOOGLE_BOOKS, AMAZON, LIBRARY_THING, GOODREADS, ISFDB, OPEN_LIBRARY,

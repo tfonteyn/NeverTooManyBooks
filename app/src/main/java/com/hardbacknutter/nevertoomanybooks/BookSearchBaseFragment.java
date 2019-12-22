@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 public abstract class BookSearchBaseFragment
         extends Fragment {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BookSearchBaseFrag";
     DAO mDb;
     SearchCoordinator mSearchCoordinator;
@@ -258,7 +258,10 @@ public abstract class BookSearchBaseFragment
      *
      * @return {@code true} if a search was started
      */
-    protected abstract boolean onSearch();
+    protected boolean onSearch() {
+        //noinspection ConstantConditions
+        return mSearchCoordinator.search(getContext());
+    }
 
     @Override
     @CallSuper

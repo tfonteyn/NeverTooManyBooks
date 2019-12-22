@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 public class SearchTask
         extends TaskBase<Bundle> {
 
+    /** Log tag. */
     private static final String TAG = "SearchTask";
 
     /** progress title. e.g. "Searching Amazon". */
@@ -60,6 +61,7 @@ public class SearchTask
 
     /** whether to fetch thumbnails. */
     private boolean mFetchThumbnail;
+
     /** search criteria. */
     @Nullable
     private String mAuthor;
@@ -103,35 +105,35 @@ public class SearchTask
     /**
      * @param nativeId to search for
      */
-    void setNativeId(@NonNull final String nativeId) {
+    void setNativeId(@Nullable final String nativeId) {
         mNativeId = nativeId;
     }
 
     /**
      * @param isbn to search for
      */
-    void setIsbn(@NonNull final String isbn) {
+    void setIsbn(@Nullable final String isbn) {
         mIsbn = isbn;
     }
 
     /**
      * @param author to search for
      */
-    void setAuthor(@NonNull final String author) {
+    void setAuthor(@Nullable final String author) {
         mAuthor = author;
     }
 
     /**
      * @param title to search for
      */
-    void setTitle(@NonNull final String title) {
+    void setTitle(@Nullable final String title) {
         mTitle = title;
     }
 
     /**
      * @param publisher to search for
      */
-    void setPublisher(@NonNull final String publisher) {
+    void setPublisher(@Nullable final String publisher) {
         mPublisher = publisher;
     }
 
@@ -177,11 +179,10 @@ public class SearchTask
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
                         .searchByIsbn(localContext, mIsbn, mFetchThumbnail);
 
-                // If we have other text to search on, ...
+                // The implementation is supposed to check the data, so no more checks here.
             } else if (mSearchEngine instanceof SearchEngine.ByText) {
                 bookData = ((SearchEngine.ByText) mSearchEngine)
-                        .search(localContext, mIsbn, mAuthor, mTitle, mPublisher,
-                                mFetchThumbnail);
+                        .search(localContext, mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
 
             } else {
                 String name = localContext.getString(mSearchEngine.getNameResId());

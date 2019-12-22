@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2019 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/border1"
+    >
+
+    <TextView
+        android:id="@+id/lbl_site_goodreads"
+        style="@style/Label.Field"
+        android:labelFor="@id/site_goodreads"
+        android:text="@string/site_goodreads"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <EditText
+        android:id="@+id/site_goodreads"
+        style="@style/genericNumberEntry"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_site_goodreads"
+        tools:ignore="Autofill"
+        tools:text="123456"
+        />
+
+    <TextView
+        android:id="@+id/lbl_site_isfdb"
+        style="@style/Label.Field"
+        android:labelFor="@id/site_isfdb"
+        android:text="@string/site_isfdb"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/site_goodreads"
+        />
+
+    <EditText
+        android:id="@+id/site_isfdb"
+        style="@style/genericNumberEntry"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_site_isfdb"
+        tools:ignore="Autofill"
+        tools:text="123456"
+        />
+
+    <TextView
+        android:id="@+id/lbl_site_library_thing"
+        style="@style/Label.Field"
+        android:labelFor="@id/site_library_thing"
+        android:text="@string/site_library_thing"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/site_isfdb"
+        />
+
+    <EditText
+        android:id="@+id/site_library_thing"
+        style="@style/genericNumberEntry"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_site_library_thing"
+        tools:ignore="Autofill"
+        tools:text="123456"
+        />
+
+    <TextView
+        android:id="@+id/lbl_site_open_library"
+        style="@style/Label.Field"
+        android:labelFor="@id/site_open_library"
+        android:text="@string/site_open_library"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/site_library_thing"
+        />
+
+    <EditText
+        android:id="@+id/site_open_library"
+        style="@style/genericTextEntry"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_site_open_library"
+        tools:ignore="Autofill"
+        tools:text="1a2b3c"
+        />
+
+    <TextView
+        android:id="@+id/lbl_site_strip_info_be"
+        style="@style/Label.Field"
+        android:labelFor="@id/site_strip_info_be"
+        android:text="@string/site_stripinfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/site_open_library"
+        />
+
+    <EditText
+        android:id="@+id/site_strip_info_be"
+        style="@style/genericNumberEntry"
+        android:layout_width="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_site_strip_info_be"
+        tools:ignore="Autofill"
+        tools:text="123456"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
+

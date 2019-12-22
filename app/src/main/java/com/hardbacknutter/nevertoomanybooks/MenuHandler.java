@@ -28,14 +28,17 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
@@ -43,9 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingMa
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
 
-/**
- * Method isolated here to make it easier to add NEWTHINGS: add new site specific ID
- */
 final class MenuHandler {
 
     private MenuHandler() {
@@ -54,82 +54,74 @@ final class MenuHandler {
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final Book book) {
 
-        boolean hasIsfdbId = 0 != book.getLong(DBDefinitions.KEY_EID_ISFDB);
-        boolean hasGoodreadsId = 0 != book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-        boolean hasLibraryThingId = 0 != book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING);
-        boolean hasStripInfoBeId = 0 != book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE);
-        boolean hasOpenLibraryId = !book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY).isEmpty();
-
         boolean hasAuthor = !book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
         boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
 
-        prepareOpenOnWebsiteMenu(menu, hasIsfdbId, hasGoodreadsId, hasLibraryThingId,
-                                 hasStripInfoBeId, hasOpenLibraryId);
+        prepareOpenOnWebsiteMenu(menu, book.getNativeIds());
         prepareOpenOnWebsiteAmazonMenu(menu, hasAuthor, hasSeries);
     }
 
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final CursorMapper row) {
 
-        boolean hasIsfdbId = 0 != row.getLong(DBDefinitions.KEY_EID_ISFDB);
-        boolean hasGoodreadsId = 0 != row.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-        boolean hasLibraryThingId = 0 != row.getLong(DBDefinitions.KEY_EID_LIBRARY_THING);
-        boolean hasStripInfoBeId = 0 != row.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE);
-        boolean hasOpenLibraryId = !row.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY).isEmpty();
+        SparseArray<String> nativeIds = new SparseArray<>();
+        for (String key : DBDefinitions.NATIVE_ID_KEYS) {
+            String value = row.getString(key);
+            if (!value.isEmpty() && !"0".equals(value)) {
+                nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
+            }
+        }
 
         boolean hasAuthor = row.contains(DBDefinitions.KEY_FK_AUTHOR)
                             && row.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
         boolean hasSeries = row.contains(DBDefinitions.KEY_FK_SERIES)
                             && row.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
 
-
-        prepareOpenOnWebsiteMenu(menu, hasIsfdbId, hasGoodreadsId, hasLibraryThingId,
-                                 hasStripInfoBeId, hasOpenLibraryId);
+        prepareOpenOnWebsiteMenu(menu, nativeIds);
         prepareOpenOnWebsiteAmazonMenu(menu, hasAuthor, hasSeries);
     }
 
     private static void prepareOpenOnWebsiteMenu(@NonNull final Menu menu,
-                                                 final boolean hasIsfdbId,
-                                                 final boolean hasGoodreadsId,
-                                                 final boolean hasLibraryThingId,
-                                                 final boolean hasStripInfoBeId,
-                                                 final boolean hasOpenLibraryId) {
+                                                 @NonNull final SparseArray<String> nativeIds) {
 
-        MenuItem subMenu = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
-        if (subMenu == null) {
+        MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
+        if (subMenuItem == null) {
             return;
         }
 
-        subMenu.setVisible(hasIsfdbId
-                           || hasGoodreadsId
-                           || hasLibraryThingId
-                           || hasOpenLibraryId
-                           || hasStripInfoBeId);
-
-        menu.findItem(R.id.MENU_VIEW_BOOK_AT_ISFDB).setVisible(hasIsfdbId);
-        menu.findItem(R.id.MENU_VIEW_BOOK_AT_GOODREADS).setVisible(hasGoodreadsId);
-        menu.findItem(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING).setVisible(hasLibraryThingId);
-        menu.findItem(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY).setVisible(hasOpenLibraryId);
-        menu.findItem(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE).setVisible(hasStripInfoBeId);
+        boolean show = nativeIds.size() > 0;
+        subMenuItem.setVisible(show);
+        if (show) {
+            SubMenu sm = subMenuItem.getSubMenu();
+            // display/hide menu items on their presence in the nativeIds list.
+            for (int item = 0; item < sm.size(); item++) {
+                int menuId = sm.getItem(item).getItemId();
+                sm.findItem(menuId)
+                  .setVisible(nativeIds.get(SearchSites.getSiteIdFromResId(menuId)) != null);
+            }
+        }
     }
 
     private static void prepareOpenOnWebsiteAmazonMenu(@NonNull final Menu menu,
                                                        final boolean hasAuthor,
                                                        final boolean hasSeries) {
 
-        MenuItem subMenu = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
-        if (subMenu == null) {
+        MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
+        if (subMenuItem == null) {
             return;
         }
 
-        subMenu.setVisible(hasAuthor || hasSeries);
-
-        menu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
-            .setVisible(hasAuthor);
-        menu.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
-            .setVisible(hasAuthor && hasSeries);
-        menu.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
-            .setVisible(hasSeries);
+        boolean show = hasAuthor || hasSeries;
+        subMenuItem.setVisible(show);
+        if (show) {
+            SubMenu sm = subMenuItem.getSubMenu();
+            sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
+              .setVisible(hasAuthor);
+            sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
+              .setVisible(hasAuthor && hasSeries);
+            sm.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
+              .setVisible(hasSeries);
+        }
     }
 
     static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
@@ -142,7 +134,8 @@ final class MenuHandler {
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                IsfdbManager.openWebsite(context, book.getLong(DBDefinitions.KEY_EID_ISFDB));
+                IsfdbManager
+                        .openWebsite(context, book.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
@@ -191,7 +184,8 @@ final class MenuHandler {
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                IsfdbManager.openWebsite(context, row.getLong(DBDefinitions.KEY_EID_ISFDB));
+                IsfdbManager
+                        .openWebsite(context, row.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:

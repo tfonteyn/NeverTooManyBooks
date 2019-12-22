@@ -396,6 +396,18 @@ public final class DBDefinitions {
     /** External id. - String. */
     public static final String KEY_EID_LCCN = "lccn_book_id";
 
+    /** All native id keys supported for lookups. */
+    public static final String[] NATIVE_ID_KEYS = {
+            DBDefinitions.KEY_EID_GOODREADS_BOOK,
+            DBDefinitions.KEY_EID_ISFDB,
+            DBDefinitions.KEY_EID_LIBRARY_THING,
+            DBDefinitions.KEY_EID_OPEN_LIBRARY,
+            DBDefinitions.KEY_EID_STRIP_INFO_BE,
+//                DBDefinitions.KEY_EID_ASIN,
+//                DBDefinitions.KEY_EID_WORLDCAT,
+//                DBDefinitions.KEY_EID_LCCN
+    };
+
     /** {@link #TBL_BOOK_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF = "bookshelf";
     public static final String KEY_BOOKSHELF_CSV = "bookshelves_csv";

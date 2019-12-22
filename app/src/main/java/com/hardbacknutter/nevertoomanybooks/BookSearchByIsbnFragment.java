@@ -65,12 +65,10 @@ import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 public class BookSearchByIsbnFragment
         extends BookSearchBaseFragment {
 
-    /** log tag. */
+    /** Log tag. */
     public static final String TAG = "BookSearchByIsbnFrag";
 
     static final String BKEY_SCAN_MODE = TAG + ":scanMode";
-    static final String BKEY_STRICT_ISBN = TAG + ":strictIsbn";
-    static final String BKEY_ISBN = TAG + ":isbn";
 
     /** User input field. */
     @Nullable
@@ -85,12 +83,8 @@ public class BookSearchByIsbnFragment
     @Nullable
     private ScannerViewModel mScannerModel;
 
-    /** The current ISBN text. */
-    private String mIsbn;
     /** manage the validation check next to the field. */
     private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
-    /** Set to {@code true} limits to using ISBN-10/13. Otherwise we also allow UPC/EAN codes. */
-    private boolean mStrictIsbn = true;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -116,23 +110,22 @@ public class BookSearchByIsbnFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
+        if (args != null) {
+            mScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
+        }
+        //noinspection ConstantConditions
+        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
+
+        getActivity().setTitle(R.string.title_search_isbn);
+
+        View view = getView();
         // stop lint being very annoying...
         Objects.requireNonNull(mIsbnView);
         Objects.requireNonNull(mAltIsbnButton);
 
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.title_search_isbn);
-
-        Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (args != null) {
-            mStrictIsbn = args.getBoolean(BKEY_STRICT_ISBN, true);
-            mScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
-            mIsbnView.setText(args.getString(BKEY_ISBN, ""));
-        }
-
-        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
-
-        View view = getView();
+        // copyModel2View();
+        mIsbnView.setText(mSearchCoordinator.getIsbnSearchText());
 
         //noinspection ConstantConditions
         view.findViewById(R.id.key_0).setOnClickListener(v -> mIsbnView.onKey("0"));
@@ -154,7 +147,8 @@ public class BookSearchByIsbnFragment
             return true;
         });
 
-        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, mStrictIsbn);
+        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(
+                mIsbnView, mSearchCoordinator.isStrictIsbn());
         mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
         mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
 
@@ -181,7 +175,7 @@ public class BookSearchByIsbnFragment
                                     @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.menu_strict_isbn)
             .setCheckable(true)
-            .setChecked(mStrictIsbn)
+            .setChecked(mSearchCoordinator.isStrictIsbn())
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -190,9 +184,10 @@ public class BookSearchByIsbnFragment
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_STRICT_ISBN) {
-            mStrictIsbn = !item.isChecked();
-            item.setChecked(mStrictIsbn);
-            mIsbnValidationTextWatcher.setStrictIsbn(mStrictIsbn);
+            boolean checked = !item.isChecked();
+            item.setChecked(checked);
+            mIsbnValidationTextWatcher.setStrictIsbn(checked);
+            mSearchCoordinator.setStrictIsbn(checked);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -202,15 +197,12 @@ public class BookSearchByIsbnFragment
     public void onPause() {
         super.onPause();
         //noinspection ConstantConditions
-        mIsbn = mIsbnView.getText().toString().trim();
+        mSearchCoordinator.setIsbnSearchText(mIsbnView.getText().toString().trim());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putString(BKEY_ISBN, mIsbn);
-        outState.putBoolean(BKEY_STRICT_ISBN, mStrictIsbn);
         outState.putBoolean(BKEY_SCAN_MODE, mScanMode);
     }
 
@@ -320,12 +312,13 @@ public class BookSearchByIsbnFragment
      * Search with ISBN.
      * <p>
      *
-     * @param isbnSearchText isbn text to search for.
+     * @param userEntry isbn text to search for.
      *                       Must be 10 characters (or more) to even consider a search.
      */
-    private void prepareSearch(@NonNull final String isbnSearchText) {
+    private void prepareSearch(@NonNull final String userEntry) {
 
-        ISBN code = new ISBN(isbnSearchText, mStrictIsbn);
+        boolean strictIsbn = mSearchCoordinator.isStrictIsbn();
+        ISBN code = new ISBN(userEntry, strictIsbn);
 
         // not a valid code ?
         if (!code.isValid()) {
@@ -336,7 +329,7 @@ public class BookSearchByIsbnFragment
 
             //noinspection ConstantConditions
             Snackbar.make(mIsbnView,
-                          getString(R.string.warning_x_is_not_a_valid_code, isbnSearchText),
+                          getString(R.string.warning_x_is_not_a_valid_code, userEntry),
                           Snackbar.LENGTH_LONG).show();
 
             if (mScanMode) {
@@ -346,18 +339,21 @@ public class BookSearchByIsbnFragment
             return;
         }
 
-        // at this point, we have a valid code
-        mIsbn = code.asText();
+        // at this point, we know we have a searchable code
+        String isbnSearchText = code.asText();
+        //noinspection ConstantConditions
+        mSearchCoordinator.setIsbnSearchText(isbnSearchText);
 
-        if (mStrictIsbn && mScanMode) {
+        if (strictIsbn && mScanMode) {
             //noinspection ConstantConditions
             mScannerModel.onValidBeep(getContext());
         }
 
         // See if ISBN already exists in our database, if not then start the search.
-        //noinspection ConstantConditions
-        final long existingId = mDb.getBookIdFromIsbn(mIsbn);
-        if (existingId != 0) {
+        final long existingId = mDb.getBookIdFromIsbn(isbnSearchText);
+        if (existingId == 0) {
+            startSearch();
+        } else {
             //noinspection ConstantConditions
             new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -383,25 +379,15 @@ public class BookSearchByIsbnFragment
                     .setPositiveButton(R.string.btn_confirm_add, (dialog, which) -> startSearch())
                     .create()
                     .show();
-        } else {
-            startSearch();
         }
     }
 
     @Override
-    protected boolean onSearch() {
-        mSearchCoordinator.setIsbnSearchText(mIsbn, mStrictIsbn);
-        //noinspection ConstantConditions
-        return mSearchCoordinator.searchByText(getContext());
-    }
-
-    @Override
     void onSearchResults(@NonNull final Bundle bookData) {
-        // A non-empty result will have a title or at least 3 fields.
+        // A non-empty result will have a title, or at least 3 fields:
         // The isbn field will always be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
-        // So a valid result means we either need a title, or a
-        // third field.
+        // So a valid result means we either need a title, or a third field.
         String title = bookData.getString(DBDefinitions.KEY_TITLE);
         if ((title != null && !title.isEmpty()) || bookData.size() > 2) {
             Intent intent = new Intent(getContext(), EditBookActivity.class)

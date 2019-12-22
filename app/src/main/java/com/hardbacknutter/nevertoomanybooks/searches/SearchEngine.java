@@ -183,7 +183,7 @@ public interface SearchEngine {
             extends SearchEngine {
 
         /**
-         * Called by the {@link SearchCoordinator#searchByText}.
+         * Called by the {@link SearchCoordinator#search}.
          *
          * @param localizedAppContext Localised application context
          * @param nativeId            the native id (as a String) for this particular search site.
@@ -207,7 +207,7 @@ public interface SearchEngine {
             extends SearchEngine {
 
         /**
-         * Called by the {@link SearchCoordinator#searchByText}.
+         * Called by the {@link SearchCoordinator#search}.
          *
          * @param localizedAppContext Localised application context
          * @param isbn                to search for, <strong>will</strong> be valid
@@ -237,7 +237,7 @@ public interface SearchEngine {
             extends ByIsbn {
 
 //        /**
-//         * Called by the {@link SearchCoordinator#searchByText}.
+//         * Called by the {@link SearchCoordinator#search}.
 //         * The barcode should be <strong>valid</strong>; i.e. it's checksum must be correct.
 //         *
 //         * @param localizedAppContext Localised application context
@@ -265,10 +265,10 @@ public interface SearchEngine {
             extends SearchEngine {
 
         /**
-         * Called by the {@link SearchCoordinator#searchByText}.
-         * The isbn is <strong>not tested</strong>.
+         * Called by the {@link SearchCoordinator#search}.
          * <p>
-         * Checking the arguments must be done inside the implementation,
+         * The isbn might or might not be valid.
+         * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
          * @param localizedAppContext Localised application context
@@ -390,7 +390,8 @@ public interface SearchEngine {
                 } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByBarcode) {
                     bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbnStr, true);
 
-                    // If we have valid text to search on, ...
+                    // otherwise we pass a non-empty (but invalid) isbn on regardless.
+                    // if the engine supports text mode.
                 } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByText) {
                     bookData = ((SearchEngine.ByText) this)
                             .search(appContext, isbnStr, "", "", "", true);

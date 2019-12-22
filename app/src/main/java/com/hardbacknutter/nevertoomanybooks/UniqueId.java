@@ -104,6 +104,8 @@ public final class UniqueId {
     /** Bundle key for {@code ParcelableArrayList<Bookshelf>}. */
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
+    /** Bundle key for native id search. */
+    public static final String BKEY_NATIVE_ID_ARRAY = "nativeId_array";
     /**
      * Bundle key for Author search text
      * (all DB KEY's and the ARRAY key is for authors with verified names).

@@ -302,7 +302,7 @@ public class UpdateFieldsFragment
             return;
         }
 
-        // If the user has selected thumbnails...
+        // If the user has selected to overwrite thumbnails...
         final FieldUsage covers = mUpdateFieldsModel.getFieldUsage(UniqueId.BKEY_THUMBNAIL);
         if (covers != null && covers.getUsage().equals(Overwrite)) {
             // check if the user really wants to overwrite all covers
@@ -330,12 +330,18 @@ public class UpdateFieldsFragment
     }
 
     private void startUpdate() {
+        mProgressDialog = ProgressDialogFragment
+                .newInstance(R.string.progress_msg_searching, true, 0);
+        mProgressDialog.setCancellable(mUpdateFieldsModel);
+
         //noinspection ConstantConditions
         if (mUpdateFieldsModel.startSearch(getContext())) {
-            mProgressDialog = ProgressDialogFragment
-                    .newInstance(R.string.progress_msg_searching, true, 0);
             mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
-            mProgressDialog.setCancellable(mUpdateFieldsModel);
+        } else {
+            mProgressDialog = null;
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.no_search_data_for_active_sites,
+                          Snackbar.LENGTH_LONG).show();
         }
     }
 

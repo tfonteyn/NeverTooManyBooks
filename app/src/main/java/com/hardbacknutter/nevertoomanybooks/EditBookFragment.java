@@ -46,6 +46,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -77,12 +78,14 @@ public class EditBookFragment
     public static final String REQUEST_BKEY_TAB = "tab";
     @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT = 0;
-    @SuppressWarnings("unused")
+    @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_PUBLICATION = 1;
-    @SuppressWarnings("unused")
+    @SuppressWarnings("WeakerAccess")
     public static final int TAB_EDIT_NOTES = 2;
-    @SuppressWarnings("unused")
-    public static final int TAB_EDIT_ANTHOLOGY = 3;
+    @SuppressWarnings("WeakerAccess")
+    public static final int TAB_EDIT_TOC = 3;
+    @SuppressWarnings("WeakerAccess")
+    public static final int TAB_EDIT_NATIVE_ID = 4;
 
     private FragmentActivity mHostActivity;
 
@@ -265,30 +268,46 @@ public class EditBookFragment
     private static class TabAdapter
             extends FragmentStateAdapter {
 
+        /** whether the show the extra tab with native id's. */
+        private final boolean mShowNativeIdFragment;
+
+        /**
+         * Constructor.
+         *
+         * @param container hosting fragment
+         */
         TabAdapter(@NonNull final Fragment container) {
             super(container);
+            //noinspection ConstantConditions
+            mShowNativeIdFragment = PreferenceManager
+                    .getDefaultSharedPreferences(container.getContext())
+                    //URGENT: implement as a setting.
+                    .getBoolean("dummy", true);
         }
 
         @Override
         public int getItemCount() {
-            return 4;
+            return mShowNativeIdFragment ? 5 : 4;
         }
 
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
             switch (position) {
-                case 0:
+                case TAB_EDIT:
                     return new EditBookFieldsFragment();
 
-                case 1:
+                case TAB_EDIT_PUBLICATION:
                     return new EditBookPublicationFragment();
 
-                case 2:
+                case TAB_EDIT_NOTES:
                     return new EditBookNotesFragment();
 
-                case 3:
+                case TAB_EDIT_TOC:
                     return new EditBookTocFragment();
+
+                case TAB_EDIT_NATIVE_ID:
+                    return new EditBookNativeIdFragment();
 
                 default:
                     throw new UnexpectedValueException(position);
@@ -298,17 +317,20 @@ public class EditBookFragment
         @StringRes
         int getTabTitle(final int position) {
             switch (position) {
-                case 0:
+                case TAB_EDIT:
                     return R.string.tab_lbl_details;
 
-                case 1:
+                case TAB_EDIT_PUBLICATION:
                     return R.string.tab_lbl_publication;
 
-                case 2:
+                case TAB_EDIT_NOTES:
                     return R.string.tab_lbl_notes;
 
-                case 3:
+                case TAB_EDIT_TOC:
                     return R.string.tab_lbl_content;
+
+                case TAB_EDIT_NATIVE_ID:
+                    return R.string.tab_lbl_id;
 
                 default:
                     throw new UnexpectedValueException(position);

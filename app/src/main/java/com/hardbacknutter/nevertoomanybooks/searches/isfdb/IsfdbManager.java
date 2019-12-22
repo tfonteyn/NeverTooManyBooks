@@ -159,23 +159,23 @@ public class IsfdbManager
                      + "&ACTION=query"
                      + "&START=0"
                      + "&TYPE=Publication"
-                     + "&C=AND"
-                     + "&";
+                     + "&C=AND";
 
         int index = 0;
+        String args = "";
 
         if (author != null && !author.isEmpty()) {
             index++;
-            url += "&USE_" + index + "=author_canonical"
-                   + "&O_" + index + "=contains"
-                   + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
+            args += "&USE_" + index + "=author_canonical"
+                    + "&O_" + index + "=contains"
+                    + "&TERM_" + index + "=" + URLEncoder.encode(author, CHARSET_ENCODE_URL);
         }
 
         if (title != null && !title.isEmpty()) {
             index++;
-            url += "&USE_" + index + "=pub_title"
-                   + "&O_" + index + "=contains"
-                   + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
+            args += "&USE_" + index + "=pub_title"
+                    + "&O_" + index + "=contains"
+                    + "&TERM_" + index + "=" + URLEncoder.encode(title, CHARSET_ENCODE_URL);
         }
 
         // as per user settings.
@@ -183,9 +183,9 @@ public class IsfdbManager
                              .getBoolean(PREFS_USE_PUBLISHER, false)) {
             if (publisher != null && !publisher.isEmpty()) {
                 index++;
-                url += "&USE_" + index + "=pub_publisher"
-                       + "&O_" + index + "=contains"
-                       + "&TERM_" + index + "=" + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
+                args += "&USE_" + index + "=pub_publisher"
+                        + "&O_" + index + "=contains"
+                        + "&TERM_" + index + "=" + URLEncoder.encode(publisher, CHARSET_ENCODE_URL);
             }
         }
 
@@ -194,8 +194,12 @@ public class IsfdbManager
         // &USE_5=pub_title&O_5=exact&TERM_5=
         // &USE_6=pub_title&O_6=exact&TERM_6=
 
+        // no data to search for.
+        if (args.isEmpty()) {
+            return new Bundle();
+        }
         return fetchBook(localizedAppContext,
-                         new IsfdbEditionsHandler(localizedAppContext).fetchPath(url),
+                         new IsfdbEditionsHandler(localizedAppContext).fetchPath(url + args),
                          fetchThumbnail);
     }
 
@@ -226,7 +230,7 @@ public class IsfdbManager
     @StringRes
     @Override
     public int getNameResId() {
-        return R.string.isfdb;
+        return R.string.site_isfdb;
     }
 
     @NonNull

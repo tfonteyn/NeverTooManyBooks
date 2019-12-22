@@ -384,7 +384,7 @@ public class GoodreadsManager
 
         if (show) {
             Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
-            StandardDialogs.registrationDialog(context, R.string.goodreads,
+            StandardDialogs.registrationDialog(context, R.string.site_goodreads,
                                                intent, required, key);
         }
         return show;
@@ -829,25 +829,20 @@ public class GoodreadsManager
             throws CredentialsException,
                    IOException {
 
-        try {
-            if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+        if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
+            try {
                 List<GoodreadsWork> goodreadsWorks = new SearchBooksApiHandler(this)
                         .search(author + ' ' + title);
 
                 if (!goodreadsWorks.isEmpty()) {
                     return getBookById(localizedAppContext, goodreadsWorks.get(0).bookId,
                                        fetchThumbnail);
-                } else {
-                    return new Bundle();
                 }
-
-            } else {
-                return new Bundle();
+            } catch (@NonNull final BookNotFoundException ignore) {
+                // to bad, ignore
             }
-        } catch (@NonNull final BookNotFoundException e) {
-            // to bad.
-            return new Bundle();
         }
+        return new Bundle();
     }
 
     @Nullable
@@ -881,7 +876,7 @@ public class GoodreadsManager
     @StringRes
     @Override
     public int getNameResId() {
-        return R.string.goodreads;
+        return R.string.site_goodreads;
     }
 
     /**

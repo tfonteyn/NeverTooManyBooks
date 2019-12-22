@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -35,6 +34,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.util.SparseArray;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorExce
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItemBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -116,18 +117,8 @@ public class Book
     public static final int TOC_SINGLE_AUTHOR_SINGLE_WORK = 0;
     public static final int TOC_MULTIPLE_WORKS = 1;
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
-
-    /** log tag. */
-    private static final String TAG = "Book";
-
-    /** mapping the edition bit to a resource string for displaying. Ordered. */
-    @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
-
-    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
     /** first edition ever of this work/content/story. */
     public static final int EDITION_FIRST = 1;
-
     /*
      * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}.
      * <p>
@@ -143,6 +134,7 @@ public class Book
      * NEWTHINGS: edition: add bit flag and add to mask
      * Never change the bit value!
      */
+    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
     /** First printing of 'this' edition. */
     private static final int EDITION_FIRST_IMPRESSION = 1 << 1;
     /** This edition had a limited run. (Numbered or not). */
@@ -161,6 +153,10 @@ public class Book
                                              | EDITION_SIGNED
                                              | EDITION_BOOK_CLUB;
 
+    /** Log tag. */
+    private static final String TAG = "Book";
+    /** mapping the edition bit to a resource string for displaying. Ordered. */
+    private static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
     /*
      * NEWTHINGS: edition: add label for the type
      *
@@ -300,7 +296,7 @@ public class Book
         // DOM_BOOK_LIBRARY_THING_ID
         // DOM_BOOK_ISFDB_ID
         // DOM_BOOK_GOODREADS_ID
-
+        // ...
         // Do not copy these specific dates.
         // DOM_BOOK_DATE_ADDED
         // DOM_DATE_LAST_UPDATED
@@ -428,6 +424,24 @@ public class Book
     }
 
     /**
+     * Get a map with all valid native ids for this book.
+     * All values will be casted to String.
+     *
+     * @return map, can be empty.
+     */
+    @NonNull
+    public SparseArray<String> getNativeIds() {
+        SparseArray<String> nativeIds = new SparseArray<>();
+        for (String key : DBDefinitions.NATIVE_ID_KEYS) {
+            String value = getString(key);
+            if (!value.isEmpty() && !"0".equals(value)) {
+                nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
+            }
+        }
+        return nativeIds;
+    }
+
+    /**
      * Using the id, reload *all* other data for this book.
      *
      * @param db Database Access
@@ -521,6 +535,7 @@ public class Book
      * @param editions List of integers, each representing a single bit==edition
      */
     public void putEditions(@NonNull final Iterable<Integer> editions) {
+        @Edition
         int bitmask = 0;
         for (Integer bit : editions) {
             bitmask |= bit;
@@ -742,6 +757,18 @@ public class Book
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS, TOC_MULTIPLE_AUTHORS})
     public @interface TocBits {
+
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef(flag = true, value = {EDITION_FIRST,
+                                  EDITION_FIRST_IMPRESSION,
+                                  EDITION_LIMITED,
+                                  EDITION_SLIPCASE,
+                                  EDITION_SIGNED,
+                                  EDITION_BOOK_CLUB
+    })
+    public @interface Edition {
 
     }
 

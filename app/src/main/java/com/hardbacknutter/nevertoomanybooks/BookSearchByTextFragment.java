@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
-    /** log tag. */
+    /** Log tag. */
     public static final String TAG = "BookSearchByTextFragment";
 
     /** A list of author names we have already searched for in this session. */
@@ -64,10 +64,11 @@ public class BookSearchByTextFragment
     private final Collection<String> mRecentAuthorNames = new ArrayList<>();
     /** adapter for the AutoCompleteTextView. */
     private ArrayAdapter<String> mAuthorAdapter;
-    /** User input field. */
-    private EditText mTitleView;
+
     /** User input field. */
     private AutoCompleteTextView mAuthorView;
+    /** User input field. */
+    private EditText mTitleView;
     /** User input field. ENHANCE: add auto-completion for publishers? */
     private EditText mPublisherView;
     /** Used to set visibility on a group of widgets all related to the Publisher. */
@@ -79,8 +80,8 @@ public class BookSearchByTextFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_booksearch_by_text, container, false);
-        mTitleView = view.findViewById(R.id.title);
         mAuthorView = view.findViewById(R.id.author);
+        mTitleView = view.findViewById(R.id.title);
         mPublisherView = view.findViewById(R.id.publisher);
         mPublisherGroup = view.findViewById(R.id.publisher_group);
         return view;
@@ -89,7 +90,6 @@ public class BookSearchByTextFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Mandatory
         setHasOptionsMenu(true);
     }
@@ -98,10 +98,6 @@ public class BookSearchByTextFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mTitleView.setText(mSearchCoordinator.getTitleSearchText());
-        mAuthorView.setText(mSearchCoordinator.getAuthorSearchText());
-        mPublisherView.setText(mSearchCoordinator.getPublisherSearchText());
-
         //noinspection ConstantConditions
         boolean usePublisher = SearchSites.usePublisher(getContext());
         mPublisherGroup.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
@@ -109,14 +105,18 @@ public class BookSearchByTextFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.title_search_for_books);
 
+        copyModel2View();
         populateAuthorList();
 
         //noinspection ConstantConditions
         getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
+            copyView2Model();
+
             String authorSearchText = mSearchCoordinator.getAuthorSearchText();
-            if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
+            boolean hasAuthor = authorSearchText != null && !authorSearchText.isEmpty();
+            if (hasAuthor) {
                 // Always add the current search text to the list of recent searches.
-                if (!authorSearchText.isEmpty()) {
+                if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
                     boolean found = false;
                     for (String s : mRecentAuthorNames) {
                         if (s.equalsIgnoreCase(authorSearchText)) {
@@ -133,9 +133,10 @@ public class BookSearchByTextFragment
                 }
             }
 
+            String titleSearchText = mSearchCoordinator.getTitleSearchText();
+            boolean hasTitle = titleSearchText != null && !titleSearchText.isEmpty();
             //sanity check
-            if (mSearchCoordinator.getAuthorSearchText().isEmpty()
-                && mSearchCoordinator.getTitleSearchText().isEmpty()) {
+            if (!hasAuthor && !hasTitle) {
                 Snackbar.make(getView(), R.string.warning_requires_at_least_one_field,
                               Snackbar.LENGTH_LONG).show();
                 return;
@@ -145,8 +146,7 @@ public class BookSearchByTextFragment
         });
 
         if (savedInstanceState == null) {
-            mSearchCoordinator.getSiteList()
-                              .promptToRegister(getContext(), false, "search");
+            mSearchCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }
@@ -195,28 +195,39 @@ public class BookSearchByTextFragment
         // we add them manually as the template for a new book.
 
         if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            bookData.putString(DBDefinitions.KEY_TITLE,
-                               mSearchCoordinator.getTitleSearchText());
+            String title = mSearchCoordinator.getTitleSearchText();
+            if (title != null) {
+                bookData.putString(DBDefinitions.KEY_TITLE, title);
+            }
         }
 
         //noinspection ConstantConditions
         if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
-            || bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY)
-                       .isEmpty()) {
+            || bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
-            bookData.putString(UniqueId.BKEY_SEARCH_AUTHOR,
-                               mSearchCoordinator.getAuthorSearchText());
+            String author = mSearchCoordinator.getAuthorSearchText();
+            if (author != null) {
+                bookData.putString(UniqueId.BKEY_SEARCH_AUTHOR, author);
+            }
         }
 
         if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
-            bookData.putString(DBDefinitions.KEY_PUBLISHER,
-                               mSearchCoordinator.getPublisherSearchText());
+            String publisher = mSearchCoordinator.getPublisherSearchText();
+            if (publisher != null) {
+                bookData.putString(DBDefinitions.KEY_PUBLISHER, publisher);
+            }
         }
 
         Intent intent = new Intent(getContext(), EditBookActivity.class)
                 .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
         startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
         clearPreviousSearchCriteria();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        copyView2Model();
     }
 
     @Override
@@ -227,13 +238,16 @@ public class BookSearchByTextFragment
         mPublisherView.setText("");
     }
 
-    @Override
-    protected boolean onSearch() {
+    private void copyModel2View() {
+        mAuthorView.setText(mSearchCoordinator.getAuthorSearchText());
+        mTitleView.setText(mSearchCoordinator.getTitleSearchText());
+        mPublisherView.setText(mSearchCoordinator.getPublisherSearchText());
+    }
+
+    private void copyView2Model() {
         mSearchCoordinator.setAuthorSearchText(mAuthorView.getText().toString().trim());
         mSearchCoordinator.setTitleSearchText(mTitleView.getText().toString().trim());
         mSearchCoordinator.setPublisherSearchText(mPublisherView.getText().toString().trim());
-        //noinspection ConstantConditions
-        return mSearchCoordinator.searchByText(getContext());
     }
 
     @Override
@@ -249,13 +263,5 @@ public class BookSearchByTextFragment
         // refresh, we could have modified/created Authors while editing
         // (even when the edit was cancelled )
         populateAuthorList();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mSearchCoordinator.setAuthorSearchText(mAuthorView.getText().toString().trim());
-        mSearchCoordinator.setTitleSearchText(mTitleView.getText().toString().trim());
-        mSearchCoordinator.setPublisherSearchText(mPublisherView.getText().toString().trim());
     }
 }
