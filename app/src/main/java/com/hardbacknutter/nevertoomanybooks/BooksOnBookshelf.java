@@ -113,7 +113,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 public class BooksOnBookshelf
         extends BaseActivity {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
     /** This is very important: the number of FAB sub-buttons we're using. */
@@ -365,11 +365,12 @@ public class BooksOnBookshelf
         mHeaderTextView[1] = findViewById(R.id.level_2_text);
 
         // Setup the bookshelf spinner and adapter.
-        mBookshelfSpinner = findViewById(R.id.bookshelf_name);
+        mBookshelfSpinner = findViewById(R.id.bookshelf_spinner);
         // note that the list of names is empty right now, we'l populate it in onResume
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(this,
                                                       R.layout.booksonbookshelf_bookshelf_spinner,
                                                       mModel.getBookshelfNameList());
+        // use a different view when the spinner is open
         mBookshelfSpinnerAdapter
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
