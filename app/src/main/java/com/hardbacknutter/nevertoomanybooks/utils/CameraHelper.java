@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
 
+    /** Log tag. */
     private static final String TAG = "CameraHelper";
 
     /**

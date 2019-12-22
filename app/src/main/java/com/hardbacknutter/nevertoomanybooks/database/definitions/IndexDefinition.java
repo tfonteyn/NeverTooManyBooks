@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class IndexDefinition {
 
+    /** Log tag. */
     private static final String TAG = "IndexDefinition";
 
     /** SQL to get the names of all indexes. */

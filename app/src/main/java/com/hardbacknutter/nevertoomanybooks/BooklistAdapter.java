@@ -96,7 +96,7 @@ public class BooklistAdapter
         extends RecyclerView.Adapter<BooklistAdapter.RowViewHolder>
         implements FastScrollerOverlay.SectionIndexerV2 {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BooklistAdapter";
 
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
@@ -389,7 +389,7 @@ public class BooklistAdapter
     private static class GetBookExtrasTask
             extends AsyncTask<Void, Void, Boolean> {
 
-        /** log tag. */
+        /** Log tag. */
         private static final String TAG = "GetBookExtrasTask";
 
         /** Format string. */

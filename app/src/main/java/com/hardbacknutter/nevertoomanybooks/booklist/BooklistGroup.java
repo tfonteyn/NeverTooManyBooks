@@ -646,6 +646,7 @@ public class BooklistGroup
         public static final int DATE_FIRST_PUB_MONTH = 28;
         public static final int COLOR = 29;
         public static final int SERIES_TITLE_LETTER = 30;
+        /** Log tag. */
         private static final String TAG = "RowKind";
         // NEWTHINGS: ROW_KIND_x
         // the highest valid index of kinds - ALWAYS to be updated after adding a row kind...

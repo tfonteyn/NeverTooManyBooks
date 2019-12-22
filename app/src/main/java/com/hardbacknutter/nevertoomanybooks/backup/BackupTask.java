@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class BackupTask
         extends TaskBase<ExportHelper> {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BackupTask";
 
     /** what and how to export. */

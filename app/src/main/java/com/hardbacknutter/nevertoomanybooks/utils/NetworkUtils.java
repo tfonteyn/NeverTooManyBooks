@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class NetworkUtils {
 
+    /** Log tag. */
     private static final String TAG = "NetworkUtils";
 
     private static final Pattern SLASH_PATTERN = Pattern.compile("//");

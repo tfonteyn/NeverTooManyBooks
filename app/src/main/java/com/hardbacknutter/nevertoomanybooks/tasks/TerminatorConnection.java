@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 public final class TerminatorConnection
         implements AutoCloseable {
 
+    /** Log tag. */
     private static final String TAG = "TerminatorConnection";
 
     /** initial connection time to websites timeout. */

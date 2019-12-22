@@ -52,6 +52,7 @@ public abstract class TaskBase<Result>
         extends AsyncTask<Void, TaskListener.ProgressMessage, Result>
         implements ProgressDialogFragment.Cancellable {
 
+    /** Log tag. */
     private static final String TAG = "TaskBase";
 
     /** id set at construction time, passed back in all messages. */

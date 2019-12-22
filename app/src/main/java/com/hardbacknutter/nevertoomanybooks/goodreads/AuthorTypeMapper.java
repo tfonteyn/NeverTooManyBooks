@@ -52,6 +52,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_WRITER;
  */
 public class AuthorTypeMapper {
 
+    /** Log tag. */
     private static final String TAG = "AuthorTypeMapper";
 
     private static final Map<String, Integer> MAPPER = new HashMap<>();

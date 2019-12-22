@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class SynchronizedDb {
 
+    /** Log tag. */
     private static final String TAG = "SynchronizedDb";
 
     /** log error string. */

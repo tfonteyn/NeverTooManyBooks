@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 public class ImportTask
         extends TaskBase<Integer> {
 
+    /** Log tag. */
     private static final String TAG = "ImportTask";
 
     @NonNull

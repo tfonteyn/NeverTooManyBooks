@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 public class About
         extends BaseActivity {
 
+    /** Log tag. */
     private static final String TAG = "AboutActivity";
 
     @Override

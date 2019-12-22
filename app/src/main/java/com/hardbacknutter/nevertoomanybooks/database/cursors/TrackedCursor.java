@@ -61,6 +61,7 @@ public class TrackedCursor
         extends SynchronizedCursor
         implements Closeable {
 
+    /** Log tag. */
     private static final String TAG = "TrackedCursor";
 
     /** DEBUG instance counter, goes up and down. */

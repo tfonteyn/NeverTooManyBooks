@@ -60,7 +60,7 @@ public class SearchSuggestionProvider
 
     /** Required. This mode bit configures the suggestions database to record recent queries. */
     public static final int MODE = DATABASE_MODE_QUERIES;
-
+    /** Log tag. */
     private static final String TAG = "SearchSuggestionProv";
 
     /** Database Access. */

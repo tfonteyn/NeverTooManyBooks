@@ -73,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class SqlStatementManager
         implements AutoCloseable {
 
+    /** Log tag. */
     private static final String TAG = "SqlStatementManager";
 
     @NonNull

@@ -64,6 +64,7 @@ public class SettingsActivity
                    PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
                    SharedPreferences.OnSharedPreferenceChangeListener {
 
+    /** Log tag. */
     private static final String TAG = "SettingsActivity";
 
     @Override

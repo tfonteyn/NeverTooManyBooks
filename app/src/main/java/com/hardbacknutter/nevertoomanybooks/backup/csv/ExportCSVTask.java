@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class ExportCSVTask
         extends TaskBase<ExportHelper> {
 
+    /** Log tag. */
     private static final String TAG = "ExportCSVTask";
 
     @NonNull

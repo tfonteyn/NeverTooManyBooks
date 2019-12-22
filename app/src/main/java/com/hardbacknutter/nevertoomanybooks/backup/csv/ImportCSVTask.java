@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class ImportCSVTask
         extends TaskBase<ImportHelper> {
 
+    /** Log tag. */
     private static final String TAG = "ImportCSVTask";
 
     @NonNull

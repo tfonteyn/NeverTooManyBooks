@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 public class CsvExporter
         implements Exporter {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "CsvExporter";
     private static final int BUFFER_SIZE = 32768;
 

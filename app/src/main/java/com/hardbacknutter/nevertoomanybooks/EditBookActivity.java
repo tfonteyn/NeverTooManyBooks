@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 public class EditBookActivity
         extends BaseActivity {
 
+    /** Log tag. */
     private static final String TAG = "EditBookActivity";
 
     @Override

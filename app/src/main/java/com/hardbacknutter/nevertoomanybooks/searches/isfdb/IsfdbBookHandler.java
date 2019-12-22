@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class IsfdbBookHandler
         extends AbstractBase {
 
+    /** Log tag. */
     private static final String TAG = "IsfdbBookHandler";
 
     /** file suffix for cover files. */

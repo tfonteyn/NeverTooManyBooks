@@ -92,6 +92,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public class XmlImporter
         implements Importer {
 
+    /** Log tag. */
     private static final String TAG = "XmlImporter";
 
     private static final String ERROR_UNABLE_TO_PROCESS_XML_ENTITY =

@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
  */
 public class CursorMapper {
 
+    /** Log tag. */
     private static final String TAG = "CursorMapper";
 
     /** the mapped cursor. */

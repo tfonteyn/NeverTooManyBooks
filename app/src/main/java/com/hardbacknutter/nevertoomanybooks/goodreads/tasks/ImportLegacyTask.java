@@ -87,6 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 class ImportLegacyTask
         extends TQTask {
 
+    /** Log tag. */
     private static final String TAG = "ImportLegacyTask";
 
     private static final long serialVersionUID = 2944686967082059350L;

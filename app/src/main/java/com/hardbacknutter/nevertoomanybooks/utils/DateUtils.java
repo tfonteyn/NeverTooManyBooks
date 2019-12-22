@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
  */
 public final class DateUtils {
 
+    /** Log tag. */
     private static final String TAG = "DateUtils";
 
     /** Month full names cache for each Locale. */

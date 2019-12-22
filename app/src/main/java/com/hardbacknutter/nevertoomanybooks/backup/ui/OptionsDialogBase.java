@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public abstract class OptionsDialogBase<T extends Options>
         extends DialogFragment {
 
+    /** Log tag. */
     private static final String TAG = "OptionsDialogBase";
 
     private Checkable cbxBooks;

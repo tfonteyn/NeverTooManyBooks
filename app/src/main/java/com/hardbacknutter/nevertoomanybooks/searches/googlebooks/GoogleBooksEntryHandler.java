@@ -165,6 +165,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 class GoogleBooksEntryHandler
         extends DefaultHandler {
 
+    /** Log tag. */
     private static final String TAG = "GoogleBooksEntryHandler";
 
     /** file suffix for cover files. */

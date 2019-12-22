@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class RestoreTask
         extends TaskBase<ImportHelper> {
 
+    /** Log tag. */
     private static final String TAG = "RestoreTask";
 
     /** what and how to import. */

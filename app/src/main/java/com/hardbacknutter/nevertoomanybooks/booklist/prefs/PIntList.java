@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 public class PIntList
         extends PCollectionBase<Integer, List<Integer>> {
 
+    /** Log tag. */
     private static final String TAG = "PIntList";
 
     /**

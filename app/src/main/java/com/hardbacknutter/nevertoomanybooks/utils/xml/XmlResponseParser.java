@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 public class XmlResponseParser
         extends DefaultHandler {
 
+    /** Log tag. */
     private static final String TAG = "XmlResponseParser";
 
     /** Temporary storage for inter-tag text. */

@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
  */
 public final class FocusFixer {
 
+    /** Log tag. */
     private static final String TAG = "FocusFixer";
 
     private FocusFixer() {

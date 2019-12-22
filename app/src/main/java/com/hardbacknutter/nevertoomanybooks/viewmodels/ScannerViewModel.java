@@ -98,7 +98,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class ScannerViewModel
         extends ViewModel {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "ScannerViewModel";
 
     /** wait for the scanner; milliseconds. */

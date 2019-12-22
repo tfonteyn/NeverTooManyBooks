@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class FTSSearchActivity
         extends BaseActivity {
 
+    /** Log tag. */
     private static final String TAG = "FTSSearchActivity";
 
     /** create timer to tick every 250ms. */

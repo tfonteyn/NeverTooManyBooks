@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class IsfdbGetBookTask
         extends TaskBase<Bundle> {
 
+    /** Log tag. */
     private static final String TAG = "IsfdbGetBookTask";
 
     private final long mIsfdbId;

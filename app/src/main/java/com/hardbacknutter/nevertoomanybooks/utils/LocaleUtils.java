@@ -91,6 +91,7 @@ public final class LocaleUtils {
      */
     @VisibleForTesting
     public static final String SYSTEM_LANGUAGE = "system";
+    /** Log tag. */
     private static final String TAG = "LocaleUtils";
     private static final Collection<WeakReference<OnLocaleChangedListener>>
             ON_LOCALE_CHANGED_LISTENERS = new ArrayList<>();

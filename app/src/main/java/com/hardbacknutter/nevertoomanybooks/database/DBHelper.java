@@ -100,6 +100,7 @@ public final class DBHelper
      * db2 == app1 == 1.0.0
      */
     public static final int DATABASE_VERSION = 2;
+    /** Log tag. */
     private static final String TAG = "DBHelper";
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";

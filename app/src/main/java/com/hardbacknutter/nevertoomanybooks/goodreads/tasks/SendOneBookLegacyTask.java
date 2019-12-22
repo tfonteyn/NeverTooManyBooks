@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 class SendOneBookLegacyTask
         extends SendBooksLegacyTaskBase {
 
+    /** Log tag. */
     private static final String TAG = "SendOneBookLegacyTask";
 
     private static final long serialVersionUID = 2715001057868693159L;

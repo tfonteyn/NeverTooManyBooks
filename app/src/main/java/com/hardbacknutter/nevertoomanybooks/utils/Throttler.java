@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 
 public class Throttler {
 
+    //    /** Log tag. */
 //    private static final String TAG = "Throttler";
 
     /**

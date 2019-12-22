@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 public class IsfdbEditionsHandler
         extends AbstractBase {
 
+    /** Log tag. */
     private static final String TAG = "IsfdbEditionsHandler";
 
     /** Search URL template. */

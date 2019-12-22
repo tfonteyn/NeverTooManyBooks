@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 public final class SoundManager {
 
+    /** Log tag. */
     private static final String TAG = "SoundManager";
 
     private SoundManager() {

@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 public class RequestAuthTask
         extends TaskBase<Integer> {
 
+    /** Log tag. */
     private static final String TAG = "RequestAuthTask";
 
     /**

@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class FlattenedBooklist
         implements AutoCloseable {
 
+    /** Log tag. */
     private static final String TAG = "FlattenedBooklist";
 
     /** Name for the 'next' statement. */

@@ -224,7 +224,7 @@ public class DAO
      * <strong>Note:</strong> Important to have start/end spaces!
      */
     public static final String COLLATION = " Collate LOCALIZED ";
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "DAO";
     /** log error string. */
     private static final String ERROR_FAILED_CREATING_BOOK_FROM = "Failed creating book from\n";

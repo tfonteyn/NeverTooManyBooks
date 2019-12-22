@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  */
 public class BooklistMappedCursorRow {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BooklistMappedCursorRow";
 
     /** Associated cursor object. */

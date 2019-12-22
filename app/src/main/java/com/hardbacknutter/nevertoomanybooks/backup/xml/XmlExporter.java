@@ -106,6 +106,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public class XmlExporter
         implements Exporter, Closeable {
 
+    /** Log tag. */
     private static final String TAG = "XmlExporter";
 
     /** uber-version of the exporter (not necessarily the same as the archive container !). */

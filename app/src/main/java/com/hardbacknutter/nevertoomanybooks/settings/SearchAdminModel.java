@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 public class SearchAdminModel
         extends ViewModel {
 
+    /** Log tag. */
     private static final String TAG = "SearchAdminModel";
     public static final String BKEY_LIST_TYPE = TAG + ":type";
 

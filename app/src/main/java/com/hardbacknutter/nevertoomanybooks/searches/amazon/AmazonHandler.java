@@ -219,6 +219,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 class AmazonHandler
         extends DefaultHandler {
 
+    /** Log tag. */
     private static final String TAG = "AmazonHandler";
 
     /** file suffix for cover files. */

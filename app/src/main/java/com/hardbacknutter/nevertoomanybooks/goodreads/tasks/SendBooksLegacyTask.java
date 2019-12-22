@@ -52,7 +52,7 @@ class SendBooksLegacyTask
         extends SendBooksLegacyTaskBase {
 
     private static final long serialVersionUID = -1933000305276643875L;
-
+    /** Log tag. */
     private static final String TAG = "SendBooksLegacyTask";
 
     /**

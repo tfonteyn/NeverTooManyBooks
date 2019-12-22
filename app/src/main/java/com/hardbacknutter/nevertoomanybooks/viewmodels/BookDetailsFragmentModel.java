@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 public class BookDetailsFragmentModel
         extends ViewModel {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BookDetailsFragModel";
 
     /** Table name of the {@link FlattenedBooklist}. */

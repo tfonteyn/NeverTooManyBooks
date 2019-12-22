@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class ZoomedImageDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     private static final String TAG = "ZoomedImageDialogFragment";
     private static final String BKEY_IMAGE_PATH = TAG + ":path";
 

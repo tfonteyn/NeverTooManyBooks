@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 class CropImageView
         extends CropImageViewTouchBase {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "CropImageView";
 
     private static final boolean ENSURE_VISIBLE = true;

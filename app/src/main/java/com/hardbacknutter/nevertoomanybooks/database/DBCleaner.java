@@ -98,6 +98,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  */
 public class DBCleaner {
 
+    /** Log tag. */
     private static final String TAG = "DBCleaner";
 
     /** Database Access. */

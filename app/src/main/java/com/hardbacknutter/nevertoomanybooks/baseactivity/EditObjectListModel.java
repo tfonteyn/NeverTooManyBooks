@@ -46,7 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class EditObjectListModel
         extends ViewModel {
 
+    /** Log tag. */
     private static final String TAG = "EditObjectListModel";
+
     /**
      * Indicate we made global changes. i.e. the list did not change but entries changed.
      * <p>

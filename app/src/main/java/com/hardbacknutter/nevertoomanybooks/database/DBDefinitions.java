@@ -382,7 +382,7 @@ public final class DBDefinitions {
     public static final String KEY_EID_ISFDB = "isfdb_book_id";
     /** External id. - Long. */
     public static final String KEY_EID_LIBRARY_THING = "lt_book_id";
-    /** External id. - Long. */
+    /** External id. - String. */
     public static final String KEY_EID_OPEN_LIBRARY = "ol_book_id";
     /** External id. - Long. */
     public static final String KEY_EID_STRIP_INFO_BE = "si_book_id";

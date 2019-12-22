@@ -97,7 +97,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public class CoverHandler {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "CoverHandler";
 
     private static final String IMAGE_MIME_TYPE = "image/*";

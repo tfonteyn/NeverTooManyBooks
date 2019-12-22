@@ -114,6 +114,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class BooklistStyle
         implements Parcelable, Entity {
 
+    /** Log tag. */
     private static final String TAG = "BooklistStyle";
 
     /** {@link Parcelable}. */

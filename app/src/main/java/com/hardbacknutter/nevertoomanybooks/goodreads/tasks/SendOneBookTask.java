@@ -56,8 +56,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 public class SendOneBookTask
         extends TaskBase<Integer> {
 
+    /** Log tag. */
     private static final String TAG = "SendOneBookTask";
 
+    /** The book to send. */
     private final long mBookId;
 
     /**

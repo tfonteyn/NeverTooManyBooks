@@ -87,7 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class CropImageActivity
         extends CropMonitoredActivity {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "CropImageActivity";
 
     public static final String BKEY_IMAGE_ABSOLUTE_PATH = TAG + ":image-path";

@@ -64,6 +64,7 @@ public class BookBaseFragmentModel
         extends ViewModel
         implements ActivityResultDataModel {
 
+    /** Log tag. */
     private static final String TAG = "BookBaseFragmentModel";
 
     private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();

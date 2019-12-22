@@ -73,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
  */
 public class ISBN {
 
+    /** Log tag. */
     private static final String TAG = "ISBN";
 
     private static final String ERROR_WRONG_SIZE =

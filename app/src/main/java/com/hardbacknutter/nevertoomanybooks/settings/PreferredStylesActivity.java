@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 public class PreferredStylesActivity
         extends BaseActivity {
 
+    /** Log tag. */
     private static final String TAG = "PreferredStylesActivity";
 
     /** The adapter for the list. */

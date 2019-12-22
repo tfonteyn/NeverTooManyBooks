@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public abstract class BackupWriterAbstract
         implements BackupWriter {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BackupWriterAbstract";
 
     private static final int BUFFER_SIZE = 32768;

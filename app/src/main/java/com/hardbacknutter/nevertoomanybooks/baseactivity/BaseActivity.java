@@ -94,6 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public abstract class BaseActivity
         extends AppCompatActivity {
 
+    /** Log tag. */
     private static final String TAG = "BaseActivity";
 
     /** Locale at {@link #onCreate} time. */

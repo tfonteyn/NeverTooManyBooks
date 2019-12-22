@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  */
 public abstract class JsoupBase {
 
+    /** Log tag. */
     private static final String TAG = "JsoupBase";
 
 //    /** Not needed for now, but handy for testing. */

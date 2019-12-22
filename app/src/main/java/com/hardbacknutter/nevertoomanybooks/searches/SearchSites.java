@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;

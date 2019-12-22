@@ -66,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  * {@link EditBookNotesFragment}
  * {@link EditBookTocFragment}
  *
+ * FIXME: we support only ONE checklist dialog on each Fragment.
  * @param <T> type of the {@link CheckListItem}
  */
 public abstract class EditBookBaseFragment<T>

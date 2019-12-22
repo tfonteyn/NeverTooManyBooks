@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class TarBackupReader
         extends BackupReaderAbstract {
 
+    /** Log tag. */
     private static final String TAG = "TarBackupReader";
 
     private static final Pattern LEGACY_STYLES_PATTERN =

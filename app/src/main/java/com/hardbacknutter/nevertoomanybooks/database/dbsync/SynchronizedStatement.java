@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class SynchronizedStatement
         implements Closeable {
 
+    /** Log tag. */
     private static final String TAG = "SynchronizedStatement";
 
     /** Synchronizer from database. */

@@ -73,7 +73,7 @@ public class StripInfoBookHandler
 
     /** read-timeout. Default is 10_000. */
     private static final int READ_TIMEOUT = 60_000;
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "StripInfoBookHandler";
     /** Color string values as used on the site. Complete 2019-10-29. */
     private static final String COLOR_STRINGS = "Kleur|Zwart/wit|Zwart/wit met steunkleur";

@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public final class DebugReport {
 
+    /** Log tag. */
     private static final String TAG = "DebugReport";
 
     /** files with these prefixes will be bundled in the report. */
