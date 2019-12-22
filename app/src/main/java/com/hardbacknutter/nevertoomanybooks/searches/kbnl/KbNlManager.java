@@ -114,7 +114,7 @@ public class KbNlManager
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         String url = getBaseURL(localizedAppContext) + String.format(BOOK_URL, isbn);
@@ -141,7 +141,7 @@ public class KbNlManager
             throw new IOException(e);
         }
 
-        if (fetchThumbnail) {
+        if (fetchThumbnail[0]) {
             getCoverImage(localizedAppContext, isbn, bookData);
         }
         return bookData;

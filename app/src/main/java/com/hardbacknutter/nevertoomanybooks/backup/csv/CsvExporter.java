@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -143,7 +144,7 @@ public class CsvExporter
      */
     public CsvExporter(@NonNull final Context context,
                        @NonNull final ExportHelper exportHelper) {
-        mUnknownString = context.getString(R.string.unknown);
+        mUnknownString = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
         mExportHelper = exportHelper;
         mExportHelper.validate();
     }
@@ -191,19 +192,15 @@ public class CsvExporter
                 results.booksExported++;
                 long bookId = bookCursor.getId();
 
-                String authorStringList = CsvCoder.getAuthorCoder()
-                                                  .encodeList(db.getAuthorsByBookId(bookId));
-
-                // Sanity check: ensure author is non-blank. This HAPPENS.
-                // Probably due to constraint failures.
-                if (authorStringList.trim().isEmpty()) {
-                    authorStringList = mUnknownString + ", " + mUnknownString;
+                String authors = CsvCoder.getAuthorCoder()
+                                         .encodeList(db.getAuthorsByBookId(bookId));
+                // Sanity check: ensure author is non-blank.
+                if (authors.trim().isEmpty()) {
+                    authors = mUnknownString;
                 }
 
                 String title = bookCursor.getString(DBDefinitions.KEY_TITLE);
-                // Sanity check: ensure title is non-blank. This has not happened yet, but we
-                // know if does for author, so completeness suggests making sure all 'required'
-                // fields are non-blank.
+                // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
                     title = mUnknownString;
                 }
@@ -212,7 +209,7 @@ public class CsvExporter
                 row.append(format(bookId))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_BOOK_UUID)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
-                   .append(format(authorStringList))
+                   .append(format(authors))
                    .append(format(title))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_ISBN)))
                    .append(format(bookCursor.getString(DBDefinitions.KEY_PUBLISHER)))

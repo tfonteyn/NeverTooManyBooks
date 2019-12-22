@@ -279,14 +279,14 @@ public class LibraryThingManager
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "isbn", isbn);
 
         Bundle bookData = fetchBook(localizedAppContext, url);
 
-        if (fetchThumbnail) {
+        if (fetchThumbnail[0]) {
             getCoverImage(localizedAppContext, isbn, bookData);
         }
 
@@ -302,14 +302,14 @@ public class LibraryThingManager
     @Override
     public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
-                                   final boolean fetchThumbnail)
+                                   @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "id", nativeId);
 
         Bundle bookData = fetchBook(localizedAppContext, url);
 
-        if (fetchThumbnail) {
+        if (fetchThumbnail[0]) {
             String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             if (isbn != null && !isbn.isEmpty()) {
                 getCoverImage(localizedAppContext, isbn, bookData);

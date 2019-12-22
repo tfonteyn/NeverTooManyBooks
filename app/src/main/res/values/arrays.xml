@@ -125,7 +125,7 @@
     <string-array name="pe_camera_next_action">
         <item>@string/none</item>
         <item>@string/menu_cover_crop</item>
-        <item>@string/menu_edit</item>
+        <item>@string/menu_cover_edit</item>
     </string-array>
     <string-array name="pv_camera_next_action">
         <item>0</item>

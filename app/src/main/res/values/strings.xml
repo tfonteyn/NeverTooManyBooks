@@ -1005,6 +1005,8 @@
     <!-- Context menu for a cover image -->
     <!-- menu option -->
     <string name="menu_cover_crop">Crop</string>
+    <!-- menu option -->
+    <string name="menu_cover_edit">Start Editor</string>
     <!-- submenu title -->
     <string name="menu_cover_replace">Replace…</string>
     <!-- menu option -->

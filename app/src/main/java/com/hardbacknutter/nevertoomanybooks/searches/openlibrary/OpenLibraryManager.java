@@ -175,7 +175,7 @@ public class OpenLibraryManager
     @Override
     public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
-                                   final boolean fetchThumbnail)
+                                   @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         String url = String.format(BASE_BOOK_URL, "OLID", nativeId);
@@ -192,7 +192,7 @@ public class OpenLibraryManager
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         String url = String.format(BASE_BOOK_URL, "ISBN", isbn);
@@ -201,7 +201,7 @@ public class OpenLibraryManager
 
     private Bundle fetchBook(@NonNull final Context appContext,
                              @NonNull final String url,
-                             final boolean fetchThumbnail)
+                             @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         // get and store the result into a string.
         String response;
@@ -434,7 +434,7 @@ public class OpenLibraryManager
     @VisibleForTesting
     Bundle handleResponse(@NonNull final Bundle bookData,
                           @NonNull final JSONObject jsonObject,
-                          final boolean fetchThumbnail)
+                          @NonNull final boolean[] fetchThumbnail)
             throws JSONException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
             Log.d(TAG, "ENTER|handleResponse|" + jsonObject.toString(2));
@@ -466,7 +466,7 @@ public class OpenLibraryManager
      */
     private Bundle handleBook(@NonNull final Bundle bookData,
                               @NonNull final String isbn,
-                              final boolean fetchThumbnail,
+                              @NonNull final boolean[] fetchThumbnail,
                               @NonNull final JSONObject result)
             throws JSONException {
 
@@ -563,7 +563,7 @@ public class OpenLibraryManager
             }
         }
 
-        if (fetchThumbnail) {
+        if (fetchThumbnail[0]) {
             // get the largest cover image available.
             o = result.optJSONObject("cover");
             String sizeParam = "large";

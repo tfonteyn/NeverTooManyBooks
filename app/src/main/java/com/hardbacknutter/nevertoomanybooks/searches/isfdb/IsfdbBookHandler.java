@@ -52,7 +52,6 @@ import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -154,9 +153,8 @@ public class IsfdbBookHandler
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
-    private final String mUnknown;
     @NonNull
-    private final Context mLocalizedAppContext;
+    private final Context mLocalizedContext;
     private final String mBaseUrl;
     /** The fully qualified ISFDB search url. */
     private String mPath;
@@ -172,30 +170,28 @@ public class IsfdbBookHandler
     /**
      * Constructor.
      *
-     * @param localizedAppContext Localised application context
+     * @param localizedContext Localised application context
      */
-    IsfdbBookHandler(@NonNull final Context localizedAppContext) {
+    IsfdbBookHandler(@NonNull final Context localizedContext) {
         super();
-        mLocalizedAppContext = localizedAppContext;
+        mLocalizedContext = localizedContext;
 
-        mBaseUrl = IsfdbManager.getBaseURL(localizedAppContext);
-        mUnknown = localizedAppContext.getString(R.string.unknown);
+        mBaseUrl = IsfdbManager.getBaseURL(localizedContext);
     }
 
     /**
      * Constructor used for testing.
      *
-     * @param localizedAppContext Localised application context
+     * @param localizedContext Localised application context
      * @param doc                 the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbBookHandler(@NonNull final Context localizedAppContext,
+    IsfdbBookHandler(@NonNull final Context localizedContext,
                      @NonNull final Document doc) {
         super(doc);
-        mLocalizedAppContext = localizedAppContext;
+        mLocalizedContext = localizedContext;
 
-        mBaseUrl = IsfdbManager.getBaseURL(mLocalizedAppContext);
-        mUnknown = mLocalizedAppContext.getString(R.string.unknown);
+        mBaseUrl = IsfdbManager.getBaseURL(mLocalizedContext);
     }
 
     @Nullable
@@ -217,7 +213,7 @@ public class IsfdbBookHandler
     @NonNull
     Bundle fetchByNativeId(@NonNull final String isfdbId,
                            final boolean addSeriesFromToc,
-                           final boolean fetchThumbnail)
+                           @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
         return fetch(mBaseUrl + String.format(BOOK_URL, isfdbId), addSeriesFromToc, fetchThumbnail);
@@ -237,12 +233,12 @@ public class IsfdbBookHandler
     @NonNull
     private Bundle fetch(@NonNull final String path,
                          final boolean addSeriesFromToc,
-                         final boolean fetchThumbnail)
+                         @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
         mPath = path;
 
-        if (loadPage(mLocalizedAppContext, mPath) == null) {
+        if (loadPage(mLocalizedContext, mPath) == null) {
             return new Bundle();
         }
 
@@ -264,7 +260,7 @@ public class IsfdbBookHandler
     @NonNull
     public Bundle fetch(@Size(min = 1) @NonNull final List<Edition> editions,
                         final boolean addSeriesFromToc,
-                        final boolean fetchThumbnail)
+                        @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
         mEditions = editions;
@@ -277,7 +273,7 @@ public class IsfdbBookHandler
             mDoc = edition.doc;
         } else {
             // nop, go get it.
-            if (loadPage(mLocalizedAppContext, mPath) == null) {
+            if (loadPage(mLocalizedContext, mPath) == null) {
                 return new Bundle();
             }
         }
@@ -457,13 +453,13 @@ public class IsfdbBookHandler
     @VisibleForTesting
     Bundle parseDoc(@NonNull final Bundle bookData,
                     final boolean addSeriesFromToc,
-                    final boolean fetchThumbnail)
+                    @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
         Elements allContentBoxes = mDoc.select("div.contentbox");
         // sanity check
         if (allContentBoxes == null) {
-            Logger.warn(mLocalizedAppContext, TAG, "parseDoc", "no contentbox found",
+            Logger.warn(mLocalizedContext, TAG, "parseDoc", "no contentbox found",
                         "mDoc.location()=" + mDoc.location());
             return bookData;
         }
@@ -626,7 +622,7 @@ public class IsfdbBookHandler
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(mLocalizedAppContext, TAG, e,
+                Logger.error(mLocalizedContext, TAG, e,
                              "path: " + mPath + "\n\nLI: " + li.toString());
             }
         }
@@ -706,7 +702,7 @@ public class IsfdbBookHandler
         }
 
         // optional fetch of the cover.
-        if (fetchThumbnail) {
+        if (fetchThumbnail[0]) {
             /* First "ContentBox" contains all basic details.
              * <pre>
              *   {@code
@@ -724,7 +720,7 @@ public class IsfdbBookHandler
              */
             Element img = mDoc.selectFirst("div.contentbox").selectFirst("img");
             if (img != null) {
-                fetchCover(mLocalizedAppContext, img.attr("src"), bookData);
+                fetchCover(mLocalizedContext, img.attr("src"), bookData);
             }
         }
 
@@ -757,7 +753,7 @@ public class IsfdbBookHandler
      * <a href="https://www.amazon.com/dp/B003ODIWEG?ie=UTF8&amp;tag=isfdb-20&amp;
      * linkCode=as2&amp;camp=1789&amp;creative=9325" target="_blank">US</a>)
      * }
-     *
+     * <p>
      * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
      *
      * @param elements LI elements
@@ -907,7 +903,7 @@ public class IsfdbBookHandler
 
         final ArrayList<TocEntry> results = new ArrayList<>();
 
-        if (loadPage(mLocalizedAppContext, mPath) == null) {
+        if (loadPage(mLocalizedContext, mPath) == null) {
             return results;
         }
 
@@ -1028,12 +1024,12 @@ public class IsfdbBookHandler
             //      Appendixes (Dune)</a> • essay by uncredited
             // </li>
             if (author == null) {
-                author = new Author(mUnknown, mUnknown);
+                author = Author.createUnknownAuthor(mLocalizedContext);
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.warn(mLocalizedAppContext, TAG, "getTocList",
+                Logger.warn(mLocalizedContext, TAG, "getTocList",
                             "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
                             "no title for li=" + li);
             }

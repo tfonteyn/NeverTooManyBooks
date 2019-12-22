@@ -259,7 +259,8 @@ class AmazonHandler
     private static final String XML_AMOUNT = "Amount";
 
     /** flag if we should fetch a thumbnail. */
-    private final boolean mFetchThumbnail;
+    @NonNull
+    private final boolean[] mFetchThumbnail;
     @NonNull
     private final Context mLocalizedAppContext;
     /** Bundle to save results in. */
@@ -331,7 +332,7 @@ class AmazonHandler
      */
     AmazonHandler(@NonNull final Context localizedAppContext,
                   @NonNull final Bundle bookData,
-                  final boolean fetchThumbnail) {
+                  @NonNull final boolean[] fetchThumbnail) {
         mLocalizedAppContext = localizedAppContext;
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
@@ -391,7 +392,7 @@ class AmazonHandler
     @Override
     @CallSuper
     public void endDocument() {
-        if (mFetchThumbnail && !mCoverUrl.isEmpty()) {
+        if (mFetchThumbnail[0] && !mCoverUrl.isEmpty()) {
             String name = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
             String fileSpec = ImageUtils.saveImage(mLocalizedAppContext,
                                                    mCoverUrl, name, FILENAME_SUFFIX, null);

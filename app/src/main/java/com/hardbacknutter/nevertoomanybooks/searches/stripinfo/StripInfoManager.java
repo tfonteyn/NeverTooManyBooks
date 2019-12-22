@@ -92,7 +92,7 @@ public class StripInfoManager
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         return new StripInfoBookHandler(localizedAppContext, this)
                 .fetch(isbn, new Bundle(), fetchThumbnail);
@@ -102,7 +102,7 @@ public class StripInfoManager
     @Override
     public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
-                                   final boolean fetchThumbnail)
+                                   @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         return new StripInfoBookHandler(localizedAppContext, this)
                 .fetchByNativeId(nativeId, new Bundle(), fetchThumbnail);

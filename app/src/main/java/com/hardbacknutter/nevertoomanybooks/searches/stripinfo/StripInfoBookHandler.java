@@ -116,7 +116,7 @@ public class StripInfoBookHandler
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
     /** cached ApplicationContext. */
     @NonNull
-    private final Context mContext;
+    private final Context mLocalizedContext;
     /** ISBN of the book we want. Only kept for logging reference. */
     private String mIsbn;
 
@@ -130,7 +130,7 @@ public class StripInfoBookHandler
                          @NonNull final SearchEngine searchEngine) {
         super();
         initSite(searchEngine);
-        mContext = localizedAppContext;
+        mLocalizedContext = localizedAppContext;
     }
 
     /**
@@ -146,7 +146,7 @@ public class StripInfoBookHandler
                          @NonNull final Document doc) {
         super(doc);
         initSite(searchEngine);
-        mContext = localizedAppContext;
+        mLocalizedContext = localizedAppContext;
     }
 
     /**
@@ -173,13 +173,13 @@ public class StripInfoBookHandler
     @NonNull
     public Bundle fetch(@NonNull final String isbn,
                         @NonNull final Bundle bookData,
-                        final boolean fetchThumbnail)
+                        @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
         // keep for reference
         mIsbn = isbn;
 
         String path = StripInfoManager.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
-        if (loadPage(mContext, path) == null) {
+        if (loadPage(mLocalizedContext, path) == null) {
             return bookData;
         }
 
@@ -205,11 +205,11 @@ public class StripInfoBookHandler
     @NonNull
     Bundle fetchByNativeId(@NonNull final String nativeId,
                            @NonNull final Bundle bookData,
-                           final boolean fetchThumbnail)
+                           @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
         String path = StripInfoManager.BASE_URL + String.format(BOOK_BY_NATIVE_ID, nativeId);
-        if (loadPage(mContext, path) == null) {
+        if (loadPage(mLocalizedContext, path) == null) {
             return bookData;
         }
 
@@ -231,10 +231,10 @@ public class StripInfoBookHandler
     @NonNull
     Bundle fetchByPath(@NonNull final String path,
                        @NonNull final Bundle bookData,
-                       final boolean fetchThumbnail)
+                       @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
-        if (loadPage(mContext, path) == null) {
+        if (loadPage(mLocalizedContext, path) == null) {
             return bookData;
         }
 
@@ -256,7 +256,7 @@ public class StripInfoBookHandler
      * @return Bundle with book data, can be empty, but never {@code null}
      */
     Bundle parseDoc(@NonNull final Bundle bookData,
-                    final boolean fetchThumbnail) {
+                    @NonNull final boolean[] fetchThumbnail) {
 
         // extracted from the page header.
         String primarySeriesTitle = extractPrimarySeriesTitle();
@@ -338,7 +338,7 @@ public class StripInfoBookHandler
                                 if (lang != null && !lang.isEmpty()) {
                                     // the language is a 'DisplayName' so convert to iso first.
                                     lang = LanguageUtils
-                                            .getISO3FromDisplayName(mContext, lang);
+                                            .getISO3FromDisplayName(mLocalizedContext, lang);
                                     bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
                                 }
                                 break;
@@ -420,13 +420,15 @@ public class StripInfoBookHandler
             bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
 
-        if (fetchThumbnail) {
+        if (fetchThumbnail[0]) {
             // front cover
             fetchCoverFromElement("a.stripThumb", 0, bookData);
+        }
+
+        if (fetchThumbnail.length > 1 && fetchThumbnail[1]) {
             // back cover
             fetchCoverFromElement("a.belowImage", 1, bookData);
         }
-
         return bookData;
     }
 
@@ -442,7 +444,7 @@ public class StripInfoBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     Bundle parseMultiResult(@NonNull final Bundle bookData,
-                            final boolean fetchThumbnail)
+                            @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
         Elements sections = mDoc.select("section.c6");
@@ -515,7 +517,7 @@ public class StripInfoBookHandler
         // do not use the isbn we searched for, use the one we found even if empty!
         String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
         // download
-        String fileSpec = ImageUtils.saveImage(mContext, coverUrl,
+        String fileSpec = ImageUtils.saveImage(mLocalizedContext, coverUrl,
                                                isbn, FILENAME_SUFFIX + cIdx, null);
 
         if (fileSpec != null) {
@@ -674,7 +676,13 @@ public class StripInfoBookHandler
                                 }
 
                                 if (title != null && !title.isEmpty()) {
-                                    TocEntry tocEntry = new TocEntry(mAuthors.get(0), title, "");
+                                    Author author;
+                                    if (!mAuthors.isEmpty()) {
+                                        author = mAuthors.get(0);
+                                    } else {
+                                        author = Author.createUnknownAuthor(mLocalizedContext);
+                                    }
+                                    TocEntry tocEntry = new TocEntry(author, title, "");
                                     tocEntries.add(tocEntry);
                                 }
                             }

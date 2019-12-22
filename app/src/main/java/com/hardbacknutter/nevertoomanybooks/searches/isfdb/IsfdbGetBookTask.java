@@ -100,13 +100,14 @@ public class IsfdbGetBookTask
         Context localContext = App.getLocalizedAppContext();
 
         try {
+            boolean[] thumbs = {false, false};
             if (mEditions != null) {
                 return new IsfdbBookHandler(localContext)
-                        .fetch(mEditions, mAddSeriesFromToc, false);
+                        .fetch(mEditions, mAddSeriesFromToc, thumbs);
 
             } else if (mIsfdbId != 0) {
                 return new IsfdbBookHandler(localContext)
-                        .fetchByNativeId(String.valueOf(mIsfdbId), mAddSeriesFromToc, false);
+                        .fetchByNativeId(String.valueOf(mIsfdbId), mAddSeriesFromToc, thumbs);
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {

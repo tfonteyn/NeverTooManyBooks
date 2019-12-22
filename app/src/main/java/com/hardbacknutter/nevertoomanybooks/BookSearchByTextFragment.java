@@ -113,8 +113,9 @@ public class BookSearchByTextFragment
             copyView2Model();
 
             String authorSearchText = mSearchCoordinator.getAuthorSearchText();
-            boolean hasAuthor = authorSearchText != null && !authorSearchText.isEmpty();
-            if (hasAuthor) {
+            String titleSearchText = mSearchCoordinator.getTitleSearchText();
+
+            if (!authorSearchText.isEmpty()) {
                 // Always add the current search text to the list of recent searches.
                 if (mAuthorAdapter.getPosition(authorSearchText) < 0) {
                     boolean found = false;
@@ -133,10 +134,8 @@ public class BookSearchByTextFragment
                 }
             }
 
-            String titleSearchText = mSearchCoordinator.getTitleSearchText();
-            boolean hasTitle = titleSearchText != null && !titleSearchText.isEmpty();
             //sanity check
-            if (!hasAuthor && !hasTitle) {
+            if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
                 Snackbar.make(getView(), R.string.warning_requires_at_least_one_field,
                               Snackbar.LENGTH_LONG).show();
                 return;
@@ -195,27 +194,21 @@ public class BookSearchByTextFragment
         // we add them manually as the template for a new book.
 
         if (!bookData.containsKey(DBDefinitions.KEY_TITLE)) {
-            String title = mSearchCoordinator.getTitleSearchText();
-            if (title != null) {
-                bookData.putString(DBDefinitions.KEY_TITLE, title);
-            }
+            bookData.putString(DBDefinitions.KEY_TITLE,
+                               mSearchCoordinator.getTitleSearchText());
         }
 
         //noinspection ConstantConditions
         if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
             || bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
-            String author = mSearchCoordinator.getAuthorSearchText();
-            if (author != null) {
-                bookData.putString(UniqueId.BKEY_SEARCH_AUTHOR, author);
-            }
+            bookData.putString(UniqueId.BKEY_SEARCH_AUTHOR,
+                               mSearchCoordinator.getAuthorSearchText());
         }
 
         if (!bookData.containsKey(DBDefinitions.KEY_PUBLISHER)) {
-            String publisher = mSearchCoordinator.getPublisherSearchText();
-            if (publisher != null) {
-                bookData.putString(DBDefinitions.KEY_PUBLISHER, publisher);
-            }
+            bookData.putString(DBDefinitions.KEY_PUBLISHER,
+                               mSearchCoordinator.getPublisherSearchText());
         }
 
         Intent intent = new Intent(getContext(), EditBookActivity.class)

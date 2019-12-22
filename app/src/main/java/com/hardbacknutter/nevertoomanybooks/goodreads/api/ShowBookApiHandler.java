@@ -277,7 +277,7 @@ public abstract class ShowBookApiHandler
      */
     @NonNull
     Bundle getBookData(@NonNull final String url,
-                       final boolean fetchThumbnail)
+                       @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, BookNotFoundException, IOException {
 
         mBookData = new Bundle();
@@ -393,7 +393,7 @@ public abstract class ShowBookApiHandler
             mBookData.putStringArrayList(ShowBookFieldName.SHELVES, mShelves);
         }
 
-        if (fetchThumbnail) {
+        if (fetchThumbnail[0]) {
             handleThumbnail(App.getAppContext());
         }
 

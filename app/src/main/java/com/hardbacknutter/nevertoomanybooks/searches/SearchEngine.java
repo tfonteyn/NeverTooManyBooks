@@ -187,8 +187,8 @@ public interface SearchEngine {
          *
          * @param localizedAppContext Localised application context
          * @param nativeId            the native id (as a String) for this particular search site.
-         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
-         *
+         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail.
+         *                            The array is guaranteed to have at least one element.
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws CredentialsException for sites which require credentials
@@ -198,7 +198,7 @@ public interface SearchEngine {
         @NonNull
         Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                 @NonNull final String nativeId,
-                                final boolean fetchThumbnail)
+                                @NonNull final boolean[] fetchThumbnail)
                 throws CredentialsException, IOException;
     }
 
@@ -213,7 +213,8 @@ public interface SearchEngine {
          * @param isbn                to search for, <strong>will</strong> be valid
          *                            unless the engine implements {@link ByBarcode},
          *                            in that case it <strong>may</strong> be generic/invalid.
-         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
+         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail.
+         *                            The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -224,7 +225,7 @@ public interface SearchEngine {
         @NonNull
         Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                             @NonNull final String isbn,
-                            final boolean fetchThumbnail)
+                            @NonNull final boolean[] fetchThumbnail)
                 throws CredentialsException, IOException;
     }
 
@@ -236,28 +237,6 @@ public interface SearchEngine {
     interface ByBarcode
             extends ByIsbn {
 
-//        /**
-//         * Called by the {@link SearchCoordinator#search}.
-//         * The barcode should be <strong>valid</strong>; i.e. it's checksum must be correct.
-//         *
-//         * @param localizedAppContext Localised application context
-//         * @param barcode             to search for
-//         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
-//         *
-//         * @return bundle with book data. Can be empty, but never {@code null}.
-//         *
-//         * @throws CredentialsException for sites which require credentials
-//         * @throws IOException          on other failures
-//         */
-//        @WorkerThread
-//        @NonNull
-//        default Bundle searchByBarcode(@NonNull final Context localizedAppContext,
-//                                       @NonNull final String barcode,
-//                                       final boolean fetchThumbnail)
-//                throws CredentialsException, IOException {
-//
-//            return searchByIsbn(localizedAppContext, barcode, fetchThumbnail);
-//        }
     }
 
     /** Optional. */
@@ -278,7 +257,8 @@ public interface SearchEngine {
          * @param publisher           optional and in addition to author/title.
          *                            i.e. author and/or title must be valid;
          *                            only then the publisher is taken into account.
-         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
+         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail.
+         *                            The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -292,14 +272,14 @@ public interface SearchEngine {
                       @Nullable String author,
                       @Nullable String title,
                       @Nullable String publisher,
-                      boolean fetchThumbnail)
+                      @NonNull boolean[] fetchThumbnail)
                 throws CredentialsException, IOException;
     }
 
     /** Optional. */
     interface CoverByIsbn
             extends SearchEngine {
-
+        //URGENT: implement multi cover
         /**
          * A site can support a single (default) or multiple sizes.
          *
@@ -324,7 +304,8 @@ public interface SearchEngine {
         default File getCoverImage(@NonNull Context appContext,
                                    @NonNull String isbn,
                                    @Nullable ImageSize size) {
-            return getCoverImageFallback(appContext, isbn);
+            boolean[] thumbs = {true, false};
+            return getCoverImageFallback(appContext, isbn, thumbs);
         }
 
         /**
@@ -371,30 +352,34 @@ public interface SearchEngine {
          * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
          * {@code null} returned.
          *
-         * @param appContext Application context
-         * @param isbnStr    to search for, <strong>must</strong> be valid.
+         * @param appContext     Application context
+         * @param isbnStr        to search for, <strong>must</strong> be valid.
+         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
          *
          * @return found/saved File, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
         default File getCoverImageFallback(@NonNull final Context appContext,
-                                           @NonNull final String isbnStr) {
+                                           @NonNull final String isbnStr,
+                                           @NonNull final boolean[] fetchThumbnail) {
             try {
                 Bundle bookData;
                 // If we have a valid ISBN, and the engine supports it, we can search.
                 if (ISBN.isValidIsbn(isbnStr) && this instanceof SearchEngine.ByIsbn) {
-                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbnStr, true);
+                    bookData = ((SearchEngine.ByIsbn) this)
+                            .searchByIsbn(appContext, isbnStr, fetchThumbnail);
 
                     // If we have a generic barcode, ...
                 } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByBarcode) {
-                    bookData = ((SearchEngine.ByIsbn) this).searchByIsbn(appContext, isbnStr, true);
+                    bookData = ((SearchEngine.ByIsbn) this)
+                            .searchByIsbn(appContext, isbnStr, fetchThumbnail);
 
                     // otherwise we pass a non-empty (but invalid) isbn on regardless.
                     // if the engine supports text mode.
                 } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByText) {
                     bookData = ((SearchEngine.ByText) this)
-                            .search(appContext, isbnStr, "", "", "", true);
+                            .search(appContext, isbnStr, "", "", "", fetchThumbnail);
                 } else {
                     // don't throw here; this is a fallback method allowed to fail.
                     return null;

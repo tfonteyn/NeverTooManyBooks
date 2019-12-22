@@ -60,7 +60,8 @@ public class SearchTask
     private final SearchEngine mSearchEngine;
 
     /** whether to fetch thumbnails. */
-    private boolean mFetchThumbnail;
+    @Nullable
+    private boolean[] mFetchThumbnail;
 
     /** search criteria. */
     @Nullable
@@ -112,36 +113,42 @@ public class SearchTask
     /**
      * @param isbn to search for
      */
-    void setIsbn(@Nullable final String isbn) {
+    void setIsbn(@NonNull final String isbn) {
         mIsbn = isbn;
     }
 
     /**
      * @param author to search for
      */
-    void setAuthor(@Nullable final String author) {
+    void setAuthor(@NonNull final String author) {
         mAuthor = author;
     }
 
     /**
      * @param title to search for
      */
-    void setTitle(@Nullable final String title) {
+    void setTitle(@NonNull final String title) {
         mTitle = title;
     }
 
     /**
      * @param publisher to search for
      */
-    void setPublisher(@Nullable final String publisher) {
+    void setPublisher(@NonNull final String publisher) {
         mPublisher = publisher;
     }
 
     /**
+     * Set flag.
+     *
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
-    void setFetchThumbnail(final boolean fetchThumbnail) {
-        mFetchThumbnail = fetchThumbnail;
+    void setFetchThumbnail(@Nullable final boolean[] fetchThumbnail) {
+        if (fetchThumbnail == null || fetchThumbnail.length == 0) {
+            mFetchThumbnail = new boolean[2];
+        } else {
+            mFetchThumbnail = fetchThumbnail;
+        }
     }
 
     @Override
@@ -160,6 +167,11 @@ public class SearchTask
                               mSearchEngine.getConnectTimeoutMs());
 
             Bundle bookData;
+
+            // sanity/paranoia check, see #setFetchThumbnail
+            if (mFetchThumbnail == null) {
+                mFetchThumbnail = new boolean[2];
+            }
 
             // if we have a native id, and the engine supports it, we can search.
             if (mNativeId != null && !mNativeId.isEmpty()

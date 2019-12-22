@@ -110,7 +110,7 @@ public class UpdateFieldsModel
      * Tracks between {@link #startSearch(Context)}
      * and {@link #processSearchResults(Context, Bundle)}.
      */
-    private Map<String, FieldUsage> mCurrentFieldUsages;
+    private Map<String, FieldUsage> mCurrentFieldsWanted;
 
     private int mCurrentProgressCounter;
     private int mCurrentCursorCount;
@@ -369,26 +369,25 @@ public class UpdateFieldsModel
                                                         mDb.getTocEntryByBook(mCurrentBookId));
 
                 // Check which fields this book needs.
-                mCurrentFieldUsages = filter(context, mFieldUsages, mCurrentBookData);
+                mCurrentFieldsWanted = filter(context, mFieldUsages, mCurrentBookData);
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
-                // Make sure the searchable fields are not NULL
-                String isbn = mCurrentBookData.getString(DBDefinitions.KEY_ISBN, "");
-                String title = mCurrentBookData.getString(DBDefinitions.KEY_TITLE, "");
+                String isbn = mCurrentBookData.getString(DBDefinitions.KEY_ISBN);
+                String title = mCurrentBookData.getString(DBDefinitions.KEY_TITLE);
+                String author = mCurrentBookData.getString(
+                        DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
-                // does this book NEED data?
-                if (!mCurrentFieldUsages.isEmpty()) {
+                if (!mCurrentFieldsWanted.isEmpty()) {
 
                     boolean canSearch = false;
 
-                    if (!isbn.isEmpty()) {
+                    if (isbn != null && !isbn.isEmpty()) {
                         setIsbnSearchText(isbn, true);
                         canSearch = true;
                     }
 
-                    String author = mCurrentBookData
-                            .getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, "");
-                    if (!author.isEmpty() && !title.isEmpty()) {
+                    if (author != null && !author.isEmpty()
+                        && title != null && !title.isEmpty()) {
                         setAuthorSearchText(author);
                         setTitleSearchText(title);
                         canSearch = true;
@@ -397,6 +396,7 @@ public class UpdateFieldsModel
                     // Collect native ids we can use
                     SparseArray<String> nativeIds = new SparseArray<>();
                     for (String key : DBDefinitions.NATIVE_ID_KEYS) {
+                        // values can be Long and String.
                         Object o = mCurrentBookData.get(key);
                         if (o != null) {
                             String value = o.toString().trim();
@@ -412,18 +412,20 @@ public class UpdateFieldsModel
 
                     if (canSearch) {
                         // optional
-                        setPublisherSearchText(mCurrentBookData.getString(
-                                DBDefinitions.KEY_PUBLISHER, ""));
+                        String publisher = mCurrentBookData.getString(DBDefinitions.KEY_PUBLISHER);
+                        if (publisher != null && !publisher.isEmpty()) {
+                            setPublisherSearchText(publisher);
+                        }
 
-                        boolean fetchThumbnail = false;
+                        boolean[] thumbs = new boolean[2];
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
-                            fetchThumbnail |= mCurrentFieldUsages
+                            thumbs[cIdx] = mCurrentFieldsWanted
                                     .containsKey(UniqueId.BKEY_FILE_SPEC[cIdx]);
                         }
-                        setFetchThumbnail(fetchThumbnail);
+                        setFetchThumbnail(thumbs);
 
                         // Update the progress base message.
-                        if (!title.isEmpty()) {
+                        if (title != null && !title.isEmpty()) {
                             setBaseMessage(title);
                         } else {
                             setBaseMessage(isbn);
@@ -455,8 +457,8 @@ public class UpdateFieldsModel
             Collection<String> toRemove = new ArrayList<>();
             for (String key : bookData.keySet()) {
                 //noinspection ConstantConditions
-                if (!mCurrentFieldUsages.containsKey(key)
-                    || !mCurrentFieldUsages.get(key).isWanted()) {
+                if (!mCurrentFieldsWanted.containsKey(key)
+                    || !mCurrentFieldsWanted.get(key).isWanted()) {
                     toRemove.add(key);
                 }
             }
@@ -466,7 +468,7 @@ public class UpdateFieldsModel
             }
 
             // For each field, process it according the usage.
-            for (FieldUsage usage : mCurrentFieldUsages.values()) {
+            for (FieldUsage usage : mCurrentFieldsWanted.values()) {
                 if (bookData.containsKey(usage.fieldId)) {
                     // Handle thumbnail specially
                     if (usage.fieldId.equals(UniqueId.BKEY_FILE_SPEC[0])) {

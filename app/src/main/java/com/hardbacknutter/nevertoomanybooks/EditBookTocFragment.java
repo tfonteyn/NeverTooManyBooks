@@ -326,9 +326,8 @@ public class EditBookTocFragment
         if (!authorList.isEmpty()) {
             mBookAuthor = authorList.get(0);
         } else {
-            // not ideal, but oh well.
-            String unknownString = getString(R.string.unknown);
-            mBookAuthor = new Author(unknownString, unknownString);
+            //noinspection ConstantConditions
+            mBookAuthor = Author.createUnknownAuthor(getContext());
         }
 
         // used to call Search sites to populate the TOC

@@ -85,7 +85,7 @@ public final class GoogleBooksManager
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         // %3C  <
         // %3E  >
@@ -101,7 +101,7 @@ public final class GoogleBooksManager
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
-                         final boolean fetchThumbnail)
+                         @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         // %2B  +
@@ -121,7 +121,7 @@ public final class GoogleBooksManager
 
     private Bundle fetchBook(@NonNull final Context appContext,
                              @NonNull final String url,
-                             final boolean fetchThumbnail)
+                             @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         Bundle bookData = new Bundle();
 

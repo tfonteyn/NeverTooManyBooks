@@ -147,7 +147,7 @@ public final class AmazonManager
     @Override
     public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
-                                   final boolean fetchThumbnail)
+                                   @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         if (!SearchSites.ENABLE_AMAZON_AWS) {
@@ -161,7 +161,7 @@ public final class AmazonManager
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         if (!SearchSites.ENABLE_AMAZON_AWS) {
@@ -179,7 +179,7 @@ public final class AmazonManager
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
-                         final boolean fetchThumbnail)
+                         @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         if (!SearchSites.ENABLE_AMAZON_AWS) {
@@ -199,7 +199,7 @@ public final class AmazonManager
 
     private Bundle fetchBook(@NonNull final Context localizedAppContext,
                              @NonNull final String query,
-                             final boolean fetchThumbnail)
+                             @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         Bundle bookData = new Bundle();
         SAXParserFactory factory = SAXParserFactory.newInstance();

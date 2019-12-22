@@ -275,6 +275,12 @@ public class Author
         mType = in.readInt();
     }
 
+    @NonNull
+    public static Author createUnknownAuthor(@NonNull final Context context) {
+        String unknown = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
+        return new Author(unknown, "");
+    }
+
     /**
      * Parse a string into a family/given name pair.
      * If the string contains a comma (and the part after it is not a recognised suffix)

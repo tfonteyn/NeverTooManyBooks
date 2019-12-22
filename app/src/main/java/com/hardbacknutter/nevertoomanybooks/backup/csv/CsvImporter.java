@@ -131,8 +131,6 @@ public class CsvImporter
     @NonNull
     private final ImportHelper mSettings;
 
-    /** cached localized "unknown" string. */
-    private final String mUnknownString;
     /** cached localized "Books" string. */
     private final String mBooksString;
     private final String mProgress_msg_n_created_m_updated;
@@ -150,7 +148,6 @@ public class CsvImporter
     @AnyThread
     public CsvImporter(@NonNull final Context context,
                        @NonNull final ImportHelper settings) {
-        mUnknownString = context.getString(R.string.unknown);
         mBooksString = context.getString(R.string.lbl_books);
         mProgress_msg_n_created_m_updated =
                 context.getString(R.string.progress_msg_n_created_m_updated);
@@ -497,16 +494,16 @@ public class CsvImporter
             }
         }
 
-        // A pre-existing bug sometimes results in blank author-details due to bad underlying data
-        // (it seems a 'book' record gets written without an 'author' record; should not happen)
-        // so we allow blank author_details and fill in a localised version of "Unknown, Unknown"
+        // Now build the array for authors
+        ArrayList<Author> list;
         if (encodedList.isEmpty()) {
-            encodedList = mUnknownString + ", " + mUnknownString;
+            list = new ArrayList<>();
+            list.add(Author.createUnknownAuthor(context));
+        } else {
+            list = CsvCoder.getAuthorCoder().decode(encodedList);
+            ItemWithFixableId.pruneList(list, context, db, Locale.getDefault(), false);
         }
 
-        // Now build the array for authors
-        ArrayList<Author> list = CsvCoder.getAuthorCoder().decode(encodedList);
-        ItemWithFixableId.pruneList(list, context, db, Locale.getDefault(), false);
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
     }

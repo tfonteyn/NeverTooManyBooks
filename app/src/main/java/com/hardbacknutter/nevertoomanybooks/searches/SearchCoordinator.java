@@ -140,25 +140,26 @@ public class SearchCoordinator
     /** {@code true} for strict ISBN checking, {@code false} for also allowing EAN-13. */
     private boolean mStrictIsbn = true;
     /** Whether of not to fetch thumbnails. */
-    private boolean mFetchThumbnail;
+    @Nullable
+    private boolean[] mFetchThumbnail;
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
     private boolean mWaitingForIsbn;
 
     /** Original ISBN for search. */
-    @Nullable
+    @NonNull
     private String mIsbnSearchText = "";
     /** Site native id for search. */
     @Nullable
     private SparseArray<String> mNativeIdSearchText;
     /** Original author for search. */
-    @Nullable
+    @NonNull
     private String mAuthorSearchText = "";
     /** Original title for search. */
-    @Nullable
+    @NonNull
     private String mTitleSearchText = "";
     /** Original publisher for search. */
-    @Nullable
-    private String mPublisherSearchText;
+    @NonNull
+    private String mPublisherSearchText = "";
 
     /** Accumulated book data. */
     private Bundle mBookData;
@@ -286,17 +287,20 @@ public class SearchCoordinator
             }
 
             if (args != null) {
-                mFetchThumbnail = App.isUsed(UniqueId.BKEY_THUMBNAIL);
+                boolean thumbs = App.isUsed(UniqueId.BKEY_THUMBNAIL);
+                mFetchThumbnail = new boolean[2];
+                mFetchThumbnail[0] = thumbs;
+                mFetchThumbnail[1] = thumbs;
 
-                mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, null);
+                mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 
                 //TODO: we'd need to encapsulate a String and make it Parcelable
                 //mNativeIdSearchText = args.getSparseParcelableArray(UniqueId.BKEY_NATIVE_ID_ARRAY);
 
-                mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, null);
+                mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
 
-                mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, null);
-                mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, null);
+                mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
+                mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
 
                 // use global preference.
                 mSiteList = SiteList.getList(context, SiteList.Type.Data);
@@ -364,7 +368,7 @@ public class SearchCoordinator
             if (hasIsbn(message.result)) {
                 mWaitingForIsbn = false;
                 // replace the search text with the (we hope) exact isbn
-                mIsbnSearchText = message.result.getString(DBDefinitions.KEY_ISBN, null);
+                mIsbnSearchText = message.result.getString(DBDefinitions.KEY_ISBN, "");
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "onSearchTaskFinished|isbn=" + mIsbnSearchText);
@@ -429,16 +433,19 @@ public class SearchCoordinator
      *
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
-    public void setFetchThumbnail(final boolean fetchThumbnail) {
+    public void setFetchThumbnail(@Nullable final boolean[] fetchThumbnail) {
         mFetchThumbnail = fetchThumbnail;
     }
 
+    /**
+     * Clear all search criteria.
+     */
     public void clearSearchText() {
         mNativeIdSearchText = null;
-        mIsbnSearchText = null;
-        mAuthorSearchText = null;
-        mTitleSearchText = null;
-        mPublisherSearchText = null;
+        mIsbnSearchText = "";
+        mAuthorSearchText = "";
+        mTitleSearchText = "";
+        mPublisherSearchText = "";
     }
 
     /**
@@ -451,7 +458,7 @@ public class SearchCoordinator
         mNativeIdSearchText = nativeIdSearchText;
     }
 
-    @Nullable
+    @NonNull
     public String getIsbnSearchText() {
         return mIsbnSearchText;
     }
@@ -475,13 +482,14 @@ public class SearchCoordinator
      * @param strictIsbn     Flag: set to {@link false} to allow invalid isbn numbers
      *                       to be passed to the searches
      */
+    @SuppressWarnings("WeakerAccess")
     public void setIsbnSearchText(@NonNull final String isbnSearchText,
                                   final boolean strictIsbn) {
         mIsbnSearchText = isbnSearchText;
         mStrictIsbn = strictIsbn;
     }
 
-    @Nullable
+    @NonNull
     public String getAuthorSearchText() {
         return mAuthorSearchText;
     }
@@ -495,7 +503,7 @@ public class SearchCoordinator
         mAuthorSearchText = authorSearchText;
     }
 
-    @Nullable
+    @NonNull
     public String getTitleSearchText() {
         return mTitleSearchText;
     }
@@ -509,7 +517,7 @@ public class SearchCoordinator
         mTitleSearchText = titleSearchText;
     }
 
-    @Nullable
+    @NonNull
     public String getPublisherSearchText() {
         return mPublisherSearchText;
     }
@@ -519,7 +527,7 @@ public class SearchCoordinator
      *
      * @param publisherSearchText to search for
      */
-    public void setPublisherSearchText(@Nullable final String publisherSearchText) {
+    public void setPublisherSearchText(@NonNull final String publisherSearchText) {
         mPublisherSearchText = publisherSearchText;
     }
 
@@ -568,10 +576,8 @@ public class SearchCoordinator
     public boolean search(@NonNull final Context context) {
         prepareSearch(context);
 
-        if (
-            // we have a valid ISBN *OR* EAN.
-                (mIsbnSearchText != null && !mIsbnSearchText.isEmpty()
-                 && (mHasValidIsbnOrEAN || !mStrictIsbn))
+        // we have a valid ISBN *OR* EAN.
+        if (!mIsbnSearchText.isEmpty() && (mHasValidIsbnOrEAN || !mStrictIsbn)
                 // or we have one or more nativeIds
                 || mNativeIdSearchText != null && mNativeIdSearchText.size() > 0) {
 
@@ -627,9 +633,9 @@ public class SearchCoordinator
             }
 
             // Note we don't care about publisher.
-            if ((mAuthorSearchText == null || mAuthorSearchText.isEmpty())
-                && (mTitleSearchText == null || mTitleSearchText.isEmpty())
-                && (mIsbnSearchText == null || mIsbnSearchText.isEmpty())
+            if (mAuthorSearchText.isEmpty()
+                && mTitleSearchText.isEmpty()
+                && mIsbnSearchText.isEmpty()
                 && (mNativeIdSearchText == null || mNativeIdSearchText.size() == 0)) {
                 throw new IllegalArgumentException("empty criteria");
             }
@@ -644,7 +650,7 @@ public class SearchCoordinator
         mSearchResults.clear();
         mSearchFinishedMessages.clear();
 
-        if (mIsbnSearchText == null || mIsbnSearchText.isEmpty()) {
+        if (mIsbnSearchText.isEmpty()) {
             mHasValidIsbnOrEAN = false;
         } else {
             mHasValidIsbnOrEAN = new ISBN(mIsbnSearchText, mStrictIsbn).isValid();
@@ -656,7 +662,6 @@ public class SearchCoordinator
                        + "|mIsbn=" + mIsbnSearchText
                        + "|mHasValidIsbnOrEAN=" + mHasValidIsbnOrEAN
                        + "|mStrictIsbn=" + mStrictIsbn
-
                        + "|mAuthor=" + mAuthorSearchText
                        + "|mTitle=" + mTitleSearchText
                        + "|mPublisher=" + mPublisherSearchText);
@@ -761,7 +766,7 @@ public class SearchCoordinator
                  && (searchEngine instanceof SearchEngine.ByIsbn))
                 ||
                 // If we have a generic barcode, ...
-                ((mIsbnSearchText != null && !mIsbnSearchText.isEmpty() && !mStrictIsbn)
+                ((!mIsbnSearchText.isEmpty() && !mStrictIsbn)
                  && (searchEngine instanceof SearchEngine.ByBarcode))
                 ||
                 // The implementation is supposed to check the data, so no more checks here.

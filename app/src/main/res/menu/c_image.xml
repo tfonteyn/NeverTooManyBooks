@@ -89,5 +89,5 @@
     <item
         android:id="@id/MENU_EDIT"
         android:icon="@drawable/ic_edit"
-        android:title="@string/menu_edit" />
+        android:title="@string/menu_cover_edit" />
 </menu>

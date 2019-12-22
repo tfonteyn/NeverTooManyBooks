@@ -635,7 +635,8 @@ public class GoodreadsManager
             grBookId = bookCursor.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
             if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
-                grBook = getBookById(context, grBookId, false);
+                boolean[] thumbs = {false, false};
+                grBook = getBookById(context, grBookId, thumbs);
             }
         } catch (@NonNull final CredentialsException | BookNotFoundException | IOException e) {
             grBookId = 0;
@@ -649,8 +650,9 @@ public class GoodreadsManager
             }
 
             // Get the book details using ISBN
+            boolean[] thumbs = {false, false};
             //noinspection ConstantConditions
-            grBook = getBookByIsbn(context, isbn.asText(), false);
+            grBook = getBookByIsbn(context, isbn.asText(), thumbs);
             if (grBook.containsKey(DBDefinitions.KEY_EID_GOODREADS_BOOK)) {
                 grBookId = grBook.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
             }
@@ -780,7 +782,7 @@ public class GoodreadsManager
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbnStr,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, IOException {
 
         try {
@@ -796,7 +798,7 @@ public class GoodreadsManager
     @Override
     public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
-                                   final boolean fetchThumbnail)
+                                   @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, IOException {
 
         try {
@@ -825,7 +827,7 @@ public class GoodreadsManager
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
-                         final boolean fetchThumbnail)
+                         @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException,
                    IOException {
 
@@ -855,7 +857,8 @@ public class GoodreadsManager
             return null;
         }
 
-        return getCoverImageFallback(appContext, isbn);
+        boolean[] thumbs = {true, false};
+        return getCoverImageFallback(appContext, isbn, thumbs);
     }
 
     @Override
@@ -893,7 +896,7 @@ public class GoodreadsManager
     @NonNull
     private Bundle getBookById(@NonNull final Context context,
                                final long bookId,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, BookNotFoundException, IOException {
 
         if (bookId != 0) {
@@ -920,7 +923,7 @@ public class GoodreadsManager
     @NonNull
     private Bundle getBookByIsbn(@NonNull final Context context,
                                  @NonNull final String isbnStr,
-                                 final boolean fetchThumbnail)
+                                 @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, BookNotFoundException, IOException {
 
         ISBN isbn = ISBN.createISBN(isbnStr);

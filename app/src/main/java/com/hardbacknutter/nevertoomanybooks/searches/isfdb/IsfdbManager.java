@@ -125,7 +125,7 @@ public class IsfdbManager
     @Override
     public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
                                    @NonNull final String nativeId,
-                                   final boolean fetchThumbnail)
+                                   @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         return new IsfdbBookHandler(localizedAppContext)
@@ -136,7 +136,7 @@ public class IsfdbManager
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
                                @NonNull final String isbn,
-                               final boolean fetchThumbnail)
+                               @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         ArrayList<Edition> editions = new IsfdbEditionsHandler(localizedAppContext).fetch(isbn);
@@ -151,7 +151,7 @@ public class IsfdbManager
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final String publisher,
-                         final boolean fetchThumbnail)
+                         @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         String url = getBaseURL(localizedAppContext) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
@@ -205,7 +205,7 @@ public class IsfdbManager
 
     private Bundle fetchBook(@NonNull final Context localizedAppContext,
                              final List<Edition> editions,
-                             final boolean fetchThumbnail)
+                             @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
         if (!editions.isEmpty()) {
             return new IsfdbBookHandler(localizedAppContext)

@@ -111,8 +111,6 @@ public final class DEBUG_SWITCHES {
 
     /** {@link DAO}. Global replace Author/Series/... */
     public static final boolean DAO_GLOBAL_REPLACE = false;
-    /** {@link DAO}. Insert & update TOC entries. */
-    public static final boolean DAO_TOC = false;
 
     /** {@link com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor}. */
     public static final boolean TRACKED_CURSOR = false;

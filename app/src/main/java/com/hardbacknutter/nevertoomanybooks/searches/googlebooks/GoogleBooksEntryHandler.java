@@ -224,7 +224,8 @@ class GoogleBooksEntryHandler
 
 
     /** flag if we should fetch a thumbnail. */
-    private final boolean mFetchThumbnail;
+    @NonNull
+    private final boolean[] mFetchThumbnail;
     /** Bundle to save results in. */
     @NonNull
     private final Bundle mBookData;
@@ -251,7 +252,7 @@ class GoogleBooksEntryHandler
      * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
      */
     GoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
-                            final boolean fetchThumbnail) {
+                            @NonNull final boolean[] fetchThumbnail) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
 
@@ -299,7 +300,7 @@ class GoogleBooksEntryHandler
             throws SAXException {
 
         // the url is an attribute of the xml element; not the content
-        if (mFetchThumbnail && XML_LINK.equalsIgnoreCase(localName)) {
+        if (mFetchThumbnail[0] && XML_LINK.equalsIgnoreCase(localName)) {
             // http; this is a schema and not an actual website url
             if ("http://schemas.google.com/books/2008/thumbnail"
                     .equals(attributes.getValue("", "rel"))) {
