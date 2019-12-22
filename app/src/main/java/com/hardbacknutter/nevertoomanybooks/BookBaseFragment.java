@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 public abstract class BookBaseFragment
         extends Fragment {
 
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BookBaseFragment";
 
     /** simple indeterminate progress spinner to show while doing lengthy work. */
@@ -322,26 +322,12 @@ public abstract class BookBaseFragment
      * Should normally be called at the *end* of {@link #onLoadFieldsFromBook}
      *
      * @param hideIfEmpty set to {@code true} when displaying; {@code false} when editing.
+     * @param keepHidden  keep a field hidden if it's already hidden
      */
-    void showOrHideFields(final boolean hideIfEmpty) {
-
-        // do all fields with their related fields
+    void showOrHideFields(final boolean hideIfEmpty,
+                          final boolean keepHidden) {
         //noinspection ConstantConditions
-        getFields().resetVisibility(getView(), hideIfEmpty);
-
-//        // Hide the baseline for the read labels if both labels are gone.
-//        // If both labels are visible, then make the baseline invisible.
-//        showOrHide(R.id.lbl_read_start_end_baseline, View.INVISIBLE,
-//                              R.id.lbl_read_start, R.id.lbl_read_end);
-//        // Hide the baseline for the value field if the labels are gone.
-//        showOrHide(R.id.read_start_end_baseline, View.INVISIBLE,
-//                              R.id.lbl_read_start_end_baseline);
-//
-//        showOrHide(R.id.lbl_publication_dates_baseline, View.INVISIBLE,
-//                   R.id.lbl_first_publication, R.id.lbl_date_published);
-//        // Hide the baseline for the value field if the labels are gone.
-//        showOrHide(R.id.publication_dates_baseline, View.INVISIBLE,
-//                   R.id.lbl_publication_dates_baseline);
+        getFields().resetVisibility(getView(), hideIfEmpty, keepHidden);
     }
 
     /**

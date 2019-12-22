@@ -164,6 +164,6 @@ public class EditBookPublicationFragment
         super.onLoadFieldsFromBook();
 
         // hide unwanted fields
-        showOrHideFields(false);
+        showOrHideFields(false, false);
     }
 }

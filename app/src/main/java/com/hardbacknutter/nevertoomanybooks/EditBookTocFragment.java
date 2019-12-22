@@ -415,7 +415,7 @@ public class EditBookTocFragment
         mItemTouchHelper.attachToRecyclerView(mListView);
 
         // hide unwanted fields
-        showOrHideFields(false);
+        showOrHideFields(false, false);
     }
 
     /**
@@ -518,6 +518,7 @@ public class EditBookTocFragment
     public static class ConfirmTocDialogFragment
             extends DialogFragment {
 
+        /** Log tag. */
         private static final String TAG = "ConfirmTocDialogFrag";
 
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";

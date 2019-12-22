@@ -92,7 +92,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 public class BookDetailsFragment
         extends BookBaseFragment {
 
-    /** log tag. */
+    /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
 
     /** the covers. */
@@ -474,7 +474,7 @@ public class BookDetailsFragment
         setupCoverViews(1, ImageUtils.SCALE_SMALL);
 
         // hide unwanted and empty fields
-        showOrHideFields(true);
+        showOrHideFields(true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionLabelVisibility(R.id.lbl_publication_section,

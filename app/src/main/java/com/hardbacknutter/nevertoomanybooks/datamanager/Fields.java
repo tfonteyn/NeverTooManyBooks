@@ -377,11 +377,13 @@ public class Fields {
      *
      * @param parent      parent view for all fields.
      * @param hideIfEmpty hide the field if it's empty
+     * @param keepHidden  keep a field hidden if it's already hidden
      */
     public void resetVisibility(@NonNull final View parent,
-                                final boolean hideIfEmpty) {
+                                final boolean hideIfEmpty,
+                                final boolean keepHidden) {
         for (Field field : mAllFields.values()) {
-            field.resetVisibility(parent, hideIfEmpty);
+            field.resetVisibility(parent, hideIfEmpty, keepHidden);
         }
     }
 
@@ -390,7 +392,6 @@ public class Fields {
             field.setParentView(parentView);
         }
     }
-
 
     /**
      * added to the Fields collection with (2018-11-11) a simple call to setDirty(true).
@@ -639,6 +640,7 @@ public class Fields {
     private static class ReformatTextWatcher<T>
             implements TextWatcher {
 
+        /** Log tag. */
         private static final String TAG = "ReformatTextWatcher";
 
         @NonNull
@@ -686,6 +688,7 @@ public class Fields {
     private abstract static class BaseDataAccessor<T>
             implements FieldDataAccessor<T> {
 
+        /** Log tag. */
         private static final String TAG = "BaseDataAccessor";
 
         @NonNull
@@ -1262,6 +1265,7 @@ public class Fields {
     public static class MonetaryFormatter
             implements FieldFormatter<Double> {
 
+        /** Log tag. */
         private static final String TAG = "MonetaryFormatter";
 
         /** Optional; if null we use the default Locale. */
@@ -1493,6 +1497,7 @@ public class Fields {
      */
     public static class Field<T> {
 
+        /** Log tag. */
         private static final String TAG = "Field";
 
         /** Field ID. */
@@ -1725,27 +1730,36 @@ public class Fields {
          *
          * @param parent      parent view for all fields.
          * @param hideIfEmpty hide the field if it's empty
+         * @param keepHidden  keep a field hidden if it's already hidden
          */
         private void resetVisibility(@NonNull final View parent,
-                                     final boolean hideIfEmpty) {
+                                     final boolean hideIfEmpty,
+                                     final boolean keepHidden) {
 
-            mIsUsed = App.isUsed(mGroup);
-            int visibility = mIsUsed ? View.VISIBLE : View.GONE;
             View view = parent.findViewById(mId);
+            mIsUsed = App.isUsed(mGroup);
 
-            if (mIsUsed && hideIfEmpty) {
-                if (view instanceof Checkable) {
-                    // hide any unchecked Checkable.
-                    visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
+            int visibility = view.getVisibility();
 
-                } else if (!(view instanceof ImageView)) {
-                    // skip ImageView, but all other fields can be tested on being empty
-                    visibility = !isEmpty() ? View.VISIBLE : View.GONE;
+            // 1. An ImageView keeps its current visibility, i.e. skip this step.
+            // 2. When 'keepHidden' is set, all hidden fields stay hidden.
+            if (!(view instanceof ImageView)
+                && (visibility != View.GONE || !keepHidden)) {
+                if (mIsUsed && hideIfEmpty) {
+                    if (view instanceof Checkable) {
+                        // hide any unchecked Checkable.
+                        visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
+
+                    } else {
+                        visibility = !isEmpty() ? View.VISIBLE : View.GONE;
+                    }
+                } else {
+                    visibility = mIsUsed ? View.VISIBLE : View.GONE;
                 }
+                view.setVisibility(visibility);
             }
 
-            view.setVisibility(visibility);
-
+            // related fields follow main field visibility
             if (mRelatedFields != null) {
                 for (int fieldId : mRelatedFields) {
                     view = parent.findViewById(fieldId);

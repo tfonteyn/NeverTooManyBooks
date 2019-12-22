@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 public class EditBookFieldsFragment
         extends EditBookBaseFragment<Bookshelf> {
 
-    /** log tag. */
+    /** Log tag. */
     public static final String TAG = "EditBookFieldsFragment";
 
     private static final int REQ_EDIT_AUTHORS = 0;
@@ -266,7 +266,7 @@ public class EditBookFieldsFragment
         populateBookshelvesField();
 
         // hide unwanted fields
-        showOrHideFields(false);
+        showOrHideFields(false, false);
     }
 
     private void setupCoverView(final int cIdx,

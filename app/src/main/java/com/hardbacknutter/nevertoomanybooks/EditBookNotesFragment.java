@@ -176,6 +176,6 @@ public class EditBookNotesFragment
         super.onLoadFieldsFromBook();
 
         // hide unwanted fields
-        showOrHideFields(false);
+        showOrHideFields(false, false);
     }
 }
