@@ -50,7 +50,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
@@ -81,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class BooksOnBookshelfModel
         extends ViewModel {
 
+    /** Log tag. */
     private static final String TAG = "BooksOnBookshelfModel";
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
@@ -219,7 +219,7 @@ public class BooksOnBookshelfModel
                      @Nullable final Bundle savedInstanceState) {
 
         if (mDb == null) {
-            mDb = new DAO();
+            mDb = new DAO(TAG);
 
             if (args != null) {
                 mSearchCriteria.from(args, true);
@@ -649,9 +649,9 @@ public class BooksOnBookshelfModel
      * @return RowDetails
      */
     @Nullable
-    public ArrayList<BooklistBuilder.RowDetails> getCurrentTargetRows() {
+    public ArrayList<BooklistBuilder.RowDetails> getTargetRows() {
         //noinspection ConstantConditions
-        return getBuilder().syncPreviouslySelectedBookId(mCurrentPositionedBookId);
+        return getBuilder().getTargetRows(mCurrentPositionedBookId);
     }
 
     /**
@@ -970,92 +970,33 @@ public class BooksOnBookshelfModel
             mHolder = new BuilderHolder(currentPosBookId, listState);
         }
 
-
         @Override
         @NonNull
         @WorkerThread
         protected BuilderHolder doInBackground(final Void... params) {
-            final long t0 = System.nanoTime();
-
             Thread.currentThread().setName("GetBookListTask");
+            // timers removed as all 'real' time spend here is in mBuilder.build.
             try {
-                // Build the underlying data
+                // Build the underlying data and preserve this state
                 mBuilder.build(mHolder.listState);
-                // preserve this state
                 mHolder.listState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
 
                 if (isCancelled()) {
                     return mHolder;
                 }
 
-                final long t1_build_done = System.nanoTime();
-
-                mHolder.resultTargetRows = mBuilder
-                        .syncPreviouslySelectedBookId(mHolder.currentPosBookId);
-
-                if (isCancelled()) {
-                    return mHolder;
-                }
-
-                final long t2_sync_done = System.nanoTime();
-
-                // Now we have the expanded groups as needed, get the list cursor
-                tempListCursor = mBuilder.getNewListCursor();
-
+                mHolder.resultTargetRows = mBuilder.getTargetRows(mHolder.currentPosBookId);
                 // Clear it so it won't be reused.
                 mHolder.currentPosBookId = 0;
 
-                final long t3_got_new_cursor = System.nanoTime();
-
+                // Now we have the expanded groups as needed, get the list cursor
+                tempListCursor = mBuilder.getNewListCursor();
                 // get a count() from the cursor in background task because the setAdapter()
                 // call will do a count() and potentially block the UI thread while it
-                // pages through the entire cursor.
-                // If we do it here, subsequent calls will be fast.
-                int countAllRows = tempListCursor.getCount();
-
-                final long t4_count_all_rows_done = System.nanoTime();
-
-                // pre-fetch this count
+                // pages through the entire cursor. Doing it here makes subsequent calls faster.
+                tempListCursor.getCount();
                 mHolder.resultDistinctBookCount = mBuilder.getDistinctBookCount();
-
-                if (isCancelled()) {
-                    return mHolder;
-                }
-
-                final long t5_distinct_count_done = System.nanoTime();
-
-                // pre-fetch this count
                 mHolder.resultTotalBookCount = mBuilder.getBookCount();
-
-                final long t6_total_count_done = System.nanoTime();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                    Log.d(TAG, "doInBackground|taskId=" + getId()
-                               + String.format(Locale.UK, ""
-                                                          + "\nBuild                    : %10d"
-                                                          + "\nsync done                : %10d"
-                                                          + "\ngot new cursor           : %10d"
-                                                          + "\ncount all rows (%5d)   : %10d"
-                                                          + "\ndistinctBookCount(%5d) : %10d"
-                                                          + "\ntotalBookCount(%5d)    : %10d"
-                                                          + "\n ==================================="
-                                                          + "\n Total time in ms: %f",
-                                               t1_build_done - t0,
-                                               t2_sync_done - t1_build_done,
-                                               t3_got_new_cursor - t2_sync_done,
-                                               countAllRows,
-                                               t4_count_all_rows_done - t3_got_new_cursor,
-                                               mHolder.resultDistinctBookCount,
-                                               t5_distinct_count_done - t4_count_all_rows_done,
-                                               mHolder.resultTotalBookCount,
-                                               t6_total_count_done - t5_distinct_count_done,
-                                               (float) (t6_total_count_done - t0)));
-                }
-
-                if (isCancelled()) {
-                    return mHolder;
-                }
-
                 // Set the results.
                 mHolder.resultListCursor = tempListCursor;
 

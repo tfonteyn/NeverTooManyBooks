@@ -120,11 +120,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TB
  * list used to display books in a list control and perform operation like
  * 'expand/collapse' on pseudo nodes in the list.
  *
- * <strong>IMPORTANT:</strong> {@link #rebuild()} was giving to many problems
- * (remember it did not work in BookCatalogue 5.2.2 except in classic mode)
- * The code for it has not been removed here yet, might get revisited later.
- * (particular issue: the triggers)
- * <p>
+ * <strong>ENHANCE:</strong> implement {@link #mRebuildStmts}.
  */
 public class BooklistBuilder
         implements AutoCloseable {
@@ -135,7 +131,7 @@ public class BooklistBuilder
     public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
     @SuppressWarnings("WeakerAccess")
     public static final int PREF_LIST_REBUILD_PREFERRED_STATE = 3;
-    /** log tag. */
+    /** Log tag. */
     private static final String TAG = "BooklistBuilder";
     /** Counter for BooklistBuilder ID's. Used to create unique table names etc... */
     @NonNull
@@ -153,6 +149,8 @@ public class BooklistBuilder
      */
     private static final String mNodesDeleteBaseSql =
             "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE + " WHERE " + DOM_FK_BOOKSHELF + "=?";
+
+    private static final String INITIAL_INSERT_FOR_REBUILD_STMT = "mInitialInsertSqlForRebuild";
 
     // not in use for now
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
@@ -250,9 +248,9 @@ public class BooklistBuilder
         mStyle = style;
 
         // Get the database and create a statements collection
-        mDb = new DAO();
+        mDb = new DAO(TAG);
         mSyncedDb = mDb.getUnderlyingDatabase();
-        mStatementManager = new SqlStatementManager(mSyncedDb);
+        mStatementManager = new SqlStatementManager(mSyncedDb, TAG);
     }
 
     /**
@@ -421,7 +419,7 @@ public class BooklistBuilder
      *
      * @param listState State to display
      */
-    public void build(@BooklistBuilder.ListRebuildMode final int listState) {
+    public void build(@ListRebuildMode final int listState) {
         final long t00 = System.nanoTime();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -517,94 +515,112 @@ public class BooklistBuilder
         final long t01_table_created = System.nanoTime();
 
         // Construct the initial insert statement components.
-        final BaseSql initialInsert = helper.build();
+        final BaseSql baseSql = helper.build();
+        baseSql.addJoins(helper);
+        baseSql.addWhere(mFilters, mStyle.getFilters());
+        baseSql.addOrderBy(helper.getSortedDomains(), mSyncedDb.isCollationCaseSensitive());
 
-        final long t02_build_base_sql = System.nanoTime();
+        final long t02_base_sql_build = System.nanoTime();
 
-        initialInsert.addJoins(helper);
-
-        final long t03_build_join = System.nanoTime();
-
-        initialInsert.addWhere(mFilters, mStyle.getFilters());
-
-        final long t04_build_where = System.nanoTime();
-
-        initialInsert.addOrderBy(helper.getSortedDomains(), mSyncedDb.isCollationCaseSensitive());
-
-        final long t05_build_order_by = System.nanoTime();
-
-        //mRebuildStmts.clear();
+        mRebuildStmts.clear();
 
         // We are good to go.
+        long t03_base_insert_prepared = 0;
+        long t04_base_insert_executed = 0;
+        long t05_listTable_analyzed = 0;
+        long t06_stateTable_build = 0;
+        long t07_stateTable_idx_created = 0;
+        long t08_stateTable_analyzed = 0;
+
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             // get the triggers in place, ready to act on our upcoming initial insert.
             createTriggers(helper.getSortedDomains());
 
             // Build the lowest level summary using our initial insert statement
-            // The triggers will do the rest.
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(initialInsert.build())) {
-                stmt.executeInsert();
-            }
+            SynchronizedStatement initialInsertStmt = mStatementManager
+                    .add(INITIAL_INSERT_FOR_REBUILD_STMT, baseSql.build());
+            mRebuildStmts.add(initialInsertStmt);
 
-            final long t06_base_insert_done = System.nanoTime();
+            t03_base_insert_prepared = System.nanoTime();
+
+            // The triggers will do the rest.
+            initialInsertStmt.executeInsert();
+
+            t04_base_insert_executed = System.nanoTime();
 
             // The list table is now fully populated.
             mSyncedDb.analyze(mListTable);
 
-            final long t07_listTable_analyzed = System.nanoTime();
+            t05_listTable_analyzed = System.nanoTime();
 
             // build the row-state aka navigation table
-            // the table is ordered at insert time, so the row id *is* the order.
-            buildRowStateTable(listState, mListTable.dot(DOM_PK_ID));
+            // we drop the table just in case there is a leftover table with the same name.
+            // (due to previous crash maybe)
+            mRowStateTable.drop(mSyncedDb);
+            // indices will be created after the table is populated.
+            mRowStateTable.create(mSyncedDb, true, false);
 
-            final long t08_stateTable_build = System.nanoTime();
+            populateRowStateTable(listState);
 
-            // create the indexes we need
+            t06_stateTable_build = System.nanoTime();
+
+            // create the indexes we need. Doing this AFTER the data got inserted has
+            // proven to be faster:
+            // populate 50ms + indexing 50ms; versus 120ms if creating the indexes before.
             mRowStateTable.createIndices(mSyncedDb);
 
-            final long t09_stateTable_idx_created = System.nanoTime();
+            t07_stateTable_idx_created = System.nanoTime();
 
             mSyncedDb.analyze(mRowStateTable);
 
-            final long t10_stateTable_analyzed = System.nanoTime();
+            t08_stateTable_analyzed = System.nanoTime();
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "build|"
-                           + String.format(Locale.UK, ""
-                                                      + "\ntable created         : %10d"
-                                                      + "\nbase sql              : %10d"
-                                                      + "\njoins                 : %10d"
-                                                      + "\nwhere clause          : %10d"
-                                                      + "\norder-by clause       : %10d"
-                                                      + "\nbase insert executed  : %10d"
-                                                      + "\ntable analyzed        : %10d"
-                                                      + "\nstateTable build      : %10d"
-                                                      + "\nstateTable idx created: %10d"
-                                                      + "\nstateTable_analyzed   : %10d",
-
-                                           t01_table_created - t00,
-                                           t02_build_base_sql - t01_table_created,
-                                           t03_build_join - t02_build_base_sql,
-                                           t04_build_where - t03_build_join,
-                                           t05_build_order_by - t04_build_where,
-                                           t06_base_insert_done - t05_build_order_by,
-                                           t07_listTable_analyzed - t06_base_insert_done,
-
-                                           t08_stateTable_build - t07_listTable_analyzed,
-                                           t09_stateTable_idx_created - t08_stateTable_build,
-                                           t10_stateTable_analyzed - t09_stateTable_idx_created));
-            }
             mSyncedDb.setTransactionSuccessful();
 
         } finally {
             mSyncedDb.endTransaction(txLock);
 
             // we don't catch exceptions but we do want to log the time it took here.
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                Log.d(TAG, "build|" +
+                           String.format(Locale.UK, ""
+                                                    + "\ntable created         : %5d"
+                                                    + "\nbase sql build        : %5d"
+
+                                                    + "\nbase insert prepared  : %5d"
+                                                    + "\nbase insert executed  : %5d"
+                                                    + "\nbase analyzed         : %5d"
+
+                                                    + "\nstateTable build      : %5d"
+                                                    + "\nstateTable idx created: %5d"
+                                                    + "\nstateTable analyzed   : %5d"
+                                                    + "\n============================="
+                                                    + "\nTotal time in ms      : %5d",
+
+                                         (t01_table_created - t00) / TO_MILLIS,
+                                         (t02_base_sql_build - t01_table_created) / TO_MILLIS,
+
+                                         (t03_base_insert_prepared - t02_base_sql_build)
+                                         / TO_MILLIS,
+                                         (t04_base_insert_executed - t03_base_insert_prepared)
+                                         / TO_MILLIS,
+                                         (t05_listTable_analyzed - t04_base_insert_executed)
+                                         / TO_MILLIS,
+
+                                         (t06_stateTable_build - t05_listTable_analyzed)
+                                         / TO_MILLIS,
+                                         (t07_stateTable_idx_created - t06_stateTable_build)
+                                         / TO_MILLIS,
+                                         (t08_stateTable_analyzed - t07_stateTable_idx_created)
+                                         / TO_MILLIS,
+                                         (System.nanoTime() - t00) / TO_MILLIS
+                                        )
+                     );
+            }
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "EXIT|build"
-                           + "|mInstanceId=" + mInstanceId
-                           + "|Total time in ms: " + ((System.nanoTime() - t00) / TO_MILLIS));
+                Log.d(TAG, "EXIT|build|mInstanceId=" + mInstanceId);
             }
         }
     }
@@ -736,18 +752,11 @@ public class BooklistBuilder
      * without having to scan the database. This is especially useful in
      * expand/collapse operations.
      *
-     * @param listState         Desired list state
-     * @param orderByExpression the ORDER BY expression
+     * @param listState Desired list state
      */
-    private void buildRowStateTable(@ListRebuildMode final int listState,
-                                    @NonNull final String orderByExpression) {
+    private void populateRowStateTable(@ListRebuildMode final int listState) {
 
-        // we drop the table just in case there is a leftover table with the same name.
-        // (due to previous crash maybe)
-        mRowStateTable.drop(mSyncedDb);
-        // indices are created after the table is populated.
-        mRowStateTable.create(mSyncedDb, true, false);
-
+        // the table is ordered at insert time, so the row id *is* the order.
         String baseSql = "INSERT INTO " + mRowStateTable
                          + " (" + DOM_FK_BOOK_BL_ROW_ID
                          + ',' + DOM_BL_ROOT_KEY
@@ -764,8 +773,6 @@ public class BooklistBuilder
                          + ',' + mListTable.dot(DOM_BL_NODE_KIND)
                          + "\n";
 
-        int topLevel = mStyle.getTopLevel();
-
         // On first-time builds, get the Preferences-based list
         switch (listState) {
             case PREF_LIST_REBUILD_ALWAYS_EXPANDED: {
@@ -774,7 +781,8 @@ public class BooklistBuilder
                              + ",1"
                              // DOM_BL_NODE_EXPANDED: all expanded
                              + ",1"
-                             + " FROM " + mListTable.ref() + " ORDER BY " + orderByExpression;
+                             + " FROM " + mListTable.ref()
+                             + " ORDER BY " + mListTable.dot(DOM_PK_ID);
 
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     int rowsUpdated = stmt.executeUpdateDelete();
@@ -801,7 +809,8 @@ public class BooklistBuilder
                              // DOM_BL_NODE_EXPANDED: all nodes collapsed
                              + ",0"
                              + "\n"
-                             + " FROM " + mListTable.ref() + " ORDER BY " + orderByExpression;
+                             + " FROM " + mListTable.ref()
+                             + " ORDER BY " + mListTable.dot(DOM_PK_ID);
 
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     int rowsUpdated = stmt.executeUpdateDelete();
@@ -820,7 +829,6 @@ public class BooklistBuilder
                 // requires statements without parameters.
                 String sql =
                         baseSql
-
                         // *all* rows in TBL_BOOK_LIST_NODE_STATE are considered visible!
                         // ergo, all others are invisible but level 1 is always visible.
 
@@ -829,10 +837,10 @@ public class BooklistBuilder
                         // level 1 is always visible
                         + " WHEN " + mListTable.dot(DOM_BL_NODE_LEVEL) + "=1 THEN 1"
                         // if the row is not present, hide it.
-                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY)
-                        + " IS NULL THEN 0"
+                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY) + " IS NULL"
+                        + /* */ " THEN 0"
                         // all others are visible
-                        + " ELSE 1"
+                        + /* */ " ELSE 1"
                         + " END"
                         // 'AS' for SQL readability/debug only
                         + " AS " + DOM_BL_NODE_VISIBLE
@@ -841,29 +849,32 @@ public class BooklistBuilder
                         // DOM_BL_NODE_EXPANDED
                         + ",CASE"
                         // if the row is not present, collapse it.
-                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY)
-                        + " IS NULL THEN 0"
+                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY) + " IS NULL"
+                        + /* */ " THEN 0"
                         //  Otherwise use the stored state
-                        + " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_EXPANDED)
+                        + /* */ " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_EXPANDED)
                         + " END"
                         // 'AS' for SQL readability/debug only
                         + " AS " + DOM_BL_NODE_EXPANDED
                         + "\n"
 
                         + " FROM " + mListTable.ref()
-                        // note this is a pure OUTER JOIN.
+                        // note this is a pure OUTER JOIN and not a where-clause
                         + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_STATE.ref()
                         + " ON "
-                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_BOOKSHELF) + '=' + mBookshelf.getId()
+                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_BOOKSHELF)
+                        + '=' + mBookshelf.getId()
                         + " AND "
-                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_STYLE) + '=' + mStyle.getId()
+                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_STYLE)
+                        + '=' + mStyle.getId()
                         + " AND "
                         + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_LEVEL)
                         + '=' + mListTable.dot(DOM_BL_NODE_LEVEL)
                         + " AND "
                         + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY)
                         + '=' + mListTable.dot(DOM_BL_ROOT_KEY)
-                        + " ORDER BY " + orderByExpression;
+
+                        + " ORDER BY " + mListTable.dot(DOM_PK_ID);
 
                 // Use already-defined SQL for preserve state.
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
@@ -874,15 +885,10 @@ public class BooklistBuilder
                                    + "|sql=" + sql);
                     }
                 }
-
-//                TBL_BOOK_LIST_NODE_STATE
-//                        .dumpTable(mSyncedDb, "PREF_LIST_REBUILD_SAVED_STATE", 0, 1000, "");
-//                mRowStateTable
-//                        .dumpTable(mSyncedDb, "PREF_LIST_REBUILD_SAVED_STATE", 71, 75, "");
                 break;
             }
             case PREF_LIST_REBUILD_PREFERRED_STATE: {
-                expandNodes(topLevel, false);
+                expandNodes(mStyle.getTopLevel(), false);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                     Log.d(TAG, "PREF_LIST_REBUILD_PREFERRED_STATE");
                 }
@@ -1023,7 +1029,7 @@ public class BooklistBuilder
      * @return the target rows, or {@code null} if none.
      */
     @Nullable
-    public ArrayList<RowDetails> syncPreviouslySelectedBookId(final long bookId) {
+    public ArrayList<RowDetails> getTargetRows(final long bookId) {
         // no input, no output...
         if (bookId == 0) {
             return null;
@@ -1088,8 +1094,8 @@ public class BooklistBuilder
             preserveAllNodes();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG,
-                      "expandNodes|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+                Log.d(TAG, "expandNodes"
+                           + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
             }
 
             if (txLock != null) {
@@ -2319,7 +2325,7 @@ public class BooklistBuilder
             // take ages because main query is a cross without index.
             addIndex(DOM_FK_BOOK_BL_ROW_ID, true, DOM_FK_BOOK_BL_ROW_ID);
 
-            // BooklistBuilder#getNodesInsertSql()
+            // #getNodesInsertSql()
             addIndex(DOM_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
 
             addIndex("NODE_DATA",
@@ -2408,7 +2414,7 @@ public class BooklistBuilder
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "countVisibleRows"
                            + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) + " nano");
+                           + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
             }
             return (int) count;
         }
