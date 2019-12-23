@@ -41,19 +41,23 @@
         style="@style/Label.Field"
         android:labelFor="@id/site_goodreads"
         android:text="@string/site_goodreads"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
         />
 
     <EditText
         android:id="@+id/site_goodreads"
         style="@style/genericNumberEntry"
         android:layout_width="0dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_site_goodreads"
         tools:ignore="Autofill"
         tools:text="123456"
+        tools:visibility="visible"
         />
 
     <TextView
@@ -61,19 +65,23 @@
         style="@style/Label.Field"
         android:labelFor="@id/site_isfdb"
         android:text="@string/site_isfdb"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/site_goodreads"
+        tools:visibility="visible"
         />
 
     <EditText
         android:id="@+id/site_isfdb"
         style="@style/genericNumberEntry"
         android:layout_width="0dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_site_isfdb"
         tools:ignore="Autofill"
         tools:text="123456"
+        tools:visibility="visible"
         />
 
     <TextView
@@ -81,19 +89,23 @@
         style="@style/Label.Field"
         android:labelFor="@id/site_library_thing"
         android:text="@string/site_library_thing"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/site_isfdb"
+        tools:visibility="visible"
         />
 
     <EditText
         android:id="@+id/site_library_thing"
         style="@style/genericNumberEntry"
         android:layout_width="0dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_site_library_thing"
         tools:ignore="Autofill"
         tools:text="123456"
+        tools:visibility="visible"
         />
 
     <TextView
@@ -101,19 +113,23 @@
         style="@style/Label.Field"
         android:labelFor="@id/site_open_library"
         android:text="@string/site_open_library"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/site_library_thing"
+        tools:visibility="visible"
         />
 
     <EditText
         android:id="@+id/site_open_library"
         style="@style/genericTextEntry"
         android:layout_width="0dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_site_open_library"
         tools:ignore="Autofill"
         tools:text="1a2b3c"
+        tools:visibility="visible"
         />
 
     <TextView
@@ -121,19 +137,23 @@
         style="@style/Label.Field"
         android:labelFor="@id/site_strip_info_be"
         android:text="@string/site_stripinfo"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/site_open_library"
+        tools:visibility="visible"
         />
 
     <EditText
         android:id="@+id/site_strip_info_be"
         style="@style/genericNumberEntry"
         android:layout_width="0dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_site_strip_info_be"
         tools:ignore="Autofill"
         tools:text="123456"
+        tools:visibility="visible"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
