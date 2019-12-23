@@ -73,7 +73,7 @@ public class SiteList
     private final Type mType;
     /** The list. */
     @NonNull
-    private final ArrayList<Site> mList;
+    private ArrayList<Site> mList;
 
     /**
      * Constructor.
@@ -223,6 +223,7 @@ public class SiteList
     /**
      * Reorder the given list based on user preferences.
      * The site objects are the same as in the original list.
+     * The actual (internal) list is NOT modified.
      *
      * @param order CSV string with site ids
      *
@@ -288,14 +289,16 @@ public class SiteList
         String order = PreferenceManager.getDefaultSharedPreferences(appContext)
                                         .getString(mType.getListOrderPreferenceKey(), null);
         if (order != null) {
-            SiteList orderedList = reorder(order);
-            if (orderedList.mList.size() < mList.size()) {
+            ArrayList<Site> oldList = mList;
+            // replace with the new order.
+            mList = reorder(order).mList;
+            if (mList.size() < oldList.size()) {
                 // This is a fringe case: a new engine was added, and the user upgraded
                 // this app. The stored order will lack the new engine.
                 // Add any sites not added yet.
                 for (Site site : mList) {
-                    if (!orderedList.mList.contains(site)) {
-                        orderedList.add(site);
+                    if (!mList.contains(site)) {
+                        mList.add(site);
                     }
                 }
                 savePrefs(appContext);
