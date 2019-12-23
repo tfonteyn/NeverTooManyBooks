@@ -110,7 +110,7 @@ public final class Logger {
         } else {
             msg = "";
         }
-        writeToLog(context, ERROR, msg, e);
+        writeToLog(context, tag, ERROR, msg, e);
         if (BuildConfig.DEBUG /* always */) {
             Log.e(tag, msg, e);
         }
@@ -142,7 +142,7 @@ public final class Logger {
                                           @NonNull final Object... params) {
         Throwable e = new Throwable();
         String msg = concat(params);
-        writeToLog(context, WARN, msg, e);
+        writeToLog(context, tag, WARN, msg, e);
         if (BuildConfig.DEBUG /* always */) {
             Log.w(tag, msg, e);
         }
@@ -175,7 +175,7 @@ public final class Logger {
                             @NonNull final String methodName,
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
-        writeToLog(context, WARN, msg, null);
+        writeToLog(context, tag, WARN, msg, null);
         if (BuildConfig.DEBUG /* always */) {
             Log.w(tag, msg);
         }
@@ -209,11 +209,14 @@ public final class Logger {
     /**
      * This is an expensive call... file open+close... BOOOO!
      *
-     * @param type    prefix tag
+     * @param context Current context
+     * @param tag     log tag
+     * @param type    warn,error,...
      * @param message to write
      * @param e       optional Throwable
      */
     private static void writeToLog(@NonNull final Context context,
+                                   @NonNull final String tag,
                                    @NonNull final String type,
                                    @NonNull final String message,
                                    @Nullable final Throwable e) {
@@ -223,7 +226,8 @@ public final class Logger {
         } else {
             exMsg = "";
         }
-        String fullMessage = DATE_FORMAT.format(new Date()) + '|' + type + '|' + message + exMsg;
+        String fullMessage = DATE_FORMAT.format(new Date())
+                             + '|' + tag + '|' + type + '|' + message + exMsg;
 
         // do not write to the log if we're running a JUnit test.
         if (BuildConfig.DEBUG && App.isJUnitTest()) {
