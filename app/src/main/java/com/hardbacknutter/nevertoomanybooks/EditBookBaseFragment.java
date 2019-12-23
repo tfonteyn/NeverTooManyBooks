@@ -153,7 +153,7 @@ public abstract class EditBookBaseFragment<T>
     /**
      * Uses the values from the Bundle to populate the Book but don't overwrite existing values.
      * <p>
-     * Can/should be overwritten for handling specific field defaults, e.g. Bookshelf.
+     * Override for handling specific field defaults, e.g. Bookshelf.
      *
      * @param bundle to load values from
      */

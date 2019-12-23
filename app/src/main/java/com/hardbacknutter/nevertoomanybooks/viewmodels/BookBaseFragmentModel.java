@@ -132,6 +132,8 @@ public class BookBaseFragmentModel
                 if (bookData != null) {
                     // if we have a populated bundle, e.g. after an internet search, use that.
                     mBook = new Book(bookData);
+                    // a new book is always dirty
+                    mIsDirty = true;
 
                 } else {
                     // otherwise, check if we have an id, e.g. user clicked on a book in a list.
