@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ARTIST;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COLORIST;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_CONTRIBUTOR;
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COVER_ARTIST;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COVER_INKING;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_EDITOR;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INKING;
@@ -66,6 +67,7 @@ public class AuthorTypeMapper {
         MAPPER.put("Editor", TYPE_EDITOR);
         MAPPER.put("Contributor", TYPE_CONTRIBUTOR);
         MAPPER.put("Translator", TYPE_TRANSLATOR);
+        MAPPER.put("Coverart", TYPE_COVER_ARTIST);
 
         // French, unless listed above
         MAPPER.put("Text", TYPE_WRITER);
