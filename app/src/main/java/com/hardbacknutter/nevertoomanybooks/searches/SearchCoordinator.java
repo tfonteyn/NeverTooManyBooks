@@ -578,8 +578,8 @@ public class SearchCoordinator
 
         // we have a valid ISBN *OR* EAN.
         if (!mIsbnSearchText.isEmpty() && (mHasValidIsbnOrEAN || !mStrictIsbn)
-                // or we have one or more nativeIds
-                || mNativeIdSearchText != null && mNativeIdSearchText.size() > 0) {
+            // or we have one or more nativeIds
+            || mNativeIdSearchText != null && mNativeIdSearchText.size() > 0) {
 
             // then start a concurrent search
             mWaitingForIsbn = false;

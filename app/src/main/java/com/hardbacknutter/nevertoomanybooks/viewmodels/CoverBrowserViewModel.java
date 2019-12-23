@@ -318,13 +318,17 @@ public class CoverBrowserViewModel
         /**
          * Check if a file is an image with an acceptable size.
          *
-         * @param file to check
+         * @param fileSpec to check
          *
          * @return {@code true} if file is acceptable.
          */
-        private boolean isGood(@NonNull final File file) {
-            boolean ok = false;
+        private boolean isGood(@Nullable final String fileSpec) {
+            if (fileSpec == null || fileSpec.isEmpty()) {
+                return false;
+            }
 
+            boolean ok = false;
+            File file = new File(fileSpec);
             if (file.exists() && file.length() != 0) {
                 try {
                     // Just read the image files to get file size
@@ -379,10 +383,7 @@ public class CoverBrowserViewModel
                 FileInfo fileInfo = mFiles.get(key);
 
                 // Do we already have a file and is it good ?
-                if ((fileInfo != null)
-                    && fileInfo.fileSpec != null
-                    && !fileInfo.fileSpec.isEmpty()
-                    && isGood(new File(fileInfo.fileSpec))) {
+                if ((fileInfo != null) && isGood(fileInfo.fileSpec)) {
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                         Log.d(TAG, "download|FILESYSTEM|fileInfo=" + fileInfo);
@@ -411,7 +412,7 @@ public class CoverBrowserViewModel
 
                             // if the site we just searched only supports one image,
                             // disable it for THIS search
-                            if (!((SearchEngine.CoverByIsbn) engine).hasMultipleSizes()) {
+                            if (!((SearchEngine.CoverByIsbn) engine).supportsMultipleSizes()) {
                                 currentSearchSites &= ~site.id;
                             }
                         } else {
@@ -444,12 +445,11 @@ public class CoverBrowserViewModel
                                   @NonNull final SearchEngine.CoverByIsbn searchEngine,
                                   @NonNull final String isbn,
                                   @NonNull final SearchEngine.CoverByIsbn.ImageSize size) {
-
             @Nullable
-            File file = searchEngine.getCoverImage(appContext, isbn, size);
-            if (file != null && isGood(file)) {
+            String fileSpec = searchEngine.getCoverImage(appContext, isbn, size);
+            if (isGood(fileSpec)) {
                 String key = isbn + '_' + size;
-                FileInfo fileInfo = new FileInfo(isbn, size, file.getAbsolutePath());
+                FileInfo fileInfo = new FileInfo(isbn, size, fileSpec);
                 mFiles.put(key, fileInfo);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {

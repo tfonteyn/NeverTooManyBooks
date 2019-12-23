@@ -46,6 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
+/**
+ * Hard coded not to fetch any images.
+ */
 public class IsfdbGetBookTask
         extends TaskBase<Bundle> {
 

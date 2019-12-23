@@ -40,7 +40,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -100,7 +99,6 @@ public class GoodreadsManager
                    SearchEngine.ByNativeId,
                    SearchEngine.ByText,
                    SearchEngine.CoverByIsbn {
-
 
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
@@ -361,8 +359,7 @@ public class GoodreadsManager
         }
 
         // Get the stored token values from prefs
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(appContext);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(appContext);
         sAccessToken = prefs.getString(ACCESS_TOKEN, null);
         sAccessSecret = prefs.getString(ACCESS_SECRET, null);
 
@@ -850,15 +847,14 @@ public class GoodreadsManager
     @Nullable
     @Override
     @WorkerThread
-    public File getCoverImage(@NonNull final Context appContext,
-                              @NonNull final String isbn,
-                              @Nullable final ImageSize size) {
+    public String getCoverImage(@NonNull final Context appContext,
+                                @NonNull final String isbn,
+                                @Nullable final ImageSize size) {
         if (!hasValidCredentials()) {
             return null;
         }
 
-        boolean[] thumbs = {true, false};
-        return getCoverImageFallback(appContext, isbn, thumbs);
+        return getCoverImageFallback(appContext, isbn);
     }
 
     @Override

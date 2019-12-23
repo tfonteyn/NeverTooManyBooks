@@ -140,12 +140,12 @@ public class LibraryThingRegistrationActivity
         protected Integer doInBackground(final Void... params) {
             Thread.currentThread().setName("LT.ValidateKey");
             Context context = App.getAppContext();
-
             try {
                 SearchEngine.CoverByIsbn ltm = new LibraryThingManager();
-                File file = ltm.getCoverImage(context, "0451451783",
-                                              SearchEngine.CoverByIsbn.ImageSize.Small);
-                if (file != null) {
+                String fileSpec = ltm.getCoverImage(context, "0451451783",
+                                                    SearchEngine.CoverByIsbn.ImageSize.Small);
+                if (fileSpec != null) {
+                    File file = new File(fileSpec);
                     long fileLen = file.length();
                     StorageUtils.deleteFile(file);
 

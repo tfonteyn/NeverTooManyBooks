@@ -39,7 +39,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -98,23 +97,17 @@ public class LibraryThingManager
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
-    private static final String TAG = "LibraryThingManager";
-
-    /** Preferences prefix. */
-    private static final String PREF_PREFIX = "librarything.";
-
-    /** Preference that contains the dev key for the user. Type: {@code String}. */
-    public static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";
-
-    /** Preference that controls display of alert about LibraryThing. */
-    private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
-
-    /** file suffix for cover files. */
-    private static final String FILENAME_SUFFIX = "_LT";
-
     /** base urls. */
     public static final String BASE_URL = "https://www.librarything.com";
-
+    private static final String TAG = "LibraryThingManager";
+    /** Preferences prefix. */
+    private static final String PREF_PREFIX = "librarything.";
+    /** Preference that contains the dev key for the user. Type: {@code String}. */
+    public static final String PREFS_DEV_KEY = PREF_PREFIX + "dev_key";
+    /** Preference that controls display of alert about LibraryThing. */
+    private static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
+    /** file suffix for cover files. */
+    private static final String FILENAME_SUFFIX = "_LT";
     private static final String WORK_URL = BASE_URL + "/work/%1$s";
     /**
      * book details urls.
@@ -283,7 +276,6 @@ public class LibraryThingManager
             throws IOException {
 
         String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "isbn", isbn);
-
         Bundle bookData = fetchBook(localizedAppContext, url);
 
         if (fetchThumbnail[0]) {
@@ -351,9 +343,9 @@ public class LibraryThingManager
     @Nullable
     @WorkerThread
     @Override
-    public File getCoverImage(@NonNull final Context appContext,
-                              @NonNull final String isbn,
-                              @Nullable final ImageSize size) {
+    public String getCoverImage(@NonNull final Context appContext,
+                                @NonNull final String isbn,
+                                @Nullable final ImageSize size) {
         String sizeParam;
         if (size == null) {
             sizeParam = "large";
@@ -375,15 +367,8 @@ public class LibraryThingManager
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();
 
-        // Fetch, then save it with a suffix
-        String coverUrl = String.format(COVER_BY_ISBN_URL, getDevKey(appContext), sizeParam, isbn);
-        String fileSpec = ImageUtils.saveImage(appContext, coverUrl,
-                                               isbn, FILENAME_SUFFIX, sizeParam);
-        if (fileSpec != null) {
-            return new File(fileSpec);
-        }
-
-        return null;
+        String url = String.format(COVER_BY_ISBN_URL, getDevKey(appContext), sizeParam, isbn);
+        return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeParam);
     }
 
     @Override
@@ -398,7 +383,7 @@ public class LibraryThingManager
     }
 
     @Override
-    public boolean hasMultipleSizes() {
+    public boolean supportsMultipleSizes() {
         return true;
     }
 

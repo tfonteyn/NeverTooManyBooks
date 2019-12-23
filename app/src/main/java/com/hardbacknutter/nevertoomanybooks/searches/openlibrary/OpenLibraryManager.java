@@ -40,7 +40,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -255,9 +254,9 @@ public class OpenLibraryManager
     @Nullable
     @Override
     @WorkerThread
-    public File getCoverImage(@NonNull final Context appContext,
-                              @NonNull final String isbn,
-                              @Nullable final ImageSize size) {
+    public String getCoverImage(@NonNull final Context appContext,
+                                @NonNull final String isbn,
+                                @Nullable final ImageSize size) {
         String sizeParam;
         if (size == null) {
             sizeParam = "L";
@@ -276,14 +275,8 @@ public class OpenLibraryManager
             }
         }
 
-        // Fetch, then save it with a suffix
         String url = String.format(BASE_COVER_URL, "isbn", isbn, sizeParam);
-        String fileSpec = ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeParam);
-        if (fileSpec != null) {
-            return new File(fileSpec);
-        }
-        return null;
-
+        return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeParam);
     }
 
     @NonNull
@@ -293,7 +286,7 @@ public class OpenLibraryManager
     }
 
     @Override
-    public boolean hasMultipleSizes() {
+    public boolean supportsMultipleSizes() {
         return true;
     }
 

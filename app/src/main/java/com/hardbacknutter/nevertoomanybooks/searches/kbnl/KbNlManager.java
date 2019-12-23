@@ -35,7 +35,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceManager;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
@@ -152,14 +151,14 @@ public class KbNlManager
      * <p>
      * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
      * <p>
-     *
+     * <p>
      * {@inheritDoc}
      */
     @Nullable
     @Override
-    public File getCoverImage(@NonNull final Context appContext,
-                              @NonNull final String isbn,
-                              @Nullable final ImageSize size) {
+    public String getCoverImage(@NonNull final Context appContext,
+                                @NonNull final String isbn,
+                                @Nullable final ImageSize size) {
         String sizeSuffix;
         if (size == null) {
             sizeSuffix = "large";
@@ -178,17 +177,12 @@ public class KbNlManager
             }
         }
 
-        String coverUrl = String.format(BASE_URL_COVERS, isbn, sizeSuffix);
-        String fileSpec = ImageUtils.saveImage(appContext, coverUrl,
-                                               isbn, FILENAME_SUFFIX, sizeSuffix);
-        if (fileSpec != null) {
-            return new File(fileSpec);
-        }
-        return null;
+        String url = String.format(BASE_URL_COVERS, isbn, sizeSuffix);
+        return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeSuffix);
     }
 
     @Override
-    public boolean hasMultipleSizes() {
+    public boolean supportsMultipleSizes() {
         return true;
     }
 

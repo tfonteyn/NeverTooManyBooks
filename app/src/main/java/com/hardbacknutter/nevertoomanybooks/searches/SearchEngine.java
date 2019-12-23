@@ -189,6 +189,7 @@ public interface SearchEngine {
          * @param nativeId            the native id (as a String) for this particular search site.
          * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail.
          *                            The array is guaranteed to have at least one element.
+         *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
          * @throws CredentialsException for sites which require credentials
@@ -276,39 +277,46 @@ public interface SearchEngine {
                 throws CredentialsException, IOException;
     }
 
-    /** Optional. */
+    /**
+     * Optional.
+     * <p>
+     * Only supports a single (front) cover for now.
+     */
     interface CoverByIsbn
             extends SearchEngine {
-        //URGENT: implement multi cover
+
         /**
          * A site can support a single (default) or multiple sizes.
          *
          * @return {@code true} if multiple sizes are supported.
          */
         @AnyThread
-        default boolean hasMultipleSizes() {
+        default boolean supportsMultipleSizes() {
             return false;
         }
 
         /**
-         * Get a cover image.
+         * Get a cover image of the specified size.
+         * <br><br>
+         * <strong>Override</strong> this method if the site support a specific/faster api.
          *
          * @param appContext Application context
          * @param isbn       to search for, <strong>must</strong> be valid.
          * @param size       of image to get.
          *
-         * @return found/saved File, or {@code null} when none found (or any other failure)
+         * @return fileSpec, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
-        default File getCoverImage(@NonNull Context appContext,
-                                   @NonNull String isbn,
-                                   @Nullable ImageSize size) {
-            boolean[] thumbs = {true, false};
-            return getCoverImageFallback(appContext, isbn, thumbs);
+        default String getCoverImage(@NonNull Context appContext,
+                                     @NonNull String isbn,
+                                     @Nullable ImageSize size) {
+            return getCoverImageFallback(appContext, isbn);
         }
 
         /**
+         * <strong>DO NOT OVERRIDE</strong>
+         * <br><br>
          * Get a cover image. Will try in order of large, medium, small depending on the site
          * supporting multiple sizes.
          *
@@ -321,48 +329,51 @@ public interface SearchEngine {
                                    @NonNull final String isbn,
                                    @NonNull final Bundle bookData) {
 
-            File file = getCoverImage(appContext, isbn, ImageSize.Large);
-            if (hasMultipleSizes()) {
-                if (file == null) {
-                    file = getCoverImage(appContext, isbn, ImageSize.Medium);
-                    if (file == null) {
-                        file = getCoverImage(appContext, isbn, ImageSize.Small);
+            String fileSpec = getCoverImage(appContext, isbn, ImageSize.Large);
+            if (supportsMultipleSizes()) {
+                if (fileSpec == null) {
+                    fileSpec = getCoverImage(appContext, isbn, ImageSize.Medium);
+                    if (fileSpec == null) {
+                        fileSpec = getCoverImage(appContext, isbn, ImageSize.Small);
                     }
                 }
             }
-            if (file != null) {
+            if (fileSpec != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
-                imageList.add(file.getAbsolutePath());
+                imageList.add(fileSpec);
                 bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
             }
         }
 
         /**
-         * If an implementation does not support a specific (and faster) way/api
-         * to fetch a cover image, then {@link #getCoverImage(Context, String, ImageSize)}
-         * can call this fallback method.
+         * <strong>DO NOT OVERRIDE</strong>
+         * <br><br>
+         * There is normally no need to call this method directly, except when you
+         * override {@link #getCoverImage(Context, String, ImageSize)}.
+         * <br><br>
          * Do NOT use if the site either does not support returning images during search,
          * or does not support isbn searches.
-         * <p>
+         * <br><br>
          * A search for the book is done, with the 'fetchThumbnail' flag set to true.
          * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
          * {@code null} returned.
          *
-         * @param appContext     Application context
-         * @param isbnStr        to search for, <strong>must</strong> be valid.
-         * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+         * @param appContext Application context
+         * @param isbnStr    to search for, <strong>must</strong> be valid.
          *
-         * @return found/saved File, or {@code null} when none found (or any other failure)
+         * @return fileSpec, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
-        default File getCoverImageFallback(@NonNull final Context appContext,
-                                           @NonNull final String isbnStr,
-                                           @NonNull final boolean[] fetchThumbnail) {
+        default String getCoverImageFallback(@NonNull final Context appContext,
+                                             @NonNull final String isbnStr) {
+
+            boolean[] fetchThumbnail = {true, false};
+
             try {
                 Bundle bookData;
                 // If we have a valid ISBN, and the engine supports it, we can search.
@@ -388,13 +399,15 @@ public interface SearchEngine {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
                 if (imageList != null && !imageList.isEmpty()) {
-                    // simply get the first one found.
+                    // This is from a single site, no need to get the 'best'.
+                    // Just use the first one found.
                     File downloadedFile = new File(imageList.get(0));
                     // let the system resolve any path variations
                     File destination = new File(downloadedFile.getAbsolutePath());
                     StorageUtils.renameFile(downloadedFile, destination);
-                    return destination;
+                    return destination.getAbsolutePath();
                 }
+
             } catch (@NonNull final CredentialsException | IOException e) {
                 Logger.error(appContext, TAG, e);
             }

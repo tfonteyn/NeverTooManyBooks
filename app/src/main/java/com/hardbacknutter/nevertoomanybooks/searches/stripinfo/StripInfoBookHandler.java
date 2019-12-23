@@ -505,19 +505,22 @@ public class StripInfoBookHandler
      * " alt="Uitvergroten" class="">
      * <p>
      * https://www.stripinfo.be/image.php?i=437246&s=348664
+     * <p>
+     * Note that the url contains the book native id, but also a specific image id.
+     * This means we cannot implement {@link SearchEngine.CoverByIsbn}.
      *
-     * @param coverUrl fully qualified url
+     * @param url      fully qualified url
      * @param bookData destination bundle
      * @param cIdx     0..n image index
      */
-    private void fetchCover(@NonNull final String coverUrl,
+    private void fetchCover(@NonNull final String url,
                             @NonNull final Bundle /* in/out */ bookData,
                             final int cIdx) {
 
         // do not use the isbn we searched for, use the one we found even if empty!
         String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
         // download
-        String fileSpec = ImageUtils.saveImage(mLocalizedContext, coverUrl,
+        String fileSpec = ImageUtils.saveImage(mLocalizedContext, url,
                                                isbn, FILENAME_SUFFIX + cIdx, null);
 
         if (fileSpec != null) {
