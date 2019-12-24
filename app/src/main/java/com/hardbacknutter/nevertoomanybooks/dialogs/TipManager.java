@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.dialogs;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,8 +46,8 @@ import androidx.preference.PreferenceManager;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 
 /**
@@ -174,8 +175,9 @@ public final class TipManager {
         // Get the tip and return if it has been disabled.
         final Tip tip = ALL.get(stringId);
         if (tip == null) {
-            // log but ignore.
-            Logger.warn(context, TAG, "display", "stringId=" + stringId);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "display|stringId=" + stringId);
+            }
             return;
         }
         if (!tip.shouldBeShown(context)) {

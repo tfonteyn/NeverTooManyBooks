@@ -459,8 +459,9 @@ public class IsfdbBookHandler
         Elements allContentBoxes = mDoc.select("div.contentbox");
         // sanity check
         if (allContentBoxes == null) {
-            Logger.warn(mLocalizedContext, TAG, "parseDoc", "no contentbox found",
-                        "mDoc.location()=" + mDoc.location());
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "parseDoc|no contentbox found|mDoc.location()=" + mDoc.location());
+            }
             return bookData;
         }
 

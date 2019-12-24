@@ -51,6 +51,7 @@ import java.util.MissingResourceException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -403,11 +404,11 @@ public final class LocaleUtils {
             if (isValid(locale)) {
                 LOCALE_MAP.put(lang, locale);
             } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.warn(context, TAG, "getLocale", "invalid locale",
-                                "inputLang=" + inputLang,
-                                "lang=" + lang,
-                                "locale=" + locale);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LOCALE) {
+                    Log.d(TAG, "getLocale|invalid locale"
+                               + "|inputLang=" + inputLang
+                               + "|lang=" + lang
+                               + "|locale=" + locale);
                 }
 
                 locale = null;

@@ -373,6 +373,7 @@ public class FastScrollerOverlay
                 }
             }
         } catch (@NonNull final NoSuchFieldException | SecurityException e) {
+            // should not happen.... yeah right!
             Logger.warn(recyclerView.getContext(), TAG,
                         "enableFastScrollerAccess", e.getLocalizedMessage());
         }
