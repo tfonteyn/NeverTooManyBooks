@@ -84,6 +84,11 @@ public class SearchAdminActivity
         }
 
         mTabAdapter = new TabAdapter(this, mModel.getType());
+
+        //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
+        // and its re-use strategy.
+        mViewPager.setOffscreenPageLimit(mTabAdapter.getItemCount());
+
         mViewPager.setAdapter(mTabAdapter);
         new TabLayoutMediator(tabLayout, mViewPager, (tab, position) ->
                 tab.setText(getString(mTabAdapter.getTabTitle(position))))

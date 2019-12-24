@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +55,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -71,21 +75,9 @@ public class EditBookFragment
 
     public static final String TAG = "EditBookFragment";
 
-    /**
-     * Tabs in order.
-     */
+    /** Preset a tab index to display on opening. See {@link TabAdapter}. */
     @SuppressWarnings("WeakerAccess")
     public static final String REQUEST_BKEY_TAB = "tab";
-    @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT = 0;
-    @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT_PUBLICATION = 1;
-    @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT_NOTES = 2;
-    @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT_TOC = 3;
-    @SuppressWarnings("WeakerAccess")
-    public static final int TAB_EDIT_NATIVE_ID = 4;
 
     private FragmentActivity mHostActivity;
 
@@ -111,6 +103,8 @@ public class EditBookFragment
         return view;
     }
 
+    // suppress use of NR_OF_TABS
+    @SuppressLint("WrongConstant")
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
@@ -124,13 +118,15 @@ public class EditBookFragment
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
         int showTab;
         if (currentArgs != null) {
-            showTab = currentArgs.getInt(REQUEST_BKEY_TAB, TAB_EDIT);
+            showTab = currentArgs.getInt(REQUEST_BKEY_TAB, TabAdapter.TAB_EDIT);
         } else {
-            showTab = TAB_EDIT;
+            showTab = TabAdapter.TAB_EDIT;
         }
 
         mTabAdapter = new TabAdapter(this);
-
+        //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
+        // and its re-use strategy.
+        mViewPager.setOffscreenPageLimit(mTabAdapter.getItemCount());
         mViewPager.setAdapter(mTabAdapter);
 
         // The FAB lives in the activity.
@@ -265,11 +261,22 @@ public class EditBookFragment
         outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
     }
 
+    /**
+     * <strong>Implementation note</strong>:
+     */
     private static class TabAdapter
             extends FragmentStateAdapter {
 
-        /** whether the show the extra tab with native id's. */
-        private final boolean mShowNativeIdFragment;
+        static final int TAB_EDIT = 0;
+        static final int TAB_EDIT_PUBLICATION = 1;
+        static final int TAB_EDIT_NOTES = 2;
+        static final int TAB_EDIT_TOC = 3;
+        static final int TAB_EDIT_NATIVE_ID = 4;
+
+        private final List<Class> mTabClasses = new ArrayList<>();
+        private final ArrayList<Integer> mTabTitles = new ArrayList<>();
+
+        private int mNrOfTabs;
 
         /**
          * Constructor.
@@ -278,63 +285,55 @@ public class EditBookFragment
          */
         TabAdapter(@NonNull final Fragment container) {
             super(container);
+
+            boolean useToc = App.isUsed(DBDefinitions.KEY_TOC_BITMASK);
+            //URGENT: create a setting
             //noinspection ConstantConditions
-            mShowNativeIdFragment = PreferenceManager
-                    .getDefaultSharedPreferences(container.getContext())
-                    //URGENT: implement as a setting.
-                    .getBoolean("dummy", true);
+            boolean useNativeIds = PreferenceManager.getDefaultSharedPreferences(
+                    container.getContext()).getBoolean("dummy", true);
+
+            mNrOfTabs = 3;
+            mTabClasses.add(EditBookFieldsFragment.class);
+            mTabTitles.add(R.string.tab_lbl_details);
+            mTabClasses.add(EditBookPublicationFragment.class);
+            mTabTitles.add(R.string.tab_lbl_publication);
+            mTabClasses.add(EditBookNotesFragment.class);
+            mTabTitles.add(R.string.tab_lbl_notes);
+
+            if (useToc) {
+                mNrOfTabs++;
+                mTabClasses.add(EditBookTocFragment.class);
+                mTabTitles.add(R.string.tab_lbl_content);
+            }
+            if (useNativeIds) {
+                mNrOfTabs++;
+                mTabClasses.add(EditBookNativeIdFragment.class);
+                mTabTitles.add(R.string.tab_lbl_id);
+            }
         }
 
         @Override
         public int getItemCount() {
-            return mShowNativeIdFragment ? 5 : 4;
+            return mNrOfTabs;
         }
 
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
-            switch (position) {
-                case TAB_EDIT:
-                    return new EditBookFieldsFragment();
-
-                case TAB_EDIT_PUBLICATION:
-                    return new EditBookPublicationFragment();
-
-                case TAB_EDIT_NOTES:
-                    return new EditBookNotesFragment();
-
-                case TAB_EDIT_TOC:
-                    return new EditBookTocFragment();
-
-                case TAB_EDIT_NATIVE_ID:
-                    return new EditBookNativeIdFragment();
-
-                default:
-                    throw new UnexpectedValueException(position);
+            try {
+                return (Fragment) mTabClasses.get(position).newInstance();
+            } catch (@NonNull final IllegalAccessException
+                    | java.lang.InstantiationException ignore) {
+                // ignore
             }
+            // We'll never get here...
+            //noinspection ConstantConditions
+            return null;
         }
 
         @StringRes
         int getTabTitle(final int position) {
-            switch (position) {
-                case TAB_EDIT:
-                    return R.string.tab_lbl_details;
-
-                case TAB_EDIT_PUBLICATION:
-                    return R.string.tab_lbl_publication;
-
-                case TAB_EDIT_NOTES:
-                    return R.string.tab_lbl_notes;
-
-                case TAB_EDIT_TOC:
-                    return R.string.tab_lbl_content;
-
-                case TAB_EDIT_NATIVE_ID:
-                    return R.string.tab_lbl_id;
-
-                default:
-                    throw new UnexpectedValueException(position);
-            }
+            return mTabTitles.get(position);
         }
     }
 }
