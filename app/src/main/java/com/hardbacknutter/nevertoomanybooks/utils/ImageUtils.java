@@ -725,6 +725,9 @@ public final class ImageUtils {
                            final int maxWidth,
                            final int maxHeight,
                            final boolean allowUpscaling) {
+            // see onPostExecute
+            imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
+
             mImageView = new WeakReference<>(imageView);
             mFile = file;
             mMaxWidth = maxWidth;
@@ -745,13 +748,18 @@ public final class ImageUtils {
 
         @Override
         protected void onPostExecute(@Nullable final Bitmap bitmap) {
-            if (mImageView.get() != null) {
+            ImageView imageView = mImageView.get();
+
+            if (imageView != null
+                // are we still associated with this view ? (remember: views are recycled)
+                && this.equals(imageView.getTag(R.id.TAG_THUMBNAIL_TASK))) {
+                imageView.setTag(R.id.TAG_THUMBNAIL_TASK, null);
+
                 // upscaling, if applicable, was already done in the background task.
                 if (bitmap != null) {
-                    setImageView(mImageView.get(), bitmap, mMaxWidth, mMaxHeight, false);
+                    setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, false);
                 } else {
-                    setPlaceholder(mImageView.get(), R.drawable.ic_broken_image, true,
-                                   mMaxHeight);
+                    setPlaceholder(imageView, R.drawable.ic_broken_image, true, mMaxHeight);
                 }
             }
         }
@@ -760,7 +768,7 @@ public final class ImageUtils {
     /**
      * Load a Bitmap from a file, and populate the view.
      */
-    public static class CacheLoader
+    private static class CacheLoader
             extends AsyncTask<Void, Void, Bitmap> {
 
         @NonNull
@@ -773,20 +781,23 @@ public final class ImageUtils {
         private final int mMaxHeight;
 
         /**
-         * @param view      to populate
+         * @param imageView to populate
          * @param uuid      UUID of the book
          * @param cIdx      0..n image index
          * @param file      to load, must be valid
          * @param maxWidth  Maximum desired width of the image
          * @param maxHeight Maximum desired height of the image
          */
-        CacheLoader(@NonNull final ImageView view,
+        CacheLoader(@NonNull final ImageView imageView,
                     final String uuid,
                     final int cIdx,
                     @NonNull final File file,
                     final int maxWidth,
                     final int maxHeight) {
-            mImageView = new WeakReference<>(view);
+            // see onPostExecute
+            imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
+
+            mImageView = new WeakReference<>(imageView);
             mUuid = uuid;
             mCIdx = cIdx;
             mFile = file;
@@ -802,19 +813,23 @@ public final class ImageUtils {
 
         @Override
         protected void onPostExecute(@Nullable final Bitmap bitmap) {
-            if (mImageView.get() != null) {
-                ImageView view = mImageView.get();
+            ImageView imageView = mImageView.get();
+
+            if (imageView != null
+                // are we still associated with this view ? (remember: views are recycled)
+                && this.equals(imageView.getTag(R.id.TAG_THUMBNAIL_TASK))) {
+                imageView.setTag(R.id.TAG_THUMBNAIL_TASK, null);
                 // upscaling, if applicable, was already done in the background task.
                 if (bitmap != null) {
                     // display
-                    view.setMaxWidth(mMaxWidth);
-                    view.setMaxHeight(mMaxHeight);
-                    view.setImageBitmap(bitmap);
+                    imageView.setMaxWidth(mMaxWidth);
+                    imageView.setMaxHeight(mMaxHeight);
+                    imageView.setImageBitmap(bitmap);
                     // and send to the cache
                     new CoversDAO.ImageCacheWriterTask(mUuid, mCIdx, mMaxWidth, mMaxHeight, bitmap)
                             .execute();
                 } else {
-                    setPlaceholder(view, R.drawable.ic_broken_image, true, mMaxHeight);
+                    setPlaceholder(imageView, R.drawable.ic_broken_image, true, mMaxHeight);
                 }
             }
         }
