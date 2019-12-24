@@ -176,14 +176,12 @@ public class BookDetailsFragment
 
         mReadCheckbox = view.findViewById(R.id.cbx_read);
         mSignedCbx = view.findViewById(R.id.cbx_signed);
-        mIsAnthologyCbx = view.findViewById(R.id.cbx_anthology);
 
         mAuthorView = view.findViewById(R.id.author);
         mSeriesView = view.findViewById(R.id.series);
         mBookshelvesView = view.findViewById(R.id.bookshelves);
         mPriceListedView = view.findViewById(R.id.price_listed);
         mPricePaidView = view.findViewById(R.id.price_paid);
-        mLoanedToView = view.findViewById(R.id.loaned_to);
         mTitleView = view.findViewById(R.id.title);
         mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
@@ -204,12 +202,28 @@ public class BookDetailsFragment
         mDateReadStartView = view.findViewById(R.id.read_start);
         mDateReadEndView = view.findViewById(R.id.read_end);
 
+        mIsAnthologyCbx = view.findViewById(R.id.cbx_anthology);
         mTocLabelView = view.findViewById(R.id.lbl_toc);
         mTocView = view.findViewById(R.id.toc);
         mTocButton = view.findViewById(R.id.toc_button);
+        if (!App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+            mIsAnthologyCbx.setVisibility(View.GONE);
+            mTocLabelView.setVisibility(View.GONE);
+            mTocView.setVisibility(View.GONE);
+            mTocButton.setVisibility(View.GONE);
+        }
+
+        mLoanedToView = view.findViewById(R.id.loaned_to);
+        if (!App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            mLoanedToView.setVisibility(View.GONE);
+        }
 
         mCoverView[0] = view.findViewById(R.id.coverImage0);
         mCoverView[1] = view.findViewById(R.id.coverImage1);
+        if (!App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+            mCoverView[0].setVisibility(View.GONE);
+            mCoverView[1].setVisibility(View.GONE);
+        }
 
         return view;
     }
@@ -446,9 +460,6 @@ public class BookDetailsFragment
         // defined, but fetched manually
         fields.addString(R.id.bookshelves, mBookshelvesView, "", DBDefinitions.KEY_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
-
-        // defined, but fetched manually
-//        fields.addString(R.id.loaned_to, mLoanedToView, "", DBDefinitions.KEY_LOANEE);
     }
 
     /**
@@ -467,11 +478,16 @@ public class BookDetailsFragment
         populatePriceFields();
 
         // handle non-text fields
-        populateLoanedToField(mBookModel.getLoanee());
-        populateToc();
-
-        setupCoverViews(0, ImageUtils.SCALE_LARGE);
-        setupCoverViews(1, ImageUtils.SCALE_SMALL);
+        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            populateLoanedToField(mBookModel.getLoanee());
+        }
+        if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+            populateToc();
+        }
+        if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+            setupCoverViews(0, ImageUtils.SCALE_LARGE);
+            setupCoverViews(1, ImageUtils.SCALE_SMALL);
+        }
 
         // hide unwanted and empty fields
         showOrHideFields(true, false);
@@ -750,15 +766,11 @@ public class BookDetailsFragment
      * @param loanee the one who shall not be mentioned.
      */
     private void populateLoanedToField(@Nullable final String loanee) {
-//        Field<String> field = getFields().getField(R.id.loaned_to);
         if (loanee != null && !loanee.isEmpty()) {
             mLoanedToView.setText(getString(R.string.lbl_loaned_to_name, loanee));
             mLoanedToView.setVisibility(View.VISIBLE);
             mLoanedToView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-                /**
-                 * yes, icons are not supported here, but:
-                 * TODO: convert to MenuPicker context menu.... if I can be bothered.
-                 */
+                /** TODO: convert to MenuPicker context menu.... if I can be bothered. */
                 @Override
                 @CallSuper
                 public void onCreateContextMenu(@NonNull final ContextMenu menu,
@@ -768,8 +780,7 @@ public class BookDetailsFragment
                     Resources r = getResources();
                     menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
                              r.getInteger(R.integer.MENU_ORDER_LENDING),
-                             R.string.menu_loan_return_book)
-                        .setIcon(R.drawable.ic_people);
+                             R.string.menu_loan_return_book);
                 }
             });
         } else {

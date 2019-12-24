@@ -133,7 +133,10 @@ public class EditBookFieldsFragment
 
         mCoverView[0] = view.findViewById(R.id.coverImage0);
         mCoverView[1] = view.findViewById(R.id.coverImage1);
-
+        if (!App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+            mCoverView[0].setVisibility(View.GONE);
+            mCoverView[1].setVisibility(View.GONE);
+        }
         return view;
     }
 
@@ -258,8 +261,10 @@ public class EditBookFieldsFragment
     protected void onLoadFieldsFromBook() {
         super.onLoadFieldsFromBook();
 
-        setupCoverView(0, ImageUtils.SCALE_MEDIUM);
-        setupCoverView(1, ImageUtils.SCALE_MEDIUM);
+        if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+            setupCoverView(0, ImageUtils.SCALE_MEDIUM);
+            setupCoverView(1, ImageUtils.SCALE_MEDIUM);
+        }
 
         populateAuthorListField();
         populateSeriesListField();
