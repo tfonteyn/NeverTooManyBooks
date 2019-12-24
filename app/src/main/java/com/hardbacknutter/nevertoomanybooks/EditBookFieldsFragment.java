@@ -477,7 +477,7 @@ public class EditBookFieldsFragment
                     //noinspection ConstantConditions
                     String barCode = mScannerModel.getScanner().getBarcode(getContext(), data);
                     if (barCode != null) {
-                        mBookModel.getBook().put(DBDefinitions.KEY_ISBN, barCode);
+                        mBookModel.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
                         return;
                     }
                 }

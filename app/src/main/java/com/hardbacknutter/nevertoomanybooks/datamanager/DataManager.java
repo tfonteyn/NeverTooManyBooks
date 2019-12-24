@@ -240,7 +240,7 @@ public class DataManager {
      * @throws UnexpectedValueException if the type of the Object is not supported.
      */
     public void put(@NonNull final String key,
-                    @NonNull final Object value)
+                    @Nullable final Object value)
             throws UnexpectedValueException {
         if (value instanceof String) {
             putString(key, (String) value);
@@ -254,6 +254,8 @@ public class DataManager {
             putLong(key, (long) value);
         } else if (value instanceof Integer) {
             putInt(key, (int) value);
+        } else if (value == null) {
+            putNull(key);
         } else {
             throw new UnexpectedValueException(value.getClass().getName());
         }
@@ -264,7 +266,7 @@ public class DataManager {
      *
      * @param key Key of data object
      *
-     * @return Data object, or {@code null} when not present
+     * @return Data object, or {@code null} when not present, o present with value {@code null}
      */
     @Nullable
     public Object get(@NonNull final String key) {
@@ -433,6 +435,15 @@ public class DataManager {
         } else {
             mRawData.putString(key, value);
         }
+    }
+
+    /**
+     * Store an explicit {@code null} value. Bypasses any data-accessors on the key.
+     *
+     * @param key Key of data object
+     */
+    public void putNull(@NonNull final String key) {
+        mRawData.putString(key, null);
     }
 
     /**

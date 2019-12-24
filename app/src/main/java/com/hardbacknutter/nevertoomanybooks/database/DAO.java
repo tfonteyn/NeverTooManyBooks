@@ -159,7 +159,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_BUILTIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TOC_TYPE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FORMATTED;
@@ -177,6 +176,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.VDOM_TOC_TYPE;
 
 /**
  * Database access helper class.
@@ -780,7 +780,7 @@ public class DAO
                                      author,
                                      mapper.getString(DOM_TITLE.getName()),
                                      mapper.getString(DOM_DATE_FIRST_PUB.getName()),
-                                     mapper.getString(DOM_TOC_TYPE.getName()).charAt(0),
+                                     mapper.getString(VDOM_TOC_TYPE.getName()).charAt(0),
                                      mapper.getInt(DOM_BL_BOOK_COUNT.getName()));
                 list.add(tocEntry);
             }
@@ -1197,7 +1197,7 @@ public class DAO
         // Handle all price related fields.
         preprocessPrices(context, book);
 
-        // Remove blank external ID's
+        // Replace blank ("" or 0) fields with {@code null} values.
         for (DomainDefinition domain : new DomainDefinition[]{
                 //NEWTHINGS: add new site specific ID: add column
                 DOM_BOOK_ISFDB_ID,
@@ -1211,14 +1211,14 @@ public class DAO
                     case ColumnInfo.TYPE_INTEGER:
                         long v = book.getLong(domain.getName());
                         if (v < 1) {
-                            book.remove(domain.getName());
+                            book.putNull(domain.getName());
                         }
                         break;
 
                     case ColumnInfo.TYPE_TEXT:
                         Object o = book.get(domain.getName());
-                        if (o == null || o.toString().isEmpty()) {
-                            book.remove(domain.getName());
+                        if (o != null && o.toString().isEmpty()) {
+                            book.putNull(domain.getName());
                         }
                         break;
 
@@ -1229,7 +1229,7 @@ public class DAO
             }
         }
 
-        // Remove {@code null} fields that should never be {@code null}.
+        // Remove {@code null} (but blanks allowed) fields that should never be {@code null}.
         for (String name : new String[]{
                 //ENHANCE: can we automate this list ? maybe by looping over the table def. ?
                 // Basically we want "NOT NULL" fields which have STRING default.
@@ -1265,7 +1265,7 @@ public class DAO
             }
         }
 
-        // Remove {@code null}/blank fields that should never be {@code null}/blank.
+        // Remove {@code null} and blank fields that should never be {@code null} or blank.
         for (String name : new String[]{
                 // auto-generated in the database
                 DBDefinitions.KEY_BOOK_UUID,
@@ -3799,20 +3799,25 @@ public class DAO
         for (String key : data.keySet()) {
             // Get column info for this column.
             ColumnInfo columnInfo = tableInfo.getColumn(key);
-            // Check if we actually have a matching column.
-            if (columnInfo != null) {
-                // Never update PK.
-                if (!columnInfo.isPrimaryKey) {
-                    // Try to set the appropriate value, but if that fails, just use TEXT...
-                    Object entry = data.get(key);
+            // Check if we actually have a matching column, and never update a PK.
+            if (columnInfo != null && !columnInfo.isPrimaryKey()) {
+                Object entry = data.get(key);
+                if (entry == null) {
+                    if (columnInfo.isNullable()) {
+                        cv.putNull(key);
+                    } else {
+                        throw new IllegalStateException("NULL on a non-nullable column");
+                    }
+                } else {
                     try {
+                        // Try to set the appropriate value, but if that fails, just use TEXT...
                         switch (columnInfo.storageClass) {
                             case Real: {
                                 if (entry instanceof Float) {
                                     cv.put(columnInfo.name, (Float) entry);
                                 } else if (entry instanceof Double) {
                                     cv.put(columnInfo.name, (Double) entry);
-                                } else if (entry != null) {
+                                } else {
                                     // Theoretically we should only get here during an import,
                                     // where everything is handled as a String.
                                     String stringValue = entry.toString().trim();
@@ -3820,7 +3825,8 @@ public class DAO
                                         // sqlite does not care about float/double,
                                         // Using double covers float as well.
                                         //Reminder: do NOT use the bookLocale to parse.
-                                        cv.put(columnInfo.name, Double.parseDouble(stringValue));
+                                        cv.put(columnInfo.name,
+                                               Double.parseDouble(stringValue));
                                     } else {
                                         cv.put(columnInfo.name, "");
                                     }
@@ -3838,13 +3844,14 @@ public class DAO
                                     cv.put(columnInfo.name, (Integer) entry);
                                 } else if (entry instanceof Long) {
                                     cv.put(columnInfo.name, (Long) entry);
-                                } else if (entry != null) {
+                                } else {
                                     // Theoretically we should only get here during an import,
                                     // where everything is handled as a String.
                                     String s = entry.toString().toLowerCase(bookLocale);
                                     if (!s.isEmpty()) {
                                         // It's not strictly needed to do these conversions.
-                                        // parseInt/catch(Exception) works, but it's not elegant...
+                                        // parseInt/catch(Exception) works,
+                                        // but it's not elegant...
                                         switch (s) {
                                             case "1":
                                             case "true":
@@ -3877,7 +3884,7 @@ public class DAO
                             case Text: {
                                 if (entry instanceof String) {
                                     cv.put(columnInfo.name, (String) entry);
-                                } else if (entry != null) {
+                                } else {
                                     cv.put(columnInfo.name, entry.toString());
                                 }
                                 break;
@@ -3885,7 +3892,7 @@ public class DAO
                             case Blob: {
                                 if (entry instanceof byte[]) {
                                     cv.put(columnInfo.name, (byte[]) entry);
-                                } else if (entry != null) {
+                                } else {
                                     throw new IllegalArgumentException(
                                             "non-null Blob but not a byte[] ?"
                                             + " column.name=" + columnInfo.name
@@ -5071,7 +5078,7 @@ public class DAO
          * We need DOM_TITLE_OB as it will be used to ORDER BY
          */
         private static final String TOC_ENTRIES_BY_AUTHOR_ID =
-                "SELECT " + "'" + TocEntry.Type.TYPE_TOC + "' AS " + DOM_TOC_TYPE
+                "SELECT " + "'" + TocEntry.Type.TYPE_TOC + "' AS " + VDOM_TOC_TYPE
                 + ',' + TBL_TOC_ENTRIES.dot(DOM_PK_ID)
                 + ',' + TBL_TOC_ENTRIES.dot(DOM_TITLE)
                 + ',' + TBL_TOC_ENTRIES.dot(DOM_TITLE_OB)
@@ -5091,7 +5098,7 @@ public class DAO
          * We need DOM_TITLE_OB as it will be used to ORDER BY
          */
         private static final String BOOK_TITLES_BY_AUTHOR_ID =
-                "SELECT " + "'" + TocEntry.Type.TYPE_BOOK + "' AS " + DOM_TOC_TYPE
+                "SELECT " + "'" + TocEntry.Type.TYPE_BOOK + "' AS " + VDOM_TOC_TYPE
                 + ',' + TBL_BOOKS.dot(DOM_PK_ID)
                 + ',' + TBL_BOOKS.dot(DOM_TITLE)
                 + ',' + TBL_BOOKS.dot(DOM_TITLE_OB)

@@ -270,7 +270,7 @@ public final class DBDefinitions {
 
 
     /** Virtual. The type of a TOC entry. See {@link TocEntry.Type} */
-    public static final DomainDefinition DOM_TOC_TYPE;
+    public static final DomainDefinition VDOM_TOC_TYPE;
 
     /**
      * {@link #TBL_BOOKS_FTS}
@@ -766,7 +766,7 @@ public final class DBDefinitions {
          *  TOC domains
          * ====================================================================================== */
 
-        DOM_TOC_TYPE =
+        VDOM_TOC_TYPE =
                 new DomainDefinition(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT);
 
         /* ======================================================================================

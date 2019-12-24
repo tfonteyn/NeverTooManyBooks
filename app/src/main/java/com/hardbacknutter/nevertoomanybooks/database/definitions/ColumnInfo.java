@@ -72,15 +72,16 @@ public class ColumnInfo {
 
     @NonNull
     public final String name;
-    public final boolean isPrimaryKey;
+
+    private final boolean mIsPrimaryKey;
+    private final boolean mNullable;
+
     @NonNull
     public final StorageClass storageClass;
     @NonNull
     private final String typeName;
     @SuppressWarnings("unused")
     private final int position;
-    @SuppressWarnings("unused")
-    private final boolean allowNull;
     @SuppressWarnings("unused")
     @Nullable
     private final String defaultValue;
@@ -95,15 +96,23 @@ public class ColumnInfo {
         position = cursor.getInt(0);
         name = cursor.getString(1);
         typeName = cursor.getString(2);
-        allowNull = cursor.getInt(3) == 0;
+        mNullable = cursor.getInt(3) == 0;
 
         // can be null
         defaultValue = cursor.getString(4);
 
-        isPrimaryKey = cursor.getInt(5) == 1;
+        mIsPrimaryKey = cursor.getInt(5) == 1;
 
         // derived
         storageClass = StorageClass.newInstance(typeName);
+    }
+
+    public boolean isNullable() {
+        return mNullable;
+    }
+
+    public boolean isPrimaryKey() {
+        return mIsPrimaryKey;
     }
 
     /**
@@ -154,14 +163,15 @@ public class ColumnInfo {
     public String toString() {
         return "\nColumnInfo{"
                + "name=`" + name + '`'
-               + ", isPrimaryKey=" + isPrimaryKey
+               + ", mIsPrimaryKey=" + mIsPrimaryKey
                + ", storageClass=" + storageClass
                + ", position=" + position
                + ", typeName=`" + typeName + '`'
-               + ", allowNull=" + allowNull
+               + ", mNullable=" + mNullable
                + ", defaultValue=`" + defaultValue + '`'
                + '}';
     }
+
 
     /**
      * Mapping types to storage classes.
