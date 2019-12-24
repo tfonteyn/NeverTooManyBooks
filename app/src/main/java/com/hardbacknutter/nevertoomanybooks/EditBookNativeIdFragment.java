@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 
+//URGENT: add a switch?? to the layout to show ALL fields.
 public class EditBookNativeIdFragment
         extends EditBookBaseFragment {
 
@@ -98,6 +99,7 @@ public class EditBookNativeIdFragment
     }
 
     private void setSiteVisibility(final int sites) {
+        // related labels are dealt with automatically in #showOrHideFields
         mEidGoodreadsView.setVisibility((sites & SearchSites.GOODREADS) != 0
                                         ? View.VISIBLE : View.GONE);
         mEidIsfdbView.setVisibility((sites & SearchSites.ISFDB) != 0

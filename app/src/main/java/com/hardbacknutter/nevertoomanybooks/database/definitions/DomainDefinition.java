@@ -84,14 +84,14 @@ public class DomainDefinition
      * @param name column name
      */
     public DomainDefinition(@NonNull final String name) {
-        this.mName = name;
+        mName = name;
         mType = ColumnInfo.TYPE_INTEGER;
         mIsPrimaryKey = true;
         mConstraints.add(NOT_NULL);
     }
 
     /**
-     * Simple column without constraints.
+     * Simple column without constraints (e.g. 'nullable')
      *
      * @param name column name
      * @param type column type (text, int, float, ...)
@@ -112,7 +112,7 @@ public class DomainDefinition
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type,
                             final boolean notNull) {
-        this.mName = name;
+        mName = name;
         mType = type;
         if (notNull) {
             mConstraints.add(NOT_NULL);
@@ -129,7 +129,7 @@ public class DomainDefinition
                             @NonNull final String type,
                             final boolean notNull,
                             @Nullable final String... constraints) {
-        this.mName = name;
+        mName = name;
         mType = type;
         if (notNull) {
             mConstraints.add(NOT_NULL);

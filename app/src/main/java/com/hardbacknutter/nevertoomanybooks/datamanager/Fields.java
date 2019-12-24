@@ -861,6 +861,7 @@ public class Fields {
 
         @Override
         public void getValueAndPut(@NonNull final DataManager target) {
+            // We don't know the type <T> so put as Object (DataManager will auto-detect).
             target.put(mField.getKey(), getValue());
         }
 

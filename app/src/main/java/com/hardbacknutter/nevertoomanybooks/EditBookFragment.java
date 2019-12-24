@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -103,8 +102,6 @@ public class EditBookFragment
         return view;
     }
 
-    // suppress use of NR_OF_TABS
-    @SuppressLint("WrongConstant")
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
@@ -191,7 +188,6 @@ public class EditBookFragment
         // Paranoia...
         for (Fragment frag : getChildFragmentManager().getFragments()) {
             if (frag.isResumed()) {
-                //Logger.debug(this,"doSave", frag);
                 ((DataEditor) frag).saveFields();
             }
         }
