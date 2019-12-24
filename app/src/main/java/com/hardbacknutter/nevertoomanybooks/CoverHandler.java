@@ -109,13 +109,15 @@ public class CoverHandler {
     private static final int CAMERA_NEXT_ACTION_CROP = 1;
     /** After taking a picture, edit. */
     private static final int CAMERA_NEXT_ACTION_EDIT = 2;
-    private final int mCIdx;
+
 
     /** The fragment hosting us. */
     @NonNull
     private final Fragment mFragment;
     @NonNull
     private final ImageView mCoverView;
+    /** Index of the image we're handling. */
+    private final int mCIdx;
     /** Context from the fragment, cached as used frequently. */
     @NonNull
     private final Context mContext;
@@ -163,8 +165,6 @@ public class CoverHandler {
         mMaxWidth = maxSize;
     }
 
-    @Nullable
-    private CoverBrowserFragment mCoverBrowser;
     /** Used to display a hint if user rotates a camera image. */
     private boolean mShowHintAboutRotating;
     @Nullable
@@ -192,10 +192,14 @@ public class CoverHandler {
         if (getCoverFile().exists()) {
             title = mContext.getString(R.string.title_cover);
         } else {
+            // there is no current image; only show the replace menu
             MenuItem menuItem = menu.findItem(R.id.SUBMENU_THUMB_REPLACE);
             menu = menuItem.getSubMenu();
             title = menuItem.getTitle();
         }
+
+        // we only support alternative edition covers for the front cover.
+        menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setEnabled(mCIdx == 0);
 
         new MenuPicker<>(mContext, title, menu, null, CoverHandler.this::onViewContextItemSelected)
                 .show();
@@ -426,12 +430,14 @@ public class CoverHandler {
 
         ISBN isbn = ISBN.createISBN(mIsbnView.getText().toString());
         if (isbn != null && isbn.isValid()) {
+            // pass in the index, as we'll need it to know which image we need to handle.
             //noinspection ConstantConditions
-            mCoverBrowser = CoverBrowserFragment.newInstance(isbn.asText());
+            CoverBrowserFragment coverBrowser = CoverBrowserFragment
+                    .newInstance(isbn.asText(), mCIdx);
             // we must use the same fragment manager as the hosting fragment...
-            mCoverBrowser.show(mFragment.getParentFragmentManager(), CoverBrowserFragment.TAG);
-            // ... as we will communicate between the two fragments directly
-            mCoverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
+            coverBrowser.show(mFragment.getParentFragmentManager(), CoverBrowserFragment.TAG);
+            // ... as the coverBrowser will send its results directly to that fragment.
+            coverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
 
         } else {
             Snackbar.make(mCoverView, R.string.warning_requires_isbn,
@@ -444,14 +450,12 @@ public class CoverHandler {
      * we take that image and stuff it into the view.
      */
     private void processCoverBrowserResult(@NonNull final Intent data) {
-        String fileSpec = data.getStringExtra(CoverBrowserFragment.BKEY_SELECTED_COVER);
-        if (mCoverBrowser != null && fileSpec != null && !fileSpec.isEmpty()) {
+        String fileSpec = data.getStringExtra(UniqueId.BKEY_FILE_SPEC[mCIdx]);
+        if (fileSpec != null && !fileSpec.isEmpty()) {
             File source = new File(fileSpec);
             File destination = getCoverFile();
             StorageUtils.renameFile(source, destination);
             setImage(destination);
-            // all done, get rid of the browser fragment
-            mCoverBrowser.dismiss();
         }
     }
 
@@ -565,7 +569,7 @@ public class CoverHandler {
 
     @IntDef({CAMERA_NEXT_ACTION_NOTHING, CAMERA_NEXT_ACTION_CROP, CAMERA_NEXT_ACTION_EDIT})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface CameraNextAction {
+    @interface CameraNextAction {
 
     }
 

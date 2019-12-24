@@ -77,6 +77,7 @@ public class EditBookFieldsFragment
 
     /** Log tag. */
     public static final String TAG = "EditBookFieldsFragment";
+    private static final String BKEY_M_CONTEXT_MENU_OPEN_INDEX = TAG + ":imgIndex";
 
     private static final int REQ_EDIT_AUTHORS = 0;
     private static final int REQ_EDIT_SERIES = 1;
@@ -86,7 +87,7 @@ public class EditBookFieldsFragment
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
     /** Track on which cover view the context menu was used. */
-    private int mContextMenuOpenIndex = -1;
+    private int mCurrentCoverHandlerIndex = -1;
 
     /** The views. */
     private View mTitleView;
@@ -144,13 +145,22 @@ public class EditBookFieldsFragment
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        if (savedInstanceState != null) {
+            mCurrentCoverHandlerIndex = savedInstanceState
+                    .getInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, -1);
+        }
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
 
         // Fix the focus order for the views
         //noinspection ConstantConditions
         FocusFixer.fix(getView());
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, mCurrentCoverHandlerIndex);
     }
 
     /**
@@ -290,13 +300,13 @@ public class EditBookFieldsFragment
             if (image.exists()) {
                 ZoomedImageDialogFragment.show(getParentFragmentManager(), image);
             } else {
-                mContextMenuOpenIndex = cIdx;
+                mCurrentCoverHandlerIndex = cIdx;
                 mCoverHandler[cIdx].onCreateContextMenu();
             }
         });
 
         mCoverView[cIdx].setOnLongClickListener(v -> {
-            mContextMenuOpenIndex = cIdx;
+            mCurrentCoverHandlerIndex = cIdx;
             mCoverHandler[cIdx].onCreateContextMenu();
             return true;
         });
@@ -476,17 +486,17 @@ public class EditBookFieldsFragment
             }
 
             default: {
-                boolean handled = false;
                 // handle any cover image request codes
-                if (mContextMenuOpenIndex != -1) {
-                    handled = mCoverHandler[mContextMenuOpenIndex]
+                if (mCurrentCoverHandlerIndex >= -1) {
+                    boolean handled = mCoverHandler[mCurrentCoverHandlerIndex]
                             .onActivityResult(requestCode, resultCode, data);
-                    mContextMenuOpenIndex = -1;
+                    mCurrentCoverHandlerIndex = -1;
+                    if (handled) {
+                        break;
+                    }
                 }
 
-                if (!handled) {
-                    super.onActivityResult(requestCode, resultCode, data);
-                }
+                super.onActivityResult(requestCode, resultCode, data);
                 break;
             }
         }

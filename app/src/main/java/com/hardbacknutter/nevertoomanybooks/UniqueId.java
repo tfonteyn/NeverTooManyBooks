@@ -126,13 +126,6 @@ public final class UniqueId {
      * Book front and back-cover file specs.
      */
     public static final String[] BKEY_FILE_SPEC = new String[2];
-    /**
-     * List of fileSpecs or uri.
-     * The key represents the single (front) cover.
-     * <p>
-     * <br>type: {@code ArrayList<String>}
-     */
-    public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
 
     static {
         // front cover
@@ -140,6 +133,14 @@ public final class UniqueId {
         // back cover
         BKEY_FILE_SPEC[1] = "fileSpec:1";
     }
+
+    /**
+     * List of fileSpecs or uri.
+     * The key represents the single (front) cover.
+     * <p>
+     * <br>type: {@code ArrayList<String>}
+     */
+    public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
 
     /**
      * The title to be used by generic Dialogs.

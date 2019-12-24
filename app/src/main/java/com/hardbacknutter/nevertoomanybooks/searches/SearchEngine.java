@@ -277,11 +277,7 @@ public interface SearchEngine {
                 throws CredentialsException, IOException;
     }
 
-    /**
-     * Optional.
-     * <p>
-     * Only supports a single (front) cover for now.
-     */
+    /** Optional. */
     interface CoverByIsbn
             extends SearchEngine {
 
@@ -302,6 +298,7 @@ public interface SearchEngine {
          *
          * @param appContext Application context
          * @param isbn       to search for, <strong>must</strong> be valid.
+         * @param cIdx       0..n image index
          * @param size       of image to get.
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
@@ -310,8 +307,9 @@ public interface SearchEngine {
         @WorkerThread
         default String getCoverImage(@NonNull Context appContext,
                                      @NonNull String isbn,
+                                     final int cIdx,
                                      @Nullable ImageSize size) {
-            return getCoverImageFallback(appContext, isbn);
+            return getCoverImageFallback(appContext, isbn, cIdx);
         }
 
         /**
@@ -327,14 +325,15 @@ public interface SearchEngine {
         @WorkerThread
         default void getCoverImage(@NonNull final Context appContext,
                                    @NonNull final String isbn,
+                                   final int cIdx,
                                    @NonNull final Bundle bookData) {
 
-            String fileSpec = getCoverImage(appContext, isbn, ImageSize.Large);
+            String fileSpec = getCoverImage(appContext, isbn, cIdx, ImageSize.Large);
             if (supportsMultipleSizes()) {
                 if (fileSpec == null) {
-                    fileSpec = getCoverImage(appContext, isbn, ImageSize.Medium);
+                    fileSpec = getCoverImage(appContext, isbn, cIdx, ImageSize.Medium);
                     if (fileSpec == null) {
-                        fileSpec = getCoverImage(appContext, isbn, ImageSize.Small);
+                        fileSpec = getCoverImage(appContext, isbn, cIdx, ImageSize.Small);
                     }
                 }
             }
@@ -353,7 +352,7 @@ public interface SearchEngine {
          * <strong>DO NOT OVERRIDE</strong>
          * <br><br>
          * There is normally no need to call this method directly, except when you
-         * override {@link #getCoverImage(Context, String, ImageSize)}.
+         * override {@link #getCoverImage(Context, String, int, ImageSize)}.
          * <br><br>
          * Do NOT use if the site either does not support returning images during search,
          * or does not support isbn searches.
@@ -364,15 +363,18 @@ public interface SearchEngine {
          *
          * @param appContext Application context
          * @param isbnStr    to search for, <strong>must</strong> be valid.
+         * @param cIdx       0..n image index
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
         default String getCoverImageFallback(@NonNull final Context appContext,
-                                             @NonNull final String isbnStr) {
+                                             @NonNull final String isbnStr,
+                                             final int cIdx) {
 
-            boolean[] fetchThumbnail = {true, false};
+            boolean[] fetchThumbnail = new boolean[2];
+            fetchThumbnail[cIdx] = true;
 
             try {
                 Bundle bookData;

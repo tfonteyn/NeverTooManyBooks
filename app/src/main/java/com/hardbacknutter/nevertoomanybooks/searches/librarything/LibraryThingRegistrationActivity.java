@@ -143,7 +143,7 @@ public class LibraryThingRegistrationActivity
             try {
                 SearchEngine.CoverByIsbn ltm = new LibraryThingManager();
                 String fileSpec = ltm.getCoverImage(context, "0451451783",
-                                                    SearchEngine.CoverByIsbn.ImageSize.Small);
+                                                    0, SearchEngine.CoverByIsbn.ImageSize.Small);
                 if (fileSpec != null) {
                     File file = new File(fileSpec);
                     long fileLen = file.length();

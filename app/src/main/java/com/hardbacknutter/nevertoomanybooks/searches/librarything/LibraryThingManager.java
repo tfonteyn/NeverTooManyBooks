@@ -279,7 +279,7 @@ public class LibraryThingManager
         Bundle bookData = fetchBook(localizedAppContext, url);
 
         if (fetchThumbnail[0]) {
-            getCoverImage(localizedAppContext, isbn, bookData);
+            getCoverImage(localizedAppContext, isbn, 0, bookData);
         }
 
         return bookData;
@@ -304,7 +304,7 @@ public class LibraryThingManager
         if (fetchThumbnail[0]) {
             String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             if (isbn != null && !isbn.isEmpty()) {
-                getCoverImage(localizedAppContext, isbn, bookData);
+                getCoverImage(localizedAppContext, isbn, 0, bookData);
             }
         }
 
@@ -345,6 +345,7 @@ public class LibraryThingManager
     @Override
     public String getCoverImage(@NonNull final Context appContext,
                                 @NonNull final String isbn,
+                                final int cIdx,
                                 @Nullable final ImageSize size) {
         String sizeParam;
         if (size == null) {
@@ -366,7 +367,7 @@ public class LibraryThingManager
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();
-
+        // ignore cIdx, site has only one image.
         String url = String.format(COVER_BY_ISBN_URL, getDevKey(appContext), sizeParam, isbn);
         return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeParam);
     }

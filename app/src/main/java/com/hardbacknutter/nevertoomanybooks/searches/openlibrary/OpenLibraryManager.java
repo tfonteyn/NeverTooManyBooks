@@ -239,23 +239,20 @@ public class OpenLibraryManager
      * <a href="https://openlibrary.org/dev/docs/api/covers">
      * https://openlibrary.org/dev/docs/api/covers</a>
      * <p>
-     * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
+     * {@code
+     *      http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
+     * }
      * <p>
      * S/M/L
      * <p>
-     * Get a cover image.
-     *
-     * @param appContext Current context (i.e. with the current Locale)
-     * @param isbn       to search for
-     * @param size       of image to get.
-     *
-     * @return found/saved File, or {@code null} when none found (or any other failure)
+     * {@inheritDoc}
      */
     @Nullable
     @Override
     @WorkerThread
     public String getCoverImage(@NonNull final Context appContext,
                                 @NonNull final String isbn,
+                                final int cIdx,
                                 @Nullable final ImageSize size) {
         String sizeParam;
         if (size == null) {
@@ -274,7 +271,7 @@ public class OpenLibraryManager
                     break;
             }
         }
-
+        // ignore cIdx, site has only one image.
         String url = String.format(BASE_COVER_URL, "isbn", isbn, sizeParam);
         return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeParam);
     }

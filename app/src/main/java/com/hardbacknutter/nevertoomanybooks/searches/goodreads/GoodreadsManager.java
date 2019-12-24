@@ -849,12 +849,13 @@ public class GoodreadsManager
     @WorkerThread
     public String getCoverImage(@NonNull final Context appContext,
                                 @NonNull final String isbn,
+                                final int cIdx,
                                 @Nullable final ImageSize size) {
         if (!hasValidCredentials()) {
             return null;
         }
 
-        return getCoverImageFallback(appContext, isbn);
+        return getCoverImageFallback(appContext, isbn, cIdx);
     }
 
     @Override

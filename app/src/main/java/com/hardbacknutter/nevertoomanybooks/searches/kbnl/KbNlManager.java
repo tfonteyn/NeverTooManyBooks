@@ -141,7 +141,7 @@ public class KbNlManager
         }
 
         if (fetchThumbnail[0]) {
-            getCoverImage(localizedAppContext, isbn, bookData);
+            getCoverImage(localizedAppContext, isbn, 0, bookData);
         }
         return bookData;
     }
@@ -151,13 +151,13 @@ public class KbNlManager
      * <p>
      * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
      * <p>
-     * <p>
      * {@inheritDoc}
      */
     @Nullable
     @Override
     public String getCoverImage(@NonNull final Context appContext,
                                 @NonNull final String isbn,
+                                final int cIdx,
                                 @Nullable final ImageSize size) {
         String sizeSuffix;
         if (size == null) {
@@ -177,6 +177,7 @@ public class KbNlManager
             }
         }
 
+        // ignore cIdx, site has only one image.
         String url = String.format(BASE_URL_COVERS, isbn, sizeSuffix);
         return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeSuffix);
     }

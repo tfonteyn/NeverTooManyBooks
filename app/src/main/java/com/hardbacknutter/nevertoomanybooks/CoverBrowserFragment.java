@@ -82,12 +82,6 @@ public class CoverBrowserFragment
 
     public static final String TAG = "CoverBrowserFragment";
 
-    /** {@code ArrayList<String>} with edition isbn's. */
-    private static final String BKEY_EDITION_LIST = TAG + ":editions";
-    /** returns the result/selected cover to use. */
-    static final String BKEY_SELECTED_COVER = TAG + ":cover";
-    private static final String BKEY_COVER_FILE_INFO = TAG + ":coverFileInfo";
-
     /** Populated by {@link #showGallery} AND savedInstanceState. */
     @NonNull
     private final ArrayList<String> mAlternativeEditions = new ArrayList<>();
@@ -102,22 +96,25 @@ public class CoverBrowserFragment
     private TextView mStatusTextView;
     /** The ViewModel. */
     private CoverBrowserViewModel mModel;
-    /** Populated by {@link #setSwitcherImage} AND savedInstanceState. */
+    /** Absolute file path of the selected image. */
     @Nullable
-    private CoverBrowserViewModel.FileInfo mSwitcherImageFileInfo;
+    private String mSelectedFileSpec;
 
     /**
      * Constructor.
      *
      * @param isbn ISBN of book
+     * @param cIdx 0..n image index
      *
      * @return the instance
      */
     @NonNull
-    public static CoverBrowserFragment newInstance(@NonNull final String isbn) {
+    public static CoverBrowserFragment newInstance(@NonNull final String isbn,
+                                                   final int cIdx) {
         CoverBrowserFragment frag = new CoverBrowserFragment();
         Bundle args = new Bundle(1);
         args.putString(DBDefinitions.KEY_ISBN, isbn);
+        args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
         frag.setArguments(args);
         return frag;
     }
@@ -140,16 +137,6 @@ public class CoverBrowserFragment
         mModel.getEditions().observe(this, this::showGallery);
         mModel.getGalleryImage().observe(this, this::setGalleryImage);
         mModel.getSelectedImage().observe(this, this::setSwitcherImage);
-
-        if (savedInstanceState != null) {
-            ArrayList<String> editions = savedInstanceState.getStringArrayList(BKEY_EDITION_LIST);
-            if (editions != null) {
-                // just store, we'll init the gallery in onResume
-                mAlternativeEditions.clear();
-                mAlternativeEditions.addAll(editions);
-            }
-            mSwitcherImageFileInfo = savedInstanceState.getParcelable(BKEY_COVER_FILE_INFO);
-        }
     }
 
     @NonNull
@@ -189,13 +176,13 @@ public class CoverBrowserFragment
         });
         // When the switcher image is clicked, send the fileSpec back to the caller and terminate.
         mImageSwitcherView.setOnClickListener(v -> {
-            // When the image was loaded, the filename was stored in the tag.
-            String fileSpec = (String) mImageSwitcherView.getTag(R.id.TAG_FILE_SPEC);
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                Log.d(TAG, "mImageSwitcherView.onClick|fileSpec=" + fileSpec);
+                Log.d(TAG, "mImageSwitcherView.onClick|fileSpec=" + mSelectedFileSpec);
             }
-            if (fileSpec != null) {
-                Intent resultData = new Intent().putExtra(BKEY_SELECTED_COVER, fileSpec);
+            if (mSelectedFileSpec != null) {
+                int cIdx = mModel.getImageIndex();
+                Intent resultData = new Intent()
+                        .putExtra(UniqueId.BKEY_FILE_SPEC[cIdx], mSelectedFileSpec);
                 //noinspection ConstantConditions
                 getTargetFragment()
                         .onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, resultData);
@@ -214,47 +201,15 @@ public class CoverBrowserFragment
     public void onCancel(@NonNull final DialogInterface dialog) {
         // prevent new tasks being started.
         mDismissing = true;
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Log.d(TAG, "EXIT|onCancel");
-        }
         super.onCancel(dialog);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        //TODO: editions are stored in the model. Get rid of this duplication.
-        if (!mAlternativeEditions.isEmpty()) {
-            outState.putStringArrayList(BKEY_EDITION_LIST, mAlternativeEditions);
-        }
-        if (mSwitcherImageFileInfo != null) {
-            outState.putParcelable(BKEY_COVER_FILE_INFO, mSwitcherImageFileInfo);
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Log.d(TAG, "EXIT|onSaveInstanceState|" + outState);
-        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         if (mAlternativeEditions.isEmpty()) {
             mStatusTextView.setText(R.string.progress_msg_finding_editions);
             mModel.fetchEditions();
-
-        } else {
-            showGallery(mAlternativeEditions);
-            if (mSwitcherImageFileInfo != null) {
-                setSwitcherImage(mSwitcherImageFileInfo);
-            }
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-            Log.d(TAG, "EXIT|onResume");
         }
     }
 
@@ -271,9 +226,9 @@ public class CoverBrowserFragment
         }
 
         if (mAlternativeEditions.isEmpty()) {
-            dismiss();
             Snackbar.make(mStatusTextView, R.string.warning_no_editions, Snackbar.LENGTH_LONG)
                     .show();
+            dismiss();
             return;
         }
 
@@ -294,7 +249,7 @@ public class CoverBrowserFragment
     private void setGalleryImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
         Objects.requireNonNull(mGalleryAdapter);
 
-        int index = mAlternativeEditions.indexOf(fileInfo.isbn);
+        int editionIndex = mAlternativeEditions.indexOf(fileInfo.isbn);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
             Log.d(TAG, "setGalleryImage"
@@ -306,15 +261,15 @@ public class CoverBrowserFragment
             File tmpFile = new File(fileInfo.fileSpec);
             if (tmpFile.exists()) {
                 tmpFile.deleteOnExit();
-                mGalleryAdapter.notifyItemChanged(index);
+                mGalleryAdapter.notifyItemChanged(editionIndex);
                 return;
             }
         }
 
         // Remove the defunct view from the gallery
-        if (index >= 0) {
+        if (editionIndex >= 0) {
             mAlternativeEditions.remove(fileInfo.isbn);
-            mGalleryAdapter.notifyItemRemoved(index);
+            mGalleryAdapter.notifyItemRemoved(editionIndex);
         }
 
         // and if none left, dismiss.
@@ -331,8 +286,6 @@ public class CoverBrowserFragment
      * @param fileInfo the file we got.
      */
     private void setSwitcherImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
-        mSwitcherImageFileInfo = fileInfo;
-
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
             Log.d(TAG, "setSwitcherImage"
                        + "|fileInfo=" + fileInfo);
@@ -343,7 +296,7 @@ public class CoverBrowserFragment
             File file = new File(fileInfo.fileSpec);
             if (file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
                 // store the path. It will be send back to the caller.
-                mImageSwitcherView.setTag(R.id.TAG_FILE_SPEC, file.getAbsolutePath());
+                mSelectedFileSpec = file.getAbsolutePath();
 
                 //noinspection ConstantConditions
                 @Nullable
