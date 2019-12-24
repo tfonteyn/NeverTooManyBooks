@@ -94,25 +94,12 @@ public class BookDetailsFragment
 
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
+    private static final String BKEY_M_CONTEXT_MENU_OPEN_INDEX = TAG + ":imgIndex";
 
     /** the covers. */
     private final ImageView[] mCoverView = new ImageView[2];
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
-        if (data != null) {
-            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
-            } else {
-                // we don't expect/implement any others.
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "bookId=" + bookId
-                               + "|fieldsChanged=" + fieldsChanged);
-                }
-            }
-        }
-    };
-
     /** The views. */
     private CompoundButton mIsAnthologyCbx;
     private CompoundButton mReadCheckbox;
@@ -128,6 +115,19 @@ public class BookDetailsFragment
     private TextView mPricePaidView;
     private TextView mPriceListedView;
     private TextView mLoanedToView;
+    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+        if (data != null) {
+            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
+            } else {
+                // we don't expect/implement any others.
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "bookId=" + bookId
+                               + "|fieldsChanged=" + fieldsChanged);
+                }
+            }
+        }
+    };
     private TextView mPagesView;
     private TextView mFormatView;
     private TextView mColorView;
@@ -157,7 +157,7 @@ public class BookDetailsFragment
     /** Contains the flattened booklist for next/previous paging. */
     private BookDetailsFragmentModel mBookDetailsFragmentModel;
     /** Track on which cover view the context menu was used. */
-    private int mContextMenuOpenIndex = -1;
+    private int mCurrentCoverHandlerIndex = -1;
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -232,12 +232,15 @@ public class BookDetailsFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-
         mBookDetailsFragmentModel = new ViewModelProvider(this).get(BookDetailsFragmentModel.class);
 
         // The book will get loaded, fields will be initialised and
         // the population logic will be triggered.
         super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            mCurrentCoverHandlerIndex = savedInstanceState
+                    .getInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, -1);
+        }
 
         mBookDetailsFragmentModel.init(mBookModel.getDb(), getArguments(),
                                        mBookModel.getBook().getId());
@@ -272,6 +275,12 @@ public class BookDetailsFragment
             //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_view_only_help, null);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, mCurrentCoverHandlerIndex);
     }
 
     @CallSuper
@@ -331,16 +340,17 @@ public class BookDetailsFragment
                 break;
 
             default: {
-                boolean handled = false;
                 // handle any cover image request codes
-                if (mContextMenuOpenIndex >= 0) {
-                    handled = mCoverHandler[mContextMenuOpenIndex]
+                if (mCurrentCoverHandlerIndex >= 0) {
+                    boolean handled = mCoverHandler[mCurrentCoverHandlerIndex]
                             .onActivityResult(requestCode, resultCode, data);
+                    mCurrentCoverHandlerIndex = -1;
+                    if (handled) {
+                        break;
+                    }
                 }
 
-                if (!handled) {
-                    super.onActivityResult(requestCode, resultCode, data);
-                }
+                super.onActivityResult(requestCode, resultCode, data);
                 break;
             }
         }
@@ -526,13 +536,13 @@ public class BookDetailsFragment
             if (image.exists()) {
                 ZoomedImageDialogFragment.show(getParentFragmentManager(), image);
             } else {
-                mContextMenuOpenIndex = cIdx;
+                mCurrentCoverHandlerIndex = cIdx;
                 mCoverHandler[cIdx].onCreateContextMenu();
             }
         });
 
         mCoverView[cIdx].setOnLongClickListener(v -> {
-            mContextMenuOpenIndex = cIdx;
+            mCurrentCoverHandlerIndex = cIdx;
             mCoverHandler[cIdx].onCreateContextMenu();
             return true;
         });
@@ -556,6 +566,11 @@ public class BookDetailsFragment
 
         menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
+
+        //FIXME: swiping through the flattened booklist will not see
+        // the duplicated book until we go back to BoB.
+        // Easiest solution would be to remove the dup. option from this screen...
+        menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
 
         //noinspection ConstantConditions
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
