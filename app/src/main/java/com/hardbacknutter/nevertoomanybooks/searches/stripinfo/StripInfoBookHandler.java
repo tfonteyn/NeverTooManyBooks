@@ -66,6 +66,13 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
+/**
+ * Currently we access the site without authenticating.
+ * <ul>
+ * <li>no access (or sync) to user data</li>
+ * <li>"mature" covers are not accessible.</li>
+ * </ul>
+ */
 public class StripInfoBookHandler
         extends JsoupBase {
 
@@ -104,6 +111,15 @@ public class StripInfoBookHandler
             (byte) 0x09, (byte) 0x16, (byte) 0xd8, (byte) 0x93,
             (byte) 0xe4, (byte) 0xb5, (byte) 0x32, (byte) 0xcf,
             (byte) 0x3d, (byte) 0x7d, (byte) 0xa9, (byte) 0x37};
+
+    /** The site specific 'mature' image. Correct 2019-12-19. */
+    private static final int MATURE_FILE_LEN = 21578;
+    /** The site specific 'mature' image. Correct 2019-12-19. */
+    private static final byte[] MATURE_COVER_MD5 = {
+            (byte) 0x22, (byte) 0x78, (byte) 0x58, (byte) 0x89,
+            (byte) 0x8b, (byte) 0xba, (byte) 0x3e, (byte) 0xee,
+            (byte) 0x4a, (byte) 0x65, (byte) 0x68, (byte) 0xc9,
+            (byte) 0x46, (byte) 0x54, (byte) 0x59, (byte) 0x4b};
 
     /** JSoup selector to get book url tags. */
     private static final String A_HREF_STRIP = "a[href*=/strip/]";
@@ -486,7 +502,11 @@ public class StripInfoBookHandler
         if (coverElement != null) {
             String coverUrl = coverElement.attr("data-ajax-url");
             // if the site has no image: https://www.stripinfo.be/image.php?i=0
-            if (coverUrl != null && !coverUrl.isEmpty() && !coverUrl.endsWith("i=0")) {
+            // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
+            if (coverUrl != null && !coverUrl.isEmpty()
+                && !coverUrl.endsWith("i=0")
+                && !coverUrl.endsWith("mature.png")
+            ) {
                 fetchCover(coverUrl, bookData, cIdx);
             }
         }
@@ -526,26 +546,17 @@ public class StripInfoBookHandler
         if (fileSpec != null) {
             // Some back covers will return the "no cover available" image regardless.
             // Sadly, we need to check explicitly after the download.
+            // But we need to check on "mature content" as well anyhow.
             File file = new File(fileSpec);
             long fileLen = file.length();
-            if (fileLen == NO_COVER_FILE_LEN) {
-                try {
-                    MessageDigest md = MessageDigest.getInstance("MD5");
-                    try (InputStream is = new FileInputStream(file)) {
-                        try (DigestInputStream dis = new DigestInputStream(is, md)) {
-                            // read and discard. 15k can be read in one go obviously.
-                            //noinspection ResultOfMethodCallIgnored
-                            dis.read(new byte[NO_COVER_FILE_LEN + 1]);
-                        }
-                    }
-                    byte[] digest = md.digest();
-                    if (Arrays.equals(digest, NO_COVER_MD5)) {
-                        //noinspection ResultOfMethodCallIgnored
-                        file.delete();
-                        return;
-                    }
-                } catch (NoSuchAlgorithmException | IOException ignore) {
-                    // ignore
+            if (fileLen == NO_COVER_FILE_LEN
+                || fileLen == MATURE_FILE_LEN) {
+                byte[] digest = md5(file);
+                if (Arrays.equals(digest, NO_COVER_MD5)
+                    || Arrays.equals(digest, MATURE_COVER_MD5)) {
+                    //noinspection ResultOfMethodCallIgnored
+                    file.delete();
+                    return;
                 }
             }
 
@@ -562,6 +573,33 @@ public class StripInfoBookHandler
                 bookData.putString(UniqueId.BKEY_FILE_SPEC[1], fileSpec);
             }
         }
+    }
+
+    /**
+     * Calculate the MD5 sum.
+     *
+     * @param file to check
+     *
+     * @return md5, or {@code null} on failure
+     */
+    @Nullable
+    private byte[] md5(@NonNull final File file) {
+        byte[] digest = null;
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            try (InputStream is = new FileInputStream(file)) {
+                try (DigestInputStream dis = new DigestInputStream(is, md)) {
+                    // read and discard. The images are small enough to always read in one go.
+                    //noinspection ResultOfMethodCallIgnored
+                    dis.read(new byte[(int) file.length() + 1]);
+                }
+            }
+            digest = md.digest();
+
+        } catch (@NonNull final NoSuchAlgorithmException | IOException ignore) {
+            // ignore
+        }
+        return digest;
     }
 
     /**
