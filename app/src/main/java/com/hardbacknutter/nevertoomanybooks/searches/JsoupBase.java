@@ -36,6 +36,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import java.io.EOFException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -256,6 +257,9 @@ public abstract class JsoupBase {
 
             } catch (@NonNull final SocketTimeoutException e) {
                 throw e;
+
+            } catch (@NonNull final FileNotFoundException e) {
+                Logger.warn(appContext, TAG, "loadPage", url);
 
             } catch (@NonNull final IOException e) {
                 Logger.error(appContext, TAG, e, url);

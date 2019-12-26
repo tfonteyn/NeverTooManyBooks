@@ -79,7 +79,7 @@ public final class TerminatorConnection
     /** if at first we don't succeed... */
     private static final int NR_OF_TRIES = 2;
     /** milliseconds to wait between retries. */
-    private static final int RETRY_AFTER_MS = 500;
+    private static final int RETRY_AFTER_MS = 1_000;
 
     @NonNull
     private final HttpURLConnection mCon;
@@ -206,48 +206,46 @@ public final class TerminatorConnection
                 // make the actual connection
                 inputStream = new BufferedInputStream(mCon.getInputStream());
 
-                // throw any real error code after connect.
-                if (mCon.getResponseCode() >= 400) {
+                if (mCon.getResponseCode() < 400) {
+                    isOpen = true;
+                    // we'll close the connection on a background task after a 'kill' timeout,
+                    // so that we can cancel any runaway timeouts.
+                    closingThread = new Thread(new TerminatorThread(this, mKillDelayInMillis));
+                    closingThread.start();
+                    return;
+
+                } else {
+                    // throw any real error code without retrying.
                     close();
                     throw new IOException("response: " + mCon.getResponseCode()
                                           + ' ' + mCon.getResponseMessage());
                 }
 
-                // close the connection on a background task after a 'kill' timeout,
-                // so that we can cancel any runaway timeouts.
-                closingThread = new Thread(new TerminatorThread(this, mKillDelayInMillis));
-                closingThread.start();
-
-                isOpen = true;
-                return;
-
+                // these exceptions CAN be retried
             } catch (@NonNull final InterruptedIOException
                     | FileNotFoundException
                     | UnknownHostException e) {
-                // retry for these exceptions.
                 // InterruptedIOException / SocketTimeoutException: connection timeout
                 // UnknownHostException: DNS or other low-level network issue
                 // FileNotFoundException: seen on some sites. Simply retrying and the site was ok.
-                retry--;
-                if (retry == 0) {
-                    throw e;
-                }
+
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "open"
                                + "|e=" + e.getLocalizedMessage()
-                               + "|will retry=" + (retry > 0)
-                               + "|url=\"" + mCon.getURL() + '\"');
+                               + "|retry=" + retry
+                               + "|url=`" + mCon.getURL() + '`');
                 }
 
-                try {
-                    Thread.sleep(RETRY_AFTER_MS);
-                } catch (@NonNull final InterruptedException ignored) {
+                retry--;
+                if (retry == 0) {
+                    close();
+                    throw e;
                 }
+            }
 
-            } catch (@NonNull final IOException e) {
-                // give up .
-                close();
-                throw e;
+            try {
+                Thread.sleep(RETRY_AFTER_MS);
+            } catch (@NonNull final InterruptedException ignored) {
             }
         }
     }
