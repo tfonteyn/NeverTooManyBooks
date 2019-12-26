@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -133,7 +132,6 @@ public class Author
 
     /** String encoding use: separator between family name and given-names. */
     public static final char NAME_SEPARATOR = ',';
-    @SuppressLint("UseSparseArrays")
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /** All valid bits for the type. */
     private static final int TYPE_MASK =

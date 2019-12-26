@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -36,6 +35,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -78,8 +78,7 @@ public class CoverBrowserViewModel
     public static final String BKEY_FILE_INDEX = TAG + ":cIdx";
 
     /** Holder for all active tasks, so we can cancel them if needed. */
-    @SuppressLint("UseSparseArrays")
-    private final Map<Integer, AsyncTask> mAllTasks = Collections.synchronizedMap(new HashMap<>());
+    private final SparseArray<AsyncTask> mAllTasks = new SparseArray<>();
 
     /** List of all alternative editions/isbn for the given ISBN. */
     private final MutableLiveData<ArrayList<String>> mEditions = new MutableLiveData<>();
@@ -88,13 +87,16 @@ public class CoverBrowserViewModel
 
     private final MutableLiveData<FileInfo> mSwitcherImage = new MutableLiveData<>();
     private final TaskListener<ArrayList<String>> mEditionTaskListener = message -> {
-        mAllTasks.remove(message.taskId);
+        synchronized (mAllTasks) {
+            mAllTasks.remove(message.taskId);
+        }
         mEditions.setValue(message.result);
     };
 
     private final TaskListener<FileInfo> mImageTaskListener = message -> {
-        mAllTasks.remove(message.taskId);
-
+        synchronized (mAllTasks) {
+            mAllTasks.remove(message.taskId);
+        }
         switch (message.taskId) {
             case R.id.TASK_ID_SWITCHER_IMAGE:
                 mSwitcherImage.setValue(message.result);
@@ -150,9 +152,11 @@ public class CoverBrowserViewModel
      * Cancel all active tasks.
      */
     private void cancelAllTasks() {
-        // cancel any active tasks.
-        for (AsyncTask task : mAllTasks.values()) {
-            task.cancel(true);
+        synchronized (mAllTasks) {
+            for (int i = 0; i < mAllTasks.size(); i++) {
+                AsyncTask task = mAllTasks.valueAt(i);
+                task.cancel(true);
+            }
         }
     }
 
@@ -161,7 +165,9 @@ public class CoverBrowserViewModel
      */
     public void fetchEditions() {
         SearchEditionsTask task = new SearchEditionsTask(mBaseIsbn, mEditionTaskListener);
-        mAllTasks.put(task.getId(), task);
+        synchronized (mAllTasks) {
+            mAllTasks.put(task.getId(), task);
+        }
         task.execute();
     }
 
@@ -188,7 +194,9 @@ public class CoverBrowserViewModel
     public void fetchGalleryImage(@NonNull final String isbn) {
         GetGalleryImageTask task = new GetGalleryImageTask(isbn, mCIdx,
                                                            mFileManager, mImageTaskListener);
-        mAllTasks.put(task.getId(), task);
+        synchronized (mAllTasks) {
+            mAllTasks.put(task.getId(), task);
+        }
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -206,7 +214,9 @@ public class CoverBrowserViewModel
     public void fetchSelectedImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
         GetSwitcherImageTask task = new GetSwitcherImageTask(fileInfo, mCIdx, mFileManager,
                                                              mImageTaskListener);
-        mAllTasks.put(task.getId(), task);
+        synchronized (mAllTasks) {
+            mAllTasks.put(task.getId(), task);
+        }
         // use the alternative executor, so we get a result back without
         // waiting on the gallery tasks.
         task.executeOnExecutor(AlternativeExecutor.THREAD_POOL_EXECUTOR);

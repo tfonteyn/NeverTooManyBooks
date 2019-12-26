@@ -27,12 +27,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,10 +51,8 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
@@ -265,8 +263,7 @@ public class EditBookAuthorsActivity
 
         static final String TAG = "EditBookAuthorDialogFrag";
         /** Key: type. */
-        @SuppressLint("UseSparseArrays")
-        private final Map<Integer, CompoundButton> mTypeButtons = new HashMap<>();
+        private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
         /** Database Access. */
         protected DAO mDb;
         private EditBookAuthorsActivity mHostActivity;
@@ -401,8 +398,8 @@ public class EditBookAuthorsActivity
 
             if (mType != Author.TYPE_UNKNOWN) {
                 setTypeEnabled(true);
-                for (Map.Entry<Integer, CompoundButton> entry : mTypeButtons.entrySet()) {
-                    entry.getValue().setChecked((mType & entry.getKey()) != 0);
+                for (int i = 0; i < mTypeButtons.size(); i++) {
+                    mTypeButtons.valueAt(i).setChecked((mType & mTypeButtons.keyAt(i)) != 0);
                 }
             } else {
                 setTypeEnabled(false);
@@ -482,17 +479,17 @@ public class EditBookAuthorsActivity
             // don't bother changing the 'checked' status, we'll ignore them anyhow.
             // and this is more user friendly if they flip the switch more than once.
             mUseTypeBtn.setChecked(enable);
-            for (CompoundButton typeBtn : mTypeButtons.values()) {
+            for (int i = 0; i < mTypeButtons.size(); i++) {
+                CompoundButton typeBtn = mTypeButtons.valueAt(i);
                 typeBtn.setEnabled(enable);
             }
         }
 
         private int getTypeFromViews() {
             int authorType = Author.TYPE_UNKNOWN;
-            for (Integer type : mTypeButtons.keySet()) {
-                //noinspection ConstantConditions
-                if (mTypeButtons.get(type).isChecked()) {
-                    authorType |= type;
+            for (int i = 0; i < mTypeButtons.size(); i++) {
+                if (mTypeButtons.valueAt(i).isChecked()) {
+                    authorType |= mTypeButtons.keyAt(i);
                 }
             }
             return authorType;

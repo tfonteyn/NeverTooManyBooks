@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
+import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -88,13 +89,13 @@ public final class Csv {
      * (but no exceptions thrown).
      * This can be avoided by providing a {@link Formatter}.
      *
-     * @param delimiter    e.g. "," or ", " etc...
-     * @param collection   collection
+     * @param delimiter        e.g. "," or ", " etc...
+     * @param collection       collection
      * @param skipEmptyStrings Flag skip null/empty values.
-     * @param prefix       (optional) prefix that will be added to each element.
-     *                     Caller is responsible to add spaces if desired.
-     * @param formatter    (optional) formatter to use on each element, or {@code null} for none.
-     * @param <E>          type of elements
+     * @param prefix           (optional) prefix that will be added to each element.
+     *                         Caller is responsible to add spaces if desired.
+     * @param formatter        (optional) formatter to use on each element, or {@code null} for none.
+     * @param <E>              type of elements
      *
      * @return csv string, can be empty, but never {@code null}.
      */
@@ -157,6 +158,18 @@ public final class Csv {
         return list;
     }
 
+    public static List<String> bitmaskToList(@NonNull final Context context,
+                                             @NonNull final SparseArray<Integer> map,
+                                             final long bitmask) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < map.size(); i++) {
+            if ((map.keyAt(i) & bitmask) != 0) {
+                list.add(context.getString(map.valueAt(i)));
+            }
+        }
+        return list;
+    }
+
     /**
      * Not strictly a Csv method, but closely related as it's usually (always?) followed
      * by sending the list to a join method.
@@ -172,6 +185,26 @@ public final class Csv {
         for (Map.Entry<Integer, String> entry : map.entrySet()) {
             if ((entry.getKey() & bitmask) != 0) {
                 list.add(entry.getValue());
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Not strictly a Csv method, but closely related as it's usually (always?) followed
+     * by sending the list to a join method.
+     *
+     * @param map     Map with bits mapped to strings
+     * @param bitmask to turn into strings
+     *
+     * @return list of Strings with the names for each bit.
+     */
+    public static List<String> bitmaskToList(@NonNull final SparseArray<String> map,
+                                             final long bitmask) {
+        List<String> list = new ArrayList<>();
+        for (int i = 0; i < map.size(); i++) {
+            if ((map.keyAt(i) & bitmask) != 0) {
+                list.add(map.valueAt(i));
             }
         }
         return list;

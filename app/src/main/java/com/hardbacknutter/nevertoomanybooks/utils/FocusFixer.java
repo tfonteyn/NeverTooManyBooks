@@ -27,17 +27,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
@@ -110,11 +107,11 @@ public final class FocusFixer {
                 }
             };
 
-            @SuppressLint("UseSparseArrays")
-            Map<Integer, View> vh = new HashMap<>();
+            SparseArray<View> vh = new SparseArray<>();
             getViews(rootView, vh);
 
-            for (View v : vh.values()) {
+            for (int i = 0; i < vh.size(); i++) {
+                View v = vh.valueAt(i);
                 if (v.getVisibility() == View.VISIBLE) {
                     fixNextView(vh, v, getDown);
                     fixNextView(vh, v, getUp);
@@ -139,7 +136,7 @@ public final class FocusFixer {
      * @param view   View to check
      * @param getter Methods to get/set 'next' view
      */
-    private static void fixNextView(@NonNull final Map<Integer, View> list,
+    private static void fixNextView(@NonNull final SparseArray<View> list,
                                     @NonNull final View view,
                                     @NonNull final INextView getter) {
         int nextId = getter.getNext(view);
@@ -161,7 +158,7 @@ public final class FocusFixer {
      *
      * @return id if first visible 'next' view
      */
-    private static int getNextView(@NonNull final Map<Integer, View> list,
+    private static int getNextView(@NonNull final SparseArray<View> list,
                                    final int nextId,
                                    @NonNull final INextView getter) {
         final View v = list.get(nextId);
@@ -183,11 +180,11 @@ public final class FocusFixer {
      * @param list   Collection
      */
     private static void getViews(@NonNull final View parent,
-                                 @NonNull final Map<Integer, View> list) {
+                                 @NonNull final SparseArray<View> list) {
         // Get the view id and add it to collection if not already present.
         @IdRes
         final int id = parent.getId();
-        if (id != View.NO_ID && !list.containsKey(id)) {
+        if (id != View.NO_ID && (list.get(id) != null)) {
             list.put(id, parent);
         }
         // If it's a ViewGroup, then process children recursively.

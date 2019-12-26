@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
-import android.annotation.SuppressLint;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -56,7 +55,6 @@ public class EventsCursor
     /** Column number of Exception column. */
     private static int sEventCol = -2;
 
-    @SuppressLint("UseSparseArrays")
     private final Map<Long, Boolean> mSelections = Collections.synchronizedMap(new HashMap<>());
 
     /**

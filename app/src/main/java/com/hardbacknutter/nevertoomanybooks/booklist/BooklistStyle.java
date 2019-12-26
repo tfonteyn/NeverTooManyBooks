@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -729,7 +728,6 @@ public class BooklistStyle
      */
     @NonNull
     public Map<String, PPref> getPreferences(final boolean all) {
-        @SuppressLint("UseSparseArrays")
         Map<String, PPref> map = new HashMap<>();
         // essential property for user-defined styles 'name'
         map.put(mName.getKey(), mName);

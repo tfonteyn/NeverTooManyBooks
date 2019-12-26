@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.scanner;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -37,6 +36,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,9 +45,6 @@ import androidx.preference.PreferenceManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -93,8 +90,7 @@ public final class ScannerManager {
     public static final int PIC2SHOP = 3;
 
     /** Collection of ScannerFactory objects. */
-    @SuppressLint("UseSparseArrays")
-    private static final Map<Integer, ScannerFactory> SCANNER_FACTORIES = new HashMap<>();
+    private static final SparseArray<ScannerFactory> SCANNER_FACTORIES = new SparseArray<>();
 
     /*
      * Build the collection. Same order as the constants.
@@ -129,8 +125,10 @@ public final class ScannerManager {
         if (psf != null && psf.isAvailable(context)) {
             return psf.newInstance(context);
         }
+
         // Search all supported scanners; return first working one
-        for (ScannerFactory sf : SCANNER_FACTORIES.values()) {
+        for (int i = 0; i < SCANNER_FACTORIES.size(); i++) {
+            ScannerFactory sf = SCANNER_FACTORIES.valueAt(i);
             if (sf != psf && sf.isAvailable(context)) {
                 return sf.newInstance(context);
             }
@@ -148,7 +146,6 @@ public final class ScannerManager {
     public static void installScanner(@NonNull final Activity activity,
                                       @NonNull final OnResultListener resultListener) {
         ScannerFactory sf = SCANNER_FACTORIES.get(getPreferredScanner());
-        //noinspection ConstantConditions
         if (!sf.isAvailable(activity)) {
             installScanner(activity, sf, resultListener);
         } else {
