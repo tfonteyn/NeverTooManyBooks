@@ -218,14 +218,6 @@ public final class UniqueId {
     public static final String BKEY_EXPORT_RESULT = "exportResult";
 
     /**
-     * Something changed (or not) that warrants a recreation of the caller to be needed.
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_RECREATE_ACTIVITY = "recreate";
-
-    /**
      * One <strong>or more</strong> books were deleted (or not).
      * <p>
      * <br>type: {@code boolean}

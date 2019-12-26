@@ -99,7 +99,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -753,19 +752,11 @@ public class BooksOnBookshelf
 
         // get out, nothing to do.
         if (isFinishing() || isDestroyed()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|onResume"
-                           + "|isFinishing=" + isFinishing()
-                           + "|isDestroyed=" + isDestroyed());
-            }
             return;
         }
 
         // don't build the list needlessly
-        if (App.isRecreating()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|isRecreating|" + LanguageUtils.toDebugString(this));
-            }
+        if (isRecreating()) {
             return;
         }
 

@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -225,7 +226,7 @@ public class GlobalPreferenceFragment
 
             default:
                 // TODO: make the response conditional, not all changes warrant a recreate!
-                mResultDataModel.putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
+                mResultDataModel.putExtra(BaseActivity.BKEY_RECREATE, true);
                 break;
         }
 

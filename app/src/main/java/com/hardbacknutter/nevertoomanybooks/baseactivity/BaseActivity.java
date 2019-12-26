@@ -67,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -94,8 +95,24 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public abstract class BaseActivity
         extends AppCompatActivity {
 
+
     /** Log tag. */
     private static final String TAG = "BaseActivity";
+    /**
+     * Something changed (or not) that warrants a recreation of the caller to be needed.
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_RECREATE = TAG + ":recreate";
+
+    /**
+     * internal; Stage of Activity  doing/needing setIsRecreating() action.
+     * See {@link #onResume()}.
+     * <p>
+     * Note this is a static!
+     */
+    private static ActivityStatus sActivityRecreateStatus;
 
     /** Locale at {@link #onCreate} time. */
     protected String mInitialLocaleSpec;
@@ -109,6 +126,25 @@ public abstract class BaseActivity
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView mNavigationView;
+
+    public void setIsRecreating() {
+        sActivityRecreateStatus = ActivityStatus.isRecreating;
+    }
+
+    protected boolean isRecreating() {
+        boolean isRecreating = sActivityRecreateStatus == ActivityStatus.isRecreating;
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+            Log.d(TAG, "EXIT"
+                       + "|isRecreating=" + isRecreating
+                       + "|LanguageUtils=" + LanguageUtils.toDebugString(this));
+        }
+        return isRecreating;
+    }
+
+    private void setNeedsRecreating() {
+        sActivityRecreateStatus = ActivityStatus.NeedsRecreating;
+    }
 
     /**
      * Override this and return the id you need.
@@ -264,21 +300,22 @@ public abstract class BaseActivity
             LocaleUtils.onLocaleChanged();
         }
 
-        if (App.isInNeedOfRecreating() || App.isThemeChanged(mInitialThemeId) || localeChanged) {
-            App.setIsRecreating();
+        if (sActivityRecreateStatus == ActivityStatus.NeedsRecreating
+            || App.isThemeChanged(mInitialThemeId) || localeChanged) {
+            setIsRecreating();
             recreate();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.onResume|Recreate!");
+                Log.d(TAG, "EXIT|BaseActivity.isGoingToRecreate|Recreate!");
             }
 
             return true;
 
         } else {
-            // this is the second time we got here in onResume, so we have been re-created.
-            App.clearRecreateFlag();
+            // this is the second time we got here, so we have been re-created.
+            sActivityRecreateStatus = ActivityStatus.Running;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.onResume|Resuming");
+                Log.d(TAG, "EXIT|BaseActivity.isGoingToRecreate|Resuming");
             }
         }
 
@@ -424,8 +461,8 @@ public abstract class BaseActivity
                 }
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data);
-                    if (data.getBooleanExtra(UniqueId.BKEY_RECREATE_ACTIVITY, false)) {
-                        App.setNeedsRecreating();
+                    if (data.getBooleanExtra(BKEY_RECREATE, false)) {
+                        setNeedsRecreating();
                     }
                 }
                 return;
@@ -475,4 +512,12 @@ public abstract class BaseActivity
         }
     }
 
+    private enum ActivityStatus {
+        /** Situation normal. */
+        Running,
+        /** Activity is in need of recreating. */
+        NeedsRecreating,
+        /** A {@link #recreate()} action has been triggered. */
+        isRecreating
+    }
 }

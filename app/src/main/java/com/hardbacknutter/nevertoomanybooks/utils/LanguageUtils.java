@@ -67,9 +67,8 @@ public final class LanguageUtils {
     /**
      * Try to convert a Language ISO code to the display name.
      *
-     *
      * @param context Current context
-     * @param iso the ISO code
+     * @param iso     the ISO code
      *
      * @return the display name for the language,
      * or the input string itself if it was an invalid ISO code
@@ -355,6 +354,7 @@ public final class LanguageUtils {
 
     /**
      * generate initial language2iso mappings.
+     *
      * @param context Current context
      */
     public static void createLanguageMappingCache(@NonNull final Context context) {
@@ -419,16 +419,13 @@ public final class LanguageUtils {
         Locale prefLocale = Locale.getDefault();
 
         return ""
-               + "\nsSystemInitialLocale       : " + systemLocale.getDisplayName()
-               + "\nsSystemInitialLocale(cur)  : " + systemLocale.getDisplayName(configLocale)
-               + "\nLocale.getDefault()        : " + Locale.getDefault().getDisplayName()
-               + "\nLocale.getDefault(cur)     : " + Locale.getDefault()
-                                                           .getDisplayName(configLocale)
-               + "\nconfiguration.locale       : " + configLocale.getDisplayName()
-               + "\nconfiguration.locale(cur)  : " + configLocale.getDisplayName(configLocale)
-               + "\ngetPreferredLocale()       : " + prefLocale.getDisplayName()
-               + "\ngetPreferredLocale(cur)    : " + prefLocale.getDisplayName(configLocale)
-               + "\nApp.isInNeedOfRecreating() : " + App.isInNeedOfRecreating()
-               + "\nApp.isRecreating()         : " + App.isRecreating();
+               + "\nsSystemInitialLocale     : " + systemLocale.getDisplayName()
+               + "\nsSystemInitialLocale(cur): " + systemLocale.getDisplayName(configLocale)
+               + "\nLocale.getDefault()      : " + Locale.getDefault().getDisplayName()
+               + "\nLocale.getDefault(cur)   : " + Locale.getDefault().getDisplayName(configLocale)
+               + "\nconfiguration.locale     : " + configLocale.getDisplayName()
+               + "\nconfiguration.locale(cur): " + configLocale.getDisplayName(configLocale)
+               + "\ngetPreferredLocale()     : " + prefLocale.getDisplayName()
+               + "\ngetPreferredLocale(cur)  : " + prefLocale.getDisplayName(configLocale);
     }
 }

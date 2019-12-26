@@ -68,7 +68,6 @@ import org.acra.annotation.AcraMailSender;
 import org.acra.annotation.AcraToast;
 import org.acra.file.Directory;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -147,7 +146,7 @@ public class App
      * Each field has an entry in the Preferences.
      * The key is suffixed with the name of the field.
      */
-    public static final String PREFS_FIELD_VISIBILITY = "fields.visibility.";
+    public static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
 
     private static final String TAG = "App";
     /** don't assume / allow the day-night theme to have a different integer ID. */
@@ -158,10 +157,7 @@ public class App
 
     /** we really only use the one. */
     private static final int NOTIFICATION_ID = 0;
-    /** Activity is in need of recreating. */
-    private static final int ACTIVITY_NEEDS_RECREATING = 1;
-    /** Checked in onResume() so not to start tasks etc. */
-    private static final int ACTIVITY_IS_RECREATING = 2;
+
     /**
      * NEWTHINGS: APP THEME: adding
      * <ol>
@@ -196,11 +192,7 @@ public class App
      * <strong>Note:</strong> never store a context in a static, use the instance instead
      */
     private static App sInstance;
-    /**
-     * internal; check if an Activity should do a 'recreate()'.
-     * See {@link BaseActivity} in the onResume method.
-     */
-    private static int sActivityRecreateStatus;
+
     /** Used to sent notifications regarding tasks. */
     private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
@@ -380,7 +372,7 @@ public class App
      */
     public static boolean isUsed(@NonNull final String fieldName) {
         return PreferenceManager.getDefaultSharedPreferences(sInstance.getApplicationContext())
-                                .getBoolean(PREFS_FIELD_VISIBILITY + fieldName, true);
+                                .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + fieldName, true);
     }
 
     /**
@@ -555,34 +547,10 @@ public class App
         }
     }
 
-    public static void setNeedsRecreating() {
-        sActivityRecreateStatus = ACTIVITY_NEEDS_RECREATING;
-    }
-
-    /* ########################################################################################## */
-
-    public static boolean isInNeedOfRecreating() {
-        return sActivityRecreateStatus == ACTIVITY_NEEDS_RECREATING;
-    }
-
-    public static void setIsRecreating() {
-        sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
-    }
-
-    public static boolean isRecreating() {
-        return sActivityRecreateStatus == ACTIVITY_IS_RECREATING;
-    }
-
-    public static void clearRecreateFlag() {
-        sActivityRecreateStatus = 0;
-    }
-
     @SuppressWarnings("unused")
     public static boolean isRtl(@NonNull final Locale locale) {
         return TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL;
     }
-
-    /* ########################################################################################## */
 
     /**
      * Return the device Locale.

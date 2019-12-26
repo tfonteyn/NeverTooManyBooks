@@ -199,7 +199,7 @@ public class SettingsActivity
             // Trigger a recreate of this activity, if this setting has changed.
             case Prefs.pk_ui_theme:
                 if (App.isThemeChanged(mInitialThemeId)) {
-                    App.setIsRecreating();
+                    setIsRecreating();
                     recreate();
                 }
                 break;
@@ -208,7 +208,7 @@ public class SettingsActivity
             case Prefs.pk_ui_locale:
                 if (LocaleUtils.isChanged(this, mInitialLocaleSpec)) {
                     LocaleUtils.onLocaleChanged();
-                    App.setIsRecreating();
+                    setIsRecreating();
                     recreate();
                 }
                 break;
@@ -220,7 +220,7 @@ public class SettingsActivity
         // set the result (and again and again...). Also see the fragment method.
         // TODO: make the response conditional, not all changes warrant a recreate!
         ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
-        resultDataModel.putExtra(UniqueId.BKEY_RECREATE_ACTIVITY, true);
+        resultDataModel.putExtra(BaseActivity.BKEY_RECREATE, true);
     }
 
     @Override

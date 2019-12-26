@@ -76,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  *          protected void onResume() {
  *              super.onResume();
  *              if (LocaleUtils.isChanged(this, mInitialLocaleSpec)) {
- *                  recreate();
+ *                  setIsRecreating();
  *              }
  *          }
  *      }
