@@ -68,18 +68,15 @@ public abstract class BackupWriterAbstract
     private static final String TAG = "BackupWriterAbstract";
 
     private static final int BUFFER_SIZE = 32768;
-
+    /** While writing cover images, only send progress updates every 200ms. */
+    private static final int PROGRESS_UPDATE_INTERVAL = 200;
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-
     /** progress message. */
     private final String mProgress_msg_covers;
     /** progress message. */
     private final String mProgress_msg_covers_skip;
-
-    private ExportHelper mExportHelper;
-    private ProgressListener mProgressListener;
 
     /**
      * Constructor.
@@ -98,7 +95,7 @@ public abstract class BackupWriterAbstract
      * Do a full backup.
      *
      * @param context          Current context
-     * @param exportHelper     what to backup
+     * @param exportHelper     configuration helper
      * @param progressListener to send progress updates to
      */
     @Override
@@ -107,10 +104,8 @@ public abstract class BackupWriterAbstract
                        @NonNull final ExportHelper exportHelper,
                        @NonNull final ProgressListener progressListener)
             throws IOException {
-        mExportHelper = exportHelper;
-        mProgressListener = progressListener;
 
-        Exporter.Results exportResults = mExportHelper.getResults();
+        Exporter.Results exportResults = exportHelper.getResults();
 
         // do a cleanup first
         mDb.purge();
@@ -118,23 +113,23 @@ public abstract class BackupWriterAbstract
         // keep track of what we wrote to the archive
         int entitiesWritten = Options.NOTHING;
 
-        boolean incBooks = (mExportHelper.options & Options.BOOK_CSV) != 0;
-        boolean incCovers = (mExportHelper.options & Options.COVERS) != 0;
-        boolean incStyles = (mExportHelper.options & Options.BOOK_LIST_STYLES) != 0;
-        boolean incPrefs = (mExportHelper.options & Options.PREFERENCES) != 0;
-        boolean incXml = (mExportHelper.options & Options.XML_TABLES) != 0;
+        boolean incBooks = (exportHelper.options & Options.BOOK_CSV) != 0;
+        boolean incCovers = (exportHelper.options & Options.COVERS) != 0;
+        boolean incStyles = (exportHelper.options & Options.BOOK_LIST_STYLES) != 0;
+        boolean incPrefs = (exportHelper.options & Options.PREFERENCES) != 0;
+        boolean incXml = (exportHelper.options & Options.XML_TABLES) != 0;
 
         File tmpBookCsvFile = null;
 
 
         try {
             // If we are doing covers, get the exact number by counting them
-            if (!mProgressListener.isCancelled() && incCovers) {
-                mProgressListener.onProgress(0, context.getString(R.string.progress_msg_searching));
+            if (!progressListener.isCancelled() && incCovers) {
+                progressListener.onProgress(0, context.getString(R.string.progress_msg_searching));
                 // the progress bar will NOT be updated.
-                doCovers(context, true);
+                doCovers(context, exportHelper, true, progressListener);
                 // set as temporary max, but keep in mind the position itself is still 0
-                mProgressListener.setMax(exportResults.coversExported);
+                progressListener.setMax(exportResults.coversExported);
             }
 
             // If we are doing books, generate the CSV file first, so we have the #books
@@ -144,10 +139,10 @@ public abstract class BackupWriterAbstract
                 tmpBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
                 tmpBookCsvFile.deleteOnExit();
 
-                Exporter mExporter = new CsvExporter(context, mExportHelper);
+                Exporter mExporter = new CsvExporter(context, exportHelper);
                 try (OutputStream os = new FileOutputStream(tmpBookCsvFile)) {
                     // doBooks will use the max and add the number of books for the new max.
-                    mExportHelper.addResults(mExporter.doBooks(os, mProgressListener));
+                    exportHelper.addResults(mExporter.doBooks(os, progressListener));
                 }
             }
 
@@ -155,29 +150,34 @@ public abstract class BackupWriterAbstract
             // exact number of steps. Added arbitrary 10 for the other entities we might do
             int max = exportResults.booksExported + exportResults.coversExported + 10;
             // overwrite the max with the exact value
-            mProgressListener.setMax(max);
+            progressListener.setMax(max);
 
             // Process each component of the Archive, unless we are cancelled.
-            if (!mProgressListener.isCancelled()) {
+            if (!progressListener.isCancelled()) {
+                progressListener.onProgressStep(1, null);
                 doInfo(exportResults.booksExported,
                        exportResults.coversExported,
                        incStyles, incPrefs);
             }
             // Write styles and prefs first. This will facilitate & speedup
             // importing as we'll be seeking in the input archive for them first.
-            if (!mProgressListener.isCancelled() && incStyles) {
-                exportResults.styles += doStyles(context);
+            if (!progressListener.isCancelled() && incStyles) {
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_styles));
+                exportResults.styles += doStyles();
+                progressListener.onProgressStep(exportResults.styles, null);
                 entitiesWritten |= Options.BOOK_LIST_STYLES;
             }
-            if (!mProgressListener.isCancelled() && incPrefs) {
+            if (!progressListener.isCancelled() && incPrefs) {
+                progressListener.onProgressStep(1, context.getString(R.string.lbl_settings));
                 doPreferences(context);
                 entitiesWritten |= Options.PREFERENCES;
             }
-            if (!mProgressListener.isCancelled() && incXml) {
-                doXmlTables(context);
+            if (!progressListener.isCancelled() && incXml) {
+                progressListener.onProgressStep(1, null);
+                doXmlTables(context, exportHelper, progressListener);
                 entitiesWritten |= Options.XML_TABLES;
             }
-            if (!mProgressListener.isCancelled() && incBooks) {
+            if (!progressListener.isCancelled() && incBooks) {
                 try {
                     putBooks(tmpBookCsvFile);
                     entitiesWritten |= Options.BOOK_CSV;
@@ -186,14 +186,14 @@ public abstract class BackupWriterAbstract
                 }
             }
             // do covers last
-            if (!mProgressListener.isCancelled() && incCovers) {
+            if (!progressListener.isCancelled() && incCovers) {
                 // the progress bar will be updated.
-                doCovers(context, false);
+                doCovers(context, exportHelper, false, progressListener);
                 entitiesWritten |= Options.COVERS;
             }
 
         } finally {
-            mExportHelper.options = entitiesWritten;
+            exportHelper.options = entitiesWritten;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
                 Log.d(TAG, "backup|mExportHelper.getResults()=" + exportResults);
             }
@@ -222,8 +222,6 @@ public abstract class BackupWriterAbstract
                         final boolean hasPrefs)
             throws IOException {
 
-        mProgressListener.onProgressStep(1, null);
-
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
@@ -236,27 +234,28 @@ public abstract class BackupWriterAbstract
         }
 
         putInfo(data.toByteArray());
-
     }
 
     /**
      * Export user data as XML.
      *
-     * @param context Current context
+     * @param context      Current context
+     * @param exportHelper configuration helper
      *
      * @throws IOException on failure
      */
-    private void doXmlTables(@NonNull final Context context)
+    private void doXmlTables(@NonNull final Context context,
+                             @NonNull final ExportHelper exportHelper,
+                             @NonNull final ProgressListener progressListener)
             throws IOException {
-        mProgressListener.onProgressStep(1, null);
 
         // Get a temp file and set for delete
         File tmpFile = File.createTempFile("tmp_xml_", ".tmp");
         tmpFile.deleteOnExit();
 
         try (OutputStream os = new FileOutputStream(tmpFile)) {
-            XmlExporter exporter = new XmlExporter(mExportHelper);
-            exporter.doAll(context, os, mProgressListener);
+            XmlExporter exporter = new XmlExporter(exportHelper);
+            exporter.doAll(context, os, progressListener);
             putXmlData(tmpFile);
 
         } finally {
@@ -266,7 +265,6 @@ public abstract class BackupWriterAbstract
 
     private void doPreferences(@NonNull final Context context)
             throws IOException {
-        mProgressListener.onProgressStep(1, context.getString(R.string.lbl_settings));
 
         // Turn the preferences into an XML file in a byte array
         ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -280,9 +278,8 @@ public abstract class BackupWriterAbstract
         putPreferences(data.toByteArray());
     }
 
-    private int doStyles(@NonNull final Context context)
+    private int doStyles()
             throws IOException {
-        mProgressListener.onProgressStep(1, context.getString(R.string.lbl_styles));
 
         // Turn the styles into an XML file in a byte array
         ByteArrayOutputStream data = new ByteArrayOutputStream();
@@ -293,8 +290,6 @@ public abstract class BackupWriterAbstract
             numberOfStyles = xmlExporter.doStyles(out);
         }
         putBooklistStyles(data.toByteArray());
-
-        mProgressListener.onProgressStep(numberOfStyles, null);
         return numberOfStyles;
     }
 
@@ -303,25 +298,30 @@ public abstract class BackupWriterAbstract
      *
      * <strong>Note:</strong> We update the count during <strong>dryRun</strong> only.
      *
-     * @param context Current context
-     * @param dryRun  when {@code true}, no writing is done, we only count them.
-     *                when {@code false}, we write, but do not count.
+     * @param context      Current context
+     * @param exportHelper configuration helper
+     * @param dryRun       when {@code true}, no writing is done, we only count them.
+     *                     when {@code false}, we write.
      *
      * @throws IOException on failure
      */
     private void doCovers(@NonNull final Context context,
-                          final boolean dryRun)
+                          @NonNull final ExportHelper exportHelper,
+                          final boolean dryRun,
+                          @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        long timeFrom = mExportHelper.getTimeFrom();
+        long timeFrom = exportHelper.getTimeFrom();
 
         int exported = 0;
         int skipped = 0;
         int[] missing = new int[2];
+        long lastUpdate = 0;
+        int delta = 0;
 
         try (Cursor cursor = mDb.fetchBookUuidList()) {
             final int uuidCol = cursor.getColumnIndex(DBDefinitions.KEY_BOOK_UUID);
-            while (cursor.moveToNext() && !mProgressListener.isCancelled()) {
+            while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 String uuid = cursor.getString(uuidCol);
                 for (int cIdx = 0; cIdx < 2; cIdx++) {
                     File cover = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
@@ -347,13 +347,20 @@ public abstract class BackupWriterAbstract
                         message = String.format(mProgress_msg_covers_skip,
                                                 exported, missing[0], missing[1], skipped);
                     }
-                    mProgressListener.onProgressStep(1, message);
+                    delta++;
+                    long now = System.currentTimeMillis();
+                    if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
+                        progressListener.onProgressStep(delta, message);
+                        lastUpdate = now;
+                        delta = 0;
+                    }
+
                 }
             }
         }
 
         if (dryRun) {
-            Exporter.Results results = mExportHelper.getResults();
+            Exporter.Results results = exportHelper.getResults();
             results.coversExported += exported;
             results.coversMissing[0] += missing[0];
             results.coversMissing[1] += missing[1];
