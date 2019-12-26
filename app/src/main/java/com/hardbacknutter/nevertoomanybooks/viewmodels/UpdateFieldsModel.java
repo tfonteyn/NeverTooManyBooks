@@ -231,6 +231,45 @@ public class UpdateFieldsModel
     }
 
     /**
+     * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
+     * <p>
+     *
+     * @param p            SharedPreferences
+     * @param fieldId      List-field name to use in FieldUsages
+     * @param nameStringId Field label string resource ID
+     * @param prefKey      Field name to use for preferences.
+     */
+    private void addListField(@NonNull final SharedPreferences p,
+                              @NonNull final String fieldId,
+                              @StringRes final int nameStringId,
+                              @NonNull final String prefKey) {
+
+        if (App.isUsed(prefKey)) {
+            FieldUsage fieldUsage = FieldUsage.createListField(fieldId, nameStringId, p, prefKey);
+            mFieldUsages.put(fieldId, fieldUsage);
+        }
+    }
+
+    /**
+     * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
+     *
+     * @param p            SharedPreferences
+     * @param fieldId      Field name to use in FieldUsages / use for preferences.
+     * @param nameStringId Field label string resource ID
+     * @param defValue     default Usage for this field
+     */
+    private void addField(@NonNull final SharedPreferences p,
+                          @NonNull final String fieldId,
+                          @StringRes final int nameStringId,
+                          @NonNull final FieldUsage.Usage defValue) {
+
+        if (App.isUsed(fieldId)) {
+            FieldUsage fieldUsage = FieldUsage.create(fieldId, nameStringId, defValue, p);
+            mFieldUsages.put(fieldId, fieldUsage);
+        }
+    }
+
+    /**
      * Add any related fields with the same setting.
      * <p>
      * We enforce a name (string id), although it's never displayed, for sanity/debug sake.
