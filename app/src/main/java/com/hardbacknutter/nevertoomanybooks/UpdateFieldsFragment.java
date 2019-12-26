@@ -189,13 +189,13 @@ public class UpdateFieldsFragment
 
             CompoundButton cb = row.findViewById(R.id.cbx_usage);
             cb.setChecked(usage.isWanted());
-            cb.setText(usage.getUsageInfo(getContext()));
+            cb.setText(usage.getUsageLabel(getContext()));
             cb.setTag(R.id.TAG_FIELD_USAGE, usage);
             cb.setOnClickListener(v -> {
                 FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
                 fieldUsage.nextState();
                 cb.setChecked(fieldUsage.isWanted());
-                cb.setText(fieldUsage.getUsageInfo(getContext()));
+                cb.setText(fieldUsage.getUsageLabel(getContext()));
             });
 
             mFieldListView.addView(row);
@@ -239,13 +239,16 @@ public class UpdateFieldsFragment
             .setIcon(R.drawable.ic_find_in_page)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
+        menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.btn_reset)
+            .setIcon(R.drawable.ic_undo)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES: {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class)
@@ -254,6 +257,12 @@ public class UpdateFieldsFragment
                         .putExtra(SiteList.Type.Data.getBundleKey(),
                                   mUpdateFieldsModel.getSiteList());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
+                return true;
+            }
+            case R.id.MENU_RESET: {
+                mUpdateFieldsModel.resetPreferences(getContext());
+                mFieldListView.removeAllViews();
+                populateFields();
                 return true;
             }
             default:
@@ -313,12 +322,10 @@ public class UpdateFieldsFragment
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                     .setNeutralButton(R.string.no, (dialog, which) -> {
                         covers.setUsage(CopyIfBlank);
-                        mUpdateFieldsModel.putFieldUsage(UniqueId.BKEY_THUMBNAIL, covers);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.yes, (dialog, which) -> {
                         covers.setUsage(Overwrite);
-                        mUpdateFieldsModel.putFieldUsage(UniqueId.BKEY_THUMBNAIL, covers);
                         startUpdate();
                     })
                     .create()
@@ -335,6 +342,8 @@ public class UpdateFieldsFragment
         mProgressDialog.setCancellable(mUpdateFieldsModel);
 
         //noinspection ConstantConditions
+        mUpdateFieldsModel.writePreferences(getContext());
+
         if (mUpdateFieldsModel.startSearch(getContext())) {
             mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
         } else {

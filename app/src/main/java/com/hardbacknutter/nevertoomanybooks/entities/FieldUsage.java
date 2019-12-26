@@ -28,13 +28,13 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 
 /**
  * How to handle a data field when updating the entity it belongs to.
@@ -45,48 +45,93 @@ public class FieldUsage {
     /** a key, usually from {@link UniqueId}. */
     @NonNull
     public final String fieldId;
-    /** Is the field capable of appending extra data. */
-    private final boolean mCanAppend;
+
     /** label to show to the user. */
     @StringRes
     private final int mNameStringId;
+    /** Default usage at creation time. */
+    @NonNull
+    private final Usage mDefValue;
+    /** Is the field capable of appending extra data. */
+    private final boolean mCanAppend;
     /** how to use this field. */
     @NonNull
     private Usage mUsage;
 
     /**
-     * Constructor.
+     * private Constructor; use static creators instead.
      *
      * @param fieldId      key
      * @param nameStringId label to show to the user.
      * @param usage        how to use this field.
+     * @param defValue     default usage
      * @param canAppend    {@code true} if this field is capable of appending extra data.
      */
-    public FieldUsage(@NonNull final String fieldId,
-                      @StringRes final int nameStringId,
-                      @NonNull final Usage usage,
-                      final boolean canAppend) {
+    private FieldUsage(@NonNull final String fieldId,
+                       @StringRes final int nameStringId,
+                       @NonNull final Usage usage,
+                       @NonNull final Usage defValue,
+                       final boolean canAppend) {
         this.fieldId = fieldId;
         mNameStringId = nameStringId;
         mUsage = usage;
+        mDefValue = defValue;
         mCanAppend = canAppend;
     }
 
     /**
-     * Constructor for a related field depending on the given primaryField.
+     * Constructor for a <strong>simple</strong> field.
+     * <p>
+     * The fieldId is used as the preference key.
+     *
+     * @param fieldId      Field name
+     * @param nameStringId Field label string resource ID
+     * @param defValue     default Usage for this field
+     * @param p            SharedPreferences to read current usage from.
+     *
+     * @return new instance
+     */
+    public static FieldUsage create(@NonNull final String fieldId,
+                                    @StringRes final int nameStringId,
+                                    @NonNull final Usage defValue,
+                                    @NonNull final SharedPreferences p) {
+        Usage usage = Usage.read(p, fieldId, defValue);
+        return new FieldUsage(fieldId, nameStringId, usage, defValue, false);
+    }
+
+    /**
+     * Constructor for a <strong>list</strong> field.
+     * <p>
+     * The default usage for a list field is always {@link Usage#Append}.
+     *
+     * @param fieldId      Field name
+     * @param nameStringId Field label string resource ID
+     * @param p            SharedPreferences to read current usage from.
+     * @param prefKey      Field name to use for preferences.
+     *
+     * @return new instance
+     */
+    public static FieldUsage createListField(@NonNull final String fieldId,
+                                             @StringRes final int nameStringId,
+                                             @NonNull final SharedPreferences p,
+                                             @NonNull final String prefKey) {
+        Usage usage = Usage.read(p, prefKey, Usage.Append);
+        return new FieldUsage(fieldId, nameStringId, usage, Usage.Append, true);
+    }
+
+    public void reset() {
+        mUsage = mDefValue;
+    }
+
+    /**
+     * Constructor for a related field depending on this field.
      *
      * @param fieldId      key
      * @param nameStringId label to show to the user.
-     * @param primaryField to which this new field relates to.
      */
-    public FieldUsage(@NonNull final String fieldId,
-                      @StringRes final int nameStringId,
-                      @NonNull final FieldUsage primaryField) {
-        this.fieldId = fieldId;
-        mNameStringId = nameStringId;
-
-        mUsage = primaryField.mUsage;
-        mCanAppend = primaryField.mCanAppend;
+    public FieldUsage createRelatedField(@NonNull final String fieldId,
+                                         @StringRes final int nameStringId) {
+        return new FieldUsage(fieldId, nameStringId, mUsage, mDefValue, mCanAppend);
     }
 
     public boolean isWanted() {
@@ -102,14 +147,28 @@ public class FieldUsage {
         mUsage = usage;
     }
 
+    /**
+     * Get the label for the field.
+     *
+     * @param context Current context
+     *
+     * @return label
+     */
     @NonNull
     public String getLabel(@NonNull final Context context) {
         return context.getString(mNameStringId);
     }
 
+    /**
+     * Get the label for the currently selected usage.
+     *
+     * @param context Current context
+     *
+     * @return label
+     */
     @NonNull
-    public String getUsageInfo(@NonNull final Context context) {
-        return context.getString(mUsage.getStringId());
+    public String getUsageLabel(@NonNull final Context context) {
+        return context.getString(mUsage.getLabelId());
     }
 
     /**
@@ -129,12 +188,32 @@ public class FieldUsage {
                + "fieldId='" + fieldId + '\''
                + ", mCanAppend=" + mCanAppend
                + ", mNameStringId=" + App.getAppContext().getString(mNameStringId)
+               + ", mDefValue=" + mDefValue
                + ", mUsage=" + mUsage
                + '}';
     }
 
     public enum Usage {
+        // NEVER change the order, we store the ordinal in SharedPreferences.
         Skip, CopyIfBlank, Append, Overwrite;
+
+        private static final String PREFS_PREFIX_FIELD_USAGE = "fields.update.usage.";
+
+        public static Usage read(@NonNull final SharedPreferences p,
+                                 @NonNull final String key,
+                                 @NonNull final Usage defValue) {
+            int ordinal = p.getInt(PREFS_PREFIX_FIELD_USAGE + key, -1);
+            if (ordinal != -1) {
+                return Usage.values()[ordinal];
+            } else {
+                return defValue;
+            }
+        }
+
+        public void write(@NonNull final SharedPreferences.Editor ed,
+                          @NonNull final String key) {
+            ed.putInt(PREFS_PREFIX_FIELD_USAGE + key, ordinal());
+        }
 
         @NonNull
         Usage nextState(final boolean allowAppend) {
@@ -156,8 +235,13 @@ public class FieldUsage {
             return Skip;
         }
 
+        /**
+         * Return the user readable label id.
+         *
+         * @return string id
+         */
         @StringRes
-        int getStringId() {
+        int getLabelId() {
             switch (this) {
                 case CopyIfBlank:
                     return R.string.lbl_field_usage_copy_if_blank;

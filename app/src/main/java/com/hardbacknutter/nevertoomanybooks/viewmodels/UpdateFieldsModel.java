@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
@@ -38,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,9 +73,7 @@ public class UpdateFieldsModel
 
     /** Log tag. */
     private static final String TAG = "UpdateFieldsModel";
-
     private static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
-
     /** which fields to update and how. */
     @NonNull
     private final Map<String, FieldUsage> mFieldUsages = new LinkedHashMap<>();
@@ -156,52 +156,57 @@ public class UpdateFieldsModel
                 mBookIds = (ArrayList<Long>) args.getSerializable(UniqueId.BKEY_ID_LIST);
             }
 
-            initFields();
+            initFields(context);
         }
     }
 
     /**
      * Entries are displayed in the order they are added here.
+     *
+     * @param context Current context
      */
-    private void initFields() {
+    private void initFields(@NonNull final Context context) {
 
-        addListField(UniqueId.BKEY_AUTHOR_ARRAY, R.string.lbl_author, DBDefinitions.KEY_FK_AUTHOR);
+        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addField(DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
-        addField(DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
-        addField(UniqueId.BKEY_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
+        addListField(p, UniqueId.BKEY_AUTHOR_ARRAY, R.string.lbl_author,
+                     DBDefinitions.KEY_FK_AUTHOR);
 
-        addListField(UniqueId.BKEY_SERIES_ARRAY, R.string.lbl_series,
+        addField(p, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
+        addField(p, UniqueId.BKEY_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
+
+        addListField(p, UniqueId.BKEY_SERIES_ARRAY, R.string.lbl_series,
                      DBDefinitions.KEY_SERIES_TITLE);
 
-        addListField(UniqueId.BKEY_TOC_ENTRY_ARRAY, R.string.lbl_table_of_content,
+        addListField(p, UniqueId.BKEY_TOC_ENTRY_ARRAY, R.string.lbl_table_of_content,
                      DBDefinitions.KEY_TOC_BITMASK);
 
-        addListField(UniqueId.BKEY_PUBLISHER_ARRAY, R.string.lbl_publisher,
+        addListField(p, UniqueId.BKEY_PUBLISHER_ARRAY, R.string.lbl_publisher,
                      DBDefinitions.KEY_PUBLISHER);
 
-        addField(DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run, CopyIfBlank);
-        addField(DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published, CopyIfBlank);
-        addField(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, R.string.lbl_first_publication,
+        addField(p, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_DATE_FIRST_PUBLICATION, R.string.lbl_first_publication,
                  CopyIfBlank);
 
         // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(DBDefinitions.KEY_PRICE_LISTED, R.string.lbl_price_listed, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_PRICE_LISTED, R.string.lbl_price_listed, CopyIfBlank);
 
-        addField(DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description, CopyIfBlank);
 
-        addField(DBDefinitions.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
-        addField(DBDefinitions.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
-        addField(DBDefinitions.KEY_COLOR, R.string.lbl_color, CopyIfBlank);
-        addField(DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
-        addField(DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_COLOR, R.string.lbl_color, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
+        addField(p, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
         //NEWTHINGS: add new site specific ID: add a field
-        addField(DBDefinitions.KEY_EID_ISFDB, R.string.site_isfdb, Overwrite);
-        addField(DBDefinitions.KEY_EID_GOODREADS_BOOK, R.string.site_goodreads, Overwrite);
-        addField(DBDefinitions.KEY_EID_LIBRARY_THING, R.string.site_library_thing, Overwrite);
-        addField(DBDefinitions.KEY_EID_OPEN_LIBRARY, R.string.site_open_library, Overwrite);
-        addField(DBDefinitions.KEY_EID_STRIP_INFO_BE, R.string.site_stripinfo, Overwrite);
+        addField(p, DBDefinitions.KEY_EID_ISFDB, R.string.site_isfdb, Overwrite);
+        addField(p, DBDefinitions.KEY_EID_GOODREADS_BOOK, R.string.site_goodreads, Overwrite);
+        addField(p, DBDefinitions.KEY_EID_LIBRARY_THING, R.string.site_library_thing, Overwrite);
+        addField(p, DBDefinitions.KEY_EID_OPEN_LIBRARY, R.string.site_open_library, Overwrite);
+        addField(p, DBDefinitions.KEY_EID_STRIP_INFO_BE, R.string.site_stripinfo, Overwrite);
     }
 
     @NonNull
@@ -212,11 +217,6 @@ public class UpdateFieldsModel
     @Nullable
     public FieldUsage getFieldUsage(@NonNull final String key) {
         return mFieldUsages.get(key);
-    }
-
-    public void putFieldUsage(@NonNull final String key,
-                              @NonNull final FieldUsage fieldUsage) {
-        mFieldUsages.put(key, fieldUsage);
     }
 
     /**
@@ -239,51 +239,41 @@ public class UpdateFieldsModel
      * @param relatedFieldId to add if the primary field is present
      * @param nameStringId   Field label string resource ID
      */
-    @SuppressWarnings("SameParameterValue")
     private void addRelatedField(@NonNull final String primaryFieldId,
                                  @NonNull final String relatedFieldId,
                                  @StringRes final int nameStringId) {
         FieldUsage primaryField = mFieldUsages.get(primaryFieldId);
+
         if (primaryField != null && primaryField.isWanted()) {
-            FieldUsage fu = new FieldUsage(relatedFieldId, nameStringId, primaryField);
+            FieldUsage fu = primaryField.createRelatedField(relatedFieldId, nameStringId);
             mFieldUsages.put(relatedFieldId, fu);
         }
     }
 
     /**
-     * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
-     * <p>
-     * The default usage for a list field is {@link FieldUsage.Usage#Append}.
+     * Write current settings to the user preferences.
      *
-     * @param fieldId      List-field name to use in FieldUsages
-     * @param nameStringId Field label string resource ID
-     * @param visField     Field name to check for visibility.
+     * @param context Current context
      */
-    private void addListField(@NonNull final String fieldId,
-                              @StringRes final int nameStringId,
-                              @NonNull final String visField) {
-
-        if (App.isUsed(visField)) {
-            FieldUsage fu = new FieldUsage(fieldId, nameStringId, FieldUsage.Usage.Append, true);
-            mFieldUsages.put(fieldId, fu);
+    public void writePreferences(@NonNull final Context context) {
+        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
+                                                       .edit();
+        for (FieldUsage fieldUsage : mFieldUsages.values()) {
+            fieldUsage.getUsage().write(ed, fieldUsage.fieldId);
         }
+        ed.apply();
     }
 
     /**
-     * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
+     * Reset current usage back to defaults, and write to preferences.
      *
-     * @param fieldId      Field name to use in FieldUsages + check for visibility
-     * @param nameStringId Field label string resource ID
-     * @param defaultUsage default Usage for this field
+     * @param context Current context
      */
-    private void addField(@NonNull final String fieldId,
-                          @StringRes final int nameStringId,
-                          @NonNull final FieldUsage.Usage defaultUsage) {
-
-        if (App.isUsed(fieldId)) {
-            FieldUsage fu = new FieldUsage(fieldId, nameStringId, defaultUsage, false);
-            putFieldUsage(fieldId, fu);
+    public void resetPreferences(final Context context) {
+        for (FieldUsage fieldUsage : mFieldUsages.values()) {
+            fieldUsage.reset();
         }
+        writePreferences(context);
     }
 
     /**
