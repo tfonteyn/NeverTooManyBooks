@@ -150,7 +150,7 @@ public class GoodreadsSearchActivity
             }
         });
 
-        mSearchTextView = findViewById(R.id.search_text);
+        mSearchTextView = findViewById(R.id.filter_text);
         mIsbnView = findViewById(R.id.isbn);
         mAuthorView = findViewById(R.id.author);
         mTitleView = findViewById(R.id.title);

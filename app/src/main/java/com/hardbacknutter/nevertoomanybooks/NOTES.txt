@@ -42,6 +42,8 @@ Alternatively migrate to using BigDecimal as a short term solution.
 
 TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter when appropriate.
 
+ENHANCE: image url loading... keep DIY, or move to Glide (androidx support?) or Picasso (seems to move to Kotlin)
+
 Issues checked: 834 down to 677 (inc)
 
 New fields:

@@ -2945,6 +2945,8 @@ public class DAO
     /**
      * Get a list of all user defined {@link BooklistStyle}, arranged in a lookup map.
      *
+     * This is a slow call, as it needs to create a new {@link BooklistStyle} for each row.
+     *
      * @return ordered map, with the uuid as key
      */
     @NonNull
@@ -4141,7 +4143,7 @@ public class DAO
 
     /**
      * Rebuild the entire FTS database.
-     * This can take several seconds with many books or a slow phone.
+     * This can take several seconds with many books or a slow device.
      */
     public void rebuildFts() {
         if (sSyncedDb.inTransaction()) {

@@ -32,6 +32,7 @@ import android.app.SearchManager;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -60,6 +61,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistMappedCursorRow;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -226,8 +229,8 @@ public class BooksOnBookshelf
                 }
             };
 
-    /** Whether to show header texts - this depends on the current style. */
-    private boolean mShowHeaderTexts;
+    /** Whether to show level-header - this depends on the current style. */
+    private boolean mShowLevelHeaders;
     /** Define a scroller to update header detail when the top row changes. */
     private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
             new RecyclerView.OnScrollListener() {
@@ -239,7 +242,7 @@ public class BooksOnBookshelf
                     // activity terminates and closes cursor
                     if (mModel.getLastTopRow() != currentTopRow
                         && !isDestroyed()
-                        && mShowHeaderTexts) {
+                        && mShowLevelHeaders) {
                         setHeaderLevelText(currentTopRow);
                     }
                 }
@@ -358,7 +361,7 @@ public class BooksOnBookshelf
      */
     private void initHeader() {
         mStyleNameView = findViewById(R.id.style_name);
-        mFilterTextView = findViewById(R.id.search_text);
+        mFilterTextView = findViewById(R.id.filter_text);
         mBookCountView = findViewById(R.id.book_count);
         mHeaderTextView[0] = findViewById(R.id.level_1_text);
         mHeaderTextView[1] = findViewById(R.id.level_2_text);
@@ -697,8 +700,8 @@ public class BooksOnBookshelf
                                                        Options.NOTHING);
                         if (options != 0) {
                             if ((options & Options.BOOK_LIST_STYLES) != 0) {
-                                // Force a refresh of the list of user styles.
-                                BooklistStyle.Helper.reload();
+                                // Force a refresh of the list of all user styles.
+                                BooklistStyle.Helper.clear();
                             }
                             if ((options & Options.PREFERENCES) != 0) {
                                 // Refresh the preferred bookshelf. This also refreshes its style.
@@ -1020,7 +1023,15 @@ public class BooksOnBookshelf
             mListView.post(() -> fixPositionWhenDrawn(targetRows));
         }
 
-        mShowHeaderTexts = prepareListHeader(count > 0);
+        // Prepare the list header fields.
+        setHeaderStyleName();
+        setHeaderFilterText();
+        setHeaderBookCount();
+        mShowLevelHeaders = setHeaderLevelTextVisibility();
+        // Set the initial details to the current first visible row (if any).
+        if (count > 0 && mShowLevelHeaders) {
+            setHeaderLevelText(mModel.getTopRow());
+        }
 
         // all set, we can close the old list
         if (oldCursor != null) {
@@ -1100,9 +1111,9 @@ public class BooksOnBookshelf
             // But adding smoothScrollToPosition seems to get the job done reasonably well.
             //
             // Specific problem occurs if:
-            // - put phone in portrait mode
+            // - put device in portrait mode
             // - edit a book near bottom of list
-            // - turn phone to landscape
+            // - turn device to landscape
             // - save the book (don't cancel)
             // Book will be off bottom of screen without the smoothScroll in the second Runnable.
             //
@@ -1629,30 +1640,10 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Convenience wrapper method that handles the 4 steps of preparing the list header.
-     *
-     * @param listHasItems Flag to indicate there are in fact items in the list
-     *
-     * @return {@code true} if the header should display the 'level' texts.
-     */
-    private boolean prepareListHeader(final boolean listHasItems) {
-        setHeaderStyleName();
-        setHeaderFilterText();
-        setHeaderBookCount();
-
-        boolean showHeaderTexts = setHeaderLevelTextVisibility();
-        // Set the initial details to the current first visible row.
-        if (listHasItems && showHeaderTexts) {
-            setHeaderLevelText(mModel.getTopRow());
-        }
-        return showHeaderTexts;
-    }
-
-    /**
      * Display or hide the style name field in the header.
      */
     private void setHeaderStyleName() {
-        if (mModel.getCurrentStyle(this).headerShowsStyleName()) {
+        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.SUMMARY_SHOW_STYLE_NAME)) {
             mStyleNameView.setText(mModel.getCurrentStyle(this).getLabel(this));
             mStyleNameView.setVisibility(View.VISIBLE);
         } else {
@@ -1661,23 +1652,41 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Display or hide the search text field in the header.
+     * Display or hide the search/filter text field in the header.
      */
     private void setHeaderFilterText() {
-        String filterText = mModel.getSearchCriteria().getDisplayString();
-        if (filterText.isEmpty()) {
-            mFilterTextView.setVisibility(View.GONE);
-        } else {
-            mFilterTextView.setVisibility(View.VISIBLE);
-            mFilterTextView.setText(getString(R.string.lbl_search_filtered_on_x, filterText));
+        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.SUMMARY_SHOW_FILTER)) {
+            Collection<String> filterText = new ArrayList<>();
+            Collection<Filter> filters = mModel.getCurrentBookshelf()
+                                               .getStyle(this, mModel.getDb())
+                                               .getFilters();
+            for (Filter f : filters) {
+                if (f.isActive()) {
+                    filterText.add(f.getLabel(this));
+                }
+            }
+
+            String searchText = mModel.getSearchCriteria().getDisplayString();
+            if (!searchText.isEmpty()) {
+                filterText.add('"' + searchText + '"');
+            }
+
+            if (!filterText.isEmpty()) {
+                mFilterTextView.setText(getString(R.string.lbl_search_filtered_on_x,
+                                                  TextUtils.join(", ", filterText)));
+                mFilterTextView.setVisibility(View.VISIBLE);
+                return;
+            }
         }
+
+        mFilterTextView.setVisibility(View.GONE);
     }
 
     /**
      * Display or hide the number of books in the current list.
      */
     private void setHeaderBookCount() {
-        if (mModel.getCurrentStyle(this).headerShowsBookCount()) {
+        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.SUMMARY_SHOW_BOOK_COUNT)) {
             int totalBooks = mModel.getTotalBooks();
             int uniqueBooks = mModel.getUniqueBooks();
             String stringArgs;
@@ -1701,21 +1710,23 @@ public class BooksOnBookshelf
      * @return {@code true} if the style supports any level at all.
      */
     private boolean setHeaderLevelTextVisibility() {
-
         BooklistStyle style = mModel.getCurrentStyle(this);
-        // for level, set the visibility of the views.
-        for (int level = 1; level <= 2; level++) {
-            int index = level - 1;
 
-            if (level < (style.groupCount() + 1) && style.headerHasLevelText(level)) {
-                mHeaderTextView[index].setVisibility(View.VISIBLE);
-                mHeaderTextView[index].setText("");
+        boolean atLeastOne = false;
+
+        // for each level, set the visibility of the views.
+        for (int i = 0; i < mHeaderTextView.length; i++) {
+            if (i < style.groupCount() && style.showHeader(BooklistStyle.HEADER_LEVELS[i])) {
+                // the actual text will be filled in as/when the user scrolls
+                mHeaderTextView[i].setText("");
+                mHeaderTextView[i].setVisibility(View.VISIBLE);
+                atLeastOne = true;
             } else {
-                mHeaderTextView[index].setVisibility(View.GONE);
+                mHeaderTextView[i].setVisibility(View.GONE);
             }
         }
-        // are we showing any levels?
-        return style.headerHasLevelText(1) || style.headerHasLevelText(2);
+
+        return atLeastOne;
     }
 
     /**

@@ -178,6 +178,9 @@ public class PreferredStylesViewModel
             style.save(mDb);
         }
 
+        // Force a refresh of the list of user styles.
+        style.updateHelper();
+
         return editedRow;
     }
 

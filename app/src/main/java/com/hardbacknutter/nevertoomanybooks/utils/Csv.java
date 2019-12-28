@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -45,23 +46,25 @@ public final class Csv {
     private Csv() {
     }
 
-//    /**
-//     * Create a CSV list String from the passed collection.
-//     * A {@code null} element is morphed into "".
-//     * This can be avoided by using {@link #join(CharSequence, Iterable, Formatter)} and
-//     * providing a {@link Formatter}.
-//     *
-//     * @param delimiter  e.g. "," or ", " etc...
-//     * @param collection collection
-//     *
-//     * @return csv string, can be empty, but never {@code null}.
-//     */
-//    @NonNull
-//    public static <E> String join(@NonNull final CharSequence delimiter,
-//                                  @NonNull final Iterable<E> collection) {
-//        return TextUtils.join(delimiter, collection);
-////        return join(delimiter, collection, true, null, null);
-//    }
+    /**
+     * Create a CSV list String from the passed collection.
+     * A {@code null} element is morphed into "".
+     * This can be avoided by using {@link #join(CharSequence, Iterable, Formatter)} and
+     * providing a {@link Formatter}.
+     *
+     * @param delimiter  e.g. "," or ", " etc...
+     * @param collection collection
+     *
+     * @return csv string, can be empty, but never {@code null}.
+     *
+     * @deprecated use {@link TextUtils#join(CharSequence, Iterable)} instead.
+     */
+    @Deprecated
+    @NonNull
+    public static <E> String join(@NonNull final CharSequence delimiter,
+                                  @NonNull final Iterable<E> collection) {
+        return TextUtils.join(delimiter, collection);
+    }
 
     /**
      * Create a CSV list String from the passed collection.

@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
  * <p>
  * 3. FUD: SQLite cursors seem to use memory based on the number of rows in the cursor. They do
  * not *seem* to refer back to the database and cache a window. If true, with lots of a books and
- * a small phone memory, this would lead to problems.
+ * a small device memory, this would lead to problems.
  * <p>
  * The result?
  * <p>

@@ -98,10 +98,7 @@ public class BooksOnBookshelfModel
     /** Inform user that Goodreads needs authentication/authorization. */
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
 
-    /**
-     * Holder for all search criteria.
-     * See {@link SearchCriteria} for more info.
-     */
+    /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /** Cache for all bookshelf names / spinner list. */
     private final List<String> mBookshelfNameList = new ArrayList<>();

@@ -113,9 +113,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class BooklistStyle
         implements Parcelable, Entity {
 
-    /** Log tag. */
-    private static final String TAG = "BooklistStyle";
-
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
             new Creator<BooklistStyle>() {
@@ -132,7 +129,7 @@ public class BooklistStyle
     /** default style when none is set yet. */
     public static final int DEFAULT_STYLE_ID = Builtin.AUTHOR_THEN_SERIES_ID;
 
-    /** Extra book data to show at lowest level. (the bit numbers are not stored anywhere) */
+    /** Extra book data to show at lowest level. (the bit numbers are NOT stored anywhere) */
     public static final int EXTRAS_BOOKSHELVES = 1;
     /** Extra book data to show at lowest level. */
     public static final int EXTRAS_LOCATION = 1 << 1;
@@ -151,13 +148,16 @@ public class BooklistStyle
     /** Extra book data to show at lowest level. */
     @SuppressWarnings("WeakerAccess")
     public static final int EXTRAS_THUMBNAIL = 1 << 8;
-
-    /** Mask for the extras that are fetched using {@link BooklistAdapter}.GetBookExtrasTask}. */
+    /** Mask for the extras that can be fetched by {@link BooklistAdapter}.GetBookExtrasTask}. */
     public static final int EXTRAS_BY_TASK = EXTRAS_BOOKSHELVES
                                              | EXTRAS_LOCATION | EXTRAS_FORMAT
                                              | EXTRAS_PUBLISHER | EXTRAS_PUB_DATE
                                              | EXTRAS_AUTHOR | EXTRAS_ISBN;
-    /** Text Scaling. */
+
+    /**
+     * Text Scaling.
+     * NEVER change these values, they get stored in preferences.
+     */
     public static final int FONT_SCALE_SMALL = 0;
     /** Text Scaling. */
     public static final int FONT_SCALE_MEDIUM = 1;
@@ -165,28 +165,42 @@ public class BooklistStyle
     @SuppressWarnings("WeakerAccess")
     public static final int FONT_SCALE_LARGE = 2;
 
+    /**
+     * the amount of details to show in the header.
+     * NEVER change these values, they get stored in preferences.
+     */
+    public static final int SUMMARY_SHOW_BOOK_COUNT = 1;
+    /** the amount of details to show in the header. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int SUMMARY_SHOW_LEVEL_1 = 1 << 1;
+    /** the amount of details to show in the header. */
+    @SuppressWarnings("WeakerAccess")
+    public static final int SUMMARY_SHOW_LEVEL_2 = 1 << 2;
+    /** the amount of details to show in the header. */
+    public static final int SUMMARY_SHOW_STYLE_NAME = 1 << 3;
+    /** the amount of details to show in the header. */
+    public static final int SUMMARY_SHOW_FILTER = 1 << 4;
+
+    /** the amount of details to show in the header. */
+    public static final int SUMMARY_SHOW_ALL =
+            SUMMARY_SHOW_BOOK_COUNT
+            | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2
+            | SUMMARY_SHOW_STYLE_NAME
+            | SUMMARY_SHOW_FILTER;
+
+    public static final int[] HEADER_LEVELS = {SUMMARY_SHOW_LEVEL_1, SUMMARY_SHOW_LEVEL_2};
+
+    /** Log tag. */
+    private static final String TAG = "BooklistStyle";
     private static final String PREFS_PREFIX = "bookList.style.";
     /** Preference for the current default style UUID to use. */
     public static final String PREF_BL_STYLE_CURRENT_DEFAULT = PREFS_PREFIX + "current";
+
     /**
      * Preferred styles / menu order.
      * Stored in global shared preferences as a CSV String of UUIDs.
      */
     public static final String PREF_BL_PREFERRED_STYLES = PREFS_PREFIX + "preferred.order";
-
-    /** the amount of details to show in the header. */
-    private static final int SUMMARY_SHOW_BOOK_COUNT = 1;
-    /** the amount of details to show in the header. */
-    private static final int SUMMARY_SHOW_LEVEL_1 = 1 << 1;
-    /** the amount of details to show in the header. */
-    private static final int SUMMARY_SHOW_LEVEL_2 = 1 << 2;
-    /** the amount of details to show in the header. */
-    private static final int SUMMARY_SHOW_STYLE_NAME = 1 << 3;
-    /** the amount of details to show in the header. */
-    public static final int SUMMARY_SHOW_ALL =
-            SUMMARY_SHOW_BOOK_COUNT
-            | SUMMARY_SHOW_LEVEL_1 | SUMMARY_SHOW_LEVEL_2
-            | SUMMARY_SHOW_STYLE_NAME;
 
     /**
      * Row id of database row from which this object comes.
@@ -194,6 +208,7 @@ public class BooklistStyle
      * Always NEGATIVE (e.g. <0 ) for a build-in style
      */
     private long mId;
+
     /**
      * The uuid based SharedPreference name.
      * <p>
@@ -201,6 +216,7 @@ public class BooklistStyle
      */
     @NonNull
     private String mUuid;
+
     /**
      * id if string representing name of this style.
      * Used for standard system-defined styles.
@@ -208,12 +224,14 @@ public class BooklistStyle
      */
     @StringRes
     private int mNameResId;
+
     /**
      * Display name of this style.
      * Used for user-defined styles.
      * Encapsulated value always {@code null} for a builtin style.
      */
     private PString mName;
+
     /**
      * Flag indicating this style was in the 'preferred' set when it was added to
      * its Styles collection.
@@ -234,6 +252,7 @@ public class BooklistStyle
 
     /** Scale factor to apply for thumbnails. */
     private PInteger mThumbnailScale;
+
     /**
      * Show list header info.
      * <p>
@@ -825,41 +844,14 @@ public class BooklistStyle
     }
 
     /**
-     * Check if the style wants the book count to be displayed.
+     * Check if the style wants the specified header to be displayed.
      *
-     * @return {@code true} if the book count should be shown
+     * @param headerMask to check
+     *
+     * @return {@code true} if the header should be shown
      */
-    public boolean headerShowsBookCount() {
-        return (mShowHeaderInfo.get() & SUMMARY_SHOW_BOOK_COUNT) != 0;
-    }
-
-    /**
-     * Check if the style wants the style name to be displayed.
-     *
-     * @return {@code true} if the style name should be shown
-     */
-    public boolean headerShowsStyleName() {
-        return (mShowHeaderInfo.get() & SUMMARY_SHOW_STYLE_NAME) != 0;
-    }
-
-    /**
-     * Check if the style can show the passed level.
-     *
-     * @param level to check, 1-based.
-     *
-     * @return {@code true} if this style can show the desired level
-     */
-    public boolean headerHasLevelText(@IntRange(from = 1, to = 2) final int level) {
-        switch (level) {
-            case 1:
-                return (mShowHeaderInfo.get() & SUMMARY_SHOW_LEVEL_1) != 0;
-            case 2:
-                return (mShowHeaderInfo.get() & SUMMARY_SHOW_LEVEL_2) != 0;
-
-            default:
-                // paranoia
-                return false;
-        }
+    public boolean showHeader(@ListHeaderOption final int headerMask) {
+        return (mShowHeaderInfo.get() & headerMask) != 0;
     }
 
     /**
@@ -1402,6 +1394,10 @@ public class BooklistStyle
         return level;
     }
 
+    public void updateHelper() {
+        Helper.S_USER_STYLES.put(mUuid, this);
+    }
+
     @IntDef(flag = true, value = {
             EXTRAS_BOOKSHELVES,
             EXTRAS_LOCATION,
@@ -1420,7 +1416,8 @@ public class BooklistStyle
 
     @IntDef(flag = true, value = {SUMMARY_SHOW_BOOK_COUNT,
                                   SUMMARY_SHOW_LEVEL_1, SUMMARY_SHOW_LEVEL_2,
-                                  SUMMARY_SHOW_STYLE_NAME})
+                                  SUMMARY_SHOW_STYLE_NAME,
+                                  SUMMARY_SHOW_FILTER})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ListHeaderOption {
 
@@ -1583,7 +1580,7 @@ public class BooklistStyle
         private Helper() {
         }
 
-        public static void reload() {
+        public static void clear() {
             S_USER_STYLES.clear();
         }
 
@@ -1641,8 +1638,7 @@ public class BooklistStyle
          * Filter the specified styles so it contains only the preferred styles.
          * If none were preferred, returns the incoming list.
          *
-         *
-         * @param context Current context
+         * @param context   Current context
          * @param allStyles a list of styles
          *
          * @return ordered list.

@@ -104,8 +104,6 @@ public class StylePreferenceFragment
 
     @Override
     public void onResume() {
-        super.onResume();
-
         PreferenceScreen screen = getPreferenceScreen();
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
@@ -113,7 +111,9 @@ public class StylePreferenceFragment
             group.addPreferences(screen, mStyle.hasGroup(group.getId()));
         }
 
-        // handle custom summaries
+        super.onResume();
+
+        // These keys are never physically present in the SharedPreferences; so handle explicitly.
         updateSummary(Prefs.psk_style_show_details);
         updateSummary(Prefs.psk_style_filters);
     }
@@ -165,11 +165,7 @@ public class StylePreferenceFragment
                 break;
             }
 
-            case Prefs.pk_bob_show_thumbnails: {
-                updateSummary(Prefs.psk_style_show_details);
-                break;
-            }
-
+            case Prefs.pk_bob_show_thumbnails:
             case Prefs.psk_style_show_details: {
                 // the 'extra' fields in use.
                 Preference preference = findPreference(key);
