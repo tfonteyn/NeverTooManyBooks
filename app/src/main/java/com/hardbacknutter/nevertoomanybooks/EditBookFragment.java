@@ -283,7 +283,7 @@ public class EditBookFragment
             super(container);
 
             boolean useToc = App.isUsed(DBDefinitions.KEY_TOC_BITMASK);
-            //URGENT: create a setting
+            //URGENT: create a setting? hide by default?
             //noinspection ConstantConditions
             boolean useNativeIds = PreferenceManager.getDefaultSharedPreferences(
                     container.getContext()).getBoolean("dummy", true);
@@ -304,7 +304,7 @@ public class EditBookFragment
             if (useNativeIds) {
                 mNrOfTabs++;
                 mTabClasses.add(EditBookNativeIdFragment.class);
-                mTabTitles.add(R.string.tab_lbl_id);
+                mTabTitles.add(R.string.tab_lbl_ext_id);
             }
         }
 

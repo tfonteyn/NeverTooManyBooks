@@ -29,6 +29,9 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -43,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
 
-//URGENT: add a switch?? to the layout to show ALL fields.
 public class EditBookNativeIdFragment
         extends EditBookBaseFragment {
 
@@ -52,6 +54,7 @@ public class EditBookNativeIdFragment
     private EditText mEidLibraryThingView;
     private EditText mEidOpenLibraryView;
     private EditText mEidStripInfoView;
+    private boolean mShowAllSites;
 
     @Override
     @Nullable
@@ -77,39 +80,77 @@ public class EditBookNativeIdFragment
         super.initFields();
         Fields fields = getFields();
 
-        fields.addString(R.id.site_goodreads, mEidGoodreadsView,
+        fields.addString(mEidGoodreadsView,
                          DBDefinitions.KEY_EID_GOODREADS_BOOK)
               .setRelatedFields(R.id.lbl_site_goodreads);
-        fields.addString(R.id.site_isfdb, mEidIsfdbView,
+        fields.addString(mEidIsfdbView,
                          DBDefinitions.KEY_EID_ISFDB)
               .setRelatedFields(R.id.lbl_site_isfdb);
-        fields.addString(R.id.site_library_thing, mEidLibraryThingView,
+        fields.addString(mEidLibraryThingView,
                          DBDefinitions.KEY_EID_LIBRARY_THING)
               .setRelatedFields(R.id.lbl_site_library_thing);
-        fields.addString(R.id.site_open_library, mEidOpenLibraryView,
+        fields.addString(mEidOpenLibraryView,
                          DBDefinitions.KEY_EID_OPEN_LIBRARY)
               .setRelatedFields(R.id.lbl_site_open_library);
-        fields.addString(R.id.site_strip_info_be, mEidStripInfoView,
+        fields.addString(mEidStripInfoView,
                          DBDefinitions.KEY_EID_STRIP_INFO_BE)
               .setRelatedFields(R.id.lbl_site_strip_info_be);
 
-        //noinspection ConstantConditions
-        int sites = SiteList.getList(getContext(), SiteList.Type.Data).getEnabledSites();
-        setSiteVisibility(sites);
+        setSiteVisibility(false);
     }
 
-    private void setSiteVisibility(final int sites) {
-        // related labels are dealt with automatically in #showOrHideFields
-        mEidGoodreadsView.setVisibility((sites & SearchSites.GOODREADS) != 0
-                                        ? View.VISIBLE : View.GONE);
-        mEidIsfdbView.setVisibility((sites & SearchSites.ISFDB) != 0
-                                    ? View.VISIBLE : View.GONE);
-        mEidLibraryThingView.setVisibility((sites & SearchSites.LIBRARY_THING) != 0
-                                           ? View.VISIBLE : View.GONE);
-        mEidOpenLibraryView.setVisibility((sites & SearchSites.OPEN_LIBRARY) != 0
-                                          ? View.VISIBLE : View.GONE);
-        mEidStripInfoView.setVisibility((sites & SearchSites.STRIP_INFO_BE) != 0
-                                        ? View.VISIBLE : View.GONE);
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        menu.add(Menu.NONE, R.id.MENU_SHOW_ALL, 0, R.string.menu_show_all)
+            .setCheckable(true)
+            .setChecked(mShowAllSites)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_SHOW_ALL) {
+            mShowAllSites = !item.isChecked();
+            item.setChecked(mShowAllSites);
+            setSiteVisibility(mShowAllSites);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setSiteVisibility(final boolean showAllSites) {
+
+        @SearchSites.Id
+        int sites;
+
+        if (showAllSites) {
+            sites = SearchSites.SEARCH_FLAG_MASK;
+        } else {
+            //noinspection ConstantConditions
+            sites = SiteList.getList(getContext(), SiteList.Type.Data).getEnabledSites();
+        }
+
+        Fields fields = getFields();
+        View parent = getView();
+
+        //noinspection ConstantConditions
+        fields.getField(mEidGoodreadsView).setVisibility(
+                parent, (sites & SearchSites.GOODREADS) != 0 ? View.VISIBLE : View.GONE);
+
+        fields.getField(mEidIsfdbView).setVisibility(
+                parent, (sites & SearchSites.ISFDB) != 0 ? View.VISIBLE : View.GONE);
+
+        fields.getField(mEidLibraryThingView).setVisibility(
+                parent, (sites & SearchSites.LIBRARY_THING) != 0 ? View.VISIBLE : View.GONE);
+
+        fields.getField(mEidOpenLibraryView).setVisibility(
+                parent, (sites & SearchSites.OPEN_LIBRARY) != 0 ? View.VISIBLE : View.GONE);
+
+        fields.getField(mEidStripInfoView).setVisibility(
+                parent, (sites & SearchSites.STRIP_INFO_BE) != 0 ? View.VISIBLE : View.GONE);
     }
 
     @CallSuper
