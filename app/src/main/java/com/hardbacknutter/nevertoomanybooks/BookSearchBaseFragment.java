@@ -242,7 +242,7 @@ public abstract class BookSearchBaseFragment
         if (onSearch()) {
             // we started at least one search.
             mProgressDialog = ProgressDialogFragment
-                    .newInstance(R.string.progress_msg_searching, true, 0);
+                    .newInstance(R.string.progress_msg_searching, true, false, 0);
             mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
             mProgressDialog.setCancellable(mSearchCoordinator);
         } else {

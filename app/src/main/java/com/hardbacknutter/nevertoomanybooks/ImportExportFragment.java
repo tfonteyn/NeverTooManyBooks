@@ -32,6 +32,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.system.ErrnoException;
+import android.system.OsConstants;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -373,7 +375,7 @@ public class ImportExportFragment
         RestoreTask task = new RestoreTask(importHelper, mImportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.title_importing, false, 0);
+                .newInstance(R.string.title_importing, false, true, 0);
         mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mTaskModel.setTask(task);
@@ -454,7 +456,7 @@ public class ImportExportFragment
                                                mImportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.title_importing, false, 0);
+                .newInstance(R.string.title_importing, false, true, 0);
         mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mTaskModel.setTask(task);
@@ -557,6 +559,8 @@ public class ImportExportFragment
             msg = getString(R.string.error_import_invalid_archive);
 
         } else if (e instanceof IOException) {
+            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
+            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
             msg = getString(R.string.error_storage_not_readable) + "\n\n"
                   + getString(R.string.error_if_the_problem_persists,
                               getString(R.string.lbl_send_debug_info));
@@ -630,7 +634,7 @@ public class ImportExportFragment
         BackupTask task = new BackupTask(exportHelper, mExportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.title_backing_up, false, 0);
+                .newInstance(R.string.title_backing_up, false, true, 0);
         mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mTaskModel.setTask(task);
@@ -667,7 +671,7 @@ public class ImportExportFragment
                                                mExportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.title_backing_up, false, 0);
+                .newInstance(R.string.title_backing_up, false, true, 0);
         mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mTaskModel.setTask(task);
@@ -795,18 +799,36 @@ public class ImportExportFragment
     }
 
     private void onExportFailed(@Nullable final Exception e) {
-        String msg;
+        String msg = null;
 
         if (e instanceof IOException) {
-            msg = getString(R.string.error_storage_not_writable) + "\n\n"
-                  + getString(R.string.error_if_the_problem_persists,
-                              getString(R.string.lbl_send_debug_info));
+            // see if we can find the exact cause
+            if (e.getCause() instanceof ErrnoException) {
+                int errno = ((ErrnoException) e.getCause()).errno;
+                // write failed: ENOSPC (No space left on device)
+                if (errno == OsConstants.ENOSPC) {
+                    msg = getString(R.string.error_storage_no_space_left);
+                } else {
+                    // write to logfile for future reporting enhancements.
+                    //noinspection ConstantConditions
+                    Logger.warn(getContext(), TAG, "onExportFailed",
+                                "errno=" + errno);
+                }
+            }
 
+            // generic IOException message
+            if (msg == null) {
+                msg = getString(R.string.error_storage_not_writable) + "\n\n"
+                      + getString(R.string.error_if_the_problem_persists,
+                                  getString(R.string.lbl_send_debug_info));
+            }
         } else if (e instanceof FormattedMessageException) {
             //noinspection ConstantConditions
             msg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
+        }
 
-        } else {
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
             msg = getString(R.string.error_unexpected_error);
         }
 

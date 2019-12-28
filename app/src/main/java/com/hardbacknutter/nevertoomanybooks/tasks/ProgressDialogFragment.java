@@ -32,6 +32,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -60,12 +61,15 @@ public class ProgressDialogFragment
     private static final String BKEY_CURRENT_MESSAGE = TAG + ":message";
     private static final String BKEY_CURRENT_VALUE = TAG + ":current";
 
+    private static final String BKEY_PREVENT_SLEEP = TAG + ":preventSleep";
+
     /** the current Cancellable. */
     @Nullable
     private Cancellable mCancellable;
 
     /** Type of ProgressBar. */
     private boolean mIsIndeterminate;
+    private boolean mPreventSleep;
     @Nullable
     private ProgressBar mProgressBar;
     @Nullable
@@ -86,6 +90,7 @@ public class ProgressDialogFragment
      *
      * @param titleId         resource id for the dialog title, can be 0 for no title.
      * @param isIndeterminate type of progress
+     * @param preventSleep    whether to block the device from sleeping while the action is ongoing
      * @param maxValue        maximum value for progress if isIndeterminate==false
      *                        Pass in 0 to keep the max as set in the layout file.
      *
@@ -95,12 +100,14 @@ public class ProgressDialogFragment
     @UiThread
     public static ProgressDialogFragment newInstance(@StringRes final int titleId,
                                                      final boolean isIndeterminate,
+                                                     final boolean preventSleep,
                                                      final int maxValue) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle(3);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, titleId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         args.putInt(BKEY_MAX, maxValue);
+        args.putBoolean(BKEY_PREVENT_SLEEP, preventSleep);
         frag.setArguments(args);
         return frag;
     }
@@ -111,7 +118,7 @@ public class ProgressDialogFragment
 
         Bundle args = requireArguments();
         mIsIndeterminate = args.getBoolean(BKEY_DIALOG_IS_INDETERMINATE, false);
-
+        mPreventSleep = args.getBoolean(BKEY_PREVENT_SLEEP, false);
         args = savedInstanceState != null ? savedInstanceState : args;
         // initial/current message.
         mMessage = args.getString(BKEY_CURRENT_MESSAGE);
@@ -129,15 +136,8 @@ public class ProgressDialogFragment
 
         mMessageView = root.findViewById(R.id.progressMessage);
         mProgressBar = root.findViewById(R.id.progressBar);
-        mProgressBar.setIndeterminate(mIsIndeterminate);
 
-        // current and max values for a 'determinate' progress bar.
-        if (!mIsIndeterminate) {
-            mProgressBar.setProgress(mCurrent);
-            if (mMax > 0) {
-                mProgressBar.setMax(mMax);
-            }
-        }
+        initProgressBar();
 
         if (mMessage != null) {
             //noinspection ConstantConditions
@@ -164,6 +164,38 @@ public class ProgressDialogFragment
         return dialog;
     }
 
+    @UiThread
+    private void initProgressBar() {
+        //noinspection ConstantConditions
+        mProgressBar.setIndeterminate(mIsIndeterminate);
+        // current and max values for a 'determinate' progress bar.
+        if (!mIsIndeterminate) {
+            mProgressBar.setProgress(mCurrent);
+            if (mMax > 0) {
+                mProgressBar.setMax(mMax);
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if (mPreventSleep) {
+            //noinspection ConstantConditions
+            getDialog().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        if (mPreventSleep) {
+            //noinspection ConstantConditions
+            getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        super.onStop();
+    }
+
     /**
      * Optionally link this object with a Cancellable.
      *
@@ -182,11 +214,28 @@ public class ProgressDialogFragment
 
     @UiThread
     public void onProgress(@NonNull final TaskListener.ProgressMessage message) {
+        @NonNull
+        Boolean previousMode = mIsIndeterminate;
+        // mode change requested ?
+        if (!previousMode.equals(message.indeterminate)) {
+            if (message.indeterminate == null) {
+                // reset to the mode when we started.
+                mIsIndeterminate = requireArguments()
+                        .getBoolean(BKEY_DIALOG_IS_INDETERMINATE, false);
+            } else {
+                mIsIndeterminate = message.indeterminate;
+            }
+            initProgressBar();
+        }
+
+        // always set these, even when (currently) in indeterminate mode.
         setAbsPosition(message.absPosition);
         setMax(message.maxPosition);
+
         if (message.text != null) {
             setMessage(message.text);
         }
+
     }
 
     /**

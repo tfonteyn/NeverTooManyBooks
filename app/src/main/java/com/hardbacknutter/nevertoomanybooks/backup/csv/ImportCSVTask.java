@@ -31,7 +31,6 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -43,8 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.ProgressListenerBase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -64,28 +61,6 @@ public class ImportCSVTask
     private final ImportHelper mImportHelper;
     @NonNull
     private final Importer mImporter;
-    private final ProgressListener mProgressListener = new ProgressListenerBase() {
-        private int mPos;
-
-        @Override
-        public void onProgress(final int pos,
-                               @Nullable final String message) {
-            mPos = pos;
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), pos, message));
-        }
-
-        @Override
-        public void onProgressStep(final int delta,
-                                   @Nullable final String message) {
-            mPos += delta;
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), mPos, message));
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return ImportCSVTask.this.isCancelled();
-        }
-    };
 
     /**
      * Constructor.
@@ -127,7 +102,7 @@ public class ImportCSVTask
             }
 
             mImportHelper.addResults(mImporter.doBooks(localContext, is,
-                                                       null, mProgressListener));
+                                                       null, getProgressListener()));
 
             return mImportHelper;
 

@@ -155,7 +155,7 @@ public class GoodreadsAdminFragment
                                                 mGoodreadsTaskModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.gr_title_sync_with_goodreads, false, 0);
+                .newInstance(R.string.gr_title_sync_with_goodreads, false, false, 0);
         mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mGoodreadsTaskModel.setTask(task);
@@ -172,7 +172,7 @@ public class GoodreadsAdminFragment
                                                    mGoodreadsTaskModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.gr_title_send_book, false, 0);
+                .newInstance(R.string.gr_title_send_book, false, false, 0);
         mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mGoodreadsTaskModel.setTask(task);

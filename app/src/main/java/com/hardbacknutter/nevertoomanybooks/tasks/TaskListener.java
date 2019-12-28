@@ -116,33 +116,48 @@ public interface TaskListener<Result> {
     class ProgressMessage {
 
         public final int taskId;
+
+        /** No-op if {@code null} otherwise change mode to the requested one. */
+        @Nullable
+        public final Boolean indeterminate;
+
+        /**
+         * The maximum position for the progressbar,
+         * should be ignored if a mode change was requested with indeterminate.
+         */
         public final int maxPosition;
+
+        /**
+         * Absolute position for the progressbar,
+         * should be ignored if a mode change was requested with indeterminate.
+         */
         public final int absPosition;
+
+        /** Optional text to display. */
         @Nullable
         public final String text;
 
         public ProgressMessage(final int taskId,
+                               @Nullable final Boolean indeterminate,
                                final int maxPosition,
                                final int absPosition,
                                @Nullable final String text) {
             this.taskId = taskId;
+            this.text = text;
+
+            this.indeterminate = indeterminate;
             this.maxPosition = maxPosition;
             this.absPosition = absPosition;
-            this.text = text;
         }
 
-        /**
-         * Constructor using a simple/single {@code StringRes}.
-         *
-         * @param taskId task ID
-         * @param text   string
-         */
         public ProgressMessage(final int taskId,
                                @Nullable final String text) {
             this.taskId = taskId;
+            this.text = text;
+
+            this.indeterminate = null;
             this.maxPosition = 0;
             this.absPosition = 0;
-            this.text = text;
         }
 
         @Override
@@ -150,6 +165,7 @@ public interface TaskListener<Result> {
         public String toString() {
             return "ProgressMessage{"
                    + "taskId=" + taskId
+                   + ", indeterminate=" + indeterminate
                    + ", maxPosition=" + maxPosition
                    + ", absPosition=" + absPosition
                    + ", text=" + text

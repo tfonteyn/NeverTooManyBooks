@@ -121,13 +121,16 @@ public abstract class BackupWriterAbstract
 
         File tmpBookCsvFile = null;
 
-
         try {
             // If we are doing covers, get the exact number by counting them
             if (!progressListener.isCancelled() && incCovers) {
+                // set the progress bar temporarily in indeterminate mode.
+                progressListener.setIndeterminate(true);
                 progressListener.onProgress(0, context.getString(R.string.progress_msg_searching));
-                // the progress bar will NOT be updated.
                 doCovers(context, exportHelper, true, progressListener);
+                // reset; won't take effect until the next onProgress.
+                progressListener.setIndeterminate(null);
+
                 // set as temporary max, but keep in mind the position itself is still 0
                 progressListener.setMax(exportResults.coversExported);
             }
@@ -173,12 +176,12 @@ public abstract class BackupWriterAbstract
                 entitiesWritten |= Options.PREFERENCES;
             }
             if (!progressListener.isCancelled() && incXml) {
-                progressListener.onProgressStep(1, null);
                 doXmlTables(context, exportHelper, progressListener);
                 entitiesWritten |= Options.XML_TABLES;
             }
             if (!progressListener.isCancelled() && incBooks) {
                 try {
+                    progressListener.onProgressStep(1, context.getString(R.string.lbl_books));
                     putBooks(tmpBookCsvFile);
                     entitiesWritten |= Options.BOOK_CSV;
                 } finally {
@@ -187,7 +190,6 @@ public abstract class BackupWriterAbstract
             }
             // do covers last
             if (!progressListener.isCancelled() && incCovers) {
-                // the progress bar will be updated.
                 doCovers(context, exportHelper, false, progressListener);
                 entitiesWritten |= Options.COVERS;
             }
@@ -198,7 +200,13 @@ public abstract class BackupWriterAbstract
                 Log.d(TAG, "backup|mExportHelper.getResults()=" + exportResults);
             }
             try {
+                // closing a very large archive will take a while.
+                progressListener.setIndeterminate(true);
+                progressListener
+                        .onProgress(0, context.getString(R.string.progress_msg_please_wait));
                 close();
+                // reset; won't take effect until the next onProgress.
+                progressListener.setIndeterminate(null);
             } catch (@NonNull final IOException ignore) {
             }
         }

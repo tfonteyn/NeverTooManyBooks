@@ -39,9 +39,9 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
-
 
 /**
  * The base for a task with our standard setup.
@@ -57,6 +57,56 @@ public abstract class TaskBase<Result>
 
     /** id set at construction time, passed back in all messages. */
     protected final int mTaskId;
+
+    private final ProgressListener<TaskListener.ProgressMessage> mProgressListener
+            = new ProgressListener<TaskListener.ProgressMessage>() {
+
+        private int mPos;
+        private int mMaxPosition;
+        @Nullable
+        private Boolean mIndeterminate;
+
+        @Override
+        public void onProgress(@NonNull final TaskListener.ProgressMessage progress) {
+            publishProgress(progress);
+        }
+
+        @Override
+        public void onProgress(final int pos,
+                               @Nullable final String message) {
+            mPos = pos;
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, mIndeterminate,
+                                                             mMaxPosition, mPos, message));
+        }
+
+        @Override
+        public void onProgressStep(final int delta,
+                                   @Nullable final String message) {
+            mPos += delta;
+            publishProgress(new TaskListener.ProgressMessage(mTaskId, mIndeterminate,
+                                                             mMaxPosition, mPos, message));
+        }
+
+        @Override
+        public void setIndeterminate(@Nullable final Boolean indeterminate) {
+            mIndeterminate = indeterminate;
+        }
+
+        @Override
+        public int getMax() {
+            return mMaxPosition;
+        }
+
+        @Override
+        public void setMax(final int maxPosition) {
+            mMaxPosition = maxPosition;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return TaskBase.this.isCancelled();
+        }
+    };
 
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
@@ -98,6 +148,15 @@ public abstract class TaskBase<Result>
      */
     public int getId() {
         return mTaskId;
+    }
+
+    /**
+     * Access for other classes.
+     *
+     * @return ProgressListener
+     */
+    protected ProgressListener<TaskListener.ProgressMessage> getProgressListener() {
+        return mProgressListener;
     }
 
     @Override

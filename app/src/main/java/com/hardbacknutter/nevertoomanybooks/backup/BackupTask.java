@@ -32,7 +32,6 @@ import android.net.Uri;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -47,8 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
- * Writes to a fixed file {@link ExportHelper#getTempFile},
- * an on being successful, copies that file to the external Uri.
+ * Calls the default {@link  BackupManager#getWriter} to create a backup.
  */
 public class BackupTask
         extends TaskBase<ExportHelper> {
@@ -59,30 +57,6 @@ public class BackupTask
     /** what and how to export. */
     @NonNull
     private final ExportHelper mExportHelper;
-
-    private final ProgressListener mProgressListener = new ProgressListenerBase() {
-
-        private int mPos;
-
-        @Override
-        public void onProgressStep(final int delta,
-                                   @Nullable final String message) {
-            mPos += delta;
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), mPos, message));
-        }
-
-        @Override
-        public void onProgress(final int pos,
-                               @Nullable final String message) {
-            mPos = pos;
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), mPos, message));
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return BackupTask.this.isCancelled();
-        }
-    };
 
     /**
      * Constructor.
@@ -120,7 +94,7 @@ public class BackupTask
         Uri uri = Uri.fromFile(ExportHelper.getTempFile(localContext));
         try (BackupWriter writer = BackupManager.getWriter(localContext, uri)) {
 
-            writer.backup(localContext, mExportHelper, mProgressListener);
+            writer.backup(localContext, mExportHelper, getProgressListener());
             if (!isCancelled()) {
                 // the export was successful
                 //noinspection ConstantConditions
@@ -144,5 +118,4 @@ public class BackupTask
             cleanup(localContext);
         }
     }
-
 }

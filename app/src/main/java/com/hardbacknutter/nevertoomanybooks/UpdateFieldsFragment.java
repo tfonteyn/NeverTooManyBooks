@@ -338,7 +338,7 @@ public class UpdateFieldsFragment
 
     private void startUpdate() {
         mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.progress_msg_searching, true, 0);
+                .newInstance(R.string.progress_msg_searching, true, true, 0);
         mProgressDialog.setCancellable(mUpdateFieldsModel);
 
         //noinspection ConstantConditions
@@ -349,7 +349,7 @@ public class UpdateFieldsFragment
         } else {
             mProgressDialog = null;
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.no_search_data_for_active_sites,
+            Snackbar.make(getView(), R.string.warning_no_search_data_for_active_sites,
                           Snackbar.LENGTH_LONG).show();
         }
     }

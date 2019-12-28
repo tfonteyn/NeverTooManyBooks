@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -42,8 +41,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.ProgressListenerBase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -59,20 +56,6 @@ public class ExportCSVTask
     private final CsvExporter mExporter;
     @NonNull
     private final ExportHelper mExportHelper;
-
-    private final ProgressListener mProgressListener = new ProgressListenerBase() {
-
-        @Override
-        public void onProgress(final int pos,
-                               @Nullable final String message) {
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), pos, message));
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return ExportCSVTask.this.isCancelled();
-        }
-    };
 
     /**
      * Constructor.
@@ -113,7 +96,7 @@ public class ExportCSVTask
         Context context = App.getAppContext();
 
         try (OutputStream os = new FileOutputStream(ExportHelper.getTempFile(context))) {
-            mExportHelper.addResults(mExporter.doBooks(os, mProgressListener));
+            mExportHelper.addResults(mExporter.doBooks(os, getProgressListener()));
 
             if (!isCancelled()) {
                 // send to user destination

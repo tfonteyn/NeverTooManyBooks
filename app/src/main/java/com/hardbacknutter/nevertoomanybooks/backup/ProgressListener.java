@@ -27,53 +27,74 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * Listener interface to get progress messages from the backup routines back to the caller.
- * Replaces all (5!) old backup related listeners.
+ * Listener interface for progress messages.
  */
-public interface ProgressListener {
+public interface ProgressListener<Progress> {
+
+    /**
+     * Send a Progress message.
+     *
+     * @param progress to send
+     */
+    void onProgress(@NonNull Progress progress);
+
+    /**
+     * Advance progress to absolute position.
+     * <p>
+     * A generic implementation could create a {@link Progress} message,
+     * and call {@link #onProgress(Progress)} to send it.
+     *
+     * @param pos     absolute position for the progress counter
+     * @param message optional message to display
+     */
+    default void onProgress(final int pos,
+                            @Nullable final String message) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Advance progress by 'delta'.
+     * <p>
+     * A generic implementation could create a {@link Progress} message,
+     * and call {@link #onProgress(Progress)} to send it.
+     *
+     * @param delta   increment/decrement value for the progress counter
+     * @param message optional message to display
+     */
+    default void onProgressStep(final int delta,
+                                @Nullable final String message) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @return {@code true} if operation was cancelled.
+     */
+    boolean isCancelled();
+
+    /**
+     * Change the indeterminate mode for the progress bar.
+     *
+     * @param indeterminate true/false to enable the indeterminate mode,
+     *                      or {@code null} to tell the receiver to use its initial mode.
+     */
+    void setIndeterminate(@Nullable final Boolean indeterminate);
 
     /**
      * Get the max position. Useful if a routine wants to adjust the max only if the
-     * new value it intents to use if larger than the current max.
+     * new value it intents to use is larger than the current max.
      *
      * @return max position
      */
     int getMax();
 
     /**
-     * Set the max value (can be estimated) for the progress counter.
+     * Set the max value for the progress counter.
      *
      * @param maxPosition value
      */
     void setMax(int maxPosition);
-
-    /**
-     * Advance progress by 'delta'.
-     * <p>
-     * Optional to implement.
-     *
-     * @param delta   increment/decrement value for the progress counter
-     * @param message to display, either a String or a StringRes
-     */
-    default void onProgressStep(int delta,
-                                @Nullable String message) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Report progress in absolute position.
-     *
-     * @param pos     absolute position for the progress counter
-     * @param message to display, either a String or a StringRes
-     */
-    void onProgress(int pos,
-                    @Nullable String message);
-
-    /**
-     * @return {@code true} if operation is cancelled.
-     */
-    boolean isCancelled();
 }

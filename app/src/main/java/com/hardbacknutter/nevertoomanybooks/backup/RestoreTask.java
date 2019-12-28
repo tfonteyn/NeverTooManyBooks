@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
@@ -53,29 +52,6 @@ public class RestoreTask
     /** what and how to import. */
     @NonNull
     private final ImportHelper mImportHelper;
-    private final ProgressListener mProgressListener = new ProgressListenerBase() {
-
-        private int mPos;
-
-        @Override
-        public void onProgressStep(final int delta,
-                                   @Nullable final String message) {
-            mPos += delta;
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), mPos, message));
-        }
-
-        @Override
-        public void onProgress(final int pos,
-                               @Nullable final String message) {
-            mPos = pos;
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, getMax(), mPos, message));
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return RestoreTask.this.isCancelled();
-        }
-    };
 
     /**
      * Constructor.
@@ -102,7 +78,7 @@ public class RestoreTask
         try (BackupReader reader = BackupManager.getReader(localContext,
                                                            mImportHelper.uri)) {
 
-            reader.restore(localContext, mImportHelper, mProgressListener);
+            reader.restore(localContext, mImportHelper, getProgressListener());
 
         } catch (@NonNull final IOException | ImportException | InvalidArchiveException e) {
             Logger.error(localContext, TAG, e);

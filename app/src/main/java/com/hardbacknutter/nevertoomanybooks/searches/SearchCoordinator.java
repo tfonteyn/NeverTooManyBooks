@@ -1103,6 +1103,8 @@ public class SearchCoordinator
                 } else if (message.exception instanceof UnknownHostException) {
                     messageId = R.string.error_search_failed_network;
                 } else if (message.exception instanceof IOException) {
+                    //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
+                    //           int errno = ((ErrnoException) message.exception.getCause()).errno;
                     messageId = R.string.error_search_failed_network;
                 } else {
                     messageId = R.string.error_unknown;
@@ -1176,7 +1178,7 @@ public class SearchCoordinator
             }
         }
 
-        return new TaskListener.ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR,
+        return new TaskListener.ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, null,
                                                 progressCount, progressMax, message.toString());
     }
 
