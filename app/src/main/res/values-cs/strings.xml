@@ -159,7 +159,7 @@
     <string name="gr_auth_blurb_part1">Goodreads je internetová síť, jejímž hlavním cílem je „pomoci lidem najít a sdílet knihy, které milují“. Mají velmi rozsáhlou databázi knih a recenzí, a pokud jste jejich registovaný uživatel, může &APP_NAME; exportovat Vaše knihy, knihovny a recenze do Goodreads a naopak importovat Vaše knihy, knihovny a recenze z Goodreads. &APP_NAME; je samostatná aplikace a ke své činnosti Goodreads nepotřebuje, ale přesto, pokud máte zájem, můžete se registrovat na:</string>
     <string name="gr_auth_blurb_part2">Pokud jste se na Goodreads registroval, nebo pokud již jste registrovaným uživatelem, můžete autorizovat &APP_NAME; k přístupu k Vašim datům na Goodreads prostřednictvím tlačítka níže. Následně budete přesunut na webovou stránku, na které se přihlásíte do Goodreads a autorizujete tuto aplikaci. Tato aplikace nikdy nebude znát Vaše heslo a udělenou autorizaci můžete kdykoli zrušit přes webové stránky Goodreads. Při problémech s připojením k internetu můžete skončit na prázdné stránce - v tom případě prostě použijte tlačítko zpět pro návrat na tuto obrazovku!</string>
     <string name="gr_auth_blurb_part3">Pamatujte…žádná z těchto možností není povinná: &APP_NAME; je samostatná aplikace a pracuje zcela správně i bez nich!</string>
-    <string name="gr_auth_blurb_part4">Vypadá to, že jste tuto aplikaci již autorizovali. Pokud chcete smazat pověření z tohoto telefonu, můžete tak učinit stisknutím tlačítka níže. Je však také důležité odstranit registraci aplikace na webových stránkách Goodreads.</string>
+    <string name="gr_auth_blurb_part4">Vypadá to, že jste tuto aplikaci již autorizovali. Pokud chcete smazat pověření z tohoto přístroj, můžete tak učinit stisknutím tlačítka níže. Je však také důležité odstranit registraci aplikace na webových stránkách Goodreads.</string>
     <string name="X_gr_auth_check">Kontrola Goodreads autorizace</string>
     <string name="gr_auth_error">Goodreads autorizace skončila chybou.</string>
     <string name="gr_auth_successful">Goodreads autorizace v pořádku</string>
@@ -350,6 +350,7 @@
     <string name="menu_amazon_books_in_series">Knihy v této sérii</string>
     <string name="menu_author_details">Všechna díla tohoto autora</string>
     <string name="menu_author_works_all">Ukázat vše</string>
+    <string name="menu_show_all">Ukázat vše</string>
     <string name="menu_author_works_book">Pouze knihy</string>
     <string name="menu_author_works_toc">Pouze tituly obsahu</string>
     <string name="menu_booklist_styles">Styly pro seznam knih</string>
@@ -393,6 +394,8 @@
     <string name="pg_bob_show_details">Podrobnosti knihy</string>
     <string name="pg_booklist">Seznamy knih</string>
     <string name="pg_filters">Filtry knih</string>
+    <string name="pv_bob_header_filters">Filtry knih</string>
+
     <string name="pg_general">Obecné</string>
     <string name="pg_style_groups">Seskupení</string>
     <string name="pt_bob_titles_sort">Seřadit tituly podle</string>
@@ -622,5 +625,12 @@
     <string name="lbl_site_book_id">ID webové stránky:</string>
     <string name="fab_add_book_by_native_id">ID webové stránky</string>
     <string name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
+    <string name="pt_camera_next_action">Akce po pořízení snímku</string>
+    <string name="warning_no_search_data_for_active_sites">Pro aktivní weby neexistují žádná platná data vyhledávání.</string>
+    <string name="menu_cover_edit">Spusťte editor</string>
+    <string name="menu_strict_isbn">Přísné ISBN</string>
+    <string name="tab_lbl_ext_id">Externí ID</string>
+    <string name="tab_lbl_alternative_editions">Alt. vydání</string>
+    <string name="unused">nepoužitý</string>
 
 </resources>

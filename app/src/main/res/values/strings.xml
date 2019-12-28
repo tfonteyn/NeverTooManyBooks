@@ -156,6 +156,8 @@
     </string>
     <string name="warning_book_not_found">Unable to find the specified book</string>
 
+    <string name="warning_no_search_data_for_active_sites">No valid search data for active sites.</string>
+
     <string name="warning_immediate_global_changes">
         NOTE: All saved changes apply instantly and globally.
     </string>
@@ -561,7 +563,7 @@
     <!-- Extra text displayed on the Goodreads activity when a user HAS registered -->
     <string name="gr_auth_blurb_part4">
         It looks like you have already authorized this app. If you would like to delete the
-        credentials from this phone, then you can do so by pressing the button below. But it is
+        credentials from this device, then you can do so by pressing the button below. But it is
         also important to delete the application\'s registration on the Goodreads website as well.
     </string>
 
@@ -761,6 +763,7 @@
 
     <!-- Preference Category -->
     <string name="pg_camera">Camera</string>
+    <string name="pt_camera_next_action">Action after taking a picture</string>
 
     <!-- Preference Category -->
     <string name="pg_thumbnails">Thumbnails</string>
@@ -845,6 +848,8 @@
     <string name="pv_bob_header_level_1">1st level heading</string>
     <string name="pv_bob_header_level_2">2nd level heading</string>
     <string name="pv_bob_header_style_name">Style name</string>
+    <string name="pv_bob_header_filters">Filters</string>
+
 
     <!-- ListPreference - Scale text. -->
     <string name="pt_bob_font_scale">Size of booklist text</string>
@@ -948,6 +953,8 @@
     <!-- generic menu option - Duplication or Clone. Not the same as 'copy'. -->
     <string name="menu_duplicate">Duplicate</string>
 
+    <string name="menu_show_all">Show all</string>
+
     <!-- ####################################################################################### -->
 
     <!-- navigation panel menu -->
@@ -991,6 +998,8 @@
     <!-- menu option -->
     <string name="menu_clear_search_filters">Clear Filters</string>
 
+    <string name="menu_strict_isbn">Strict ISBN</string>
+
     <!-- ####################################################################################### -->
 
     <!-- Options menu on the "view all works of an author" screen. -->
@@ -1006,7 +1015,7 @@
     <!-- menu option -->
     <string name="menu_cover_crop">Crop</string>
     <!-- menu option -->
-    <string name="menu_cover_edit">Start Editor</string>
+    <string name="menu_cover_edit">Start editor</string>
     <!-- submenu title -->
     <string name="menu_cover_replace">Replace…</string>
     <!-- menu option -->
@@ -1205,20 +1214,20 @@
 
     <!-- ####################################################################################### -->
     <!-- == TAB labels - need to be very short -->
-    <!-- The four labels should preferable fit on one line, otherwise the user will
-         need to scroll the tab-bar -->
     <!-- ####################################################################################### -->
 
-    <!-- Heading of the 'Details' tab when editing a book. -->
+    <!-- Name of the 'Details' tab when editing a book. -->
     <string name="tab_lbl_details">Details</string>
-    <!-- Heading of the 'Publication' tab when editing a book. -->
+    <!-- Name of the 'Publication' tab when editing a book. -->
     <string name="tab_lbl_publication">Publication</string>
-    <!-- Heading of the 'Notes' tab when editing a book.-->
+    <!-- Name of the 'Notes' tab when editing a book.-->
     <string name="tab_lbl_notes">Notes</string>
-    <!-- Heading of the 'Table Of Content' (formerly 'Anthology') tab when editing a book. -->
+    <!-- Name of the 'Table Of Content' (formerly 'Anthology') tab when editing a book. -->
     <string name="tab_lbl_content">TOC</string>
+    <!-- Name of the 'External website id' tab when editing a book.-->
+    <string name="tab_lbl_ext_id">Ext. ID</string>
 
-    <!-- Heading of the 'Alternative Editions' tab on the SearchAdmin page -->
+    <!-- Name of the 'Alternative Editions' tab on the SearchAdmin page -->
     <string name="tab_lbl_alternative_editions">Alt.Ed.</string>
 
     <!-- ####################################################################################### -->
@@ -1232,11 +1241,14 @@
     <string name="unknown">Unknown</string>
     <string name="done">Done</string>
     <string name="X_swap">Swap</string>
+    <string name="unused">unused</string>
 
     <!-- e.g. indicates nothing was selected; nothing was done. -->
     <string name="none">None</string>
     <!-- e.g. clearing a form. -->
     <string name="clear">Clear</string>
+
+    <string name="scan">Scan barcode</string>
 
     <!-- abbreviation to indicate there are more of something.
         e.g. a list of Series: "Foundation et.al" indicates a book belongs to the
@@ -1312,6 +1324,9 @@
     <string name="lbl_cover_images">Cover images</string>
     <string name="lbl_read_and_unread">Read &amp; Unread</string>
 
+    <string name="lbl_site_book_id">Website book ID:</string>
+    <string name="lbl_select_website">Select a website:</string>
+
     <!-- short and long label for the same field -->
     <string name="lbl_bookshelves">Shelves</string>
     <string name="lbl_bookshelves_long">Bookshelves</string>
@@ -1354,7 +1369,7 @@
     <string name="lbl_field_usage_overwrite">Overwrites existing data</string>
     <string name="lbl_field_usage_skip">Skip</string>
 
-    <string name="lbl_search_filtered_on_x">Filtered: %1$s</string>
+    <string name="lbl_search_filtered_on_x">Filtered on: %1$s</string>
 
     <!-- grouping headings in the booklist -->
     <string name="lbl_read">Read</string>
@@ -1502,30 +1517,27 @@
     <!-- ####################################################################################### -->
     <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
+    <!-- Internal cleanup of Booklist node states... collapsed/expanded etc... need proper name -->
     <string name="lbl_purge_blns">Purge BLNS</string>
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf ToRead" -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
 
 
+    <!-- Colors; used by mainly for comics. -->
     <string name="book_color_full_color">Colored</string>
     <string name="book_color_uncolored">Black &amp; white</string>
-    <!-- uncolored, but with a support-color.
+    <!-- uncolored, but with 1 or 2 support-colors.
          e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Uncolored + support color</string>
 
-
-    <string name="lbl_site_book_id">Website book ID:</string>
-    <string name="lbl_select_website">Select a website:</string>
-    <string name="scan">Scan barcode</string>
-    <string name="menu_strict_isbn">Strict ISBN</string>
-    <string name="unused">unused</string>
+    <!-- meant for dialog box where a set of bitmask checkboxes can be selected,
+        or the neutral button to indicate "don't use this at all"
+         Dialog UI still needs to change.
+    -->
     <string name="info_bitmask_preference">
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
-    <string name="pt_camera_next_action">Action after taking a picture</string>
-    <string name="no_search_data_for_active_sites">No valid search data for active sites.</string>
-    <string name="tab_lbl_id">ID</string>
 
 </resources>

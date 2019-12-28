@@ -153,7 +153,7 @@
     <string name="gr_auth_blurb_part1">Το Goodreads είναι μια ιστοσελίδα με αποστολή «να βοηθήσει τους ανθρώπους να βρουν και να μοιραστούν τα βιβλία που αγαπούν». Έχουν μια εκτενή βάση δεδομένων με βιβλία και κριτικές και αν είστε εγγεγραμμένος χρήστης στο  Goodreads, τότε το &APP_NAME; μπορεί να εξάγει τα βιβλία σας, τα ράφια και τις κριτικές σας στο Goodreads, καθώς και να εισάγει βιβλία, ράφια και κριτικές από το Goodreads. Το &APP_NAME; είναι αυτόνομη εφαρμογή και δεν απαιτεί Goodreads, αλλά αν σας ενδιαφέρει, μπορείτε να εγγραφείτε στο:</string>
     <string name="gr_auth_blurb_part2">Όταν εγγραφείτε, ή αν είστε ήδη χρήστης του Goodreads, μπορείτε να δώσετε άδεια στο &APP_NAME; να έχει πρόσβαση στα δεδομένα του Goodreads σας πατώντας στο παρακάτω κουμπί. Θα σας μεταφέρει σε μια ιστοσελίδα όπου θα πρέπει να συνδεθείτε στο Goodreads και να δώσετε άδεια στην εφαρμογή. Εμείς ποτέ δεν βλέπουμε τον κωδικό πρόσβασής σας. Μπορείτε να απενεργοποιήσετε την πρόσβαση μέσω της ιστοσελίδας Goodreads. Εαν καταλήξετε σε μια κενή ιστοσελίδα, κάντε κλικ στο κουμπί επιστροφής για να επιστρέψετε εδώ!</string>
     <string name="gr_auth_blurb_part3">Ωστόσο, να θυμάστε… ότι δεν είναι απαραίτητο να γίνει κάτι από τα παραπάνω: Το &APP_NAME; δουλεύει μια χαρά και χώρις αυτό!</string>
-    <string name="gr_auth_blurb_part4">Έχετε ήδη δώσει άδεια σε αυτή την εφαρμογή. Αν θέλετε να διαγράψετε τα διαπιστευτήρια από αυτό το τηλέφωνο, μπορείτε να το κάνετε πατώντας το παρακάτω κουμπί. Αλλά είναι επίσης σημαντικό να διαγράψετε την εγγραφή της εφαρμογής και στην ιστοσελίδα Goodreads.</string>
+    <string name="gr_auth_blurb_part4">Έχετε ήδη δώσει άδεια σε αυτή την εφαρμογή. Αν θέλετε να διαγράψετε τα διαπιστευτήρια από αυτό το συσκευή, μπορείτε να το κάνετε πατώντας το παρακάτω κουμπί. Αλλά είναι επίσης σημαντικό να διαγράψετε την εγγραφή της εφαρμογής και στην ιστοσελίδα Goodreads.</string>
     <string name="X_gr_auth_check">Ελεγχος αδειοδότησης Goodreads</string>
     <string name="gr_auth_error">Η αδειοδότηση του Goodreads οδήγησε σε λάθος.</string>
     <string name="gr_auth_successful">Επιτυχής η αδειοδότηση Goodreads</string>
@@ -344,6 +344,7 @@
     <string name="menu_amazon_books_in_series">Βιβλία σε αυτή τη σειρά</string>
     <string name="menu_author_details">Όλα τα έργα αυτού του συγγραφέα</string>
     <string name="menu_author_works_all">Προβολή όλων</string>
+    <string name="menu_show_all">Προβολή όλων</string>
     <string name="menu_author_works_book">Μόνο βιβλία</string>
     <string name="menu_author_works_toc">Μόνο τίτλοι περιεχομένου</string>
     <string name="menu_booklist_styles">Στυλ λίστας βιβλίων</string>
@@ -387,6 +388,8 @@
     <string name="pg_bob_show_details">Στοιχεία βιβλίου</string>
     <string name="pg_booklist">Λίστα βιβλίων</string>
     <string name="pg_filters">Φίλτρα Βιβλίων</string>
+    <string name="pv_bob_header_filters">Φίλτρα Βιβλίων</string>
+
     <string name="pg_general">Γενικά</string>
     <string name="pg_style_groups">Ομαδοποιήσεις</string>
     <string name="pt_bob_titles_sort">Ταξινόμηση τίτλων με βάση</string>
@@ -620,5 +623,12 @@
     <string name="lbl_site_book_id">Αναγνωριστικό βιβλίου ιστοτόπου:</string>
     <string name="fab_add_book_by_native_id">Αναγνωριστικό βιβλίου ιστοτόπου</string>
     <string name="warning_enable_at_least_1_website">Ενεργοποιήστε τουλάχιστον έναν ιστότοπο για κάθε κατηγορία.</string>
+    <string name="pt_camera_next_action">Ενέργεια μετά τη λήψη μιας φωτογραφίας</string>
+    <string name="warning_no_search_data_for_active_sites">Δεν υπάρχουν έγκυρα δεδομένα αναζήτησης για ενεργούς ιστότοπους.</string>
+    <string name="menu_cover_edit">Ξεκινήστε τον επεξεργαστή</string>
+    <string name="menu_strict_isbn">Αυστηρό ISBN</string>
+    <string name="tab_lbl_ext_id">Εξωτερικό αναγνωριστικό</string>
+    <string name="tab_lbl_alternative_editions">Εναλλακτικές εκδόσεις</string>
+    <string name="unused">αχρησιμοποίητος</string>
 
 </resources>

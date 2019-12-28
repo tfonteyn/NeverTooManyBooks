@@ -351,6 +351,7 @@
     <string name="menu_amazon_books_in_series">Libros de la misma serie</string>
     <string name="menu_author_details">Todas las obras de este autor.</string>
     <string name="menu_author_works_all">Mostrar todo</string>
+    <string name="menu_show_all">Mostrar todo</string>
     <string name="menu_author_works_book">Solo libros</string>
     <string name="menu_author_works_toc">Solo títulos de contenido</string>
     <string name="menu_booklist_styles">Estilos del listado de libros</string>
@@ -394,6 +395,8 @@
     <string name="pg_bob_show_details">Detalles del libro</string>
     <string name="pg_booklist">Listas de libros</string>
     <string name="pg_filters">Filtros adicionales</string>
+    <string name="pv_bob_header_filters">Filtros adicionales</string>
+
     <string name="pg_general">General</string>
     <string name="pg_style_groups">Grupos</string>
     <string name="pt_bob_titles_sort">Ordenar títulos por</string>
@@ -626,5 +629,12 @@
     <string name="lbl_site_book_id">ID del libro del sitio web:</string>
     <string name="fab_add_book_by_native_id">Identificación del libro del sitio web</string>
     <string name="warning_enable_at_least_1_website">Habilite al menos un sitio web para cada categoría.</string>
+    <string name="pt_camera_next_action">Acción después de tomar una foto</string>
+    <string name="warning_no_search_data_for_active_sites">No hay datos de búsqueda válidos para sitios activos.</string>
+    <string name="menu_cover_edit">Iniciar editor</string>
+    <string name="menu_strict_isbn">ISBN estricto</string>
+    <string name="tab_lbl_ext_id">ID externo</string>
+    <string name="tab_lbl_alternative_editions">Ediciones Alt.</string>
+    <string name="unused">no usado</string>
 
 </resources>

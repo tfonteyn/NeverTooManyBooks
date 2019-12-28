@@ -159,7 +159,7 @@
     <string name="gr_auth_blurb_part1">Goodreads to strona internetowa, której misją jest „pomaganie ludziom w znajdowaniu i dzieleniu się książkami, które kochają”. Posiadają obszerną bazę książek i recenzji, a jeśli jesteś zarejestrowanym użytkownikiem Goodreads, możesz eksportować swoje książki, półki i recenzje do Goodreads i importować swoje książki, półki i recenzje z Goodreads. jest samodzielną aplikacją i nie wymaga Goodreads, ale jeśli jesteś zainteresowany, możesz zarejestrować się na:</string>
     <string name="gr_auth_blurb_part2">Po zarejestrowaniu lub jeśli jesteś już użytkownikiem Goodreads, możesz autoryzować dostęp do danych Goodreads, naciskając poniższy przycisk. Spowoduje to przejście do strony internetowej, na której będziesz musiał zalogować się do Goodreads i autoryzować tę aplikację. Nigdy nie zobaczymy Twojego hasła i możesz wyłączyć dostęp za pośrednictwem strony Goodreads. Ze względu na kaprysy sieci, możesz skończyć na pustej stronie internetowej. Wystarczy dotknąć przycisku Wstecz, aby wrócić tutaj!</string>
     <string name="gr_auth_blurb_part3">Ale pamiętaj… nie ma potrzeby tego robić: bez niego działa dobrze!</string>
-    <string name="gr_auth_blurb_part4">Wygląda na to, że już autoryzowałeś tę aplikację. Jeśli chcesz usunąć poświadczenia z tego telefonu, możesz to zrobić, naciskając poniższy przycisk. Ważne jest jednak również, aby usunąć rejestrację aplikacji na stronie Goodreads.</string>
+    <string name="gr_auth_blurb_part4">Wygląda na to, że już autoryzowałeś tę aplikację. Jeśli chcesz usunąć poświadczenia z tego urządzenie, możesz to zrobić, naciskając poniższy przycisk. Ważne jest jednak również, aby usunąć rejestrację aplikacji na stronie Goodreads.</string>
     <string name="X_gr_auth_check">Sprawdzanie autoryzacji Goodreads</string>
     <string name="gr_auth_error">Autoryzacja Goodreads spowodowała błąd.</string>
     <string name="gr_auth_successful">Autoryzacja Goodreads powiodła się</string>
@@ -349,6 +349,7 @@
     <string name="menu_amazon_books_in_series">Książki z tej serii</string>
     <string name="menu_author_details">Wszystkie prace tego autora</string>
     <string name="menu_author_works_all">Pokaż wszystko</string>
+    <string name="menu_show_all">Pokaż wszystko</string>
     <string name="menu_author_works_book">Tylko książki</string>
     <string name="menu_author_works_toc">Tylko tytuły treści</string>
     <string name="menu_booklist_styles">Style listy książek</string>
@@ -392,6 +393,8 @@
     <string name="pg_bob_show_details">Szczegóły książki</string>
     <string name="pg_booklist">Listy książek</string>
     <string name="pg_filters">Filtry</string>
+    <string name="pv_bob_header_filters">Filtry</string>
+
     <string name="pg_general">Ogólne</string>
     <string name="pg_style_groups">Grupowanie</string>
     <string name="pt_bob_titles_sort">Sortuj tytuły według</string>
@@ -621,4 +624,11 @@
     <string name="lbl_site_book_id">Identyfikator książki internetowej:</string>
     <string name="fab_add_book_by_native_id">Identyfikator książki internetowej</string>
     <string name="warning_enable_at_least_1_website">Włącz przynajmniej jedną stronę internetową dla każdej kategorii.</string>
+    <string name="pt_camera_next_action">Działanie po zrobieniu zdjęcia</string>
+    <string name="warning_no_search_data_for_active_sites">Brak prawidłowych danych wyszukiwania dla aktywnych witryn.</string>
+    <string name="menu_cover_edit">Uruchom edytor</string>
+    <string name="menu_strict_isbn">Ścisły ISBN</string>
+    <string name="tab_lbl_ext_id">Zewnętrzny ID</string>
+    <string name="tab_lbl_alternative_editions">Alt. wersje</string>
+    <string name="unused">nie używany</string>
 </resources>

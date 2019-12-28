@@ -355,6 +355,7 @@
     <string name="menu_amazon_books_in_series">Boeken in deze serie</string>
     <string name="menu_author_details">Alle werken van deze Auteur</string>
     <string name="menu_author_works_all">Toon alles</string>
+    <string name="menu_show_all">Toon alles</string>
     <string name="menu_author_works_book">Alleen boeken</string>
     <string name="menu_author_works_toc">Alleen inhouds titels</string>
     <string name="menu_booklist_styles">Boekenlijst Stijlen</string>
@@ -398,6 +399,8 @@
     <string name="pg_bob_show_details">Boek details</string>
     <string name="pg_booklist">Boeken Lijst</string>
     <string name="pg_filters">Boekfilters</string>
+    <string name="pv_bob_header_filters">Boekfilters</string>
+
     <string name="pg_general">Algemeen</string>
     <string name="pg_style_groups">Groeperingen</string>
     <string name="pt_bob_titles_sort">Sorteer titels op</string>
@@ -631,5 +634,12 @@
     <string name="lbl_site_book_id">Website boek ID:</string>
     <string name="fab_add_book_by_native_id">Website boek-id</string>
     <string name="warning_enable_at_least_1_website">Schakel ten minste één website in voor elke categorie.</string>
+    <string name="pt_camera_next_action">Actie na het nemen van een foto</string>
+    <string name="warning_no_search_data_for_active_sites">Geen geldige zoekgegevens voor actieve sites.</string>
+    <string name="menu_cover_edit">Start de editor</string>
+    <string name="menu_strict_isbn">Strikt ISBN</string>
+    <string name="tab_lbl_ext_id">Extern ID</string>
+    <string name="tab_lbl_alternative_editions">Alt. edities</string>
+    <string name="unused">ongebruikt</string>
 
 </resources>
