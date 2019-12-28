@@ -425,7 +425,9 @@ public class SynchronizedStatement
         if (!mCloseWasCalled) {
             Logger.warn(TAG, "finalize",
                         "Closing unclosed statement:\n" + mStatement);
-            mStatement.close();
+            if (mStatement != null) {
+                mStatement.close();
+            }
         }
         super.finalize();
     }
