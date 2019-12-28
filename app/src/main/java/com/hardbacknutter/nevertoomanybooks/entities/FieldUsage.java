@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
  */
 public class FieldUsage {
 
-    /** a key, usually from {@link UniqueId}. */
     @NonNull
     public final String fieldId;
 
@@ -86,17 +85,17 @@ public class FieldUsage {
      *
      * @param fieldId      Field name
      * @param nameStringId Field label string resource ID
-     * @param defValue     default Usage for this field
      * @param p            SharedPreferences to read current usage from.
+     * @param defValue     default Usage for this field
      *
      * @return new instance
      */
     public static FieldUsage create(@NonNull final String fieldId,
                                     @StringRes final int nameStringId,
-                                    @NonNull final Usage defValue,
-                                    @NonNull final SharedPreferences p) {
-        Usage usage = Usage.read(p, fieldId, defValue);
-        return new FieldUsage(fieldId, nameStringId, usage, defValue, false);
+                                    @NonNull final SharedPreferences p,
+                                    @NonNull final Usage defValue) {
+        Usage initialValue = Usage.read(p, fieldId, defValue);
+        return new FieldUsage(fieldId, nameStringId, initialValue, defValue, false);
     }
 
     /**
@@ -107,16 +106,14 @@ public class FieldUsage {
      * @param fieldId      Field name
      * @param nameStringId Field label string resource ID
      * @param p            SharedPreferences to read current usage from.
-     * @param prefKey      Field name to use for preferences.
      *
      * @return new instance
      */
     public static FieldUsage createListField(@NonNull final String fieldId,
                                              @StringRes final int nameStringId,
-                                             @NonNull final SharedPreferences p,
-                                             @NonNull final String prefKey) {
-        Usage usage = Usage.read(p, prefKey, Usage.Append);
-        return new FieldUsage(fieldId, nameStringId, usage, Usage.Append, true);
+                                             @NonNull final SharedPreferences p) {
+        Usage initialValue = Usage.read(p, fieldId, Usage.Append);
+        return new FieldUsage(fieldId, nameStringId, initialValue, Usage.Append, true);
     }
 
     public void reset() {

@@ -245,7 +245,7 @@ public class UpdateFieldsModel
                               @NonNull final String prefKey) {
 
         if (App.isUsed(prefKey)) {
-            FieldUsage fieldUsage = FieldUsage.createListField(fieldId, nameStringId, p, prefKey);
+            FieldUsage fieldUsage = FieldUsage.createListField(fieldId, nameStringId, p);
             mFieldUsages.put(fieldId, fieldUsage);
         }
     }
@@ -264,7 +264,7 @@ public class UpdateFieldsModel
                           @NonNull final FieldUsage.Usage defValue) {
 
         if (App.isUsed(fieldId)) {
-            FieldUsage fieldUsage = FieldUsage.create(fieldId, nameStringId, defValue, p);
+            FieldUsage fieldUsage = FieldUsage.create(fieldId, nameStringId, p, defValue);
             mFieldUsages.put(fieldId, fieldUsage);
         }
     }
@@ -542,7 +542,8 @@ public class UpdateFieldsModel
 
         //update the counter, another one done.
         mSearchCoordinatorProgressMessage.setValue(new TaskListener.ProgressMessage(
-                R.id.TASK_ID_UPDATE_FIELDS, mCurrentCursorCount, mCurrentProgressCounter, null));
+                R.id.TASK_ID_UPDATE_FIELDS, null,
+                mCurrentCursorCount, mCurrentProgressCounter, null));
 
         // On to the next book in the list.
         return nextBook(context);
