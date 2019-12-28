@@ -39,7 +39,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.Space;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -695,8 +694,6 @@ public class BooklistAdapter
         private final TextView mLocationView;
         /** View that stores the related book field. */
         private final TextView mBookshelvesView;
-        /** Spacer to show if there is otherwise not enough real estate to click on. */
-        private final Space mNoExtrasSpacer;
 
         /**
          * Receives the results of one {@link GetBookExtrasTask} and populates the fields.
@@ -705,25 +702,19 @@ public class BooklistAdapter
                 new GetBookExtrasTask.TaskFinishedListener() {
                     @Override
                     public void onTaskFinished(@NonNull final Bundle results) {
-                        int linesShown = 0;
                         // do not re-test usage here. If not in use, we wouldn't have fetched them.
-                        linesShown += showOrHide(mBookshelvesView, mShelvesLabel,
-                                                 results.getString(
-                                                         DBDefinitions.KEY_BOOKSHELF_CSV));
-                        linesShown += showOrHide(mAuthorView,
-                                                 results.getString(
-                                                         DBDefinitions.KEY_AUTHOR_FORMATTED));
-                        linesShown += showOrHide(mIsbnView,
-                                                 results.getString(DBDefinitions.KEY_ISBN));
-                        linesShown += showOrHide(mFormatView,
-                                                 results.getString(DBDefinitions.KEY_FORMAT));
-                        linesShown += showOrHide(mLocationView, mLocationLabel,
-                                                 results.getString(DBDefinitions.KEY_LOCATION));
-                        linesShown += showOrHide(mPublisherView,
-                                                 results.getString(DBDefinitions.KEY_PUBLISHER));
-
-                        mNoExtrasSpacer.setVisibility(mCoverIsUsed && linesShown < 2 ? View.VISIBLE
-                                                                                     : View.GONE);
+                        showOrHide(mBookshelvesView, mShelvesLabel,
+                                   results.getString(DBDefinitions.KEY_BOOKSHELF_CSV));
+                        showOrHide(mAuthorView,
+                                   results.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                        showOrHide(mIsbnView,
+                                   results.getString(DBDefinitions.KEY_ISBN));
+                        showOrHide(mFormatView,
+                                   results.getString(DBDefinitions.KEY_FORMAT));
+                        showOrHide(mLocationView, mLocationLabel,
+                                   results.getString(DBDefinitions.KEY_LOCATION));
+                        showOrHide(mPublisherView,
+                                   results.getString(DBDefinitions.KEY_PUBLISHER));
                     }
                 };
 
@@ -754,8 +745,6 @@ public class BooklistAdapter
 
             // quick & compact value to pass to the background task.
             mExtraFieldsUsed = style.getExtraFieldsStatus();
-
-            mNoExtrasSpacer = itemView.findViewById(R.id.noExtrasSpacer);
 
             // now predetermine field usage & visibility.
 
@@ -894,37 +883,33 @@ public class BooklistAdapter
             }
 
             if (!style.useTaskForExtras()) {
-                int linesShown = 0;
                 if (mBookshelfIsUsed && rowData.contains(DBDefinitions.KEY_BOOKSHELF_CSV)) {
-                    linesShown += showOrHide(mBookshelvesView,
-                                             rowData.getString(DBDefinitions.KEY_BOOKSHELF_CSV));
+                    showOrHide(mBookshelvesView,
+                               rowData.getString(DBDefinitions.KEY_BOOKSHELF_CSV));
                 }
                 if (mAuthorIsUsed && rowData.contains(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-                    linesShown += showOrHide(mAuthorView,
-                                             rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                    showOrHide(mAuthorView,
+                               rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 }
                 if (mIsbnIsUsed && rowData.contains(DBDefinitions.KEY_ISBN)) {
-                    linesShown += showOrHide(mIsbnView,
-                                             rowData.getString(DBDefinitions.KEY_ISBN));
+                    showOrHide(mIsbnView,
+                               rowData.getString(DBDefinitions.KEY_ISBN));
                 }
                 if (mFormatIsUsed && rowData.contains(DBDefinitions.KEY_FORMAT)) {
-                    linesShown += showOrHide(mFormatView,
-                                             rowData.getString(DBDefinitions.KEY_FORMAT));
+                    showOrHide(mFormatView,
+                               rowData.getString(DBDefinitions.KEY_FORMAT));
                 }
                 if (mLocationIsUsed && rowData.contains(DBDefinitions.KEY_LOCATION)) {
-                    linesShown += showOrHide(mLocationView,
-                                             rowData.getString(DBDefinitions.KEY_LOCATION));
+                    showOrHide(mLocationView,
+                               rowData.getString(DBDefinitions.KEY_LOCATION));
                 }
                 if ((mPublisherIsUsed && rowData.contains(DBDefinitions.KEY_PUBLISHER))
                     || (mPubDateIsUsed && rowData.contains(DBDefinitions.KEY_DATE_PUBLISHED))) {
-                    linesShown += showOrHide(mPublisherView,
-                                             getPublisherAndPubDateText(rowData,
-                                                                        mPublisherIsUsed,
-                                                                        mPubDateIsUsed));
+                    showOrHide(mPublisherView,
+                               getPublisherAndPubDateText(rowData,
+                                                          mPublisherIsUsed,
+                                                          mPubDateIsUsed));
                 }
-                mNoExtrasSpacer.setVisibility(mCoverIsUsed && linesShown < 2 ? View.VISIBLE
-                                                                             : View.GONE);
-
             } else {
                 // Start a background task if there are extras to get.
                 // Note that the cover image is already handled in an earlier background task
@@ -942,9 +927,6 @@ public class BooklistAdapter
                                           rowData.getLong(DBDefinitions.KEY_FK_BOOK),
                                           mBookExtrasTaskFinishedListener, mExtraFieldsUsed)
                             .execute();
-
-                } else if (mCoverIsUsed) {
-                    mNoExtrasSpacer.setVisibility(View.VISIBLE);
                 }
             }
         }
@@ -990,31 +972,27 @@ public class BooklistAdapter
         /**
          * Conditionally display 'text'.
          */
-        private int showOrHide(@NonNull final TextView view,
-                               @Nullable final String text) {
+        private void showOrHide(@NonNull final TextView view,
+                                @Nullable final String text) {
             if (text != null && !text.isEmpty()) {
                 view.setText(text);
                 view.setVisibility(View.VISIBLE);
-                return 1;
             } else {
                 view.setVisibility(View.GONE);
-                return 0;
             }
         }
 
         /**
          * Conditionally display 'label: text'.
          */
-        private int showOrHide(@NonNull final TextView view,
-                               @NonNull final String label,
-                               @Nullable final String text) {
+        private void showOrHide(@NonNull final TextView view,
+                                @NonNull final String label,
+                                @Nullable final String text) {
             if (text != null && !text.isEmpty()) {
                 view.setText(String.format(mName_colon_value, label, text));
                 view.setVisibility(View.VISIBLE);
-                return 1;
             } else {
                 view.setVisibility(View.GONE);
-                return 0;
             }
         }
     }
