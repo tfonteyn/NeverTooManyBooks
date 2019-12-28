@@ -78,7 +78,8 @@ class IsfdbBookHandlerTest
         IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(mContext, doc);
         // we've set the doc, so no internet download will be done.
         try {
-            mBookData = isfdbBookHandler.parseDoc(mBookData, false, false);
+            boolean[] fetchThumbnail = {false, false};
+            mBookData = isfdbBookHandler.parseDoc(mBookData, false, fetchThumbnail);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -164,7 +165,8 @@ class IsfdbBookHandlerTest
         IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(mContext, doc);
         // we've set the doc, so no internet download will be done.
         try {
-            mBookData = isfdbBookHandler.parseDoc(mBookData, true, false);
+            boolean[] fetchThumbnail = {false, false};
+            mBookData = isfdbBookHandler.parseDoc(mBookData, true, fetchThumbnail);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -236,7 +238,8 @@ class IsfdbBookHandlerTest
         IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(mContext, doc);
         // we've set the doc, so no internet download will be done.
         try {
-            mBookData = isfdbBookHandler.parseDoc(mBookData, true, false);
+            boolean[] fetchThumbnail = {false, false};
+            mBookData = isfdbBookHandler.parseDoc(mBookData, true, fetchThumbnail);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }

@@ -80,7 +80,8 @@ class StripInfoTest
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
+        boolean[] fetchThumbnail = {false, false};
+        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -149,7 +150,8 @@ class StripInfoTest
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
+        boolean[] fetchThumbnail = {false, false};
+        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -217,7 +219,8 @@ class StripInfoTest
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
+        boolean[] fetchThumbnail = {false, false};
+        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -292,7 +295,8 @@ class StripInfoTest
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
+        boolean[] fetchThumbnail = {false, false};
+        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -364,7 +368,8 @@ class StripInfoTest
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, false);
+        boolean[] fetchThumbnail = {false, false};
+        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -433,7 +438,8 @@ class StripInfoTest
         // we've set the doc, but will redirect.. so an internet download WILL be done.
         Bundle bookData = null;
         try {
-            bookData = stripInfoBookHandler.parseMultiResult(mBookData, false);
+            boolean[] fetchThumbnail = {false, false};
+            bookData = stripInfoBookHandler.parseMultiResult(mBookData, fetchThumbnail);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }

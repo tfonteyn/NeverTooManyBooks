@@ -80,7 +80,8 @@ class OpenLibraryManagerTest {
             assertNotNull(is);
             String response = m.readResponseStream(is);
             json = new JSONObject(response);
-            mBookData = m.handleResponse(mBookData, json, false);
+            boolean[] fetchThumbnail = {false, false};
+            mBookData = m.handleResponse(mBookData, json, fetchThumbnail);
 
         } catch (@NonNull final IOException | JSONException e) {
             fail(e);
