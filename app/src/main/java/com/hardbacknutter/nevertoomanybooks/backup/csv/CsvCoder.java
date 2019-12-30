@@ -104,6 +104,8 @@ public final class CsvCoder {
     public static StringList<Author> getAuthorCoder() {
         if (sAuthorUtils == null) {
             sAuthorUtils = new StringList<>(new StringList.Factory<Author>() {
+                private char[] escapeChars = {Author.NAME_SEPARATOR, ' ', '(', ')'};
+
                 @Override
                 @NonNull
                 public Author decode(@NonNull final String encodedString) {
@@ -126,9 +128,9 @@ public final class CsvCoder {
                     // Note the use of Author.NAME_SEPARATOR between family and given-names,
                     // i.e. the names are considered ONE field with a private separator.
                     String result =
-                            escape(author.getFamilyName(), Author.NAME_SEPARATOR, ' ')
+                            escape(author.getFamilyName(), escapeChars)
                             + Author.NAME_SEPARATOR + ' '
-                            + escape(author.getGivenNames(), Author.NAME_SEPARATOR);
+                            + escape(author.getGivenNames(), escapeChars);
 
                     JSONObject details = new JSONObject();
                     try {
@@ -167,6 +169,8 @@ public final class CsvCoder {
     public static StringList<Series> getSeriesCoder() {
         if (sSeriesUtils == null) {
             sSeriesUtils = new StringList<>(new StringList.Factory<Series>() {
+                private char[] escapeChars = {'(', ')'};
+
                 @Override
                 @NonNull
                 public Series decode(@NonNull final String encodedString) {
@@ -185,12 +189,12 @@ public final class CsvCoder {
                 @NonNull
                 @Override
                 public String encode(@NonNull final Series series) {
-                    String result = escape(series.getTitle(), '(');
+                    String result = escape(series.getTitle(), escapeChars);
 
                     if (!series.getNumber().isEmpty()) {
                         // start with a space for readability
                         // the surrounding () are NOT escaped as they are part of the format.
-                        result += " (" + escape(series.getNumber(), '(') + ')';
+                        result += " (" + escape(series.getNumber(), escapeChars) + ')';
                     } // else {
                     //     // Adding an empty number makes an import more fool proof.
                     //     result += " ()";
@@ -264,10 +268,11 @@ public final class CsvCoder {
                     }
                 }
 
+                private char[] escapeChars = {'(', ')'};
                 @NonNull
                 @Override
                 public String encode(@NonNull final TocEntry tocEntry) {
-                    String result = escape(tocEntry.getTitle(), '(');
+                    String result = escape(tocEntry.getTitle(), escapeChars);
 
                     if (!tocEntry.getFirstPublication().isEmpty()) {
                         // start with a space for readability
@@ -297,6 +302,7 @@ public final class CsvCoder {
     public static StringList<Bookshelf> getBookshelfCoder() {
         if (sBookshelfUtils == null) {
             sBookshelfUtils = new StringList<>(new StringList.Factory<Bookshelf>() {
+                private char[] escapeChars = {'(', ')'};
 
                 /**
                  * Backwards compatibility rules ',' (not using the default '|').
@@ -334,7 +340,7 @@ public final class CsvCoder {
                 @NonNull
                 @Override
                 public String encode(@NonNull final Bookshelf bookshelf) {
-                    String s = escape(bookshelf.getName());
+                    String s = escape(bookshelf.getName(), escapeChars);
 
                     JSONObject details = new JSONObject();
                     try {

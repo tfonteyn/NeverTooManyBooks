@@ -37,9 +37,9 @@ import java.util.ArrayList;
  * <p>
  * Each element is a list of objects separated by the {@link Factory#getObjectSeparator()}.
  * <p>
- * FIXME: there is a degree of double-decoding in {@link #decode}.
- * No harm done, but wasting cpu cycles. This is due to the (default) assumption
- * that each element in a list can in turn be a list.
+ * <strong>Note</strong>: due to the above there often is a degree of double-decoding
+ * in {@link #decode} even when not needed. No harm done, but wasting cpu cycles.
+ * ENHANCE: would be nice to init StringList objects with the level of coding (1 or 2) needed.
  *
  * @param <E> the type of the elements stored in the string.
  */
@@ -256,7 +256,6 @@ public class StringList<E> {
          * <ul>
          * <li>{@link #getElementSeparator()}</li>
          * <li>{@link #getObjectSeparator()}</li>
-         * <li>any '\', \'r', '\n', '\t'</li>
          * <li>any additional 'escapeChars'</li>
          * </ul>
          * The escape char is '\'.
@@ -268,13 +267,9 @@ public class StringList<E> {
          */
         default String escape(@NonNull final String source,
                               final char... escapeChars) {
-
-            char[] temp = new char[escapeChars.length + 2];
-            System.arraycopy(escapeChars, 0, temp, 2, escapeChars.length);
-            temp[0] = getElementSeparator();
-            temp[1] = getObjectSeparator();
-
-            return ParseUtils.escape(source, temp);
+            // add the factory specific separators
+            return ParseUtils.escape(getElementSeparator(), getObjectSeparator(),
+                                     source, escapeChars);
         }
     }
 }

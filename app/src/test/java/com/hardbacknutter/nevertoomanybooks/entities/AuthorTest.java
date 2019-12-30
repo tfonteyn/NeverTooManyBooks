@@ -78,6 +78,15 @@ class AuthorTest {
     }
 
     @Test
+    void fromString12() {
+        // yes, there REALLY is a book with an author named like this...
+        Author author = Author.fromString("Don (*3)");
+        assertNotNull(author);
+        assertEquals("(*3)", author.getFamilyName());
+        assertEquals("Don", author.getGivenNames());
+    }
+
+    @Test
     void fromString20() {
         Author author = Author.fromString("Charles Emerson Winchester III");
         assertNotNull(author);

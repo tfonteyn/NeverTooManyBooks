@@ -83,7 +83,9 @@ public final class ParseUtils {
      * @return encoded string
      */
     @SuppressWarnings("WeakerAccess")
-    public static String escape(@NonNull final CharSequence source,
+    public static String escape(final char elementSeparator,
+                                final char objectSeparator,
+                                @NonNull final CharSequence source,
                                 final char... escapeChars) {
 
         StringBuilder sb = new StringBuilder();
@@ -107,14 +109,20 @@ public final class ParseUtils {
                     break;
 
                 default:
-                    for (char e : escapeChars) {
-                        if (c == e) {
-                            sb.append('\\');
-                            // break from the for (char e : escapeChars)
-                            break;
-                        }
+                    if (c == elementSeparator || c == objectSeparator) {
+                        // Escape these twice, as StringList uses a list inside a list model.
+                        sb.append("\\\\");
 
+                    } else {
+                        for (char e : escapeChars) {
+                            if (c == e) {
+                                sb.append('\\');
+                                // break from the for (char e : escapeChars)
+                                break;
+                            }
+                        }
                     }
+                    // add the actual character
                     sb.append(c);
                     break;
             }
