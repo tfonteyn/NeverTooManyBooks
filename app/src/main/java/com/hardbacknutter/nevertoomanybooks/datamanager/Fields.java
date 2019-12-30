@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
@@ -37,6 +36,7 @@ import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -60,7 +60,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Currency;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -75,17 +74,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 
 /**
- * This is the class that manages data and views for an Activity; access to the data that
+ * This is the class that manages data and views for an Activity/Fragment; access to the data that
  * each view represents should be handled via this class (and its related classes) where
  * possible.
  * <ul>Features provides are:
- * <li> handling of visibility via preferences</li>
- * <li> handling of group(RowKind) visibility via the 'mGroup' property of a field.</li>
+ * <li> handling of visibility via preferences / 'mUsageKey' property of a field.</li>
  * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
  * as expected as will setting the value of a Spinner). As new view types are added, it
  * will be necessary to add new {@link FieldDataAccessor} implementations.</li>
  * <li> Custom data accessors and formatter to provide application-specific data rules.</li>
- * <li> simplified extraction of data to a {@link ContentValues} collection.</li>
+ * <li> simplified extraction of data.</li>
  * </ul>
  * <p>
  * Formatter and Accessors
@@ -109,13 +107,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
  * <li>OUT (with formatter):
  * <br>(DataManager/Bundle) -> transform (in accessor) -> extract (via accessor) -> Object</li>
  * </ul>
- * <p>
  */
 public class Fields {
 
     /** the list with all fields. */
-    @SuppressLint("UseSparseArrays")
-    private final Map<Integer, Field> mAllFields = new HashMap<>();
+    private final SparseArray<Field> mAllFields = new SparseArray<>();
 
     /** TextEdit fields will be watched. */
     @Nullable
@@ -137,20 +133,58 @@ public class Fields {
     }
 
     public boolean isEmpty() {
-        return mAllFields.isEmpty();
+        return mAllFields.size() == 0;
+    }
+
+    /**
+     * Define a String field. It will be added as usual, but all read/writes
+     * to the {@link DataManager} or {@code Bundle} will be suppressed.
+     *
+     * @param view     View to use
+     * @param usageKey The preference key to check if this Field is used or not.
+     *                 Not being in use merely means it's not displayed;
+     *                 all functionality (populate, storage...) is still executed.
+     *
+     * @return The resulting Field.
+     */
+    @NonNull
+    public Field<String> define(@NonNull final View view,
+                                @NonNull final String usageKey) {
+        Field<String> field = new Field<>(this, view, "", usageKey);
+        mAllFields.put(view.getId(), field);
+        return field;
+    }
+
+    /**
+     * Define a Monetary field. It will be added as usual, but all read/writes
+     * to the {@link DataManager} or {@code Bundle} will be suppressed.
+     * *
+     *
+     * @param view     View to use
+     * @param usageKey The preference key to check if this Field is used or not.
+     *                 Not being in use merely means it's not displayed;
+     *                 all functionality (populate, storage...) is still executed.
+     *
+     * @return The resulting Field.
+     */
+    @NonNull
+    public Field<Double> defineMonetary(@NonNull final View view,
+                                        @NonNull final String usageKey) {
+        Field<Double> field = new Field<>(this, view, "", usageKey);
+        mAllFields.put(view.getId(), field);
+        return field;
     }
 
     /**
      * Add a field to this collection.
      *
-     * @param fieldId Layout ID
-     * @param key     Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param view View to use
+     * @param key  Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
     @NonNull
-    public Field<String> addString(@IdRes final int fieldId,
-                                   @NonNull final View fieldView,
+    public Field<String> addString(@NonNull final View view,
                                    @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -158,44 +192,22 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<String> field = new Field<>(this, fieldId, fieldView, key, key);
-        mAllFields.put(fieldId, field);
+        Field<String> field = new Field<>(this, view, key, key);
+        mAllFields.put(view.getId(), field);
         return field;
     }
 
-    /**
-     * Add a field to this collection.
-     *
-     * @param fieldId         Layout ID
-     * @param fieldView       View to use
-     * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
-     *                        Set to "" to suppress all access.
-     * @param visibilityGroup Group name to determine visibility.
-     *
-     * @return The resulting Field.
-     */
-    @NonNull
-    public Field<String> addString(@IdRes final int fieldId,
-                                   @NonNull final View fieldView,
-                                   @NonNull final String key,
-                                   @NonNull final String visibilityGroup) {
-        Field<String> field = new Field<>(this, fieldId, fieldView, key, visibilityGroup);
-        mAllFields.put(fieldId, field);
-        return field;
-    }
 
     /**
      * Add a Boolean field to this collection.
      *
-     * @param fieldId   Layout ID
-     * @param fieldView View to use
-     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param view View to use
+     * @param key  Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
     @NonNull
-    public Field<Boolean> addBoolean(@IdRes final int fieldId,
-                                     @NonNull final View fieldView,
+    public Field<Boolean> addBoolean(@NonNull final View view,
                                      @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -203,24 +215,21 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Boolean> field = new Field<>(this, fieldId, fieldView, key, key);
-        mAllFields.put(fieldId, field);
+        Field<Boolean> field = new Field<>(this, view, key, key);
+        mAllFields.put(view.getId(), field);
         return field;
     }
 
     /**
      * Add a Long field to this collection.
      *
-     * @param fieldId   Layout ID
-     * @param fieldView View to use
-     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param view View to use
+     * @param key  Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
-    @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Field<Long> addLong(@IdRes final int fieldId,
-                               @NonNull final View fieldView,
+    public Field<Long> addLong(@NonNull final View view,
                                @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -228,24 +237,21 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Long> field = new Field<>(this, fieldId, fieldView, key, key);
-        mAllFields.put(fieldId, field);
+        Field<Long> field = new Field<>(this, view, key, key);
+        mAllFields.put(view.getId(), field);
         return field;
     }
 
     /**
      * Add a Float field to this collection.
      *
-     * @param fieldId   Layout ID
-     * @param fieldView View to use
-     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param view View to use
+     * @param key  Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
-    @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public Field<Float> addFloat(@IdRes final int fieldId,
-                                 @NonNull final View fieldView,
+    public Field<Float> addFloat(@NonNull final View view,
                                  @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -253,23 +259,21 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Float> field = new Field<>(this, fieldId, fieldView, key, key);
-        mAllFields.put(fieldId, field);
+        Field<Float> field = new Field<>(this, view, key, key);
+        mAllFields.put(view.getId(), field);
         return field;
     }
 
     /**
      * Add a Monetary field to this collection.
      *
-     * @param fieldId   Layout ID
-     * @param fieldView View to use
-     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param view View to use
+     * @param key  Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
-    @SuppressWarnings("UnusedReturnValue")
-    public Field<Double> addMonetary(@IdRes final int fieldId,
-                                     @NonNull final View fieldView,
+    @NonNull
+    public Field<Double> addMonetary(@NonNull final View view,
                                      @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
@@ -277,29 +281,11 @@ public class Fields {
                 throw new IllegalArgumentException("key should not be empty");
             }
         }
-        Field<Double> field = new Field<>(this, fieldId, fieldView, key, key);
-        mAllFields.put(fieldId, field);
+        Field<Double> field = new Field<>(this, view, key, key);
+        mAllFields.put(view.getId(), field);
         return field;
     }
 
-    /**
-     * Add a Monetary field to this collection.
-     *
-     * @param fieldId   Layout ID
-     * @param fieldView View to use
-     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
-     *
-     * @return The resulting Field.
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public Field<Double> addMonetary(@IdRes final int fieldId,
-                                     @NonNull final View fieldView,
-                                     @NonNull final String key,
-                                     @NonNull final String visibilityGroup) {
-        Field<Double> field = new Field<>(this, fieldId, fieldView, key, visibilityGroup);
-        mAllFields.put(fieldId, field);
-        return field;
-    }
 
     /**
      * Return the Field associated with the passed layout ID.
@@ -322,6 +308,11 @@ public class Fields {
         throw new IllegalArgumentException("fieldId= 0x" + Integer.toHexString(fieldId));
     }
 
+    @NonNull
+    public <T> Field<T> getField(@NonNull final View view) {
+        return getField(view.getId());
+    }
+
     /**
      * Load fields from the passed bundle.
      *
@@ -332,11 +323,13 @@ public class Fields {
     public void setAllFrom(@NonNull final Bundle rawData,
                            final boolean withOverwrite) {
         if (withOverwrite) {
-            for (Field field : mAllFields.values()) {
+            for (int f = 0; f < mAllFields.size(); f++) {
+                Field field = mAllFields.valueAt(f);
                 field.setValueFrom(rawData);
             }
         } else {
-            for (Field field : mAllFields.values()) {
+            for (int f = 0; f < mAllFields.size(); f++) {
+                Field field = mAllFields.valueAt(f);
                 if (!field.getKey().isEmpty() && rawData.containsKey(field.getKey())) {
                     Object value = rawData.get(field.getKey());
                     if (value != null) {
@@ -354,7 +347,8 @@ public class Fields {
      * @param dataManager DataManager to load Field objects from.
      */
     public void setAllFrom(@NonNull final DataManager dataManager) {
-        for (Field field : mAllFields.values()) {
+        for (int f = 0; f < mAllFields.size(); f++) {
+            Field field = mAllFields.valueAt(f);
             field.setValueFrom(dataManager);
         }
     }
@@ -365,7 +359,8 @@ public class Fields {
      * @param dataManager DataManager to put Field objects in.
      */
     public void putAllInto(@NonNull final DataManager dataManager) {
-        for (Field field : mAllFields.values()) {
+        for (int f = 0; f < mAllFields.size(); f++) {
+            Field field = mAllFields.valueAt(f);
             if (!field.getKey().isEmpty()) {
                 field.putValueInto(dataManager);
             }
@@ -382,13 +377,15 @@ public class Fields {
     public void resetVisibility(@NonNull final View parent,
                                 final boolean hideIfEmpty,
                                 final boolean keepHidden) {
-        for (Field field : mAllFields.values()) {
-            field.resetVisibility(parent, hideIfEmpty, keepHidden);
+        for (int f = 0; f < mAllFields.size(); f++) {
+            Field field = mAllFields.valueAt(f);
+            field.setVisibility(parent, hideIfEmpty, keepHidden);
         }
     }
 
     public void setParentView(@NonNull final View parentView) {
-        for (Field field : mAllFields.values()) {
+        for (int f = 0; f < mAllFields.size(); f++) {
+            Field field = mAllFields.valueAt(f);
             field.setParentView(parentView);
         }
     }
@@ -414,6 +411,8 @@ public class Fields {
 
         /**
          * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
+         * <strong>Implementation note</strong>: we don't provide a getView() method on purpose.
+         * Using that would need to deal with {@code null} values.
          */
         void setView(@NonNull View view);
 
@@ -1490,7 +1489,7 @@ public class Fields {
      * Field definition contains all information and methods necessary to manage display and
      * extraction of data in a view.
      *
-     * <strong>Note:</strong> visibility/isUsed is only visual.
+     * <strong>Note:</strong> mUsageKey is only visual.
      * The logic around the view itself is still put in place and called upon.
      * i.e. invisible fields are still populated with data etc...
      *
@@ -1520,24 +1519,29 @@ public class Fields {
          */
         @NonNull
         private final String mKey;
-        /** Visibility group name. Used in conjunction with preferences to show/hide Views. */
+
+        /**
+         * The preference key (field-name) to check if this Field is used or not.
+         */
         @NonNull
-        private final String mGroup;
+        private final String mUsageKey;
+
         /**
          * Accessor to use (automatically defined).
          * Encapsulates the formatter.
          */
         @NonNull
         private final FieldDataAccessor<T> mFieldDataAccessor;
-        /** DEBUG - Owning collection. */
+
+        /** Parent collection. */
         @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
         private final Fields mFields;
+
         @Nullable
         @IdRes
         private int[] mRelatedFields;
-        /** Is the field in use; i.e. is it enabled in the user-preferences. **/
-        private boolean mIsUsed;
+
         /**
          * Option indicating that even though field has a key, it should NOT be fetched
          * from a {@link DataManager} (or Bundle).
@@ -1550,28 +1554,29 @@ public class Fields {
         /**
          * Constructor.
          *
-         * @param fields          Parent collection
-         * @param fieldId         Layout ID
-         * @param view            for this field. Is only used to determine the type.
-         * @param key             Key used to access a {@link DataManager} or {@code Bundle}.
-         *                        Set to "" to suppress all access.
-         * @param visibilityGroup Visibility group. Can be blank.
+         * @param fields   Parent collection
+         * @param view     for this field. Is only used to read the id/type from.
+         *                 <strong>NOT cached!</strong>
+         * @param key      Key used to access a {@link DataManager} or {@code Bundle}.
+         *                 Set to "" to suppress all access.
+         * @param usageKey The preference key to check if this Field is used or not.
+         *                 Not being in use merely means it's not displayed;
+         *                 all functionality (populate, storage...) is still executed.
          */
         @VisibleForTesting
         public Field(@NonNull final Fields fields,
-                     @IdRes final int fieldId,
                      @NonNull final View view,
                      @NonNull final String key,
-                     @NonNull final String visibilityGroup) {
+                     @NonNull final String usageKey) {
 
             mFields = fields;
-            mId = fieldId;
-            mKey = key;
-            mGroup = visibilityGroup;
+            mId = view.getId();
 
-            // check if the user actually uses this group.
-            mIsUsed = App.isUsed(mGroup);
-            if (!mIsUsed) {
+            mKey = key;
+            mUsageKey = usageKey;
+
+            // don't cache the 'isUsed' status; the user can change it at all times.
+            if (!App.isUsed(mUsageKey)) {
                 view.setVisibility(View.GONE);
             }
 
@@ -1709,6 +1714,8 @@ public class Fields {
 
         /**
          * set the field ids which should follow visibility with this Field.
+         * <p>
+         * URGENT: redo this using androidx.constraintlayout.widget.Group
          *
          * @param relatedFields labels etc
          */
@@ -1723,30 +1730,31 @@ public class Fields {
          * @return {@code true} if the field *can* be visible
          */
         public boolean isUsed() {
-            return mIsUsed;
+            return App.isUsed(mUsageKey);
         }
 
         /**
-         * Set the visibility for the field.
+         * <strong>Conditionally</strong> set the visibility for the field and its related fields.
          *
          * @param parent      parent view for all fields.
          * @param hideIfEmpty hide the field if it's empty
          * @param keepHidden  keep a field hidden if it's already hidden
          */
-        private void resetVisibility(@NonNull final View parent,
-                                     final boolean hideIfEmpty,
-                                     final boolean keepHidden) {
+        private void setVisibility(@NonNull final View parent,
+                                   final boolean hideIfEmpty,
+                                   final boolean keepHidden) {
 
             View view = parent.findViewById(mId);
-            mIsUsed = App.isUsed(mGroup);
+            boolean isUsed = App.isUsed(mUsageKey);
 
             int visibility = view.getVisibility();
 
-            // 1. An ImageView keeps its current visibility, i.e. skip this step.
+            // 1. An ImageView always keeps its current visibility, i.e. skips this step.
             // 2. When 'keepHidden' is set, all hidden fields stay hidden.
+            // 3. Empty fields are optionally hidden.
             if (!(view instanceof ImageView)
                 && (visibility != View.GONE || !keepHidden)) {
-                if (mIsUsed && hideIfEmpty) {
+                if (isUsed && hideIfEmpty) {
                     if (view instanceof Checkable) {
                         // hide any unchecked Checkable.
                         visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
@@ -1755,12 +1763,39 @@ public class Fields {
                         visibility = !isEmpty() ? View.VISIBLE : View.GONE;
                     }
                 } else {
-                    visibility = mIsUsed ? View.VISIBLE : View.GONE;
+                    visibility = isUsed ? View.VISIBLE : View.GONE;
                 }
                 view.setVisibility(visibility);
             }
+            // related fields follow main field visibility
+            setRelatedFieldsVisibility(parent, visibility);
+        }
+
+        /**
+         * <strong>Unconditionally</strong> set the visibility for the field and its related fields.
+         *
+         * @param parent     parent view for all fields.
+         * @param visibility to use
+         */
+        public void setVisibility(@NonNull final View parent,
+                                  final int visibility) {
+
+            View view = parent.findViewById(mId);
+            view.setVisibility(visibility);
 
             // related fields follow main field visibility
+            setRelatedFieldsVisibility(parent, visibility);
+        }
+
+        /**
+         * Set the visibility for the related fields.
+         *
+         * @param parent     parent view for all fields.
+         * @param visibility to use
+         */
+        private void setRelatedFieldsVisibility(@NonNull final View parent,
+                                                final int visibility) {
+            View view;
             if (mRelatedFields != null) {
                 for (int fieldId : mRelatedFields) {
                     view = parent.findViewById(fieldId);
@@ -1873,9 +1908,8 @@ public class Fields {
         public String toString() {
             return "Field{"
                    + "mId=" + mId
-                   + ", mGroup='" + mGroup + '\''
+                   + ", mUsageKey='" + mUsageKey + '\''
                    + ", mKey='" + mKey + '\''
-                   + ", mIsUsed=" + mIsUsed
                    + ", mDoNoFetch=" + mDoNoFetch
                    + ", mFieldDataAccessor=" + mFieldDataAccessor
                    + ", mRelatedFields=" + Arrays.toString(mRelatedFields)

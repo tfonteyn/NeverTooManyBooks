@@ -375,100 +375,100 @@ public class BookDetailsFragment
         Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
 
         // book fields
-        fields.addString(R.id.title, mTitleView, DBDefinitions.KEY_TITLE);
+        fields.addString(mTitleView, DBDefinitions.KEY_TITLE);
 
         // defined, but fetched manually
-        fields.addString(R.id.author, mAuthorView, "", DBDefinitions.KEY_FK_AUTHOR)
+        fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
               .setShowHtml(true);
 
         // defined, but fetched manually
-        fields.addString(R.id.series, mSeriesView, "", DBDefinitions.KEY_SERIES_TITLE)
+        fields.define(mSeriesView, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
-        fields.addString(R.id.isbn, mIsbnView, DBDefinitions.KEY_ISBN)
+        fields.addString(mIsbnView, DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
-        fields.addString(R.id.description, mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
+        fields.addString(mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
               .setShowHtml(true)
               .setRelatedFields(R.id.lbl_description);
 
-        fields.addBoolean(R.id.cbx_anthology, mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS)
+        fields.addBoolean(mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS)
               .setRelatedFields(R.id.lbl_anthology);
         // not added here: actual TOC which is non-text
 
-        fields.addString(R.id.genre, mGenreView, DBDefinitions.KEY_GENRE)
+        fields.addString(mGenreView, DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
-        fields.addString(R.id.language, mLanguageView, DBDefinitions.KEY_LANGUAGE)
+        fields.addString(mLanguageView, DBDefinitions.KEY_LANGUAGE)
               .setFormatter(new Fields.LanguageFormatter())
               .setRelatedFields(R.id.lbl_language);
 
         //noinspection ConstantConditions
-        fields.addString(R.id.pages, mPagesView, DBDefinitions.KEY_PAGES)
+        fields.addString(mPagesView, DBDefinitions.KEY_PAGES)
               .setFormatter(new Fields.PagesFormatter(getContext()));
 
-        fields.addString(R.id.format, mFormatView, DBDefinitions.KEY_FORMAT);
+        fields.addString(mFormatView, DBDefinitions.KEY_FORMAT);
 
-        fields.addString(R.id.color, mColorView, DBDefinitions.KEY_COLOR);
+        fields.addString(mColorView, DBDefinitions.KEY_COLOR);
 
-        fields.addString(R.id.publisher, mPublisherView, DBDefinitions.KEY_PUBLISHER);
+        fields.addString(mPublisherView, DBDefinitions.KEY_PUBLISHER);
 
-        fields.addString(R.id.date_published, mDatePublishedView, DBDefinitions.KEY_DATE_PUBLISHED)
+        fields.addString(mDatePublishedView, DBDefinitions.KEY_DATE_PUBLISHED)
               .setFormatter(dateFormatter)
               .setRelatedFields(R.id.lbl_date_published);
 
-        fields.addString(R.id.first_publication, mFirstPubView,
+        fields.addString(mFirstPubView,
                          DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
               .setFormatter(dateFormatter)
               .setRelatedFields(R.id.lbl_first_publication);
 
-        fields.addString(R.id.print_run, mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
+        fields.addString(mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
         // defined, but fetched manually
-        fields.addMonetary(R.id.price_listed, mPriceListedView, "", DBDefinitions.KEY_PRICE_LISTED)
+        fields.defineMonetary(mPriceListedView, DBDefinitions.KEY_PRICE_LISTED)
               .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
         // Personal fields
-        fields.addString(R.id.date_acquired, mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
+        fields.addString(mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
               .setFormatter(dateFormatter)
               .setRelatedFields(R.id.lbl_date_acquired);
 
-        fields.addLong(R.id.edition, mEditionView, DBDefinitions.KEY_EDITION_BITMASK)
+        fields.addLong(mEditionView, DBDefinitions.KEY_EDITION_BITMASK)
               .setFormatter(new Fields.BitMaskFormatter(Book.getEditions(getContext())))
               .setRelatedFields(R.id.lbl_edition);
 
-        fields.addString(R.id.location, mLocationView, DBDefinitions.KEY_LOCATION)
+        fields.addString(mLocationView, DBDefinitions.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-        fields.addFloat(R.id.rating, mRatingView, DBDefinitions.KEY_RATING)
+        fields.addFloat(mRatingView, DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.addString(R.id.notes, mNotesView, DBDefinitions.KEY_PRIVATE_NOTES)
+        fields.addString(mNotesView, DBDefinitions.KEY_PRIVATE_NOTES)
               .setShowHtml(true)
               .setRelatedFields(R.id.lbl_notes);
 
-        fields.addString(R.id.read_start, mDateReadStartView, DBDefinitions.KEY_READ_START)
+        fields.addString(mDateReadStartView, DBDefinitions.KEY_READ_START)
               .setFormatter(dateFormatter)
               .setRelatedFields(R.id.lbl_read_start);
 
-        fields.addString(R.id.read_end, mDateReadEndView, DBDefinitions.KEY_READ_END)
+        fields.addString(mDateReadEndView, DBDefinitions.KEY_READ_END)
               .setFormatter(dateFormatter)
               .setRelatedFields(R.id.lbl_read_end);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        fields.addBoolean(R.id.cbx_read, mReadCheckbox, DBDefinitions.KEY_READ);
+        fields.addBoolean(mReadCheckbox, DBDefinitions.KEY_READ);
 
         // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
-        fields.addBoolean(R.id.cbx_signed, mSignedCbx, DBDefinitions.KEY_SIGNED)
+        fields.addBoolean(mSignedCbx, DBDefinitions.KEY_SIGNED)
               .setRelatedFields(R.id.lbl_signed);
 
         // defined, but fetched manually
-        fields.addMonetary(R.id.price_paid, mPricePaidView, "", DBDefinitions.KEY_PRICE_PAID)
+        fields.defineMonetary(mPricePaidView, DBDefinitions.KEY_PRICE_PAID)
               .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
 
         // defined, but fetched manually
-        fields.addString(R.id.bookshelves, mBookshelvesView, "", DBDefinitions.KEY_BOOKSHELF)
+        fields.define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
 
@@ -622,7 +622,7 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_READ:
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle 'read' status of the book
-                Field<Boolean> field = getFields().getField(R.id.cbx_read);
+                Field<Boolean> field = getFields().getField(mReadCheckbox);
                 field.setValue(mBookModel.toggleRead());
                 return true;
             }
@@ -697,7 +697,7 @@ public class BookDetailsFragment
         Book book = mBookModel.getBook();
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        Field<String> field = getFields().getField(R.id.author);
+        Field<String> field = getFields().getField(mAuthorView);
         field.setValue(Csv.join("<br>", list, true, "• ",
                                 this::formatAuthor));
     }
@@ -732,7 +732,7 @@ public class BookDetailsFragment
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
-        Field<String> field = getFields().getField(R.id.series);
+        Field<String> field = getFields().getField(mSeriesView);
         //noinspection ConstantConditions
         field.setValue(Csv.join("\n", list, true, "• ",
                                 series -> series.getLabel(getContext())));
@@ -745,7 +745,7 @@ public class BookDetailsFragment
         Book book = mBookModel.getBook();
 
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-        Field<String> field = getFields().getField(R.id.bookshelves);
+        Field<String> field = getFields().getField(mBookshelvesView);
         field.setValue(Csv.join(", ", list, Bookshelf::getName));
     }
 
@@ -760,13 +760,13 @@ public class BookDetailsFragment
 
         Fields.MonetaryFormatter listedFormatter = new Fields.MonetaryFormatter()
                 .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        getFields().getField(R.id.price_listed)
+        getFields().getField(mPriceListedView)
                    .setFormatter(listedFormatter)
                    .setValue(book.getDouble(DBDefinitions.KEY_PRICE_LISTED));
 
         Fields.MonetaryFormatter paidFormatter = new Fields.MonetaryFormatter()
                 .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
-        getFields().getField(R.id.price_paid)
+        getFields().getField(mPricePaidView)
                    .setFormatter(paidFormatter)
                    .setValue(book.getDouble(DBDefinitions.KEY_PRICE_PAID));
     }

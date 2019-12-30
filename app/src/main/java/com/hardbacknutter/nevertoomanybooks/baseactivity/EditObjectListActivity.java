@@ -45,7 +45,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -177,30 +176,6 @@ public abstract class EditObjectListActivity<T extends Parcelable>
      * @param target The view that was clicked ('add' button).
      */
     protected abstract void onAdd(@NonNull View target);
-
-    /**
-     * Handle the edits.
-     *
-     * <strong>Note:</strong> this method is only to enforce a pattern
-     *
-     * @param item    the original data.
-     * @param newData a holder for the edited data.
-     */
-    protected abstract void processChanges(@NonNull T item,
-                                           @NonNull T newData);
-
-    /**
-     * Update the item for <strong>this</strong> book.
-     *
-     * <strong>Note:</strong> this method is only to enforce a pattern
-     *
-     * @param item           the original data.
-     * @param newData        a holder for the edited data.
-     * @param fallbackLocale Locale to use if the item has none set.
-     */
-    protected abstract void updateItem(@NonNull T item,
-                                       @NonNull T newData,
-                                       @NonNull Locale fallbackLocale);
 
     /**
      * Ensure that the list is saved.

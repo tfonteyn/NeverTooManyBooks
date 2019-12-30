@@ -202,8 +202,8 @@ public class EditBookTocFragment
                     if (tocBitMask != 0) {
                         Book book = mBookModel.getBook();
                         book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                        getFields().getField(R.id.cbx_is_anthology).setValueFrom(book);
-                        getFields().getField(R.id.cbx_multiple_authors).setValueFrom(book);
+                        getFields().getField(mIsAnthologyCbx).setValueFrom(book);
+                        getFields().getField(mMultiAuthorsView).setValueFrom(book);
                     }
 
                     mList.addAll(tocEntries);
@@ -287,9 +287,9 @@ public class EditBookTocFragment
         Fields fields = getFields();
 
         // Anthology is provided as a bitmask, see {@link Book#initAccessorsAndValidators()}
-        fields.addBoolean(R.id.cbx_is_anthology, mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS);
+        fields.addBoolean(mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS);
 
-        fields.addBoolean(R.id.cbx_multiple_authors, mMultiAuthorsView, Book.HAS_MULTIPLE_AUTHORS);
+        fields.addBoolean(mMultiAuthorsView, Book.HAS_MULTIPLE_AUTHORS);
 
         // adding a new TOC entry
         //noinspection ConstantConditions

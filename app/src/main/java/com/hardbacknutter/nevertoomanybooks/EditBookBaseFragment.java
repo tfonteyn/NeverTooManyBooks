@@ -77,18 +77,18 @@ public abstract class EditBookBaseFragment<T>
     private Fields mFields;
 
     private final CheckListDialogFragment.CheckListResultsListener<T>
-            mCheckListResultsListener = (fieldId, list) -> {
+            mCheckListResultsListener = (destinationFieldId, list) -> {
         Book book = mBookModel.getBook();
 
-        if (fieldId == R.id.bookshelves) {
+        if (destinationFieldId == R.id.bookshelves) {
             ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
-            getFields().getField(R.id.bookshelves)
+            getFields().getField(destinationFieldId)
                        .setValue(Csv.join(", ", bsList, Bookshelf::getName));
 
-        } else if (fieldId == R.id.edition) {
+        } else if (destinationFieldId == R.id.edition) {
             book.putEditions((ArrayList<Integer>) list);
-            getFields().getField(R.id.edition)
+            getFields().getField(destinationFieldId)
                        .setValue(book.getLong(DBDefinitions.KEY_EDITION_BITMASK));
         }
     };
