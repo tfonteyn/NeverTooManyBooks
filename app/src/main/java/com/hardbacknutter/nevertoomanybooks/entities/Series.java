@@ -56,8 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  *
  * <p>
  * <strong>Note:</strong> the Series "number" is a column of {@link DBDefinitions#TBL_BOOK_SERIES}
- * So this class does not strictly represent a Series, but a "BookInSeries"
+ * So this class does not strictly represent a Series, but a "BookInSeries" without the book-id...
  * When the number is disregarded, it is a real Series representation.
+ * (and I agree, this is NOT good practice).
  * <p>
  * The patterns defined are certainly not foolproof.
  * The extraction of numbers and the meaning of brackets works well enough for books,

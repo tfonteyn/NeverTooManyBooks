@@ -497,7 +497,6 @@ public class BooksOnBookshelf
 
             debugSubMenu.add(Menu.NONE, R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE, 0,
                              R.string.lbl_purge_blns);
-
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -1496,7 +1495,7 @@ public class BooksOnBookshelf
                                       .getSeries(rowMapper.getLong(DBDefinitions.KEY_FK_SERIES));
                 if (series != null) {
                     StandardDialogs.deleteSeriesAlert(this, series, () -> {
-                        mModel.getDb().deleteSeries(series.getId());
+                        mModel.getDb().deleteSeries(this, series.getId());
                         mBookChangedListener.onBookChanged(0, BookChangedListener.SERIES, null);
                     });
                 }

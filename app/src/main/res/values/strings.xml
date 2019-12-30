@@ -390,11 +390,11 @@
 
     <!-- Progress message displayed when exporting covers -->
     <string name="progress_msg_n_covers_processed_m_missing">
-        %1$d covers processed\n(%2$d/%3$d missing)
+        %1$d covers processed\n  (%2$d/%3$d missing)
     </string>
     <!-- Progress message displayed when exporting covers -->
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">
-        %1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)
+        %1$d covers processed\n  (%2$d/%3$d missing, %4$d skipped)
     </string>
 
     <!-- Progress message displayed when importing books/covers.

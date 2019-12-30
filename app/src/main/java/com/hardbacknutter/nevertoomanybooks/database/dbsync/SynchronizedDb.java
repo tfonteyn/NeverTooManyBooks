@@ -570,12 +570,10 @@ public class SynchronizedDb {
      */
     public void endTransaction(@NonNull final Synchronizer.SyncLock txLock) {
         if (mTxLock == null) {
-            throw new TransactionException(
-                    "Ending a transaction when none is started");
+            throw new TransactionException("Ending a transaction when none is started");
         }
         if (!mTxLock.equals(txLock)) {
-            throw new TransactionException(
-                    "Ending a transaction with wrong transaction lock");
+            throw new TransactionException("Ending a transaction with wrong transaction lock");
         }
 
         try {

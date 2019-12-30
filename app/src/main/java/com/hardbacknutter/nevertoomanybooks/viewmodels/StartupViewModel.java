@@ -427,9 +427,12 @@ public class StartupViewModel
                 cleaner.updateLanguages(localContext);
                 // clean/correct style UUID's on Bookshelves for deleted styles.
                 cleaner.bookshelves(localContext);
+                // re-sort positional links
+                cleaner.bookAuthors(localContext);
+                cleaner.bookSeries(localContext);
 
-                // check & log, but don't update yet... need more testing
-                cleaner.maybeUpdate(true);
+                //URGENT: check & log, but don't update yet... need more testing
+                cleaner.maybeUpdate(localContext, true);
                 return true;
 
             } catch (@NonNull final RuntimeException e) {
@@ -437,7 +440,6 @@ public class StartupViewModel
                 mException = e;
                 return false;
             }
-
         }
     }
 

@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -58,6 +57,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -75,6 +75,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  */
 public class EditBookAuthorsActivity
         extends EditObjectListActivity<Author> {
+
+    private static final String TAG = "EditBookAuthorsActivity";
 
     /**
      * Constructor.
@@ -135,114 +137,104 @@ public class EditBookAuthorsActivity
         mAutoCompleteTextView.setText("");
     }
 
-    @Override
+    /**
+     * Process the modified (if any) data.
+     *
+     * @param author    the user was editing (with the original data)
+     * @param tmpAuthor the modifications the user made in a placeholder object.
+     *                  Non-modified data was copied here as well.
+     */
     protected void processChanges(@NonNull final Author author,
-                                  @NonNull final Author newAuthorData) {
+                                  @NonNull final Author tmpAuthor) {
 
         // anything other than the type changed ?
-        if (author.getFamilyName().equals(newAuthorData.getFamilyName())
-            && author.getGivenNames().equals(newAuthorData.getGivenNames())
-            && author.isComplete() == newAuthorData.isComplete()) {
+        if (author.getFamilyName().equals(tmpAuthor.getFamilyName())
+            && author.getGivenNames().equals(tmpAuthor.getGivenNames())
+            && author.isComplete() == tmpAuthor.isComplete()) {
 
             // Type is not part of the Author table, but of the book_author table.
-            if (author.getType() != newAuthorData.getType()) {
-                author.setType(newAuthorData.getType());
+            if (author.getType() != tmpAuthor.getType()) {
+                author.setType(tmpAuthor.getType());
                 ItemWithFixableId
                         .pruneList(mList, this, mModel.getDb(), Locale.getDefault(), false);
                 mListAdapter.notifyDataSetChanged();
             }
-            // nothing or only the type was different, so we're done here.
+            // nothing was modified,
+            // or only the type was different, either way, we're done here.
             return;
         }
+
+        // The base data for the Author was modified.
 
         // See if the old one is used by any other books.
         long nrOfReferences = mModel.getDb().countBooksByAuthor(this, author)
                               + mModel.getDb().countTocEntryByAuthor(this, author);
-
         // if it's not, we simply re-use the old object.
         if (mModel.isSingleUsage(nrOfReferences)) {
-            /*
-             * Use the original Author object, but update its fields
-             *
-             * see below and {@link DAO#insertBookDependents} where an *insert* will be done
-             * The 'old' Author will be orphaned. TODO: simplify / don't orphan?
-             */
-            updateItem(author, newAuthorData, Locale.getDefault());
+            // Copy the new data into the original Author object that the user was changing.
+            // The Author object keeps the same (old) ID!
+            author.copyFrom(tmpAuthor, true);
+            ItemWithFixableId.pruneList(mList, this, mModel.getDb(), Locale.getDefault(), false);
+            mListAdapter.notifyDataSetChanged();
             return;
         }
 
-        // At this point, we know the names are genuinely different and the old Author
-        // is used in more than one place. Ask the user if they want to make the changes globally.
+        // At this point, the base data for the Author was modified and the old Author is used
+        // in more than one place.
+        // Ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
         String message = getString(R.string.confirm_apply_author_changed,
                                    author.getSorting(this),
-                                   newAuthorData.getSorting(this),
+                                   tmpAuthor.getSorting(this),
                                    allBooks);
-        AlertDialog dialog = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_scope_of_change)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .create();
+                .setNeutralButton(allBooks, (d, which) -> {
+                    // This change is done in the database NOW!
+                    // Process the destination Series.
+                    // It will either find/update or insert the data and update the tmpAuthor.id
+                    boolean replaced;
+                    //URGENT: do we really need to have a new id?
+                    // Can we not simply update the original object?
+                    if (mModel.getDb().updateOrInsertAuthor(this, tmpAuthor)) {
+                        // Anywhere where the old Author (id) is used, replace it with the new one.
+                        replaced = mModel.getDb().globalReplace(this, author, tmpAuthor);
 
-        /*
-         * Choosing 'all books':
-         * globalReplace:
-         * - Find/update or insert the new Author.
-         * - update the TOC of all books so they use the new author id.
-         * - update TBL_BOOK_AUTHORS for all books to use the new author id
-         * - re-order the 'position' if needed.
-         * Result:
-         * - all books previously using the olf author, now point to the new author.
-         * - the old author will still exist, but won't be in use.
-         *
-         * WARNING: if the given-name is/was empty, the replace might have failed.
-         * Solution: make a change to the family name, do replace, change family name back,
-         * do replace.
-         *
-         * Copy the data fields (name,..) from the holder to the 'old' author.
-         * and remove any duplicates.
-         *
-         * When the actual book is saved, {@link DAO#updateBook} will call
-         * {@link DAO#insertBookDependents} which when updating TBL_BOOK_AUTHORS
-         * will first try and find the author (with the old id) based on name.
-         * => it will find the NEW author, and update the id in memory (old becomes new)
-         * Result:
-         * - this book uses the new author (by recycling the old object with all new id/data)
-         *
-         * TODO: speculate if this can be simplified.
-         */
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, allBooks, (d, which) -> {
-            mModel.setGlobalReplacementsMade(
-                    mModel.getDb().globalReplace(this, author, newAuthorData));
-            updateItem(author, newAuthorData, Locale.getDefault());
-        });
+                        // flag any changes up.
+                        mModel.setGlobalReplacementsMade(replaced);
+                        // unlink the old one, and link with the new Author
+                        mList.remove(author);
+                        mList.add(tmpAuthor);
+                        ItemWithFixableId.pruneList(mList, this, mModel.getDb(),
+                                                    Locale.getDefault(), false);
+                        mListAdapter.notifyDataSetChanged();
 
-        /*
-         * choosing 'this book':
-         * Copy the data fields (name,..) from the holder to the 'old' author.
-         * and remove any duplicates.
-         *
-         * When the actual book is saved, {@link DAO#updateBook} will call
-         * {@link DAO#insertBookDependents} which when updating TBL_BOOK_AUTHORS
-         * will first try and find the author based on name.
-         * If its names differ -> new Author -> inserts the new author.
-         * Result: *this* book now uses the modified/new author,
-         * while all others keep using the original one.
-         *
-         * TODO: speculate if it would not be easier to:
-         * - fixup(newAuthor) and  if id == 0 insert newAuthor
-         * - remove old author from book
-         * - add new author to book
-         */
-        dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                         getString(R.string.btn_this_book), (d, which) ->
-                                 updateItem(author, newAuthorData, Locale.getDefault()));
-
-        dialog.show();
+                    } else {
+                        // eek?
+                        Logger.warnWithStackTrace(this, TAG,
+                                                  "Could not update", "author=" + tmpAuthor);
+                        new AlertDialog.Builder(this)
+                                .setIconAttribute(android.R.attr.alertDialogIcon)
+                                .setMessage(R.string.error_unexpected_error)
+                                .show();
+                    }
+                })
+                .setPositiveButton(R.string.btn_this_book, (d, which) -> {
+                    // treat the new data as a new Author.
+                    // unlink the old one, and link with the new Author
+                    mList.remove(author);
+                    mList.add(tmpAuthor);
+                    ItemWithFixableId.pruneList(mList, this, mModel.getDb(),
+                                                Locale.getDefault(), false);
+                    mListAdapter.notifyDataSetChanged();
+                })
+                .create()
+                .show();
     }
 
-    @Override
     protected void updateItem(@NonNull final Author author,
                               @NonNull final Author newAuthorData,
                               @NonNull final Locale fallbackLocale) {
@@ -411,6 +403,8 @@ public class EditBookAuthorsActivity
                     .setTitle(R.string.title_edit_author)
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                     .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
+                        // don't check on the name being the same as the old one here,
+                        // we're doing more extensive checks later on.
                         mFamilyName = mFamilyNameView.getText().toString().trim();
                         if (mFamilyName.isEmpty()) {
                             Snackbar.make(mFamilyNameView, R.string.warning_missing_name,
@@ -422,12 +416,12 @@ public class EditBookAuthorsActivity
                         mIsComplete = mIsCompleteView.isChecked();
                         mType = getTypeFromViews();
 
-                        // Create a new Author as a holder for the changes.
-                        Author newAuthorData = new Author(mFamilyName, mGivenNames, mIsComplete);
+                        // Create a new Author as a holder for all changes.
+                        Author tmpAuthor = new Author(mFamilyName, mGivenNames, mIsComplete);
                         if (mUseTypeBtn.isChecked()) {
-                            newAuthorData.setType(mType);
+                            tmpAuthor.setType(mType);
                         }
-                        mHostActivity.processChanges(mAuthor, newAuthorData);
+                        mHostActivity.processChanges(mAuthor, tmpAuthor);
                     })
                     .create();
         }

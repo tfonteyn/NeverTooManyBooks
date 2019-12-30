@@ -53,6 +53,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -67,6 +68,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  */
 public class EditBookSeriesActivity
         extends EditObjectListActivity<Series> {
+
+    private static final String TAG = "EditBookSeriesActivity";
 
     /** Main screen Series Number field. */
     private TextView mSeriesNumberView;
@@ -133,48 +136,55 @@ public class EditBookSeriesActivity
         mSeriesNumberView.setText("");
     }
 
-    @Override
+    /**
+     * Process the modified (if any) data.
+     *
+     * @param series    the user was editing (with the original data)
+     * @param tmpSeries the modifications the user made in a placeholder object.
+     *                  Non-modified data was copied here as well.
+     */
     protected void processChanges(@NonNull final Series series,
-                                  @NonNull final Series newSeriesData) {
+                                  @NonNull final Series tmpSeries) {
 
         final Locale bookLocale = mModel.getBookLocale();
 
         // anything other than the number changed ?
-        if (series.getTitle().equals(newSeriesData.getTitle())
-            && series.isComplete() == newSeriesData.isComplete()) {
+        if (series.getTitle().equals(tmpSeries.getTitle())
+            && series.isComplete() == tmpSeries.isComplete()) {
 
             // Number is not part of the Series table, but of the book_series table.
-            if (!series.getNumber().equals(newSeriesData.getNumber())) {
+            if (!series.getNumber().equals(tmpSeries.getNumber())) {
                 // so if the number is different, just update it
-                series.setNumber(newSeriesData.getNumber());
+                series.setNumber(tmpSeries.getNumber());
                 Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
                 mListAdapter.notifyDataSetChanged();
             }
-            // nothing or only the number was different, so we're done here.
+            // nothing was modified,
+            // or only the number was different, either way, we're done here.
             return;
         }
+
+        // The base data for the Series was modified.
 
         //See if the old one is used by any other books.
         long nrOfReferences = mModel.getDb().countBooksInSeries(this, series, bookLocale);
-
-        // if it's not, we simply re-use the old object.
+        // if it's not, we can simply modify the old object and we're done here.
         if (mModel.isSingleUsage(nrOfReferences)) {
-            /*
-             * Use the original Series object, but update its fields
-             *
-             * see below and {@link DAO#insertBookDependents} where an *insert* will be done
-             * The 'old' Series will be orphaned. TODO: simplify / don't orphan?
-             */
-            updateItem(series, newSeriesData, bookLocale);
+            // Copy the new data into the original Series object that the user was changing.
+            // The Series object keeps the same (old) ID!
+            series.copyFrom(tmpSeries, true);
+            Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
+            mListAdapter.notifyDataSetChanged();
             return;
         }
 
-        // At this point, we know the names are genuinely different and the old Series is used
-        // in more than one place. Ask the user if they want to make the changes globally.
+        // At this point, the base data for the Series was modified and the old Series is used
+        // in more than one place.
+        // Ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
         String message = getString(R.string.confirm_apply_series_changed,
                                    series.getSorting(),
-                                   newSeriesData.getSorting(),
+                                   tmpSeries.getSorting(),
                                    allBooks);
         new AlertDialog.Builder(this)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -182,19 +192,47 @@ public class EditBookSeriesActivity
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setNeutralButton(allBooks, (dialog, which) -> {
-                    boolean replaced = mModel.getDb().globalReplace(this, bookLocale,
-                                                                    series, newSeriesData);
-                    mModel.setGlobalReplacementsMade(replaced);
-                    updateItem(series, newSeriesData, bookLocale);
+                    // This change is done in the database NOW!
+                    // Process the destination Series.
+                    // It will either find/update or insert the data and update the tmpSeries.id
+                    boolean replaced;
+                    //URGENT: do we really need to have a new id?
+                    // Can we not simply update the original object?
+                    if (mModel.getDb().updateOrInsertSeries(this, bookLocale, tmpSeries)) {
+                        // Anywhere where the old Series (id) is used, replace it with the new one.
+                        replaced = mModel.getDb().globalReplace(this, bookLocale,
+                                                                series, tmpSeries);
 
+                        // flag any changes up.
+                        mModel.setGlobalReplacementsMade(replaced);
+                        // unlink the old one, and link with the new Series
+                        mList.remove(series);
+                        mList.add(tmpSeries);
+                        Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
+                        mListAdapter.notifyDataSetChanged();
+
+                    } else {
+                        // eek?
+                        Logger.warnWithStackTrace(this, TAG,
+                                                  "Could not update", "series=" + tmpSeries);
+                        new AlertDialog.Builder(this)
+                                .setIconAttribute(android.R.attr.alertDialogIcon)
+                                .setMessage(R.string.error_unexpected_error)
+                                .show();
+                    }
                 })
-                .setPositiveButton(R.string.btn_this_book, (dialog, which) ->
-                        updateItem(series, newSeriesData, bookLocale))
+                .setPositiveButton(R.string.btn_this_book, (dialog, which) -> {
+                    // treat the new data as a new Series.
+                    // unlink the old one, and link with the new Series
+                    mList.remove(series);
+                    mList.add(tmpSeries);
+                    Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
+                    mListAdapter.notifyDataSetChanged();
+                })
                 .create()
                 .show();
     }
 
-    @Override
     protected void updateItem(@NonNull final Series series,
                               @NonNull final Series newSeriesData,
                               @NonNull final Locale fallbackLocale) {
@@ -299,21 +337,33 @@ public class EditBookSeriesActivity
                     .setTitle(R.string.title_edit_series)
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                     .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
+                        // don't check on the name being the same as the old one here,
+                        // we're doing more extensive checks later on.
                         mSeriesName = mTitleView.getText().toString().trim();
                         if (mSeriesName.isEmpty()) {
                             Snackbar.make(mTitleView, R.string.warning_missing_name,
                                           Snackbar.LENGTH_LONG).show();
                             return;
                         }
+
+                        // Create a new Series as a holder for all changes.
+                        Series tmpSeries = new Series(mSeriesName);
+
                         if (mIsCompleteView != null) {
                             mSeriesIsComplete = mIsCompleteView.isChecked();
+                            tmpSeries.setComplete(mSeriesIsComplete);
+                        } else {
+                            tmpSeries.setComplete(mSeries.isComplete());
                         }
-                        mSeriesNumber = mNumberView.getText().toString().trim();
 
-                        // Create a new Series as a holder for the changes.
-                        Series newSeriesData = new Series(mSeriesName, mSeriesIsComplete);
-                        newSeriesData.setNumber(mSeriesNumber);
-                        mHostActivity.processChanges(mSeries, newSeriesData);
+                        if (mNumberView != null) {
+                            mSeriesNumber = mNumberView.getText().toString().trim();
+                            tmpSeries.setNumber(mSeriesNumber);
+                        } else {
+                            tmpSeries.setNumber(mSeries.getNumber());
+                        }
+
+                        mHostActivity.processChanges(mSeries, tmpSeries);
                     })
                     .create();
         }

@@ -32,16 +32,33 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 
 /**
  * Intention is to create cleanup routines for some columns/tables
@@ -119,19 +136,6 @@ public class DBCleaner {
         mSyncedDb = db.getUnderlyingDatabase();
     }
 
-    public void maybeUpdate(final boolean dryRun) {
-
-        // remove orphan rows
-        bookBookshelf(dryRun);
-
-        // make sure these are '0' or '1'
-        booleanCleanup(DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_READ, dryRun);
-        booleanCleanup(DBDefinitions.TBL_BOOKS, DBDefinitions.DOM_BOOK_SIGNED, dryRun);
-
-        //TODO: books table: search out invalid UUIDs, check if there is a file, rename/remove...
-        // in particular if the UUID is surrounded with '' or ""
-    }
-
     /**
      * Do a mass update of any languages not yet converted to ISO codes.
      *
@@ -153,7 +157,7 @@ public class DBCleaner {
     }
 
     /**
-     * Validates the style versus Bookshelf. No dry-run.
+     * Validates the style versus Bookshelf.
      *
      * @param context Current context
      */
@@ -163,19 +167,37 @@ public class DBCleaner {
         }
     }
 
+    /* ****************************************************************************************** */
+
+
+    public void maybeUpdate(@NonNull final Context context,
+                            final boolean dryRun) {
+
+        // remove orphan rows
+        bookBookshelf(dryRun);
+
+
+        // make sure these are '0' or '1'
+        booleanCleanup(TBL_BOOKS, DOM_BOOK_READ, dryRun);
+        booleanCleanup(TBL_BOOKS, DOM_BOOK_SIGNED, dryRun);
+
+        //TODO: books table: search for invalid UUIDs, check if there is a file, rename/remove...
+        // in particular if the UUID is surrounded with '' or ""
+    }
+
     /**
      * Remove rows where books are sitting on a {@code null} bookshelf.
      *
      * @param dryRun {@code true} to run the update.
      */
     private void bookBookshelf(final boolean dryRun) {
-        String select = "SELECT DISTINCT " + DBDefinitions.DOM_FK_BOOK
-                        + " FROM " + DBDefinitions.TBL_BOOK_BOOKSHELF
-                        + " WHERE " + DBDefinitions.DOM_FK_BOOKSHELF + "=NULL";
+        String select = "SELECT DISTINCT " + DOM_FK_BOOK
+                        + " FROM " + TBL_BOOK_BOOKSHELF
+                        + " WHERE " + DOM_FK_BOOKSHELF + "=NULL";
         toLog("ENTER", select);
         if (!dryRun) {
-            String sql = "DELETE " + DBDefinitions.TBL_BOOK_BOOKSHELF
-                         + " WHERE " + DBDefinitions.DOM_FK_BOOKSHELF + "=NULL";
+            String sql = "DELETE " + TBL_BOOK_BOOKSHELF
+                         + " WHERE " + DOM_FK_BOOKSHELF + "=NULL";
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
@@ -183,6 +205,88 @@ public class DBCleaner {
         }
     }
 
+    /**
+     * Check for books which do not have an Author at position 1.
+     * For those that don't, read their authors, and re-save them.
+     * <p>
+     * Transaction: participate, or runs in new.
+     *
+     * @param context Current context
+     */
+    public void bookAuthors(@NonNull final Context context) {
+        String sql = "SELECT " + DOM_FK_BOOK + " FROM "
+                     + "(SELECT " + DOM_FK_BOOK + ", MIN(" + DOM_BOOK_AUTHOR_POSITION + ") AS mp"
+                     + " FROM " + TBL_BOOK_AUTHOR + " GROUP BY " + DOM_FK_BOOK
+                     + ") WHERE mp > 1";
+
+        ArrayList<Long> bookIds = mDb.getIdList(sql);
+        if (!bookIds.isEmpty()) {
+            Log.w(TAG, "bookSeries|" + TBL_BOOK_AUTHOR.getName() + ", rows=" + bookIds.size());
+            Synchronizer.SyncLock txLock = null;
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+            try {
+                for (long bookId : bookIds) {
+                    ArrayList<Author> list = mDb.getAuthorsByBookId(bookId);
+                    mDb.insertBookAuthors(context, bookId, list);
+                }
+                if (txLock != null) {
+                    mSyncedDb.setTransactionSuccessful();
+                }
+            } catch (@NonNull final RuntimeException e) {
+                Logger.error(TAG, e);
+            } finally {
+                if (txLock != null) {
+                    mSyncedDb.endTransaction(txLock);
+                }
+                Log.w(TAG, "bookSeries|done");
+            }
+        }
+    }
+
+    /**
+     * Check for books which do not have a Series at position 1.
+     * For those that don't, read their series, and re-save them.
+     * <p>
+     * Transaction: participate, or runs in new.
+     *
+     * @param context Current context
+     */
+    public void bookSeries(@NonNull final Context context) {
+        String sql = "SELECT " + DOM_FK_BOOK + " FROM "
+                     + "(SELECT " + DOM_FK_BOOK + ", MIN(" + DOM_BOOK_SERIES_POSITION + ") AS mp"
+                     + " FROM " + TBL_BOOK_SERIES + " GROUP BY " + DOM_FK_BOOK
+                     + ") WHERE mp > 1";
+
+        ArrayList<Long> bookIds = mDb.getIdList(sql);
+        if (!bookIds.isEmpty()) {
+            Log.w(TAG, "bookSeries|" + TBL_BOOK_SERIES.getName() + ", rows=" + bookIds.size());
+            // ENHANCE: we really should fetch each book individually
+            Locale bookLocale = Locale.getDefault();
+
+            Synchronizer.SyncLock txLock = null;
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+            try {
+                for (long bookId : bookIds) {
+                    ArrayList<Series> list = mDb.getSeriesByBookId(bookId);
+                    mDb.insertBookSeries(context, bookId, bookLocale, list);
+                }
+                if (txLock != null) {
+                    mSyncedDb.setTransactionSuccessful();
+                }
+            } catch (@NonNull final RuntimeException e) {
+                Logger.error(TAG, e);
+            } finally {
+                if (txLock != null) {
+                    mSyncedDb.endTransaction(txLock);
+                }
+                Log.w(TAG, "bookSeries|done");
+            }
+        }
+    }
 
     /* ****************************************************************************************** */
 
