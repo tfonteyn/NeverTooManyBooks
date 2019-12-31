@@ -377,11 +377,11 @@ public class BookDetailsFragment
         // book fields
         fields.addString(mTitleView, DBDefinitions.KEY_TITLE);
 
-        // defined, but fetched manually
+        // defined, but populated manually
         fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
               .setShowHtml(true);
 
-        // defined, but fetched manually
+        // defined, but populated manually
         fields.define(mSeriesView, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
@@ -392,9 +392,9 @@ public class BookDetailsFragment
               .setShowHtml(true)
               .setRelatedFields(R.id.lbl_description);
 
-        fields.addBoolean(mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS)
+        // defined, but populated manually
+        fields.define(mIsAnthologyCbx, DBDefinitions.KEY_TOC_BITMASK)
               .setRelatedFields(R.id.lbl_anthology);
-        // not added here: actual TOC which is non-text
 
         fields.addString(mGenreView, DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
@@ -425,7 +425,7 @@ public class BookDetailsFragment
         fields.addString(mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        // defined, but fetched manually
+        // defined, but populated manually
         fields.defineMonetary(mPriceListedView, DBDefinitions.KEY_PRICE_LISTED)
               .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
@@ -456,18 +456,16 @@ public class BookDetailsFragment
               .setFormatter(dateFormatter)
               .setRelatedFields(R.id.lbl_read_end);
 
-        // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.addBoolean(mReadCheckbox, DBDefinitions.KEY_READ);
 
-        // no DataAccessor needed, the Fields CheckableAccessor takes care of this.
         fields.addBoolean(mSignedCbx, DBDefinitions.KEY_SIGNED)
               .setRelatedFields(R.id.lbl_signed);
 
-        // defined, but fetched manually
+        // defined, but populated manually
         fields.defineMonetary(mPricePaidView, DBDefinitions.KEY_PRICE_PAID)
               .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
 
-        // defined, but fetched manually
+        // defined, but populated manually
         fields.define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
@@ -492,6 +490,10 @@ public class BookDetailsFragment
             populateLoanedToField(mBookModel.getLoanee());
         }
         if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+            boolean isAnthology = mBookModel
+                    .getBook().isBitSet(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            mIsAnthologyCbx.setChecked(isAnthology);
+
             populateToc();
         }
         if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
@@ -504,21 +506,21 @@ public class BookDetailsFragment
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionLabelVisibility(R.id.lbl_publication_section,
-                                  R.id.publisher,
-                                  R.id.date_published,
-                                  R.id.price_listed,
-                                  R.id.first_publication);
+                                  mPublisherView,
+                                  mDatePublishedView,
+                                  mPriceListedView,
+                                  mFirstPubView);
 
         // Hide the Notes label if none of the notes fields are shown.
         setSectionLabelVisibility(R.id.lbl_notes,
-                                  R.id.notes,
-                                  R.id.lbl_edition,
-                                  R.id.lbl_signed,
-                                  R.id.lbl_date_acquired,
-                                  R.id.lbl_price_paid,
-                                  R.id.lbl_read_start,
-                                  R.id.lbl_read_end,
-                                  R.id.lbl_location);
+                                  mNotesView,
+                                  mEditionView,
+                                  mSignedCbx,
+                                  mDateAcquiredView,
+                                  mPricePaidView,
+                                  mDateReadStartView,
+                                  mDateReadEndView,
+                                  mLocationView);
     }
 
     private void setupCoverViews(final int cIdx,
@@ -561,7 +563,7 @@ public class BookDetailsFragment
         Book book = mBookModel.getBook();
 
         boolean isSaved = book.getId() > 0;
-        boolean isRead = book.getBoolean(Book.IS_READ);
+        boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
         boolean isAvailable = mBookModel.isAvailable();
 
         menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);

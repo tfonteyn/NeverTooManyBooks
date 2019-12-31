@@ -501,7 +501,7 @@ class ImportLegacyTask
         // If it has a rating or a 'read_end' date, assume it's read. If these are missing then
         // DO NOT overwrite existing data since it *may* be read even without these fields.
         if ((rating != null && rating > 0) || (readEnd != null && !readEnd.isEmpty())) {
-            bookData.putBoolean(Book.IS_READ, true);
+            bookData.putBoolean(DBDefinitions.KEY_READ, true);
         }
 
         // Pages: convert long to String

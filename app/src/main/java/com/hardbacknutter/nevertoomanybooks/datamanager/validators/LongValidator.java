@@ -36,19 +36,18 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * Validator to apply a default value and validate as Integer.
- * Long is casted to Integer.
+ * Validator to apply a default value and validate as Long.
  */
-public class IntegerValidator
+public class LongValidator
         implements DataValidator {
 
     /** Default to apply if the field is {@code null} or empty. */
-    private final int mDefaultValue;
+    private final long mDefaultValue;
 
     /**
-     * Constructor; default value is 0f.
+     * Constructor; default value is 0.
      */
-    public IntegerValidator() {
+    public LongValidator() {
         mDefaultValue = 0;
     }
 
@@ -57,7 +56,7 @@ public class IntegerValidator
      *
      * @param defValue Default to apply if the field is empty
      */
-    public IntegerValidator(final int defValue) {
+    public LongValidator(final long defValue) {
         mDefaultValue = defValue;
     }
 
@@ -69,27 +68,27 @@ public class IntegerValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        Integer value;
+        long value;
         Object obj = dataManager.get(key);
         if (obj == null) {
             value = mDefaultValue;
-        } else if (obj instanceof Integer) {
-            value = (Integer) obj;
         } else if (obj instanceof Long) {
-            value = ((Long) obj).intValue();
+            value = (long) obj;
+        } else if (obj instanceof Integer) {
+            value = ((Integer) obj).longValue();
         } else {
             String stringValue = obj.toString().trim();
             if (stringValue.isEmpty()) {
                 value = mDefaultValue;
             } else {
                 try {
-                    value = Integer.parseInt(stringValue);
+                    value = Long.parseLong(stringValue);
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(R.string.vldt_integer_expected_for_x,
                                                  context.getString(errorLabelId));
                 }
             }
         }
-        dataManager.putInt(key, value);
+        dataManager.putLong(key, value);
     }
 }

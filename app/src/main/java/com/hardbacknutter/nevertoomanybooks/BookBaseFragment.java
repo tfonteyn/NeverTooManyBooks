@@ -341,7 +341,7 @@ public abstract class BookBaseFragment
      */
     void setSectionLabelVisibility(@SuppressWarnings("SameParameterValue")
                                    @IdRes final int sectionLabelId,
-                                   @NonNull @IdRes final int... fields) {
+                                   @NonNull final View... fields) {
         showOrHide(sectionLabelId, View.VISIBLE, fields);
     }
 
@@ -351,15 +351,15 @@ public abstract class BookBaseFragment
      *
      * @param fieldToSet      field to set
      * @param visibilityToSet to use for the fieldToSet
-     * @param fields          to test for having the same visibility
+     * @param views           to test for having the same visibility
      */
     private void showOrHide(@IdRes final int fieldToSet,
                             @SuppressWarnings("SameParameterValue") final int visibilityToSet,
-                            @NonNull @IdRes final int... fields) {
+                            @NonNull final View... views) {
         //noinspection ConstantConditions
         View fieldView = getView().findViewById(fieldToSet);
         if (fieldView != null) {
-            boolean allGone = hasSameVisibility(View.GONE, fields);
+            boolean allGone = hasSameVisibility(View.GONE, views);
             fieldView.setVisibility(allGone ? View.GONE : visibilityToSet);
         }
     }
@@ -368,20 +368,18 @@ public abstract class BookBaseFragment
      * Check if all fields have the same visibility.
      *
      * @param visibility to check
-     * @param fields     to check
+     * @param views      to check
      *
      * @return {@code true} if all fields have the same visibility
      */
     private boolean hasSameVisibility(@SuppressWarnings("SameParameterValue") final int visibility,
-                                      @IdRes @NonNull final int[] fields) {
-        View view = getView();
-        for (int fieldId : fields) {
-            //noinspection ConstantConditions
-            View field = view.findViewById(fieldId);
-            if (field != null && field.getVisibility() != visibility) {
+                                      @NonNull final View[] views) {
+        for (View view : views) {
+            if (view != null && view.getVisibility() != visibility) {
                 return false;
             }
         }
         return true;
     }
+
 }

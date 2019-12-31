@@ -866,11 +866,13 @@ public class Fields {
 
         @Override
         public void setValue(@NonNull final Bundle source) {
+            //noinspection unchecked
             setValue((T) source.get(mField.getKey()));
         }
 
         @Override
         public void setValue(@NonNull final DataManager source) {
+            //noinspection unchecked
             setValue((T) source.get(mField.getKey()));
         }
     }

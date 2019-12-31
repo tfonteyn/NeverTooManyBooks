@@ -282,9 +282,8 @@ public class BookBaseFragmentModel
      */
     public boolean toggleRead() {
         mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
-        return mBook.setRead(mDb, !mBook.getBoolean(Book.IS_READ));
+        return mBook.setRead(mDb, !mBook.getBoolean(DBDefinitions.KEY_READ));
     }
-
 
     /**
      * To be called if global changes to the Authors <strong>may</strong> have happened.

@@ -3823,7 +3823,7 @@ public class DAO
      *
      * @param context         Current context
      * @param tableDefinition destination table
-     * @param data            A collection with the columns to be set. May contain extra data.
+     * @param dataManager     A collection with the columns to be set. May contain extra data.
      * @param bookLocale      the Locale to use for character case manipulation
      *
      * @return New and filtered ContentValues
@@ -3832,19 +3832,19 @@ public class DAO
     private ContentValues filterValues(@NonNull final Context context,
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final TableDefinition tableDefinition,
-                                       @NonNull final DataManager data,
+                                       @NonNull final DataManager dataManager,
                                        @NonNull final Locale bookLocale) {
 
         TableInfo tableInfo = tableDefinition.getTableInfo(sSyncedDb);
 
         ContentValues cv = new ContentValues();
         // Create the arguments
-        for (String key : data.keySet()) {
+        for (String key : dataManager.keySet()) {
             // Get column info for this column.
             ColumnInfo columnInfo = tableInfo.getColumn(key);
             // Check if we actually have a matching column, and never update a PK.
             if (columnInfo != null && !columnInfo.isPrimaryKey()) {
-                Object entry = data.get(key);
+                Object entry = dataManager.get(key);
                 if (entry == null) {
                     if (columnInfo.isNullable()) {
                         cv.putNull(key);

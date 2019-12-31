@@ -58,8 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BitmaskDataAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.BooleanDataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -77,23 +75,6 @@ public class Book
         extends DataManager
         implements ItemWithTitle {
 
-    /**
-     * Key for accessor to the underlying {@link DBDefinitions#KEY_READ}.
-     * Type: Boolean
-     */
-    public static final String IS_READ = "+IsRead";
-    /**
-     * Key for accessor to the underlying {@link DBDefinitions#KEY_TOC_BITMASK}.
-     * Type: Boolean
-     * true: anthology by one or more authors
-     */
-    public static final String HAS_MULTIPLE_WORKS = "+HasMultiWorks";
-    /**
-     * Key for accessor to the underlying {@link DBDefinitions#KEY_TOC_BITMASK}.
-     * Type: Boolean
-     * true: anthology by multiple authors
-     */
-    public static final String HAS_MULTIPLE_AUTHORS = "+HasMultiAuthors";
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
@@ -157,6 +138,7 @@ public class Book
     private static final String TAG = "Book";
     /** mapping the edition bit to a resource string for displaying. Ordered. */
     private static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
+
     /*
      * NEWTHINGS: edition: add label for the type
      *
@@ -176,7 +158,7 @@ public class Book
      * Public Constructor.
      */
     public Book() {
-        initAccessorsAndValidators();
+        addValidators();
     }
 
     /**
@@ -190,7 +172,7 @@ public class Book
      */
     public Book(final long bookId,
                 @NonNull final DAO db) {
-        initAccessorsAndValidators();
+        addValidators();
         if (bookId > 0) {
             reload(db, bookId);
         }
@@ -205,7 +187,7 @@ public class Book
      * @param bookData Bundle with book data
      */
     public Book(@NonNull final Bundle bookData) {
-        initAccessorsAndValidators();
+        addValidators();
         putAll(bookData);
     }
 
@@ -389,10 +371,10 @@ public class Book
      */
     public boolean setRead(@NonNull final DAO db,
                            final boolean isRead) {
-        boolean old = getBoolean(Book.IS_READ);
+        boolean old = getBoolean(DBDefinitions.KEY_READ);
 
         if (db.setBookRead(getId(), isRead)) {
-            putBoolean(Book.IS_READ, isRead);
+            putBoolean(DBDefinitions.KEY_READ, isRead);
             if (isRead) {
                 putString(DBDefinitions.KEY_READ_END, DateUtils.localSqlDateForToday());
             } else {
@@ -411,7 +393,7 @@ public class Book
     @CallSuper
     public void clear() {
         super.clear();
-        initAccessorsAndValidators();
+        addValidators();
     }
 
     /**
@@ -669,7 +651,7 @@ public class Book
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LOCALE) {
                 Log.d(TAG, "getLocale|no language set"
                            + "|id=" + getId()
-                           + "|title=" + get(DBDefinitions.KEY_TITLE),
+                           + "|title=" + getString(DBDefinitions.KEY_TITLE),
                       new Throwable());
             }
             // none, use fallback.
@@ -694,26 +676,17 @@ public class Book
     }
 
     /**
-     * Build any special purpose accessors + validators.
+     * Add validators.
      * <p>
      * ENHANCE: add (partial) date validators ? any other validators needed ?
      */
-    private void initAccessorsAndValidators() {
-
-        // Booleans are stored as Long (0,1)
-        addAccessor(IS_READ, new BooleanDataAccessor(DBDefinitions.KEY_READ));
-
-        // set/reset a single bit in a bitmask.
-        addAccessor(HAS_MULTIPLE_WORKS,
-                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK, TOC_MULTIPLE_WORKS));
-        addAccessor(HAS_MULTIPLE_AUTHORS,
-                    new BitmaskDataAccessor(DBDefinitions.KEY_TOC_BITMASK, TOC_MULTIPLE_AUTHORS));
+    private void addValidators() {
 
         addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR, R.string.lbl_title);
         addValidator(UniqueId.BKEY_AUTHOR_ARRAY, NON_BLANK_VALIDATOR, R.string.lbl_author);
 
-        addValidator(DBDefinitions.KEY_EDITION_BITMASK, INTEGER_VALIDATOR, R.string.lbl_edition);
-        addValidator(DBDefinitions.KEY_TOC_BITMASK, INTEGER_VALIDATOR,
+        addValidator(DBDefinitions.KEY_EDITION_BITMASK, LONG_VALIDATOR, R.string.lbl_edition);
+        addValidator(DBDefinitions.KEY_TOC_BITMASK, LONG_VALIDATOR,
                      R.string.lbl_table_of_content);
 
         addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_DOUBLE_VALIDATOR,

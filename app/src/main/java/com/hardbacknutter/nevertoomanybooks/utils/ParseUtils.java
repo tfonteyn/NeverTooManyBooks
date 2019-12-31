@@ -72,7 +72,7 @@ public final class ParseUtils {
     /**
      * Encode a string by 'escaping' all instances of:
      * <ul>
-     * <li>any '\', \'r', '\n', '\t'</li>
+     * <li>'\\', '\r', '\n', '\t'</li>
      * <li>any additional 'escapeChars'</li>
      * </ul>
      * The escape char is '\'.
@@ -132,6 +132,7 @@ public final class ParseUtils {
 
     /**
      * Decode a string by removing any escapes.
+     * <strong>Does NOT recurse.</strong>
      *
      * @param source String to decode
      *
@@ -181,11 +182,10 @@ public final class ParseUtils {
         return sb.toString().trim();
     }
 
-
     /**
      * Translate the passed Object to a Long value.
      *
-     * @param source Object
+     * @param source Object to convert
      *
      * @return Resulting value ({@code null} or empty becomes 0)
      *
@@ -193,9 +193,9 @@ public final class ParseUtils {
      */
     public static long toLong(@Nullable final Object source)
             throws NumberFormatException {
+        // handle null and native type first!
         if (source == null) {
             return 0;
-
         } else if (source instanceof Long) {
             return (long) source;
 
@@ -217,11 +217,10 @@ public final class ParseUtils {
         }
     }
 
-
     /**
      * Translate the passed Object to a boolean value.
      *
-     * @param source Object
+     * @param source Object to convert
      *
      * @return Resulting value, {@code null} or empty string become {@code false}.
      *
@@ -229,17 +228,20 @@ public final class ParseUtils {
      */
     public static boolean toBoolean(@Nullable final Object source)
             throws NumberFormatException {
+        // handle null and native type first!
         if (source == null) {
             return false;
         } else if (source instanceof Boolean) {
             return (boolean) source;
-        } else if (source instanceof Integer) {
-            return (int) source != 0;
-        } else if (source instanceof Long) {
+
+        } else if (source instanceof Integer || source instanceof Long) {
             return (long) source != 0;
+//        } else if (source instanceof Float || source instanceof Double) {
+//            return (double) source != 0.0;
+        } else {
+            // is it a String?
+            return parseBoolean(source.toString(), true);
         }
-        // lets see if its a String
-        return parseBoolean(source.toString(), true);
     }
 
     /**
@@ -249,7 +251,7 @@ public final class ParseUtils {
      * we return {@code false} if the string was {@code null} or empty.
      * If set to {@code false}, we throw a NumberFormatException exception.
      *
-     * @param source       String to convert
+     * @param source       String to parse
      * @param emptyIsFalse how to handle a {@code null} or empty string
      *
      * @return boolean value
@@ -267,6 +269,8 @@ public final class ParseUtils {
                 throw new NumberFormatException(ERROR_INVALID_BOOLEAN_S + source + '`');
             }
         } else {
+            // we only do english terms, as it's expected that these come from some
+            // sort of program code during imports etc...
             String stringValue = source.trim().toLowerCase(Locale.ENGLISH);
             switch (stringValue) {
                 case "1":
@@ -275,12 +279,14 @@ public final class ParseUtils {
                 case "t":
                 case "true":
                     return true;
+
                 case "0":
                 case "n":
                 case "no":
                 case "f":
                 case "false":
                     return false;
+
                 default:
                     try {
                         return Integer.parseInt(stringValue) != 0;
@@ -291,13 +297,11 @@ public final class ParseUtils {
         }
     }
 
-
     /**
      * Translate the passed Object to a float value.
      *
-     * @param source       Object
-     * @param sourceLocale Locale to use for the formatter/parser.
-     *                     Can be {@code null} in which case {@code Locale.getDefault()} is used.
+     * @param source       Object to convert
+     * @param sourceLocale (optional) Locale to use for the formatter/parser.
      *
      * @return Resulting value ({@code null} or empty becomes 0)
      *
@@ -306,9 +310,9 @@ public final class ParseUtils {
     public static float toFloat(@Nullable final Object source,
                                 @Nullable final Locale sourceLocale)
             throws NumberFormatException {
+        // handle null and native type first!
         if (source == null) {
             return 0f;
-
         } else if (source instanceof Float) {
             return (float) source;
 
@@ -332,8 +336,10 @@ public final class ParseUtils {
     /**
      * Replacement for {@code Float.parseFloat(String)} using Locales.
      *
-     * @param source       string to parse
-     * @param sourceLocale (optional) Locale to use for the formatter/parser.
+     * @param source       String to parse
+     * @param sourceLocale Locale to use for the formatter/parser.
+     *                     Can be {@code null} in which case
+     *                     {@link Double#parseDouble(String)} is used.
      *
      * @return Resulting value ({@code null} or empty becomes 0)
      *
@@ -358,8 +364,6 @@ public final class ParseUtils {
         for (Locale locale : locales) {
             try {
                 DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
-//                char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();
-
                 Number number = nf.parse(source);
                 if (number != null) {
                     return number.floatValue();
@@ -372,13 +376,11 @@ public final class ParseUtils {
         throw new NumberFormatException("not a float: " + source);
     }
 
-
     /**
      * Translate the passed Object to a double value.
      *
-     * @param source       Object
-     * @param sourceLocale Locale to use for the formatter/parser.
-     *                     Can be {@code null} in which case {@code Locale.getDefault()} is used.
+     * @param source       Object to convert
+     * @param sourceLocale (optional) Locale to use for the formatter/parser.
      *
      * @return Resulting value ({@code null} or empty becomes 0)
      *
@@ -387,9 +389,9 @@ public final class ParseUtils {
     public static double toDouble(@Nullable final Object source,
                                   @Nullable final Locale sourceLocale)
             throws NumberFormatException {
+        // handle null and native type first!
         if (source == null) {
             return 0;
-
         } else if (source instanceof Double) {
             return (Double) source;
 
@@ -414,9 +416,10 @@ public final class ParseUtils {
     /**
      * Replacement for {@code Double.parseDouble(String)} using Locales.
      *
-     * @param source       string to parse
+     * @param source       String to parse
      * @param sourceLocale Locale to use for the formatter/parser.
-     *                     Can be {@code null} in which case {@code Locale.getDefault()} is used.
+     *                     Can be {@code null} in which case
+     *                     {@link Double#parseDouble(String)} is used.
      *
      * @return Resulting value ({@code null} or empty becomes 0)
      *

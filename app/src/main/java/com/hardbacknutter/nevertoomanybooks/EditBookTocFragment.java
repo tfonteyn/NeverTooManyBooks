@@ -64,7 +64,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
@@ -126,7 +125,10 @@ public class EditBookTocFragment
     private RecyclerView mListView;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
+    /** checkbox to indicate this is an anthology. */
     private CompoundButton mIsAnthologyCbx;
+    /** checkbox to hide/show the author edit field. */
+    private CompoundButton mMultiAuthorsView;
 
     private TaskModel mIsfdbTaskModel;
 
@@ -197,15 +199,16 @@ public class EditBookTocFragment
                  * The user approved, so add the TOC to the list and refresh the screen
                  * (still not saved to database).
                  */
-                public void commitIsfdbData(final long tocBitMask,
+                public void commitIsfdbData(@Book.TocBits final long tocBitMask,
                                             @NonNull final List<TocEntry> tocEntries) {
                     if (tocBitMask != 0) {
                         Book book = mBookModel.getBook();
                         book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-                        getFields().getField(mIsAnthologyCbx).setValueFrom(book);
-                        getFields().getField(mMultiAuthorsView).setValueFrom(book);
+
+                        populateTocBits(book);
                     }
 
+                    // append! the new data
                     mList.addAll(tocEntries);
                     mListAdapter.notifyDataSetChanged();
                 }
@@ -220,8 +223,7 @@ public class EditBookTocFragment
                 }
             };
 
-    /** checkbox to hide/show the author edit field. */
-    private CompoundButton mMultiAuthorsView;
+
     /** Hold the item position in the ist while we're editing an item. */
     @Nullable
     private Integer mEditPosition;
@@ -281,27 +283,10 @@ public class EditBookTocFragment
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @Override
-    protected void initFields() {
-        super.initFields();
-        Fields fields = getFields();
-
-        // Anthology is provided as a bitmask, see {@link Book#initAccessorsAndValidators()}
-        fields.addBoolean(mIsAnthologyCbx, Book.HAS_MULTIPLE_WORKS);
-
-        fields.addBoolean(mMultiAuthorsView, Book.HAS_MULTIPLE_AUTHORS);
-
-        // adding a new TOC entry
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.btn_add).setOnClickListener(v -> newEntry());
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mListView.setLayoutManager(linearLayoutManager);
-        //noinspection ConstantConditions
-        mListView.addItemDecoration(
-                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
-        mListView.setHasFixedSize(true);
-    }
+//    @Override
+//    protected void initFields() {
+//        super.initFields();
+//    }
 
     @Override
     @CallSuper
@@ -333,10 +318,22 @@ public class EditBookTocFragment
         // used to call Search sites to populate the TOC
         mIsbn = book.getString(DBDefinitions.KEY_ISBN);
 
+        // adding a new TOC entry
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.btn_add).setOnClickListener(v -> newEntry());
+
+        // set up the list view. The adapter is setup in onLoadFieldsFromBook
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mListView.setLayoutManager(linearLayoutManager);
+        //noinspection ConstantConditions
+        mListView.addItemDecoration(
+                new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+        mListView.setHasFixedSize(true);
+
         // do other stuff here that might affect the view.
 
+
         // Fix the focus order for the views
-        //noinspection ConstantConditions
         FocusFixer.fix(getView());
     }
 
@@ -399,6 +396,8 @@ public class EditBookTocFragment
 
         Book book = mBookModel.getBook();
 
+        populateTocBits(book);
+
         // Populate the list view with the book content table.
         mList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
@@ -417,13 +416,26 @@ public class EditBookTocFragment
         showOrHideFields(false, false);
     }
 
-    /**
-     * The toc list is not a 'real' field. Hence the need to store it manually here.
-     */
+    private void populateTocBits(@NonNull final Book book) {
+        mIsAnthologyCbx.setChecked(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
+                                                 Book.TOC_MULTIPLE_WORKS));
+        mMultiAuthorsView.setChecked(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
+                                                   Book.TOC_MULTIPLE_AUTHORS));
+    }
+
     @Override
     protected void onSaveFieldsToBook() {
         super.onSaveFieldsToBook();
-        mBookModel.getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+
+        Book book = mBookModel.getBook();
+
+        book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS,
+                    mIsAnthologyCbx.isChecked());
+        book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_AUTHORS,
+                    mMultiAuthorsView.isChecked());
+
+        // The toc list is not a 'real' field. Hence the need to store it manually here.
+        book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
     }
 
     private void onCreateContextMenu(final int position) {
@@ -523,6 +535,7 @@ public class EditBookTocFragment
         private static final String BKEY_HAS_OTHER_EDITIONS = TAG + ":hasOtherEditions";
 
         private boolean mHasOtherEditions;
+        @Book.TocBits
         private long mTocBitMask;
         private ArrayList<TocEntry> mTocEntries;
 
@@ -635,7 +648,7 @@ public class EditBookTocFragment
 
         interface ConfirmTocResults {
 
-            void commitIsfdbData(long tocBitMask,
+            void commitIsfdbData(@Book.TocBits long tocBitMask,
                                  @NonNull List<TocEntry> tocEntries);
 
             void getNextEdition();

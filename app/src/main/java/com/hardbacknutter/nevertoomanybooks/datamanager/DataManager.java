@@ -45,12 +45,11 @@ import java.util.Map;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.datamanager.accessors.DataAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataCrossValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DoubleValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.validators.IntegerValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
@@ -61,24 +60,28 @@ import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
 /**
  * Class to manage a version of a set of related data.
+ * It's basically an extended Bundle.
+ *
+ * <strong>Note</strong>: there is no int support on purpose. Always use long values.
+ * In contrast, float is supported solely due to RatingBar usage.
  * <ul>
  * <li>mRawData: stores the actual data</li>
- * <li>mDataAccessorsMap: accessors which can 'translate' data</li>
  * <li>mValidatorsMap: validators applied at 'save' time</li>
  * <li>mCrossValidators: cross-validators applied at 'save' time</li>
- * <li></li>
  * </ul>
  */
 public class DataManager {
 
     /** re-usable validator. */
-    protected static final DataValidator INTEGER_VALIDATOR = new IntegerValidator();
+    protected static final DataValidator LONG_VALIDATOR = new LongValidator();
     /** re-usable validator. */
     protected static final DataValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
     /** re-usable validator. */
     protected static final DataValidator BLANK_OR_DOUBLE_VALIDATOR = new OrValidator(
             new BlankValidator(),
             new DoubleValidator());
+
+    /** Log tag. */
     private static final String TAG = "DataManager";
     /** DataValidators. */
     private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
@@ -93,8 +96,376 @@ public class DataManager {
 
     /** Raw data storage. */
     private final Bundle mRawData = new Bundle();
-    /** DataAccessors. */
-    private final Map<String, DataAccessor> mDataAccessorsMap = new UniqueMap<>();
+
+    /**
+     * Store all passed values in our collection.
+     *
+     * @param src bundle to copy from
+     *
+     * @throws UnexpectedValueException if the type of the Object is not supported.
+     */
+    protected void putAll(@NonNull final Bundle src)
+            throws UnexpectedValueException {
+        for (String key : src.keySet()) {
+            put(key, src.get(key));
+        }
+    }
+
+    /**
+     * Store all passed values in our collection.
+     * <p>
+     * See the comments on methods in {@link android.database.CursorWindow}
+     * for info on type conversions which explains our use of getLong/getDouble.
+     * <ul>
+     * <li>booleans -> long (0,1)</li>
+     * <li>int -> long</li>
+     * <li>float -> double</li>
+     * <li>date -> string</li>
+     * </ul>
+     *
+     * @param cursor to read from
+     */
+    protected void putAll(@NonNull final Cursor cursor) {
+        cursor.moveToFirst();
+        for (int i = 0; i < cursor.getColumnCount(); i++) {
+            final String name = cursor.getColumnName(i);
+            switch (cursor.getType(i)) {
+                case Cursor.FIELD_TYPE_STRING:
+                    mRawData.putString(name, cursor.getString(i));
+                    break;
+
+                case Cursor.FIELD_TYPE_INTEGER:
+                    // a null becomes 0
+                    mRawData.putLong(name, cursor.getLong(i));
+                    break;
+
+                case Cursor.FIELD_TYPE_FLOAT:
+                    // a null becomes 0.0
+                    mRawData.putDouble(name, cursor.getDouble(i));
+                    break;
+
+                case Cursor.FIELD_TYPE_BLOB:
+                    putSerializable(name, cursor.getBlob(i));
+                    break;
+
+                case Cursor.FIELD_TYPE_NULL:
+                    // discard any fields with null values.
+                    break;
+
+                default:
+                    throw new UnexpectedValueException(cursor.getType(i));
+            }
+        }
+    }
+
+    /**
+     * Store a Object value. The object will be casted to one of the supported types.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     *
+     * @throws UnexpectedValueException if the type of the Object is not supported.
+     */
+    public void put(@NonNull final String key,
+                    @Nullable final Object value)
+            throws UnexpectedValueException {
+
+        if (value instanceof String) {
+            mRawData.putString(key, (String) value);
+        } else if (value instanceof Integer) {
+            mRawData.putInt(key, (int) value);
+        } else if (value instanceof Long) {
+            mRawData.putLong(key, (long) value);
+        } else if (value instanceof Double) {
+            mRawData.putDouble(key, (double) value);
+        } else if (value instanceof Float) {
+            mRawData.putFloat(key, (float) value);
+        } else if (value instanceof Boolean) {
+            mRawData.putBoolean(key, (boolean) value);
+
+        } else if ((value instanceof ArrayList)
+                   && (!((ArrayList) value).isEmpty())
+                   && ((ArrayList) value).get(0) instanceof Parcelable) {
+            //noinspection unchecked
+            putParcelableArrayList(key, (ArrayList<Parcelable>) value);
+
+        } else if (value instanceof Serializable) {
+            putSerializable(key, (Serializable) value);
+
+        } else if (value == null) {
+            Logger.warn(TAG, "put",
+                        "key=`" + key + '`',
+                        "value=<NULL>");
+            // Stored as a String.
+            putNull(key);
+
+        } else {
+            Logger.warnWithStackTrace(TAG, "put",
+                                      "key=`" + key + '`',
+                                      "value=" + value);
+            throw new UnexpectedValueException(value.getClass().getName());
+        }
+    }
+
+    /**
+     * Get the data object specified by the passed key.
+     *
+     * @param key Key of data object
+     *
+     * @return Data object, or {@code null} when not present, o present with value {@code null}
+     */
+    @Nullable
+    public Object get(@NonNull final String key) {
+        return mRawData.get(key);
+    }
+
+    /**
+     * Get a boolean value.
+     *
+     * @param key Key of data object
+     *
+     * @return a boolean value.
+     */
+    public boolean getBoolean(@NonNull final String key) {
+        return ParseUtils.toBoolean(mRawData.get(key));
+    }
+
+    /**
+     * Store a boolean value.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putBoolean(@NonNull final String key,
+                           final boolean value) {
+        mRawData.putBoolean(key, value);
+    }
+
+    public boolean isBitSet(@NonNull final String key,
+                            final int bit) {
+        return (ParseUtils.toLong(mRawData.get(key)) & bit) != 0;
+    }
+
+    public void setBit(@NonNull final String key,
+                       final int bit,
+                       final boolean checked) {
+
+        long bits = ParseUtils.toLong(mRawData.get(key));
+
+        if (checked) {
+            // set the bit
+            bits |= bit;
+        } else {
+            // or reset the bit
+            bits &= ~bit;
+        }
+
+        mRawData.putLong(key, bits);
+    }
+
+    /**
+     * Get a double value.
+     *
+     * @param key Key of data object
+     *
+     * @return a double value.
+     */
+    public double getDouble(@NonNull final String key) {
+        return ParseUtils.toDouble(mRawData.get(key), null);
+    }
+
+    /**
+     * Store a double value.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putDouble(@NonNull final String key,
+                          final double value) {
+        mRawData.putDouble(key, value);
+    }
+
+    /**
+     * Get a float value.
+     *
+     * @param key Key of data object
+     *
+     * @return a float value.
+     */
+    float getFloat(@NonNull final String key) {
+        return ParseUtils.toFloat(mRawData.get(key), null);
+    }
+
+    /**
+     * Store a float value.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    void putFloat(@NonNull final String key,
+                  final float value) {
+        mRawData.putFloat(key, value);
+    }
+
+    /**
+     * Get a long value.
+     *
+     * @param key Key of data object
+     *
+     * @return a long value.
+     */
+    public long getLong(@NonNull final String key) {
+        return ParseUtils.toLong(mRawData.get(key));
+    }
+
+    /**
+     * Store a long value.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putLong(@NonNull final String key,
+                        final long value) {
+        mRawData.putLong(key, value);
+    }
+
+    /**
+     * Get a String value. Non-String values will be casted using toString().
+     *
+     * @param key Key of data object
+     *
+     * @return Value of the data, can be empty, but never {@code null}
+     */
+    @NonNull
+    public String getString(@NonNull final String key) {
+        Object o = mRawData.get(key);
+        if (o == null) {
+            return "";
+        } else {
+            return o.toString().trim();
+        }
+    }
+
+    /**
+     * Store a String value.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putString(@NonNull final String key,
+                          @NonNull final String value) {
+        mRawData.putString(key, value);
+    }
+
+    /**
+     * Store an explicit {@code null} value.
+     *
+     * @param key Key of data object
+     */
+    public void putNull(@NonNull final String key) {
+        mRawData.putString(key, null);
+    }
+
+    /**
+     * Get the Parcelable ArrayList from the collection.
+     *
+     * @param key Key of data object
+     * @param <T> type of objects in the list
+     *
+     * @return The list, can be empty, but never {@code null}
+     */
+    @NonNull
+    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
+        Object o = mRawData.get(key);
+        if (o == null) {
+            return new ArrayList<>();
+        }
+        //noinspection unchecked
+        return (ArrayList<T>) o;
+    }
+
+    /**
+     * Set the Parcelable ArrayList in the collection.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     * @param <T>   type of objects in the list
+     */
+    public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
+                                                              @NonNull final ArrayList<T> value) {
+        mRawData.putParcelableArrayList(key, value);
+    }
+
+    /**
+     * Get the serializable object from the collection.
+     *
+     * @param key Key of data object
+     * @param <T> type of objects in the list
+     *
+     * @return The data
+     */
+    @SuppressWarnings("unused")
+    @Nullable
+    protected <T extends Serializable> T getSerializable(@NonNull final String key) {
+        //noinspection unchecked
+        return (T) mRawData.getSerializable(key);
+    }
+
+    /**
+     * Set the serializable object in the collection.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    private void putSerializable(@NonNull final String key,
+                                 @NonNull final Serializable value) {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "putSerializable|key=" + key
+                       + "|type=" + value.getClass().getCanonicalName(), new Throwable());
+        }
+        mRawData.putSerializable(key, value);
+    }
+
+    /**
+     * Check if the underlying data contains the specified key.
+     *
+     * @param key Key of data object
+     *
+     * @return {@code true} if the underlying data contains the specified key.
+     */
+    public boolean containsKey(@NonNull final String key) {
+        return mRawData.containsKey(key);
+    }
+
+    /**
+     * Get all (real and virtual) keys for this data manager.
+     *
+     * @return the current set of data.
+     */
+    @NonNull
+    public Set<String> keySet() {
+        return new HashSet<>(mRawData.keySet());
+    }
+
+    /**
+     * Remove the specified key from this collection.
+     *
+     * @param key Key of data object to remove.
+     */
+    public void remove(@NonNull final String key) {
+        mRawData.remove(key);
+    }
+
+    /**
+     * Erase everything in this instance.
+     */
+    public void clear() {
+        mRawData.clear();
+        mValidatorsMap.clear();
+        mValidatorErrorIdMap.clear();
+        mCrossValidators.clear();
+        mValidationExceptions.clear();
+    }
 
     /**
      * Add a validator for the specified key.
@@ -117,453 +488,6 @@ public class DataManager {
      */
     protected void addCrossValidator(@NonNull final DataCrossValidator validator) {
         mCrossValidators.add(validator);
-    }
-
-    /**
-     * Add an {@link DataAccessor} for the specified key.
-     * <p>
-     * It's up to the Accessor to handle the actual key into the rawData.
-     *
-     * @param accessorKey Key to the data
-     * @param accessor    Accessor
-     */
-    protected void addAccessor(@NonNull final String accessorKey,
-                               @NonNull final DataAccessor accessor) {
-        mDataAccessorsMap.put(accessorKey, accessor);
-    }
-
-    /**
-     * Store all passed values in our collection.
-     * We do the laborious method here to allow Accessors to do their thing.
-     *
-     * @param src bundle to copy from
-     */
-    protected void putAll(@NonNull final Bundle src) {
-        for (String key : src.keySet()) {
-            Object value = src.get(key);
-            if (value instanceof String) {
-                putString(key, (String) value);
-
-            } else if (value instanceof Integer) {
-                putInt(key, (int) value);
-
-            } else if (value instanceof Long) {
-                putLong(key, (long) value);
-
-            } else if (value instanceof Double) {
-                putDouble(key, (double) value);
-
-            } else if (value instanceof Float) {
-                putFloat(key, (float) value);
-
-            } else if (value instanceof Boolean) {
-                putBoolean(key, (boolean) value);
-
-            } else if ((value instanceof ArrayList)
-                       && (!((ArrayList) value).isEmpty())
-                       && ((ArrayList) value).get(0) instanceof Parcelable) {
-                //noinspection unchecked
-                putParcelableArrayList(key, (ArrayList<Parcelable>) value);
-
-            } else if (value instanceof Serializable) {
-                putSerializable(key, (Serializable) value);
-
-            } else {
-                // THIS IS NOT IDEAL! Keep checking the log if we ever get here.
-                Logger.warnWithStackTrace(TAG, "putAll",
-                                          "key=`" + key + '`',
-                                          "value=" + value);
-                if (value != null) {
-                    putString(key, value.toString());
-                }
-            }
-        }
-    }
-
-    /**
-     * Store all passed values in our collection.
-     * We do the laborious method here to allow Accessors to do their thing.
-     * <p>
-     * See the comments on methods in {@link android.database.CursorWindow}
-     * for info on type conversions which explains our use of getLong/getDouble.
-     * <ul>
-     * <li>booleans -> long (0,1)</li>
-     * <li>int -> long</li>
-     * <li>float -> double</li>
-     * <li>date -> string</li>
-     * </ul>
-     *
-     * @param cursor to read from
-     */
-    protected void putAll(@NonNull final Cursor cursor) {
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getColumnCount(); i++) {
-            final String name = cursor.getColumnName(i);
-            switch (cursor.getType(i)) {
-                case Cursor.FIELD_TYPE_STRING:
-                    putString(name, cursor.getString(i));
-                    break;
-
-                case Cursor.FIELD_TYPE_INTEGER:
-                    // a null becomes 0
-                    putLong(name, cursor.getLong(i));
-                    break;
-
-                case Cursor.FIELD_TYPE_FLOAT:
-                    // a null becomes 0.0
-                    putDouble(name, cursor.getDouble(i));
-                    break;
-
-                case Cursor.FIELD_TYPE_BLOB:
-                    putSerializable(name, cursor.getBlob(i));
-                    break;
-
-                case Cursor.FIELD_TYPE_NULL:
-                    // discard any fields with null values.
-                    break;
-
-                default:
-                    throw new UnexpectedValueException(cursor.getType(i));
-            }
-        }
-
-    }
-
-    /**
-     * Store a Object value. The object will be casted to one of the supported types.
-     * Does not cover {@link #putParcelableArrayList}
-     * or {@link #putSerializable}
-     *
-     * @param key   Key of data object
-     * @param value to store
-     *
-     * @throws UnexpectedValueException if the type of the Object is not supported.
-     */
-    public void put(@NonNull final String key,
-                    @Nullable final Object value)
-            throws UnexpectedValueException {
-        if (value instanceof String) {
-            putString(key, (String) value);
-        } else if (value instanceof Boolean) {
-            putBoolean(key, (boolean) value);
-        } else if (value instanceof Double) {
-            putDouble(key, (double) value);
-        } else if (value instanceof Float) {
-            putFloat(key, (float) value);
-        } else if (value instanceof Long) {
-            putLong(key, (long) value);
-        } else if (value instanceof Integer) {
-            putInt(key, (int) value);
-        } else if (value == null) {
-            putNull(key);
-        } else {
-            throw new UnexpectedValueException(value.getClass().getName());
-        }
-    }
-
-    /**
-     * Get the data object specified by the passed key.
-     *
-     * @param key Key of data object
-     *
-     * @return Data object, or {@code null} when not present, o present with value {@code null}
-     */
-    @Nullable
-    public Object get(@NonNull final String key) {
-        Object o;
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            o = mDataAccessorsMap.get(key).get(mRawData);
-        } else {
-            o = mRawData.get(key);
-        }
-        return o;
-    }
-
-    /**
-     * Get a boolean value.
-     *
-     * @param key Key of data object
-     *
-     * @return a boolean value.
-     */
-    public boolean getBoolean(@NonNull final String key) {
-        return ParseUtils.toBoolean(get(key));
-    }
-
-    /**
-     * Store a boolean value.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    public void putBoolean(@NonNull final String key,
-                           final boolean value) {
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            mDataAccessorsMap.get(key).put(mRawData, value);
-        } else {
-            mRawData.putBoolean(key, value);
-        }
-    }
-
-    /**
-     * Get a double value.
-     *
-     * @param key Key of data object
-     *
-     * @return a double value.
-     */
-    public double getDouble(@NonNull final String key) {
-        return ParseUtils.toDouble(get(key), null);
-    }
-
-    /**
-     * Store a double value.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    public void putDouble(@NonNull final String key,
-                          final double value) {
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            mDataAccessorsMap.get(key).put(mRawData, value);
-        } else {
-            mRawData.putDouble(key, value);
-        }
-    }
-
-    /**
-     * Get a float value.
-     *
-     * @param key Key of data object
-     *
-     * @return a float value.
-     */
-    float getFloat(@NonNull final String key) {
-        return ParseUtils.toFloat(get(key), null);
-    }
-
-    /**
-     * Store a float value.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    void putFloat(@NonNull final String key,
-                  final float value) {
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            mDataAccessorsMap.get(key).put(mRawData, value);
-        } else {
-            mRawData.putFloat(key, value);
-        }
-    }
-
-    /**
-     * Store an int value.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    public void putInt(@NonNull final String key,
-                       final int value) {
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            mDataAccessorsMap.get(key).put(mRawData, value);
-        } else {
-            mRawData.putInt(key, value);
-        }
-    }
-
-    /**
-     * Get a long value.
-     *
-     * @param key Key of data object
-     *
-     * @return a long value.
-     */
-    public long getLong(@NonNull final String key) {
-        return ParseUtils.toLong(get(key));
-    }
-
-    /**
-     * Store a long value.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    public void putLong(@NonNull final String key,
-                        final long value) {
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            mDataAccessorsMap.get(key).put(mRawData, value);
-        } else {
-            mRawData.putLong(key, value);
-        }
-    }
-
-    /**
-     * Get a String value. Non-String values will be casted to String.
-     *
-     * @param key Key of data object
-     *
-     * @return Value of the data, can be empty, but never {@code null}
-     */
-    @NonNull
-    public String getString(@NonNull final String key) {
-        Object o = get(key);
-        if (o == null) {
-            return "";
-        } else {
-            return o.toString().trim();
-        }
-    }
-
-    /**
-     * Store a String value.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    public void putString(@NonNull final String key,
-                          @NonNull final String value) {
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            mDataAccessorsMap.get(key).put(mRawData, value);
-        } else {
-            mRawData.putString(key, value);
-        }
-    }
-
-    /**
-     * Store an explicit {@code null} value. Bypasses any data-accessors on the key.
-     *
-     * @param key Key of data object
-     */
-    public void putNull(@NonNull final String key) {
-        mRawData.putString(key, null);
-    }
-
-    /**
-     * Get the Parcelable ArrayList from the collection.
-     *
-     * @param key Key of data object
-     * @param <T> type of objects in the list
-     *
-     * @return The list, can be empty, but never {@code null}
-     */
-    @NonNull
-    public <T extends Parcelable> ArrayList<T> getParcelableArrayList(@NonNull final String key) {
-        Object o;
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            o = mDataAccessorsMap.get(key).get(mRawData);
-        } else {
-            o = mRawData.get(key);
-        }
-
-        if (o == null) {
-            return new ArrayList<>();
-        }
-        //noinspection unchecked
-        return (ArrayList<T>) o;
-    }
-
-    /**
-     * Set the Parcelable ArrayList in the collection.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     * @param <T>   type of objects in the list
-     */
-    public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
-                                                              @NonNull final ArrayList<T> value) {
-        if (mDataAccessorsMap.containsKey(key)) {
-            //noinspection ConstantConditions
-            mDataAccessorsMap.get(key).put(mRawData, value);
-        } else {
-            mRawData.putParcelableArrayList(key, value);
-        }
-    }
-
-    /**
-     * Get the serializable object from the collection.
-     * Does not support a {@link DataAccessor}.
-     *
-     * @param key Key of data object
-     * @param <T> type of objects in the list
-     *
-     * @return The data
-     */
-    @SuppressWarnings("unused")
-    @Nullable
-    protected <T extends Serializable> T getSerializable(@NonNull final String key) {
-        //noinspection unchecked
-        return (T) mRawData.getSerializable(key);
-    }
-
-    /**
-     * Set the serializable object in the collection.
-     * Does not support a {@link DataAccessor}.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    private void putSerializable(@NonNull final String key,
-                                 @NonNull final Serializable value) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "putSerializable|key=" + key
-                       + "|type=" + value.getClass().getCanonicalName(), new Throwable());
-        }
-        mRawData.putSerializable(key, value);
-    }
-
-    /**
-     * Check if the underlying data contains the specified key.
-     *
-     * @param key Key of data object
-     *
-     * @return {@code true} if the underlying data contains the specified key.
-     */
-    public boolean containsKey(@NonNull final String key) {
-        return mDataAccessorsMap.containsKey(key) || mRawData.containsKey(key);
-    }
-
-    /**
-     * Get all (real and virtual) keys for this data manager.
-     *
-     * @return the current set of data.
-     */
-    @NonNull
-    public Set<String> keySet() {
-        Set<String> allKeys = new HashSet<>(mRawData.keySet());
-        // add virtual keys ('real' duplicates are simply overwritten which is fine).
-        allKeys.addAll(mDataAccessorsMap.keySet());
-        return allKeys;
-    }
-
-    /**
-     * Remove the specified key from this collection.
-     *
-     * @param key Key of data object to remove.
-     */
-    public void remove(@NonNull final String key) {
-        mDataAccessorsMap.remove(key);
-        mRawData.remove(key);
-    }
-
-    /**
-     * Erase everything in this instance.
-     */
-    public void clear() {
-        mRawData.clear();
-        mDataAccessorsMap.clear();
-        mValidatorsMap.clear();
-        mValidatorErrorIdMap.clear();
-        mCrossValidators.clear();
-        mValidationExceptions.clear();
     }
 
     /**
@@ -631,7 +555,6 @@ public class DataManager {
     public String toString() {
         return "DataManager{"
                + "mRawData=" + mRawData
-               + ", mDataAccessorsMap=" + mDataAccessorsMap
                + ", mValidationExceptions=" + mValidationExceptions
                + ", mValidatorsMap=" + mValidatorsMap
                + ", mCrossValidators=" + mCrossValidators
