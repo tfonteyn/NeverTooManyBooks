@@ -143,6 +143,7 @@ public class EditBookAuthorsActivity
      * @param author    the user was editing (with the original data)
      * @param tmpAuthor the modifications the user made in a placeholder object.
      *                  Non-modified data was copied here as well.
+     *                  The id==0.
      */
     protected void processChanges(@NonNull final Author author,
                                   @NonNull final Author tmpAuthor) {
@@ -154,9 +155,10 @@ public class EditBookAuthorsActivity
 
             // Type is not part of the Author table, but of the book_author table.
             if (author.getType() != tmpAuthor.getType()) {
+                // so if the type is different, just update it
                 author.setType(tmpAuthor.getType());
-                ItemWithFixableId
-                        .pruneList(mList, this, mModel.getDb(), Locale.getDefault(), false);
+                ItemWithFixableId.pruneList(mList, this, mModel.getDb(),
+                                            Locale.getDefault(), false);
                 mListAdapter.notifyDataSetChanged();
             }
             // nothing was modified,
@@ -169,7 +171,8 @@ public class EditBookAuthorsActivity
         // See if the old one is used by any other books.
         long nrOfReferences = mModel.getDb().countBooksByAuthor(this, author)
                               + mModel.getDb().countTocEntryByAuthor(this, author);
-        // if it's not, we simply re-use the old object.
+        // If it's not, we can simply modify the old object and we're done here.
+        // There is no need to consult the user.
         if (mModel.isSingleUsage(nrOfReferences)) {
             // Copy the new data into the original Author object that the user was changing.
             // The Author object keeps the same (old) ID!
@@ -181,7 +184,7 @@ public class EditBookAuthorsActivity
 
         // At this point, the base data for the Author was modified and the old Author is used
         // in more than one place.
-        // Ask the user if they want to make the changes globally.
+        // We need to ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
         String message = getString(R.string.confirm_apply_author_changed,
                                    author.getSorting(this),

@@ -142,6 +142,7 @@ public class EditBookSeriesActivity
      * @param series    the user was editing (with the original data)
      * @param tmpSeries the modifications the user made in a placeholder object.
      *                  Non-modified data was copied here as well.
+     *                  The id==0.
      */
     protected void processChanges(@NonNull final Series series,
                                   @NonNull final Series tmpSeries) {
@@ -168,7 +169,8 @@ public class EditBookSeriesActivity
 
         //See if the old one is used by any other books.
         long nrOfReferences = mModel.getDb().countBooksInSeries(this, series, bookLocale);
-        // if it's not, we can simply modify the old object and we're done here.
+        // If it's not, we can simply modify the old object and we're done here.
+        // There is no need to consult the user.
         if (mModel.isSingleUsage(nrOfReferences)) {
             // Copy the new data into the original Series object that the user was changing.
             // The Series object keeps the same (old) ID!
@@ -180,7 +182,7 @@ public class EditBookSeriesActivity
 
         // At this point, the base data for the Series was modified and the old Series is used
         // in more than one place.
-        // Ask the user if they want to make the changes globally.
+        // We need to ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
         String message = getString(R.string.confirm_apply_series_changed,
                                    series.getSorting(),
