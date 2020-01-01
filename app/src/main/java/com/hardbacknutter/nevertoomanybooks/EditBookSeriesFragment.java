@@ -43,6 +43,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -51,80 +56,136 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
+import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
- * Activity to edit a list of mSeries provided in an {@code ArrayList<Series>}
- * and return an updated list.
- * <p>
- * Calling point is a Book; see {@link EditSeriesDialogFragment} for list
+ * Edit the list of Series of a Book.
  */
-public class EditBookSeriesActivity
-        extends EditObjectListActivity<Series> {
+public class EditBookSeriesFragment
+        extends Fragment {
 
     /** Log tag. */
-    private static final String TAG = "EditBookSeriesActivity";
+    public static final String TAG = "EditBookSeriesFragment";
+    private static final int REQ_EDIT_ROW = 0;
 
+    /** the rows. */
+    private ArrayList<Series> mList;
+
+    /** Series name field. */
+    private AutoCompleteTextView mSeriesNameView;
     /** Main screen Series Number field. */
     private TextView mSeriesNumberView;
+    /** The View for the list. */
+    private RecyclerView mListView;
 
-    /**
-     * Constructor.
-     */
-    public EditBookSeriesActivity() {
-        super(UniqueId.BKEY_SERIES_ARRAY);
-    }
+    /** The adapter for the list itself. */
+    private RecyclerViewAdapterBase mListAdapter;
+
+    /** The book. Must be in the Activity scope. */
+    private BookBaseFragmentModel mBookModel;
+    private final SimpleAdapterDataObserver mAdapterDataObserver =
+            new SimpleAdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    mBookModel.setDirty(true);
+                }
+            };
+    /** Database Access. */
+    private DAO mDb;
+    /** Drag and drop support for the list view. */
+    private ItemTouchHelper mItemTouchHelper;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_edit_list_series;
-    }
-
-    @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.title_edit_book_series);
-
-        mAutoCompleteAdapter = new ArrayAdapter<>(this,
-                                                  android.R.layout.simple_dropdown_item_1line,
-                                                  mModel.getDb().getSeriesTitles());
-
-        mAutoCompleteTextView = findViewById(R.id.series);
-        mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
-
-        mSeriesNumberView = findViewById(R.id.series_num);
+        mDb = new DAO(TAG);
     }
 
     @Override
-    protected RecyclerViewAdapterBase
-    createListAdapter(@NonNull final ArrayList<Series> list,
-                      @NonNull final StartDragListener dragStartListener) {
-        return new SeriesListAdapter(this, list, dragStartListener);
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_edit_list_series, container, false);
+        mListView = view.findViewById(android.R.id.list);
+        mSeriesNameView = view.findViewById(R.id.series);
+        mSeriesNumberView = view.findViewById(R.id.series_num);
+        return view;
     }
 
     @Override
-    protected void onAdd(@NonNull final View target) {
-        String name = mAutoCompleteTextView.getText().toString().trim();
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
+        getActivity().setTitle(R.string.title_edit_book_series);
+
+        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
+
+        Book book = mBookModel.getBook();
+        mList = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+
+        //noinspection ConstantConditions
+        ArrayAdapter<String> nameAdapter =
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
+                                   mDb.getSeriesTitles());
+        mSeriesNameView.setAdapter(nameAdapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mListView.setLayoutManager(layoutManager);
+        mListView.setHasFixedSize(true);
+        mListAdapter = new SeriesListAdapter(getContext(), mList,
+                                             vh -> mItemTouchHelper.startDrag(vh));
+        mListView.setAdapter(mListAdapter);
+        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
+
+        SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mListView);
+
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.btn_add).setOnClickListener(this::onAdd);
+    }
+
+    private void onAdd(@SuppressWarnings("unused") @NonNull final View target) {
+        String name = mSeriesNameView.getText().toString().trim();
         if (name.isEmpty()) {
-            Snackbar.make(mAutoCompleteTextView, R.string.warning_missing_name,
+            Snackbar.make(mSeriesNameView, R.string.warning_missing_name,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
 
+        Book book = mBookModel.getBook();
+        //noinspection ConstantConditions
+        final Locale bookLocale = book.getLocale(getContext());
+
         Series newSeries = new Series(name);
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
         // see if it already exists
-        newSeries.fixId(this, mModel.getDb(), mModel.getBookLocale());
+        newSeries.fixId(getContext(), mDb, bookLocale);
         // and check it's not already in the list.
         if (mList.contains(newSeries)) {
-            Snackbar.make(mAutoCompleteTextView, R.string.warning_series_already_in_list,
+            Snackbar.make(mSeriesNameView, R.string.warning_series_already_in_list,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -133,22 +194,24 @@ public class EditBookSeriesActivity
         mListAdapter.notifyDataSetChanged();
 
         // and clear the form for next entry.
-        mAutoCompleteTextView.setText("");
+        mSeriesNameView.setText("");
         mSeriesNumberView.setText("");
     }
 
     /**
      * Process the modified (if any) data.
      *
-     * @param series    the user was editing (with the original data)
+     * @param series  the user was editing (with the original data)
      * @param tmpData the modifications the user made in a placeholder object.
-     *                  Non-modified data was copied here as well.
-     *                  The id==0.
+     *                Non-modified data was copied here as well.
+     *                The id==0.
      */
-    protected void processChanges(@NonNull final Series series,
-                                  @NonNull final Series tmpData) {
+    private void processChanges(@NonNull final Series series,
+                                @NonNull final Series tmpData) {
 
-        final Locale bookLocale = mModel.getBookLocale();
+        Book book = mBookModel.getBook();
+        //noinspection ConstantConditions
+        final Locale bookLocale = book.getLocale(getContext());
 
         // name not changed ?
         if (series.getTitle().equals(tmpData.getTitle())) {
@@ -159,7 +222,8 @@ public class EditBookSeriesActivity
             if (!series.getNumber().equals(tmpData.getNumber())) {
                 // so if the number is different, just update it
                 series.setNumber(tmpData.getNumber());
-                Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
+                //noinspection ConstantConditions
+                Series.pruneList(mList, getContext(), mDb, bookLocale, false);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -167,13 +231,13 @@ public class EditBookSeriesActivity
 
         // The name of the Series was modified.
         // Check if it's used by any other books.
-        long nrOfReferences = mModel.getDb().countBooksInSeries(this, series, bookLocale);
-        // If it's not, we can simply modify the old object and we're done here.
-        // There is no need to consult the user.
-        if (mModel.isSingleUsage(nrOfReferences)) {
+        if (isSingleUsage(series, bookLocale)) {
+            // If it's not, we can simply modify the old object and we're done here.
+            // There is no need to consult the user.
             // Copy the new data into the original Series object that the user was changing.
             series.copyFrom(tmpData, true);
-            Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
+            //noinspection ConstantConditions
+            Series.pruneList(mList, getContext(), mDb, bookLocale, false);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -186,7 +250,7 @@ public class EditBookSeriesActivity
                                    series.getTitle(),
                                    tmpData.getTitle(),
                                    allBooks);
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_scope_of_change)
                 .setMessage(message)
@@ -195,17 +259,17 @@ public class EditBookSeriesActivity
                     // copy all new data
                     series.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
-                    int rowsAffected = mModel.getDb().updateSeries(this, series, bookLocale);
+                    int rowsAffected = mDb.updateSeries(getContext(), series, bookLocale);
                     if (rowsAffected == 1) {
-                        mModel.setGlobalReplacementsMade(true);
-                        Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
+                        Series.pruneList(mList, getContext(), mDb, bookLocale, false);
+                        mBookModel.getBook().refreshSeriesList(getContext(), mDb);
                         mListAdapter.notifyDataSetChanged();
                     } else {
                         // eek?
-                        Logger.warnWithStackTrace(this, TAG, "Could not update",
+                        Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                                   "series=" + series,
                                                   "tmpSeries=" + tmpData);
-                        new AlertDialog.Builder(this)
+                        new AlertDialog.Builder(getContext())
                                 .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .setMessage(R.string.error_unexpected_error)
                                 .show();
@@ -216,18 +280,44 @@ public class EditBookSeriesActivity
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Series. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mModel.getDb().updateOrInsertSeries(this, bookLocale, tmpData);
+                    mDb.updateOrInsertSeries(getContext(), bookLocale, tmpData);
                     // unlink the old one (and unmodified), and link with the new one
                     // book/series positions will be fixed up when saving.
                     // Note that the old one *might* be orphaned at this time.
                     // Same remark as above.
                     mList.remove(series);
                     mList.add(tmpData);
-                    Series.pruneList(mList, this, mModel.getDb(), bookLocale, false);
+                    Series.pruneList(mList, getContext(), mDb, bookLocale, false);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()
                 .show();
+    }
+
+    private boolean isSingleUsage(@NonNull final Series series,
+                                  @NonNull final Locale bookLocale) {
+        //noinspection ConstantConditions
+        long nrOfReferences = mDb.countBooksInSeries(getContext(), series, bookLocale);
+        return nrOfReferences <= (mBookModel.getBook().getId() == 0 ? 0 : 1);
+    }
+
+    /**
+     * Holder pattern for each row.
+     */
+    private static class Holder
+            extends RecyclerViewViewHolderBase {
+
+        @NonNull
+        final TextView seriesView;
+        @NonNull
+        final TextView seriesSortView;
+
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+
+            seriesView = itemView.findViewById(R.id.row_series);
+            seriesSortView = itemView.findViewById(R.id.row_series_sort);
+        }
     }
 
     /**
@@ -242,8 +332,6 @@ public class EditBookSeriesActivity
         /** Log tag. */
         private static final String TAG = "EditBookSeriesDialogFragment";
 
-        private EditBookSeriesActivity mHostActivity;
-
         private AutoCompleteTextView mTitleView;
         private Checkable mIsCompleteView;
         private EditText mNumberView;
@@ -257,30 +345,13 @@ public class EditBookSeriesActivity
         /** Current edit. */
         private String mSeriesNumber;
 
-        /**
-         * Constructor.
-         *
-         * @param series to edit
-         *
-         * @return the instance
-         */
-        static EditBookSeriesDialogFragment newInstance(@NonNull final Series series) {
-            EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
-            Bundle args = new Bundle(1);
-            args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
-            frag.setArguments(args);
-            return frag;
-        }
-
-        @Override
-        public void onAttach(@NonNull final Context context) {
-            super.onAttach(context);
-            mHostActivity = (EditBookSeriesActivity) context;
-        }
+        /** Database Access. */
+        private DAO mDb;
 
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
+            mDb = new DAO(TAG);
 
             Bundle args = requireArguments();
             mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
@@ -298,9 +369,20 @@ public class EditBookSeriesActivity
             }
         }
 
+        @Override
+        public void onDestroy() {
+            if (mDb != null) {
+                mDb.close();
+            }
+            super.onDestroy();
+        }
+
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+
+            Objects.requireNonNull(getTargetFragment(), "no target fragment set");
+
             // Reminder: *always* use the activity inflater here.
             //noinspection ConstantConditions
             LayoutInflater layoutInflater = getActivity().getLayoutInflater();
@@ -309,8 +391,11 @@ public class EditBookSeriesActivity
             // the dialog fields != screen fields.
             mTitleView = root.findViewById(R.id.series);
             mTitleView.setText(mSeriesName);
-            // we can re-use the activity adapter.
-            mTitleView.setAdapter(mHostActivity.mAutoCompleteAdapter);
+            //noinspection ConstantConditions
+            ArrayAdapter<String> seriesNameAdapter =
+                    new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
+                                       mDb.getSeriesTitles());
+            mTitleView.setAdapter(seriesNameAdapter);
 
             mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
             if (mIsCompleteView != null) {
@@ -320,7 +405,6 @@ public class EditBookSeriesActivity
             mNumberView = root.findViewById(R.id.series_num);
             mNumberView.setText(mSeriesNumber);
 
-            //noinspection ConstantConditions
             return new AlertDialog.Builder(getContext())
                     .setView(root)
                     .setTitle(R.string.title_edit_series)
@@ -354,7 +438,8 @@ public class EditBookSeriesActivity
                             tmpSeries.setNumber(mSeries.getNumber());
                         }
 
-                        mHostActivity.processChanges(mSeries, tmpSeries);
+                        ((EditBookSeriesFragment) getTargetFragment())
+                                .processChanges(mSeries, tmpSeries);
                     })
                     .create();
         }
@@ -378,25 +463,6 @@ public class EditBookSeriesActivity
             }
 
             super.onPause();
-        }
-    }
-
-    /**
-     * Holder pattern for each row.
-     */
-    private static class Holder
-            extends RecyclerViewViewHolderBase {
-
-        @NonNull
-        final TextView seriesView;
-        @NonNull
-        final TextView seriesSortView;
-
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-
-            seriesView = itemView.findViewById(R.id.row_series);
-            seriesSortView = itemView.findViewById(R.id.row_series_sort);
         }
     }
 
@@ -443,9 +509,15 @@ public class EditBookSeriesActivity
             }
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> EditBookSeriesDialogFragment
-                    .newInstance(series)
-                    .show(getSupportFragmentManager(), EditBookSeriesDialogFragment.TAG));
+            holder.rowDetailsView.setOnClickListener(v -> {
+                EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
+                Bundle args = new Bundle(1);
+                args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
+                frag.setArguments(args);
+                frag.setTargetFragment(EditBookSeriesFragment.this,
+                                       EditBookSeriesFragment.REQ_EDIT_ROW);
+                frag.show(getParentFragmentManager(), EditBookSeriesDialogFragment.TAG);
+            });
         }
     }
 }

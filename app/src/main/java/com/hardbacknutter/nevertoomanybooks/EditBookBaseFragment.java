@@ -112,6 +112,18 @@ public abstract class EditBookBaseFragment<T>
         }
     }
 
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        // We hide the tab bar for some screens. Make sure to set it visible here.
+        //noinspection ConstantConditions
+        View tabBarLayout = getActivity().findViewById(R.id.tab_panel);
+        if (tabBarLayout != null) {
+            tabBarLayout.setVisibility(View.VISIBLE);
+        }
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
     @NonNull
     @Override
     Fields getFields() {

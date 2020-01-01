@@ -379,6 +379,7 @@ public class BookDetailsFragment
 
         // defined, but populated manually
         fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
+              .setRelatedFields(R.id.lbl_author)
               .setShowHtml(true);
 
         // defined, but populated manually

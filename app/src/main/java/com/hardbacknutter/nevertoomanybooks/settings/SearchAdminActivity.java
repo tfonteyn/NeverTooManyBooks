@@ -73,14 +73,14 @@ public class SearchAdminActivity
         mModel.init(getIntent().getExtras());
 
         mViewPager = findViewById(R.id.tab_fragment);
-        TabLayout tabLayout = findViewById(R.id.tab_panel);
+        TabLayout tabBarLayout = findViewById(R.id.tab_panel);
 
         if (mModel.getType() == null) {
             setTitle(R.string.lbl_websites);
 
         } else {
             setTitle(mModel.getType().getLabelId());
-            tabLayout.setVisibility(View.GONE);
+            tabBarLayout.setVisibility(View.GONE);
         }
 
         mTabAdapter = new TabAdapter(this, mModel.getType());
@@ -90,7 +90,7 @@ public class SearchAdminActivity
         mViewPager.setOffscreenPageLimit(mTabAdapter.getItemCount());
 
         mViewPager.setAdapter(mTabAdapter);
-        new TabLayoutMediator(tabLayout, mViewPager, (tab, position) ->
+        new TabLayoutMediator(tabBarLayout, mViewPager, (tab, position) ->
                 tab.setText(getString(mTabAdapter.getTabTitle(position))))
                 .attach();
     }

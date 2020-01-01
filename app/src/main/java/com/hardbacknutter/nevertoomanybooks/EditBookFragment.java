@@ -133,9 +133,9 @@ public class EditBookFragment
         fabButton.setOnClickListener(v -> doSave());
 
         // The tab bar lives in the activity layout inside the AppBarLayout!
-        TabLayout tabLayout = mHostActivity.findViewById(R.id.tab_panel);
+        TabLayout tabBarLayout = mHostActivity.findViewById(R.id.tab_panel);
 
-        new TabLayoutMediator(tabLayout, mViewPager, (tab, position) ->
+        new TabLayoutMediator(tabBarLayout, mViewPager, (tab, position) ->
                 tab.setText(getString(mTabAdapter.getTabTitle(position))))
                 .attach();
 
@@ -187,7 +187,7 @@ public class EditBookFragment
         // There should only be the one fragment, i.e. the front/current fragment.
         // Paranoia...
         for (Fragment frag : getChildFragmentManager().getFragments()) {
-            if (frag.isResumed()) {
+            if (frag.isResumed() && frag instanceof DataEditor) {
                 ((DataEditor) frag).saveFields();
             }
         }
@@ -272,7 +272,7 @@ public class EditBookFragment
         private final List<Class> mTabClasses = new ArrayList<>();
         private final ArrayList<Integer> mTabTitles = new ArrayList<>();
 
-        private int mNrOfTabs;
+        private final int mNrOfTabs;
 
         /**
          * Constructor.
@@ -282,30 +282,36 @@ public class EditBookFragment
         TabAdapter(@NonNull final Fragment container) {
             super(container);
 
-            boolean useToc = App.isUsed(DBDefinitions.KEY_TOC_BITMASK);
+            mTabClasses.add(EditBookFieldsFragment.class);
+            mTabTitles.add(R.string.tab_lbl_details);
+
+//            mTabClasses.add(EditBookAuthorsFragment.class);
+//            mTabTitles.add(R.string.lbl_authors);
+//
+//            mTabClasses.add(EditBookSeriesFragment.class);
+//            mTabTitles.add(R.string.lbl_series_multiple);
+
+            mTabClasses.add(EditBookPublicationFragment.class);
+            mTabTitles.add(R.string.tab_lbl_publication);
+
+            mTabClasses.add(EditBookNotesFragment.class);
+            mTabTitles.add(R.string.tab_lbl_notes);
+
+            if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+                mTabClasses.add(EditBookTocFragment.class);
+                mTabTitles.add(R.string.tab_lbl_content);
+            }
+
             //URGENT: create a setting? hide by default?
             //noinspection ConstantConditions
             boolean useNativeIds = PreferenceManager.getDefaultSharedPreferences(
                     container.getContext()).getBoolean("dummy", true);
-
-            mNrOfTabs = 3;
-            mTabClasses.add(EditBookFieldsFragment.class);
-            mTabTitles.add(R.string.tab_lbl_details);
-            mTabClasses.add(EditBookPublicationFragment.class);
-            mTabTitles.add(R.string.tab_lbl_publication);
-            mTabClasses.add(EditBookNotesFragment.class);
-            mTabTitles.add(R.string.tab_lbl_notes);
-
-            if (useToc) {
-                mNrOfTabs++;
-                mTabClasses.add(EditBookTocFragment.class);
-                mTabTitles.add(R.string.tab_lbl_content);
-            }
             if (useNativeIds) {
-                mNrOfTabs++;
                 mTabClasses.add(EditBookNativeIdFragment.class);
                 mTabTitles.add(R.string.tab_lbl_ext_id);
             }
+
+            mNrOfTabs = mTabClasses.size();
         }
 
         @Override

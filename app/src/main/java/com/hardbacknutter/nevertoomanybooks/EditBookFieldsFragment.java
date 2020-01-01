@@ -45,13 +45,14 @@ import android.widget.ImageView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListModel;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
@@ -78,9 +79,6 @@ public class EditBookFieldsFragment
     /** Log tag. */
     public static final String TAG = "EditBookFieldsFragment";
     private static final String BKEY_M_CONTEXT_MENU_OPEN_INDEX = TAG + ":imgIndex";
-
-    private static final int REQ_EDIT_AUTHORS = 0;
-    private static final int REQ_EDIT_SERIES = 1;
 
     /** the covers. */
     private final ImageView[] mCoverView = new ImageView[2];
@@ -122,8 +120,8 @@ public class EditBookFieldsFragment
                              @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
         mAuthorView = view.findViewById(R.id.author);
-        mTitleView = view.findViewById(R.id.title);
         mSeriesView = view.findViewById(R.id.series);
+        mTitleView = view.findViewById(R.id.title);
         mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
         mGenreView = view.findViewById(R.id.genre);
@@ -163,55 +161,26 @@ public class EditBookFieldsFragment
         outState.putInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, mCurrentCoverHandlerIndex);
     }
 
-    /**
-     * Some fields are only present (or need specific handling) on {@link BookDetailsFragment}.
-     * <p>
-     * <br>{@inheritDoc}
-     */
     @Override
     protected void initFields() {
         super.initFields();
         Fields fields = getFields();
 
-        Book book = mBookModel.getBook();
-
         // book fields
 
         fields.addString(mTitleView, DBDefinitions.KEY_TITLE);
 
-        // defined, but populated/stored manually
-        // Storing the list back into the book is handled by onActivityResult
-        fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR);
-        mAuthorView.setOnClickListener(v -> {
-            String title = fields.getField(mTitleView).getValue().toString();
-            ArrayList<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+//        // defined, but populated/stored manually
+        fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
+              .setRelatedFields(R.id.lbl_author);
+        mAuthorView.setOnClickListener(v -> showEditListFragment(new EditBookAuthorsFragment(),
+                                                                 EditBookAuthorsFragment.TAG));
 
-            Intent intent = new Intent(getContext(), EditBookAuthorsActivity.class)
-                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
-                    .putExtra(DBDefinitions.KEY_TITLE, title)
-                    .putExtra(DBDefinitions.KEY_LANGUAGE,
-                              book.getString(DBDefinitions.KEY_LANGUAGE))
-                    .putExtra(UniqueId.BKEY_AUTHOR_ARRAY, authors);
-            startActivityForResult(intent, REQ_EDIT_AUTHORS);
-        });
-
-        // defined, but populated/stored manually
-        // Storing the list back into the book is handled by onActivityResult
+//        // defined, but populated/stored manually
         fields.define(mSeriesView, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
-        mSeriesView.setOnClickListener(v -> {
-            // use the current title.
-            String title = fields.getField(mTitleView).getValue().toString();
-            ArrayList<Series> series = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-
-            Intent intent = new Intent(getContext(), EditBookSeriesActivity.class)
-                    .putExtra(DBDefinitions.KEY_PK_ID, book.getId())
-                    .putExtra(DBDefinitions.KEY_TITLE, title)
-                    .putExtra(DBDefinitions.KEY_LANGUAGE,
-                              book.getString(DBDefinitions.KEY_LANGUAGE))
-                    .putExtra(UniqueId.BKEY_SERIES_ARRAY, series);
-            startActivityForResult(intent, REQ_EDIT_SERIES);
-        });
+        mSeriesView.setOnClickListener(v -> showEditListFragment(new EditBookSeriesFragment(),
+                                                                 EditBookSeriesFragment.TAG));
 
         fields.addString(mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
@@ -238,11 +207,27 @@ public class EditBookFieldsFragment
 
         // defined, but populated/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
-        field = fields
-                .define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
-                .setRelatedFields(R.id.lbl_bookshelves);
+        field = fields.define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
+                      .setRelatedFields(R.id.lbl_bookshelves);
         initCheckListEditor(field, mBookshelvesView, R.string.lbl_bookshelves_long,
                             () -> mBookModel.getEditableBookshelvesList());
+    }
+
+    /**
+     * Show the given fragment to edit the list of authors/series.
+     *
+     * @param frag the fragment to show
+     * @param tag  the tag to use for the fragment
+     */
+    private void showEditListFragment(@NonNull final Fragment frag,
+                                      @NonNull final String tag) {
+        //noinspection ConstantConditions
+        getActivity().getSupportFragmentManager()
+                     .beginTransaction()
+                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                     .replace(R.id.main_fragment, frag, tag)
+                     .addToBackStack(tag)
+                     .commit();
     }
 
     @Override
@@ -417,67 +402,9 @@ public class EditBookFieldsFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
-        Book book = mBookModel.getBook();
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case REQ_EDIT_AUTHORS: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (data.hasExtra(UniqueId.BKEY_AUTHOR_ARRAY)) {
-                        ArrayList<Author> list =
-                                data.getParcelableArrayListExtra(UniqueId.BKEY_AUTHOR_ARRAY);
-                        if (list == null) {
-                            list = new ArrayList<>(0);
-                        }
-                        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-                    }
-
-                    if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
-                        mBookModel.setDirty(true);
-                    }
-
-                    // URGENT: replaceTocAuthors is WIP
-//                    if (data.hasExtra(EditBookAuthorsActivity.BKEY_AUTHOR_ID_SWAPPED)) {
-//                        // The user has been REPLACING author(s).
-//                        // i.e. an Author was removed, and a new one was added. (x times)
-//                        // Update the TOC:
-//                        //noinspection unchecked
-//                        ArrayList<Pair<Long, Long>> mSwappedAuthorPairs =
-//                                (ArrayList<Pair<Long, Long>>) data.getSerializableExtra(
-//                                        EditBookAuthorsActivity.BKEY_AUTHOR_ID_SWAPPED);
-//                        mBookModel.replaceTocAuthors(mSwappedAuthorPairs);
-//                    }
-
-                    // Some Authors MAY have been modified.
-                    if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {
-                        //noinspection ConstantConditions
-                        mBookModel.refreshAuthorList(getContext());
-                    }
-                }
-                break;
-            }
-            case REQ_EDIT_SERIES: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (data.hasExtra(UniqueId.BKEY_SERIES_ARRAY)) {
-                        ArrayList<Series> list =
-                                data.getParcelableArrayListExtra(UniqueId.BKEY_SERIES_ARRAY);
-                        if (list == null) {
-                            list = new ArrayList<>(0);
-                        }
-                        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-                    }
-
-                    if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
-                        mBookModel.setDirty(true);
-                    }
-
-                    // Some Series MAY have been modified.
-                    if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {
-                        //noinspection ConstantConditions
-                        mBookModel.refreshSeriesList(getContext());
-                    }
-                }
-                break;
-            }
             case UniqueId.REQ_SCAN_BARCODE: {
                 //noinspection ConstantConditions
                 mScannerModel.setScannerStarted(false);

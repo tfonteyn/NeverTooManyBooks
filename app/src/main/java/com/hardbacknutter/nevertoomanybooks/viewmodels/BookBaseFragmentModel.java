@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListModel;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -283,26 +282,6 @@ public class BookBaseFragmentModel
     public boolean toggleRead() {
         mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
         return mBook.setRead(mDb, !mBook.getBoolean(DBDefinitions.KEY_READ));
-    }
-
-    /**
-     * To be called if global changes to the Authors <strong>may</strong> have happened.
-     *
-     * @param context Current context
-     */
-    public void refreshAuthorList(@NonNull final Context context) {
-        mBook.refreshAuthorList(context, mDb);
-        mResultData.putExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, true);
-    }
-
-    /**
-     * To be called if global changes to the Series <strong>may</strong> have happened.
-     *
-     * @param context Current context
-     */
-    public void refreshSeriesList(@NonNull final Context context) {
-        mBook.refreshSeriesList(context, mDb);
-        mResultData.putExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, true);
     }
 
     @NonNull

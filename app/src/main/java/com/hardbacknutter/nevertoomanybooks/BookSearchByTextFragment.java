@@ -170,8 +170,8 @@ public class BookSearchByTextFragment
     @NonNull
     private ArrayList<String> getAuthorNames(@NonNull final Iterable<String> authorNames) {
 
-        final ArrayList<String> authors = mDb.getAuthorNames(
-                DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+        final ArrayList<String> authors =
+                mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {

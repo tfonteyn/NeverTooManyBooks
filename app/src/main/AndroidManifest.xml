@@ -135,12 +135,6 @@
         <activity
             android:name="com.hardbacknutter.nevertoomanybooks.EditBookActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.EditBookAuthorsActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity
-            android:name="com.hardbacknutter.nevertoomanybooks.EditBookSeriesActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <!-- View an Author and all of their works. -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.AuthorWorksActivity" />
 

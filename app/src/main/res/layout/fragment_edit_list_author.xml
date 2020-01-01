@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!--
   ~ @Copyright 2019 HardBackNutter
   ~ @License GNU General Public License
@@ -28,45 +27,55 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Edit the Series details.
-    Title: global
-    isComplete: global
-
-    Number: book
-    -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/DialogFrame"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".EditBookAuthorsFragment"
     >
 
+    <TextView
+        android:id="@+id/lbl_author"
+        style="@style/Label.Header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_authors"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
     <AutoCompleteTextView
-        android:id="@+id/series"
-        style="@style/titleTextEntryAutoComplete"
-        android:hint="@string/lbl_series"
-        app:layout_constraintEnd_toStartOf="@id/series_num"
-        app:layout_constraintHorizontal_weight="2"
+        android:id="@+id/author"
+        style="@style/personalNameTextEntry"
+        android:layout_marginStart="@dimen/indent1"
+        android:hint="@string/lbl_author"
+        app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_author"
         />
 
-    <CheckBox
-        android:id="@+id/cbx_is_complete"
-        style="@style/CheckboxEntry"
-        android:text="@string/lbl_is_complete"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/series"
-        />
-
-    <EditText
-        android:id="@+id/series_num"
-        style="@style/EditText.SeriesNumber"
-        app:layout_constraintBaseline_toBaselineOf="@id/series"
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/btn_confirm_add"
+        app:layout_constraintBaseline_toBaselineOf="@id/author"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/series"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill,LabelFor"
+        app:layout_constraintStart_toEndOf="@id/author"
         />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@android:id/list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_add"
+        tools:listitem="@layout/row_edit_author_list"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

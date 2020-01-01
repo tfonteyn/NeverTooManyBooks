@@ -1292,7 +1292,14 @@
     <string name="lbl_by_author_s">by %1$s</string>
     <string name="lbl_family_name">Family Name</string>
     <string name="lbl_given_names">Given Names</string>
+
     <string name="lbl_author">Author</string>
+    <string name="lbl_authors">Authors</string>
+
+    <!-- A single Series. -->
+    <string name="lbl_series">Series</string>
+    <!-- Multiple Series. -->
+    <string name="lbl_series_multiple">Series</string>
 
     <string name="lbl_publication">Publication</string>
     <string name="lbl_publisher">Publisher</string>
@@ -1317,7 +1324,6 @@
     <string name="lbl_cover">Cover</string>
     <string name="lbl_covers">Covers</string>
     <string name="lbl_title">Title</string>
-    <string name="lbl_series">Series</string>
     <string name="lbl_series_num">#</string>
     <string name="lbl_date_acquired">Date Acquired</string>
     <string name="lbl_price_paid">Price paid</string>

@@ -45,8 +45,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.Group;
-import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -55,82 +59,134 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.EditObjectListActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
+import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
+import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
- * Activity to edit a list of authors provided in an {@code ArrayList<Author>}
- * and return an updated list.
+ * Edit the list of Authors of a Book.
  * <p>
- * Calling point is a Book; see {@link EditBookAuthorDialogFragment} for list
- * <p>
- * You can edit the type in the edit-author dialog, but you cannot set it when adding
+ * You can edit the type in the edit-author dialog, but you cannot yet set it when adding
  * an author to the list.
  */
-public class EditBookAuthorsActivity
-        extends EditObjectListActivity<Author> {
+public class EditBookAuthorsFragment
+        extends Fragment {
 
-    /** Log tag. */
-    private static final String TAG = "EditBookAuthorsActivity";
+    public static final String TAG = "EditBookAuthorsFragment";
+    private static final int REQ_EDIT_ROW = 0;
 
-    public static final String BKEY_AUTHOR_ID_SWAPPED = TAG + ":swapAuthorIdPairs";
-    private final ArrayList<Pair<Long, Long>> mSwappedAuthorPairs = new ArrayList<>();
+    /** the rows. */
+    private ArrayList<Author> mList;
 
-    /**
-     * Constructor.
-     */
-    public EditBookAuthorsActivity() {
-        super(UniqueId.BKEY_AUTHOR_ARRAY);
-    }
+    /** Author name field. */
+    private AutoCompleteTextView mAuthorNameView;
+    /** The View for the list. */
+    private RecyclerView mListView;
+
+    /** The adapter for the list itself. */
+    private RecyclerViewAdapterBase mListAdapter;
+
+    /** The book. Must be in the Activity scope. */
+    private BookBaseFragmentModel mBookModel;
+    private final SimpleAdapterDataObserver mAdapterDataObserver =
+            new SimpleAdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    mBookModel.setDirty(true);
+                }
+            };
+    /** Database Access. */
+    private DAO mDb;
+    /** Drag and drop support for the list view. */
+    private ItemTouchHelper mItemTouchHelper;
+
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_edit_list_author;
-    }
-
-    @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.title_edit_book_authors);
-
-        mAutoCompleteAdapter =
-                new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line,
-                                   mModel.getDb()
-                                         .getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
-
-        mAutoCompleteTextView = findViewById(R.id.author);
-        mAutoCompleteTextView.setAdapter(mAutoCompleteAdapter);
+        mDb = new DAO(TAG);
     }
 
     @Override
-    protected RecyclerViewAdapterBase
-    createListAdapter(@NonNull final ArrayList<Author> list,
-                      @NonNull final StartDragListener dragStartListener) {
-        return new AuthorListAdapter(this, list, dragStartListener);
+    public void onDestroy() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onDestroy();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_edit_list_author, container, false);
+        mListView = view.findViewById(android.R.id.list);
+        mAuthorNameView = view.findViewById(R.id.author);
+        return view;
     }
 
     @Override
-    protected void onAdd(@NonNull final View target) {
-        String name = mAutoCompleteTextView.getText().toString().trim();
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
+        getActivity().setTitle(R.string.title_edit_book_authors);
+
+        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
+
+        Book book = mBookModel.getBook();
+        mList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+
+        //noinspection ConstantConditions
+        ArrayAdapter<String> nameAdapter =
+                new ArrayAdapter<>(getContext(),
+                                   android.R.layout.simple_dropdown_item_1line,
+                                   mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+        mAuthorNameView.setAdapter(nameAdapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mListView.setLayoutManager(layoutManager);
+        mListView.setHasFixedSize(true);
+        mListAdapter = new AuthorListAdapter(getContext(), mList,
+                                             vh -> mItemTouchHelper.startDrag(vh));
+        mListView.setAdapter(mListAdapter);
+        mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
+
+        SimpleItemTouchHelperCallback sitHelperCallback =
+                new SimpleItemTouchHelperCallback(mListAdapter);
+        mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
+        mItemTouchHelper.attachToRecyclerView(mListView);
+
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.btn_add).setOnClickListener(this::onAdd);
+    }
+
+    private void onAdd(@SuppressWarnings("unused") @NonNull final View target) {
+        String name = mAuthorNameView.getText().toString().trim();
         if (name.isEmpty()) {
-            Snackbar.make(mAutoCompleteTextView, R.string.warning_missing_name,
+            Snackbar.make(mAuthorNameView, R.string.warning_missing_name,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
 
         Author newAuthor = Author.fromString(name);
         // see if it already exists
-        newAuthor.fixId(this, mModel.getDb(), Locale.getDefault());
+        //noinspection ConstantConditions
+        newAuthor.fixId(getContext(), mDb, Locale.getDefault());
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
-            Snackbar.make(mAutoCompleteTextView, R.string.warning_author_already_in_list,
+            Snackbar.make(mAuthorNameView, R.string.warning_author_already_in_list,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -139,7 +195,7 @@ public class EditBookAuthorsActivity
         mListAdapter.notifyDataSetChanged();
 
         // and clear the form for next entry.
-        mAutoCompleteTextView.setText("");
+        mAuthorNameView.setText("");
     }
 
     /**
@@ -150,8 +206,8 @@ public class EditBookAuthorsActivity
      *                Non-modified data was copied here as well.
      *                The id==0.
      */
-    protected void processChanges(@NonNull final Author author,
-                                  @NonNull final Author tmpData) {
+    private void processChanges(@NonNull final Author author,
+                                @NonNull final Author tmpData) {
 
         // name not changed ?
         if (author.getFamilyName().equals(tmpData.getFamilyName())
@@ -164,8 +220,8 @@ public class EditBookAuthorsActivity
             if (author.getType() != tmpData.getType()) {
                 // so if the type is different, just update it
                 author.setType(tmpData.getType());
-                ItemWithFixableId.pruneList(mList, this, mModel.getDb(),
-                                            Locale.getDefault(), false);
+                //noinspection ConstantConditions
+                ItemWithFixableId.pruneList(mList, getContext(), mDb, Locale.getDefault(), false);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -173,14 +229,13 @@ public class EditBookAuthorsActivity
 
         // The name of the Author was modified.
         // Check if it's used by any other books.
-        long nrOfReferences = mModel.getDb().countBooksByAuthor(this, author)
-                              + mModel.getDb().countTocEntryByAuthor(this, author);
-        // If it's not, we can simply modify the original and we're done here.
-        // There is no need to consult the user.
-        if (mModel.isSingleUsage(nrOfReferences)) {
+        if (isSingleUsage(author)) {
+            // If it's not, we can simply modify the original and we're done here.
+            // There is no need to consult the user.
             // Copy the new data into the original Author object that the user was changing.
             author.copyFrom(tmpData, true);
-            ItemWithFixableId.pruneList(mList, this, mModel.getDb(), Locale.getDefault(), false);
+            //noinspection ConstantConditions
+            ItemWithFixableId.pruneList(mList, getContext(), mDb, Locale.getDefault(), false);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -189,11 +244,12 @@ public class EditBookAuthorsActivity
         // and the it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
         String allBooks = getString(R.string.bookshelf_all_books);
+        //noinspection ConstantConditions
         String message = getString(R.string.confirm_apply_author_changed,
-                                   author.getSorting(this),
-                                   tmpData.getSorting(this),
+                                   author.getSorting(getContext()),
+                                   tmpData.getSorting(getContext()),
                                    allBooks);
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_scope_of_change)
                 .setMessage(message)
@@ -202,18 +258,18 @@ public class EditBookAuthorsActivity
                     // copy all new data
                     author.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
-                    int rowsAffected = mModel.getDb().updateAuthor(this, author);
+                    int rowsAffected = mDb.updateAuthor(getContext(), author);
                     if (rowsAffected == 1) {
-                        mModel.setGlobalReplacementsMade(true);
-                        ItemWithFixableId.pruneList(mList, this, mModel.getDb(),
+                        ItemWithFixableId.pruneList(mList, getContext(), mDb,
                                                     Locale.getDefault(), false);
+                        mBookModel.getBook().refreshAuthorList(getContext(), mDb);
                         mListAdapter.notifyDataSetChanged();
                     } else {
                         // eek?
-                        Logger.warnWithStackTrace(this, TAG, "Could not update",
+                        Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                                   "author=" + author,
                                                   "tmpAuthor=" + tmpData);
-                        new AlertDialog.Builder(this)
+                        new AlertDialog.Builder(getContext())
                                 .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .setMessage(R.string.error_unexpected_error)
                                 .show();
@@ -224,7 +280,7 @@ public class EditBookAuthorsActivity
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new author. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mModel.getDb().updateOrInsertAuthor(this, tmpData);
+                    mDb.updateOrInsertAuthor(getContext(), tmpData);
 
                     // unlink the old one (and unmodified), and link with the new one
                     // book/author positions will be fixed up when saving.
@@ -232,7 +288,7 @@ public class EditBookAuthorsActivity
                     // Same remark as above.
                     mList.remove(author);
                     mList.add(tmpData);
-                    ItemWithFixableId.pruneList(mList, this, mModel.getDb(),
+                    ItemWithFixableId.pruneList(mList, getContext(), mDb,
                                                 Locale.getDefault(), false);
 
                     //URGENT: replaceTocAuthors is WIP
@@ -257,6 +313,38 @@ public class EditBookAuthorsActivity
                 .show();
     }
 
+    private boolean isSingleUsage(@NonNull final Author author) {
+        //noinspection ConstantConditions
+        long nrOfReferences = mDb.countBooksByAuthor(getContext(), author)
+                              + mDb.countTocEntryByAuthor(getContext(), author);
+        return nrOfReferences <= (mBookModel.getBook().getId() == 0 ? 0 : 1);
+    }
+
+    /**
+     * Holder pattern for each row.
+     */
+    private static class Holder
+            extends RecyclerViewViewHolderBase {
+
+        @NonNull
+        final TextView authorView;
+        @NonNull
+        final TextView authorSortView;
+        @NonNull
+        final TextView authorTypeView;
+
+        Holder(@NonNull final View itemView) {
+            super(itemView);
+
+            authorView = itemView.findViewById(R.id.row_author);
+            authorSortView = itemView.findViewById(R.id.row_author_sort);
+            authorTypeView = itemView.findViewById(R.id.row_author_type);
+
+            if (!App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+                authorTypeView.setVisibility(View.GONE);
+            }
+        }
+    }
 
     /**
      * Edit an Author from the list.
@@ -271,9 +359,7 @@ public class EditBookAuthorsActivity
         static final String TAG = "EditBookAuthorDialogFrag";
         /** Key: type. */
         private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
-        /** Database Access. */
-        private DAO mDb;
-        private EditBookAuthorsActivity mHostActivity;
+
         private AutoCompleteTextView mFamilyNameView;
         private AutoCompleteTextView mGivenNamesView;
         private Checkable mIsCompleteView;
@@ -291,36 +377,12 @@ public class EditBookAuthorsActivity
         @Author.Type
         private int mType;
 
-
-        /**
-         * Constructor.
-         *
-         * @param author to edit.
-         *
-         * @return the instance
-         */
-        static EditBookAuthorDialogFragment newInstance(@NonNull final Author author) {
-            EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
-            Bundle args = new Bundle(1);
-            args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
-            frag.setArguments(args);
-            return frag;
-        }
-
-        protected int getLayoutId() {
-            return R.layout.dialog_edit_book_author;
-        }
-
-        @Override
-        public void onAttach(@NonNull final Context context) {
-            super.onAttach(context);
-            mHostActivity = (EditBookAuthorsActivity) context;
-        }
+        /** Database Access. */
+        private DAO mDb;
 
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
             mDb = new DAO(TAG);
 
             Bundle args = requireArguments();
@@ -341,22 +403,32 @@ public class EditBookAuthorsActivity
             }
         }
 
+        @Override
+        public void onDestroy() {
+            if (mDb != null) {
+                mDb.close();
+            }
+            super.onDestroy();
+        }
+
         @NonNull
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+
+            Objects.requireNonNull(getTargetFragment(), "no target fragment set");
+
             // Reminder: *always* use the activity inflater here.
             //noinspection ConstantConditions
             LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-            View root = layoutInflater.inflate(getLayoutId(), null);
+            View root = layoutInflater.inflate(R.layout.dialog_edit_book_author, null);
 
-            Context context = getContext();
 
             @SuppressWarnings("ConstantConditions")
             ArrayAdapter<String> mFamilyNameAdapter =
-                    new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
+                    new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
                                        mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
             ArrayAdapter<String> mGivenNameAdapter =
-                    new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
+                    new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
                                        mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
             // the dialog fields != screen fields.
@@ -410,7 +482,7 @@ public class EditBookAuthorsActivity
                 setTypeEnabled(false);
             }
 
-            return new AlertDialog.Builder(context)
+            return new AlertDialog.Builder(getContext())
                     .setIcon(R.drawable.ic_edit)
                     .setView(root)
                     .setTitle(R.string.title_edit_author)
@@ -450,7 +522,8 @@ public class EditBookAuthorsActivity
                             tmpAuthor.setType(mAuthor.getType());
                         }
 
-                        mHostActivity.processChanges(mAuthor, tmpAuthor);
+                        ((EditBookAuthorsFragment) getTargetFragment())
+                                .processChanges(mAuthor, tmpAuthor);
                     })
                     .create();
         }
@@ -494,14 +567,6 @@ public class EditBookAuthorsActivity
             super.onPause();
         }
 
-        @Override
-        public void onDestroy() {
-            if (mDb != null) {
-                mDb.close();
-            }
-            super.onDestroy();
-        }
-
         /**
          * Enable or disable the type related fields.
          *
@@ -532,33 +597,6 @@ public class EditBookAuthorsActivity
             return authorType;
         }
     }
-
-    /**
-     * Holder pattern for each row.
-     */
-    private static class Holder
-            extends RecyclerViewViewHolderBase {
-
-        @NonNull
-        final TextView authorView;
-        @NonNull
-        final TextView authorSortView;
-        @NonNull
-        final TextView authorTypeView;
-
-        Holder(@NonNull final View itemView) {
-            super(itemView);
-
-            authorView = itemView.findViewById(R.id.row_author);
-            authorSortView = itemView.findViewById(R.id.row_author_sort);
-            authorTypeView = itemView.findViewById(R.id.row_author_type);
-
-            if (!App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
-                authorTypeView.setVisibility(View.GONE);
-            }
-        }
-    }
-
 
     protected class AuthorListAdapter
             extends RecyclerViewAdapterBase<Author, Holder> {
@@ -612,9 +650,15 @@ public class EditBookAuthorsActivity
             }
 
             // click -> edit
-            holder.rowDetailsView.setOnClickListener(v -> EditBookAuthorDialogFragment
-                    .newInstance(author)
-                    .show(getSupportFragmentManager(), EditBookAuthorDialogFragment.TAG));
+            holder.rowDetailsView.setOnClickListener(v -> {
+                EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
+                Bundle args = new Bundle(1);
+                args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
+                frag.setArguments(args);
+                frag.setTargetFragment(EditBookAuthorsFragment.this,
+                                       EditBookAuthorsFragment.REQ_EDIT_ROW);
+                frag.show(getParentFragmentManager(), EditBookAuthorDialogFragment.TAG);
+            });
         }
     }
 }
