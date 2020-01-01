@@ -187,7 +187,6 @@ public class StartupViewModel
     protected void onCleared() {
         if (mDb != null) {
             mDb.close();
-            mDb = null;
         }
     }
 

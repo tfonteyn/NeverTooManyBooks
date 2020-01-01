@@ -240,11 +240,11 @@ public class LendBookDialogFragment
     }
 
     @Override
-    public void onDestroyView() {
+    public void onDestroy() {
         if (mDb != null) {
             mDb.close();
         }
-        super.onDestroyView();
+        super.onDestroy();
     }
 
     /**

@@ -303,12 +303,4 @@ public abstract class BookSearchBaseFragment
             }
         }
     }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
-    }
 }

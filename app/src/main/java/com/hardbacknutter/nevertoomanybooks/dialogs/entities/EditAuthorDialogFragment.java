@@ -50,7 +50,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.EditBookAuthorsActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -60,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 /**
  * Dialog to edit an existing single author.
  * <p>
- * Calling point is a List; see {@link EditBookAuthorsActivity} for book
+ * Calling point is a List
  */
 public class EditAuthorDialogFragment
         extends DialogFragment {

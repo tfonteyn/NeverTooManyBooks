@@ -201,7 +201,6 @@ public class BooksOnBookshelfModel
 
         if (mDb != null) {
             mDb.close();
-            mDb = null;
         }
     }
 
