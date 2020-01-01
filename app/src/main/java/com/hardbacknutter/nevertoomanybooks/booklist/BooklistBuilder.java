@@ -480,24 +480,31 @@ public class BooklistBuilder
             // the bottom level has groups for all levels.
             group.setDomains(helper.getDomainsForCurrentGroup());
         }
+        // After adding the groups, we now know if we have a Bookshelf group or not.
 
-        // After adding the groups, we now know if we have a Bookshelf group.
-        // If we want a specific shelf, we''ll need to filter on it.
+        // If we want a specific shelf, we  need to filter on it.
         if (!mBookshelf.isAllBooks()) {
-            if (helper.hasBookshelfGroup()) {
-                // we have the group, and we want a specific shelf, just add an 'exists' filter.
-                mFilters.add(() -> "EXISTS(SELECT NULL FROM "
-                                   + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS)
-                                   + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF)
-                                   + '=' + mBookshelf.getId()
-                                   + ')');
-            } else {
-                // we do not have the group but we do want a specific shelf.
-                // So tell the helper we'll need to join and add the 'exact' filter.
+            if (!helper.hasBookshelfGroup()) {
+                // We DO NOT have bookshelves as a group
+                // So tell the helper we DO need to join with the bookshelves table
                 helper.setJoinWithBookshelves();
+                // and add a specific filter to get only the requested shelf.
                 mFilters.add(() -> '(' + TBL_BOOKSHELF.dot(DOM_PK_ID)
                                    + '=' + mBookshelf.getId() + ')');
+
             }
+            //else {
+            //URGENT: we're listing ONE Bookshelf.. and have bookshelves as a filter
+            // confused.... this is wrong
+            // Commented out as a TEST
+            // We DO have bookshelves as a group
+            // Add an 'exists' filter.
+//                mFilters.add(() -> "EXISTS(SELECT NULL FROM "
+//                                   + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS)
+//                                   + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF)
+//                                   + '=' + mBookshelf.getId()
+//                                   + ')');
+            //}
         }
 
         // Last step in preparing the domains: add any caller-specified extras (e.g. title).
