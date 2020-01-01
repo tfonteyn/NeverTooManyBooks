@@ -40,7 +40,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 /**
@@ -272,7 +271,6 @@ public class TocEntry
         // don't use the bookLocale for the Author; translated books would have the wrong Locale.
         mAuthor.fixId(context, db, Locale.getDefault());
         mId = db.getTocEntryId(context, this, bookLocale);
-        LocaleUtils.insanityCheck(context);
         return mId;
     }
 

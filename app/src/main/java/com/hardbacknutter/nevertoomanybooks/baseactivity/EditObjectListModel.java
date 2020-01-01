@@ -63,12 +63,13 @@ public class EditObjectListModel
      * setResult
      */
     public static final String BKEY_LIST_MODIFIED = TAG + ":listModified";
+
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     private final Intent mResultData = new Intent();
     /** Database Access. */
     private DAO mDb;
-    /** Row ID... mainly used (if list is from a book) to know if the object is new. */
-    private long mRowId;
+    /** Book ID. Can be 0 for new books. */
+    private long mBookId;
     /** Displayed for user reference only. */
     @Nullable
     private String mBookTitle;
@@ -93,7 +94,7 @@ public class EditObjectListModel
             mDb = new DAO(TAG);
 
             // Look for id and title
-            mRowId = args.getLong(DBDefinitions.KEY_PK_ID);
+            mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
             String bookLang = args.getString(DBDefinitions.KEY_LANGUAGE);
             if (bookLang != null && !bookLang.isEmpty()) {
@@ -114,7 +115,7 @@ public class EditObjectListModel
     }
 
     public boolean isSingleUsage(final long nrOfReferences) {
-        return nrOfReferences <= (mRowId == 0 ? 0 : 1);
+        return nrOfReferences <= (mBookId == 0 ? 0 : 1);
     }
 
     @Nullable
@@ -133,11 +134,11 @@ public class EditObjectListModel
     }
 
     @NonNull
-    Intent getResultData() {
+    public Intent getResultData() {
         return mResultData;
     }
 
-    void setDirty(@SuppressWarnings("SameParameterValue") final boolean isDirty) {
+    public void setDirty(@SuppressWarnings("SameParameterValue") final boolean isDirty) {
         mResultData.putExtra(BKEY_LIST_MODIFIED, isDirty);
     }
 }

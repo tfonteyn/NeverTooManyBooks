@@ -109,8 +109,10 @@
     <string name="btn_this_book">Bu kitap</string>
     <string name="bytes">%.0fB</string>
     <string name="clear">Silme</string>
-    <string name="confirm_apply_author_changed">Yazarı şundan:\n\n “%1$s” şuna: “%2$s” değiştirdiniz.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
-    <string name="confirm_apply_series_changed">Seriyi şundan:\n\n “%1$s” şuna: “%2$s” değiştirdiniz.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
+
+    <string name="confirm_apply_author_changed">Yazarı şundan:\n\n “%1$s”\n şuna “%2$s”\n değiştirdiniz.\n \nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
+    <string name="confirm_apply_series_changed">Seriyi şundan:\n\n “%1$s”\n şuna “%2$s”\n değiştirdiniz.\n \nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
+
     <string name="confirm_delete_book">Bu işlem bu kitabı tümüyle silecektir: “%1$s” - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="confirm_delete_series">“%1$s” serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="confirm_delete_toc_entry">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>

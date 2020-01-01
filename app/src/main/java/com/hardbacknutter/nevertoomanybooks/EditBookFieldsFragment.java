@@ -179,7 +179,7 @@ public class EditBookFieldsFragment
 
         fields.addString(mTitleView, DBDefinitions.KEY_TITLE);
 
-        // defined, but fetched/stored manually
+        // defined, but populated/stored manually
         // Storing the list back into the book is handled by onActivityResult
         fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR);
         mAuthorView.setOnClickListener(v -> {
@@ -195,7 +195,7 @@ public class EditBookFieldsFragment
             startActivityForResult(intent, REQ_EDIT_AUTHORS);
         });
 
-        // defined, but fetched/stored manually
+        // defined, but populated/stored manually
         // Storing the list back into the book is handled by onActivityResult
         fields.define(mSeriesView, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
@@ -236,7 +236,7 @@ public class EditBookFieldsFragment
 
         // Personal fields
 
-        // defined, but fetched/stored manually
+        // defined, but populated/stored manually
         // Storing the list back into the book is handled by onCheckListEditorSave
         field = fields
                 .define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
@@ -434,6 +434,18 @@ public class EditBookFieldsFragment
                     if (data.getBooleanExtra(EditObjectListModel.BKEY_LIST_MODIFIED, false)) {
                         mBookModel.setDirty(true);
                     }
+
+                    // URGENT: replaceTocAuthors is WIP
+//                    if (data.hasExtra(EditBookAuthorsActivity.BKEY_AUTHOR_ID_SWAPPED)) {
+//                        // The user has been REPLACING author(s).
+//                        // i.e. an Author was removed, and a new one was added. (x times)
+//                        // Update the TOC:
+//                        //noinspection unchecked
+//                        ArrayList<Pair<Long, Long>> mSwappedAuthorPairs =
+//                                (ArrayList<Pair<Long, Long>>) data.getSerializableExtra(
+//                                        EditBookAuthorsActivity.BKEY_AUTHOR_ID_SWAPPED);
+//                        mBookModel.replaceTocAuthors(mSwappedAuthorPairs);
+//                    }
 
                     // Some Authors MAY have been modified.
                     if (data.getBooleanExtra(EditObjectListModel.BKEY_GLOBAL_CHANGES_MADE, false)) {

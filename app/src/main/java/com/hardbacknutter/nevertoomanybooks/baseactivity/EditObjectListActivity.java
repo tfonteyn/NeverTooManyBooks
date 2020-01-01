@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 public abstract class EditObjectListActivity<T extends Parcelable>
         extends BaseActivity {
 
-    /** The key to use in the Bundle to get the array. */
+    /** The key to use in the Bundle to get/put the array. */
     @NonNull
     private final String mBKey;
 

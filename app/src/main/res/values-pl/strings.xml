@@ -110,8 +110,10 @@
     <string name="btn_this_book">Ta książka</string>
     <string name="bytes">%.0fB</string>
     <string name="clear">Wyczyść</string>
-    <string name="confirm_apply_author_changed">Zmieniłeś autora z :\n\n  „%1$s” na „%2$s”\n\nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
-    <string name="confirm_apply_series_changed">Zmieniłeś serię z:\n\n  „%1$s” na „%2$s”\n\nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
+
+    <string name="confirm_apply_author_changed">Zmieniłeś autora\n\n z „%1$s”\n na „%2$s”\n \nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
+    <string name="confirm_apply_series_changed">Zmieniłeś serię\n\n z „%1$s”\n na „%2$s”\n \nJak chcesz zastosować tę zmianę?\n\nUwaga: Zmiana „%3$s” zostanie wykonana natychmiast.</string>
+
     <string name="confirm_delete_book">Zamierzasz usunąć książkę o tytule „%1$s” autora %2$s. Czy chcesz kontynuować?</string>
     <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?\n\nKsiążki nie będą usuwane.\n\nRozważ zmianę nazwy serii by zachować te dane</string>
     <string name="confirm_delete_toc_entry">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>

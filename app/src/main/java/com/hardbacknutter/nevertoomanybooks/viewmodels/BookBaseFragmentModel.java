@@ -436,4 +436,28 @@ public class BookBaseFragmentModel
         return mGoodreadsTaskListener;
     }
 
+
+    // URGENT: replaceTocAuthors is WIP
+//    /**
+//     * Replace authors on the TOC. Each pair in the past list contains the original author
+//     * to replace, and the new author to assign.
+//     *
+//     * @param idPairs list of author ID pairs.
+//     */
+//    public void replaceTocAuthors(@NonNull final Iterable<Pair<Long, Long>> idPairs) {
+//        ArrayList<TocEntry> toc = getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+//        for (Pair<Long, Long> pair : idPairs) {
+//            for (TocEntry tocEntry : toc) {
+//                //noinspection ConstantConditions
+//                if (tocEntry.getAuthor().getId() == pair.first) {
+//                    //noinspection ConstantConditions
+//                    Author author = mDb.getAuthor(pair.second);
+//                    if (author != null) {
+//                        tocEntry.setAuthor(author);
+//                    }
+//                }
+//            }
+//        }
+//        getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
+//    }
 }

@@ -112,8 +112,10 @@
     <string name="btn_this_book">Ce livre</string>
     <string name="bytes">%.0f octets</string>
     <string name="clear">Effacer</string>
-    <string name="confirm_apply_author_changed">Vous avez changé le nom de l\'auteur, de\n\n «%1$s» à «%2$s»\n\nComment souhaitez-vous appliquer ce changement ?\n\nNote : votre choix «%3$s» sera pris en compte instantanément.</string>
-    <string name="confirm_apply_series_changed">Vous avez modifié la série de\n\n «%1$s» à «%2$s»\n\nComment souhaitez vous appliquer ce changement ?\n\nNote : votre choix «%3$s» sera pris en compte immédiatement.</string>
+
+    <string name="confirm_apply_author_changed">Vous avez modifié l\'auteur\n\n de «%1$s»\n à «%2$s»\n \nComment souhaitez-vous appliquer ce changement ?\n\nNote : votre choix «%3$s» sera pris en compte instantanément.</string>
+    <string name="confirm_apply_series_changed">Vous avez modifié la série\n\n de «%1$s»\n à «%2$s»\n \nComment souhaitez vous appliquer ce changement ?\n\nNote : votre choix «%3$s» sera pris en compte immédiatement.</string>
+
     <string name="confirm_delete_book">Cela effacera totalement le livre intitulé «%1$s» par %2$s.\nÊtes vous sûr de vouloir poursuivre ?</string>
     <string name="confirm_delete_series">Supprimer la série «%1$s» ?\n\nLes livres eux-mêmes ne seront pas supprimés.\n\n Envisagez de modifier la série et d\'en changer le nom pour conserver cette information.</string>
     <string name="confirm_delete_toc_entry">Vraiment supprimer le titre «%1$s» (par %2$s)? Il sera supprimé de tous les livres dans lesquels il est répertorié. Les livres eux-mêmes ne seront pas supprimés.</string>

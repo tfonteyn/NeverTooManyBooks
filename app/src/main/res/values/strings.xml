@@ -312,19 +312,33 @@
     </string>
     <string name="confirm_overwrite_thumbnail">
         This will update the selected fields as shown, but images can optionally be downloaded
-        for ALL books.\n\nDo you want to overwrite all existing images?
-        Warning, this may take a long time.
+        for ALL books.\n
+        \nDo you want to overwrite all existing images? Warning, this may take a long time.
     </string>
+
+    <!-- param 1: previous and param 2: new Author name, each time as a single string.
+         param 3: the text on the button for making a global change. e.g. "All books" -->
     <string name="confirm_apply_author_changed">
-        You have changed the author from:\n\n “%1$s” to “%2$s”\n\n
-        How do you wish to apply this change?\n\n
-        Note: The choice “%3$s” will be applied instantly.
+        You have changed the author:
+        \n
+        \n from “%1$s”
+        \n to “%2$s”
+        \n
+        \nHow do you wish to apply this change?
+        \nNote: The choice “%3$s” will be applied instantly.
     </string>
+    <!-- param 1: previous and param 2: new Series title.
+         param 3: the text on the button for making a global change. e.g. "All books" -->
     <string name="confirm_apply_series_changed">
-        You have changed the series from:\n\n “%1$s” to “%2$s”\n\n
-        How do you wish to apply this change?\n\n
-        Note: The choice “%3$s” will be applied instantly.
+        You have changed the series:
+        \n
+        \n from “%1$s”
+        \n to “%2$s”
+        \n
+        \nHow do you wish to apply this change?
+        \nNote: The choice “%3$s” will be applied instantly.
     </string>
+
     <!-- offer to send the exported file as an email attachment -->
     <string name="confirm_email_export">Would you like to send this export as an email?</string>
 

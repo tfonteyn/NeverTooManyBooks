@@ -830,8 +830,8 @@ public class DAO
      *
      * @return rows affected, should be 1 for success
      */
-    private int updateAuthor(@NonNull final Context context,
-                             @NonNull final Author author) {
+    public int updateAuthor(@NonNull final Context context,
+                            @NonNull final Author author) {
 
         Locale authorLocale = author.getLocale(context, this, Locale.getDefault());
 
@@ -960,48 +960,6 @@ public class DAO
                 author.setId(0);
             }
         }
-    }
-
-    /**
-     * Globally replace the Author data. This does <strong>not</strong> copy book related fields.
-     *
-     * @param context Current context
-     * @param from    Author to replace
-     * @param to      Author to use
-     *
-     * @return {@code true} for success.
-     */
-    public boolean globalReplace(@NonNull final Context context,
-                                 @NonNull final Author from,
-                                 @NonNull final Author to) {
-
-        // sanity check
-        if (from.getId() == 0 && from.fixId(context, this, Locale.getDefault()) == 0) {
-            Logger.warnWithStackTrace(context, TAG, "Old Author is not defined");
-            return false;
-        }
-
-        // sanity check
-        if (from.getId() == to.getId()) {
-            return true;
-        }
-
-        SyncLock txLock = sSyncedDb.beginTransaction(true);
-        try {
-            // replace the old id with the new id on the TOC entries
-            updateAuthorOnTocEntry(from.getId(), to.getId());
-
-            globalReplace(TBL_BOOK_AUTHOR, DOM_FK_AUTHOR, DOM_BOOK_AUTHOR_POSITION,
-                          from.getId(), to.getId());
-
-            sSyncedDb.setTransactionSuccessful();
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            return false;
-        } finally {
-            sSyncedDb.endTransaction(txLock);
-        }
-        return true;
     }
 
     /**
@@ -2012,7 +1970,9 @@ public class DAO
             Locale bookLocale = book.getLocale(context);
             // As an entry can exist in multiple books, try to find the entry.
             if (tocEntry.fixId(context, this, bookLocale) == 0) {
+                // it's a new entry
                 insertTocEntry(context, tocEntry, bookLocale);
+
             } else {
                 // It's an existing entry.
                 // We cannot update the author (we never even get here if the author was changed)
@@ -2260,208 +2220,6 @@ public class DAO
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
             return stmt.executeUpdateDelete();
-        }
-    }
-
-    /**
-     * Books use an ordered list of Authors and Series (custom order by the end-user).
-     * When replacing one of them, lists have to be adjusted.
-     * <p>
-     * transaction: required
-     * <p>
-     * throws exceptions, caller must handle
-     *
-     * @param table     TBL_BOOK_AUTHOR or TBL_BOOK_SERIES
-     * @param fk        DOM_FK_AUTHOR or DOM_FK_SERIES
-     * @param posDomain DOM_BOOK_AUTHOR_POSITION or DOM_BOOK_SERIES_POSITION
-     * @param fromId    the author/series id to replace
-     * @param toId      the new author/series id to use
-     */
-    private void globalReplace(@NonNull final TableDefinition table,
-                               @NonNull final DomainDefinition fk,
-                               @NonNull final DomainDefinition posDomain,
-                               @IntRange(from = 1) final long fromId,
-                               @IntRange(from = 1) final long toId) {
-
-        // Developer sanity check
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-            if (TBL_BOOK_AUTHOR.equals(table)) {
-                if (!DOM_FK_AUTHOR.equals(fk)) {
-                    throw new IllegalArgumentException("table=" + table + ", invalid fk=" + fk);
-                }
-                if (!DOM_BOOK_AUTHOR_POSITION.equals(posDomain)) {
-                    throw new IllegalArgumentException("table=" + table
-                                                       + ", invalid posDomain=" + posDomain);
-                }
-            } else if (TBL_BOOK_SERIES.equals(table)) {
-                if (!DOM_FK_SERIES.equals(fk)) {
-                    throw new IllegalArgumentException("table=" + table + ", invalid fk=" + fk);
-                }
-                if (!DOM_BOOK_SERIES_POSITION.equals(posDomain)) {
-                    throw new IllegalArgumentException("table=" + table
-                                                       + ", invalid posDomain=" + posDomain);
-                }
-            } else {
-                throw new IllegalArgumentException("invalid table=" + table);
-            }
-        }
-
-        if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
-        }
-
-        //URGENT: verify the working of this method. It smells like far to complicated
-        // There may be legacy/baggage left over from pre-v5 version of BookCatalogue
-
-        // A safety to add to the WHERE-clause.
-        String sqlSafetyClause = "EXISTS (SELECT NULL FROM " + table.ref() + " WHERE "
-                                 // left: the aliased table, right the actual table
-                                 + table.dot(DOM_FK_BOOK) + '=' + table + '.' + DOM_FK_BOOK
-                                 // left: the aliased table
-                                 + " AND " + table.dot(fk) + "=?)";
-
-        // Replace any old foreign key id with the new foreign key id.
-        String sqlReplaceFK = "UPDATE " + table + " SET " + fk + "=? WHERE " + fk + "=?"
-                              // but only do this for books that do NOT already have a reference
-                              // to the replacement foreign key.
-                              + " AND NOT " + sqlSafetyClause;
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-            Log.d(TAG, "DAO=" + mInstanceName
-                       + "|globalReplace-1"
-                       + "|fromId=" + fromId
-                       + "|toId=" + toId
-                       + "\nsqlReplaceFK=" + String.format(
-                    sqlReplaceFK.replaceAll("=\\?", "%s"),
-                    toId, fromId, toId));
-        }
-        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(sqlReplaceFK)) {
-            stmt.bindLong(1, toId);
-            stmt.bindLong(2, fromId);
-            stmt.bindLong(3, toId);
-            stmt.executeUpdateDelete();
-        }
-
-        // The loop-cursor: Get the book and the old ('fromId') position.
-        String sql = "SELECT " + DOM_FK_BOOK + ',' + posDomain + " FROM " + table
-                     + " WHERE " + fk + "=?"
-                     // Be extra cautious by using the EXISTS statement again, this time
-                     // to limit it to books that DO already have a reference
-                     // to the replacement foreign key (i.e. the opposite of above).
-                     // It's not necessary, but we do it to reduce the risk of data loss.
-                     + " AND " + sqlSafetyClause;
-
-        // Get the position of the already-existing 'new/replacement' object
-        String sqlGetNewPosition = "SELECT " + posDomain + " FROM " + table
-                                   + " WHERE " + DOM_FK_BOOK + "=? AND " + fk + "=?";
-        // Delete the object record we just fetched.
-        String sqlDeleteByPk = _DELETE_FROM_ + table
-                               + " WHERE " + DOM_FK_BOOK + "=? AND " + fk + "=?";
-
-        // Make sure positioned lists start with position 1
-        String sqlGetMinimumPosition = "SELECT MIN(" + posDomain + ") FROM " + table
-                                       + " WHERE " + DOM_FK_BOOK + "=?";
-        // Move a single entry to a new position when needed.
-        String SqlUpdatePosition = "UPDATE " + table + " SET " + posDomain + "=?"
-                                   + " WHERE " + DOM_FK_BOOK + "=? AND " + posDomain + "=?";
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-            Log.d(TAG, "DAO=" + mInstanceName
-                       + "|globalReplace"
-                       + "|fromId=" + fromId
-                       + "|toId=" + toId
-                       + "\nloop cursor=" + sql
-                       + "\nsqlGetNewPosition=" + sqlGetNewPosition
-                       + "\nsqlDeleteByPk=" + sqlDeleteByPk
-                       + "\nsqlGetMinimumPosition=" + sqlGetMinimumPosition
-                       + "\nSqlMovePosition=" + SqlUpdatePosition);
-        }
-
-        try (
-                SynchronizedStatement getToPositionStmt
-                        = sSyncedDb.compileStatement(sqlGetNewPosition);
-                SynchronizedStatement delStmt
-                        = sSyncedDb.compileStatement(sqlDeleteByPk);
-                SynchronizedStatement selectMinPosStmt
-                        = sSyncedDb.compileStatement(sqlGetMinimumPosition);
-                SynchronizedStatement updatePositionStmt
-                        = sSyncedDb.compileStatement(SqlUpdatePosition);
-
-                Cursor cursor = sSyncedDb.rawQuery(sql, new String[]{String.valueOf(fromId),
-                                                                     String.valueOf(toId)})) {
-            // Get the column indexes we need
-            int bookCol = cursor.getColumnIndexOrThrow(DOM_FK_BOOK.getName());
-            int posCol = cursor.getColumnIndexOrThrow(posDomain.getName());
-
-            // Loop through all instances of the old object still appearing
-            while (cursor.moveToNext()) {
-                // Get the primary key of the old object
-                long bookId = cursor.getLong(bookCol);
-                long pos = cursor.getLong(posCol);
-
-                // Get the position of the book +  new foreign key reference
-                getToPositionStmt.bindLong(1, bookId);
-                getToPositionStmt.bindLong(2, toId);
-                // SELECT author_position FROM book_author WHERE book=? AND author=?
-                // SELECT series_position FROM book_series WHERE book=? AND series_id=?
-                long toPosition = getToPositionStmt.simpleQueryForLong();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-                    Log.d(TAG, "DAO=" + mInstanceName
-                               + "|globalReplace"
-                               + "|bookId=" + bookId
-                               + "|toId=" + toId
-                               + "|toPosition=" + toPosition);
-                }
-
-                // Delete the book + old foreign key reference
-                delStmt.bindLong(1, bookId);
-                delStmt.bindLong(2, fromId);
-                //  DELETE FROM book_author WHERE book=? AND author=?
-                //  DELETE FROM book_series WHERE book=? AND series_id=?
-                delStmt.executeUpdateDelete();
-
-                // If the deleted 'fromId' object had a more prominent position than
-                // the new 'toId' object, move the new one up
-                if (toPosition > pos) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-                        Log.d(TAG, "DAO=" + mInstanceName
-                                   + "|globalReplace"
-                                   + "|updatePosition");
-                    }
-                    updatePositionStmt.bindLong(1, pos);
-                    updatePositionStmt.bindLong(2, bookId);
-                    updatePositionStmt.bindLong(3, toPosition);
-                    // UPDATE book_author SET author_position=? WHERE book=? AND author_position=?
-                    // UPDATE book_series SET series_position=? WHERE book=? AND series_position=?
-                    updatePositionStmt.executeUpdateDelete();
-                }
-
-                // We now need to make sure we have something in position 1.
-                // Get the minimum position
-                selectMinPosStmt.bindLong(1, bookId);
-                // SELECT MIN(author_position) FROM book_author WHERE book=?"
-                // SELECT MIN(series_position) FROM book_series WHERE book=?"
-                long minPos = selectMinPosStmt.simpleQueryForLong();
-                // and if it's > 1, move it up to 1
-                if (minPos > 1) {
-                    // It is tempting to move all rows up by one when we delete something, but that
-                    // would have to be done in another sorted cursor in order to prevent duplicate
-                    // index errors. So we just make sure we have something in position 1.
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.DAO_GLOBAL_REPLACE) {
-                        Log.d(TAG, "DAO=" + mInstanceName
-                                   + "|globalReplace"
-                                   + "|bookId=" + bookId
-                                   + "|minPos=" + minPos);
-                    }
-                    updatePositionStmt.bindLong(1, 1);
-                    updatePositionStmt.bindLong(2, bookId);
-                    updatePositionStmt.bindLong(3, minPos);
-                    // UPDATE book_author SET author_position=? WHERE book=? AND author_position=?
-                    // UPDATE book_series SET series_position=? WHERE book=? AND series_position=?
-                    updatePositionStmt.executeUpdateDelete();
-                }
-            }
         }
     }
 
@@ -3409,9 +3167,9 @@ public class DAO
      *
      * @return rows affected, should be 1 for success
      */
-    private int updateSeries(@NonNull final Context context,
-                             @NonNull final Series series,
-                             @NonNull final Locale bookLocale) {
+    public int updateSeries(@NonNull final Context context,
+                            @NonNull final Series series,
+                            @NonNull final Locale bookLocale) {
 
         Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
@@ -3470,7 +3228,7 @@ public class DAO
             stmt = mStatements.add(STMT_DELETE_SERIES, SqlDelete.SERIES_BY_ID);
         }
 
-        int rowsAffected = 0;
+        int rowsAffected;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, id);
@@ -3593,47 +3351,6 @@ public class DAO
                 series.setId(0);
             }
         }
-    }
-
-    /**
-     * Globally replace the Series data. This does <strong>not</strong> copy book related fields.
-     *
-     * @param context    Current context
-     * @param bookLocale the Locale to use if the "from" Series has none set
-     * @param from       Series to replace
-     * @param to         Series to use
-     *
-     * @return {@code true} for success.
-     */
-    public boolean globalReplace(@NonNull final Context context,
-                                 @NonNull final Locale bookLocale,
-                                 @NonNull final Series from,
-                                 @NonNull final Series to) {
-
-        // sanity check
-        if (from.getId() == 0 && from.fixId(context, this, bookLocale) == 0) {
-            Logger.warnWithStackTrace(context, TAG, "Old Series is not defined");
-            return false;
-        }
-
-        // sanity check
-        if (from.getId() == to.getId()) {
-            return true;
-        }
-
-        SyncLock txLock = sSyncedDb.beginTransaction(true);
-        try {
-            globalReplace(TBL_BOOK_SERIES, DOM_FK_SERIES, DOM_BOOK_SERIES_POSITION,
-                          from.getId(), to.getId());
-
-            sSyncedDb.setTransactionSuccessful();
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            return false;
-        } finally {
-            sSyncedDb.endTransaction(txLock);
-        }
-        return true;
     }
 
     /**
