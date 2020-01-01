@@ -104,7 +104,7 @@ public final class CsvCoder {
     public static StringList<Author> getAuthorCoder() {
         if (sAuthorUtils == null) {
             sAuthorUtils = new StringList<>(new StringList.Factory<Author>() {
-                private char[] escapeChars = {Author.NAME_SEPARATOR, ' ', '(', ')'};
+                private final char[] escapeChars = {Author.NAME_SEPARATOR, ' ', '(', ')'};
 
                 @Override
                 @NonNull
@@ -169,7 +169,7 @@ public final class CsvCoder {
     public static StringList<Series> getSeriesCoder() {
         if (sSeriesUtils == null) {
             sSeriesUtils = new StringList<>(new StringList.Factory<Series>() {
-                private char[] escapeChars = {'(', ')'};
+                private final char[] escapeChars = {'(', ')'};
 
                 @Override
                 @NonNull
@@ -235,6 +235,8 @@ public final class CsvCoder {
     public static StringList<TocEntry> getTocCoder() {
         if (sTocUtils == null) {
             sTocUtils = new StringList<>(new StringList.Factory<TocEntry>() {
+                private final char[] escapeChars = {'(', ')'};
+
                 /**
                  * Attempts to parse a single string into an TocEntry.
                  * <ul>The date *must* match a patter of a (partial) SQL date string:
@@ -268,7 +270,6 @@ public final class CsvCoder {
                     }
                 }
 
-                private char[] escapeChars = {'(', ')'};
                 @NonNull
                 @Override
                 public String encode(@NonNull final TocEntry tocEntry) {
@@ -302,7 +303,7 @@ public final class CsvCoder {
     public static StringList<Bookshelf> getBookshelfCoder() {
         if (sBookshelfUtils == null) {
             sBookshelfUtils = new StringList<>(new StringList.Factory<Bookshelf>() {
-                private char[] escapeChars = {'(', ')'};
+                private final char[] escapeChars = {'(', ')'};
 
                 /**
                  * Backwards compatibility rules ',' (not using the default '|').
