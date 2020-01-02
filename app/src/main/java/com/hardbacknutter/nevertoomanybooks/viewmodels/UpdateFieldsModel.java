@@ -407,7 +407,8 @@ public class UpdateFieldsModel
                         DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
                 if (!mCurrentFieldsWanted.isEmpty()) {
-
+                    // remove all other criteria (this is CRUCIAL)
+                    clearSearchText();
                     boolean canSearch = false;
 
                     if (isbn != null && !isbn.isEmpty()) {
