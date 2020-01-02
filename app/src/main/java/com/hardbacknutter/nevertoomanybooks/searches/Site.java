@@ -171,7 +171,7 @@ public final class Site
     /**
      * Get the {@link SearchEngine} instance for this site.
      *
-     * @return {@link SearchEngine}
+     * @return (cached) instance
      */
     public SearchEngine getSearchEngine() {
         if (mSearchEngine == null) {

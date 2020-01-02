@@ -58,7 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * <br>NEWTHINGS: adding a new search engine:
  * To make it available, follow these steps:
  * <ol>
- * <li>Implement {@link SearchEngine} to create the new engine (class).</li>
+ * <li>Implement {@link SearchEngine} to create the new engine (class).
+ * <br>It needs a no-arguments constructor.</li>
  * <li>Add an identifier (bit) in this class and
  * add it to {@link #SEARCH_FLAG_MASK} and {@link Id}</li>
  * <li>Add a name for it to {@link #getName}.<br>
@@ -110,7 +111,6 @@ public final class SearchSites {
 
 
     /** Mask including all search sources. */
-    @SuppressWarnings("WeakerAccess")
     public static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON | LIBRARY_THING | GOODREADS
                                                | ISFDB | OPEN_LIBRARY
                                                | KB_NL | STRIP_INFO_BE;
@@ -150,7 +150,7 @@ public final class SearchSites {
      *
      * @return the name
      */
-    static String getName(@Id final int id) {
+    public static String getName(@Id final int id) {
         switch (id) {
             case GOOGLE_BOOKS:
                 return "GoogleBooks";
@@ -227,6 +227,8 @@ public final class SearchSites {
                                    final boolean loadPrefs) {
         SiteList list = new SiteList(type);
 
+        // yes, we could loop over the sites, and detect their interfaces.
+        // but this gives more control (e.g. language and other defaults).
         switch (type) {
             case Data: {
                 if (ENABLE_AMAZON_AWS) {
@@ -362,15 +364,9 @@ public final class SearchSites {
      */
     public static String getSiteUrls(@NonNull final Context context) {
         return AmazonManager.getBaseURL(context) + '\n'
-//               + GoodreadsManager.getBaseURL(context) + '\n'
-//               + GoogleBooksManager.getBaseURL(context) + '\n'
                + IsfdbManager.getBaseURL(context) + '\n'
-               + KbNlManager.getBaseURL(context) + '\n'
-//               + LibraryThingManager.getBaseURL(context) + '\n'
-//               + OpenLibraryManager.getBaseURL(context) + '\n'
-//               + StripInfoManager.getBaseURL(context) + '\n'
-                ;
-        //NEWTHINGS: add new search engine if it supports a changeable url.
+               + KbNlManager.getBaseURL(context) + '\n';
+        //NEWTHINGS: add new search engine if it supports a user changeable url.
     }
 
     /**

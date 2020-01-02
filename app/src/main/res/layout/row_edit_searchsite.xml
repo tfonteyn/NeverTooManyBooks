@@ -59,6 +59,15 @@
             tools:text="site name"
             />
 
+        <TextView
+            android:id="@+id/info"
+            style="@style/RowTextLine.Secondary"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:visibility="gone"
+            tools:ignore="SelectableText"
+            tools:text="site info"
+            tools:visibility="visible"
+            />
     </LinearLayout>
 
     <ImageView

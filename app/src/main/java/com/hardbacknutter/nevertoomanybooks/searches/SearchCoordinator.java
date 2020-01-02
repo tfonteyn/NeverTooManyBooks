@@ -548,8 +548,9 @@ public class SearchCoordinator
         if (nativeIdSearchText.isEmpty()) {
             throw new IllegalStateException("nativeId was empty");
         }
-        // remove all other criteria
+        // remove all other criteria (this is CRUCIAL)
         clearSearchText();
+
         mNativeIdSearchText = new SparseArray<>();
         mNativeIdSearchText.put(site.id, nativeIdSearchText);
         prepareSearch(context);

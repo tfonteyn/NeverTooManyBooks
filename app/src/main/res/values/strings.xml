@@ -1559,5 +1559,7 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
+    <string name="allow_edit_native_id">Allow editing native website book id</string>
+    <string name="lbl_barcode">Barcode</string>
 
 </resources>
