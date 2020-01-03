@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -43,7 +42,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -67,18 +65,11 @@ public abstract class BookSearchBaseFragment
     private static final String TAG = "BookSearchBaseFrag";
     DAO mDb;
     SearchCoordinator mSearchCoordinator;
-    /** hosting activity. */
-    private FragmentActivity mHostActivity;
+
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** the ViewModel. */
     private ResultDataModel mResultDataModel;
-
-    @Override
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        mHostActivity = (FragmentActivity) context;
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -100,7 +91,8 @@ public abstract class BookSearchBaseFragment
         super.onActivityCreated(savedInstanceState);
 
         // Activity scope!
-        mSearchCoordinator = new ViewModelProvider(mHostActivity).get(SearchCoordinator.class);
+        //noinspection ConstantConditions
+        mSearchCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
         //noinspection ConstantConditions
         mSearchCoordinator.init(getContext(), requireArguments());
         mSearchCoordinator.getSearchCoordinatorProgressMessage()
@@ -108,7 +100,7 @@ public abstract class BookSearchBaseFragment
         mSearchCoordinator.getSearchCoordinatorFinishedMessage()
                           .observe(getViewLifecycleOwner(), this::onSearchFinished);
 
-        mResultDataModel = new ViewModelProvider(mHostActivity).get(ResultDataModel.class);
+        mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
         FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);

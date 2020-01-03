@@ -81,6 +81,12 @@ public class SearchOrderFragment
     private SearchAdminModel mModel;
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -118,12 +124,6 @@ public class SearchOrderFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setHasOptionsMenu(isVisible());
     }
 
     @Override

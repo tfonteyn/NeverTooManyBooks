@@ -90,6 +90,12 @@ public class AuthorWorksFragment
     /** The Adapter. */
     private TocAdapter mAdapter;
 
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -145,8 +151,6 @@ public class AuthorWorksFragment
                 return;
             }
         }
-
-        setHasOptionsMenu(isVisible());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Log.d(TAG, "EXIT|onResume");

@@ -87,6 +87,12 @@ public class BookSearchByIsbnFragment
     private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -157,12 +163,6 @@ public class BookSearchByIsbnFragment
 //            //noinspection ConstantConditions
 //            mSearchCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
 //        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setHasOptionsMenu(isVisible());
     }
 
     @Override

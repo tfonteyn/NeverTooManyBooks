@@ -160,6 +160,12 @@ public class BookDetailsFragment
     private int mCurrentCoverHandlerIndex = -1;
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
         if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
             ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
@@ -291,8 +297,6 @@ public class BookDetailsFragment
     public void onResume() {
         // The parent will kick of the process that triggers {@link #onLoadFields}.
         super.onResume();
-
-        setHasOptionsMenu(isVisible());
 
         //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);

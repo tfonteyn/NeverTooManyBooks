@@ -312,6 +312,7 @@ public class EditBookTocFragment
     @Override
     public void onResume() {
         super.onResume();
+        // needs to be done here (instead of in onCreate) due to ViewPager2
         setHasOptionsMenu(isVisible());
     }
 

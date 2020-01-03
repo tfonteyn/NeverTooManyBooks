@@ -75,6 +75,12 @@ public class BookSearchByTextFragment
     private Group mPublisherGroup;
 
     @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -142,12 +148,6 @@ public class BookSearchByTextFragment
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setHasOptionsMenu(isVisible());
     }
 
     /**
