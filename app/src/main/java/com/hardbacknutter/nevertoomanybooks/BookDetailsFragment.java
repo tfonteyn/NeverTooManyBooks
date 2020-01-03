@@ -50,6 +50,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
@@ -102,7 +103,18 @@ public class BookDetailsFragment
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
     /** The views. */
     private CompoundButton mIsAnthologyCbx;
-    private CompoundButton mReadCheckbox;
+    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+        if (data != null) {
+            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
+            } else {
+                // we don't expect/implement any others.
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "bookId=" + bookId + "|fieldsChanged=" + fieldsChanged);
+                }
+            }
+        }
+    };
     private CompoundButton mSignedCbx;
     private RatingBar mRatingView;
     private TextView mAuthorView;
@@ -115,19 +127,7 @@ public class BookDetailsFragment
     private TextView mPricePaidView;
     private TextView mPriceListedView;
     private TextView mLoanedToView;
-    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
-        if (data != null) {
-            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
-            } else {
-                // we don't expect/implement any others.
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "bookId=" + bookId
-                               + "|fieldsChanged=" + fieldsChanged);
-                }
-            }
-        }
-    };
+    private CompoundButton mReadCbx;
     private TextView mPagesView;
     private TextView mFormatView;
     private TextView mColorView;
@@ -174,9 +174,8 @@ public class BookDetailsFragment
         View view = inflater.inflate(R.layout.fragment_book_details, container, false);
         mTopScrollView = view.findViewById(R.id.topScroller);
 
-        mReadCheckbox = view.findViewById(R.id.cbx_read);
+        mReadCbx = view.findViewById(R.id.cbx_read);
         mSignedCbx = view.findViewById(R.id.cbx_signed);
-
         mAuthorView = view.findViewById(R.id.author);
         mSeriesView = view.findViewById(R.id.series);
         mBookshelvesView = view.findViewById(R.id.bookshelves);
@@ -202,6 +201,7 @@ public class BookDetailsFragment
         mDateReadStartView = view.findViewById(R.id.read_start);
         mDateReadEndView = view.findViewById(R.id.read_end);
 
+        // Anthology/TOC fields
         mIsAnthologyCbx = view.findViewById(R.id.cbx_anthology);
         mTocLabelView = view.findViewById(R.id.lbl_toc);
         mTocView = view.findViewById(R.id.toc);
@@ -213,16 +213,17 @@ public class BookDetailsFragment
             mTocButton.setVisibility(View.GONE);
         }
 
-        mLoanedToView = view.findViewById(R.id.loaned_to);
-        if (!App.isUsed(DBDefinitions.KEY_LOANEE)) {
-            mLoanedToView.setVisibility(View.GONE);
-        }
-
+        // Covers
         mCoverView[0] = view.findViewById(R.id.coverImage0);
         mCoverView[1] = view.findViewById(R.id.coverImage1);
         if (!App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
             mCoverView[0].setVisibility(View.GONE);
             mCoverView[1].setVisibility(View.GONE);
+        }
+
+        mLoanedToView = view.findViewById(R.id.loaned_to);
+        if (!App.isUsed(DBDefinitions.KEY_LOANEE)) {
+            mLoanedToView.setVisibility(View.GONE);
         }
 
         return view;
@@ -237,6 +238,7 @@ public class BookDetailsFragment
         // The book will get loaded, fields will be initialised and
         // the population logic will be triggered.
         super.onActivityCreated(savedInstanceState);
+
         if (savedInstanceState != null) {
             mCurrentCoverHandlerIndex = savedInstanceState
                     .getInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, -1);
@@ -245,7 +247,8 @@ public class BookDetailsFragment
         mBookDetailsFragmentModel.init(mBookModel.getDb(), getArguments(),
                                        mBookModel.getBook().getId());
 
-        FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
+        //noinspection ConstantConditions
+        FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_edit);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> startEditBook());
@@ -258,7 +261,7 @@ public class BookDetailsFragment
         // show/hide the TOC as the user flips the switch.
         mTocButton.setOnClickListener(v -> {
             // note that the button is explicitly (re)set.
-            // If user clicks to fast it gets out of sync.
+            // If user clicks to fast it seems to get out of sync.
             if (mTocView.getVisibility() == View.VISIBLE) {
                 // force a scroll; a manual scroll is no longer possible after the TOC closes.
                 mTopScrollView.fullScroll(View.FOCUS_UP);
@@ -286,15 +289,20 @@ public class BookDetailsFragment
     @CallSuper
     @Override
     public void onResume() {
-        // The parent will kick of the process that triggers {@link #onLoadFieldsFromBook}.
+        // The parent will kick of the process that triggers {@link #onLoadFields}.
         super.onResume();
-        ((BookDetailsActivity) mHostActivity).registerOnTouchListener(mOnTouchListener);
+
+        setHasOptionsMenu(isVisible());
+
+        //noinspection ConstantConditions
+        ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);
     }
 
     @Override
     @CallSuper
     public void onPause() {
-        ((BookDetailsActivity) mHostActivity).unregisterOnTouchListener(mOnTouchListener);
+        //noinspection ConstantConditions
+        ((BookDetailsActivity) getActivity()).unregisterOnTouchListener(mOnTouchListener);
         super.onPause();
     }
 
@@ -457,7 +465,7 @@ public class BookDetailsFragment
               .setFormatter(dateFormatter)
               .setRelatedFields(R.id.lbl_read_end);
 
-        fields.addBoolean(mReadCheckbox, DBDefinitions.KEY_READ);
+        fields.addBoolean(mReadCbx, DBDefinitions.KEY_READ);
 
         fields.addBoolean(mSignedCbx, DBDefinitions.KEY_SIGNED)
               .setRelatedFields(R.id.lbl_signed);
@@ -476,34 +484,44 @@ public class BookDetailsFragment
      * At this point we're told to load our local (to the fragment) fields from the Book.
      * </p>
      * <br>{@inheritDoc}
+     * @param book
      */
     @Override
-    protected void onLoadFieldsFromBook() {
-        super.onLoadFieldsFromBook();
+    protected void onLoadFields(@NonNull final Book book) {
+        super.onLoadFields(book);
 
-        populateAuthorListField();
-        populateSeriesListField();
-        populateBookshelvesField();
-        populatePriceFields();
+        populateAuthorListField(book);
+
+        if (App.isUsed(DBDefinitions.KEY_FK_SERIES)) {
+            populateSeriesListField(book);
+        }
+        if (App.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
+            populateBookshelvesField(book);
+        }
+
+        populatePriceFields(book);
 
         // handle non-text fields
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             populateLoanedToField(mBookModel.getLoanee());
         }
+
         if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
-            boolean isAnthology = mBookModel
-                    .getBook().isBitSet(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
+                                                Book.TOC_MULTIPLE_WORKS);
             mIsAnthologyCbx.setChecked(isAnthology);
 
-            populateToc();
+            populateToc(book);
         }
+
         if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
-            setupCoverViews(0, ImageUtils.SCALE_LARGE);
-            setupCoverViews(1, ImageUtils.SCALE_SMALL);
+            setupCoverViews(book, 0, ImageUtils.SCALE_LARGE);
+            setupCoverViews(book, 1, ImageUtils.SCALE_SMALL);
         }
 
         // hide unwanted and empty fields
-        showOrHideFields(true, false);
+        //noinspection ConstantConditions
+        getFields().resetVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionLabelVisibility(R.id.lbl_publication_section,
@@ -524,11 +542,36 @@ public class BookDetailsFragment
                                   mLocationView);
     }
 
-    private void setupCoverViews(final int cIdx,
+    /**
+     * If all 'fields' are View.GONE, set 'sectionLabelId' to View.GONE as well.
+     * Otherwise, set 'sectionLabelId' to View.VISIBLE.
+     *
+     * @param sectionLabelId field to set
+     * @param fields         to check
+     */
+    private void setSectionLabelVisibility(@IdRes final int sectionLabelId,
+                                           @NonNull final View... fields) {
+        //noinspection ConstantConditions
+        View fieldView = getView().findViewById(sectionLabelId);
+        if (fieldView != null) {
+            for (View view : fields) {
+                if (view != null && view.getVisibility() != View.GONE) {
+                    // at least one field was visible
+                    fieldView.setVisibility(View.VISIBLE);
+                    return;
+                }
+            }
+            // all fields were gone.
+            fieldView.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupCoverViews(@NonNull final Book book,
+                                 final int cIdx,
                                  @ImageUtils.Scale final int scale) {
 
         mCoverHandler[cIdx] = new CoverHandler(this, mProgressBar,
-                                               mBookModel.getBook(), mIsbnView, cIdx,
+                                               book, mIsbnView, cIdx,
                                                mCoverView[cIdx], scale);
         mCoverHandler[cIdx].setImage();
 
@@ -563,7 +606,7 @@ public class BookDetailsFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         Book book = mBookModel.getBook();
 
-        boolean isSaved = book.getId() > 0;
+        boolean isSaved = !book.isNew();
         boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
         boolean isAvailable = mBookModel.isAvailable();
 
@@ -611,8 +654,9 @@ public class BookDetailsFragment
                     mBookModel.deleteBook(getContext());
 
                     Intent resultData = mBookModel.getActivityResultData();
-                    mHostActivity.setResult(Activity.RESULT_OK, resultData);
-                    mHostActivity.finish();
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().finish();
                 });
                 return true;
             }
@@ -625,7 +669,7 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_READ:
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle 'read' status of the book
-                Field<Boolean> field = getFields().getField(mReadCheckbox);
+                Field<Boolean> field = getFields().getField(mReadCbx);
                 field.setValue(mBookModel.toggleRead());
                 return true;
             }
@@ -696,9 +740,7 @@ public class BookDetailsFragment
     /**
      * The author field is a single csv String.
      */
-    private void populateAuthorListField() {
-        Book book = mBookModel.getBook();
-
+    private void populateAuthorListField(@NonNull final Book book) {
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         Field<String> field = getFields().getField(mAuthorView);
         field.setValue(Csv.join("<br>", list, true, "• ",
@@ -706,7 +748,7 @@ public class BookDetailsFragment
     }
 
     /**
-     * The formatter for the {@link Csv#join} used by {@link #populateAuthorListField()}.
+     * The formatter for the {@link Csv#join} used by {@link #populateAuthorListField(Book)}.
      *
      * @param author to format
      *
@@ -730,8 +772,7 @@ public class BookDetailsFragment
      * The Series field is a single String with line-breaks between multiple Series.
      * Each line will be prefixed with a "• "
      */
-    private void populateSeriesListField() {
-        Book book = mBookModel.getBook();
+    private void populateSeriesListField(@NonNull final Book book) {
 
         ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
@@ -744,8 +785,7 @@ public class BookDetailsFragment
     /**
      * The bookshelves field is a single csv String.
      */
-    private void populateBookshelvesField() {
-        Book book = mBookModel.getBook();
+    private void populateBookshelvesField(@NonNull final Book book) {
 
         ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         Field<String> field = getFields().getField(mBookshelvesView);
@@ -758,20 +798,23 @@ public class BookDetailsFragment
      * <p>
      * Using a formatter object is a little overkill, but this leaves future changes easier.
      */
-    private void populatePriceFields() {
-        Book book = mBookModel.getBook();
+    private void populatePriceFields(@NonNull final Book book) {
 
-        Fields.MonetaryFormatter listedFormatter = new Fields.MonetaryFormatter()
-                .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        getFields().getField(mPriceListedView)
-                   .setFormatter(listedFormatter)
-                   .setValue(book.getDouble(DBDefinitions.KEY_PRICE_LISTED));
+        if (App.isUsed(DBDefinitions.KEY_PRICE_LISTED)) {
+            Fields.MonetaryFormatter listedFormatter = new Fields.MonetaryFormatter()
+                    .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+            getFields().getField(mPriceListedView)
+                       .setFormatter(listedFormatter)
+                       .setValue(book.getDouble(DBDefinitions.KEY_PRICE_LISTED));
+        }
 
-        Fields.MonetaryFormatter paidFormatter = new Fields.MonetaryFormatter()
-                .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
-        getFields().getField(mPricePaidView)
-                   .setFormatter(paidFormatter)
-                   .setValue(book.getDouble(DBDefinitions.KEY_PRICE_PAID));
+        if (App.isUsed(DBDefinitions.KEY_PRICE_PAID)) {
+            Fields.MonetaryFormatter paidFormatter = new Fields.MonetaryFormatter()
+                    .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
+            getFields().getField(mPricePaidView)
+                       .setFormatter(paidFormatter)
+                       .setValue(book.getDouble(DBDefinitions.KEY_PRICE_PAID));
+        }
     }
 
     /**
@@ -810,9 +853,7 @@ public class BookDetailsFragment
     /**
      * Show or hide the Table Of Content section.
      */
-    private void populateToc() {
-        Book book = mBookModel.getBook();
-
+    private void populateToc(@NonNull final Book book) {
         // we can get called more than once (when user moves sideways to another book),
         // so clear and hide/disable the view before populating it.
         // Actual visibility is handled after building the list.
@@ -897,7 +938,7 @@ public class BookDetailsFragment
 
                 if (moved) {
                     long bookId = fbl.getBookId();
-                    // only reload if it's a new book
+                    // only reload if it's a different book
                     if (bookId != mBookModel.getBook().getId()) {
                         mBookModel.moveTo(bookId);
                         loadFields();

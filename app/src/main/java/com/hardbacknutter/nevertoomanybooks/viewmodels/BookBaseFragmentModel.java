@@ -41,13 +41,16 @@ import androidx.lifecycle.ViewModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -212,12 +215,44 @@ public class BookBaseFragmentModel
         mBook.reload(mDb, bookId);
     }
 
-    public boolean isExistingBook() {
-        return mBook.getId() > 0;
+    /**
+     * Check if the passed Author is only used by this book.
+     *
+     * @param context Current context
+     * @param author  to check
+     *
+     * @return {@code true} if the Author is only used by this book
+     */
+    public boolean isSingleUsage(@NonNull final Context context,
+                                 @NonNull final Author author) {
+        long nrOfReferences = mDb.countBooksByAuthor(context, author)
+                              + mDb.countTocEntryByAuthor(context, author);
+        return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
+    /**
+     * Check if the passed Series is only used by this book.
+     *
+     * @param context    Current context
+     * @param series     to check
+     * @param bookLocale Locale to use if the series has none set
+     *
+     * @return {@code true} if the Series is only used by this book
+     */
+    public boolean isSingleUsage(final Context context,
+                                 final Series series,
+                                 final Locale bookLocale) {
+        long nrOfReferences = mDb.countBooksInSeries(context, series, bookLocale);
+        return nrOfReferences <= (mBook.isNew() ? 0 : 1);
+    }
+
+    /**
+     * Insert/update the book into the database, store cover files, and prepare activity results.
+     *
+     * @param context Current context
+     */
     public void saveBook(@NonNull final Context context) {
-        if (mBook.getId() == 0) {
+        if (mBook.isNew()) {
             long id = mDb.insertBook(context, mBook);
             if (id > 0) {
                 // if the user added a cover to the new book, make it permanent
@@ -239,6 +274,11 @@ public class BookBaseFragmentModel
         mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
     }
 
+    /**
+     * Delete the current book.
+     *
+     * @param context Current context
+     */
     public void deleteBook(@NonNull final Context context) {
         mDb.deleteBook(context, mBook.getId());
         mResultData.putExtra(UniqueId.BKEY_BOOK_DELETED, true);
@@ -256,7 +296,9 @@ public class BookBaseFragmentModel
     }
 
     /**
-     * @return the one who shall not be mentioned.
+     * Get the current loanee.
+     *
+     * @return the one who shall not be mentioned, or {@code null} if none
      */
     @Nullable
     public String getLoanee() {
@@ -414,29 +456,4 @@ public class BookBaseFragmentModel
         }
         return mGoodreadsTaskListener;
     }
-
-
-    // URGENT: replaceTocAuthors is WIP
-//    /**
-//     * Replace authors on the TOC. Each pair in the past list contains the original author
-//     * to replace, and the new author to assign.
-//     *
-//     * @param idPairs list of author ID pairs.
-//     */
-//    public void replaceTocAuthors(@NonNull final Iterable<Pair<Long, Long>> idPairs) {
-//        ArrayList<TocEntry> toc = getBook().getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
-//        for (Pair<Long, Long> pair : idPairs) {
-//            for (TocEntry tocEntry : toc) {
-//                //noinspection ConstantConditions
-//                if (tocEntry.getAuthor().getId() == pair.first) {
-//                    //noinspection ConstantConditions
-//                    Author author = mDb.getAuthor(pair.second);
-//                    if (author != null) {
-//                        tocEntry.setAuthor(author);
-//                    }
-//                }
-//            }
-//        }
-//        getBook().putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
-//    }
 }

@@ -27,13 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
+import androidx.annotation.NonNull;
+
 /**
  * Interface supported by an editor object.
  */
-public interface DataEditor {
+public interface DataEditor<T extends DataManager> {
 
     /**
-     * Save the contents of all Fields to the actual data store/manager.
+     * Save the contents of all Fields to the {@link DataManager}.
+     *
+     * @param dataManager to save the data to
      */
-    void saveFields();
+    void onSaveFields(@NonNull T dataManager);
 }

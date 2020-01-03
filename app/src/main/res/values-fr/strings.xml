@@ -380,7 +380,6 @@
     <string name="menu_loan_lend_book">Prêter le livre…</string>
     <string name="menu_loan_return_book">Le livre emprunté est de retour</string>
     <string name="menu_populate_toc">Renseigner les titres automatiquement (expérimental)</string>
-    <string name="btn_search">Recherche</string>
     <string name="fab_add_book_by_internet_search">Chercher sur Internet</string>
     <string name="menu_set_complete">Marquer comme complet</string>
     <string name="menu_set_incomplete">Marquer comme incomplet</string>
@@ -629,7 +628,7 @@
     <string name="btn_email">email</string>
     <string name="warning_requires_site_and_id">Sélectionnez un site Web et entrez un identifiant.</string>
     <string name="style_builtin_first_letter_series_title">Titre de la série 1ère lettre</string>
-    <string name="scan">Scan code à barres</string>
+    <string name="btn_scan_barcode">Scan code à barres</string>
     <string name="lbl_author_type_inking">Encrage</string>
     <string name="lbl_select_website">Sélectionnez un site web:</string>
     <string name="lbl_site_book_id">Identifiant du livre du site:</string>

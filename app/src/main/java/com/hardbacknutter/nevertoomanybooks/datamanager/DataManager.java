@@ -98,6 +98,17 @@ public class DataManager {
     private final Bundle mRawData = new Bundle();
 
     /**
+     * Erase everything in this instance.
+     */
+    public void clear() {
+        mRawData.clear();
+        mValidatorsMap.clear();
+        mValidatorErrorIdMap.clear();
+        mCrossValidators.clear();
+        mValidationExceptions.clear();
+    }
+
+    /**
      * Store all passed values in our collection.
      *
      * @param src bundle to copy from
@@ -454,17 +465,6 @@ public class DataManager {
      */
     public void remove(@NonNull final String key) {
         mRawData.remove(key);
-    }
-
-    /**
-     * Erase everything in this instance.
-     */
-    public void clear() {
-        mRawData.clear();
-        mValidatorsMap.clear();
-        mValidatorErrorIdMap.clear();
-        mCrossValidators.clear();
-        mValidationExceptions.clear();
     }
 
     /**

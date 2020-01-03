@@ -90,13 +90,6 @@ public class AuthorWorksFragment
     /** The Adapter. */
     private TocAdapter mAdapter;
 
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
@@ -152,6 +145,9 @@ public class AuthorWorksFragment
                 return;
             }
         }
+
+        setHasOptionsMenu(isVisible());
+
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
             Log.d(TAG, "EXIT|onResume");
         }
@@ -366,18 +362,19 @@ public class AuthorWorksFragment
                                      final int position) {
 
             TocEntry tocEntry = mModel.getTocEntries().get(position);
+            final Context context = getContext();
 
             String title = tocEntry.getTitle();
             //noinspection ConstantConditions
-            if (Prefs.reorderTitleForDisplaying(getContext())) {
-                Locale locale = tocEntry.getLocale(getContext(), mDb, Locale.getDefault());
-                title = LocaleUtils.reorderTitle(getContext(), title, locale);
+            if (Prefs.reorderTitleForDisplaying(context)) {
+                Locale locale = tocEntry.getLocale(context, mDb, Locale.getDefault());
+                title = LocaleUtils.reorderTitle(context, title, locale);
             }
             holder.titleView.setText(title);
 
             // optional
             if (holder.authorView != null) {
-                holder.authorView.setText(tocEntry.getAuthor().getLabel(getContext()));
+                holder.authorView.setText(tocEntry.getAuthor().getLabel(context));
             }
             // optional
             if (holder.firstPublicationView != null) {
@@ -385,8 +382,7 @@ public class AuthorWorksFragment
                 if (date.isEmpty()) {
                     holder.firstPublicationView.setVisibility(View.GONE);
                 } else {
-                    String fp = holder.firstPublicationView
-                            .getContext().getString(R.string.brackets, date);
+                    String fp = context.getString(R.string.brackets, date);
                     holder.firstPublicationView.setText(fp);
                     holder.firstPublicationView.setVisibility(View.VISIBLE);
                 }

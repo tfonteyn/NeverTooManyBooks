@@ -58,12 +58,14 @@
     <integer name="MENU_ORDER_AMAZON_SERIES">910</integer>
     <integer name="MENU_ORDER_AMAZON_AUTHOR_IN_SERIES">915</integer>
 
+
     <!-- So why not use generic menu ids everywhere?
          Well, having individual menu id's (e.g. multiple 'menu_edit_*')
          makes the code much more readable and up to a point foolproof.  -->
     <item name="MENU_EDIT" type="id" />
     <item name="MENU_DELETE" type="id" />
     <item name="MENU_DUPLICATE" type="id" />
+    <item name="MENU_SHOW_ALL" type="id" />
 
     <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
 
@@ -138,6 +140,8 @@
 
     <!-- options menu: on-the-fly access to setting search order -->
     <item name="MENU_PREFS_SEARCH_SITES" type="id" />
+    <!-- options menu: enforce strict ISBN (or not) -->
+    <item name="MENU_STRICT_ISBN" type="id" />
 
     <!-- options menu: on the FTS search activity -->
     <item name="MENU_REBUILD_FTS" type="id" />
@@ -162,4 +166,5 @@
     <item name="MENU_DEBUG_TRACKER" type="id" />
     <item name="MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE" type="id" />
     <item name="MENU_DEBUG_UNMANGLE" type="id" />
+    <item name="MENU_SCAN_BARCODE" type="id" />
 </resources>

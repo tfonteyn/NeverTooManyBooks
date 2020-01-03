@@ -87,14 +87,6 @@ public class BookSearchByIsbnFragment
     private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -152,9 +144,6 @@ public class BookSearchByIsbnFragment
         mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
         mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
 
-        view.findViewById(R.id.btn_scan).setOnClickListener(
-                v -> mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE));
-
         //noinspection ConstantConditions
         view.findViewById(R.id.btn_search)
             .setOnClickListener(v -> prepareSearch(mIsbnView.getText().toString().trim()));
@@ -171,8 +160,19 @@ public class BookSearchByIsbnFragment
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        setHasOptionsMenu(isVisible());
+    }
+
+    @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
+
+        menu.add(Menu.NONE, R.id.MENU_SCAN_BARCODE, 0, R.string.btn_scan_barcode)
+            .setIcon(R.drawable.ic_barcode)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
         menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.menu_strict_isbn)
             .setCheckable(true)
             .setChecked(mSearchCoordinator.isStrictIsbn())
@@ -183,14 +183,23 @@ public class BookSearchByIsbnFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_STRICT_ISBN) {
-            boolean checked = !item.isChecked();
-            item.setChecked(checked);
-            mIsbnValidationTextWatcher.setStrictIsbn(checked);
-            mSearchCoordinator.setStrictIsbn(checked);
-            return true;
+        switch (item.getItemId()) {
+            case R.id.MENU_SCAN_BARCODE:
+                //noinspection ConstantConditions
+                mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                return true;
+
+            case R.id.MENU_STRICT_ISBN: {
+                boolean checked = !item.isChecked();
+                item.setChecked(checked);
+                mIsbnValidationTextWatcher.setStrictIsbn(checked);
+                mSearchCoordinator.setStrictIsbn(checked);
+                return true;
+            }
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

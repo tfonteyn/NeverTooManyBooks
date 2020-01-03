@@ -137,12 +137,6 @@ public abstract class BookSearchBaseFragment
 //        }
 //    }
 
-    /**
-     * <strong>Child classes</strong> must call {@code setHasOptionsMenu(true)}
-     * from their {@link #onCreate} to enable the option menu.
-     * <br><br>
-     * {@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
@@ -222,6 +216,11 @@ public abstract class BookSearchBaseFragment
         Snackbar.make(getView(), R.string.progress_end_cancelled, Snackbar.LENGTH_LONG).show();
     }
 
+    /**
+     * Clear the SearchCoordinator search criteria.
+     * <p>
+     * Override to clear the input fields for the former.
+     */
     @CallSuper
     void clearPreviousSearchCriteria() {
         mSearchCoordinator.clearSearchText();

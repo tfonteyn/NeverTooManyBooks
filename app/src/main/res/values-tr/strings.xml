@@ -373,7 +373,6 @@
     <string name="menu_loan_lend_book">Kitabı ödünç ver…</string>
     <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
-    <string name="btn_search">Ara</string>
     <string name="fab_add_book_by_internet_search">Genelağ\'da ara</string>
     <string name="menu_set_complete">“Tamamla” olarak ayarla</string>
     <string name="menu_set_incomplete">Eksik ayarla</string>
@@ -620,7 +619,7 @@
     <string name="btn_email">E-posta</string>
     <string name="warning_requires_site_and_id">Bir web sitesi seçin ve bir kimlik girin.</string>
     <string name="style_builtin_first_letter_series_title">Seri başlığı 1. harf</string>
-    <string name="scan">Barkod tara</string>
+    <string name="btn_scan_barcode">Barkod tara</string>
     <string name="lbl_author_type_inking">mürekkepleme</string>
     <string name="lbl_select_website">Bir web sitesi seçin:</string>
     <string name="lbl_site_book_id">Web sitesi kitap kimliği:</string>

@@ -42,9 +42,10 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 public class EditBookNativeIdFragment
         extends EditBookBaseFragment {
@@ -54,6 +55,8 @@ public class EditBookNativeIdFragment
     private EditText mEidLibraryThingView;
     private EditText mEidOpenLibraryView;
     private EditText mEidStripInfoView;
+
+    /** Show all sites, instead of just the enabled sites. */
     private boolean mShowAllSites;
 
     @Override
@@ -70,33 +73,47 @@ public class EditBookNativeIdFragment
         return view;
     }
 
-    /**
-     * Some fields are only present (or need specific handling) on {@link BookDetailsFragment}.
-     * <p>
-     * <br>{@inheritDoc}
-     */
     @Override
     protected void initFields() {
         super.initFields();
         Fields fields = getFields();
 
-        fields.addString(mEidGoodreadsView,
-                         DBDefinitions.KEY_EID_GOODREADS_BOOK)
+        fields.addString(mEidGoodreadsView, DBDefinitions.KEY_EID_GOODREADS_BOOK)
               .setRelatedFields(R.id.lbl_site_goodreads);
-        fields.addString(mEidIsfdbView,
-                         DBDefinitions.KEY_EID_ISFDB)
+        fields.addString(mEidIsfdbView, DBDefinitions.KEY_EID_ISFDB)
               .setRelatedFields(R.id.lbl_site_isfdb);
-        fields.addString(mEidLibraryThingView,
-                         DBDefinitions.KEY_EID_LIBRARY_THING)
+        fields.addString(mEidLibraryThingView, DBDefinitions.KEY_EID_LIBRARY_THING)
               .setRelatedFields(R.id.lbl_site_library_thing);
-        fields.addString(mEidOpenLibraryView,
-                         DBDefinitions.KEY_EID_OPEN_LIBRARY)
+        fields.addString(mEidOpenLibraryView, DBDefinitions.KEY_EID_OPEN_LIBRARY)
               .setRelatedFields(R.id.lbl_site_open_library);
-        fields.addString(mEidStripInfoView,
-                         DBDefinitions.KEY_EID_STRIP_INFO_BE)
+        fields.addString(mEidStripInfoView, DBDefinitions.KEY_EID_STRIP_INFO_BE)
               .setRelatedFields(R.id.lbl_site_strip_info_be);
 
         setSiteVisibility(false);
+    }
+
+    @CallSuper
+    @Override
+    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        //noinspection ConstantConditions
+        ViewFocusOrder.fix(getView());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setHasOptionsMenu(isVisible());
+    }
+
+    @Override
+    protected void onLoadFields(@NonNull final Book book) {
+        super.onLoadFields(book);
+
+        // hide unwanted fields
+        //noinspection ConstantConditions
+        getFields().resetVisibility(getView(), false, true);
     }
 
     @Override
@@ -151,25 +168,5 @@ public class EditBookNativeIdFragment
 
         fields.getField(mEidStripInfoView).setVisibility(
                 parent, (sites & SearchSites.STRIP_INFO_BE) != 0 ? View.VISIBLE : View.GONE);
-    }
-
-    @CallSuper
-    @Override
-    public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // do other stuff here that might affect the view.
-
-        // Fix the focus order for the views
-        //noinspection ConstantConditions
-        FocusFixer.fix(getView());
-    }
-
-    @Override
-    protected void onLoadFieldsFromBook() {
-        super.onLoadFieldsFromBook();
-
-        // hide unwanted fields
-        showOrHideFields(false, true);
     }
 }

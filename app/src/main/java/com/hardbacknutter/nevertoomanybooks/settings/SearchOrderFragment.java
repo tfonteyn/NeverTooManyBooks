@@ -81,13 +81,6 @@ public class SearchOrderFragment
     private SearchAdminModel mModel;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
@@ -125,6 +118,12 @@ public class SearchOrderFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setHasOptionsMenu(isVisible());
     }
 
     @Override
@@ -180,7 +179,6 @@ public class SearchOrderFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-
             View view = getLayoutInflater().inflate(R.layout.row_edit_searchsite, parent, false);
             return new Holder(view, mShowInfo);
         }
@@ -208,12 +206,11 @@ public class SearchOrderFragment
                     info.add(context.getString(R.string.tab_lbl_ext_id));
                 }
                 if (searchEngine instanceof SearchEngine.ByText) {
-                    info.add(context.getString(R.string.btn_search));
+                    info.add(context.getString(android.R.string.search_go));
                 }
                 holder.infoView.setText(context.getString(R.string.brackets,
                                                           TextUtils.join(", ", info)));
             }
-
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(site.isEnabled());
 

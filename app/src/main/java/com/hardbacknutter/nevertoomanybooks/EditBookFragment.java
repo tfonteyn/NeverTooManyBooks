@@ -30,11 +30,9 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -60,6 +58,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
@@ -77,6 +76,8 @@ public class EditBookFragment
     /** Preset a tab index to display on opening. See {@link TabAdapter}. */
     @SuppressWarnings("WeakerAccess")
     public static final String REQUEST_BKEY_TAB = "tab";
+
+    static final String TMP_SHOW_TAB_AUTH_SER = "tmp.edit.book.tab.authSer";
 
     private FragmentActivity mHostActivity;
 
@@ -115,9 +116,9 @@ public class EditBookFragment
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
         int showTab;
         if (currentArgs != null) {
-            showTab = currentArgs.getInt(REQUEST_BKEY_TAB, TabAdapter.TAB_EDIT);
+            showTab = currentArgs.getInt(REQUEST_BKEY_TAB, TabAdapter.TAB_DETAILS);
         } else {
-            showTab = TabAdapter.TAB_EDIT;
+            showTab = TabAdapter.TAB_DETAILS;
         }
 
         mTabAdapter = new TabAdapter(this);
@@ -130,7 +131,7 @@ public class EditBookFragment
         FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_save);
         fabButton.setVisibility(View.VISIBLE);
-        fabButton.setOnClickListener(v -> doSave());
+        fabButton.setOnClickListener(v -> prepareSave());
 
         // The tab bar lives in the activity layout inside the AppBarLayout!
         TabLayout tabBarLayout = mHostActivity.findViewById(R.id.tab_panel);
@@ -146,53 +147,65 @@ public class EditBookFragment
         mViewPager.setCurrentItem(showTab);
     }
 
-    /**
-     * Add the menu items which are common to all child fragments.
-     */
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        Resources r = getResources();
-        // onOptionsItemSelected: MENU_BOOK_UPDATE_FROM_INTERNET handled in super.
-        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
-                 r.getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
-                 R.string.menu_update_fields)
-            .setIcon(R.drawable.ic_cloud_download);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    /**
-     * Set visibility of menu items as appropriate.
-     * <p>
-     * <br>{@inheritDoc}
-     */
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        menu.findItem(R.id.MENU_UPDATE_FROM_INTERNET).setVisible(mBookModel.isExistingBook());
-    }
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        setHasOptionsMenu(isVisible());
+//    }
+//    /**
+//     * Add the menu items which are common to all child fragments.
+//     */
+//    @Override
+//    public void onCreateOptionsMenu(@NonNull final Menu menu,
+//                                    @NonNull final MenuInflater inflater) {
+//        Resources r = getResources();
+////        menu.add(Menu.NONE, R.id.MENU_UPDATE_FROM_INTERNET,
+////                 r.getInteger(R.integer.MENU_ORDER_UPDATE_FIELDS),
+////                 R.string.menu_update_fields)
+////            .setIcon(R.drawable.ic_cloud_download);
+//
+//        super.onCreateOptionsMenu(menu, inflater);
+//    }
+//
+//    /**
+//     * Set visibility of menu items as appropriate.
+//     * <p>
+//     * <br>{@inheritDoc}
+//     */
+//    @Override
+//    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+//        super.onPrepareOptionsMenu(menu);
+////        menu.findItem(R.id.MENU_UPDATE_FROM_INTERNET).setVisible(mBookModel.isExistingBook());
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+//        // MENU_BOOK_UPDATE_FROM_INTERNET handled in super.
+//        return super.onOptionsItemSelected(item);
+//    }
 
     /**
      * Called when the user clicks 'save'.
      * <p>
-     * Save a book into the database, by either updating or created a book.
-     * Validation is done before saving.
+     * Validates the data.<br>
      * Checks if the book already exists (isbn search) when the user is creating a book;
      * if so we prompt to confirm.
      */
-    private void doSave() {
+    private void prepareSave() {
+
+        Book book = mBookModel.getBook();
 
         // Ask any fragment that has not gone into 'onPause' to add its fields.
         // There should only be the one fragment, i.e. the front/current fragment.
         // Paranoia...
         for (Fragment frag : getChildFragmentManager().getFragments()) {
             if (frag.isResumed() && frag instanceof DataEditor) {
-                ((DataEditor) frag).saveFields();
+                //noinspection unchecked
+                ((DataEditor<Book>) frag).onSaveFields(book);
             }
         }
 
-        Book book = mBookModel.getBook();
+
         // Now validate the book data
         //noinspection ConstantConditions
         if (!book.validate(getContext())) {
@@ -206,7 +219,7 @@ public class EditBookFragment
             return;
         }
 
-        if (book.getId() == 0) {
+        if (book.isNew()) {
             String isbn = book.getString(DBDefinitions.KEY_ISBN);
             // Check if the book already exists
             if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn) > 0))) {
@@ -263,11 +276,7 @@ public class EditBookFragment
     private static class TabAdapter
             extends FragmentStateAdapter {
 
-        static final int TAB_EDIT = 0;
-        static final int TAB_EDIT_PUBLICATION = 1;
-        static final int TAB_EDIT_NOTES = 2;
-        static final int TAB_EDIT_TOC = 3;
-        static final int TAB_EDIT_NATIVE_ID = 4;
+        static final int TAB_DETAILS = 0;
 
         private final List<Class> mTabClasses = new ArrayList<>();
         private final ArrayList<Integer> mTabTitles = new ArrayList<>();
@@ -281,15 +290,26 @@ public class EditBookFragment
          */
         TabAdapter(@NonNull final Fragment container) {
             super(container);
+            Context context = container.getContext();
+            //noinspection ConstantConditions
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+            boolean showTabNativeId = prefs.getBoolean(Prefs.pk_tabs_edit_book_native_id, false);
+
+            boolean showTabAuthSer = prefs.getBoolean(TMP_SHOW_TAB_AUTH_SER, false);
 
             mTabClasses.add(EditBookFieldsFragment.class);
             mTabTitles.add(R.string.tab_lbl_details);
 
-//            mTabClasses.add(EditBookAuthorsFragment.class);
-//            mTabTitles.add(R.string.lbl_authors);
-//
-//            mTabClasses.add(EditBookSeriesFragment.class);
-//            mTabTitles.add(R.string.lbl_series_multiple);
+            if (showTabAuthSer) {
+                mTabClasses.add(EditBookAuthorsFragment.class);
+                mTabTitles.add(R.string.lbl_authors);
+
+                if (App.isUsed(DBDefinitions.KEY_FK_SERIES)) {
+                    mTabClasses.add(EditBookSeriesFragment.class);
+                    mTabTitles.add(R.string.lbl_series_multiple);
+                }
+            }
 
             mTabClasses.add(EditBookPublicationFragment.class);
             mTabTitles.add(R.string.tab_lbl_publication);
@@ -302,11 +322,7 @@ public class EditBookFragment
                 mTabTitles.add(R.string.tab_lbl_content);
             }
 
-            //URGENT: create a setting? hide by default?
-            //noinspection ConstantConditions
-            boolean useNativeIds = PreferenceManager.getDefaultSharedPreferences(
-                    container.getContext()).getBoolean("dummy", true);
-            if (useNativeIds) {
+            if (showTabNativeId) {
                 mTabClasses.add(EditBookNativeIdFragment.class);
                 mTabTitles.add(R.string.tab_lbl_ext_id);
             }

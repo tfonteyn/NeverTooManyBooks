@@ -42,12 +42,12 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
  * Ensure that next up/down/left/right View is visible.
  * Sets the nextFocusX attributes on the visible fields.
  */
-public final class FocusFixer {
+public final class ViewFocusOrder {
 
     /** Log tag. */
-    private static final String TAG = "FocusFixer";
+    private static final String TAG = "ViewFocusOrder";
 
-    private FocusFixer() {
+    private ViewFocusOrder() {
     }
 
     /**

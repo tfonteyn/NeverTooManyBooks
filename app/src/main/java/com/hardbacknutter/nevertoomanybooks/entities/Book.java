@@ -406,6 +406,15 @@ public class Book
     }
 
     /**
+     * Check if this book has not been saved to the database yet.
+     *
+     * @return {@code true} if this is a new book
+     */
+    public boolean isNew() {
+        return getId() == 0;
+    }
+
+    /**
      * Get a map with all valid native ids for this book.
      * All values will be casted to String.
      *

@@ -33,19 +33,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/border1"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".EditBookAuthorsFragment"
     >
-
-    <TextView
-        android:id="@+id/lbl_author"
-        style="@style/Label.Header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/lbl_authors"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
 
     <AutoCompleteTextView
         android:id="@+id/author"
@@ -54,7 +45,7 @@
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <Button

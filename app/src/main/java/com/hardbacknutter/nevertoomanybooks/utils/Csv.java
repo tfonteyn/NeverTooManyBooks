@@ -97,7 +97,8 @@ public final class Csv {
      * @param skipEmptyStrings Flag skip null/empty values.
      * @param prefix           (optional) prefix that will be added to each element.
      *                         Caller is responsible to add spaces if desired.
-     * @param formatter        (optional) formatter to use on each element, or {@code null} for none.
+     * @param formatter        (optional) formatter to use on each element,
+     *                         or {@code null} for none.
      * @param <E>              type of elements
      *
      * @return csv string, can be empty, but never {@code null}.

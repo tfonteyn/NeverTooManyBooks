@@ -43,8 +43,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -61,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -72,27 +69,12 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * Edit the list of Series of a Book.
  */
 public class EditBookSeriesFragment
-        extends Fragment {
+        extends EditBookBaseFragment {
 
     /** Log tag. */
     public static final String TAG = "EditBookSeriesFragment";
-    private static final int REQ_EDIT_ROW = 0;
 
-    /** the rows. */
-    private ArrayList<Series> mList;
-
-    /** Series name field. */
-    private AutoCompleteTextView mSeriesNameView;
-    /** Main screen Series Number field. */
-    private TextView mSeriesNumberView;
-    /** The View for the list. */
-    private RecyclerView mListView;
-
-    /** The adapter for the list itself. */
-    private RecyclerViewAdapterBase mListAdapter;
-
-    /** The book. Must be in the Activity scope. */
-    private BookBaseFragmentModel mBookModel;
+    /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
@@ -100,24 +82,19 @@ public class EditBookSeriesFragment
                     mBookModel.setDirty(true);
                 }
             };
-    /** Database Access. */
-    private DAO mDb;
+
+    /** Series name field. */
+    private AutoCompleteTextView mSeriesNameView;
+    /** Main screen Series Number field. */
+    private TextView mSeriesNumberView;
+    /** The View for the list. */
+    private RecyclerView mListView;
+    /** the rows. */
+    private ArrayList<Series> mList;
+    /** The adapter for the list itself. */
+    private RecyclerViewAdapterBase mListAdapter;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mDb = new DAO(TAG);
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
-    }
 
     @Nullable
     @Override
@@ -137,22 +114,30 @@ public class EditBookSeriesFragment
 
         //noinspection ConstantConditions
         getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
-        getActivity().setTitle(R.string.title_edit_book_series);
-
-        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
-
-        Book book = mBookModel.getBook();
-        mList = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
         //noinspection ConstantConditions
         ArrayAdapter<String> nameAdapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getSeriesTitles());
+                                   mBookModel.getDb().getSeriesTitles());
         mSeriesNameView.setAdapter(nameAdapter);
 
+        // set up the list view. The adapter is setup in onLoadFields
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(layoutManager);
         mListView.setHasFixedSize(true);
+
+        // adding a new entry
+        //noinspection ConstantConditions
+        getView().findViewById(R.id.btn_add).setOnClickListener(v -> onAdd());
+    }
+
+    @Override
+    protected void onLoadFields(@NonNull final Book book) {
+        super.onLoadFields(book);
+
+        mList = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+
+        //noinspection ConstantConditions
         mListAdapter = new SeriesListAdapter(getContext(), mList,
                                              vh -> mItemTouchHelper.startDrag(vh));
         mListView.setAdapter(mListAdapter);
@@ -162,12 +147,17 @@ public class EditBookSeriesFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
-
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.btn_add).setOnClickListener(this::onAdd);
     }
 
-    private void onAdd(@SuppressWarnings("unused") @NonNull final View target) {
+    @Override
+    public void onSaveFields(@NonNull final Book book) {
+        super.onSaveFields(book);
+
+        // The list is not a 'real' field. Hence the need to store it manually here.
+        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mList);
+    }
+
+    private void onAdd() {
         String name = mSeriesNameView.getText().toString().trim();
         if (name.isEmpty()) {
             Snackbar.make(mSeriesNameView, R.string.warning_missing_name,
@@ -175,14 +165,14 @@ public class EditBookSeriesFragment
             return;
         }
 
-        Book book = mBookModel.getBook();
         //noinspection ConstantConditions
-        final Locale bookLocale = book.getLocale(getContext());
+        final Locale bookLocale = mBookModel.getBook().getLocale(getContext());
 
         Series newSeries = new Series(name);
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
+
         // see if it already exists
-        newSeries.fixId(getContext(), mDb, bookLocale);
+        newSeries.fixId(getContext(), mBookModel.getDb(), bookLocale);
         // and check it's not already in the list.
         if (mList.contains(newSeries)) {
             Snackbar.make(mSeriesNameView, R.string.warning_series_already_in_list,
@@ -209,9 +199,8 @@ public class EditBookSeriesFragment
     private void processChanges(@NonNull final Series series,
                                 @NonNull final Series tmpData) {
 
-        Book book = mBookModel.getBook();
         //noinspection ConstantConditions
-        final Locale bookLocale = book.getLocale(getContext());
+        final Locale bookLocale = mBookModel.getBook().getLocale(getContext());
 
         // name not changed ?
         if (series.getTitle().equals(tmpData.getTitle())) {
@@ -223,7 +212,7 @@ public class EditBookSeriesFragment
                 // so if the number is different, just update it
                 series.setNumber(tmpData.getNumber());
                 //noinspection ConstantConditions
-                Series.pruneList(mList, getContext(), mDb, bookLocale, false);
+                Series.pruneList(mList, getContext(), mBookModel.getDb(), bookLocale, false);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -231,13 +220,13 @@ public class EditBookSeriesFragment
 
         // The name of the Series was modified.
         // Check if it's used by any other books.
-        if (isSingleUsage(series, bookLocale)) {
+        if (mBookModel.isSingleUsage(getContext(), series, bookLocale)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original Series object that the user was changing.
             series.copyFrom(tmpData, true);
             //noinspection ConstantConditions
-            Series.pruneList(mList, getContext(), mDb, bookLocale, false);
+            Series.pruneList(mList, getContext(), mBookModel.getDb(), bookLocale, false);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -259,13 +248,15 @@ public class EditBookSeriesFragment
                     // copy all new data
                     series.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
-                    int rowsAffected = mDb.updateSeries(getContext(), series, bookLocale);
+                    int rowsAffected = mBookModel.getDb().updateSeries(getContext(),
+                                                                       series, bookLocale);
                     if (rowsAffected == 1) {
-                        Series.pruneList(mList, getContext(), mDb, bookLocale, false);
-                        mBookModel.getBook().refreshSeriesList(getContext(), mDb);
+                        Series.pruneList(mList, getContext(), mBookModel.getDb(),
+                                         bookLocale, false);
+                        mBookModel.getBook().refreshSeriesList(getContext(), mBookModel.getDb());
                         mListAdapter.notifyDataSetChanged();
+
                     } else {
-                        // eek?
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                                   "series=" + series,
                                                   "tmpSeries=" + tmpData);
@@ -280,25 +271,18 @@ public class EditBookSeriesFragment
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Series. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mDb.updateOrInsertSeries(getContext(), bookLocale, tmpData);
+                    mBookModel.getDb().updateOrInsertSeries(getContext(), bookLocale, tmpData);
                     // unlink the old one (and unmodified), and link with the new one
                     // book/series positions will be fixed up when saving.
                     // Note that the old one *might* be orphaned at this time.
                     // Same remark as above.
                     mList.remove(series);
                     mList.add(tmpData);
-                    Series.pruneList(mList, getContext(), mDb, bookLocale, false);
+                    Series.pruneList(mList, getContext(), mBookModel.getDb(), bookLocale, false);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()
                 .show();
-    }
-
-    private boolean isSingleUsage(@NonNull final Series series,
-                                  @NonNull final Locale bookLocale) {
-        //noinspection ConstantConditions
-        long nrOfReferences = mDb.countBooksInSeries(getContext(), series, bookLocale);
-        return nrOfReferences <= (mBookModel.getBook().getId() == 0 ? 0 : 1);
     }
 
     /**
@@ -388,13 +372,14 @@ public class EditBookSeriesFragment
             LayoutInflater layoutInflater = getActivity().getLayoutInflater();
             View root = layoutInflater.inflate(R.layout.dialog_edit_book_series, null);
 
-            // the dialog fields != screen fields.
-            mTitleView = root.findViewById(R.id.series);
-            mTitleView.setText(mSeriesName);
             //noinspection ConstantConditions
             ArrayAdapter<String> seriesNameAdapter =
                     new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
                                        mDb.getSeriesTitles());
+
+            // the dialog fields != screen fields.
+            mTitleView = root.findViewById(R.id.series);
+            mTitleView.setText(mSeriesName);
             mTitleView.setAdapter(seriesNameAdapter);
 
             mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
@@ -403,7 +388,9 @@ public class EditBookSeriesFragment
             }
 
             mNumberView = root.findViewById(R.id.series_num);
-            mNumberView.setText(mSeriesNumber);
+            if (mNumberView != null) {
+                mNumberView.setText(mSeriesNumber);
+            }
 
             return new AlertDialog.Builder(getContext())
                     .setView(root)
@@ -514,8 +501,7 @@ public class EditBookSeriesFragment
                 Bundle args = new Bundle(1);
                 args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
                 frag.setArguments(args);
-                frag.setTargetFragment(EditBookSeriesFragment.this,
-                                       EditBookSeriesFragment.REQ_EDIT_ROW);
+                frag.setTargetFragment(EditBookSeriesFragment.this, 0);
                 frag.show(getParentFragmentManager(), EditBookSeriesDialogFragment.TAG);
             });
         }

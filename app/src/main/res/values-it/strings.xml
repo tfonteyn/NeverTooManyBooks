@@ -375,7 +375,6 @@
     <string name="menu_loan_lend_book">Presta libro…</string>
     <string name="menu_loan_return_book">Il libro preso in prestito è tornato</string>
     <string name="menu_populate_toc">Inserisci titoli automaticamente (SPERIMENTALE)</string>
-    <string name="btn_search">Cerca</string>
     <string name="fab_add_book_by_internet_search">Cerca in Internet</string>
     <string name="menu_set_complete">Contrassegna come completo</string>
     <string name="menu_set_incomplete">Contrassegna come incompleto</string>
@@ -624,7 +623,7 @@
     <string name="btn_email">e-mail</string>
     <string name="warning_requires_site_and_id">Seleziona un sito Web e inserisci un ID.</string>
     <string name="style_builtin_first_letter_series_title">Titolo della serie 1a lettera</string>
-    <string name="scan">Scansione codice a barre</string>
+    <string name="btn_scan_barcode">Scansione codice a barre</string>
     <string name="lbl_author_type_inking">Inchiostro</string>
     <string name="lbl_select_website">Seleziona un sito Web:</string>
     <string name="lbl_site_book_id">ID libro del sito Web:</string>

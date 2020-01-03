@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,13 +36,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
@@ -64,13 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
  * Base class for {@link BookDetailsFragment} and {@link EditBookBaseFragment}.
  * <p>
  * This class supports the loading of a book. See {@link #loadFields}.
- * <p>
- * BookBaseFragment -> BookDetailsFragment.
- * BookBaseFragment -> EditBookBaseFragment.
- * BookBaseFragment -> EditBookBaseFragment -> EditBookFieldsFragment
- * BookBaseFragment -> EditBookBaseFragment -> EditBookNotesFragment
- * BookBaseFragment -> EditBookBaseFragment -> EditBookPublicationFragment
- * BookBaseFragment -> EditBookBaseFragment -> EditBookTocFragment
  */
 public abstract class BookBaseFragment
         extends Fragment {
@@ -80,43 +70,34 @@ public abstract class BookBaseFragment
 
     /** simple indeterminate progress spinner to show while doing lengthy work. */
     ProgressBar mProgressBar;
-    /** Hosting activity to handle FAB/result/touches. Avoids excessive casting/checking. */
-    FragmentActivity mHostActivity;
 
-    /** The book. Must be in the Activity scope. */
+    /** The book. */
     BookBaseFragmentModel mBookModel;
 
-    @Override
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        mHostActivity = (FragmentActivity) context;
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
-
-    /**
-     * Registers the {@link Book} as a ViewModel, and load/create the its data as needed.
-     * <p>
-     * <br>{@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mProgressBar = mHostActivity.findViewById(R.id.progressBar);
+        //noinspection ConstantConditions
+        mProgressBar = getActivity().findViewById(R.id.progressBar);
 
-        mBookModel = new ViewModelProvider(mHostActivity).get(BookBaseFragmentModel.class);
+        // Must be in the Activity scope.
+        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
         mBookModel.init(getArguments());
         mBookModel.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
         mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), this::showNeedsGoodreads);
 
         initFields();
+    }
+
+    /**
+     * Add any {@link Field} we need to {@link Fields}.
+     * <p>
+     * Called from {@link #onActivityCreated(Bundle)}.
+     */
+    @CallSuper
+    void initFields() {
     }
 
     /**
@@ -131,8 +112,8 @@ public abstract class BookBaseFragment
             Log.d(TAG, "ENTER|onResume");
         }
         super.onResume();
-        if (mHostActivity instanceof BaseActivity) {
-            BaseActivity activity = (BaseActivity) mHostActivity;
+        if (getActivity() instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) getActivity();
             if (activity.isGoingToRecreate()) {
                 return;
             }
@@ -149,36 +130,72 @@ public abstract class BookBaseFragment
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "EXIT|onPause");
-        }
+    /**
+     * Get the fields collection.
+     *
+     * @return the fields
+     */
+    @NonNull
+    abstract Fields getFields();
+
+    /**
+     * Load all Fields from the actual data store/manager.
+     * <p>
+     * Loads the data while preserving the isDirty() status.
+     * Normally called from the base {@link #onResume},
+     * but can explicitly be called after {@link Book#reload}.
+     * <p>
+     * This is 'final' because we want inheritors to implement {@link #onLoadFields}.
+     */
+    final void loadFields() {
+        Book book = mBookModel.getBook();
+
+        // disabling the AfterFieldChangeListener and preserve the 'dirty' status.
+        getFields().setAfterFieldChangeListener(null);
+        final boolean wasDirty = mBookModel.isDirty();
+        // make it so!
+        onLoadFields(book);
+        // restore the dirt-status and the listener
+        mBookModel.setDirty(wasDirty);
+        getFields().setAfterFieldChangeListener((field, newValue) -> mBookModel.setDirty(true));
+
+        // this is a good place to do this, as we use data from the book for the title.
+        setActivityTitle(book);
+    }
+
+    /**
+     * This is where you should populate all the fields with the values coming from the book.
+     * The base class (this one) manages all the actual fields, but 'special' fields can/should
+     * be handled in overrides, calling super as the first step.
+     */
+    @CallSuper
+    void onLoadFields(@NonNull final Book book) {
+        getFields().setAllFrom(book);
     }
 
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        Book book = mBookModel.getBook();
-
+        /*
+         * We handle R.id.MENU_UPDATE_FROM_INTERNET here,
+         * as it's shown by several children of this class.
+         */
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_UPDATE_FROM_INTERNET:
+                Book book = mBookModel.getBook();
                 ArrayList<Long> bookIds = new ArrayList<>();
                 bookIds.add(book.getId());
-                Intent intentUpdateFields =
-                        new Intent(getContext(), BookSearchActivity.class)
-                                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                                .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
-                                // pass the title for displaying to the user
-                                .putExtra(DBDefinitions.KEY_TITLE,
-                                          book.getString(DBDefinitions.KEY_TITLE))
-                                // pass the author for displaying to the user
-                                .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                          book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
-                startActivityForResult(intentUpdateFields,
-                                       UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                Intent intent = new Intent(getContext(), BookSearchActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
+                        .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                        // pass the title for displaying to the user
+                        .putExtra(DBDefinitions.KEY_TITLE,
+                                  book.getString(DBDefinitions.KEY_TITLE))
+                        // pass the author for displaying to the user
+                        .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                                  book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
 
             default:
@@ -189,20 +206,20 @@ public abstract class BookBaseFragment
     /**
      * Set the activity title depending on View or Edit mode.
      */
-    private void setActivityTitle() {
-        Book book = mBookModel.getBook();
+    private void setActivityTitle(@NonNull final Book book) {
 
-        ActionBar actionBar = ((AppCompatActivity) mHostActivity).getSupportActionBar();
+        //noinspection ConstantConditions
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            if (book.getId() > 0) {
+            if (book.isNew()) {
+                // EDIT NEW book
+                actionBar.setTitle(R.string.title_add_book);
+                actionBar.setSubtitle(null);
+            } else {
                 // VIEW or EDIT existing book
                 actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
                 //noinspection ConstantConditions
                 actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
-            } else {
-                // EDIT NEW book
-                actionBar.setTitle(R.string.title_add_book);
-                actionBar.setSubtitle(null);
             }
         }
     }
@@ -216,8 +233,7 @@ public abstract class BookBaseFragment
     private void showNeedsGoodreads(@Nullable final Boolean needs) {
         if (needs != null && needs) {
             //noinspection ConstantConditions
-            RequestAuthTask.needsRegistration(getContext(),
-                                              mBookModel.getGoodreadsTaskListener());
+            RequestAuthTask.needsRegistration(getContext(), mBookModel.getGoodreadsTaskListener());
         }
     }
 
@@ -231,57 +247,6 @@ public abstract class BookBaseFragment
         if (view != null && message != null && !message.isEmpty()) {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
-    }
-
-    /**
-     * Get the fields collection.
-     *
-     * @return the fields
-     */
-    @NonNull
-    abstract Fields getFields();
-
-    /**
-     * Add any {@link Field} we need to {@link Fields}.
-     * <p>
-     * Do not add any View related calls here.
-     */
-    @CallSuper
-    void initFields() {
-    }
-
-    /**
-     * Load all Fields from the actual data store/manager.
-     * <p>
-     * Loads the data while preserving the isDirty() status.
-     * Normally called from the base onResume, but can also be called after {@link Book#reload}.
-     * <p>
-     * This is 'final' because we want inheritors to implement {@link #onLoadFieldsFromBook}.
-     */
-    final void loadFields() {
-        // load the book, while disabling the AfterFieldChangeListener
-        getFields().setAfterFieldChangeListener(null);
-        // preserve the 'dirty' status.
-        final boolean wasDirty = mBookModel.isDirty();
-
-        // make it so!
-        onLoadFieldsFromBook();
-        // get dirty...
-        mBookModel.setDirty(wasDirty);
-        getFields().setAfterFieldChangeListener((field, newValue) -> mBookModel.setDirty(true));
-
-        // this is a good place to do this, as we use data from the book for the title.
-        setActivityTitle();
-    }
-
-    /**
-     * This is where you should populate all the fields with the values coming from the book.
-     * The base class (this one) manages all the actual fields, but 'special' fields can/should
-     * be handled in overrides, calling super as the first step.
-     */
-    @CallSuper
-    void onLoadFieldsFromBook() {
-        getFields().setAllFrom(mBookModel.getBook());
     }
 
     @Override
@@ -316,70 +281,4 @@ public abstract class BookBaseFragment
                 break;
         }
     }
-
-    /**
-     * Hides unused fields if they have no useful data.
-     * Should normally be called at the *end* of {@link #onLoadFieldsFromBook}
-     *
-     * @param hideIfEmpty set to {@code true} when displaying; {@code false} when editing.
-     * @param keepHidden  keep a field hidden if it's already hidden
-     */
-    void showOrHideFields(final boolean hideIfEmpty,
-                          final boolean keepHidden) {
-        //noinspection ConstantConditions
-        getFields().resetVisibility(getView(), hideIfEmpty, keepHidden);
-    }
-
-    /**
-     * Syntax sugar.
-     * <p>
-     * If all 'fields' are View.GONE, set 'sectionLabelId' to View.GONE as well.
-     * Otherwise, set 'sectionLabelId' to View.VISIBLE.
-     *
-     * @param sectionLabelId field to set
-     * @param fields         to check
-     */
-    void setSectionLabelVisibility(@SuppressWarnings("SameParameterValue")
-                                   @IdRes final int sectionLabelId,
-                                   @NonNull final View... fields) {
-        showOrHide(sectionLabelId, View.VISIBLE, fields);
-    }
-
-    /**
-     * If all 'fields' are View.GONE, set 'fieldToSet' to View.GONE as well.
-     * Otherwise, set 'fieldToSet' to the desired visibility.
-     *
-     * @param fieldToSet      field to set
-     * @param visibilityToSet to use for the fieldToSet
-     * @param views           to test for having the same visibility
-     */
-    private void showOrHide(@IdRes final int fieldToSet,
-                            @SuppressWarnings("SameParameterValue") final int visibilityToSet,
-                            @NonNull final View... views) {
-        //noinspection ConstantConditions
-        View fieldView = getView().findViewById(fieldToSet);
-        if (fieldView != null) {
-            boolean allGone = hasSameVisibility(View.GONE, views);
-            fieldView.setVisibility(allGone ? View.GONE : visibilityToSet);
-        }
-    }
-
-    /**
-     * Check if all fields have the same visibility.
-     *
-     * @param visibility to check
-     * @param views      to check
-     *
-     * @return {@code true} if all fields have the same visibility
-     */
-    private boolean hasSameVisibility(@SuppressWarnings("SameParameterValue") final int visibility,
-                                      @NonNull final View[] views) {
-        for (View view : views) {
-            if (view != null && view.getVisibility() != visibility) {
-                return false;
-            }
-        }
-        return true;
-    }
-
 }

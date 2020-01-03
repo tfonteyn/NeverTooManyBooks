@@ -123,6 +123,8 @@
         <Button
             android:id="@+id/btn_altIsbn"
             style="@style/IconButton"
+            android:layout_marginStart="@dimen/indent1"
+            android:layout_marginEnd="@dimen/indent1"
             app:icon="@drawable/ic_autorenew"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
@@ -144,6 +146,8 @@
         <Button
             android:id="@+id/btn_scan"
             style="@style/IconButton"
+            android:layout_marginStart="@dimen/indent1"
+            android:layout_marginEnd="@dimen/indent1"
             android:enabled="true"
             app:icon="@drawable/ic_barcode"
             app:iconGravity="textStart"

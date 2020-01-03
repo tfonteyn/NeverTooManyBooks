@@ -372,6 +372,7 @@ public class Fields {
      *
      * @param parent      parent view for all fields.
      * @param hideIfEmpty hide the field if it's empty
+     *                    set to {@code true} when displaying; {@code false} when editing.
      * @param keepHidden  keep a field hidden if it's already hidden
      */
     public void resetVisibility(@NonNull final View parent,

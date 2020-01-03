@@ -98,29 +98,32 @@ public class EditBookActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    /**
-     * When the user clicks 'back/up', check if we're clean to leave.
-     * <p>
-     * <br>{@inheritDoc}
-     */
     @Override
     public void onBackPressed() {
-        CoverHandler.deleteOrphanedCoverFiles(this);
-
         BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
 
-        if (model.isDirty()) {
+        int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+
+        // When the user clicks 'back/up', and we're not at some sub fragment,
+        // check if we're clean to leave.
+        if (backStackEntryCount == 0 && model.isDirty()) {
             // If the user clicks 'exit', we finish()
             StandardDialogs.unsavedEditsDialog(this, () -> {
                 // STILL send an OK and result data!
                 // The result data will contain the re-position book id.
                 setResult(Activity.RESULT_OK, model.getActivityResultData());
+                // we're really leaving, clean up
+                CoverHandler.deleteOrphanedCoverFiles(this);
                 finish();
             });
             return;
         }
 
         setResult(Activity.RESULT_OK, model.getActivityResultData());
+        if (backStackEntryCount == 0) {
+            // we're really leaving, clean up
+            CoverHandler.deleteOrphanedCoverFiles(this);
+        }
         super.onBackPressed();
     }
 }

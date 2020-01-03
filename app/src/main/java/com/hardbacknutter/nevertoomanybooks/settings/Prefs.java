@@ -76,6 +76,9 @@ public final class Prefs {
     /** Preference Key. */
     public static final String pk_ui_locale = "ui.locale";
     public static final String pk_ui_theme = "ui.theme";
+
+    public static final String pk_tabs_edit_book_native_id = "edit.book.tab.nativeId";
+
     public static final String pk_network_allow_metered = "network.allow.metered";
     public static final String pk_scanner_preferred = "scanner.preferred";
     public static final String pk_search_form_advanced = "search.form.advanced";
@@ -154,11 +157,15 @@ public final class Prefs {
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     static final String psk_style_show_details = "psk_style_show_details";
     static final String pk_reformat_titles_sort = "reformat.titles.sort";
+    @SuppressWarnings("WeakerAccess")
+    static final String pk_reformat_titles_display = "reformat.titles.display";
+
     /** Global settings - Purge action. */
     static final String psk_purge_blns = "psk_purge_blns";
+
     /** Log tag. */
     private static final String TAG = "Prefs";
-    private static final String pk_reformat_titles_display = "reformat.titles.display";
+
 
     private Prefs() {
     }

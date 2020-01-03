@@ -71,7 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  */
 public abstract class EditBookBaseFragment<T>
         extends BookBaseFragment
-        implements DataEditor {
+        implements DataEditor<Book> {
 
     /** The fields collection. */
     private Fields mFields;
@@ -108,7 +108,8 @@ public abstract class EditBookBaseFragment<T>
 
         } else if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
             //noinspection unchecked
-            ((CheckListDialogFragment<T>) childFragment).setListener(mCheckListResultsListener);
+            ((CheckListDialogFragment<T>) childFragment)
+                    .setListener(mCheckListResultsListener);
         }
     }
 
@@ -148,31 +149,32 @@ public abstract class EditBookBaseFragment<T>
     @Override
     @CallSuper
     public void onPause() {
-        saveFields();
+        onSaveFields(mBookModel.getBook());
         super.onPause();
     }
 
     @Override
-    protected void onLoadFieldsFromBook() {
-        super.onLoadFieldsFromBook();
+    protected void onLoadFields(@NonNull final Book book) {
+        super.onLoadFields(book);
 
         // new book ?
-        if (!mBookModel.isExistingBook()) {
-            populateNewBookFieldsFromBundle(getArguments());
+        if (book.isNew()) {
+            onLoadFieldsFromNewData(book, getArguments());
         }
     }
 
     /**
-     * Uses the values from the Bundle to populate the Book but don't overwrite existing values.
+     * Add values from the Bundle to the Book but don't overwrite existing values.
      * <p>
      * Override for handling specific field defaults, e.g. Bookshelf.
      *
-     * @param bundle to load values from
+     * @param args a Bundle to load values from
      */
-    void populateNewBookFieldsFromBundle(@Nullable final Bundle bundle) {
+    void onLoadFieldsFromNewData(@NonNull final Book book,
+                                 @Nullable final Bundle args) {
         // Check if we have any data, for example from a Search
-        if (bundle != null) {
-            Bundle rawData = bundle.getBundle(UniqueId.BKEY_BOOK_DATA);
+        if (args != null) {
+            Bundle rawData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
             if (rawData != null) {
                 // if we do, add if not there yet
                 getFields().setAllFrom(rawData, false);
@@ -181,24 +183,14 @@ public abstract class EditBookBaseFragment<T>
     }
 
     /**
-     * <br>{@inheritDoc}
-     * <br>
-     * <p>This is 'final' because we want inheritors to implement {@link #onSaveFieldsToBook}.
-     */
-    @Override
-    public final void saveFields() {
-        onSaveFieldsToBook();
-    }
-
-    /**
      * Default implementation of code to save existing data to the Book object.
-     * We simply copy all {@link Field} into the {@link DataManager} e.g. the {@link Book}
+     * We simply copy all {@link Field} into the given {@link DataManager} e.g. the {@link Book}
      * <p>
      * Override as needed.
      */
     @CallSuper
-    void onSaveFieldsToBook() {
-        getFields().putAllInto(mBookModel.getBook());
+    public void onSaveFields(@NonNull final Book book) {
+        getFields().putAllInto(book);
     }
 
     /**

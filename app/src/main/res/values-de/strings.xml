@@ -378,7 +378,6 @@
     <string name="menu_loan_lend_book">Buch verleihen…</string>
     <string name="menu_loan_return_book">Geliehenes Buch ist zurück</string>
     <string name="menu_populate_toc">Automatisches Ausfüllen der Anthologie-Titel (nur ISFDB)</string>
-    <string name="btn_search">Suche</string>
     <string name="fab_add_book_by_internet_search">Internet durchsuchen</string>
     <string name="menu_set_complete">Als abgeschlossen markieren</string>
     <string name="menu_set_incomplete">Als unvollständig markieren</string>
@@ -628,7 +627,7 @@
     <string name="btn_email">Email</string>
     <string name="warning_requires_site_and_id">Wählen Sie eine Website und geben Sie eine ID ein.</string>
     <string name="style_builtin_first_letter_series_title">Serientitel 1. Buchstabe</string>
-    <string name="scan">Barcode scannen</string>
+    <string name="btn_scan_barcode">Barcode scannen</string>
     <string name="lbl_author_type_inking">Tinte</string>
     <string name="lbl_select_website">Wählen Sie eine Website aus:</string>
     <string name="lbl_site_book_id">Website-Buch-ID:</string>

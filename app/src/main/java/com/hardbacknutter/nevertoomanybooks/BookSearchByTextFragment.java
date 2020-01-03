@@ -88,13 +88,6 @@ public class BookSearchByTextFragment
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -149,6 +142,12 @@ public class BookSearchByTextFragment
 
             TipManager.display(getContext(), R.string.tip_book_search_by_text, null);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setHasOptionsMenu(isVisible());
     }
 
     /**

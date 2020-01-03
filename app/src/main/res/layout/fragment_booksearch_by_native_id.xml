@@ -146,7 +146,7 @@
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_search"
+            android:text="@android:string/search_go"
             app:layout_constraintBaseline_toBaselineOf="@id/native_id"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/native_id"

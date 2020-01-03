@@ -106,8 +106,6 @@
 
     <item name="TASK_ID_GALLERY_IMAGE" type="id" />
     <item name="TASK_ID_SWITCHER_IMAGE" type="id" />
-    <item name="MENU_STRICT_ISBN" type="id" />
-    <item name="MENU_SHOW_ALL" type="id" />
 
     <!-- END predefined AsyncTask IDs -->
 

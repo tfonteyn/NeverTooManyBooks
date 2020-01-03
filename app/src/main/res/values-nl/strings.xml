@@ -380,7 +380,6 @@
     <string name="menu_loan_lend_book">Boek uitlenen…</string>
     <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
     <string name="menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
-    <string name="btn_search">Zoeken</string>
     <string name="fab_add_book_by_internet_search">Internet doorzoeken</string>
     <string name="menu_set_complete">Markeer als volledig</string>
     <string name="menu_set_incomplete">Markeer als onvolledig</string>
@@ -630,7 +629,7 @@
     <string name="btn_email">e-mail</string>
     <string name="warning_requires_site_and_id">Selecteer een website en voer een ID in.</string>
     <string name="style_builtin_first_letter_series_title">Serietitel 1e letter</string>
-    <string name="scan">Scan barcode</string>
+    <string name="btn_scan_barcode">Scan barcode</string>
     <string name="lbl_author_type_inking">Inking</string>
     <string name="lbl_select_website">Selecteer een website:</string>
     <string name="lbl_site_book_id">Website boek ID:</string>

@@ -37,7 +37,8 @@
 
     <!--    <style name="HorizontalDivider">-->
     <!--        <item name="android:layout_width">0dp</item>-->
-    <!--        &lt;!&ndash; reminder: don't set layout_height to wrap_content, will CF the layout &ndash;&gt;-->
+    <!--        &lt;!&ndash; reminder: don't set layout_height to wrap_content,-->
+    <!--            will CF the layout &ndash;&gt;-->
     <!--        <item name="android:layout_height">1dp</item>-->
     <!--        <item name="android:layout_marginTop">2dp</item>-->
     <!--        <item name="android:layout_marginBottom">2dp</item>-->
@@ -46,7 +47,8 @@
 
     <!--    &lt;!&ndash; used in landscape mode only &ndash;&gt;-->
     <!--    <style name="VerticalDivider">-->
-    <!--        &lt;!&ndash; reminder: don't set layout_width to wrap_content, will CF the layout &ndash;&gt;-->
+    <!--        &lt;!&ndash; reminder: don't set layout_width to wrap_content,-->
+    <!--            will CF the layout &ndash;&gt;-->
     <!--        <item name="android:layout_width">1dp</item>-->
     <!--        <item name="android:layout_height">0dp</item>-->
     <!--        <item name="android:layout_marginStart">2dp</item>-->
@@ -255,8 +257,8 @@
 
     <!-- Base style for the isbn search keyboard; not to be used directly in layouts. -->
     <style name="IsbnKeyPadButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">@dimen/IsbnKeyPadButton_height</item>
+        <item name="android:layout_width">@dimen/isbn_key_pad_button_width</item>
+        <item name="android:layout_height">@dimen/isbn_key_pad_button_height</item>
         <item name="android:layout_marginStart">@dimen/indent1</item>
         <item name="android:layout_marginEnd">@dimen/indent1</item>
     </style>
@@ -637,8 +639,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">30dp</item>
         <item name="android:enabled">false</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent1</item>
     </style>
 
     <!-- *************************************************************************************** -->

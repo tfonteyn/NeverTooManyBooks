@@ -257,11 +257,27 @@
             android:title="@string/lbl_purge_files"
             />
 
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_tab"
+            android:key="edit.book.tab.nativeId"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/allow_edit_native_id" />
+
+        <!-- URGENT: temp -->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_tab"
+            android:key="tmp.edit.book.tab.authSer"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="show authSer as tabs" />
+
         <Preference
             android:icon="@drawable/ic_send"
             android:key="psk_send_debug_info"
             android:title="@string/lbl_send_debug_info"
             />
-
     </PreferenceCategory>
 </PreferenceScreen>

@@ -41,7 +41,8 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
-import com.hardbacknutter.nevertoomanybooks.utils.FocusFixer;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the publication fields Tab.
@@ -152,18 +153,16 @@ public class EditBookPublicationFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // do other stuff here that might affect the view.
-
-        // Fix the focus order for the views
         //noinspection ConstantConditions
-        FocusFixer.fix(getView());
+        ViewFocusOrder.fix(getView());
     }
 
     @Override
-    protected void onLoadFieldsFromBook() {
-        super.onLoadFieldsFromBook();
+    protected void onLoadFields(@NonNull final Book book) {
+        super.onLoadFields(book);
 
         // hide unwanted fields
-        showOrHideFields(false, false);
+        //noinspection ConstantConditions
+        getFields().resetVisibility(getView(), false, false);
     }
 }

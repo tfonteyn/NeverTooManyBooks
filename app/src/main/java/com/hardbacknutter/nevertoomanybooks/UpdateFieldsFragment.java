@@ -52,6 +52,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
@@ -87,13 +88,6 @@ public class UpdateFieldsFragment
     private UpdateFieldsModel mUpdateFieldsModel;
 
     private ProgressDialogFragment mProgressDialog;
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Mandatory
-        setHasOptionsMenu(true);
-    }
 
     @Nullable
     @Override
@@ -163,17 +157,19 @@ public class UpdateFieldsFragment
         }
     }
 
-//    @Override
-//    @CallSuper
-//    public void onResume() {
-//        super.onResume();
-//        if (getActivity() instanceof BaseActivity) {
-//            BaseActivity activity = (BaseActivity) getActivity();
-//            if (activity.isGoingToRecreate()) {
-//                return;
-//            }
-//        }
-//    }
+    @Override
+    @CallSuper
+    public void onResume() {
+        super.onResume();
+        if (getActivity() instanceof BaseActivity) {
+            BaseActivity activity = (BaseActivity) getActivity();
+            if (activity.isGoingToRecreate()) {
+                return;
+            }
+        }
+
+        setHasOptionsMenu(isVisible());
+    }
 
     /**
      * Display the list of fields.

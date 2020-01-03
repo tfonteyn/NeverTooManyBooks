@@ -28,16 +28,20 @@
   -->
 
 <!--
+    Reference sites:
+    https://www.abbreviations.com/
+
+
+    ENTITY:
     Define entities that can be used inside of other string (not possible with standard Android
     resources e.g. the entities file define APP_NAME; use it in another string with: &APP_NAME;
     cannot put these into an external file: https://issuetracker.google.com/issues/68434088
--->
-<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
-<!--
+
     Each language string.xml file uses localized quotes as per
     https://en.wikipedia.org/wiki/Quotation_mark#Summary_table
     See top of each language resource file for the "quotes" comment.
 -->
+<!DOCTYPE resources [<!ENTITY APP_NAME "NeverTooManyBooks">]>
 <!-- Quotes “…” - Regex to find wrong ones: ('|„|‘|’|«|») -->
 <!--suppress LongLine -->
 <resources>
@@ -1097,10 +1101,11 @@
 
     <!-- button text for import/export dialogs -->
     <string name="btn_options">Options</string>
-    <!-- generic search button -->
-    <string name="btn_search">Search</string>
     <!-- Button text, to 'return' a loaned book -->
     <string name="btn_loan_returned">Returned</string>
+
+    <!-- Button; where we can use a long text. Should also show icon: res/drawable/ic_barcode -->
+    <string name="btn_scan_barcode">Scan barcode</string>
 
     <!-- generic response button texts -->
     <string name="btn_disable_message">Disable Message</string>
@@ -1233,7 +1238,7 @@
     <!-- Name of the 'Details' tab when editing a book. -->
     <string name="tab_lbl_details">Details</string>
     <!-- Name of the 'Publication' tab when editing a book. -->
-    <string name="tab_lbl_publication">Publication</string>
+    <string name="tab_lbl_publication">Pub.</string>
     <!-- Name of the 'Notes' tab when editing a book.-->
     <string name="tab_lbl_notes">Notes</string>
     <!-- Name of the 'Table Of Content' (formerly 'Anthology') tab when editing a book. -->
@@ -1242,7 +1247,7 @@
     <string name="tab_lbl_ext_id">Ext. ID</string>
 
     <!-- Name of the 'Alternative Editions' tab on the SearchAdmin page -->
-    <string name="tab_lbl_alternative_editions">Alt.Ed.</string>
+    <string name="tab_lbl_alternative_editions">Alt. Ed.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Single words used for multiple purposes ========== -->
@@ -1261,8 +1266,6 @@
     <string name="none">None</string>
     <!-- e.g. clearing a form. -->
     <string name="clear">Clear</string>
-
-    <string name="scan">Scan barcode</string>
 
     <!-- abbreviation to indicate there are more of something.
         e.g. a list of Series: "Foundation et.al" indicates a book belongs to the

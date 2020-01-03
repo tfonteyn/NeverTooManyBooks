@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -52,6 +53,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -118,19 +120,21 @@ public class BooksOnBookshelf
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
 
-    /** This is very important: the number of FAB sub-buttons we're using. */
-    private static final int FAB_ITEMS = 5;
-
     /**
      * Views for the current row level-text.
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mHeaderTextView = new TextView[2];
+    /** List header. */
+    private TextView mStyleNameView;
+    /** List header. */
+    private TextView mFilterTextView;
+    /** List header: The number of books in the current list. */
+    private TextView mBookCountView;
 
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
-    private final ExtendedFloatingActionButton[] mFabMenuItems =
-            new ExtendedFloatingActionButton[FAB_ITEMS];
-    private TextView mFilterTextView;
+    private ExtendedFloatingActionButton[] mFabMenuItems;
+
     /** The View for the list. */
     private RecyclerView mListView;
     private LinearLayoutManager mLayoutManager;
@@ -142,8 +146,7 @@ public class BooksOnBookshelf
     private Spinner mBookshelfSpinner;
     /** The adapter used to fill the mBookshelfSpinner. */
     private ArrayAdapter<String> mBookshelfSpinnerAdapter;
-    /** The number of books in the current list. */
-    private TextView mBookCountView;
+
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
     /** Listener for the Bookshelf Spinner. */
@@ -247,7 +250,7 @@ public class BooksOnBookshelf
                     }
                 }
             };
-    private TextView mStyleNameView;
+
 
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
@@ -383,10 +386,8 @@ public class BooksOnBookshelf
      * Called from {@link #onCreate}.
      */
     private void initFAB() {
-        mFabButton = findViewById(R.id.fab);
-        mFabButton.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
-        mFabOverlay = findViewById(R.id.fabOverlay);
-        // modify FAB_ITEMS if adding more options.
+        // Make SURE that the array length fits the options list below.
+        mFabMenuItems = new ExtendedFloatingActionButton[5];
         mFabMenuItems[0] = findViewById(R.id.fab0);
         mFabMenuItems[0].setOnClickListener(v -> addBySearchIsbn(true));
         mFabMenuItems[1] = findViewById(R.id.fab1);
@@ -395,8 +396,17 @@ public class BooksOnBookshelf
         mFabMenuItems[2].setOnClickListener(v -> addBySearch(BookSearchByTextFragment.TAG));
         mFabMenuItems[3] = findViewById(R.id.fab3);
         mFabMenuItems[3].setOnClickListener(v -> startAddManually());
-        mFabMenuItems[4] = findViewById(R.id.fab4);
-        mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean showTabNativeId = prefs.getBoolean(Prefs.pk_tabs_edit_book_native_id, false);
+        if (showTabNativeId) {
+            mFabMenuItems[4] = findViewById(R.id.fab4);
+            mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
+        }
+
+        mFabButton = findViewById(R.id.fab);
+        mFabButton.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
+        mFabOverlay = findViewById(R.id.fabOverlay);
     }
 
     /**
@@ -642,13 +652,13 @@ public class BooksOnBookshelf
                         mModel.setCurrentPositionedBookId(newId);
                     }
                 }
-                //URGENT: temporary debug: first fix the list level display issue, next fix the rebuild.
+                //URGENT: temporary debug: first fix the list level display issue, next fix rebuild
                 if (!mModel.isForceRebuildInOnResume()) {
                     Log.d(TAG, "ENTER|onActivityResult"
                                + "|requestCode=" + requestCode
                                + "|resultCode=" + resultCode
                                + "|data=" + data);
-                    Snackbar.make(mListView, "dbg intbklst", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(mListView, "dbg intbklst", Snackbar.LENGTH_SHORT).show();
                 }
                 break;
             }
@@ -723,7 +733,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * If the FAB is showing, hide it.
+     * If the FAB menu is showing, hide it.
      * If the current list is has any search criteria enabled, clear them and rebuild the list.
      * <p>
      * Otherwise handle the back-key as normal.
@@ -823,10 +833,7 @@ public class BooksOnBookshelf
     @CallSuper
     public void onPause() {
         hideFABMenu();
-        //TEST: why did I add the if() ?
-//        if (mModel.getSearchCriteria().isEmpty()) {
         savePosition();
-//        }
         super.onPause();
     }
 

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.SparseLongArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -104,15 +106,16 @@ public class SearchCoordinator
      * <p>
      * key: site id (== task id)
      */
-
+    @SuppressLint("UseSparseArrays")
     @NonNull
-    private final Map<Integer, Bundle> mSearchResults
-            = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Integer, Bundle> mSearchResults = new HashMap<>();
 
+    @SuppressLint("UseSparseArrays")
     @NonNull
-    private final Map<Integer, TaskListener.FinishMessage<Bundle>> mSearchFinishedMessages
-            = Collections.synchronizedMap(new HashMap<>());
+    private final Map<Integer, TaskListener.FinishMessage<Bundle>>
+            mSearchFinishedMessages = Collections.synchronizedMap(new HashMap<>());
 
+    @SuppressLint("UseSparseArrays")
     @NonNull
     private final Map<Integer, TaskListener.ProgressMessage>
             mSearchProgressMessages = new HashMap<>();
@@ -164,8 +167,8 @@ public class SearchCoordinator
     /** Accumulated book data. */
     private Bundle mBookData;
     private long mSearchStartTime;
-    private Map<Integer, Long> mSearchTasksStartTime;
-    private Map<Integer, Long> mSearchTasksEndTime;
+    private SparseLongArray mSearchTasksStartTime;
+    private SparseLongArray mSearchTasksEndTime;
 
     /** Listen for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
@@ -203,11 +206,13 @@ public class SearchCoordinator
                                + "|searchErrors=" + searchErrors);
 
                     if (DEBUG_SWITCHES.TIMERS) {
-                        for (Map.Entry<Integer, Long> entry : mSearchTasksStartTime.entrySet()) {
-                            String name = SearchSites.getName(entry.getKey());
-                            long start = entry.getValue();
-                            Long end = mSearchTasksEndTime.get(entry.getKey());
-                            if (end != null) {
+                        for (int i = 0; i < mSearchTasksStartTime.size(); i++) {
+                            long start = mSearchTasksStartTime.valueAt(i);
+                            // use the key, not the index!
+                            int key = mSearchTasksStartTime.keyAt(i);
+                            long end = mSearchTasksEndTime.get(key);
+                            String name = SearchSites.getName(key);
+                            if (end != 0) {
                                 Log.d(TAG, String.format(Locale.UK,
                                                          "mSearchTaskListener.onFinished"
                                                          + "|taskId=%20s:%10d ms",
@@ -275,8 +280,8 @@ public class SearchCoordinator
         if (mSiteList == null) {
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                mSearchTasksStartTime = new HashMap<>();
-                mSearchTasksEndTime = new HashMap<>();
+                mSearchTasksStartTime = new SparseLongArray();
+                mSearchTasksEndTime = new SparseLongArray();
             }
 
             if (FormatMapper.isMappingAllowed(context)) {
@@ -295,7 +300,8 @@ public class SearchCoordinator
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 
                 //TODO: we'd need to encapsulate a String and make it Parcelable
-                //mNativeIdSearchText = args.getSparseParcelableArray(UniqueId.BKEY_NATIVE_ID_ARRAY);
+                //mNativeIdSearchText = args
+                //  .getSparseParcelableArray(UniqueId.BKEY_NATIVE_ID_ARRAY);
 
                 mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
 
@@ -347,13 +353,17 @@ public class SearchCoordinator
             case Failed:
                 // Store for later
                 if (message.exception != null) {
-                    mSearchFinishedMessages.put(message.taskId, message);
+                    synchronized (mSearchFinishedMessages) {
+                        mSearchFinishedMessages.put(message.taskId, message);
+                    }
                 }
                 break;
 
             case Success:
                 // Store for later
-                mSearchResults.put(message.taskId, message.result);
+                synchronized (mSearchResults) {
+                    mSearchResults.put(message.taskId, message.result);
+                }
                 break;
         }
 
@@ -648,7 +658,9 @@ public class SearchCoordinator
         mIsSearchActive = false;
 
         mBookData = new Bundle();
+        // no synchronized needed here
         mSearchResults.clear();
+        // no synchronized needed here
         mSearchFinishedMessages.clear();
 
         if (mIsbnSearchText.isEmpty()) {
@@ -823,7 +835,7 @@ public class SearchCoordinator
                         String isbnFound = bookData.getString(DBDefinitions.KEY_ISBN);
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                            Log.d(TAG, "accumulateResults|ISBN.matches"
+                            Log.d(TAG, "accumulateResults"
                                        + "|mIsbn" + mIsbnSearchText
                                        + "|isbnFound" + isbnFound);
                         }
@@ -1057,6 +1069,7 @@ public class SearchCoordinator
      */
     private String accumulateErrors(@NonNull final Context context) {
         String errorMessage = null;
+        // no synchronized needed, at this point all other threads have finished.
         if (!mSearchFinishedMessages.isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (Map.Entry<Integer, TaskListener.FinishMessage<Bundle>>
@@ -1153,22 +1166,22 @@ public class SearchCoordinator
         int progressCount = 0;
 
         // Start with the base message if we have one.
-        StringBuilder message;
+        StringBuilder sb;
         if (mBaseMessage != null && !mBaseMessage.isEmpty()) {
-            message = new StringBuilder(mBaseMessage);
+            sb = new StringBuilder(mBaseMessage);
         } else {
-            message = new StringBuilder();
+            sb = new StringBuilder();
         }
 
         synchronized (mSearchProgressMessages) {
             if (!mSearchProgressMessages.isEmpty()) {
                 // if there was a baseMessage, add a linefeed to it.
-                if (message.length() > 0) {
-                    message.append('\n');
+                if (sb.length() > 0) {
+                    sb.append('\n');
                 }
                 // Append each task message
-                message.append(Csv.join("\n", mSearchProgressMessages.values(), true,
-                                        "• ", element -> element.text));
+                sb.append(Csv.join("\n", mSearchProgressMessages.values(), true,
+                                   "• ", element -> element.text));
 
                 for (TaskListener.ProgressMessage progressMessage : mSearchProgressMessages
                         .values()) {
@@ -1180,7 +1193,7 @@ public class SearchCoordinator
         }
 
         return new TaskListener.ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, null,
-                                                progressCount, progressMax, message.toString());
+                                                progressCount, progressMax, sb.toString());
     }
 
     public enum Searching {

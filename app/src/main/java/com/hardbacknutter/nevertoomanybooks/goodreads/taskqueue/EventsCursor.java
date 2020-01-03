@@ -32,11 +32,9 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
+import androidx.collection.LongSparseArray;
 
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
@@ -55,7 +53,7 @@ public class EventsCursor
     /** Column number of Exception column. */
     private static int sEventCol = -2;
 
-    private final Map<Long, Boolean> mSelections = Collections.synchronizedMap(new HashMap<>());
+    private final LongSparseArray<Boolean> mSelections = new LongSparseArray<>();
 
     /**
      * Constructor, based on SQLiteCursor constructor.
@@ -89,17 +87,21 @@ public class EventsCursor
      * @return Flag indicating if current row has been 'selected'.
      */
     public boolean isSelected() {
-        if (mSelections.containsKey(getId())) {
-            //noinspection ConstantConditions
-            return mSelections.get(getId());
-        } else {
-            return false;
+        synchronized (mSelections) {
+            if (mSelections.containsKey(getId())) {
+                //noinspection ConstantConditions
+                return mSelections.get(getId());
+            } else {
+                return false;
+            }
         }
     }
 
     public void setSelected(final long id,
                             final boolean selected) {
-        mSelections.put(id, selected);
+        synchronized (mSelections) {
+            mSelections.put(id, selected);
+        }
     }
 
     @Override
