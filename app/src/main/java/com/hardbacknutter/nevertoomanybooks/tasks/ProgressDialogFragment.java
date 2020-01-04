@@ -166,13 +166,15 @@ public class ProgressDialogFragment
 
     @UiThread
     private void initProgressBar() {
-        //noinspection ConstantConditions
-        mProgressBar.setIndeterminate(mIsIndeterminate);
-        // current and max values for a 'determinate' progress bar.
-        if (!mIsIndeterminate) {
-            mProgressBar.setProgress(mCurrent);
-            if (mMax > 0) {
-                mProgressBar.setMax(mMax);
+        // yes, check... we can get a new message calling here, before our dialog is even up.
+        if (mProgressBar != null) {
+            mProgressBar.setIndeterminate(mIsIndeterminate);
+            // current and max values for a 'determinate' progress bar.
+            if (!mIsIndeterminate) {
+                mProgressBar.setProgress(mCurrent);
+                if (mMax > 0) {
+                    mProgressBar.setMax(mMax);
+                }
             }
         }
     }
