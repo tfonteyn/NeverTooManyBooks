@@ -31,6 +31,8 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -679,6 +681,7 @@ class GoogleBooksHandler
     /** XML tags/attrs we look for. */
     private static final String XML_ID = "id";
     private static final String XML_ENTRY = "entry";
+    private static final Pattern HTTP_PATTERN = Pattern.compile("http:", Pattern.LITERAL);
 
     private final StringBuilder mBuilder = new StringBuilder();
     @NonNull
@@ -729,7 +732,9 @@ class GoogleBooksHandler
             mEntryDone = true;
         } else if (mInEntry) {
             if (localName.equalsIgnoreCase(XML_ID)) {
-                url.add(mBuilder.toString());
+                // This url comes back as http, and we must use https... so replace it.
+                url.add(HTTP_PATTERN.matcher(mBuilder.toString())
+                                    .replaceAll(Matcher.quoteReplacement("https:")));
             }
         }
 

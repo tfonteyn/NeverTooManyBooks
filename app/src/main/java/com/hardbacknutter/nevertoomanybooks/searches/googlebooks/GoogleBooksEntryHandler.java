@@ -35,6 +35,8 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -51,10 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
  * 2019-11: this needs scrapping. See {@link GoogleBooksManager} class doc.
- *
+ * <p>
  * THIS CLASS IS OBSOLETE (but still in use and working fine).
- *
- *
+ * <p>
+ * <p>
  * An XML handler for the Google Books entry return.
  *
  * <pre>
@@ -221,6 +223,7 @@ class GoogleBooksEntryHandler
     private static final String XML_PRICE_SUGGESTED_RETAIL_PRICE = "SuggestedRetailPrice";
     private static final String XML_PRICE_RETAIL_PRICE = "RetailPrice";
     private static final String XML_MONEY = "money";
+    private static final Pattern HTTP_PATTERN = Pattern.compile("http:", Pattern.LITERAL);
 
 
     /** flag if we should fetch a thumbnail. */
@@ -304,8 +307,9 @@ class GoogleBooksEntryHandler
             // http; this is a schema and not an actual website url
             if ("http://schemas.google.com/books/2008/thumbnail"
                     .equals(attributes.getValue("", "rel"))) {
-
-                String coverUrl = attributes.getValue("", "href");
+                // This url comes back as http, and we must use https... so replace it.
+                String coverUrl = HTTP_PATTERN.matcher(attributes.getValue("", "href"))
+                                              .replaceAll(Matcher.quoteReplacement("https:"));
                 String name = mBookData.getString(DBDefinitions.KEY_ISBN, "");
                 if (name.isEmpty()) {
                     // just use something...

@@ -147,6 +147,7 @@ public final class GoogleBooksManager
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
                 oneBookUrl = urlList.get(0);
+
                 try (TerminatorConnection con =
                              TerminatorConnection.openConnection(appContext, oneBookUrl)) {
                     parser.parse(con.getInputStream(), entryHandler);
