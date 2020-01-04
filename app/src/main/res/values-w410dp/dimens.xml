@@ -28,6 +28,8 @@
   -->
 
 <resources>
-    <!-- The ISBN keypad button height. -->
-    <dimen name="isbn_key_pad_button_height">45dp</dimen>
+    <!-- The ISBN keypad button width. -->
+    <dimen name="isbn_key_pad_button_width">120dp</dimen>
+    <!-- The ISBN keypad should not stretch beyond a reasonable width. -->
+    <dimen name="isbn_key_pad_max_width">410dp</dimen>
 </resources>

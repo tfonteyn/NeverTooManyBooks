@@ -27,29 +27,47 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.core.widget.NestedScrollView
+<!--<androidx.core.widget.NestedScrollView-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:id="@+id/topScroller"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+<!--    tools:context=".BookSearchActivity"-->
+<!--    >-->
+
+<!-- The layout and button sizes in dimens.xml were tested with:
+    4WVGA - 240dpi - sw320dp
+    port: w320dp h509dp
+    land: w533dp h296dp
+
+    Pixel2 - 420dpi - sw411dp
+    port: w411dp h659dp
+    land: w683dp h387dp
+
+    Samsung A5 -  480dpi - sw360dp
+    port:  w360dp h616dp
+    land:  w640dp h336dp
+-->
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/topScroller"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".BookSearchActivity"
-    >
-
-    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:maxWidth="@dimen/isbn_key_pad_max_width"
-        android:minWidth="@dimen/isbn_key_pad_min_width"
+    tools:context=".BookSearchActivity"
         >
 
         <Button
             android:id="@+id/btn_altIsbn"
-            style="@style/IconButton"
+            android:layout_width="@dimen/icon_button_width"
+            android:layout_height="wrap_content"
             android:layout_marginStart="0dp"
+            android:enabled="false"
             app:icon="@drawable/ic_autorenew"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
@@ -70,7 +88,8 @@
 
         <Button
             android:id="@+id/isbn_del"
-            style="@style/IsbnKeyPadButton.Del"
+            android:layout_width="@dimen/icon_button_width"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="0dp"
             android:contentDescription="@string/menu_delete"
             app:icon="@drawable/ic_backspace"
@@ -218,6 +237,6 @@
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+    <!--</androidx.core.widget.NestedScrollView>-->
 
 

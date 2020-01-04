@@ -28,6 +28,6 @@
   -->
 
 <resources>
-    <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
-    <dimen name="cover_base_size">20dp</dimen>
+    <!-- The ISBN keypad button height. -->
+    <dimen name="isbn_key_pad_button_height">66dp</dimen>
 </resources>

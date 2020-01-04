@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
-    <dimen name="cover_base_size">40dp</dimen>
-</resources>

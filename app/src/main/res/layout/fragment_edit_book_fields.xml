@@ -122,9 +122,11 @@
 
         <Button
             android:id="@+id/btn_altIsbn"
-            style="@style/IconButton"
+            android:layout_width="@dimen/icon_button_width"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent1"
             android:layout_marginEnd="@dimen/indent1"
+            android:enabled="false"
             app:icon="@drawable/ic_autorenew"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
@@ -145,7 +147,8 @@
 
         <Button
             android:id="@+id/btn_scan"
-            style="@style/IconButton"
+            android:layout_width="@dimen/icon_button_width"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/indent1"
             android:layout_marginEnd="@dimen/indent1"
             android:enabled="true"
