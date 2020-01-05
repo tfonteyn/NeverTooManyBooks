@@ -409,7 +409,8 @@ public class DAO
     }
 
     /**
-     * Purge Booklist node state data for the given Bookshelf.
+     * Purge Booklist node state data for the given Bookshelf.<br>
+     * Called when a Bookshelf is deleted or manually from the Bookshelf management context menu.
      *
      * @param bookshelfId to purge
      */
@@ -423,7 +424,8 @@ public class DAO
     }
 
     /**
-     * Purge Booklist node state data for the given Style.
+     * Purge Booklist node state data for the given Style.<br>
+     * Called when a style is deleted or manually from the Styles management context menu.
      *
      * @param styleId to purge
      */
@@ -627,6 +629,10 @@ public class DAO
 
     /**
      * Used by {@link CsvImporter}.
+     *
+     * @param isUpdate Indicates if updates will be done in TX
+     *
+     * @return the lock
      */
     @NonNull
     public SyncLock startTransaction(final boolean isUpdate) {
@@ -635,6 +641,8 @@ public class DAO
 
     /**
      * Used by {@link CsvImporter}.
+     *
+     * @param txLock Lock returned from BeginTransaction().
      */
     public void endTransaction(@NonNull final SyncLock txLock) {
         sSyncedDb.endTransaction(txLock);
@@ -1788,6 +1796,8 @@ public class DAO
     }
 
     /**
+     * Search for a book by the given ISBN.
+     *
      * @param isbnStr to search for
      *
      * @return book id, or 0 if not found
@@ -2508,6 +2518,7 @@ public class DAO
      * Creates a new bookshelf in the database.
      *
      * @param bookshelf object to insert. Will be updated with the id.
+     * @param styleId   the style this bookshelf uses by default
      *
      * @return the row id of the newly inserted row, or -1 if an error occurred
      */
@@ -2607,6 +2618,8 @@ public class DAO
     }
 
     /**
+     * Search for a Bookshelf with the given name.
+     *
      * @param name of bookshelf to find
      *
      * @return the Bookshelf, or {@code null} if not found
@@ -3004,6 +3017,8 @@ public class DAO
     }
 
     /**
+     * Lend out a book.
+     *
      * @param bookId book to lend
      * @param loanee person to lend to
      *
@@ -3218,7 +3233,8 @@ public class DAO
     /**
      * Delete the passed series.
      *
-     * @param id series to delete
+     * @param context Current context
+     * @param id      series to delete
      *
      * @return the number of rows affected
      */
@@ -3404,6 +3420,9 @@ public class DAO
 
     /**
      * Set the Goodreads book id for this book.
+     *
+     * @param bookId          the/our book id
+     * @param goodreadsBookId the Goodreads native book id
      */
     public void setGoodreadsBookId(final long bookId,
                                    final long goodreadsBookId) {
@@ -3837,6 +3856,9 @@ public class DAO
      * Insert a book into the FTS. Assumes book does not already exist in FTS.
      * <p>
      * Transaction: required
+     *
+     * @param context Current context
+     * @param bookId the book to add to FTS
      */
     private void insertFts(@NonNull final Context context,
                            final long bookId) {
@@ -4511,13 +4533,15 @@ public class DAO
          * https://www.sqlitetutorial.net/sqlite-glob/</a>
          *
          * @param fieldSpec fully qualified field name
-         * @param toLocal   convert the fieldSpec to local time from UTC
+         * @param toLocal   if set, first convert the fieldSpec to local time from UTC
          *
          * @return expression
          */
         @NonNull
         public static String year(@NonNull String fieldSpec,
                                   final boolean toLocal) {
+
+            //TODO: This covers a timezone offset for Dec-31 / Jan-01 only - how important is this?
             if (toLocal) {
                 fieldSpec = localDateExpression(fieldSpec);
             }
@@ -4531,11 +4555,11 @@ public class DAO
         /**
          * Create a GLOB expression to get the 'month' from a text date field in a standard way.
          * <p>
-         * Just look for 4 leading numbers followed by 2 or 1 digit.
+         * Just look for 4 leading numbers followed by '-' and by 2 or 1 digit.
          * We don't care about anything else.
          *
          * @param fieldSpec fully qualified field name
-         * @param toLocal   convert the fieldSpec to local time from UTC
+         * @param toLocal   if set, first convert the fieldSpec to local time from UTC
          *
          * @return expression
          */
@@ -4557,11 +4581,12 @@ public class DAO
         /**
          * Create a GLOB expression to get the 'day' from a text date field in a standard way.
          * <p>
-         * Just look for 4 leading numbers followed by 2 or 1 digit, and then 1 or two digits.
+         * Just look for 4 leading numbers followed by '-' and by 2 or 1 digit,
+         * and then by '-' and 1 or two digits.
          * We don't care about anything else.
          *
          * @param fieldSpec fully qualified field name
-         * @param toLocal   convert the fieldSpec to local time from UTC
+         * @param toLocal   if set, first convert the fieldSpec to local time from UTC
          *
          * @return expression
          */
@@ -5090,6 +5115,9 @@ public class DAO
                 "SELECT COUNT(" + DOM_FK_BOOK + ") FROM " + TBL_BOOK_AUTHOR
                 + " WHERE " + DOM_FK_AUTHOR + "=?";
 
+        /**
+         * Count the number of {@link TocEntry}'s by an {@link Author}.
+         */
         static final String COUNT_TOC_ENTRIES_BY_AUTHOR =
                 "SELECT COUNT(" + DOM_PK_ID + ") FROM " + TBL_TOC_ENTRIES
                 + " WHERE " + DOM_FK_AUTHOR + "=?";
