@@ -144,12 +144,6 @@ public class BooklistBuilder
     /** divider to convert nanoseconds to milliseconds. */
     private static final int TO_MILLIS = 1_000_000;
 
-    /**
-     * The base DELETE SQL for {@link #preserveAllNodes()} / {@link #preserveNodes}.
-     */
-    private static final String mNodesDeleteBaseSql =
-            "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE + " WHERE " + DOM_FK_BOOKSHELF + "=?";
-
     private static final String INITIAL_INSERT_FOR_REBUILD_STMT = "mInitialInsertSqlForRebuild";
 
     // not in use for now
@@ -1022,7 +1016,7 @@ public class BooklistBuilder
                 // If root node is not the node we are checking,
                 // and root node is not expanded, expand it.
                 if (rootId != rowId && !rootIsExpanded) {
-                    expandNode(rootId, NodeState.Expand);
+                    expandNode(rootId, NodeNextState.Expand);
                 }
             }
         }
@@ -1119,12 +1113,12 @@ public class BooklistBuilder
      * Expand, collapse or toggle the status of the node at the specified absolute position.
      *
      * @param rowId      of the node in the list
-     * @param nodeStatus one of {@link NodeState}
+     * @param nodeStatus one of {@link NodeNextState}
      *
      * @return {@code true} if the new state is expanded, {@code false} if collapsed.
      */
     public boolean expandNode(final long rowId,
-                              @NonNull final NodeState nodeStatus) {
+                              @NonNull final NodeNextState nodeStatus) {
 
         // future state of the affected rows.
         boolean expand;
@@ -1168,10 +1162,10 @@ public class BooklistBuilder
             }
 
             // expand/collapse until we get to a node on the same level.
-            long nextRowId = mRowStateTable.expandNodes(expand, rowId, rowLevel);
+            long endRowId = mRowStateTable.expandNodes(expand, rowId, rowLevel);
 
             // Store the state of these nodes.
-            preserveNodes(rowId, nextRowId);
+            preserveNodes(rowId, rowLevel, endRowId);
 
             if (txLock != null) {
                 mSyncedDb.setTransactionSuccessful();
@@ -1185,6 +1179,12 @@ public class BooklistBuilder
         return expand;
     }
 
+    /**
+     * Get the base insert statement for
+     * {@link #preserveAllNodes()} and {@link #preserveNodes(long, long, long)}.
+     *
+     * @return sql insert
+     */
     private String getNodesInsertSql() {
         return ("INSERT INTO " + TBL_BOOK_LIST_NODE_STATE
                 + " (" + DOM_FK_BOOKSHELF
@@ -1211,6 +1211,8 @@ public class BooklistBuilder
     /**
      * Save the state for all nodes to permanent storage.
      * We only store visible nodes and their expansion state.
+     *
+     * <strong>Note:</strong> always uses the current bookshelf/style
      */
     private void preserveAllNodes() {
         SyncLock txLock = null;
@@ -1219,21 +1221,30 @@ public class BooklistBuilder
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-            // delete *all* rows (i.e. all styles) for the current bookshelf.
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(mNodesDeleteBaseSql)) {
+            // delete all rows for the current bookshelf/style
+            String sql = "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE
+                         + " WHERE " + DOM_FK_BOOKSHELF + "=?"
+                         + " AND " + DOM_FK_STYLE + "=?";
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.bindLong(1, mBookshelf.getId());
+                stmt.bindLong(2, mStyle.getId());
+
                 int rowsDeleted = stmt.executeUpdateDelete();
+
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                     Log.d(TAG, "preserveAllNodes"
                                + "|bookshelfId=" + mBookshelf.getId()
                                + "|rowsDeleted=" + rowsDeleted);
                 }
             }
+
             // Read all visible nodes, and send them to the permanent table.
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(getNodesInsertSql())) {
                 stmt.bindLong(1, mBookshelf.getId());
                 stmt.bindLong(2, mStyle.getId());
+
                 int rowsUpdated = stmt.executeUpdateDelete();
+
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                     Log.d(TAG, "preserveAllNodes"
                                + "|bookshelfId=" + mBookshelf.getId()
@@ -1254,74 +1265,88 @@ public class BooklistBuilder
     /**
      * Save the state for a single node to permanent storage.
      *
-     * @param startRow between this row (inclusive)
-     * @param endRow   and this row (exclusive)
+     * <strong>Note:</strong> always uses the current bookshelf/style
+     *
+     * @param startRow      between this row (inclusive)
+     * @param startRowLevel level
+     * @param endRow        and this row (exclusive)
      */
     private void preserveNodes(final long startRow,
+                               final long startRowLevel,
                                final long endRow) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+            Log.d(TAG, "preserveNodes"
+                       + "|startRow=" + startRow
+                       + "|startRowLevel=" + startRowLevel
+                       + "|endRow=" + endRow);
+        }
+
         SyncLock txLock = null;
         try {
             if (!mSyncedDb.inTransaction()) {
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-//            mRowStateTable
-//                    .dumpTable(mSyncedDb, "preserveNodes", 71, 75, "before delete");
-//            TBL_BOOK_LIST_NODE_STATE
-//                    .dumpTable(mSyncedDb, "preserveNodes", 0, 1000, "before delete");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                TBL_BOOK_LIST_NODE_STATE
+                        .dumpTable(mSyncedDb, "preserveNodes", "before delete", 10,
+                                   DOM_BL_ROOT_KEY.getName() + " DESC");
+            }
 
-            // delete the given rows for the current bookshelf
+            // delete the given rows (inc. start, excl. end) and level
+            // for the current bookshelf/style
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    mNodesDeleteBaseSql + " AND " + DOM_BL_ROOT_KEY + " IN ("
-                    + " SELECT DISTINCT " + DOM_BL_ROOT_KEY
-                    + " FROM " + mRowStateTable
+                    "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE
+                    + " WHERE " + DOM_FK_BOOKSHELF + "=?"
+                    + " AND " + DOM_FK_STYLE + "=?"
+                    // leave the parent levels untouched
+                    + " AND " + DOM_BL_NODE_LEVEL + ">=" + startRowLevel
+                    + " AND " + DOM_BL_ROOT_KEY + " IN ("
+                    + " SELECT DISTINCT " + DOM_BL_ROOT_KEY + " FROM " + mRowStateTable
                     + " WHERE " + DOM_PK_ID + ">=? AND " + DOM_PK_ID + "<?"
                     + ")")) {
                 stmt.bindLong(1, mBookshelf.getId());
+                stmt.bindLong(2, mStyle.getId());
 
-                stmt.bindLong(2, startRow);
-                stmt.bindLong(3, endRow);
+                stmt.bindLong(3, startRow);
+                stmt.bindLong(4, endRow);
 
                 int rowsDeleted = stmt.executeUpdateDelete();
+
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "preserveNodes"
-                               + "|bookshelfId=" + mBookshelf.getId()
-                               + "|startRow=" + startRow
-                               + "|endRow=" + endRow
-                               + "|rowsDeleted=" + rowsDeleted);
+                    Log.d(TAG, "preserveNodes|rowsDeleted=" + rowsDeleted);
                 }
             }
-//            TBL_BOOK_LIST_NODE_STATE
-//                    .dumpTable(mSyncedDb, "preserveNodes", 0, 1000, "delete done");
 
-            // Read all nodes below the given node, and send them to the permanent table.
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                TBL_BOOK_LIST_NODE_STATE
+                        .dumpTable(mSyncedDb, "preserveNodes", "delete done", 10,
+                                   DOM_BL_ROOT_KEY.getName() + " DESC");
+            }
+
+            // Read all nodes below the given node (again inc. start, excl. end),
+            // and send them to the permanent table.
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    getNodesInsertSql() + " AND " + DOM_PK_ID + ">=? AND " + DOM_PK_ID + "<?")) {
-                int p = 0;
-                stmt.bindLong(++p, mBookshelf.getId());
-                stmt.bindLong(++p, mStyle.getId());
+                    getNodesInsertSql()
+                    + " AND " + DOM_PK_ID + ">=? AND " + DOM_PK_ID + "<?")) {
+                stmt.bindLong(1, mBookshelf.getId());
+                stmt.bindLong(2, mStyle.getId());
 
-                stmt.bindLong(++p, startRow);
-                stmt.bindLong(++p, endRow);
+                stmt.bindLong(3, startRow);
+                stmt.bindLong(4, endRow);
+
+                int rowsInserted = stmt.executeUpdateDelete();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "preserveNodes"
-                               + "|bookshelfId=" + mBookshelf.getId()
-                               + "|styleId=" + mStyle.getId()
-                               + "|startRow=" + startRow
-                               + "|endRow=" + endRow);
-                }
-
-                int rowsUpdated = stmt.executeUpdateDelete();
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "preserveNodes"
-                               + "|rowsUpdated=" + rowsUpdated);
+                    Log.d(TAG, "preserveNodes|rowsInserted=" + rowsInserted);
                 }
             }
 
-
-//            TBL_BOOK_LIST_NODE_STATE
-//                    .dumpTable(mSyncedDb, "preserveNodes", 0, 1000, "insert done");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                TBL_BOOK_LIST_NODE_STATE
+                        .dumpTable(mSyncedDb, "preserveNodes", "insert done", 10,
+                                   DOM_BL_ROOT_KEY.getName() + " DESC");
+            }
 
             if (txLock != null) {
                 mSyncedDb.setTransactionSuccessful();
@@ -1523,7 +1548,10 @@ public class BooklistBuilder
         return mRowStateTable.countVisibleRows();
     }
 
-    public enum NodeState {
+    /**
+     * The state the note should be switched to.
+     */
+    public enum NodeNextState {
         Toggle, Expand, Collapse
     }
 
@@ -2457,7 +2485,6 @@ public class BooklistBuilder
 
                 // collapse and hide all levels starting from the topLevel
                 updateNodes(false, false, ">", topLevel);
-
             }
         }
 
@@ -2483,7 +2510,7 @@ public class BooklistBuilder
 
             // Update the intervening nodes; this excludes the start and end row
             // visibility matches expansion state
-            updateNodes(expand, expand, rowId, endRow);
+            updateNodes(expand, /* visible: */ expand, rowId, endRow);
 
             return endRow;
         }
@@ -2491,19 +2518,20 @@ public class BooklistBuilder
         /**
          * Find the next row ('after' the given row) at the given level (or lower).
          *
-         * @param startRowId from where to start looking
-         * @param rowLevel   level to look for
+         * @param startRowId    from where to start looking
+         * @param startRowLevel level to look for
          *
          * @return endRowId
          */
         private long findNextRowId(final long startRowId,
-                                   final int rowLevel) {
+                                   final int startRowLevel) {
 
             SynchronizedStatement stmt = mStatementManager.get(STMT_GET_NEXT_NODE_AT_SAME_LEVEL);
             if (stmt == null) {
                 stmt = mStatementManager.add(
                         STMT_GET_NEXT_NODE_AT_SAME_LEVEL,
                         // the COALESCE(max(" + DOM_PK_ID + "),-1) prevents a SQLiteDoneException
+                        // It catches the end-of-list situation.
                         "SELECT COALESCE(Max(" + DOM_PK_ID + "),-1) FROM "
                         + "(SELECT " + DOM_PK_ID + " FROM " + this.ref()
                         + " WHERE " + this.dot(DOM_PK_ID) + ">?"
@@ -2515,7 +2543,7 @@ public class BooklistBuilder
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
                 stmt.bindLong(1, startRowId);
-                stmt.bindLong(2, rowLevel);
+                stmt.bindLong(2, startRowLevel);
                 nextRowId = stmt.simpleQueryForLong();
             }
 
@@ -2535,7 +2563,7 @@ public class BooklistBuilder
          */
         private void updateNode(final long rowId,
                                 final boolean expand,
-                                final boolean visible) {
+                                @SuppressWarnings("SameParameterValue") final boolean visible) {
             SynchronizedStatement stmt = mStatementManager.get(STMT_UPD_SINGLE_NODE);
             if (stmt == null) {
                 stmt = mStatementManager.add(
