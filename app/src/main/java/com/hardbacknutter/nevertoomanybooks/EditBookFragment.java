@@ -42,7 +42,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -77,9 +77,8 @@ public class EditBookFragment
     @SuppressWarnings("WeakerAccess")
     public static final String REQUEST_BKEY_TAB = "tab";
 
+    //URGENT: this is temporary.. until it's decided what UI to go for.
     static final String TMP_SHOW_TAB_AUTH_SER = "tmp.edit.book.tab.authSer";
-
-    private FragmentActivity mHostActivity;
 
     private ViewPager2 mViewPager;
     private TabAdapter mTabAdapter;
@@ -87,11 +86,11 @@ public class EditBookFragment
     /** The book. Must be in the Activity scope. */
     private BookBaseFragmentModel mBookModel;
 
-    @Override
-    public void onAttach(@NonNull final Context context) {
-        super.onAttach(context);
-        mHostActivity = (FragmentActivity) context;
-    }
+//    @Override
+//    public void onCreate(@Nullable final Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setHasOptionsMenu(true);
+//    }
 
     @Override
     @Nullable
@@ -128,13 +127,13 @@ public class EditBookFragment
         mViewPager.setAdapter(mTabAdapter);
 
         // The FAB lives in the activity.
-        FloatingActionButton fabButton = mHostActivity.findViewById(R.id.fab);
+        FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_save);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> prepareSave());
 
         // The tab bar lives in the activity layout inside the AppBarLayout!
-        TabLayout tabBarLayout = mHostActivity.findViewById(R.id.tab_panel);
+        TabLayout tabBarLayout = getActivity().findViewById(R.id.tab_panel);
 
         new TabLayoutMediator(tabBarLayout, mViewPager, (tab, position) ->
                 tab.setText(getString(mTabAdapter.getTabTitle(position))))
@@ -147,11 +146,6 @@ public class EditBookFragment
         mViewPager.setCurrentItem(showTab);
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        setHasOptionsMenu(isVisible());
-//    }
 //    /**
 //     * Add the menu items which are common to all child fragments.
 //     */
@@ -195,7 +189,8 @@ public class EditBookFragment
 
         Book book = mBookModel.getBook();
 
-        // Ask any fragment that has not gone into 'onPause' to add its fields.
+        // The ViewPager2 fragments are created as children.
+        // Ask any of them that has not gone into 'onPause' to add its fields.
         // There should only be the one fragment, i.e. the front/current fragment.
         // Paranoia...
         for (Fragment frag : getChildFragmentManager().getFragments()) {
@@ -205,9 +200,26 @@ public class EditBookFragment
             }
         }
 
+        // if we're NOT running in tabbed mode for authors/series, send them a save command too.
+        //noinspection ConstantConditions
+        boolean showTabAuthSer = PreferenceManager.getDefaultSharedPreferences(getContext())
+                                                  .getBoolean(TMP_SHOW_TAB_AUTH_SER, false);
+        if (!showTabAuthSer) {
+            //noinspection ConstantConditions
+            FragmentManager fm = getActivity().getSupportFragmentManager();
+            Fragment frag = fm.findFragmentByTag(EditBookAuthorsFragment.TAG);
+            if (frag != null) {
+                //noinspection unchecked
+                ((DataEditor<Book>) frag).onSaveFields(book);
+            }
+            frag = fm.findFragmentByTag(EditBookSeriesFragment.TAG);
+            if (frag != null) {
+                //noinspection unchecked
+                ((DataEditor<Book>) frag).onSaveFields(book);
+            }
+        }
 
         // Now validate the book data
-        //noinspection ConstantConditions
         if (!book.validate(getContext())) {
             new AlertDialog.Builder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -223,6 +235,7 @@ public class EditBookFragment
             String isbn = book.getString(DBDefinitions.KEY_ISBN);
             // Check if the book already exists
             if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn) > 0))) {
+                //noinspection ConstantConditions
                 new AlertDialog.Builder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.title_duplicate_book)
@@ -231,7 +244,7 @@ public class EditBookFragment
                         .setCancelable(false)
                         // User aborts this edit
                         .setNegativeButton(android.R.string.cancel, (dialog, which) ->
-                                mHostActivity.finish())
+                                getActivity().finish())
                         // User wants to continue editing this book
                         .setNeutralButton(R.string.edit, (dialog, which) -> dialog.dismiss())
                         // User wants to add regardless
@@ -254,8 +267,9 @@ public class EditBookFragment
         mBookModel.saveBook(getContext());
 
         Intent resultData = mBookModel.getActivityResultData();
-        mHostActivity.setResult(Activity.RESULT_OK, resultData);
-        mHostActivity.finish();
+        //noinspection ConstantConditions
+        getActivity().setResult(Activity.RESULT_OK, resultData);
+        getActivity().finish();
     }
 
     /**
