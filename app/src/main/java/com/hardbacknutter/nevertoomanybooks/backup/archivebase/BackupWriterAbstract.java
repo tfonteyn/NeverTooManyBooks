@@ -105,8 +105,6 @@ public abstract class BackupWriterAbstract
                        @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        Exporter.Results exportResults = exportHelper.getResults();
-
         // do a cleanup first
         mDb.purge();
 
@@ -122,7 +120,9 @@ public abstract class BackupWriterAbstract
         File tmpBookCsvFile = null;
 
         try {
-            // If we are doing covers, get the exact number by counting them
+            // If we are doing covers, get the exact number by counting them.
+            // We want to stick that number into the INFO block.
+            // Once you get beyond a 1000 covers this step is getting tedious/slow....
             if (!progressListener.isCancelled() && incCovers) {
                 // set the progress bar temporarily in indeterminate mode.
                 progressListener.setIndeterminate(true);
@@ -131,12 +131,12 @@ public abstract class BackupWriterAbstract
                 // reset; won't take effect until the next onProgress.
                 progressListener.setIndeterminate(null);
 
-                // set as temporary max, but keep in mind the position itself is still 0
-                progressListener.setMax(exportResults.coversExported);
+                // set as temporary max, but keep in mind the position itself is still == 0
+                progressListener.setMax(exportHelper.getResults().coversExported);
             }
 
             // If we are doing books, generate the CSV file first, so we have the #books
-            // which we need to stick into the info block, and use with the progress listener.
+            // which we want to stick into the INFO block, and use with the progress listener.
             if (incBooks) {
                 // Get a temp file and set for delete
                 tmpBookCsvFile = File.createTempFile("tmp_books_csv_", ".tmp");
@@ -149,25 +149,29 @@ public abstract class BackupWriterAbstract
                 }
             }
 
-            // we now have a known number of books; add the covers and we've more or less have an
-            // exact number of steps. Added arbitrary 10 for the other entities we might do
-            int max = exportResults.booksExported + exportResults.coversExported + 10;
-            // overwrite the max with the exact value
-            progressListener.setMax(max);
+            // Calculate the max value for the progress bar.
+            int max = exportHelper.getResults().booksExported
+                      + exportHelper.getResults().coversExported;
+
+            // arbitrarily add 10 for the other entities we might do.
+            progressListener.setMax(max + 10);
 
             // Process each component of the Archive, unless we are cancelled.
+
+            // Start with the INFO block
             if (!progressListener.isCancelled()) {
                 progressListener.onProgressStep(1, null);
-                doInfo(exportResults.booksExported,
-                       exportResults.coversExported,
+                doInfo(exportHelper.getResults().booksExported,
+                       exportHelper.getResults().coversExported,
                        incStyles, incPrefs);
             }
-            // Write styles and prefs first. This will facilitate & speedup
+
+            // Write styles and prefs next. This will facilitate & speedup
             // importing as we'll be seeking in the input archive for them first.
             if (!progressListener.isCancelled() && incStyles) {
                 progressListener.onProgressStep(1, context.getString(R.string.lbl_styles));
-                exportResults.styles += doStyles();
-                progressListener.onProgressStep(exportResults.styles, null);
+                exportHelper.getResults().styles += doStyles();
+                progressListener.onProgressStep(exportHelper.getResults().styles, null);
                 entitiesWritten |= Options.BOOK_LIST_STYLES;
             }
             if (!progressListener.isCancelled() && incPrefs) {
@@ -175,10 +179,12 @@ public abstract class BackupWriterAbstract
                 doPreferences(context);
                 entitiesWritten |= Options.PREFERENCES;
             }
+
             if (!progressListener.isCancelled() && incXml) {
                 doXmlTables(context, exportHelper, progressListener);
                 entitiesWritten |= Options.XML_TABLES;
             }
+
             if (!progressListener.isCancelled() && incBooks) {
                 try {
                     progressListener.onProgressStep(1, context.getString(R.string.lbl_books));
@@ -188,6 +194,7 @@ public abstract class BackupWriterAbstract
                     StorageUtils.deleteFile(tmpBookCsvFile);
                 }
             }
+
             // do covers last
             if (!progressListener.isCancelled() && incCovers) {
                 doCovers(context, exportHelper, false, progressListener);
@@ -197,7 +204,7 @@ public abstract class BackupWriterAbstract
         } finally {
             exportHelper.options = entitiesWritten;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Log.d(TAG, "backup|mExportHelper.getResults()=" + exportResults);
+                Log.d(TAG, "backup|mExportHelper.getResults()=" + exportHelper.getResults());
             }
             try {
                 // closing a very large archive will take a while.
@@ -334,7 +341,7 @@ public abstract class BackupWriterAbstract
                 for (int cIdx = 0; cIdx < 2; cIdx++) {
                     File cover = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
                     if (cover.exists()) {
-                        if (cover.exists() && (timeFrom < cover.lastModified())) {
+                        if (timeFrom < cover.lastModified()) {
                             if (!dryRun) {
                                 putFile(cover.getName(), cover);
                             }
@@ -349,8 +356,8 @@ public abstract class BackupWriterAbstract
                 if (!dryRun) {
                     String message;
                     if (skipped == 0) {
-                        message = String.format(mProgress_msg_covers, exported,
-                                                missing[0], missing[1]);
+                        message = String.format(mProgress_msg_covers,
+                                                exported, missing[0], missing[1]);
                     } else {
                         message = String.format(mProgress_msg_covers_skip,
                                                 exported, missing[0], missing[1], skipped);
