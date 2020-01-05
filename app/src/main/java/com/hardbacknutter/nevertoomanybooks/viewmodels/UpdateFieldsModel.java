@@ -454,14 +454,17 @@ public class UpdateFieldsModel
                         }
                         setFetchThumbnail(thumbs);
 
-                        // Update the progress base message.
-                        if (title != null && !title.isEmpty()) {
-                            setBaseMessage(title);
-                        } else {
-                            setBaseMessage(isbn);
-                        }
                         // Start searching
-                        return search(context);
+                        if (search(context)) {
+                            // Update the progress base message.
+                            if (title != null && !title.isEmpty()) {
+                                setBaseMessage(title);
+                            } else {
+                                setBaseMessage(isbn);
+                            }
+                            return true;
+                        }
+                        // else if no search was started, fall through and loop to the next book.
                     }
                 }
 
