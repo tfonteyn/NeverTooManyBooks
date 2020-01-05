@@ -117,12 +117,12 @@
         WORK IN PROGRESS, HAS ISSUES, CRASHES due to not passing 'extras' with the tag name
         implement 'onPreferenceStartFragment'
         -->
-        <!--        <Preference-->
-        <!--            android:icon="@drawable/ic_details"-->
-        <!--            android:key="psk_styles"-->
-        <!--            android:title="@string/lbl_styles"-->
-        <!--            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.StylePreferenceFragment"-->
-        <!--            />-->
+        <!--  <Preference-->
+        <!--  android:icon="@drawable/ic_details"-->
+        <!--  android:key="psk_styles"-->
+        <!--  android:title="@string/lbl_styles"-->
+        <!--  android:fragment="com.hardbacknutter.nevertoomanybooks.settings.StylePreferenceFragment"-->
+        <!--  />-->
 
         <!-- the state of the list when starting the app. -->
         <!-- default BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE == 0 -->
@@ -265,14 +265,14 @@
             android:summaryOn="@string/yes"
             android:title="@string/allow_edit_native_id" />
 
-        <!-- URGENT: temp -->
+        <!-- URGENT: this is temporary.. until it's decided what UI to go for. -->
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_tab"
             android:key="tmp.edit.book.tab.authSer"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="show authSer as tabs" />
+            android:title="show Auth/Series as tabs" />
 
         <Preference
             android:icon="@drawable/ic_send"

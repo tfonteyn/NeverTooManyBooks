@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * Activity to edit the groups associated with a style (include/exclude + move up/down).
  * <p>
- * <strong>Note:</strong>: changes are saved when this activity is quit, see {@link #onBackPressed}.
+ * <strong>Note:</strong> changes are saved when this activity is quit, see {@link #onBackPressed}.
  */
 public class StyleGroupsActivity
         extends BaseActivity {

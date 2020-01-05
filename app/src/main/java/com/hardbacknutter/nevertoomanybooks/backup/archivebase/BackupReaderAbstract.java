@@ -136,7 +136,7 @@ public abstract class BackupReaderAbstract
                 if (info.hasCoverCount()) {
                     estimatedSteps += info.getCoverCount();
                 } else {
-                    // We don't have a count, so assume each book has a cover.
+                    // We don't have a count, so assume each book has 1 cover.
                     estimatedSteps *= 2;
                 }
             }

@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
  * Class to manage a version of a set of related data.
  * It's basically an extended Bundle.
  *
- * <strong>Note</strong>: there is no int support on purpose. Always use long values.
+ * <strong>Note:</strong> there is no int support on purpose. Always use long values.
  * In contrast, float is supported solely due to RatingBar usage.
  * <ul>
  * <li>mRawData: stores the actual data</li>

@@ -845,6 +845,7 @@ public class BooklistAdapter
                 String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
                 // store the uuid for use in the OnClickListener
                 mCoverView.setTag(R.id.TAG_UUID, uuid);
+                // always reset to default dimensions first
                 mCoverView.setMaxHeight(mMaxCoverSize);
                 mCoverView.setMaxWidth(mMaxCoverSize);
                 boolean isSet = ImageUtils.setImageView(mCoverView, uuid, 0,

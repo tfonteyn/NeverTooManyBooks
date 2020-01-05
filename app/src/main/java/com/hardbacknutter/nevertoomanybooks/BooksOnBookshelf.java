@@ -251,7 +251,6 @@ public class BooksOnBookshelf
                 }
             };
 
-
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
@@ -380,7 +379,6 @@ public class BooksOnBookshelf
                 .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
     }
-
 
     /**
      * Called from {@link #onCreate}.

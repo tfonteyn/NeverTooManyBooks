@@ -37,7 +37,7 @@ import java.util.ArrayList;
  * <p>
  * Each element is a list of objects separated by the {@link Factory#getObjectSeparator()}.
  * <p>
- * <strong>Note</strong>: due to the above there often is a degree of double-decoding
+ * <strong>Note:</strong> due to the above there often is a degree of double-decoding
  * in {@link #decode} even when not needed. No harm done, but wasting cpu cycles.
  * ENHANCE: would be nice to init StringList objects with the level of coding (1 or 2) needed.
  *

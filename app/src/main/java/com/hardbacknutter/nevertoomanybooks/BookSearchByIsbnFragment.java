@@ -163,6 +163,9 @@ public class BookSearchByIsbnFragment
 //            //noinspection ConstantConditions
 //            mSearchCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
 //        }
+
+//        Configuration c = getActivity().getResources().getConfiguration();
+//        Log.d(TAG,"CONFIG: " + c);
     }
 
     @Override
@@ -322,7 +325,7 @@ public class BookSearchByIsbnFragment
      * <p>
      *
      * @param userEntry isbn text to search for.
-     *                       Must be 10 characters (or more) to even consider a search.
+     *                  Must be 10 characters (or more) to even consider a search.
      */
     private void prepareSearch(@NonNull final String userEntry) {
 

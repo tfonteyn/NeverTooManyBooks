@@ -102,6 +102,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
  * <li>meant for loading on a computer to create reports or whatever...</li>
  * <li>not bound to the application itself.</li>
  * </ul>
+ *
+ * <strong>Note:</strong> None of the methods here count/contribute to the ExportHelper
+ * result counters.
  */
 public class XmlExporter
         implements Exporter, Closeable {

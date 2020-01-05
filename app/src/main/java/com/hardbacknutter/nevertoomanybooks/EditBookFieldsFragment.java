@@ -242,6 +242,7 @@ public class EditBookFieldsFragment
     @Override
     public void onResume() {
         super.onResume();
+        // needs to be done here (instead of in onCreate) due to ViewPager2
         setHasOptionsMenu(isVisible());
     }
 
@@ -329,6 +330,12 @@ public class EditBookFieldsFragment
      */
     private void showEditListFragment(@NonNull final Fragment frag,
                                       @NonNull final String tag) {
+        // The original intent was to simply add the new fragment on the same level
+        // as the current one; using getParentFragment().getChildFragmentManager()
+        // but we got: IllegalStateException: ViewPager2 does not support direct child views
+        // So... we use the top-level fragment manager,
+        // and have EditBookFragment#prepareSave explicitly check.
+
         //noinspection ConstantConditions
         getActivity().getSupportFragmentManager()
                      .beginTransaction()
