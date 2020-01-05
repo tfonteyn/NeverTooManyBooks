@@ -827,37 +827,31 @@ public class TableDefinition
      *
      * @param syncedDb the database
      * @param tag      log tag to use
-     * @param startRow from
-     * @param endRow   to
      * @param header   a header which will be logged first
+     * @param limit    LIMIT limit
+     * @param orderBy  ORDER BY orderBy
      */
     public void dumpTable(@NonNull final SynchronizedDb syncedDb,
                           @NonNull final String tag,
-                          final int startRow,
-                          final int endRow,
-                          @NonNull final String header) {
+                          @NonNull final String header,
+                          final int limit,
+                          @NonNull final String orderBy) {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag, "Table: " + mName + ": " + header);
 
-            String pk = mPrimaryKey.get(0).getName();
-
-            String sql = "SELECT * FROM " + mName
-                         + " WHERE " + pk + ">=" + startRow + " AND " + pk + "<=" + endRow
-                         + " ORDER BY " + pk;
-
+            String sql = "SELECT * FROM " + mName + " ORDER BY " + orderBy + " LIMIT " + limit;
             try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
                 StringBuilder columnHeading = new StringBuilder();
                 String[] columnNames = cursor.getColumnNames();
                 for (String column : columnNames) {
-                    columnHeading.append(String.format("%-12s", column));
+                    columnHeading.append(String.format("%-12s  ", column));
                 }
-                columnHeading.append(", total rows=").append(cursor.getCount());
                 Log.d(tag, columnHeading.toString());
 
                 while (cursor.moveToNext()) {
                     StringBuilder line = new StringBuilder();
                     for (int c = 0; c < cursor.getColumnCount(); c++) {
-                        line.append(String.format("%-12s", cursor.getString(c)));
+                        line.append(String.format("%-12s  ", cursor.getString(c)));
                     }
                     Log.d(tag, line.toString());
                 }
