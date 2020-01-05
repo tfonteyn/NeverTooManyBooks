@@ -1065,6 +1065,8 @@ public class DAO
     }
 
     /**
+     * Count the books for the given Author.
+     *
      * @param context Current context
      * @param author  to retrieve
      *
@@ -1084,6 +1086,8 @@ public class DAO
     }
 
     /**
+     * Count the TocEntry's for the given Author.
+     *
      * @param context Current context
      * @param author  to count the TocEntries of
      *
@@ -3354,6 +3358,19 @@ public class DAO
     }
 
     /**
+     * Count all books.
+     *
+     * @return number of books
+     */
+    public long countBooks() {
+        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlSelect.COUNT_BOOKS)) {
+            return stmt.count();
+        }
+    }
+
+    /**
+     * Count the books for the given Series.
+     *
      * @param context    Current context
      * @param series     to count the books in
      * @param bookLocale Locale to use if the item has none set
@@ -5053,6 +5070,11 @@ public class DAO
          */
         static final String BOOK_EXISTS =
                 "SELECT COUNT(*) " + " FROM " + TBL_BOOKS + " WHERE " + DOM_PK_ID + "=?";
+
+        /**
+         * Count all {@link Book}'s.
+         */
+        static final String COUNT_BOOKS = "SELECT COUNT(*) FROM " + TBL_BOOKS;
 
         /**
          * Count the number of {@link Book}'s in a {@link Series}.
