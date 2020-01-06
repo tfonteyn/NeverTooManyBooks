@@ -117,18 +117,6 @@ public abstract class BookSearchBaseFragment
         }
     }
 
-//    @Override
-//    @CallSuper
-//    public void onResume() {
-//        super.onResume();
-//        if (getActivity() instanceof BaseActivity) {
-//            BaseActivity activity = (BaseActivity) getActivity();
-//            if (activity.isGoingToRecreate()) {
-//                return;
-//            }
-//        }
-//    }
-
     @Override
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,

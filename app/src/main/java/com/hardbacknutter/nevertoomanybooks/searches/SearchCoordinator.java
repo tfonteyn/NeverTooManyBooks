@@ -299,9 +299,8 @@ public class SearchCoordinator
 
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 
-                //TODO: we'd need to encapsulate a String and make it Parcelable
-                //mNativeIdSearchText = args
-                //  .getSparseParcelableArray(UniqueId.BKEY_NATIVE_ID_ARRAY);
+                //TODO: (maybe) implement native id as argument
+//                mNativeIdSearchText = args.get...(UniqueId.BKEY_NATIVE_ID_ARRAY);
 
                 mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
 

@@ -48,7 +48,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
@@ -108,26 +107,13 @@ public abstract class BookBaseFragment
     @Override
     @CallSuper
     public void onResume() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "ENTER|onResume");
-        }
         super.onResume();
-        if (getActivity() instanceof BaseActivity) {
-            BaseActivity activity = (BaseActivity) getActivity();
-            if (activity.isGoingToRecreate()) {
-                return;
-            }
-        }
 
         // set the View member as the Views will be (re)created each time.
         //noinspection ConstantConditions
         getFields().setParentView(getView());
         // and load the content into the views
         loadFields();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "EXIT|onResume");
-        }
     }
 
     /**

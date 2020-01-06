@@ -162,18 +162,6 @@ public class UpdateFieldsFragment
         }
     }
 
-//    @Override
-//    @CallSuper
-//    public void onResume() {
-//        super.onResume();
-//        if (getActivity() instanceof BaseActivity) {
-//            BaseActivity activity = (BaseActivity) getActivity();
-//            if (activity.isGoingToRecreate()) {
-//                return;
-//            }
-//        }
-//    }
-
     /**
      * Display the list of fields.
      */

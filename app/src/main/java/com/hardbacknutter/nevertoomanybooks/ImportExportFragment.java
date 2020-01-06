@@ -71,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.ImportCSVTask;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ExportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -297,24 +296,6 @@ public class ImportExportFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
             }
-        }
-    }
-
-    @Override
-    @CallSuper
-    public void onResume() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "ENTER|onResume");
-        }
-        super.onResume();
-        if (getActivity() instanceof BaseActivity) {
-            BaseActivity activity = (BaseActivity) getActivity();
-            if (activity.isGoingToRecreate()) {
-                return;
-            }
-        }
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "EXIT|onResume");
         }
     }
 

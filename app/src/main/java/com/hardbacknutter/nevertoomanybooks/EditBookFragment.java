@@ -86,12 +86,6 @@ public class EditBookFragment
     /** The book. Must be in the Activity scope. */
     private BookBaseFragmentModel mBookModel;
 
-//    @Override
-//    public void onCreate(@Nullable final Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setHasOptionsMenu(true);
-//    }
-
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,

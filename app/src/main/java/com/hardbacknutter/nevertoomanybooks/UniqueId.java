@@ -104,8 +104,6 @@ public final class UniqueId {
     /** Bundle key for {@code ParcelableArrayList<Bookshelf>}. */
     public static final String BKEY_BOOKSHELF_ARRAY = "bookshelf_array";
 
-    /** Bundle key for native id search. */
-    public static final String BKEY_NATIVE_ID_ARRAY = "nativeId_array";
     /**
      * Bundle key for Author search text
      * (all DB KEY's and the ARRAY key is for authors with verified names).
@@ -137,10 +135,12 @@ public final class UniqueId {
     /**
      * List of fileSpecs or uri.
      * The key represents the single (front) cover.
+     * Currently no support for a list of back-covers, as the only SearchEngine
+     * providing back covers, only provides a single cover anyhow.
      * <p>
      * <br>type: {@code ArrayList<String>}
      */
-    public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array";
+    public static final String BKEY_FILE_SPEC_ARRAY = "fileSpec_array:0";
 
     /**
      * The title to be used by generic Dialogs.

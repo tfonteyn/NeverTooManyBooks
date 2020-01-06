@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,7 +40,6 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
@@ -54,7 +52,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -138,24 +135,23 @@ public class AuthorWorksFragment
         }
     }
 
-    @Override
-    @CallSuper
-    public void onResume() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "ENTER|onResume");
-        }
-        super.onResume();
-        if (getActivity() instanceof BaseActivity) {
-            BaseActivity activity = (BaseActivity) getActivity();
-            if (activity.isGoingToRecreate()) {
-                return;
-            }
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-            Log.d(TAG, "EXIT|onResume");
-        }
-    }
+//    @Override
+//    @CallSuper
+//    public void onResume() {
+//        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
+//            Log.d(TAG, "ENTER|onResume");
+//        }
+//        super.onResume();
+//        if (getActivity() instanceof BaseActivity) {
+//            BaseActivity activity = (BaseActivity) getActivity();
+//            if (activity.isGoingToRecreate()) {
+//                return;
+//            }
+//        }
+//        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
+//            Log.d(TAG, "EXIT|onResume");
+//        }
+//    }
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,

@@ -44,6 +44,7 @@ public class Edition {
     /**
      * If a fetch of editions resulted in a single book returned (via redirects),
      * then the doc is kept here for immediate processing.
+     * If we get (at least) 2 editions, then this will always be {@code null}.
      */
     @Nullable
     final Document doc;
@@ -51,7 +52,8 @@ public class Edition {
     /**
      * Constructor: we found a link to a book.
      *
-     * @param isfdbId of the book link we found
+     * @param isfdbId of the book we found
+     * @param isbn    of the book we found (as read from the site)
      */
     Edition(final long isfdbId,
             @Nullable final String isbn) {
@@ -64,6 +66,7 @@ public class Edition {
      * Constructor: we found a single edition, the doc contains the book for further processing.
      *
      * @param isfdbId of the book we found
+     * @param isbn    of the book we found (as searched for, not yet read from the 'doc')
      * @param doc     of the book we found
      */
     Edition(final long isfdbId,
