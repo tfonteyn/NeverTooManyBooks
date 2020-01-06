@@ -113,13 +113,13 @@ public final class LegacyPreferences {
                         int bobState;
                         switch (oldState) {
                             case 1:
-                                bobState = BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_EXPANDED;
+                                bobState = BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED;
                                 break;
                             case 2:
-                                bobState = BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_COLLAPSED;
+                                bobState = BooklistBuilder.PREF_REBUILD_ALWAYS_COLLAPSED;
                                 break;
                             default:
-                                bobState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
+                                bobState = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
                                 break;
                         }
                         ed.putString(Prefs.pk_bob_levels_rebuild_state, String.valueOf(bobState));

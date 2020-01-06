@@ -126,11 +126,11 @@ public class BooklistBuilder
         implements AutoCloseable {
 
     /** id values for state preservation property. See {@link ListRebuildMode}. */
-    public static final int PREF_LIST_REBUILD_SAVED_STATE = 0;
-    public static final int PREF_LIST_REBUILD_ALWAYS_EXPANDED = 1;
-    public static final int PREF_LIST_REBUILD_ALWAYS_COLLAPSED = 2;
+    public static final int PREF_REBUILD_SAVED_STATE = 0;
+    public static final int PREF_REBUILD_ALWAYS_EXPANDED = 1;
+    public static final int PREF_REBUILD_ALWAYS_COLLAPSED = 2;
     @SuppressWarnings("WeakerAccess")
-    public static final int PREF_LIST_REBUILD_PREFERRED_STATE = 3;
+    public static final int PREF_REBUILD_PREFERRED_STATE = 3;
     /** Log tag. */
     private static final String TAG = "BooklistBuilder";
     /** Counter for BooklistBuilder ID's. Used to create unique table names etc... */
@@ -142,7 +142,7 @@ public class BooklistBuilder
     private static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
 
     /** divider to convert nanoseconds to milliseconds. */
-    private static final int TO_MILLIS = 1_000_000;
+    private static final int NANO_TO_MILLIS = 1_000_000;
 
     private static final String INITIAL_INSERT_FOR_REBUILD_STMT = "mInitialInsertSqlForRebuild";
 
@@ -255,7 +255,7 @@ public class BooklistBuilder
     @ListRebuildMode
     public static int getPreferredListRebuildState() {
         return PIntString.getListPreference(Prefs.pk_bob_levels_rebuild_state,
-                                            PREF_LIST_REBUILD_SAVED_STATE);
+                                            PREF_REBUILD_SAVED_STATE);
     }
 
     /**
@@ -599,23 +599,26 @@ public class BooklistBuilder
                                                     + "\n============================="
                                                     + "\nTotal time in ms      : %5d",
 
-                                         (t01_table_created - t00) / TO_MILLIS,
-                                         (t02_base_sql_build - t01_table_created) / TO_MILLIS,
+                                         (t01_table_created - t00)
+                                         / NANO_TO_MILLIS,
+                                         (t02_base_sql_build - t01_table_created)
+                                         / NANO_TO_MILLIS,
 
                                          (t03_base_insert_prepared - t02_base_sql_build)
-                                         / TO_MILLIS,
+                                         / NANO_TO_MILLIS,
                                          (t04_base_insert_executed - t03_base_insert_prepared)
-                                         / TO_MILLIS,
+                                         / NANO_TO_MILLIS,
                                          (t05_listTable_analyzed - t04_base_insert_executed)
-                                         / TO_MILLIS,
+                                         / NANO_TO_MILLIS,
 
                                          (t06_stateTable_build - t05_listTable_analyzed)
-                                         / TO_MILLIS,
+                                         / NANO_TO_MILLIS,
                                          (t07_stateTable_idx_created - t06_stateTable_build)
-                                         / TO_MILLIS,
+                                         / NANO_TO_MILLIS,
                                          (t08_stateTable_analyzed - t07_stateTable_idx_created)
-                                         / TO_MILLIS,
-                                         (System.nanoTime() - t00) / TO_MILLIS
+                                         / NANO_TO_MILLIS,
+                                         (System.nanoTime() - t00)
+                                         / NANO_TO_MILLIS
                                         )
                      );
             }
@@ -776,7 +779,7 @@ public class BooklistBuilder
 
         // On first-time builds, get the Preferences-based list
         switch (listState) {
-            case PREF_LIST_REBUILD_ALWAYS_EXPANDED: {
+            case PREF_REBUILD_ALWAYS_EXPANDED: {
                 String sql = baseSql
                              // DOM_BL_NODE_VISIBLE: all visible
                              + ",1"
@@ -788,14 +791,14 @@ public class BooklistBuilder
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Log.d(TAG, "PREF_LIST_REBUILD_ALWAYS_EXPANDED"
+                        Log.d(TAG, "PREF_REBUILD_ALWAYS_EXPANDED"
                                    + "|rowsUpdated=" + rowsUpdated
                                    + "|sql=" + sql);
                     }
                 }
                 break;
             }
-            case PREF_LIST_REBUILD_ALWAYS_COLLAPSED: {
+            case PREF_REBUILD_ALWAYS_COLLAPSED: {
                 String sql = baseSql
                              // DOM_BL_NODE_VISIBLE:
                              + ",CASE"
@@ -816,14 +819,14 @@ public class BooklistBuilder
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Log.d(TAG, "PREF_LIST_REBUILD_ALWAYS_COLLAPSED"
+                        Log.d(TAG, "PREF_REBUILD_ALWAYS_COLLAPSED"
                                    + "|rowsUpdated=" + rowsUpdated
                                    + "|sql=" + sql);
                     }
                 }
                 break;
             }
-            case PREF_LIST_REBUILD_SAVED_STATE: {
+            case PREF_REBUILD_SAVED_STATE: {
                 // SQL to rebuild with state preserved.
                 // IMPORTANT: we concat the sql with the bookshelf and style id's.
                 // should bind those obviously, but current (and non-functional) mRebuildStmts
@@ -881,17 +884,17 @@ public class BooklistBuilder
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Log.d(TAG, "PREF_LIST_REBUILD_SAVED_STATE"
+                        Log.d(TAG, "PREF_REBUILD_SAVED_STATE"
                                    + "|rowsUpdated=" + rowsUpdated
                                    + "|sql=" + sql);
                     }
                 }
                 break;
             }
-            case PREF_LIST_REBUILD_PREFERRED_STATE: {
+            case PREF_REBUILD_PREFERRED_STATE: {
                 expandNodes(mStyle.getTopLevel(), false);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "PREF_LIST_REBUILD_PREFERRED_STATE");
+                    Log.d(TAG, "PREF_REBUILD_PREFERRED_STATE");
                 }
                 break;
             }
@@ -1096,7 +1099,7 @@ public class BooklistBuilder
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "expandNodes"
-                           + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
             }
 
             if (txLock != null) {
@@ -1511,7 +1514,7 @@ public class BooklistBuilder
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "getDistinctBookCount"
                            + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
             }
             return (int) count;
         }
@@ -1533,7 +1536,7 @@ public class BooklistBuilder
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "getBookCount"
                            + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
             }
             return (int) count;
         }
@@ -1556,10 +1559,10 @@ public class BooklistBuilder
     }
 
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({PREF_LIST_REBUILD_SAVED_STATE,
-             PREF_LIST_REBUILD_ALWAYS_EXPANDED,
-             PREF_LIST_REBUILD_ALWAYS_COLLAPSED,
-             PREF_LIST_REBUILD_PREFERRED_STATE})
+    @IntDef({PREF_REBUILD_SAVED_STATE,
+             PREF_REBUILD_ALWAYS_EXPANDED,
+             PREF_REBUILD_ALWAYS_COLLAPSED,
+             PREF_REBUILD_PREFERRED_STATE})
     public @interface ListRebuildMode {
 
     }
@@ -2449,7 +2452,7 @@ public class BooklistBuilder
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "countVisibleRows"
                            + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
             }
             return (int) count;
         }

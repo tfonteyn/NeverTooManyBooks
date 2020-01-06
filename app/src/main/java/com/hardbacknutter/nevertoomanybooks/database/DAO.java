@@ -292,7 +292,7 @@ public class DAO
     private static final Pattern ENCODE_ORDERBY_PATTERN = Pattern.compile("\\W");
     private static final Pattern ASCII_REGEX = Pattern.compile("[^\\p{ASCII}]");
     /** divider to convert nanoseconds to milliseconds. */
-    private static final int TO_MILLIS = 1_000_000;
+    private static final int NANO_TO_MILLIS = 1_000_000;
     private static final String _DELETE_FROM_ = "DELETE FROM ";
     /** Actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
@@ -3995,7 +3995,7 @@ public class DAO
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Log.d(TAG, "DAO=" + mInstanceName
                        + "|rebuildFts"
-                       + "|completed in " + (System.nanoTime() - t0) / TO_MILLIS + " ms");
+                       + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
         }
     }
 

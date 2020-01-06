@@ -56,12 +56,16 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
  * number of hits more or less in real time. The user can choose to see a full list at any time.
- * ENHANCE: make the fields autocomplete based on individual FTS searches.
+ * ENHANCE: make the fields autocomplete based on individual searches?
  * <p>
  * The form allows entering free text, author, title, series.
  * <p>
  * The search gets the ID's of matching books, and returns this list when the 'show' button
  * is tapped. <strong>Only this list is returned</strong>; the original fields are not.
+ *
+ * <strong>Note:</strong> when the fab is clicked, we <strong>RETURN</strong>
+ * to the {@link BooksOnBookshelf} Activity.
+ * This is intentionally different from the behaviour of {@link AuthorWorksFragment}.
  */
 public class FTSSearchActivity
         extends BaseActivity {
@@ -70,11 +74,24 @@ public class FTSSearchActivity
     private static final String TAG = "FTSSearchActivity";
 
     /** create timer to tick every 250ms. */
-    private static final int TIMER_TICK = 250;
+    private static final int TIMER_TICK_MS = 250;
+    /** 1 second idle trigger. */
+    private static final int NANO_TO_SECONDS = 1_000_000_000;
+
     /** Handle inter-thread messages. */
     private final Handler mHandler = new Handler();
     /** Database Access. */
     private DAO mDb;
+    /** User entered search text. */
+    private String mAuthorSearchText;
+    /** User entered search text. */
+    private String mTitleSearchText;
+    /** User entered search text. */
+    private String mSeriesTitleSearchText;
+    /** search field. */
+    private EditText mAuthorView;
+    /** search field. */
+    private EditText mTitleView;
     /** Detect text changes and call userIsActive(...). */
     private final TextWatcher mTextWatcher = new TextWatcher() {
         @Override
@@ -97,21 +114,9 @@ public class FTSSearchActivity
         }
     };
     /** User entered search text. */
-    private String mAuthorSearchText;
-    /** User entered search text. */
-    private String mTitleSearchText;
-    /** User entered search text. */
-    private String mSeriesTitleSearchText;
-
-    /** search field. */
-    private EditText mAuthorView;
-    /** search field. */
-    private EditText mTitleView;
-    /** User entered search text. */
     private String mKeywordsSearchText;
     /** search field. */
     private EditText mKeywordsView;
-
     /** show the number of results. */
     private TextView mBooksFound;
     /** The results list. */
@@ -181,6 +186,7 @@ public class FTSSearchActivity
 
         // When the show results buttons is tapped, go show the resulting booklist.
         findViewById(R.id.fab).setOnClickListener(v -> {
+            // POP THE STACK, returning! to the list activity.
             Intent data = new Intent()
                     // pass these for displaying to the user
                     .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
@@ -331,7 +337,7 @@ public class FTSSearchActivity
             mIdleStart = System.nanoTime();
         }
 
-        mTimer.schedule(new SearchUpdateTimer(), 0, TIMER_TICK);
+        mTimer.schedule(new SearchUpdateTimer(), 0, TIMER_TICK_MS);
     }
 
     /**
@@ -362,7 +368,7 @@ public class FTSSearchActivity
             boolean doSearch = false;
             // Synchronize since this is relevant to more than 1 thread.
             synchronized (this) {
-                boolean idle = (System.nanoTime() - mIdleStart) > 1_000_000;
+                boolean idle = (System.nanoTime() - mIdleStart) > NANO_TO_SECONDS;
                 if (idle) {
                     // Stop the timer, it will be restarted when the user changes something
                     stopIdleTimer();

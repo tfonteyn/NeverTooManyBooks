@@ -94,7 +94,7 @@ public class SearchCoordinator
     public static final String BKEY_SEARCH_ERROR = TAG + ":error";
 
     /** divider to convert nanoseconds to milliseconds. */
-    private static final int TO_MILLIS = 1_000_000;
+    private static final int NANO_TO_MILLIS = 1_000_000;
     /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
     protected final MutableLiveData<TaskListener.ProgressMessage>
             mSearchCoordinatorProgressMessage = new MutableLiveData<>();
@@ -216,7 +216,7 @@ public class SearchCoordinator
                                 Log.d(TAG, String.format(Locale.UK,
                                                          "mSearchTaskListener.onFinished"
                                                          + "|taskId=%20s:%10d ms",
-                                                         name, (end - start) / TO_MILLIS));
+                                                         name, (end - start) / NANO_TO_MILLIS));
                             } else {
                                 Log.d(TAG, String.format(Locale.UK,
                                                          "mSearchTaskListener.onFinished"
@@ -228,11 +228,13 @@ public class SearchCoordinator
                         Log.d(TAG, String.format(Locale.UK,
                                                  "mSearchTaskListener.onFinished"
                                                  + "|total search time: %10d ms",
-                                                 (processTime - mSearchStartTime) / TO_MILLIS));
+                                                 (processTime - mSearchStartTime)
+                                                 / NANO_TO_MILLIS));
                         Log.d(TAG, String.format(Locale.UK,
                                                  "mSearchTaskListener.onFinished"
                                                  + "|processing time: %10d ms",
-                                                 (System.nanoTime() - processTime) / TO_MILLIS));
+                                                 (System.nanoTime() - processTime)
+                                                 / NANO_TO_MILLIS));
                     }
                 }
             }
