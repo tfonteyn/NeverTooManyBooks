@@ -71,6 +71,10 @@ import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
 /**
  * Display all TocEntry's for an Author.
  * Selecting an entry will take you to the book(s) that contain that entry.
+ *
+ * <strong>Note:</strong> when an item is click we start a <strong>NEW</strong> Activity.
+ * Doing a 'back' will then get the user back here.
+ * This is intentionally different from the behaviour of {@link FTSSearchActivity}.
  */
 public class AuthorWorksFragment
         extends Fragment {
@@ -252,42 +256,37 @@ public class AuthorWorksFragment
      * @param item the TocEntry or Book
      */
     private void gotoBook(@NonNull final TocEntry item) {
-        Intent intent;
         switch (item.getType()) {
-            case Toc:
-                final ArrayList<Long> bookIds = mModel.getBookIds(item);
-                // story in one book, goto that book.
-                if (bookIds.size() == 1) {
-                    intent = new Intent(getContext(), BookDetailsActivity.class)
-                            .putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
-                    startActivity(intent);
-
-                } else {
-                    // multiple books, go to the list, filtering on the books.
-                    intent = new Intent(getContext(), BooksOnBookshelf.class)
-                            // clear the back-stack.
-                            // We want to keep BooksOnBookshelf on top
-                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            // bring up list, filtered on the book ID's
-                            .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
-                            // if we don't expand, then you often end up
-                            // with the author as a single line, and no books shown
-                            // which is quite confusing to the user.
-                            .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
-                                      BooklistBuilder.PREF_LIST_REBUILD_ALWAYS_EXPANDED);
-                    startActivity(intent);
-                }
-                break;
-
-            case Book:
-                intent = new Intent(getContext(), BookDetailsActivity.class)
+            case Book: {
+                // open new activity to show the book, 'back' will return to this one.
+                Intent intent = new Intent(getContext(), BookDetailsActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, item.getId());
                 startActivity(intent);
                 break;
-        }
+            }
+            case Toc: {
+                final ArrayList<Long> bookIds = mModel.getBookIds(item);
+                if (bookIds.size() == 1) {
+                    // open new activity to show the book, 'back' will return to this one.
+                    Intent intent = new Intent(getContext(), BookDetailsActivity.class)
+                            .putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
+                    startActivity(intent);
+                    break;
 
-        //noinspection ConstantConditions
-        getActivity().finish();
+                } else {
+                    // multiple books, open the list as a NEW ACTIVITY
+                    Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
+                            .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                            // Open the list expanded, as otherwise you end up with
+                            // the author as a single line, and no books shown at all,
+                            // which can be quite confusing to the user.
+                            .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
+                                      BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED);
+                    startActivity(intent);
+                    break;
+                }
+            }
+        }
     }
 
     /**

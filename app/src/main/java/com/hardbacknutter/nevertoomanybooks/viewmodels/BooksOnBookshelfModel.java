@@ -232,7 +232,7 @@ public class BooksOnBookshelfModel
         } else {
             // Unless set by the caller, preserve state when rebuilding/recreating etc
             mRebuildState = currentArgs.getInt(BKEY_LIST_STATE,
-                                               BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE);
+                                               BooklistBuilder.PREF_REBUILD_SAVED_STATE);
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -378,6 +378,10 @@ public class BooksOnBookshelfModel
 
     public void setLastTopRow(final int lastTopRow) {
         mLastTopRow = lastTopRow;
+    }
+
+    public void setRebuildState(final int rebuildState) {
+        mRebuildState = rebuildState;
     }
 
     /**
@@ -865,33 +869,44 @@ public class BooksOnBookshelfModel
          *
          * @param bundle     with criteria.
          * @param clearFirst Flag to force clearing all before loading the new criteria
+         *
+         * @return {@code true} if at least one criteria was set
          */
-        public void from(@NonNull final Bundle bundle,
-                         final boolean clearFirst) {
+        public boolean from(@NonNull final Bundle bundle,
+                            final boolean clearFirst) {
             if (clearFirst) {
                 clear();
             }
+            boolean isSet = false;
 
             if (bundle.containsKey(UniqueId.BKEY_SEARCH_TEXT)) {
                 setKeywords(bundle.getString(UniqueId.BKEY_SEARCH_TEXT));
+                isSet = true;
             }
             if (bundle.containsKey(UniqueId.BKEY_SEARCH_AUTHOR)) {
                 ftsAuthor = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+                isSet = true;
             }
             if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
                 ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
+                isSet = true;
             }
 
             if (bundle.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
                 ftsSeries = bundle.getString(DBDefinitions.KEY_SERIES_TITLE);
+                isSet = true;
             }
             if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
                 loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
+                isSet = true;
             }
             if (bundle.containsKey(UniqueId.BKEY_ID_LIST)) {
                 //noinspection unchecked
                 bookList = (ArrayList<Long>) bundle.getSerializable(UniqueId.BKEY_ID_LIST);
+                isSet = true;
             }
+
+            return isSet;
         }
 
         /**
@@ -975,7 +990,7 @@ public class BooksOnBookshelfModel
             try {
                 // Build the underlying data and preserve this state
                 mBuilder.build(mHolder.listState);
-                mHolder.listState = BooklistBuilder.PREF_LIST_REBUILD_SAVED_STATE;
+                mHolder.listState = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
 
                 if (isCancelled()) {
                     return mHolder;

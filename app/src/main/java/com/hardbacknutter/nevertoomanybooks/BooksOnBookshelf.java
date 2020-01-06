@@ -632,40 +632,36 @@ public class BooksOnBookshelf
             case UniqueId.REQ_BOOK_EDIT:
             case UniqueId.REQ_BOOK_DUPLICATE:
             case UniqueId.REQ_BOOK_SEARCH:
+            case UniqueId.REQ_ADVANCED_LOCAL_SEARCH:
             case UniqueId.REQ_AUTHOR_WORKS: {
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-
-                    // modified status includes creation and duplication of books
-                    if (data.getBooleanExtra(UniqueId.BKEY_BOOK_MODIFIED, false)) {
-                        mModel.setForceRebuildInOnResume(true);
-                    }
-                    if (data.getBooleanExtra(UniqueId.BKEY_BOOK_DELETED, false)) {
-                        mModel.setForceRebuildInOnResume(true);
-                    }
-
-                    // if we got an id back, re-position to it.
-                    long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
-                    if (newId != 0) {
-                        mModel.setCurrentPositionedBookId(newId);
-                    }
-                }
-                //URGENT: temporary debug: first fix the list level display issue, next fix rebuild
-                if (!mModel.isForceRebuildInOnResume()) {
-                    Log.d(TAG, "ENTER|onActivityResult"
-                               + "|requestCode=" + requestCode
-                               + "|resultCode=" + resultCode
-                               + "|data=" + data);
-                    Snackbar.make(mListView, "dbg intbklst", Snackbar.LENGTH_SHORT).show();
-                }
-                break;
-            }
-            case UniqueId.REQ_ADVANCED_LOCAL_SEARCH: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     Bundle extras = data.getExtras();
                     if (extras != null) {
-                        mModel.getSearchCriteria().from(extras, true);
-                        mModel.setForceRebuildInOnResume(true);
+                        // modified status includes creation and duplication of books
+                        if (extras.getBoolean(UniqueId.BKEY_BOOK_MODIFIED, false)) {
+                            mModel.setForceRebuildInOnResume(true);
+                        }
+                        if (extras.getBoolean(UniqueId.BKEY_BOOK_DELETED, false)) {
+                            mModel.setForceRebuildInOnResume(true);
+                        }
+
+                        if (mModel.getSearchCriteria().from(extras, true)) {
+                            mModel.setForceRebuildInOnResume(true);
+                        }
+
+                        if (extras.containsKey(BooksOnBookshelfModel.BKEY_LIST_STATE)) {
+                            int state = extras.getInt(BooksOnBookshelfModel.BKEY_LIST_STATE,
+                                                      BooklistBuilder.PREF_REBUILD_SAVED_STATE);
+                            mModel.setRebuildState(state);
+                            mModel.setForceRebuildInOnResume(true);
+                        }
+
+                        // if we got an id back, re-position to it.
+                        long newId = extras.getLong(DBDefinitions.KEY_PK_ID, 0);
+                        if (newId != 0) {
+                            //URGENT: re-position needs more work
+                            mModel.setCurrentPositionedBookId(newId);
+                        }
                     }
                 }
                 break;
@@ -676,8 +672,10 @@ public class BooksOnBookshelf
                     // the last edited/inserted shelf
                     long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
                                                          Bookshelf.DEFAULT_ID);
-                    mModel.setCurrentBookshelf(bookshelfId);
-                    mModel.setForceRebuildInOnResume(true);
+                    if (bookshelfId != mModel.getCurrentBookshelf().getId()) {
+                        mModel.setCurrentBookshelf(bookshelfId);
+                        mModel.setForceRebuildInOnResume(true);
+                    }
                 }
                 break;
             }
@@ -743,7 +741,11 @@ public class BooksOnBookshelf
             return;
         }
 
-        if (!mModel.getSearchCriteria().isEmpty()) {
+        // This Activity can be the (as normal) the real root activity,
+        // but it can also have been started to show a filtered list.
+        // Only clear and re-init if we are indeed the root.
+        // Otherwise drop-through to onBackPressed.
+        if (isTaskRoot() && !mModel.getSearchCriteria().isEmpty()) {
             mModel.getSearchCriteria().clear();
             initBookList();
             return;
@@ -808,7 +810,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|reusing existing list");
             }
 
-            //URGENT: temporary debug: first fix the list level display issue, next fix the rebuild.
+            //URGENT: temporary debug: fix the rebuild.
             initBookList();
 //            //noinspection ConstantConditions
 //            displayList(mModel.getBuilder().getNewListCursor(), mModel.getCurrentTargetRows());
