@@ -71,7 +71,7 @@
     <string name="X_lbl_available">Beschikbaar</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="title_edit_author">Auteur bewerken</string>
-    <string name="title_edit_series">Serie bewerken</string>
+    <string name="title_edit_series">>Reeks bewerken</string>
     <string name="X_tip_booklist_global_properties">Je kan dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. Je kan de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
     <string name="X_use_default_setting">Gebruik de standaard waarden</string>
     <string name="X_warning_cover_corrupt">Omslagafbeelding is niet geldig</string>
@@ -112,10 +112,10 @@
     <string name="clear">Wissen</string>
 
     <string name="confirm_apply_author_changed">Je hebt de auteur veranderd:\n\n van „%1$s”\n naar „%2$s”\n \nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast.</string>
-    <string name="confirm_apply_series_changed">Je hebt de serie veranderd:\n\n van „%1$s”\n naar „%2$s”\n \nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast.</string>
+    <string name="confirm_apply_series_changed">Je hebt de reeks veranderd:\n\n van „%1$s”\n naar „%2$s”\n \nHoe wil je deze verandering toepassen?\n\nNB: De keuze „%3$s” wordt onmiddelijk toegepast.</string>
 
     <string name="confirm_delete_book">Dit zal het boek met de titel „%1$s” door %2$s compleet verwijderen. Weet je zeker dat je door wilt gaan?</string>
-    <string name="confirm_delete_series">Wilt je werkelijk de serie „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de serie te bewerken en de serienaam te veranderen om deze gegevens te behouden</string>
+    <string name="confirm_delete_series">Wilt je werkelijk de reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden</string>
     <string name="confirm_delete_toc_entry">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
     <string name="confirm_merge_bookshelves">De boekenplank die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
@@ -318,7 +318,7 @@
     <string name="lbl_websites">Websites</string>
     <string name="lbl_select_fields">Selecteer velden</string>
     <string name="lbl_send_debug_info">Zend debug informatie</string>
-    <string name="lbl_series">Serie</string>
+    <string name="lbl_series">Reeks</string>
     <string name="lbl_series_num">nr.</string>
     <string name="lbl_settings">Instellingen</string>
     <string name="menu_settings">Instellingen</string>
@@ -353,8 +353,8 @@
     <string name="fab_add_book_by_isbn">Invullen ISBN</string>
     <string name="fab_add_book_manually">Handmatig toevoegen</string>
     <string name="menu_amazon_books_by_author">Boeken van deze auteur</string>
-    <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/serie</string>
-    <string name="menu_amazon_books_in_series">Boeken in deze serie</string>
+    <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/reeks</string>
+    <string name="menu_amazon_books_in_series">Boeken in deze reeks</string>
     <string name="menu_author_details">Alle werken van deze Auteur</string>
     <string name="menu_author_works_all">Toon alles</string>
     <string name="menu_show_all">Toon alles</string>
@@ -435,7 +435,7 @@
     <string name="progress_msg_upgrading">Nieuwe versie voorbereiden…</string>
     <string name="pt_allow_mobile_data">Sta mobiel dataverbruik toe</string>
     <string name="pt_bob_books_under_multiple_authors">Boeken met meerdere auteurs</string>
-    <string name="pt_bob_books_under_multiple_series">Boeken in meerdere series</string>
+    <string name="pt_bob_books_under_multiple_series">Boeken in meerdere reeksen</string>
     <string name="pt_bob_authors_display">Toon auteurs als</string>
     <string name="pt_bob_header">Details in de koptekst</string>
     <string name="pt_bob_list_rebuild_state">Boekenlijst opstart status</string>
@@ -443,7 +443,7 @@
     <string name="pt_bob_font_scale">Grootte van boekenlijst tekst</string>
     <string name="pt_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
     <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
-    <string name="pt_collect_series_info_from_toc">Verzamel Serie-info van de inhouds tabel</string>
+    <string name="pt_collect_series_info_from_toc">Verzamel reeks-informatie van de inhouds tabel</string>
     <string name="pt_bob_thumbnails_scale">Miniaturen grootte in lijsten</string>
     <string name="pt_reformat_titles_summary_original">De titel</string>
     <string name="pt_reformat_titles_summary_reformatted">titel, De</string>
@@ -468,7 +468,7 @@
     <string name="retry">Opnieuw\nproberen</string>
     <string name="style_builtin_acquired_date">Datum verworven</string>
     <string name="style_builtin_added_date">Datum toegevoegd</string>
-    <string name="style_builtin_author_series">Auteur daarna Serie</string>
+    <string name="style_builtin_author_series">Auteur daarna Reeks</string>
     <string name="style_builtin_author_year">Auteur en jaar</string>
     <string name="style_builtin_compact">Compact</string>
     <string name="style_builtin_genre">Genrenaam</string>
@@ -476,9 +476,9 @@
     <string name="style_builtin_publication_date">Uitgifte datum</string>
     <string name="style_builtin_read_and_unread">Gelezen en ongelezen</string>
     <string name="style_builtin_read_date">Datum gelezen</string>
-    <string name="style_builtin_series">Series</string>
+    <string name="style_builtin_series">Reeksen</string>
     <string name="style_builtin_first_letter_book_title">Eerste letter van de titel</string>
-    <string name="style_builtin_unread">Ongelezen (Auteur/Serie)</string>
+    <string name="style_builtin_unread">Ongelezen (Auteur/Reeks)</string>
     <string name="style_builtin_update_date">Datum update</string>
     <string name="style_builtin_bookshelf">Boekenplank</string>
     <string name="style_builtin_rating">Waardering</string>
@@ -507,18 +507,18 @@
     <string name="tip_dialog_title">Aanwijzing</string>
     <string name="tip_reset_all">Herstel aanwijzingen</string>
     <string name="tip_reset_done">Aanwijzingen zijn hersteld</string>
-    <string name="tip_series_book_may_appear_more_than_once">Als boeken worden getoond in alle series, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
+    <string name="tip_series_book_may_appear_more_than_once">Als boeken worden getoond in alle reeksen, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
     <string name="tip_view_only_help">Je kan naar link en rechts vegen om naar andere boeken te gaan.</string>
     <string name="title_add_book">Boek Toevoegen</string>
     <string name="X_title_backup">Back-up</string>
     <string name="title_clone_style">Stijl klonen</string>
     <string name="title_cover">Omslag miniatuur</string>
     <string name="title_delete_book">Boek verwijderen</string>
-    <string name="title_delete_series">Verwijderen serie</string>
+    <string name="title_delete_series">Verwijderen reeks</string>
     <string name="title_delete_toc_entry">Titel verwijderen</string>
     <string name="title_duplicate_book">Dupliceer Boek</string>
     <string name="title_edit_book_authors">Bewerk boek auteurs</string>
-    <string name="title_edit_book_series">Series bewerken</string>
+    <string name="title_edit_book_series">Reeks bewerken</string>
     <string name="title_edit_bookshelf">Boekenplank bewerken</string>
     <string name="title_edit_bookshelves">Boekenplank beheren</string>
     <string name="title_edit_style">Stijl bewerken</string>
@@ -565,7 +565,7 @@
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
     <string name="warning_requires_at_least_one_field">Er moet op z\'n minst een veld ingevuld zijn.</string>
     <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
-    <string name="warning_series_already_in_list">Serie staat al in de lijst</string>
+    <string name="warning_series_already_in_list">Reeks staat al in de lijst</string>
     <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
     <string name="warning_book_not_found">Kan gespecificeerd boek niet vinden</string>
     <string name="warning_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als je nu afsluit gaan die verloren.</string>
@@ -609,7 +609,7 @@
     <string name="menu_level_reset">Voorkeur expansieniveau</string>
     <string name="hint_empty_rating">(niet beoordeeld)</string>
     <string name="hint_empty_language">(Geen taal ingevuld)</string>
-    <string name="hint_empty_series">(Geen serie)</string>
+    <string name="hint_empty_series">(Geen reeks)</string>
     <string name="hint_empty_month">(Geen maand ingevuld)</string>
     <string name="hint_empty_read_status">(Leesstatus onbekend)</string>
     <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
@@ -628,7 +628,7 @@
     <string name="pt_site_settings">Website instellingen</string>
     <string name="btn_email">e-mail</string>
     <string name="warning_requires_site_and_id">Selecteer een website en voer een ID in.</string>
-    <string name="style_builtin_first_letter_series_title">Serietitel 1e letter</string>
+    <string name="style_builtin_first_letter_series_title">Reekstitel 1e letter</string>
     <string name="btn_scan_barcode">Scan barcode</string>
     <string name="lbl_author_type_inking">Inking</string>
     <string name="lbl_select_website">Selecteer een website:</string>
@@ -642,5 +642,8 @@
     <string name="tab_lbl_ext_id">Extern ID</string>
     <string name="tab_lbl_alternative_editions">Alt. edities</string>
     <string name="unused">ongebruikt</string>
+    <string name="lbl_barcode">Barcode</string>
+    <string name="lbl_authors">Auteurs</string>
+    <string name="lbl_series_multiple">Reeksen</string>
 
 </resources>

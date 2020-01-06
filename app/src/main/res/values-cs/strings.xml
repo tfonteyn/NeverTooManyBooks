@@ -633,5 +633,8 @@
     <string name="tab_lbl_ext_id">Externí ID</string>
     <string name="tab_lbl_alternative_editions">Alt. vydání</string>
     <string name="unused">nepoužitý</string>
+    <string name="lbl_barcode">čárový kód</string>
+    <string name="lbl_authors">Autoři</string>
+    <string name="lbl_series_multiple">Série</string>
 
 </resources>

@@ -637,5 +637,8 @@
     <string name="tab_lbl_ext_id">ID externo</string>
     <string name="tab_lbl_alternative_editions">Ediciones Alt.</string>
     <string name="unused">no usado</string>
+    <string name="lbl_barcode">Código de barras</string>
+    <string name="lbl_authors">Autores</string>
+    <string name="lbl_series_multiple">Serie</string>
 
 </resources>

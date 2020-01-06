@@ -631,5 +631,8 @@
     <string name="tab_lbl_ext_id">Εξωτερικό αναγνωριστικό</string>
     <string name="tab_lbl_alternative_editions">Εναλλακτικές εκδόσεις</string>
     <string name="unused">αχρησιμοποίητος</string>
+    <string name="lbl_barcode">Barcode</string>
+    <string name="lbl_authors">Συγγραφείς</string>
+    <string name="lbl_series_multiple">Σειρά</string>
 
 </resources>

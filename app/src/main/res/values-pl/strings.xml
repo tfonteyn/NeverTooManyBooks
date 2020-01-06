@@ -632,4 +632,7 @@
     <string name="tab_lbl_ext_id">Zewnętrzny ID</string>
     <string name="tab_lbl_alternative_editions">Alt. wersje</string>
     <string name="unused">nie używany</string>
+    <string name="lbl_barcode">kod kreskowy</string>
+    <string name="lbl_authors">Autorski</string>
+    <string name="lbl_series_multiple">Serial</string>
 </resources>

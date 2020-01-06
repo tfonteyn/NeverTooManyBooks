@@ -632,5 +632,8 @@
     <string name="tab_lbl_ext_id">Harici Kimlik</string>
     <string name="tab_lbl_alternative_editions">Alt. Basımlar</string>
     <string name="unused">kullanılmamış</string>
+    <string name="lbl_barcode">Barkod</string>
+    <string name="lbl_authors">Yazarlar</string>
+    <string name="lbl_series_multiple">Dizi</string>
 
 </resources>
