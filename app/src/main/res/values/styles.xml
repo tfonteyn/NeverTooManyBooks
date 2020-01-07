@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -386,12 +386,15 @@
     <!-- Cover image  -->
     <!-- *************************************************************************************** -->
 
-    <!-- Cover image; actual size is always set from code. -->
+    <!-- Cover image;
+        layout_width/layout_height is set from code to wrap/wrap for real images,
+        and to a calculation for placeholders.
+        The maximum width/height of the view is also done from code.
+         -->
     <style name="CoverImage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/border1</item>
-        <item name="android:background">@drawable/border</item>
         <item name="android:scaleType">centerInside</item>
         <item name="android:adjustViewBounds">true</item>
     </style>
@@ -485,7 +488,6 @@
     <!-- level + book rows = The row itself. -->
     <style name="BooklistBook.Row">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">0dp</item>
     </style>
 
