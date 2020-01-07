@@ -38,7 +38,6 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
@@ -67,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Dialog to create a new loan, or edit an existing one.
@@ -263,9 +263,8 @@ public class LendBookDialogFragment
         Collections.sort(people);
 
         //noinspection ConstantConditions
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                   people);
+        DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
+                getContext(), android.R.layout.simple_dropdown_item_1line, people);
         mLoaneeView.setAdapter(adapter);
     }
 

@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
 import android.widget.EditText;
@@ -59,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -112,13 +112,14 @@ public class EditBookSeriesFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        //URGENT: this is temporary.. until it's decided what UI to go for.
         //noinspection ConstantConditions
         getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
 
         //noinspection ConstantConditions
-        ArrayAdapter<String> nameAdapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                   mBookModel.getDb().getSeriesTitles());
+        DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
+                getContext(), android.R.layout.simple_dropdown_item_1line,
+                mBookModel.getDb().getSeriesTitles());
         mSeriesNameView.setAdapter(nameAdapter);
 
         // set up the list view. The adapter is setup in onLoadFields
@@ -373,9 +374,9 @@ public class EditBookSeriesFragment
             View root = layoutInflater.inflate(R.layout.dialog_edit_book_series, null);
 
             //noinspection ConstantConditions
-            ArrayAdapter<String> seriesNameAdapter =
-                    new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                       mDb.getSeriesTitles());
+            DiacriticArrayAdapter<String> seriesNameAdapter = new DiacriticArrayAdapter<>(
+                    getContext(), android.R.layout.simple_dropdown_item_1line,
+                    mDb.getSeriesTitles());
 
             // the dialog fields != screen fields.
             mTitleView = root.findViewById(R.id.series);

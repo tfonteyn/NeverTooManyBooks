@@ -35,7 +35,6 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
 import android.widget.CompoundButton;
@@ -63,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -116,15 +116,14 @@ public class EditBookAuthorsFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        //URGENT: this is temporary.. until it's decided what UI to go for.
         //noinspection ConstantConditions
         getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
 
+        List<String> names = mBookModel.getDb().getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED);
         //noinspection ConstantConditions
-        ArrayAdapter<String> nameAdapter =
-                new ArrayAdapter<>(getContext(),
-                                   android.R.layout.simple_dropdown_item_1line,
-                                   mBookModel.getDb()
-                                             .getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+        DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
+                getContext(), android.R.layout.simple_dropdown_item_1line, names);
         mAuthorNameView.setAdapter(nameAdapter);
 
         // set up the list view. The adapter is setup in onLoadFields
@@ -413,12 +412,12 @@ public class EditBookAuthorsFragment
 
 
             @SuppressWarnings("ConstantConditions")
-            ArrayAdapter<String> mFamilyNameAdapter =
-                    new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                       mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
-            ArrayAdapter<String> mGivenNameAdapter =
-                    new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                       mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
+            DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
+                    getContext(), android.R.layout.simple_dropdown_item_1line,
+                    mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
+            DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
+                    getContext(), android.R.layout.simple_dropdown_item_1line,
+                    mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
             // the dialog fields != screen fields.
             mFamilyNameView = root.findViewById(R.id.family_name);

@@ -32,7 +32,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
@@ -63,7 +63,7 @@ public class BookSearchByTextFragment
     @NonNull
     private final Collection<String> mRecentAuthorNames = new ArrayList<>();
     /** adapter for the AutoCompleteTextView. */
-    private ArrayAdapter<String> mAuthorAdapter;
+    private DiacriticArrayAdapter<String> mAuthorAdapter;
 
     /** User input field. */
     private AutoCompleteTextView mAuthorView;
@@ -160,9 +160,8 @@ public class BookSearchByTextFragment
         final ArrayList<String> authors = getAuthorNames(mRecentAuthorNames);
         // Now get an adapter based on the combined names
         //noinspection ConstantConditions
-        mAuthorAdapter = new ArrayAdapter<>(getContext(),
-                                            android.R.layout.simple_dropdown_item_1line,
-                                            authors);
+        mAuthorAdapter = new DiacriticArrayAdapter<>(
+                getContext(), android.R.layout.simple_dropdown_item_1line, authors);
         mAuthorView.setAdapter(mAuthorAdapter);
     }
 

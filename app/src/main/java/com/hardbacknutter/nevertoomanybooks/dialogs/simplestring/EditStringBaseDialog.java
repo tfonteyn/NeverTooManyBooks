@@ -32,7 +32,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
@@ -53,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 abstract class EditStringBaseDialog {
 
@@ -69,7 +69,7 @@ abstract class EditStringBaseDialog {
     private final Context mContext;
 
     /** Adapter for the AutoCompleteTextView field. */
-    private final ArrayAdapter<String> mAdapter;
+    private final DiacriticArrayAdapter<String> mAdapter;
 
     private EditText mEditText;
     private String mCurrentText;
@@ -92,8 +92,9 @@ abstract class EditStringBaseDialog {
 
     /**
      * AutoCompleteTextView.
-     * @param context Current context
-     * @param db Database Access
+     *
+     * @param context  Current context
+     * @param db       Database Access
      * @param list     for the AutoCompleteTextView
      * @param listener BookChangedListener
      */
@@ -104,7 +105,8 @@ abstract class EditStringBaseDialog {
         mContext = context;
         mDb = db;
         mBookChangedListener = new WeakReference<>(listener);
-        mAdapter = new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line, list);
+        mAdapter = new DiacriticArrayAdapter<>(
+                context, android.R.layout.simple_dropdown_item_1line, list);
     }
 
     @NonNull

@@ -32,7 +32,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
@@ -53,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Dialog to edit an existing publisher.
@@ -117,9 +117,8 @@ public class EditPublisherDialogFragment
         View root = layoutInflater.inflate(R.layout.dialog_edit_publisher, null);
 
         @SuppressWarnings("ConstantConditions")
-        ArrayAdapter<String> mAdapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getPublisherNames());
+        DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
+                getContext(), android.R.layout.simple_dropdown_item_1line, mDb.getPublisherNames());
 
         mNameView = root.findViewById(R.id.name);
         mNameView.setText(mName);

@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.CallSuper;
@@ -56,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Base class for all fragments that appear in {@link EditBookFragment}.
@@ -116,6 +116,7 @@ public abstract class EditBookBaseFragment<T>
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         // We hide the tab bar for some screens. Make sure to set it visible here.
+        //URGENT: this is temporary.. until it's decided what UI to go for.
         //noinspection ConstantConditions
         View tabBarLayout = getActivity().findViewById(R.id.tab_panel);
         if (tabBarLayout != null) {
@@ -226,8 +227,8 @@ public abstract class EditBookBaseFragment<T>
 
         // Get the list to use in the AutoCompleteTextView
         //noinspection ConstantConditions
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, list);
+        DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
+                getContext(), android.R.layout.simple_dropdown_item_1line, list);
 
         fieldView.setAdapter(adapter);
 

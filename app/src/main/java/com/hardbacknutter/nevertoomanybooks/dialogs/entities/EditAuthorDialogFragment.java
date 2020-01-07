@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
 
@@ -55,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Dialog to edit an existing single author.
@@ -137,12 +137,12 @@ public class EditAuthorDialogFragment
         Context context = getContext();
 
         @SuppressWarnings("ConstantConditions")
-        ArrayAdapter<String> mFamilyNameAdapter =
-                new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
-        ArrayAdapter<String> mGivenNameAdapter =
-                new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
+        DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
+                context, android.R.layout.simple_dropdown_item_1line,
+                mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
+        DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
+                context, android.R.layout.simple_dropdown_item_1line,
+                mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
         // the dialog fields != screen fields.
         mFamilyNameView = root.findViewById(R.id.family_name);

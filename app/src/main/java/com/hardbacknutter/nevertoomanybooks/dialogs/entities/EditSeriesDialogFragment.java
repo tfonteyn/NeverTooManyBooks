@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Checkable;
 
@@ -56,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Dialog to edit an existing single Series.
@@ -127,9 +127,8 @@ public class EditSeriesDialogFragment
         Context context = getContext();
 
         @SuppressWarnings("ConstantConditions")
-        ArrayAdapter<String> mAdapter =
-                new ArrayAdapter<>(context, android.R.layout.simple_dropdown_item_1line,
-                                   mDb.getSeriesTitles());
+        DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
+                context, android.R.layout.simple_dropdown_item_1line, mDb.getSeriesTitles());
 
         // the dialog fields != screen fields.
         mNameView = root.findViewById(R.id.name);

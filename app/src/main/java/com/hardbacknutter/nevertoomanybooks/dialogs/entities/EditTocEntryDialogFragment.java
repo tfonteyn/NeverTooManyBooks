@@ -33,7 +33,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Dialog to add a new TOCEntry, or edit an existing one.
@@ -139,10 +139,9 @@ public class EditTocEntryDialogFragment
 
         if (mHasMultipleAuthors) {
             @SuppressWarnings("ConstantConditions")
-            ArrayAdapter<String> authorAdapter =
-                    new ArrayAdapter<>(getContext(),
-                                       android.R.layout.simple_dropdown_item_1line,
-                                       mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+            DiacriticArrayAdapter<String> authorAdapter = new DiacriticArrayAdapter<>(
+                    getContext(), android.R.layout.simple_dropdown_item_1line,
+                    mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
             mAuthorTextView.setAdapter(authorAdapter);
 
             mAuthorTextView.setText(mTocEntry.getAuthor().getLabel(getContext()));
