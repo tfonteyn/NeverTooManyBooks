@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -117,12 +117,13 @@ dependencies {
     //
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
+    implementation 'androidx.core:core:1.2.0-rc01'
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.0-alpha03'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-rc03'
-    implementation 'androidx.core:core:1.2.0-rc01'
     implementation 'androidx.fragment:fragment:1.2.0-rc04'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0-rc03'
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
@@ -131,9 +132,9 @@ dependencies {
     // barcode decoder using https://developers.google.com/android/guides/setup
     implementation 'com.google.android.gms:play-services-vision:19.0.0'
 
-    implementation 'ch.acra:acra-mail:5.3.0'
-    implementation 'ch.acra:acra-toast:5.3.0'
-    implementation 'ch.acra:acra-dialog:5.3.0'
+    implementation 'ch.acra:acra-mail:5.5.0'
+    implementation 'ch.acra:acra-toast:5.5.0'
+    implementation 'ch.acra:acra-dialog:5.5.0'
     // OAuth for Goodreads secure access.
     implementation 'oauth.signpost:signpost-core:1.2.1.2'
     // Tar file support for backups
@@ -145,9 +146,8 @@ dependencies {
     //    implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'org.jsoup:jsoup:1.11.3'
 
-    testImplementation 'org.mockito:mockito-core:3.2.0'
+    testImplementation 'org.mockito:mockito-core:3.2.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
-//    testCompile  "org.json:json:20190722"
     testImplementation  "org.json:json:20190722"
 }
 

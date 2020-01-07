@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -348,8 +347,9 @@ public class BooksOnBookshelf
         mListView.setLayoutManager(mLayoutManager);
         mListView.addOnScrollListener(mUpdateHeaderScrollListener);
         mListView.addOnScrollListener(mUpdateFABVisibility);
-        mListView.addItemDecoration(
-                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
+        // using CardView now, so disabling.... but TEST performance of CardView
+//        mListView.addItemDecoration(
+//                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
 
         // see class docs for FastScrollerOverlay
         if (!(mListView instanceof CFSRecyclerView)) {
