@@ -960,7 +960,7 @@ public class BooklistBuilder
 
     /**
      * Get all positions, and the row info for that position,
-     * at which the specified book appears (and is visible).
+     * at which the specified book appears.
      *
      * @param bookId the book to find
      *

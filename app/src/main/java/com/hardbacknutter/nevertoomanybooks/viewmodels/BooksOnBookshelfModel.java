@@ -134,10 +134,10 @@ public class BooksOnBookshelfModel
     @Nullable
     private Bookshelf mCurrentBookshelf;
     /**
-     * Stores the book id for the current list position, e.g. while a book is viewed/edited.
-     * Gets set after the {@link GetBookListTask} finishes and after edit/view.
+     * Stores the book id for the desired list position.
+     * Used to call {@link GetBookListTask}. Reset to afterwards.
      */
-    private long mCurrentPositionedBookId;
+    private long mDesiredCentralBookId;
 
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mLastTopRow = -1;
@@ -168,15 +168,18 @@ public class BooksOnBookshelfModel
 
                     if (mListHasBeenLoaded) {
                         // always copy modified fields.
-                        mCurrentPositionedBookId = message.result.currentPosBookId;
+                        // right now (2020-01-07) this means 0 / PREF_REBUILD_SAVED_STATE
+                        // but blindly copying makes this flexible
+                        mDesiredCentralBookId = message.result.desiredCentralBookId;
                         mRebuildState = message.result.listState;
 
                         // always copy these results
                         mTotalBooks = message.result.resultTotalBookCount;
                         mUniqueBooks = message.result.resultDistinctBookCount;
 
-                        // do not copy the result.resultListCursor, as it might be null
-                        // in which case we will use the old value
+                        // Do not copy the resultListCursor yet, as it might be null
+                        // in which case we will use the old value.
+                        // The target rows get read when we'll use them
                     }
 
                     // always call back, even if there is no new list.
@@ -561,12 +564,11 @@ public class BooksOnBookshelfModel
                           mSearchCriteria.ftsSeries,
                           mSearchCriteria.ftsKeywords);
 
-            // non-FTS
-            //blb.setFilterOnSeriesName(mSearchCriteria.ftsSeries);
             blb.setFilterOnLoanedToPerson(mSearchCriteria.loanee);
         }
 
-        new GetBookListTask(blb, mCursor, mCurrentPositionedBookId, mRebuildState,
+        new GetBookListTask(blb, mCursor,
+                            mDesiredCentralBookId, mRebuildState,
                             mOnGetBookListTaskListener)
                 .execute();
     }
@@ -633,25 +635,12 @@ public class BooksOnBookshelfModel
 
 
     /**
-     * Store the current/desired book id to position the list.
+     * Set the <strong>desired</strong> book id to position the list.
      *
      * @param bookId to use
      */
-    public void setCurrentPositionedBookId(final long bookId) {
-        mCurrentPositionedBookId = bookId;
-    }
-
-    /**
-     * Convenience method to hide the internals.
-     * <p>
-     * Get the target rows based on the current book position.
-     *
-     * @return RowDetails
-     */
-    @Nullable
-    public ArrayList<BooklistBuilder.RowDetails> getTargetRows() {
-        //noinspection ConstantConditions
-        return getBuilder().getTargetRows(mCurrentPositionedBookId);
+    public void setDesiredCentralBookId(final long bookId) {
+        mDesiredCentralBookId = bookId;
     }
 
     /**
@@ -779,7 +768,7 @@ public class BooksOnBookshelfModel
     public static class SearchCriteria {
 
         /**
-         * List of currentPosBookId's to display.
+         * List of desiredCentralBookId's to display.
          * The RESULT of a search with {@link FTSSearchActivity}
          * which can be re-used for the builder.
          */
@@ -835,12 +824,12 @@ public class BooksOnBookshelfModel
         }
 
         /**
-         * Get a single string with all search words, for displaying.
+         * Get a single string with all FTS search words, for displaying.
          *
          * @return csv string, can be empty, but never {@code null}.
          */
         @NonNull
-        public String getDisplayString() {
+        public String getFtsSearchText() {
             Collection<String> list = new ArrayList<>();
 
             if (ftsAuthor != null && !ftsAuthor.isEmpty()) {
@@ -848,6 +837,9 @@ public class BooksOnBookshelfModel
             }
             if (ftsTitle != null && !ftsTitle.isEmpty()) {
                 list.add(ftsTitle);
+            }
+            if (ftsSeries != null && !ftsSeries.isEmpty()) {
+                list.add(ftsSeries);
             }
             if (ftsKeywords != null && !ftsKeywords.isEmpty()) {
                 list.add(ftsKeywords);
@@ -891,11 +883,11 @@ public class BooksOnBookshelfModel
                 ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
                 isSet = true;
             }
-
             if (bundle.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
                 ftsSeries = bundle.getString(DBDefinitions.KEY_SERIES_TITLE);
                 isSet = true;
             }
+
             if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
                 loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
                 isSet = true;
@@ -917,11 +909,10 @@ public class BooksOnBookshelfModel
         public void to(@NonNull final Intent intent) {
             intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, ftsKeywords)
                   .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, ftsAuthor)
-
                   .putExtra(DBDefinitions.KEY_TITLE, ftsTitle)
                   .putExtra(DBDefinitions.KEY_SERIES_TITLE, ftsSeries)
-                  .putExtra(DBDefinitions.KEY_LOANEE, loanee)
 
+                  .putExtra(DBDefinitions.KEY_LOANEE, loanee)
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }
 
@@ -931,6 +922,7 @@ public class BooksOnBookshelfModel
                    && (ftsAuthor == null || ftsAuthor.isEmpty())
                    && (ftsTitle == null || ftsTitle.isEmpty())
                    && (ftsSeries == null || ftsSeries.isEmpty())
+
                    && (loanee == null || loanee.isEmpty())
                    && (bookList == null || bookList.isEmpty());
         }
@@ -960,16 +952,16 @@ public class BooksOnBookshelfModel
         /**
          * Constructor.
          *
-         * @param bookListBuilder   the builder
-         * @param currentListCursor Current displayed list cursor.
-         * @param currentPosBookId  Current position in the list.
-         * @param listState         Requested list state
-         * @param taskListener      listener
+         * @param bookListBuilder      the builder
+         * @param currentListCursor    Current displayed list cursor.
+         * @param desiredCentralBookId current position in the list.
+         * @param listState            Requested list state
+         * @param taskListener         listener
          */
         @UiThread
         GetBookListTask(@NonNull final BooklistBuilder bookListBuilder,
                         @Nullable final BooklistPseudoCursor currentListCursor,
-                        final long currentPosBookId,
+                        final long desiredCentralBookId,
                         @BooklistBuilder.ListRebuildMode final int listState,
                         final TaskListener<BuilderHolder> taskListener) {
             super(R.id.TASK_ID_GET_BOOKLIST, taskListener);
@@ -978,7 +970,7 @@ public class BooksOnBookshelfModel
             mCurrentListCursor = currentListCursor;
 
             // input/output fields for the task.
-            mHolder = new BuilderHolder(currentPosBookId, listState);
+            mHolder = new BuilderHolder(desiredCentralBookId, listState);
         }
 
         @Override
@@ -996,9 +988,10 @@ public class BooksOnBookshelfModel
                     return mHolder;
                 }
 
-                mHolder.resultTargetRows = mBuilder.getTargetRows(mHolder.currentPosBookId);
+                // these are the row(s) we want to center the new list on.
+                mHolder.resultTargetRows = mBuilder.getTargetRows(mHolder.desiredCentralBookId);
                 // Clear it so it won't be reused.
-                mHolder.currentPosBookId = 0;
+                mHolder.desiredCentralBookId = 0;
 
                 // Now we have the expanded groups as needed, get the list cursor
                 tempListCursor = mBuilder.getNewListCursor();
@@ -1046,8 +1039,8 @@ public class BooksOnBookshelfModel
     /** value class for the Builder. */
     public static class BuilderHolder {
 
-        /** input/output field. The book id around which the list is positioned. */
-        long currentPosBookId;
+        /** input field. The book id around which the list is currently positioned. */
+        long desiredCentralBookId;
         /** input/output field. */
         @BooklistBuilder.ListRebuildMode
         int listState;
@@ -1079,9 +1072,9 @@ public class BooksOnBookshelfModel
         /**
          * Constructor: these are the fields we need as input.
          */
-        BuilderHolder(final long currentPosBookId,
+        BuilderHolder(final long desiredCentralBookId,
                       @BooklistBuilder.ListRebuildMode final int listState) {
-            this.currentPosBookId = currentPosBookId;
+            this.desiredCentralBookId = desiredCentralBookId;
             this.listState = listState;
         }
 
@@ -1091,7 +1084,7 @@ public class BooksOnBookshelfModel
         }
 
         @Nullable
-        public ArrayList<BooklistBuilder.RowDetails> getResultTargetRows() {
+        public List<BooklistBuilder.RowDetails> getResultTargetRows() {
             return resultTargetRows;
         }
 
@@ -1099,7 +1092,7 @@ public class BooksOnBookshelfModel
         @NonNull
         public String toString() {
             return "BuilderHolder{"
-                   + "currentPosBookId=" + currentPosBookId
+                   + "desiredCentralBookId=" + desiredCentralBookId
                    + ", listState=" + listState
                    + ", resultTotalBookCount=" + resultTotalBookCount
                    + ", resultDistinctBookCount=" + resultDistinctBookCount

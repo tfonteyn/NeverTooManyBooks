@@ -656,11 +656,10 @@ public class BooksOnBookshelf
                             mModel.setForceRebuildInOnResume(true);
                         }
 
-                        // if we got an id back, re-position to it.
-                        long newId = extras.getLong(DBDefinitions.KEY_PK_ID, 0);
-                        if (newId != 0) {
-                            //URGENT: re-position needs more work
-                            mModel.setCurrentPositionedBookId(newId);
+                        // if we got an id back, make any rebuild re-position to it.
+                        long bookId = extras.getLong(DBDefinitions.KEY_PK_ID, 0);
+                        if (bookId != 0) {
+                            mModel.setDesiredCentralBookId(bookId);
                         }
                     }
                 }
@@ -873,21 +872,25 @@ public class BooksOnBookshelf
         int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
         if (layoutPosition != RecyclerView.NO_POSITION) {
+
             BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
                     mListView.findViewHolderForLayoutPosition(layoutPosition);
+            //noinspection ConstantConditions
+            int absPos = holder.absolutePosition;
 
             // save position before
             savePosition();
 
             // get the builder from the current cursor; expand/collapse and save the new position
             BooklistBuilder booklistBuilder = mModel.getBuilder();
-            //noinspection ConstantConditions
-            booklistBuilder.expandNodes(topLevel, expand);
-            //noinspection ConstantConditions
-            savePosition(booklistBuilder.getListPosition(holder.absolutePosition));
+            if (booklistBuilder != null) {
+                booklistBuilder.expandNodes(topLevel, expand);
+                // save position after
+                savePosition(booklistBuilder.getListPosition(absPos));
 
-            // pass in the new cursor and display the list.
-            displayList(booklistBuilder.getNewListCursor(), null);
+                // pass in the new cursor and display the list.
+                displayList(booklistBuilder.getNewListCursor(), null);
+            }
         }
     }
 
@@ -987,11 +990,7 @@ public class BooksOnBookshelf
      * @param targetRows    if set, change the position to targetRows.
      */
     private void displayList(@NonNull final BooklistPseudoCursor newListCursor,
-                             @Nullable final ArrayList<RowDetails> targetRows) {
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "ENTER|displayList|newListCursor=" + newListCursor);
-        }
+                             @Nullable final List<RowDetails> targetRows) {
 
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
@@ -1041,15 +1040,10 @@ public class BooksOnBookshelf
 
         // all set, we can close the old list
         if (oldCursor != null) {
-            //noinspection ConstantConditions
-            if (!mModel.getBuilder().equals(oldCursor.getBuilder())) {
+            if (!oldCursor.getBuilder().equals(mModel.getBuilder())) {
                 oldCursor.getBuilder().close();
             }
             oldCursor.close();
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "EXIT|displayList");
         }
     }
 
@@ -1079,64 +1073,43 @@ public class BooksOnBookshelf
      *
      * @param targetRows list of rows of which we want one to be visible to the user.
      */
-    private void fixPositionWhenDrawn(@NonNull final ArrayList<RowDetails> targetRows) {
+    private void fixPositionWhenDrawn(@NonNull final List<RowDetails> targetRows) {
         // Find the actual extend of the current view and get centre.
         final int first = mLayoutManager.findFirstVisibleItemPosition();
         final int last = mLayoutManager.findLastVisibleItemPosition();
         final int centre = (last + first) / 2;
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Log.d(TAG, "fixPositionWhenDrawn"
-                       + "|first=" + first
-                       + "|centre=" + centre
-                       + "|last=" + last);
-        }
+
         // Get the first 'target' and make it 'best candidate'
-        RowDetails best = targetRows.get(0);
+        int best = targetRows.get(0).listPosition;
         // distance from currently visible centre row
-        int dist = Math.abs(best.listPosition - centre);
+        int dist = Math.abs(best - centre);
 
         // Loop all other rows, looking for a nearer one
         for (int i = 1; i < targetRows.size(); i++) {
-            RowDetails ri = targetRows.get(i);
-            int newDist = Math.abs(ri.listPosition - centre);
+            int ri = targetRows.get(i).listPosition;
+            int newDist = Math.abs(ri - centre);
             if (newDist < dist) {
                 dist = newDist;
                 best = ri;
             }
         }
-
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Log.d(TAG, "fixPositionWhenDrawn|best=" + best.listPosition);
+            Log.d(TAG, "fixPositionWhenDrawn"
+                       + "|first=" + first
+                       + "|centre=" + centre
+                       + "|last=" + last
+                       + "|best=" + best);
         }
-        // Try to put at top if not already visible, or only partially visible
-        if (first >= best.listPosition || last <= best.listPosition) {
+
+        // If the 'best' row is not in view, or at the edge, scroll it into view.
+        if (best <= first || last <= best) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
                 Log.d(TAG, "fixPositionWhenDrawn|Adjusting position");
             }
-            //TEST: setSelectionFromTop does not seem to always do what is expected.
-            // But adding smoothScrollToPosition seems to get the job done reasonably well.
-            //
-            // Specific problem occurs if:
-            // - put device in portrait mode
-            // - edit a book near bottom of list
-            // - turn device to landscape
-            // - save the book (don't cancel)
-            // Book will be off bottom of screen without the smoothScroll in the second Runnable.
-            //
-            mLayoutManager.scrollToPositionWithOffset(best.listPosition, 0);
-            // Code below does not behave as expected.
-            // Results in items often being near bottom.
-            //lv.setSelectionFromTop(best.listPosition, lv.getHeight() / 2);
-
-            // Without this call some positioning may be off by one row (see above).
-            final int newPos = best.listPosition;
+            mLayoutManager.scrollToPositionWithOffset(best, 0);
+            // Without this call some positioning may be off by one row.
+            final int newPos = best;
             mListView.post(() -> mListView.smoothScrollToPosition(newPos));
-
-            //int newTop = best.listPosition - (last-first)/2;
-            // if (BuildConfig.DEBUG && BOB_FIX_POSITION) {
-            //Logger.info(this, "fixPositionWhenDrawn", "New Top @" + newTop );
-            //}
-            //lv.setSelection(newTop);
         }
     }
 
@@ -1678,9 +1651,9 @@ public class BooksOnBookshelf
                 }
             }
 
-            String searchText = mModel.getSearchCriteria().getDisplayString();
-            if (!searchText.isEmpty()) {
-                filterText.add('"' + searchText + '"');
+            String ftsSearchText = mModel.getSearchCriteria().getFtsSearchText();
+            if (!ftsSearchText.isEmpty()) {
+                filterText.add('"' + ftsSearchText + '"');
             }
 
             if (!filterText.isEmpty()) {
