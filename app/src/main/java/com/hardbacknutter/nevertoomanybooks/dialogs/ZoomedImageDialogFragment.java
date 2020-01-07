@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,13 +27,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
-import android.app.Dialog;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -111,19 +112,53 @@ public class ZoomedImageDialogFragment
     @Override
     public void onResume() {
         super.onResume();
-        // force the dialog to be big enough
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = ViewGroup.LayoutParams.MATCH_PARENT;
-            int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            //noinspection ConstantConditions
-            dialog.getWindow().setLayout(width, height);
+
+        // It's quite possible there are better ways of doing the below.
+        // The intention is:
+        // - make the image as big as possible as compared to screen size/orientation.
+        // - have the dialog window wrap around the image.
+        // - assume 10% of the screen used for Dialog padding
+
+        //noinspection ConstantConditions
+        @NonNull
+        final Window window = getDialog().getWindow();
+        //noinspection ConstantConditions
+        final Resources resources = getContext().getResources();
+        final Configuration configuration = resources.getConfiguration();
+
+        // not ideal, but it works: use 90% of the available space for our image.
+        final float density = resources.getDisplayMetrics().density;
+        int w = (int) (configuration.screenWidthDp * density * 0.9f);
+        int h = (int) (configuration.screenHeightDp * density * 0.9f);
+        int dx;
+        int dy;
+        switch (configuration.orientation) {
+            case Configuration.ORIENTATION_PORTRAIT:
+                dx = w;
+                dy = h;
+                window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
+                                 ViewGroup.LayoutParams.WRAP_CONTENT);
+                break;
+
+            case Configuration.ORIENTATION_LANDSCAPE:
+                dx = h;
+                dy = w;
+                window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                 ViewGroup.LayoutParams.MATCH_PARENT);
+                break;
+
+            default:
+                // according to the Configuration class docs, there *might* be other values.
+                // x/y as for portrait, but window layout on the safe side.
+                dx = w;
+                dy = h;
+                window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                 ViewGroup.LayoutParams.WRAP_CONTENT);
+                break;
         }
 
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-
-        new ImageUtils.ImageLoader(mImageView, mImageFile,
-                                   metrics.widthPixels, metrics.heightPixels, true)
+        // load and resize as needed.
+        new ImageUtils.ImageLoader(mImageView, mImageFile, dx, dy, true)
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }
