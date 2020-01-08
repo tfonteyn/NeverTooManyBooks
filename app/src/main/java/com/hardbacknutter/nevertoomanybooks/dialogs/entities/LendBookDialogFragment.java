@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -275,68 +274,41 @@ public class LendBookDialogFragment
     private ArrayList<String> getPhoneContacts() {
         //noinspection ConstantConditions
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
-            != PackageManager.PERMISSION_GRANTED) {
+            == PackageManager.PERMISSION_GRANTED) {
+
+            ArrayList<String> list = new ArrayList<>();
+            ContentResolver cr = getContext().getContentResolver();
+            try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
+                                                  null, null, null)) {
+                if (contactsCursor != null) {
+                    while (contactsCursor.moveToNext()) {
+                        String name = contactsCursor.getString(contactsCursor.getColumnIndex(
+                                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+                        list.add(name);
+                    }
+                }
+            }
+            return list;
+
+        } else {
             //noinspection ConstantConditions
             ActivityCompat.requestPermissions(getActivity(),
                                               new String[]{Manifest.permission.READ_CONTACTS},
                                               UniqueId.REQ_ANDROID_PERMISSIONS);
             return null;
         }
-
-        return getSecuredPhoneContacts();
-    }
-
-    /**
-     * Return a list of friends from your contact list.
-     *
-     * @return an ArrayList of names
-     *
-     * @throws SecurityException if we did not have the required permissions
-     */
-    @RequiresPermission(Manifest.permission.READ_CONTACTS)
-    @NonNull
-    private ArrayList<String> getSecuredPhoneContacts()
-            throws SecurityException {
-        ArrayList<String> list = new ArrayList<>();
-        @SuppressWarnings("ConstantConditions")
-        ContentResolver cr = getContext().getContentResolver();
-        try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
-                                              null, null, null)) {
-            if (contactsCursor != null) {
-                while (contactsCursor.moveToNext()) {
-                    String name = contactsCursor.getString(contactsCursor.getColumnIndex(
-                            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-                    list.add(name);
-                }
-            }
-        }
-        return list;
     }
 
     @PermissionChecker.PermissionResult
     public void onRequestPermissionsResult(final int requestCode,
                                            @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
-        //ENHANCE: when/if we request more permissions, then the permissions[] and grantResults[]
-        // must be checked in parallel
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case UniqueId.REQ_ANDROID_PERMISSIONS:
-                if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    ArrayList<String> contacts = getPhoneContacts();
-                    if (contacts != null) {
-                        initAdapter(contacts);
-                    }
-                }
-                break;
-
-            default:
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "requestCode=" + requestCode);
-                }
-                break;
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            ArrayList<String> contacts = getPhoneContacts();
+            if (contacts != null) {
+                // the autocomplete view will be updated.
+                initAdapter(contacts);
+            }
         }
     }
 
