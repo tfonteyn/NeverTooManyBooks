@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -133,6 +133,11 @@ public class CoverHandler {
     private final ProgressBar mProgressBar;
     private final int mMaxWidth;
     private final int mMaxHeight;
+    /** Used to display a hint if user rotates a camera image. */
+    private boolean mShowHintAboutRotating;
+    @Nullable
+    private CameraHelper mCameraHelper;
+
     /**
      * Constructor.
      *
@@ -164,11 +169,6 @@ public class CoverHandler {
         mMaxHeight = maxSize;
         mMaxWidth = maxSize;
     }
-
-    /** Used to display a hint if user rotates a camera image. */
-    private boolean mShowHintAboutRotating;
-    @Nullable
-    private CameraHelper mCameraHelper;
 
     /**
      * Delete any orphaned temporary cover files.
@@ -362,9 +362,13 @@ public class CoverHandler {
         }
 
         if (fileLen == 0) {
-            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo, false, mMaxHeight);
+            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
+                                      ImageUtils.PLACE_HOLDER_RESIZE_NO,
+                                      mMaxWidth, mMaxHeight);
         } else {
-            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image, false, mMaxHeight);
+            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image,
+                                      ImageUtils.PLACE_HOLDER_RESIZE_NO,
+                                      mMaxWidth, mMaxHeight);
         }
         mBook.remove(UniqueId.BKEY_FILE_SPEC[mCIdx]);
     }
@@ -403,7 +407,9 @@ public class CoverHandler {
             CoversDAO.delete(uuid);
         }
         // replace the old image with a placeholder.
-        ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo, false, mMaxHeight);
+        ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
+                                  ImageUtils.PLACE_HOLDER_RESIZE_NO,
+                                  mMaxWidth, mMaxHeight);
     }
 
     private void startCamera() {

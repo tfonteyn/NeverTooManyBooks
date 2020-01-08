@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,6 +94,8 @@ public class GoodreadsWork {
     @Nullable
     private byte[] mImageBytes;
     private WeakReference<ImageView> mImageView;
+    private int mMaxWidth;
+    private int mMaxHeight;
 
     /**
      * If the cover image has already been retrieved, put it in the passed view.
@@ -101,13 +103,21 @@ public class GoodreadsWork {
      * the image becomes available.
      *
      * @param imageView ImageView to display cover image
+     * @param maxWidth  Maximum width of the image
+     * @param maxHeight Maximum height of the image
      */
     @UiThread
-    public void fillImageView(@NonNull final ImageView imageView) {
+    public void fillImageView(@NonNull final ImageView imageView,
+                              final int maxWidth,
+                              final int maxHeight) {
+        mMaxWidth = maxWidth;
+        mMaxHeight = maxHeight;
         synchronized (this) {
             if (mImageBytes == null) {
                 // Image not retrieved yet, so clear any existing image
-                imageView.setImageBitmap(null);
+                ImageUtils.setPlaceholder(imageView, R.drawable.ic_image,
+                                          ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
+                                          maxWidth, maxHeight);
                 // Save the view so we know where the image is going to be displayed
                 mImageView = new WeakReference<>(imageView);
                 // run task to get the image. Use parallel executor.
@@ -122,9 +132,11 @@ public class GoodreadsWork {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
                                                                   mImageBytes.length,
                                                                   new BitmapFactory.Options());
-                    imageView.setImageBitmap(bitmap);
+                    ImageUtils.setImageView(imageView, bitmap, maxWidth, maxHeight, true);
                 } else {
-                    imageView.setImageBitmap(null);
+                    ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image,
+                                              ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
+                                              maxWidth, maxHeight);
                 }
 
                 // Clear the work in the View, in case some other job was running
@@ -161,9 +173,11 @@ public class GoodreadsWork {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
                                                                       mImageBytes.length,
                                                                       new BitmapFactory.Options());
-                        imageView.setImageBitmap(bitmap);
+                        ImageUtils.setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, true);
                     } else {
-                        imageView.setImageBitmap(null);
+                        ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image,
+                                                  ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
+                                                  mMaxWidth, mMaxHeight);
                     }
                 }
             }

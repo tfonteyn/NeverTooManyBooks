@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 
@@ -352,6 +353,8 @@ public class GoodreadsSearchActivity
     private class WorksAdapter
             extends RecyclerViewAdapterBase<GoodreadsWork, Holder> {
 
+        private final int mMaxSize;
+
         /**
          * Constructor.
          *
@@ -361,6 +364,8 @@ public class GoodreadsSearchActivity
         WorksAdapter(@NonNull final Context context,
                      @NonNull final List<GoodreadsWork> items) {
             super(context, items, null);
+
+            mMaxSize = ImageUtils.getMaxImageSize(context, ImageUtils.SCALE_MEDIUM);
         }
 
         @NonNull
@@ -383,7 +388,7 @@ public class GoodreadsSearchActivity
             holder.itemView.setOnClickListener(v -> onWorkSelected(item));
 
             // get the cover (or start a background task to get it)
-            item.fillImageView(holder.coverView);
+            item.fillImageView(holder.coverView, mMaxSize, mMaxSize);
 
             // Update the views based on the work
             holder.authorView.setText(item.authorName);

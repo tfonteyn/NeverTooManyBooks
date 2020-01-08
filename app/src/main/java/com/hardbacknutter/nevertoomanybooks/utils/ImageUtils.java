@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -116,14 +116,16 @@ public final class ImageUtils {
     public static final int SCALE_X_LARGE = 5;
     /** Thumbnail Scaling. */
     public static final int SCALE_2X_LARGE = 6;
+
+    public static final float PLACE_HOLDER_RESIZE_NO = -1;
+    public static final float PLACE_HOLDER_RESIZE_YES = 0;
+    public static final float PLACE_HOLDER_RESIZE_PORTRAIT = 0.75f;
+
     /** scaling factor for each SCALE_* option. */
     private static final int[] SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12};
-
     /** Log tag. */
     private static final String TAG = "ImageUtils";
-
     private static final int BUFFER_SIZE = 32768;
-
     /** network: if at first we don't succeed... */
     private static final int NR_OF_TRIES = 2;
     /** network: milliseconds to wait between retries. */
@@ -135,7 +137,8 @@ public final class ImageUtils {
     /**
      * Get the maximum pixel size an image should be based on the desired scale factor.
      *
-     * @param scale to apply
+     * @param context Current context
+     * @param scale   to apply
      *
      * @return amount in pixels
      */
@@ -146,6 +149,8 @@ public final class ImageUtils {
     }
 
     /**
+     * Check if caching is enabled.
+     *
      * @param context Current context
      *
      * @return {@code true} if resized images are cached in a database.
@@ -158,78 +163,29 @@ public final class ImageUtils {
     /**
      * Set a placeholder drawable in the view.
      *
-     * @param view        The ImageView to load with the placeholder
+     * @param imageView   The ImageView to load with the placeholder
      * @param placeholder drawable to use
-     * @param resize      if set, the View will forcibly be sized to a 1:(3/4) ratio.
-     * @param maxHeight   Maximum desired height of the image
+     * @param resize      == 0: the View size will be set to maxHeight x maxWidth
+     *                    > 0: the View size will be set to maxHeight x (maxHeight * resize)
+     *                    < 0: no resizing done
+     * @param maxWidth    Maximum width of the image
+     * @param maxHeight   Maximum height of the image
      */
     @UiThread
-    public static void setPlaceholder(@NonNull final ImageView view,
+    public static void setPlaceholder(@NonNull final ImageView imageView,
                                       @DrawableRes final int placeholder,
-                                      final boolean resize,
+                                      final float resize,
+                                      final int maxWidth,
                                       final int maxHeight) {
-        if (resize) {
-            ViewGroup.LayoutParams lp = view.getLayoutParams();
+        //TODO: This needs a rethink....
+        if (resize >= 0) {
+            ViewGroup.LayoutParams lp = imageView.getLayoutParams();
             lp.height = maxHeight;
-            lp.width = (int) (maxHeight * 0.75);
-            view.setLayoutParams(lp);
-        }
-        view.setImageResource(placeholder);
-    }
-
-    /**
-     * Load the image owned by the UUID/cIdx into the destination ImageView.
-     * Handles checking & storing in the cache.
-     * <p>
-     * Images and placeholder will always be scaled to a fixed size.
-     *
-     * @param view      View to populate
-     * @param uuid      UUID of the book
-     * @param cIdx      0..n image index
-     * @param maxWidth  Max width of resulting image
-     * @param maxHeight Max height of resulting image
-     *
-     * @return {@code true} if the image was displayed. {@code false} if a place holder was used.
-     */
-    @UiThread
-    public static boolean setImageView(@NonNull final ImageView view,
-                                       @NonNull final String uuid,
-                                       final int cIdx,
-                                       final int maxWidth,
-                                       final int maxHeight) {
-
-        Context context = view.getContext();
-
-        // 1. If caching is used, and we don't have cache building happening, check it.
-        if (imagesAreCached(context) && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
-            Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, maxWidth, maxHeight);
-            if (bitmap != null) {
-                setImageView(view, bitmap, maxWidth, maxHeight, true);
-                return true;
-            }
+            lp.width = resize == 0 ? maxWidth : (int) (maxHeight * resize);
+            imageView.setLayoutParams(lp);
         }
 
-        // 2. Cache did not have it, or we were not allowed to check.
-        // Check if the file exists; if it does not, set the placeholder icon and exit.
-        File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
-        if (file.length() < MIN_IMAGE_FILE_SIZE) {
-            setPlaceholder(view, R.drawable.ic_image, true, maxHeight);
-            return false;
-        }
-
-        // Once we get here, we know the file is valid
-
-        // 3. If caching is used, go get the image from the file system AND send it to the cache.
-        if (imagesAreCached(context)) {
-            new CacheLoader(view, uuid, cIdx, file, maxWidth, maxHeight)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            return true;
-        } else {
-            // Cache not used, we know the file is valid, go get it.
-            new ImageLoader(view, file, maxWidth, maxHeight, true)
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            return true;
-        }
+        imageView.setImageResource(placeholder);
     }
 
     /**
@@ -237,16 +193,16 @@ public final class ImageUtils {
      *
      * @param imageView      The ImageView to load with the bitmap or an appropriate icon
      * @param source         The Bitmap of the image
-     * @param maxWidth       Maximum desired width of the image
-     * @param maxHeight      Maximum desired height of the image
+     * @param maxWidth       Maximum width of the image
+     * @param maxHeight      Maximum height of the image
      * @param allowUpscaling use the maximum h/w also as the minimum; thereby forcing upscaling.
      */
     @UiThread
-    private static void setImageView(@NonNull final ImageView imageView,
-                                     @NonNull final Bitmap source,
-                                     final int maxWidth,
-                                     final int maxHeight,
-                                     final boolean allowUpscaling) {
+    public static void setImageView(@NonNull final ImageView imageView,
+                                    @NonNull final Bitmap source,
+                                    final int maxWidth,
+                                    final int maxHeight,
+                                    final boolean allowUpscaling) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMAGE_UTILS) {
             Log.d(TAG, "setImageView"
                        + "|maxWidth=" + maxWidth
@@ -255,6 +211,11 @@ public final class ImageUtils {
                        + "|bm.width=" + source.getWidth()
                        + "|bm.height=" + source.getHeight());
         }
+
+        ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+        lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+        imageView.setLayoutParams(lp);
 
         imageView.setMaxWidth(maxWidth);
         imageView.setMaxHeight(maxHeight);
@@ -266,6 +227,64 @@ public final class ImageUtils {
         }
 
         imageView.setImageBitmap(bitmap);
+    }
+
+    /**
+     * Load the image owned by the UUID/cIdx into the destination ImageView.
+     * Handles checking & storing in the cache.
+     * <p>
+     * Images and placeholder will always be scaled to a fixed size.
+     *
+     * @param imageView View to populate
+     * @param uuid      UUID of the book
+     * @param cIdx      0..n image index
+     * @param maxWidth  Maximum width of resulting image
+     * @param maxHeight Maximum height of resulting image
+     *
+     * @return {@code true} if the image was displayed. {@code false} if a place holder was used.
+     */
+    @UiThread
+    public static boolean setImageView(@NonNull final ImageView imageView,
+                                       @NonNull final String uuid,
+                                       final int cIdx,
+                                       final int maxWidth,
+                                       final int maxHeight) {
+
+        Context context = imageView.getContext();
+
+        // 1. If caching is used, and we don't have cache building happening, check it.
+        if (imagesAreCached(context) && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
+            Bitmap bitmap = CoversDAO.getImage(context, uuid, cIdx, maxWidth, maxHeight);
+            if (bitmap != null) {
+                setImageView(imageView, bitmap, maxWidth, maxHeight, true);
+                return true;
+            }
+        }
+
+        // 2. Cache did not have it, or we were not allowed to check.
+        // Check if the file exists; if it does not, set the placeholder icon and exit.
+        File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+        if (file.length() < MIN_IMAGE_FILE_SIZE) {
+            setPlaceholder(imageView, R.drawable.ic_image,
+                           ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
+                           maxWidth, maxHeight);
+            return false;
+        }
+
+        // Once we get here, we know the file is valid
+
+        // 3. If caching is used, go get the image from the file system AND send it to the cache.
+        if (imagesAreCached(context)) {
+            new CacheLoader(imageView, uuid, cIdx, file, maxWidth, maxHeight)
+                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            return true;
+
+        } else {
+            // Cache not used, we know the file is valid, go get it.
+            new ImageLoader(imageView, file, maxWidth, maxHeight, true)
+                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            return true;
+        }
     }
 
     /**
@@ -754,12 +773,13 @@ public final class ImageUtils {
                 // are we still associated with this view ? (remember: views are recycled)
                 && this.equals(imageView.getTag(R.id.TAG_THUMBNAIL_TASK))) {
                 imageView.setTag(R.id.TAG_THUMBNAIL_TASK, null);
-
-                // upscaling, if applicable, was already done in the background task.
                 if (bitmap != null) {
+                    // upscaling, if applicable, was done in the background task.
                     setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, false);
                 } else {
-                    setPlaceholder(imageView, R.drawable.ic_broken_image, true, mMaxHeight);
+                    setPlaceholder(imageView, R.drawable.ic_broken_image,
+                                   ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
+                                   mMaxWidth, mMaxHeight);
                 }
             }
         }
@@ -819,17 +839,16 @@ public final class ImageUtils {
                 // are we still associated with this view ? (remember: views are recycled)
                 && this.equals(imageView.getTag(R.id.TAG_THUMBNAIL_TASK))) {
                 imageView.setTag(R.id.TAG_THUMBNAIL_TASK, null);
-                // upscaling, if applicable, was already done in the background task.
                 if (bitmap != null) {
-                    // display
-                    imageView.setMaxWidth(mMaxWidth);
-                    imageView.setMaxHeight(mMaxHeight);
-                    imageView.setImageBitmap(bitmap);
-                    // and send to the cache
+                    // display it, upscaling, if applicable, was done in the background task.
+                    setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, false);
+                    // and start another task to send it to the cache
                     new CoversDAO.ImageCacheWriterTask(mUuid, mCIdx, mMaxWidth, mMaxHeight, bitmap)
                             .execute();
                 } else {
-                    setPlaceholder(imageView, R.drawable.ic_broken_image, true, mMaxHeight);
+                    setPlaceholder(imageView, R.drawable.ic_broken_image,
+                                   ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
+                                   mMaxWidth, mMaxHeight);
                 }
             }
         }
