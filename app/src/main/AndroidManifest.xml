@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@
 <!--suppress InconsistentLineSeparators -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.hardbacknutter.nevertoomanybooks"
     android:installLocation="auto"
     android:versionCode="1"
@@ -52,6 +53,7 @@
     <!-- for the LOAN functionality -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
+    <!-- API 24:  android:networkSecurityConfig="@xml/network_security_config" -->
     <application
         android:name="com.hardbacknutter.nevertoomanybooks.App"
         android:allowBackup="true"
@@ -207,6 +209,10 @@
             android:finishOnTaskLaunch="true"
             android:launchMode="singleInstance" />
 
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
     </application>
 
 </manifest>

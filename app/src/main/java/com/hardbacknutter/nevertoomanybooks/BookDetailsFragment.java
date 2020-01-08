@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,20 +101,10 @@ public class BookDetailsFragment
     private final ImageView[] mCoverView = new ImageView[2];
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+
+
     /** The views. */
     private CompoundButton mIsAnthologyCbx;
-    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
-        if (data != null) {
-            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
-            } else {
-                // we don't expect/implement any others.
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "bookId=" + bookId + "|fieldsChanged=" + fieldsChanged);
-                }
-            }
-        }
-    };
     private CompoundButton mSignedCbx;
     private RatingBar mRatingView;
     private TextView mAuthorView;
@@ -127,6 +117,18 @@ public class BookDetailsFragment
     private TextView mPricePaidView;
     private TextView mPriceListedView;
     private TextView mLoanedToView;
+    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+        if (data != null) {
+            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
+            } else {
+                // we don't expect/implement any others.
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "bookId=" + bookId + "|fieldsChanged=" + fieldsChanged);
+                }
+            }
+        }
+    };
     private CompoundButton mReadCbx;
     private TextView mPagesView;
     private TextView mFormatView;
@@ -488,6 +490,7 @@ public class BookDetailsFragment
      * At this point we're told to load our local (to the fragment) fields from the Book.
      * </p>
      * <br>{@inheritDoc}
+     *
      * @param book
      */
     @Override
@@ -906,7 +909,6 @@ public class BookDetailsFragment
             mTocButton.setVisibility(View.GONE);
         }
     }
-
 
     /**
      * Listener to handle 'fling' events; we could handle others but need to be

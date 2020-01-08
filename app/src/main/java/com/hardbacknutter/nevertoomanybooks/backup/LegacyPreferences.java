@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -150,7 +150,7 @@ public final class LegacyPreferences {
                                 scanner = ScannerManager.ZXING;
                                 break;
                             default:
-                                scanner = ScannerManager.GOOGLE_PLAY_SERVICES;
+                                scanner = ScannerManager.DEFAULT;
                                 break;
                         }
                         ed.putString(Prefs.pk_scanner_preferred, String.valueOf(scanner));

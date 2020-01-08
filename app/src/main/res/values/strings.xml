@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -773,9 +773,14 @@
     <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
     <!-- SwitchPreference -->
     <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
+    <!-- SwitchPreference - Embedded & ZXing only.-->
+    <string name="pt_scanning_beep_when_barcode_found">Beep when a barcode is found</string>
+
+
     <!-- ListPreference - the barcode scanner to use-->
     <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
     <string name="pv_scanner_zxing_compatible">Zxing Compatible Scanner</string>
+    <string name="pv_scanner_embedded">Internal</string>
 
     <string name="pt_search_form">Local Search Form</string>
 

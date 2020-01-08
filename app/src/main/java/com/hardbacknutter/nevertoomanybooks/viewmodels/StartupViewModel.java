@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -377,7 +377,7 @@ public class StartupViewModel
             ScannerFactory factory = new GoogleBarcodeScanner.GoogleBarcodeScannerFactory();
             if (factory.isAvailable(context)) {
                 // trigger the download if needed.
-                factory.newInstance(context);
+                factory.getScanner(context);
             }
             return true;
         }

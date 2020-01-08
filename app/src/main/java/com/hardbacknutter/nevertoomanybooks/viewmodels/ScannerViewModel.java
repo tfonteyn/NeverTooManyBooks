@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -226,9 +225,7 @@ public class ScannerViewModel
      * @param context Current context
      */
     public void onValidBeep(@NonNull final Context context) {
-
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
+        if (ScannerManager.isBeepOnValid(context)) {
             SoundManager.beepHigh(context);
         }
     }
@@ -239,11 +236,11 @@ public class ScannerViewModel
      * @param context Current context
      */
     public void onInvalidBeep(@NonNull final Context context) {
-        if (PreferenceManager.getDefaultSharedPreferences(context)
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
+        if (ScannerManager.isBeepOnInvalid(context)) {
             SoundManager.beepLow(context);
         }
     }
+
 
     /**
      * None of the scanners was available or working correctly.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <p>
  * Pro and cons for the Scanners.
  * <ul>
+ * <li>embedded: easiest for the user; developer must support/upgrade it</li>
  * <li>Google Play Services: near automatic install.<br>
  * But won't work on devices without Google.<br>
  * Decoding is done AFTER the picture was taken so might force the user to repeat.</li>
@@ -70,41 +71,42 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * NEWTHINGS: adding a scanner
  * - implement the {@link Scanner} interface
  * - create a {@link ScannerFactory} for it and add to {@link #SCANNER_FACTORIES}
- * - add to {@link #ALL_ACTIONS} and add a new identifier here below.
+ * - add string/number to res/arrays/pe_scanning_preferred_scanner
+ * - (optional) add to {@link #ALL_ACTIONS} and add a new identifier here below.
  */
 public final class ScannerManager {
 
-    /** All actions for the supported scanner variants. Only used by the debug report. */
+    /**
+     * All actions for the supported scanner variants.
+     * <strong>Only used by the debug report</strong> to report on installed scanners.
+     */
     public static final String[] ALL_ACTIONS = new String[]{
             MediaStore.ACTION_IMAGE_CAPTURE,
-            ZxingScanner.ACTION,
+            com.google.zxing.client.android.Intents.Scan.ACTION,
             Pic2ShopScanner.Free.ACTION,
             Pic2ShopScanner.Pro.ACTION,
             };
 
     /** Unique ID's to associate with each supported scanner intent. */
-    public static final int GOOGLE_PLAY_SERVICES = 0;
-    public static final int DEFAULT = GOOGLE_PLAY_SERVICES;
-    public static final int ZXING_COMPATIBLE = 1;
+    public static final int EMBEDDED_ZXING = 0;
+    public static final int GOOGLE_PLAY_SERVICES = 1;
     public static final int ZXING = 2;
-    public static final int PIC2SHOP = 3;
+    public static final int ZXING_COMPATIBLE = 3;
+    public static final int PIC2SHOP = 4;
+
+    public static final int DEFAULT = EMBEDDED_ZXING;
 
     /** Collection of ScannerFactory objects. */
-    private static final SparseArray<ScannerFactory> SCANNER_FACTORIES = new SparseArray<>();
+    private static final SparseArray<Class> SCANNER_FACTORIES = new SparseArray<>();
 
-    /*
-     * Build the collection. Same order as the constants.
-     */
     static {
-        // universal
-        SCANNER_FACTORIES
-                .put(GOOGLE_PLAY_SERVICES, new GoogleBarcodeScanner.GoogleBarcodeScannerFactory());
-        // universal
-        SCANNER_FACTORIES.put(ZXING_COMPATIBLE, new ZxingScanner.ZxingCompatibleScannerFactory());
-        // the original ZXing (or ZXing+)
-        SCANNER_FACTORIES.put(ZXING, new ZxingScanner.ZxingScannerFactory());
-        // Pic2Shop is not free, but allegedly better in bad conditions
-        SCANNER_FACTORIES.put(PIC2SHOP, new Pic2ShopScanner.Pic2ShopScannerFactory());
+        SCANNER_FACTORIES.put(EMBEDDED_ZXING,
+                              EmbeddedZxingScanner.EmbeddedZxingScannerFactory.class);
+        SCANNER_FACTORIES.put(GOOGLE_PLAY_SERVICES,
+                              GoogleBarcodeScanner.GoogleBarcodeScannerFactory.class);
+        SCANNER_FACTORIES.put(ZXING, ZxingScanner.ZxingScannerFactory.class);
+        SCANNER_FACTORIES.put(ZXING_COMPATIBLE, ZxingScanner.ZxingCompatibleScannerFactory.class);
+        SCANNER_FACTORIES.put(PIC2SHOP, Pic2ShopScanner.Pic2ShopScannerFactory.class);
     }
 
     private ScannerManager() {
@@ -119,20 +121,25 @@ public final class ScannerManager {
      */
     @Nullable
     public static Scanner getScanner(@NonNull final Context context) {
-
-        // See if preferred one is present, if so return a new instance
-        ScannerFactory psf = SCANNER_FACTORIES.get(getPreferredScanner());
-        if (psf != null && psf.isAvailable(context)) {
-            return psf.newInstance(context);
-        }
-
-        // Search all supported scanners; return first working one
-        for (int i = 0; i < SCANNER_FACTORIES.size(); i++) {
-            ScannerFactory sf = SCANNER_FACTORIES.valueAt(i);
-            if (sf != psf && sf.isAvailable(context)) {
-                return sf.newInstance(context);
+        try {
+            // Preferred scanner available?
+            ScannerFactory psf = (ScannerFactory) SCANNER_FACTORIES.get(getPreferredScanner())
+                                                                   .newInstance();
+            if (psf.isAvailable(context)) {
+                return psf.getScanner(context);
             }
+
+            // Search all supported scanners; return first working one
+            for (int i = 0; i < SCANNER_FACTORIES.size(); i++) {
+                ScannerFactory sf = (ScannerFactory) SCANNER_FACTORIES.valueAt(i).newInstance();
+                if (sf != psf && sf.isAvailable(context)) {
+                    return sf.getScanner(context);
+                }
+            }
+        } catch (@NonNull final IllegalAccessException | InstantiationException ignore) {
+            // ignore
         }
+
         // up to the caller to tell the user.
         return null;
     }
@@ -145,7 +152,14 @@ public final class ScannerManager {
      */
     public static void installScanner(@NonNull final Activity activity,
                                       @NonNull final OnResultListener resultListener) {
-        ScannerFactory sf = SCANNER_FACTORIES.get(getPreferredScanner());
+        ScannerFactory sf = null;
+        try {
+            sf = (ScannerFactory) SCANNER_FACTORIES.get(getPreferredScanner())
+                                                   .newInstance();
+        } catch (@NonNull final IllegalAccessException | InstantiationException ignore) {
+            // ignore
+        }
+        //noinspection ConstantConditions
         if (!sf.isAvailable(activity)) {
             installScanner(activity, sf, resultListener);
         } else {
@@ -170,16 +184,19 @@ public final class ScannerManager {
         } else {
             // without the store, we can't do any automatic installs.
             if (isGooglePlayStoreInstalled(activity)) {
-                Uri uri = Uri.parse(sf.getMarketUrl());
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                try {
-                    activity.startActivity(intent);
-                    // returning true is not a guarantee for the install working...
-                    resultListener.onResult(true);
-                    return;
-                } catch (@NonNull final ActivityNotFoundException ignore) {
+                String marketUrl = sf.getMarketUrl();
+                if (marketUrl != null && !marketUrl.isEmpty()) {
+                    Uri uri = Uri.parse(marketUrl);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    try {
+                        activity.startActivity(intent);
+                        // returning true is not a guarantee for the install working...
+                        resultListener.onResult(true);
+                        return;
+                    } catch (@NonNull final ActivityNotFoundException ignore) {
+                    }
+                    googlePlayStoreMissing(activity, resultListener);
                 }
-                googlePlayStoreMissing(activity, resultListener);
             }
         }
     }
@@ -274,6 +291,21 @@ public final class ScannerManager {
 
     private static int getPreferredScanner() {
         return PIntString.getListPreference(Prefs.pk_scanner_preferred, DEFAULT);
+    }
+
+    static boolean isBeepOnBarcodeFound(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
+    }
+
+    public static boolean isBeepOnValid(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false);
+    }
+
+    public static boolean isBeepOnInvalid(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true);
     }
 
     public interface OnResultListener {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.zxing.client.android.Intents;
+
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -54,11 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public final class ZxingScanner
         implements Scanner {
 
-    static final String ACTION = "com.google.zxing.client.android.SCAN";
     private static final String MARKET_URL = "market://details?id=com.google.zxing.client.android";
     private static final String PACKAGE = "com.google.zxing.client.android";
-
-    private static final String SCAN_RESULT = "SCAN_RESULT";
 
     /** Set to {@code true} if the Zxing package is required. */
     private final boolean mMustBeZxing;
@@ -82,7 +81,7 @@ public final class ZxingScanner
      */
     private static boolean isIntentAvailable(@NonNull final Context context,
                                              @Nullable final String packageName) {
-        Intent intent = new Intent(ACTION);
+        Intent intent = new Intent(Intents.Scan.ACTION);
         if (packageName != null && !packageName.isEmpty()) {
             intent.setPackage(packageName);
         }
@@ -92,10 +91,13 @@ public final class ZxingScanner
     @Override
     public boolean startActivityForResult(@NonNull final Fragment fragment,
                                           final int requestCode) {
-        Intent intent = new Intent(ACTION);
+        Intent intent = new Intent(Intents.Scan.ACTION);
         if (mMustBeZxing) {
             intent.setPackage(PACKAGE);
         }
+        //noinspection ConstantConditions
+        intent.putExtra(Intents.Scan.BEEP_ENABLED,
+                        ScannerManager.isBeepOnBarcodeFound(fragment.getContext()));
         // not limiting the format, just grab anything supported.
         fragment.startActivityForResult(intent, requestCode);
         return true;
@@ -106,7 +108,7 @@ public final class ZxingScanner
     public String getBarcode(@NonNull final Context context,
                              @Nullable final Intent data) {
         Objects.requireNonNull(data);
-        return data.getStringExtra(SCAN_RESULT);
+        return data.getStringExtra(Intents.Scan.RESULT);
     }
 
     @Override
@@ -133,7 +135,7 @@ public final class ZxingScanner
 
         @NonNull
         @Override
-        public Scanner newInstance(@NonNull final Context context) {
+        public Scanner getScanner(@NonNull final Context context) {
             return new ZxingScanner(true);
         }
 
@@ -159,7 +161,7 @@ public final class ZxingScanner
 
         @NonNull
         @Override
-        public Scanner newInstance(@NonNull final Context context) {
+        public Scanner getScanner(@NonNull final Context context) {
             return new ZxingScanner(false);
         }
 

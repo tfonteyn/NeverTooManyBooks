@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -146,7 +146,7 @@
         android:key="psk_barcode_scanner"
         android:title="@string/pg_barcode_scanner">
 
-        <!-- default ScannerManager.GOOGLE_PLAY_SERVICES  -->
+        <!-- default ScannerManager.DEFAULT  -->
         <ListPreference
             android:defaultValue="0"
             android:entries="@array/pe_scanning_preferred_scanner"
@@ -154,6 +154,14 @@
             android:icon="@drawable/ic_barcode"
             android:key="scanner.preferred"
             android:title="@string/pt_scanning_preferred_scanner" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_surround_sound"
+            android:key="sounds.scan.barcode.found"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_scanning_beep_when_barcode_found" />
 
         <SwitchPreference
             android:defaultValue="true"
@@ -170,7 +178,6 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/pt_scanning_beep_if_isbn_valid" />
-
     </PreferenceCategory>
 
     <PreferenceCategory

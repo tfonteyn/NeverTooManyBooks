@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
 import com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn;
@@ -63,7 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
  */
 public class BookSearchByIsbnFragment
-        extends BookSearchBaseFragment {
+        extends BookSearchBaseFragment
+        implements PermissionsHelper.RequestHandler {
 
     /** Log tag. */
     public static final String TAG = "BookSearchByIsbnFrag";
@@ -85,6 +87,14 @@ public class BookSearchByIsbnFragment
 
     /** manage the validation check next to the field. */
     private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull final String[] permissions,
+                                           @NonNull final int[] grantResults) {
+        // Camera permissions
+        onRequestPermissionsResultCallback(requestCode, permissions, grantResults);
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

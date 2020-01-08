@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,8 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -36,6 +38,8 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import java.io.File;
@@ -44,6 +48,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
@@ -63,6 +68,8 @@ public class CameraHelper {
     private int mRotationAngle;
     /** by default, we tell the camera to give us full-size pictures. */
     private boolean mUseFullSize = true;
+    private Fragment mFragment;
+    private int mRequestCode;
 
     /**
      * DEBUG only.
@@ -99,6 +106,9 @@ public class CameraHelper {
      */
     public void startCamera(@NonNull final Fragment fragment,
                             final int requestCode) {
+        mFragment = fragment;
+        mRequestCode = requestCode;
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (mUseFullSize) {
             //noinspection ConstantConditions
@@ -109,7 +119,25 @@ public class CameraHelper {
             Uri uri = GenericFileProvider.getUriForFile(fragment.getContext(), file);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
-        fragment.startActivityForResult(intent, requestCode);
+
+        //noinspection ConstantConditions
+        if (ContextCompat.checkSelfPermission(fragment.getContext(), Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED) {
+            // GO!
+            fragment.startActivityForResult(intent, requestCode);
+
+        } else {
+            ((PermissionsHelper.RequestHandler) fragment).addPermissionCallback(
+                    UniqueId.REQ_ANDROID_PERMISSIONS, (perms, grantResults) -> {
+                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                            startCamera(mFragment, mRequestCode);
+                        }
+                    });
+            //noinspection ConstantConditions
+            ActivityCompat.requestPermissions(fragment.getActivity(),
+                                              new String[]{Manifest.permission.CAMERA},
+                                              UniqueId.REQ_ANDROID_PERMISSIONS);
+        }
     }
 
     /**
@@ -142,8 +170,8 @@ public class CameraHelper {
     /**
      * Get the file with optional rotation.
      *
-     * @param data    intent to read from, or {@code null}
-     *                if you <strong>know there will be a full-sized file</strong>
+     * @param data intent to read from, or {@code null}
+     *             if you <strong>know there will be a full-sized file</strong>
      *
      * @return file or {@code null}
      */

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -93,18 +93,20 @@
         <item>2</item>
     </string-array>
 
-    <!-- ListPreference - the barcode scanner to use-->
+    <!-- ListPreference - the barcode scanner to use - NEWTHINGS: adding a scanner-->
     <string-array name="pe_scanning_preferred_scanner">
+        <item>@string/pv_scanner_embedded</item>
         <item>@string/google_play_services</item>
-        <item>@string/pv_scanner_zxing_compatible</item>
         <item>@string/pv_scanner_zxing</item>
-        <item>@string/pv_scanner_pic2shop</item>
+        <item>@string/pv_scanner_zxing_compatible</item>
+        <!--        <item>@string/pv_scanner_pic2shop</item>-->
     </string-array>
     <string-array name="pv_scanning_preferred_scanner">
         <item>0</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
+        <!--        <item>4</item>-->
     </string-array>
 
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->

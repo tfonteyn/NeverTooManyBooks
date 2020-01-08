@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -139,11 +139,6 @@ public class GoogleBarcodeScanner
     public static class GoogleBarcodeScannerFactory
             implements ScannerFactory {
 
-        @NonNull
-        public String getMarketUrl() {
-            return "";
-        }
-
         @IdRes
         @Override
         public int getMenuId() {
@@ -152,7 +147,7 @@ public class GoogleBarcodeScanner
 
         @NonNull
         @Override
-        public Scanner newInstance(@NonNull final Context context) {
+        public Scanner getScanner(@NonNull final Context context) {
             return new GoogleBarcodeScanner(context);
         }
 

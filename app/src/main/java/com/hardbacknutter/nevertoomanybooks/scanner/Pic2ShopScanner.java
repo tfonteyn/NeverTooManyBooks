@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * https://github.com/VisionSmarts/pic2shop-client
  * <p>
  * It also has a static method to check if the intent is present.
+ *
+ * 2020-01-08: disabled in preferences.
  */
 public class Pic2ShopScanner
         implements Scanner {
@@ -158,7 +160,7 @@ public class Pic2ShopScanner
 
         @NonNull
         @Override
-        public Scanner newInstance(@NonNull final Context context) {
+        public Scanner getScanner(@NonNull final Context context) {
             return new Pic2ShopScanner();
         }
 

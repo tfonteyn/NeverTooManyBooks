@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import android.content.Context;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Support for creating scanner objects on the fly without knowing which ones are available.
@@ -52,7 +53,7 @@ public interface ScannerFactory {
      * @return a new scanner of the related type.
      */
     @NonNull
-    Scanner newInstance(@NonNull Context context);
+    Scanner getScanner(@NonNull Context context);
 
     /**
      * Get a resource id that can be used in menus.
@@ -63,11 +64,12 @@ public interface ScannerFactory {
     int getMenuId();
 
     /**
-     * Get the market url, or the empty string if not applicable.
-     * The caller must check on {@code }isEmpty()}.
+     * Get the market url.
      *
-     * @return the market url, or "".
+     * @return the market url, or {@code null} if not applicable.
      */
-    @NonNull
-    String getMarketUrl();
+    @Nullable
+    default String getMarketUrl() {
+        return null;
+    }
 }

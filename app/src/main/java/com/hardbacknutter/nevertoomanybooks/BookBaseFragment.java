@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
+import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
 /**
@@ -62,7 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
  * This class supports the loading of a book. See {@link #loadFields}.
  */
 public abstract class BookBaseFragment
-        extends Fragment {
+        extends Fragment
+        implements PermissionsHelper.RequestHandler {
 
     /** Log tag. */
     private static final String TAG = "BookBaseFragment";
@@ -72,6 +74,14 @@ public abstract class BookBaseFragment
 
     /** The book. */
     BookBaseFragmentModel mBookModel;
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull final String[] permissions,
+                                           @NonNull final int[] grantResults) {
+        // Camera permissions
+        onRequestPermissionsResultCallback(requestCode, permissions, grantResults);
+    }
 
     @Override
     @CallSuper

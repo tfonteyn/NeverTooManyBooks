@@ -38,12 +38,13 @@ android {
 
     // another site: https://gs.statcounter.com/
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2019-11-30 world wide:
-    // 9.0		35.25
-    // 8.1		49.83
-    // 8.0		59.81
-    // 7.0		67.87
-    // 6.0		81.19
+    // 2019-12-31 world wide:
+    // 10.0
+    // 9.0		41.90
+    // 8.1		55.43
+    // 8.0		63.9
+    // 7.0		71.27
+    // 6.0		82.45
 
     //  May 7, 2019.: https://developer.android.com/about/dashboards/
     //  A       API     %
@@ -145,6 +146,13 @@ dependencies {
     // don't upgrade... 1.12.1 is hitting #990 alike situation, while 1.11.3 works ok.
     //    implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'org.jsoup:jsoup:1.11.3'
+
+    // Embedded ZXing: https://github.com/journeyapps/zxing-android-embedded
+    // supporting API <24
+    implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
+    implementation 'com.google.zxing:core:3.3.0'
+    // supporting API 24+
+    //implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
 
     testImplementation 'org.mockito:mockito-core:3.2.4'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
