@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,7 +101,7 @@ class TaskQueueDAO
      * @return The database
      */
     @NonNull
-    SQLiteDatabase getDb() {
+    private SQLiteDatabase getDb() {
         return mTaskQueueDBHelper.getWritableDatabase();
     }
 

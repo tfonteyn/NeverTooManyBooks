@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -284,8 +284,7 @@ public class EditBookAuthorsFragment
                     ItemWithFixableId.pruneList(mList, getContext(), mBookModel.getDb(),
                                                 Locale.getDefault(), false);
 
-                    //URGENT: replaceTocAuthors is WIP
-                    // right now, the Book gets the updated author(s), but the TocEntries
+                    //URGENT: right now, the Book gets the updated author(s), but the TocEntries
                     // remain using the old Author(s)
                     // .
                     // A TocEntry is unique based on author and title_od.

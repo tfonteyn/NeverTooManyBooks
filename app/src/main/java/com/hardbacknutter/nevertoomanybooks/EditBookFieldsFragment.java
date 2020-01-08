@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ public class EditBookFieldsFragment
 
     /** Log tag. */
     public static final String TAG = "EditBookFieldsFragment";
-    private static final String BKEY_M_CONTEXT_MENU_OPEN_INDEX = TAG + ":imgIndex";
+    private static final String BKEY_CONTEXT_MENU_OPEN_INDEX = TAG + ":imgIndex";
 
     /** the covers. */
     private final ImageView[] mCoverView = new ImageView[2];
@@ -199,7 +199,7 @@ public class EditBookFieldsFragment
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             mCurrentCoverHandlerIndex = savedInstanceState
-                    .getInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, -1);
+                    .getInt(BKEY_CONTEXT_MENU_OPEN_INDEX, -1);
         }
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
@@ -319,7 +319,7 @@ public class EditBookFieldsFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, mCurrentCoverHandlerIndex);
+        outState.putInt(BKEY_CONTEXT_MENU_OPEN_INDEX, mCurrentCoverHandlerIndex);
     }
 
     /**
@@ -345,6 +345,13 @@ public class EditBookFieldsFragment
                      .commit();
     }
 
+    /**
+     * Hook up the indexed cover image.
+     *
+     * @param book  the book
+     * @param cIdx  0..n image index
+     * @param scale image scale to apply
+     */
     private void setupCoverView(@NonNull final Book book,
                                 final int cIdx,
                                 @SuppressWarnings("SameParameterValue")
@@ -399,7 +406,6 @@ public class EditBookFieldsFragment
     }
 
     private void populateAuthorListField(@NonNull final Book book) {
-
         //noinspection ConstantConditions
         @NonNull
         Context context = getContext();
