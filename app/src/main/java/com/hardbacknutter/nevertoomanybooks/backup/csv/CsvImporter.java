@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -74,28 +74,37 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  * <p>
  * A CSV file which was not written by this app, should be careful about encoding the following
  * characters:
- * <ul>The obvious:
+ *
+ * <strong>DOUBLE escape the '*' character; i.e. '*' should be encoded as \\\\*</strong>
+ *
+ * <ul>Always <strong>escape:</strong>
  * <li>"</li>
  * <li>'</li>
- * <li>\\</li>
+ * <li>\</li>
  * <li>\r</li>
  * <li>\n</li>
  * <li>\t</li>
- * </ul>
- * <ul>These should be <strong>escaped</strong> when used in names, titles etc.
- * <li>,</li>
  * <li>|</li>
- * <li>*</li>
  * <li>(</li>
  * <li>)</li>
  * </ul>
- * <ul>These are used <strong>unescaped</strong>:
- * <li>',' is allowed/used in an Author name: "family, given-names",<br>
- * * and as a list separator in a list of Bookshelf names.</li>
- * <li>'|' is used as an element separator for fields that take more than one value.</li>
- * <li>'*' is used in few places where an element itself can consist of multiple parts.</li>
- * <li>'(' and ')' are used to add numbers or dates (between the brackets) to items.</li>
+ *
+ * <ul>Unescaped special characters:
+ * <li>',' is recognised/used in an Author name: "family, given-names",<br>
+ * and as a list separator in a list of Bookshelf names.
+ * </li>
+ * <li>'|' is used as an element separator for fields that take more than one value.<br>
+ * e.g. a list of Author names, Series, ...
+ * </li>
+ * <li>'*' is used in few places where an element itself can consist of multiple parts.
+ * e.g. See Author and Series object encoding. (for advanced usage)</li>
+ * <li>'(' and ')' are used to add numbers or dates (between the brackets) to items.
+ * e.g. TOC entries can contain a date, Series will have the book number,... </li>
  * </ul>
+ *
+ * Space characters are encoded for Authors names while exporting,
+ * but it's not strictly needed although some exotic names might get mangled;
+ * when in doubt, escape.
  */
 public class CsvImporter
         implements Importer {

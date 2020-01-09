@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Provides encoding/decoding of specific objects to/from a string format
- * as used by the CSV format.
+ * as used by the CSV format for <strong>export/import</strong>.
  * <p>
  * This extends the internally used #fromString(String) constructor.
  *
@@ -108,12 +108,12 @@ public final class CsvCoder {
 
                 @Override
                 @NonNull
-                public Author decode(@NonNull final String encodedString) {
-                    List<String> elements = StringList.newInstance().decodeElement(encodedString);
-                    Author author = Author.fromString(elements.get(0));
-                    if (elements.size() > 1) {
+                public Author decode(@NonNull final String element) {
+                    List<String> parts = StringList.newInstance().decodeElement(element);
+                    Author author = Author.fromString(parts.get(0));
+                    if (parts.size() > 1) {
                         try {
-                            JSONObject details = new JSONObject(elements.get(1));
+                            JSONObject details = new JSONObject(parts.get(1));
                             author.setComplete(details.optBoolean(JSON_COMPLETE));
                             author.setType(details.optInt(JSON_TYPE));
                         } catch (@NonNull final JSONException ignore) {
@@ -173,12 +173,12 @@ public final class CsvCoder {
 
                 @Override
                 @NonNull
-                public Series decode(@NonNull final String encodedString) {
-                    List<String> elements = StringList.newInstance().decodeElement(encodedString);
-                    Series series = Series.fromString(elements.get(0));
-                    if (elements.size() > 1) {
+                public Series decode(@NonNull final String element) {
+                    List<String> parts = StringList.newInstance().decodeElement(element);
+                    Series series = Series.fromString(parts.get(0));
+                    if (parts.size() > 1) {
                         try {
-                            JSONObject details = new JSONObject(elements.get(1));
+                            JSONObject details = new JSONObject(parts.get(1));
                             series.setComplete(details.optBoolean(JSON_COMPLETE));
                         } catch (@NonNull final JSONException ignore) {
                         }
@@ -194,11 +194,8 @@ public final class CsvCoder {
                     if (!series.getNumber().isEmpty()) {
                         // start with a space for readability
                         // the surrounding () are NOT escaped as they are part of the format.
-                        result += " (" + escape(series.getNumber(), escapeChars) + ')';
-                    } // else {
-                    //     // Adding an empty number makes an import more fool proof.
-                    //     result += " ()";
-                    // }
+                        result += " (" + escape(series.getNumber(), escapeChars) + ")";
+                    }
 
                     JSONObject details = new JSONObject();
                     try {
@@ -254,10 +251,10 @@ public final class CsvCoder {
                  */
                 @Override
                 @NonNull
-                public TocEntry decode(@NonNull final String encodedString) {
-                    List<String> elements = StringList.newInstance().decodeElement(encodedString);
-                    String title = elements.get(0);
-                    Author author = Author.fromString(elements.get(1));
+                public TocEntry decode(@NonNull final String element) {
+                    List<String> parts = StringList.newInstance().decodeElement(element);
+                    String title = parts.get(0);
+                    Author author = Author.fromString(parts.get(1));
 
                     Matcher matcher = DATE_PATTERN.matcher(title);
                     if (matcher.find()) {
@@ -315,13 +312,13 @@ public final class CsvCoder {
 
                 @Override
                 @NonNull
-                public Bookshelf decode(@NonNull final String encodedString) {
-                    List<String> elements = StringList.newInstance().decodeElement(encodedString);
-                    String name = elements.get(0);
+                public Bookshelf decode(@NonNull final String element) {
+                    List<String> parts = StringList.newInstance().decodeElement(element);
+                    String name = parts.get(0);
                     String uuid = null;
-                    if (elements.size() > 1) {
+                    if (parts.size() > 1) {
                         try {
-                            JSONObject details = new JSONObject(elements.get(1));
+                            JSONObject details = new JSONObject(parts.get(1));
                             uuid = details.optString(JSON_STYLE);
                             // it's quite possible that the UUID is not a style we (currently)
                             // know. But that does not matter as we'll check it upon first access.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -290,6 +290,9 @@ public class Author
      * <li>multiple, and not concatenated, family names.</li>
      * <li>more than 1 un-encoded comma.</li>
      * </ul>
+     *
+     * <strong>Note:</strong> uses a simple String decoder.
+     * Any complex decoding for JSON format must be done before calling here.
      *
      * @param name a String containing the name
      *

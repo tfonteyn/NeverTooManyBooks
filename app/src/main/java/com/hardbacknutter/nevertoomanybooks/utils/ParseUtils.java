@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -109,8 +109,12 @@ public final class ParseUtils {
                     break;
 
                 default:
-                    if (c == elementSeparator || c == objectSeparator) {
-                        // Escape these twice, as StringList uses a list inside a list model.
+                    if (c == elementSeparator) {
+                        // list of elements, just once
+                        sb.append("\\");
+
+                    } else if (c == objectSeparator) {
+                        // list of objects, inside a list of elements, so TWICE
                         sb.append("\\\\");
 
                     } else {

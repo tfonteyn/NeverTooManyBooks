@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
  * <p>
  * https://en.wikipedia.org/wiki/Decimal_separator
  */
-class ParseUtilsTest {
+class ParseUtilsParseFloatTest {
 
     /** US / computer standard. */
     private static final String DEC_SEP_IS_DOT = "1234.56";

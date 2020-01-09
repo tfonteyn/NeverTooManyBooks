@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,15 +31,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A StringList contains a list of elements, separated by the {@link Factory#getElementSeparator()}.
  * <p>
  * Each element is a list of objects separated by the {@link Factory#getObjectSeparator()}.
- * <p>
- * <strong>Note:</strong> due to the above there often is a degree of double-decoding
- * in {@link #decode} even when not needed. No harm done, but wasting cpu cycles.
- * ENHANCE: would be nice to init StringList objects with the level of coding (1 or 2) needed.
  *
  * @param <E> the type of the elements stored in the string.
  */
@@ -65,12 +62,13 @@ public class StringList<E> {
         });
     }
 
+
     /**
-     * Decode the StringList into a list of elements.
+     * Decode the StringList into a list of <strong>elements</strong>.
      *
      * @param stringList String representing the list
      *
-     * @return Array of elements
+     * @return ArrayList (so it's Parcelable) of elements
      */
     @NonNull
     public ArrayList<E> decode(@Nullable final CharSequence stringList) {
@@ -80,17 +78,18 @@ public class StringList<E> {
     /**
      * Decode an element into a list of objects.
      *
-     * @param stringList String representing the list of items
+     * @param stringList String representing the list of element sub-objects (parts)
      *
-     * @return Array of objects
+     * @return List of objects/parts
      */
     @NonNull
-    public ArrayList<E> decodeElement(@Nullable final CharSequence stringList) {
+    public List<E> decodeElement(@Nullable final CharSequence stringList) {
         return decode(stringList, mFactory.getObjectSeparator(), false);
     }
 
     /**
      * Decode a string list separated by 'delimiter' and encoded by {@link Factory#escape}.
+     * The elements will be decoded by the factory.
      *
      * @param stringList String representing the list
      * @param delimiter  delimiter to use
@@ -140,10 +139,10 @@ public class StringList<E> {
 
                 } else if (c == delimiter) {
                     // we reached the end of an element
-                    String source = sb.toString().trim();
-                    if (allowBlank || !source.isEmpty()) {
-                        // decode it and add it to the list
-                        list.add(mFactory.decode(source));
+                    String element = sb.toString().trim();
+                    if (allowBlank || !element.isEmpty()) {
+                        // decode it using the objects factory and add it to the list
+                        list.add(mFactory.decode(element));
                     }
                     // reset, and start on the next element
                     sb.setLength(0);
@@ -155,9 +154,9 @@ public class StringList<E> {
         }
 
         // It's important to send back even an empty item.
-        String source = sb.toString().trim();
-        if (allowBlank || !source.isEmpty()) {
-            list.add(mFactory.decode(source));
+        String element = sb.toString().trim();
+        if (allowBlank || !element.isEmpty()) {
+            list.add(mFactory.decode(element));
         }
         return list;
     }
@@ -215,7 +214,7 @@ public class StringList<E> {
         }
 
         /**
-         * Decode a single element.
+         * Decode a <string>SINGLE</string> element.
          * <p>
          * The default implementation returns the input.
          *
