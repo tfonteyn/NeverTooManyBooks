@@ -106,11 +106,12 @@ public class IsfdbGetBookTask
             boolean[] thumbs = {false, false};
             if (mEditions != null) {
                 return new IsfdbBookHandler(localContext)
-                        .fetch(mEditions, mAddSeriesFromToc, thumbs);
+                        .fetch(mEditions, mAddSeriesFromToc, thumbs, new Bundle());
 
             } else if (mIsfdbId != 0) {
                 return new IsfdbBookHandler(localContext)
-                        .fetchByNativeId(String.valueOf(mIsfdbId), mAddSeriesFromToc, thumbs);
+                        .fetchByNativeId(String.valueOf(mIsfdbId),
+                                         mAddSeriesFromToc, thumbs, new Bundle());
 
             } else {
                 if (BuildConfig.DEBUG /* always */) {

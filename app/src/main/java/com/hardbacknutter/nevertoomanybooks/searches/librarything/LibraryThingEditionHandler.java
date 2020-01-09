@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.librarything;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.xml.sax.helpers.DefaultHandler;
@@ -61,16 +62,25 @@ class LibraryThingEditionHandler
     private static final String XML_ISBN = "isbn";
 
     private final StringBuilder mBuilder = new StringBuilder();
-    @NonNull
-    private final List<String> mEditions;
+    private final List<String> mEditions = new ArrayList<>();
 
     /**
      * Constructor.
      *
-     * @param editions the bundle to which we'll write the results
+     * @param isbn the original isbn
      */
-    LibraryThingEditionHandler(@NonNull final List<String> /* out */ editions) {
-        mEditions = editions;
+    LibraryThingEditionHandler(@NonNull final String isbn) {
+        mEditions.add(isbn);
+    }
+
+    /**
+     * Get the results.
+     *
+     * @return the list with ISBN numbers.
+     */
+    @NonNull
+    public List<String> getResult() {
+        return mEditions;
     }
 
     @Override
@@ -80,10 +90,9 @@ class LibraryThingEditionHandler
                            @NonNull final String qName) {
 
         if (localName.equalsIgnoreCase(XML_ISBN)) {
-            // Add the isbn
-            String isbn = mBuilder.toString();
-            mEditions.add(isbn);
+            mEditions.add(mBuilder.toString());
         }
+
         // Always reset the length. This is not entirely the right thing to do, but works
         // because we always want strings from the lowest level (leaf) XML elements.
         // To be completely correct, we should maintain a stack of builders that are pushed and

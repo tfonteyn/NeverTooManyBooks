@@ -80,13 +80,14 @@ public class ShowBookByIsbnApiHandler
      */
     @NonNull
     public Bundle get(@NonNull final String isbnStr,
-                      @NonNull final boolean[] fetchThumbnail)
+                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final Bundle bookData)
             throws CredentialsException, BookNotFoundException, IOException {
 
         ISBN isbn = ISBN.createISBN(isbnStr);
         if (isbn != null && isbn.isValid()) {
             String url = String.format(URL, isbn.asText(), mManager.getDevKey());
-            return getBookData(url, fetchThumbnail);
+            return getBookData(url, fetchThumbnail, bookData);
 
         } else {
             throw new BookNotFoundException(isbnStr);

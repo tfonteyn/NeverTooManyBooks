@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -451,9 +451,9 @@ class LibraryThingHandler
     /**
      * Constructor.
      *
-     * @param bookData Bundle to save results in
+     * @param bookData       Bundle to save results in (passed in to allow mocking)
      */
-    LibraryThingHandler(@NonNull final Bundle /* out */bookData) {
+    LibraryThingHandler(@NonNull final Bundle bookData) {
         mBookData = bookData;
     }
 
@@ -480,6 +480,16 @@ class LibraryThingHandler
             }
             bundle.putString(key, v);
         }
+    }
+
+    /**
+     * Get the results.
+     *
+     * @return Bundle with book data
+     */
+    @NonNull
+    public Bundle getResult() {
+        return mBookData;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,8 +105,8 @@ public class KbNlManager
 //    private static final String AUTHOR_URL = getBaseURL(context)
 //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
     @NonNull
-    public static String getBaseURL(@NonNull final Context appContext) {
-        return PreferenceManager.getDefaultSharedPreferences(appContext)
+    public static String getBaseURL(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getString(PREFS_HOST_URL, "http://opc4.kb.nl");
     }
 
@@ -119,9 +119,8 @@ public class KbNlManager
 
         String url = getBaseURL(localizedAppContext) + String.format(BOOK_URL, isbn);
 
-        Bundle bookData = new Bundle();
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        KbNlBookHandler handler = new KbNlBookHandler(bookData);
+        KbNlBookHandler handler = new KbNlBookHandler(new Bundle());
 
         try (TerminatorConnection terminatorConnection =
                      new TerminatorConnection(localizedAppContext, url)) {
@@ -141,6 +140,7 @@ public class KbNlManager
             throw new IOException(e);
         }
 
+        Bundle bookData = handler.getResult();
         if (fetchThumbnail[0]) {
             getCoverImage(localizedAppContext, isbn, 0, bookData);
         }
@@ -190,8 +190,8 @@ public class KbNlManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context appContext) {
-        return getBaseURL(appContext);
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
     }
 
     @StringRes

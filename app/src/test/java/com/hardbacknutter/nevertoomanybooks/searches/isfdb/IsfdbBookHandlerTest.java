@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ class IsfdbBookHandlerTest
         // we've set the doc, so no internet download will be done.
         try {
             boolean[] fetchThumbnail = {false, false};
-            mBookData = isfdbBookHandler.parseDoc(mBookData, false, fetchThumbnail);
+            mBookData = isfdbBookHandler.parseDoc(false, fetchThumbnail, mBookData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -166,7 +166,7 @@ class IsfdbBookHandlerTest
         // we've set the doc, so no internet download will be done.
         try {
             boolean[] fetchThumbnail = {false, false};
-            mBookData = isfdbBookHandler.parseDoc(mBookData, true, fetchThumbnail);
+            mBookData = isfdbBookHandler.parseDoc(true, fetchThumbnail, mBookData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -239,7 +239,7 @@ class IsfdbBookHandlerTest
         // we've set the doc, so no internet download will be done.
         try {
             boolean[] fetchThumbnail = {false, false};
-            mBookData = isfdbBookHandler.parseDoc(mBookData, true, fetchThumbnail);
+            mBookData = isfdbBookHandler.parseDoc(true, fetchThumbnail, mBookData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -327,15 +327,25 @@ class AmazonHandler
      * Constructor.
      *
      * @param localizedAppContext Localised application context
-     * @param bookData            Bundle to save results in
      * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
+     * @param bookData            Bundle to save results in (passed in to allow mocking)
      */
     AmazonHandler(@NonNull final Context localizedAppContext,
-                  @NonNull final Bundle bookData,
-                  @NonNull final boolean[] fetchThumbnail) {
+                  @NonNull final boolean[] fetchThumbnail,
+                  @NonNull final Bundle bookData) {
         mLocalizedAppContext = localizedAppContext;
-        mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
+        mBookData = bookData;
+    }
+
+    /**
+     * Get the results.
+     *
+     * @return Bundle with book data
+     */
+    @NonNull
+    public Bundle getResult() {
+        return mBookData;
     }
 
     @Nullable

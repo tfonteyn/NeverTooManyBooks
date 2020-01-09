@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,15 +73,13 @@ class OpenLibraryManagerTest {
 
         String filename = "/openlibrary/9780980200447.json";
 
-        JSONObject json;
-
         OpenLibraryManager m = new OpenLibraryManager();
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             String response = m.readResponseStream(is);
-            json = new JSONObject(response);
+            JSONObject json = new JSONObject(response);
             boolean[] fetchThumbnail = {false, false};
-            mBookData = m.handleResponse(mBookData, json, fetchThumbnail);
+            mBookData = m.handleResponse(json, fetchThumbnail, mBookData);
 
         } catch (@NonNull final IOException | JSONException e) {
             fail(e);
@@ -90,8 +88,7 @@ class OpenLibraryManagerTest {
         assertNotNull(mBookData);
         assertFalse(mBookData.isEmpty());
 
-        assertEquals("Slow reading",
-                     mBookData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("Slow reading", mBookData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("9780980200447", mBookData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("OL22853304M", mBookData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
         assertEquals("2008054742", mBookData.getString(DBDefinitions.KEY_EID_LCCN));

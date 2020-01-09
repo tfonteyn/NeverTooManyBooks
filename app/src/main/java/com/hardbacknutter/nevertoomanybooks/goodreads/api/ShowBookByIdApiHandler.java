@@ -79,10 +79,11 @@ public class ShowBookByIdApiHandler
      */
     @NonNull
     public Bundle get(final long id,
-                      @NonNull final boolean[] fetchThumbnail)
+                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final Bundle bookData)
             throws CredentialsException, BookNotFoundException, IOException {
 
         String url = String.format(URL, id, mManager.getDevKey());
-        return getBookData(url, fetchThumbnail);
+        return getBookData(url, fetchThumbnail, bookData);
     }
 }

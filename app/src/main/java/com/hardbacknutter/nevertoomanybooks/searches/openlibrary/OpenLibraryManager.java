@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -102,6 +102,7 @@ public class OpenLibraryManager
                    SearchEngine.ByNativeId,
                    SearchEngine.CoverByIsbn {
 
+    /** base urls. */
     public static final String BASE_URL = "https://openlibrary.org";
 
     /** Log tag. */
@@ -161,13 +162,13 @@ public class OpenLibraryManager
     /**
      * View a Book on the web site.
      *
-     * @param appContext Application context
+     * @param context Current context
      * @param bookId     site native book id to show
      */
-    public static void openWebsite(@NonNull final Context appContext,
+    public static void openWebsite(@NonNull final Context context,
                                    @NonNull final String bookId) {
         String url = BASE_URL + "/books/" + bookId;
-        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
@@ -178,7 +179,7 @@ public class OpenLibraryManager
             throws IOException {
 
         String url = String.format(BASE_BOOK_URL, "OLID", nativeId);
-        return fetchBook(localizedAppContext, url, fetchThumbnail);
+        return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
     }
 
     /**
@@ -195,25 +196,24 @@ public class OpenLibraryManager
             throws IOException {
 
         String url = String.format(BASE_BOOK_URL, "ISBN", isbn);
-        return fetchBook(localizedAppContext, url, fetchThumbnail);
+        return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
     }
 
     private Bundle fetchBook(@NonNull final Context appContext,
                              @NonNull final String url,
-                             @NonNull final boolean[] fetchThumbnail)
+                             @NonNull final boolean[] fetchThumbnail,
+                             @NonNull final Bundle bookData)
             throws IOException {
         // get and store the result into a string.
         String response;
-        try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url)) {
+        try (TerminatorConnection con = TerminatorConnection.open(appContext, url)) {
             //noinspection ConstantConditions
             response = readResponseStream(con.getInputStream());
         }
 
         // json-ify and handle.
         try {
-            Bundle bookData = handleResponse(new Bundle(),
-                                             new JSONObject(response), fetchThumbnail);
-            return bookData != null ? bookData : new Bundle();
+            return handleResponse(new JSONObject(response), fetchThumbnail, bookData);
 
         } catch (@NonNull final JSONException e) {
             // wrap parser exceptions in an IOException
@@ -240,7 +240,7 @@ public class OpenLibraryManager
      * https://openlibrary.org/dev/docs/api/covers</a>
      * <p>
      * {@code
-     *      http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
+     * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false
      * }
      * <p>
      * S/M/L
@@ -278,7 +278,7 @@ public class OpenLibraryManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context appContext) {
+    public String getUrl(@NonNull final Context context) {
         return BASE_URL;
     }
 
@@ -413,18 +413,19 @@ public class OpenLibraryManager
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
-     * @param bookData       bundle to populate
      * @param jsonObject     the complete book record.
-     * @param fetchThumbnail flag
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to populate
      *
      * @return bookData
      *
      * @throws JSONException upon any error
      */
     @VisibleForTesting
-    Bundle handleResponse(@NonNull final Bundle bookData,
-                          @NonNull final JSONObject jsonObject,
-                          @NonNull final boolean[] fetchThumbnail)
+    @NonNull
+    Bundle handleResponse(@NonNull final JSONObject jsonObject,
+                          @NonNull final boolean[] fetchThumbnail,
+                          @NonNull final Bundle bookData)
             throws JSONException {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
             Log.d(TAG, "ENTER|handleResponse|" + jsonObject.toString(2));
@@ -434,30 +435,32 @@ public class OpenLibraryManager
         if (it.hasNext()) {
             String topLevelKey = it.next();
             String[] data = topLevelKey.split(":");
-            if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])
-            ) {
-                return handleBook(bookData, data[1], fetchThumbnail,
-                                  jsonObject.getJSONObject(topLevelKey));
+            if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
+                return handleBook(data[1], jsonObject.getJSONObject(topLevelKey), fetchThumbnail,
+                                  bookData);
             }
         }
 
-        return null;
+        return bookData;
     }
 
     /**
-     * @param bookData       bundle to populate
+     * Parse the results, and build the bookData bundle.
+     *
      * @param isbn           of the book
-     * @param fetchThumbnail flag
      * @param result         JSON result data
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to populate
      *
      * @return bookData object
      *
      * @throws JSONException upon any error
      */
-    private Bundle handleBook(@NonNull final Bundle bookData,
-                              @NonNull final String isbn,
+    @NonNull
+    private Bundle handleBook(@NonNull final String isbn,
+                              @NonNull final JSONObject result,
                               @NonNull final boolean[] fetchThumbnail,
-                              @NonNull final JSONObject result)
+                              @NonNull final Bundle bookData)
             throws JSONException {
 
         JSONObject o;

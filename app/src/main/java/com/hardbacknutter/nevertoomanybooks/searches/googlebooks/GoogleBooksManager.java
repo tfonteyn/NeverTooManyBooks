@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -90,7 +90,7 @@ public final class GoogleBooksManager
         // %3C  <
         // %3E  >
         String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3C" + isbn + "%3E";
-        return fetchBook(localizedAppContext, url, fetchThumbnail);
+        return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
     }
 
     @NonNull
@@ -112,7 +112,7 @@ public final class GoogleBooksManager
                          + "intitle%3A" + encodeSpaces(title)
                          + "%2B"
                          + "inauthor%3A" + encodeSpaces(author);
-            return fetchBook(localizedAppContext, url, fetchThumbnail);
+            return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
 
         } else {
             return new Bundle();
@@ -121,49 +121,45 @@ public final class GoogleBooksManager
 
     private Bundle fetchBook(@NonNull final Context appContext,
                              @NonNull final String url,
-                             @NonNull final boolean[] fetchThumbnail)
+                             @NonNull final boolean[] fetchThumbnail,
+                             @NonNull final Bundle bookData)
             throws IOException {
-        Bundle bookData = new Bundle();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-
-        // The main handler can return multiple books ('entry' elements)
-        GoogleBooksHandler handler = new GoogleBooksHandler();
-
-        // The entry handler takes care of an individual book ('entry')
-        GoogleBooksEntryHandler entryHandler =
-                new GoogleBooksEntryHandler(bookData, fetchThumbnail);
 
         String oneBookUrl;
         try {
             SAXParser parser = factory.newSAXParser();
 
-            // get the booklist
-            try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url)) {
+            // get the booklist, can return multiple books ('entry' elements)
+            GoogleBooksHandler handler = new GoogleBooksHandler();
+            try (TerminatorConnection con = TerminatorConnection.open(appContext, url)) {
                 parser.parse(con.getInputStream(), handler);
             }
+            List<String> urlList = handler.getResult();
 
-            ArrayList<String> urlList = handler.getUrlList();
+            // The entry handler takes care of an individual book ('entry')
+            GoogleBooksEntryHandler entryHandler =
+                    new GoogleBooksEntryHandler(fetchThumbnail, bookData);
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
                 oneBookUrl = urlList.get(0);
 
-                try (TerminatorConnection con =
-                             TerminatorConnection.openConnection(appContext, oneBookUrl)) {
+                try (TerminatorConnection con = TerminatorConnection.open(appContext, oneBookUrl)) {
                     parser.parse(con.getInputStream(), entryHandler);
                 }
             }
+            return entryHandler.getResult();
+
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             // wrap parser exceptions in an IOException
             throw new IOException(e);
         }
-
-        return bookData;
     }
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context appContext) {
+    public String getUrl(@NonNull final Context context) {
         return BASE_URL;
     }
 

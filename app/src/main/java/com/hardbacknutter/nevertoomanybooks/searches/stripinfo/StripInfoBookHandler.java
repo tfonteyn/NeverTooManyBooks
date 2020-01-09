@@ -179,8 +179,8 @@ public class StripInfoBookHandler
      * Fetch a book.
      *
      * @param isbn           to search
-     * @param bookData       to populate
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to populate
      *
      * @return Bundle with book data
      *
@@ -188,8 +188,8 @@ public class StripInfoBookHandler
      */
     @NonNull
     public Bundle fetch(@NonNull final String isbn,
-                        @NonNull final Bundle bookData,
-                        @NonNull final boolean[] fetchThumbnail)
+                        @NonNull final boolean[] fetchThumbnail,
+                        @NonNull final Bundle bookData)
             throws SocketTimeoutException {
         // keep for reference
         mIsbn = isbn;
@@ -220,8 +220,8 @@ public class StripInfoBookHandler
      */
     @NonNull
     Bundle fetchByNativeId(@NonNull final String nativeId,
-                           @NonNull final Bundle bookData,
-                           @NonNull final boolean[] fetchThumbnail)
+                           @NonNull final boolean[] fetchThumbnail,
+                           @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
         String path = StripInfoManager.BASE_URL + String.format(BOOK_BY_NATIVE_ID, nativeId);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -125,20 +125,19 @@ public class LibraryThingManager
             "https://covers.librarything.com/devkey/%1$s/%2$s/isbn/%3$s";
 
     /** Can only send requests at a throttled speed. */
-    @NonNull
     private static final Throttler THROTTLER = new Throttler();
     private static final Pattern DEV_KEY_PATTERN = Pattern.compile("[\\r\\t\\n\\s]*");
 
     /**
      * View a Book on the web site.
      *
-     * @param appContext Application context
+     * @param context Current context
      * @param bookId     site native book id to show
      */
-    public static void openWebsite(@NonNull final Context appContext,
+    public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
         String url = String.format(WORK_URL, bookId);
-        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     /**
@@ -224,25 +223,18 @@ public class LibraryThingManager
     @WorkerThread
     @NonNull
     @Override
-    public ArrayList<String> getAlternativeEditions(@NonNull final Context appContext,
-                                                    @NonNull final String isbn) {
-        // the resulting data we'll return
-        ArrayList<String> isbnList = new ArrayList<>();
-        // add the original isbn
-        isbnList.add(isbn);
-
-        // Base path for an Editions search
-        String url = String.format(EDITIONS_URL, isbn);
+    public List<String> getAlternativeEditions(@NonNull final Context appContext,
+                                               @NonNull final String isbn) {
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        LibraryThingEditionHandler handler = new LibraryThingEditionHandler(isbnList);
+        LibraryThingEditionHandler handler = new LibraryThingEditionHandler(isbn);
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con =
-                     TerminatorConnection.openConnection(appContext, url)) {
+        String url = String.format(EDITIONS_URL, isbn);
+        try (TerminatorConnection con = TerminatorConnection.open(appContext, url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
@@ -250,7 +242,7 @@ public class LibraryThingManager
                 Log.d(TAG, "getAlternativeEditions|e=" + e);
             }
         }
-        return isbnList;
+        return handler.getResult();
     }
 
     @Override
@@ -276,7 +268,7 @@ public class LibraryThingManager
             throws IOException {
 
         String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "isbn", isbn);
-        Bundle bookData = fetchBook(localizedAppContext, url);
+        Bundle bookData = fetchBook(localizedAppContext, url, new Bundle());
 
         if (fetchThumbnail[0]) {
             getCoverImage(localizedAppContext, isbn, 0, bookData);
@@ -299,7 +291,7 @@ public class LibraryThingManager
 
         String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "id", nativeId);
 
-        Bundle bookData = fetchBook(localizedAppContext, url);
+        Bundle bookData = fetchBook(localizedAppContext, url, new Bundle());
 
         if (fetchThumbnail[0]) {
             String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
@@ -311,10 +303,10 @@ public class LibraryThingManager
         return bookData;
     }
 
-    private Bundle fetchBook(@NonNull final Context appContext,
-                             @NonNull final String url)
+    private Bundle fetchBook(@NonNull final Context localizedAppContext,
+                             @NonNull final String url,
+                             @NonNull final Bundle bookData)
             throws IOException {
-        Bundle bookData = new Bundle();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         LibraryThingHandler handler = new LibraryThingHandler(bookData);
@@ -323,15 +315,15 @@ public class LibraryThingManager
         THROTTLER.waitUntilRequestAllowed();
 
         // Get it
-        try (TerminatorConnection con = TerminatorConnection.openConnection(appContext, url)) {
+        try (TerminatorConnection con = TerminatorConnection.open(localizedAppContext, url)) {
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
+            return handler.getResult();
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             // wrap parser exceptions in an IOException
             throw new IOException(e);
         }
-        return bookData;
     }
 
     /**
@@ -379,7 +371,7 @@ public class LibraryThingManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context appContext) {
+    public String getUrl(@NonNull final Context context) {
         return BASE_URL;
     }
 

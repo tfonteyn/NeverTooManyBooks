@@ -186,7 +186,7 @@ public class IsfdbBookHandler
      * Constructor used for testing.
      *
      * @param localizedContext Localised application context
-     * @param doc                 the JSoup Document.
+     * @param doc              the JSoup Document.
      */
     @VisibleForTesting
     IsfdbBookHandler(@NonNull final Context localizedContext,
@@ -217,10 +217,12 @@ public class IsfdbBookHandler
     @NonNull
     Bundle fetchByNativeId(@NonNull final String isfdbId,
                            final boolean addSeriesFromToc,
-                           @NonNull final boolean[] fetchThumbnail)
+                           @NonNull final boolean[] fetchThumbnail,
+                           @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        return fetch(mBaseUrl + String.format(BOOK_URL, isfdbId), addSeriesFromToc, fetchThumbnail);
+        return fetch(mBaseUrl + String.format(BOOK_URL, isfdbId),
+                     addSeriesFromToc, fetchThumbnail, bookData);
     }
 
     /**
@@ -238,17 +240,17 @@ public class IsfdbBookHandler
     @NonNull
     private Bundle fetch(@NonNull final String path,
                          final boolean addSeriesFromToc,
-                         @NonNull final boolean[] fetchThumbnail)
+                         @NonNull final boolean[] fetchThumbnail,
+                         @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
         mPath = path;
 
         if (loadPage(mLocalizedContext, mPath) == null) {
-            return new Bundle();
+            return bookData;
         }
 
-        Bundle bookData = new Bundle();
-        return parseDoc(bookData, addSeriesFromToc, fetchThumbnail);
+        return parseDoc(addSeriesFromToc, fetchThumbnail, bookData);
     }
 
     /**
@@ -266,7 +268,8 @@ public class IsfdbBookHandler
     @NonNull
     public Bundle fetch(@Size(min = 1) @NonNull final List<Edition> editions,
                         final boolean addSeriesFromToc,
-                        @NonNull final boolean[] fetchThumbnail)
+                        @NonNull final boolean[] fetchThumbnail,
+                        @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
         mEditions = editions;
@@ -280,12 +283,11 @@ public class IsfdbBookHandler
         } else {
             // nop, go get it.
             if (loadPage(mLocalizedContext, mPath) == null) {
-                return new Bundle();
+                return bookData;
             }
         }
 
-        Bundle bookData = new Bundle();
-        return parseDoc(bookData, addSeriesFromToc, fetchThumbnail);
+        return parseDoc(addSeriesFromToc, fetchThumbnail, bookData);
     }
 
     /**
@@ -457,9 +459,9 @@ public class IsfdbBookHandler
      */
     @NonNull
     @VisibleForTesting
-    Bundle parseDoc(@NonNull final Bundle bookData,
-                    final boolean addSeriesFromToc,
-                    @NonNull final boolean[] fetchThumbnail)
+    Bundle parseDoc(final boolean addSeriesFromToc,
+                    @NonNull final boolean[] fetchThumbnail,
+                    @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
         Elements allContentBoxes = mDoc.select(CSS_Q_DIV_CONTENTBOX);

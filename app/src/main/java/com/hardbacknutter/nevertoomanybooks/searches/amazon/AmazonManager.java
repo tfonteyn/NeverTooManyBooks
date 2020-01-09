@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,8 +81,8 @@ public final class AmazonManager
     private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
 
     @NonNull
-    public static String getBaseURL(@NonNull final Context appContext) {
-        return PreferenceManager.getDefaultSharedPreferences(appContext)
+    public static String getBaseURL(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getString(PREFS_HOST_URL, "https://www.amazon.com");
     }
 
@@ -154,7 +154,7 @@ public final class AmazonManager
             return new Bundle();
         }
 
-        return fetchBook(localizedAppContext, "isbn=" + nativeId, fetchThumbnail);
+        return fetchBook(localizedAppContext, "isbn=" + nativeId, fetchThumbnail, new Bundle());
     }
 
     @NonNull
@@ -168,7 +168,7 @@ public final class AmazonManager
             return new Bundle();
         }
 
-        return fetchBook(localizedAppContext, "isbn=" + isbn, fetchThumbnail);
+        return fetchBook(localizedAppContext, "isbn=" + isbn, fetchThumbnail, new Bundle());
     }
 
     @Override
@@ -189,7 +189,7 @@ public final class AmazonManager
         if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
             String query = "author=" + URLEncoder.encode(author, UTF_8)
                            + "&title=" + URLEncoder.encode(title, UTF_8);
-            return fetchBook(localizedAppContext, query, fetchThumbnail);
+            return fetchBook(localizedAppContext, query, fetchThumbnail, new Bundle());
 
         } else {
             return new Bundle();
@@ -199,21 +199,20 @@ public final class AmazonManager
 
     private Bundle fetchBook(@NonNull final Context localizedAppContext,
                              @NonNull final String query,
-                             @NonNull final boolean[] fetchThumbnail)
+                             @NonNull final boolean[] fetchThumbnail,
+                             @NonNull final Bundle bookData)
             throws IOException {
-        Bundle bookData = new Bundle();
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        AmazonHandler handler = new AmazonHandler(localizedAppContext, bookData, fetchThumbnail);
+        AmazonHandler handler = new AmazonHandler(localizedAppContext, fetchThumbnail, bookData);
 
         // See class docs: adding throttling
         THROTTLER.waitUntilRequestAllowed();
 
         String url = PROXY_URL + query;
         // Get it
-        try (TerminatorConnection tCon =
-                     TerminatorConnection.openConnection(localizedAppContext, url)) {
+        try (TerminatorConnection con = TerminatorConnection.open(localizedAppContext, url)) {
             SAXParser parser = factory.newSAXParser();
-            parser.parse(tCon.getInputStream(), handler);
+            parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             // wrap parser exceptions in an IOException
             throw new IOException(e);
@@ -223,13 +222,13 @@ public final class AmazonManager
         if (error != null) {
             throw new IOException(error);
         }
-        return bookData;
+        return handler.getResult();
     }
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context appContext) {
-        return getBaseURL(appContext);
+    public String getUrl(@NonNull final Context context) {
+        return getBaseURL(context);
     }
 
     @StringRes

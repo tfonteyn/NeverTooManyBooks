@@ -64,13 +64,13 @@ public class StripInfoManager
     /**
      * View a Book on the web site.
      *
-     * @param appContext Application context
-     * @param bookId     site native book id to show
+     * @param context Current context
+     * @param bookId  site native book id to show
      */
-    public static void openWebsite(@NonNull final Context appContext,
+    public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
         String url = BASE_URL + "/reeks/strip/" + bookId;
-        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @Override
@@ -80,10 +80,9 @@ public class StripInfoManager
 
     @NonNull
     @Override
-    public String getUrl(@NonNull final Context appContext) {
+    public String getUrl(@NonNull final Context context) {
         return BASE_URL;
     }
-
 
     @NonNull
     @Override
@@ -92,7 +91,7 @@ public class StripInfoManager
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         return new StripInfoBookHandler(localizedAppContext, this)
-                .fetch(isbn, new Bundle(), fetchThumbnail);
+                .fetch(isbn, fetchThumbnail, new Bundle());
     }
 
     @NonNull
@@ -102,12 +101,13 @@ public class StripInfoManager
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         return new StripInfoBookHandler(localizedAppContext, this)
-                .fetchByNativeId(nativeId, new Bundle(), fetchThumbnail);
+                .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());
     }
 
     @Override
     public void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
-        // StripInfo has clean titles and the default cleaner gives false positives.
+        // StripInfo always has clean titles and uses ()
+        // which causes the default cleaner to give false positives.
     }
 
     @StringRes

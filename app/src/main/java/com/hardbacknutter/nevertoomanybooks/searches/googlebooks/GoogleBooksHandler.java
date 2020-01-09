@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -685,18 +686,18 @@ class GoogleBooksHandler
 
     private final StringBuilder mBuilder = new StringBuilder();
     @NonNull
-    private final ArrayList<String> url = new ArrayList<>();
+    private final List<String> url = new ArrayList<>();
 
     private boolean mInEntry;
     private boolean mEntryDone;
 
     /**
-     * Return the id of the first book found.
+     * Get the results.
      *
      * @return The book url list (to be passed to the entry handler), can be empty.
      */
     @NonNull
-    ArrayList<String> getUrlList() {
+    List<String> getResult() {
         return url;
     }
 

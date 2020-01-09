@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -239,7 +239,6 @@ class GoogleBooksEntryHandler
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
-
     /** XML content. */
     private final StringBuilder mBuilder = new StringBuilder();
 
@@ -251,15 +250,24 @@ class GoogleBooksEntryHandler
     /**
      * Constructor.
      *
-     * @param bookData       Bundle to save results in
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to save results in (passed in to allow mocking)
      */
-    GoogleBooksEntryHandler(@NonNull final Bundle /* out */ bookData,
-                            @NonNull final boolean[] fetchThumbnail) {
+    GoogleBooksEntryHandler(@NonNull final boolean[] fetchThumbnail,
+                            @NonNull final Bundle bookData) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
-
         mLocale = App.getSystemLocale();
+    }
+
+    /**
+     * Get the results.
+     *
+     * @return Bundle with book data
+     */
+    @NonNull
+    public Bundle getResult() {
+        return mBookData;
     }
 
     /**

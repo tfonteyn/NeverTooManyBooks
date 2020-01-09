@@ -278,10 +278,11 @@ public abstract class ShowBookApiHandler
      */
     @NonNull
     Bundle getBookData(@NonNull final String url,
-                       @NonNull final boolean[] fetchThumbnail)
+                       @NonNull final boolean[] fetchThumbnail,
+                       @NonNull final Bundle bookData)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        mBookData = new Bundle();
+        mBookData = bookData;
         mShelves = null;
 
         DefaultHandler handler = new XmlResponseParser(mRootFilter);

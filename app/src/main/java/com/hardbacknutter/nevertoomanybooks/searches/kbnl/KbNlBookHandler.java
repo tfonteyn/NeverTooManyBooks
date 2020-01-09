@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,16 +55,24 @@ class KbNlBookHandler
     @NonNull
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
-
     /**
      * Constructor.
      *
-     * @param bookData to populate
+     * @param bookData Bundle to save results in (passed in to allow mocking)
      */
     KbNlBookHandler(@NonNull final Bundle bookData) {
         mBookData = bookData;
     }
 
+    /**
+     * Get the results.
+     *
+     * @return Bundle with book data
+     */
+    @NonNull
+    public Bundle getResult() {
+        return mBookData;
+    }
 
     @Override
     public void endDocument() {
