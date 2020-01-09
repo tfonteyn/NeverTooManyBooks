@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,9 @@ import androidx.preference.PreferenceManager;
 
 import java.util.Locale;
 import java.util.Objects;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
@@ -259,7 +262,8 @@ public class Bookshelf
     /**
      * Returns a valid style for this bookshelf.
      *
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      *
      * @return the style associated with this bookshelf.
      */
@@ -320,6 +324,35 @@ public class Bookshelf
         dest.writeLong(mId);
         dest.writeString(mName);
         dest.writeString(mStyleUuid);
+    }
+
+    /**
+     * Write the extra data to the JSON object.
+     *
+     * @param data which {@link #fromJson(JSONObject)} will read
+     *
+     * @throws JSONException on failure
+     */
+    public void toJson(final JSONObject data)
+            throws JSONException {
+        if (!mStyleUuid.isEmpty()) {
+            data.put(DBDefinitions.KEY_FK_STYLE, mStyleUuid);
+        }
+    }
+
+    /**
+     * Read the extra data from the JSON object.
+     *
+     * @param data as written by {@link #toJson(JSONObject)}
+     */
+    public void fromJson(@NonNull final JSONObject data) {
+        // it's quite possible that the UUID is not a style we (currently)
+        // know. But that does not matter as we'll check it upon first access.
+        if (data.has(DBDefinitions.KEY_FK_STYLE)) {
+            mStyleUuid = data.optString(DBDefinitions.KEY_FK_STYLE);
+        } else if (data.has("style")) {
+            mStyleUuid = data.optString("style");
+        }
     }
 
     @Override

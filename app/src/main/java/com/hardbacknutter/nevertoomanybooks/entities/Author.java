@@ -47,6 +47,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -89,43 +92,43 @@ public class Author
      */
 
     /** Generic Author; the default. A single person created the book. */
-    public static final int TYPE_UNKNOWN = 0b0000_0000_0000_0000;
+    public static final int TYPE_UNKNOWN = 0;
 
     /** primary or only writer. i.e. in contrast to any of the below. */
-    public static final int TYPE_WRITER = 0b0000_0000_0000_0001;
-//    public static final int TYPE_ = 0b0000_0000_0000_0010;
-//    public static final int TYPE_ = 0b0000_0000_0000_0100;
-//    public static final int TYPE_ = 0b0000_0000_0000_1000;
+    public static final int TYPE_WRITER = 1;
+//    public static final int TYPE_ = 1 << 1;
+//    public static final int TYPE_ = 1 << 2;
+//    public static final int TYPE_ = 1 << 3;
 
     /** translator. */
-    public static final int TYPE_TRANSLATOR = 0b0000_0000_0001_0000;
+    public static final int TYPE_TRANSLATOR = 1 << 4;
     /** foreword/afterword/introduction etc. */
-    public static final int TYPE_INTRODUCTION = 0b0000_0000_0010_0000;
+    public static final int TYPE_INTRODUCTION = 1 << 5;
     /** editor (e.g. of an anthology). */
-    public static final int TYPE_EDITOR = 0b0000_0000_0100_0000;
+    public static final int TYPE_EDITOR = 1 << 6;
     /** generic collaborator. */
-    public static final int TYPE_CONTRIBUTOR = 0b0000_0000_1000_0000;
+    public static final int TYPE_CONTRIBUTOR = 1 << 7;
 
 
     /** cover artist. */
-    public static final int TYPE_COVER_ARTIST = 0b0000_0001_0000_0000;
+    public static final int TYPE_COVER_ARTIST = 1 << 8;
     /** cover artist. */
-    public static final int TYPE_COVER_INKING = 0b0000_0010_0000_0000;
+    public static final int TYPE_COVER_INKING = 1 << 9;
 
-//    public static final int TYPE_ = 0b0000_0100_0000_0000;
+//    public static final int TYPE_ = 1 << 10;
     /** cover colorist. */
-    public static final int TYPE_COVER_COLORIST = 0b0000_1000_0000_0000;
+    public static final int TYPE_COVER_COLORIST = 1 << 11;
 
 
     /** Internal art work; could be illustrations, or the pages of a comic. */
-    public static final int TYPE_ARTIST = 0b0001_0000_0000_0000;
+    public static final int TYPE_ARTIST = 1 << 12;
     /** Internal art work (if addition to artwork); comics. */
-    public static final int TYPE_INKING = 0b0010_0000_0000_0000;
+    public static final int TYPE_INKING = 1 << 13;
 
-//    public static final int TYPE_ = 0b0100_0000_0000_0000;
+//    public static final int TYPE_ = 1 << 14;
 
     /** internal colorist. */
-    public static final int TYPE_COLORIST = 0b1000_0000_0000_0000;
+    public static final int TYPE_COLORIST = 1 << 15;
 
     //    15 more bits available in the higher word (minus the sign-bit)
 
@@ -509,6 +512,44 @@ public class Author
         dest.writeString(mGivenNames);
         dest.writeInt(mIsComplete ? 1 : 0);
         dest.writeInt(mType);
+    }
+
+    /**
+     * Write the extra data to the JSON object.
+     *
+     * @param data which {@link #fromJson(JSONObject)} will read
+     *
+     * @throws JSONException on failure
+     */
+    public void toJson(@NonNull final JSONObject data)
+            throws JSONException {
+
+        if (mIsComplete) {
+            data.put(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, true);
+        }
+        if (mType != Author.TYPE_UNKNOWN) {
+            data.put(DBDefinitions.KEY_AUTHOR_TYPE, mType);
+        }
+    }
+
+    /**
+     * Read the extra data from the JSON object.
+     *
+     * @param data as written by {@link #toJson(JSONObject)}
+     */
+    public void fromJson(@NonNull final JSONObject data) {
+
+        if (data.has(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
+            mIsComplete = data.optBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+        } else if (data.has("complete")) {
+            mIsComplete = data.optBoolean("complete");
+        }
+
+        if (data.has(DBDefinitions.KEY_AUTHOR_TYPE)) {
+            setType(data.optInt(DBDefinitions.KEY_AUTHOR_TYPE));
+        } else if (data.has("type")) {
+            setType(data.optInt("type"));
+        }
     }
 
     @NonNull

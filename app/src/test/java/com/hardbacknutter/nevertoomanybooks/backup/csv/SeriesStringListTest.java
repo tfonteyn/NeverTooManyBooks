@@ -61,10 +61,10 @@ class SeriesStringListTest {
     private static final String ENCODED =
             "Jerry Cornelius"
             + "|"
-            + "Dancers (5) * {\"complete\":true}"
+            + "Dancers (5) * {\"series_complete\":true}"
             + "|"
             + "Cornelius Chronicles, The (8\\|8 as includes The Alchemist's Question)"
-            + " * {\"complete\":true}"
+            + " * {\"series_complete\":true}"
             + "|"
             + "Eternal Champion, The (984\\|Jerry Cornelius Calendar 4 as includes"
             + " The Alchemist's \\\\* Question)";
@@ -93,7 +93,7 @@ class SeriesStringListTest {
 
     @Test
     void decode() {
-        List<Series> decoded = mCoder.decode(ENCODED);
+        List<Series> decoded = mCoder.decodeList(ENCODED);
         assertEquals(SERIES.length, decoded.size());
 
         Series series;

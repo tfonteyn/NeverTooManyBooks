@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
  * and can be missing.
  */
-public final class CsvCoder {
+final class CsvCoder {
 
     /**
      * Find the publication year in a string like "some title (1978-04-22)".
@@ -66,23 +66,18 @@ public final class CsvCoder {
                                                                 + "|[1|2]\\d\\d\\d-\\d\\d"
                                                                 + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
                                                                 + "\\)");
-    /** JSON tags used. */
-    private static final String JSON_COMPLETE = "complete";
-    private static final String JSON_TYPE = "type";
-    private static final String JSON_STYLE = "style";
-
     /** pre-configured coder/decoder for Author elements. */
     @Nullable
-    private static StringList<Author> sAuthorUtils;
+    private static StringList<Author> sAuthorCoder;
     /** pre-configured coder/decoder for Series elements. */
     @Nullable
-    private static StringList<Series> sSeriesUtils;
+    private static StringList<Series> sSeriesCoder;
     /** pre-configured coder/decoder for TocEntry elements. */
     @Nullable
-    private static StringList<TocEntry> sTocUtils;
+    private static StringList<TocEntry> sTocCoder;
     /** pre-configured  coder/decoder for Bookshelf elements. */
     @Nullable
-    private static StringList<Bookshelf> sBookshelfUtils;
+    private static StringList<Bookshelf> sBookshelfCoder;
 
     private CsvCoder() {
     }
@@ -99,11 +94,10 @@ public final class CsvCoder {
      *
      * @return StringList factory
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static StringList<Author> getAuthorCoder() {
-        if (sAuthorUtils == null) {
-            sAuthorUtils = new StringList<>(new StringList.Factory<Author>() {
+    static StringList<Author> getAuthorCoder() {
+        if (sAuthorCoder == null) {
+            sAuthorCoder = new StringList<>(new StringList.Factory<Author>() {
                 private final char[] escapeChars = {Author.NAME_SEPARATOR, ' ', '(', ')'};
 
                 @Override
@@ -114,9 +108,9 @@ public final class CsvCoder {
                     if (parts.size() > 1) {
                         try {
                             JSONObject details = new JSONObject(parts.get(1));
-                            author.setComplete(details.optBoolean(JSON_COMPLETE));
-                            author.setType(details.optInt(JSON_TYPE));
+                            author.fromJson(details);
                         } catch (@NonNull final JSONException ignore) {
+                            // ignore
                         }
                     }
                     return author;
@@ -134,15 +128,11 @@ public final class CsvCoder {
 
                     JSONObject details = new JSONObject();
                     try {
-                        if (author.isComplete()) {
-                            details.put(JSON_COMPLETE, author.isComplete());
-                        }
-                        if (author.getType() != Author.TYPE_UNKNOWN) {
-                            details.put(JSON_TYPE, author.getType());
-                        }
+                        author.toJson(details);
                     } catch (@NonNull final JSONException e) {
                         throw new IllegalStateException(e);
                     }
+
                     if (details.length() != 0) {
                         result += ' ' + String.valueOf(getObjectSeparator())
                                   + ' ' + details.toString();
@@ -151,7 +141,7 @@ public final class CsvCoder {
                 }
             });
         }
-        return sAuthorUtils;
+        return sAuthorCoder;
     }
 
     /**
@@ -166,9 +156,9 @@ public final class CsvCoder {
      * @return StringList factory
      */
     @NonNull
-    public static StringList<Series> getSeriesCoder() {
-        if (sSeriesUtils == null) {
-            sSeriesUtils = new StringList<>(new StringList.Factory<Series>() {
+    static StringList<Series> getSeriesCoder() {
+        if (sSeriesCoder == null) {
+            sSeriesCoder = new StringList<>(new StringList.Factory<Series>() {
                 private final char[] escapeChars = {'(', ')'};
 
                 @Override
@@ -179,8 +169,9 @@ public final class CsvCoder {
                     if (parts.size() > 1) {
                         try {
                             JSONObject details = new JSONObject(parts.get(1));
-                            series.setComplete(details.optBoolean(JSON_COMPLETE));
+                            series.fromJson(details);
                         } catch (@NonNull final JSONException ignore) {
+                            // ignore
                         }
                     }
                     return series;
@@ -190,21 +181,19 @@ public final class CsvCoder {
                 @Override
                 public String encode(@NonNull final Series series) {
                     String result = escape(series.getTitle(), escapeChars);
-
                     if (!series.getNumber().isEmpty()) {
                         // start with a space for readability
                         // the surrounding () are NOT escaped as they are part of the format.
-                        result += " (" + escape(series.getNumber(), escapeChars) + ")";
+                        result += " (" + escape(series.getNumber(), escapeChars) + ')';
                     }
 
                     JSONObject details = new JSONObject();
                     try {
-                        if (series.isComplete()) {
-                            details.put(JSON_COMPLETE, series.isComplete());
-                        }
+                        series.toJson(details);
                     } catch (@NonNull final JSONException e) {
                         throw new IllegalStateException(e);
                     }
+
                     if (details.length() != 0) {
                         result += ' ' + String.valueOf(getObjectSeparator())
                                   + ' ' + details.toString();
@@ -213,7 +202,7 @@ public final class CsvCoder {
                 }
             });
         }
-        return sSeriesUtils;
+        return sSeriesCoder;
     }
 
     /**
@@ -227,11 +216,10 @@ public final class CsvCoder {
      *
      * @return StringList factory
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static StringList<TocEntry> getTocCoder() {
-        if (sTocUtils == null) {
-            sTocUtils = new StringList<>(new StringList.Factory<TocEntry>() {
+    static StringList<TocEntry> getTocCoder() {
+        if (sTocCoder == null) {
+            sTocCoder = new StringList<>(new StringList.Factory<TocEntry>() {
                 private final char[] escapeChars = {'(', ')'};
 
                 /**
@@ -280,11 +268,12 @@ public final class CsvCoder {
 
                     return result
                            + ' ' + getObjectSeparator()
+                           // we only use the name here
                            + ' ' + getAuthorCoder().encodeElement(tocEntry.getAuthor());
                 }
             });
         }
-        return sTocUtils;
+        return sTocCoder;
     }
 
     /**
@@ -295,11 +284,10 @@ public final class CsvCoder {
      *
      * @return StringList factory
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static StringList<Bookshelf> getBookshelfCoder() {
-        if (sBookshelfUtils == null) {
-            sBookshelfUtils = new StringList<>(new StringList.Factory<Bookshelf>() {
+    static StringList<Bookshelf> getBookshelfCoder() {
+        if (sBookshelfCoder == null) {
+            sBookshelfCoder = new StringList<>(new StringList.Factory<Bookshelf>() {
                 private final char[] escapeChars = {'(', ')'};
 
                 /**
@@ -314,48 +302,43 @@ public final class CsvCoder {
                 @NonNull
                 public Bookshelf decode(@NonNull final String element) {
                     List<String> parts = StringList.newInstance().decodeElement(element);
-                    String name = parts.get(0);
-                    String uuid = null;
+                    // the right thing to do would be: get a database and get the 'real'
+                    // default style. As this is a lot of overkill for importing,
+                    // and as hopefully the element will contain a UUID anyhow,
+                    // we're just using the builtin default.
+                    Bookshelf bookshelf = new Bookshelf(parts.get(0),
+                                                        BooklistStyle.Builtin.DEFAULT);
                     if (parts.size() > 1) {
                         try {
                             JSONObject details = new JSONObject(parts.get(1));
-                            uuid = details.optString(JSON_STYLE);
-                            // it's quite possible that the UUID is not a style we (currently)
-                            // know. But that does not matter as we'll check it upon first access.
+                            bookshelf.fromJson(details);
                         } catch (@NonNull final JSONException ignore) {
+                            // ignore
                         }
                     }
-
-                    if (uuid != null && !uuid.isEmpty()) {
-                        return new Bookshelf(name, uuid);
-                    }
-                    // the right thing to do would be: get a database and get the 'real'
-                    // default style. As this is a lot of overkill for importing,
-                    // we're just using the builtin default.
-                    return new Bookshelf(name, BooklistStyle.Builtin.DEFAULT);
+                    return bookshelf;
                 }
 
                 @NonNull
                 @Override
                 public String encode(@NonNull final Bookshelf bookshelf) {
-                    String s = escape(bookshelf.getName(), escapeChars);
+                    String result = escape(bookshelf.getName(), escapeChars);
 
                     JSONObject details = new JSONObject();
                     try {
-                        if (!bookshelf.getStyleUuid().isEmpty()) {
-                            details.put(JSON_STYLE, bookshelf.getStyleUuid());
-                        }
+                        bookshelf.toJson(details);
                     } catch (@NonNull final JSONException e) {
                         throw new IllegalStateException(e);
                     }
 
                     if (details.length() != 0) {
-                        s += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
+                        result += ' ' + String.valueOf(getObjectSeparator())
+                                  + ' ' + details.toString();
                     }
-                    return s;
+                    return result;
                 }
             });
         }
-        return sBookshelfUtils;
+        return sBookshelfCoder;
     }
 }

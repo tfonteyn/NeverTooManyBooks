@@ -72,9 +72,9 @@ class AuthorStringListTest {
             + "|"
             + "Giroud, Frank"
             + "|"
-            + "Meyer, Ralph * {\"type\":36864}"
+            + "Meyer, Ralph * {\"author_type\":36864}"
             + "|"
-            + "Van\\ der\\ Heide\\ Produkties, Zandvoort * {\"type\":16}"
+            + "Van\\ der\\ Heide\\ Produkties, Zandvoort * {\"author_type\":16}"
             + "|"
             + "\\(\\\\*3\\), Don";
 
@@ -102,7 +102,7 @@ class AuthorStringListTest {
 
     @Test
     void decode() {
-        List<Author> decoded = mCoder.decode(ENCODED);
+        List<Author> decoded = mCoder.decodeList(ENCODED);
         assertEquals(AUTHORS.length, decoded.size());
         Author author;
 

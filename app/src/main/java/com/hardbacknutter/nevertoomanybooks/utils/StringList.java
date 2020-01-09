@@ -56,12 +56,24 @@ public class StringList<E> {
 
     /**
      * Convenience constructor for a StringList consisting of String elements.
+     *
+     * @return instance
      */
     public static StringList<String> newInstance() {
         return new StringList<>(new Factory<String>() {
+            @NonNull
+            @Override
+            public String encode(@NonNull final String obj) {
+                return obj;
+            }
+
+            @NonNull
+            @Override
+            public String decode(@NonNull final String element) {
+                return element;
+            }
         });
     }
-
 
     /**
      * Decode the StringList into a list of <strong>elements</strong>.
@@ -71,7 +83,7 @@ public class StringList<E> {
      * @return ArrayList (so it's Parcelable) of elements
      */
     @NonNull
-    public ArrayList<E> decode(@Nullable final CharSequence stringList) {
+    public ArrayList<E> decodeList(@Nullable final CharSequence stringList) {
         return decode(stringList, mFactory.getElementSeparator(), false);
     }
 
@@ -107,10 +119,10 @@ public class StringList<E> {
             return list;
         }
 
-        boolean inEsc = false;
+        boolean isEsc = false;
         for (int i = 0; i < stringList.length(); i++) {
             char c = stringList.charAt(i);
-            if (inEsc) {
+            if (isEsc) {
                 switch (c) {
                     case '\\':
                         sb.append('\\');
@@ -132,10 +144,11 @@ public class StringList<E> {
                         sb.append(c);
                         break;
                 }
-                inEsc = false;
+                isEsc = false;
+
             } else {
                 if (c == '\\') {
-                    inEsc = true;
+                    isEsc = true;
 
                 } else if (c == delimiter) {
                     // we reached the end of an element
@@ -187,13 +200,7 @@ public class StringList<E> {
     }
 
     /**
-     * A factory is responsible for encoding and decoding individual elements.
-     *
-     * <strong>All</strong> methods have defaults with
-     * <ul>
-     * <li>{@link #encode} method returning toString()</li>
-     * <li>{@link #decode} returning the input</li>
-     * </ul>
+     * A factory is responsible for encoding and decoding <strong>individual</strong> elements.
      *
      * @param <E> type of element.
      */
@@ -201,32 +208,23 @@ public class StringList<E> {
 
         /**
          * Encode an object to a String representation.
-         * <p>
-         * The default implementation returns the input as a toString().
          *
          * @param obj Object to encode
          *
          * @return string
          */
         @NonNull
-        default String encode(@NonNull final E obj) {
-            return obj.toString();
-        }
+        String encode(@NonNull E obj);
 
         /**
          * Decode a <string>SINGLE</string> element.
-         * <p>
-         * The default implementation returns the input.
          *
          * @param element to decode
          *
          * @return the object
          */
         @NonNull
-        default E decode(@NonNull final String element) {
-            //noinspection unchecked
-            return (E) element;
-        }
+        E decode(@NonNull String element);
 
 
         /**

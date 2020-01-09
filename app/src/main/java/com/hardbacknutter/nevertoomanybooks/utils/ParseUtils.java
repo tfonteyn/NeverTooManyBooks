@@ -147,11 +147,11 @@ public final class ParseUtils {
             return "";
         }
 
-        boolean inEsc = false;
+        boolean isEsc = false;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < source.length(); i++) {
             char c = source.charAt(i);
-            if (inEsc) {
+            if (isEsc) {
                 switch (c) {
                     case '\\':
                         sb.append('\\');
@@ -173,10 +173,10 @@ public final class ParseUtils {
                         sb.append(c);
                         break;
                 }
-                inEsc = false;
+                isEsc = false;
             } else {
                 if (c == '\\') {
-                    inEsc = true;
+                    isEsc = true;
                 } else {
                     // keep building the element string
                     sb.append(c);

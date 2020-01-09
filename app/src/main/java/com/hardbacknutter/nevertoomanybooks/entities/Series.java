@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,6 +44,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -178,9 +181,9 @@ public class Series
 
     /** Remove any leading zeros from Series number. */
     private static final Pattern PURE_NUMERICAL_PATTERN = Pattern.compile("^[0-9]+$");
-
-
+    /** Row ID. */
     private long mId;
+    /** Series title. */
     @NonNull
     private String mTitle;
     /** whether we have all we want from this Series / if the Series is finished. */
@@ -483,7 +486,6 @@ public class Series
                || modified;
     }
 
-
     /**
      * @return {@code true} if the Series is complete
      */
@@ -513,6 +515,34 @@ public class Series
         dest.writeString(mTitle);
         dest.writeInt(mIsComplete ? 1 : 0);
         dest.writeString(mNumber);
+    }
+
+    /**
+     * Write the extra data to the JSONObject.
+     *
+     * @param data which {@link #fromJson(JSONObject)} will read
+     *
+     * @throws JSONException on failure
+     */
+    public void toJson(@NonNull final JSONObject data)
+            throws JSONException {
+
+        if (mIsComplete) {
+            data.put(DBDefinitions.KEY_SERIES_IS_COMPLETE, true);
+        }
+    }
+
+    /**
+     * Read the extra data from the JSONObject.
+     *
+     * @param data as written by {@link #toJson(JSONObject)}
+     */
+    public void fromJson(@NonNull final JSONObject data) {
+        if (data.has(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
+            mIsComplete = data.optBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+        } else if (data.has("complete")) {
+            mIsComplete = data.optBoolean("complete");
+        }
     }
 
     @Override
