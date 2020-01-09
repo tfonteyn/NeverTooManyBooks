@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -442,7 +442,7 @@ public class SearchCoordinator
     /**
      * Indicate we want a thumbnail.
      *
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      */
     public void setFetchThumbnail(@Nullable final boolean[] fetchThumbnail) {
         mFetchThumbnail = fetchThumbnail;

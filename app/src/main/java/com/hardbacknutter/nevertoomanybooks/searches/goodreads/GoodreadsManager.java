@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -602,6 +602,7 @@ public class GoodreadsManager
      * <p>
      * See {@link DAO#fetchBookForExportToGoodreads}
      *
+     * @param context    Current context
      * @param db         Database Access
      * @param bookCursor single book to send
      *
@@ -882,7 +883,10 @@ public class GoodreadsManager
     /**
      * Wrapper to search for a book.
      *
-     * @param context Current context
+     * @param context        Current context
+     * @param bookId         Goodreads book id to get
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to save results in (passed in to allow mocking)
      *
      * @return Bundle of GoodreadsWork objects
      *
@@ -909,8 +913,8 @@ public class GoodreadsManager
      *
      * @param context        Current context
      * @param isbnStr        to search for
-     * @param fetchThumbnail Flag whether to get a thumbnail or not
-     *
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to save results in (passed in to allow mocking)
      * @return Bundle of GoodreadsWork objects
      *
      * @throws CredentialsException  with GoodReads

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -184,7 +184,7 @@ public class Book
      * Populate a book object with the fields from the bundle.
      * Can contain an id, but does not have.
      *
-     * @param bookData Bundle with book data
+     * @param bookData Bundle with book data to load
      */
     public Book(@NonNull final Bundle bookData) {
         addValidators();

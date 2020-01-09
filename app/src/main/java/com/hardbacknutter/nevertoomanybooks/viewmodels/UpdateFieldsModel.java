@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -646,7 +646,7 @@ public class UpdateFieldsModel
      *
      * @param context         Current context
      * @param requestedFields the FieldUsage map to clean up
-     * @param bookData        to filter on
+     * @param bookData        Bundle with keys to filter on
      *
      * @return the filtered FieldUsage map
      */

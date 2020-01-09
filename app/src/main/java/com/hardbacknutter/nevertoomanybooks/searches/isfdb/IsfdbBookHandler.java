@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -89,6 +89,8 @@ public class IsfdbBookHandler
     private static final Pattern YEAR_PATTERN = Pattern.compile(DOT + " \\(([1|2]\\d\\d\\d)\\)");
     /** ISFDB uses 00 for the day/month when unknown. We cut that out. */
     private static final Pattern UNKNOWN_M_D_PATTERN = Pattern.compile("-00", Pattern.LITERAL);
+    /** A CSS select query. */
+    private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
 
     /*
      * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
@@ -155,6 +157,7 @@ public class IsfdbBookHandler
 
     @NonNull
     private final Context mLocalizedContext;
+    @NonNull
     private final String mBaseUrl;
     /** The fully qualified ISFDB search url. */
     private String mPath;
@@ -204,7 +207,8 @@ public class IsfdbBookHandler
      *
      * @param isfdbId          ISFDB native book ID (as a String)
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param fetchThumbnail   whether to get thumbnails as well
+     * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
+     * @param bookData         Bundle to save results in (passed in to allow mocking)
      *
      * @return Bundle with book data
      *
@@ -224,7 +228,8 @@ public class IsfdbBookHandler
      *
      * @param path             A fully qualified ISFDB search url
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param fetchThumbnail   whether to get thumbnails as well
+     * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
+     * @param bookData         Bundle to save results in (passed in to allow mocking)
      *
      * @return Bundle with book data
      *
@@ -251,7 +256,8 @@ public class IsfdbBookHandler
      *
      * @param editions         List of ISFDB Editions with native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param fetchThumbnail   whether to get thumbnails as well
+     * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
+     * @param bookData         Bundle to save results in (passed in to allow mocking)
      *
      * @return Bundle with book data
      *
@@ -441,9 +447,9 @@ public class IsfdbBookHandler
      * }
      * </pre>
      *
-     * @param bookData         to populate
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
-     * @param fetchThumbnail   whether to get thumbnails as well
+     * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
+     * @param bookData         Bundle to save results in (passed in to allow mocking)
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      *
@@ -456,7 +462,7 @@ public class IsfdbBookHandler
                     @NonNull final boolean[] fetchThumbnail)
             throws SocketTimeoutException {
 
-        Elements allContentBoxes = mDoc.select("div.contentbox");
+        Elements allContentBoxes = mDoc.select(CSS_Q_DIV_CONTENTBOX);
         // sanity check
         if (allContentBoxes == null) {
             if (BuildConfig.DEBUG /* always */) {
@@ -719,7 +725,7 @@ public class IsfdbBookHandler
              *     }
              * </pre>
              */
-            Element img = mDoc.selectFirst("div.contentbox").selectFirst("img");
+            Element img = mDoc.selectFirst(CSS_Q_DIV_CONTENTBOX).selectFirst("img");
             if (img != null) {
                 fetchCover(mLocalizedContext, img.attr("src"), bookData);
             }
@@ -758,7 +764,7 @@ public class IsfdbBookHandler
      * So for Amazon we only get a single link which is ok as the ASIN is the same in all.
      *
      * @param elements LI elements
-     * @param bookData bundle to store the findings.
+     * @param bookData Bundle to populate
      */
     private void handleExternalIdElements(@NonNull final Iterable<Element> elements,
                                           @NonNull final Bundle bookData) {
@@ -844,7 +850,7 @@ public class IsfdbBookHandler
      *
      * @param appContext Application context
      * @param coverUrl   fully qualified url
-     * @param bookData   destination bundle
+     * @param bookData   Bundle to populate
      */
     private void fetchCover(@NonNull final Context appContext,
                             @NonNull final String coverUrl,
@@ -909,7 +915,7 @@ public class IsfdbBookHandler
         }
 
         // <div class="ContentBox"> but there are two, so get last one
-        Element contentBox = mDoc.select("div.contentbox").last();
+        Element contentBox = mDoc.select(CSS_Q_DIV_CONTENTBOX).last();
         Elements lis = contentBox.select("li");
         for (Element li : lis) {
 
@@ -1056,13 +1062,12 @@ public class IsfdbBookHandler
      * ISFDB specific field names we add to the bundle based on parsed XML data.
      */
     static class BookField {
-
-//        private static final String AUTHOR_ID = "__ISFDB_AUTHORS_ID";
-//        private static final String SERIES_ID = "__ISFDB_SERIES_ID";
-//        private static final String PUBLISHER_ID = "__ISFDB_PUBLISHER_ID";
-//        private static final String EDITORS_ID = "__ISFDB_EDITORS_ID";
-//        private static final String BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID";
-//        private static final String BOOK_COVER_ART_TXT = "__BOOK_COVER_ART_TXT";
+        // private static final String AUTHOR_ID = "__ISFDB_AUTHORS_ID";
+        // private static final String SERIES_ID = "__ISFDB_SERIES_ID";
+        // private static final String PUBLISHER_ID = "__ISFDB_PUBLISHER_ID";
+        // private static final String EDITORS_ID = "__ISFDB_EDITORS_ID";
+        // private static final String BOOK_COVER_ARTIST_ID = "__ISFDB_BOOK_COVER_ARTIST_ID";
+        // private static final String BOOK_COVER_ART_TXT = "__BOOK_COVER_ART_TXT";
 
         static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
         static final String ISBN_2 = "__ISFDB_ISBN2";

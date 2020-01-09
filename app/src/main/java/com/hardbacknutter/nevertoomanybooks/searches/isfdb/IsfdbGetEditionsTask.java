@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,6 +50,7 @@ public class IsfdbGetEditionsTask
     /** Log tag. */
     private static final String TAG = "IsfdbGetEditionsTask";
 
+    /** The isbn we're looking up. */
     @NonNull
     private final String mIsbn;
 

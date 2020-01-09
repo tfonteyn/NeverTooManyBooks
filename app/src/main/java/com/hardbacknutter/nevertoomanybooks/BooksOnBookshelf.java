@@ -54,6 +54,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -103,7 +104,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
@@ -120,6 +120,7 @@ public class BooksOnBookshelf
     private static final String TAG = "BooksOnBookshelf";
 
     /**
+     * List header.
      * Views for the current row level-text.
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
@@ -347,9 +348,8 @@ public class BooksOnBookshelf
         mListView.setLayoutManager(mLayoutManager);
         mListView.addOnScrollListener(mUpdateHeaderScrollListener);
         mListView.addOnScrollListener(mUpdateFABVisibility);
-        // using CardView now, so disabling.... but TEST performance of CardView
-//        mListView.addItemDecoration(
-//                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
+        mListView.addItemDecoration(
+                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
 
         // see class docs for FastScrollerOverlay
         if (!(mListView instanceof CFSRecyclerView)) {
@@ -761,13 +761,8 @@ public class BooksOnBookshelf
         }
         super.onResume();
 
-        // get out, nothing to do.
-        if (isFinishing() || isDestroyed()) {
-            return;
-        }
-
         // don't build the list needlessly
-        if (isRecreating()) {
+        if (isRecreating() || isFinishing() || isDestroyed()) {
             return;
         }
 
@@ -810,9 +805,10 @@ public class BooksOnBookshelf
             }
 
             //URGENT: temporary debug: fix the rebuild.
-            initBookList();
-//            //noinspection ConstantConditions
-//            displayList(mModel.getBuilder().getNewListCursor(), mModel.getCurrentTargetRows());
+            Snackbar.make(mListView, "reusing existing list", Snackbar.LENGTH_SHORT);
+            //initBookList();
+            //noinspection ConstantConditions
+            displayList(mModel.getBuilder().getNewListCursor(), mModel.getTargetRows());
         }
 
         // always reset for next iteration.
@@ -872,21 +868,20 @@ public class BooksOnBookshelf
         int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
         if (layoutPosition != RecyclerView.NO_POSITION) {
+            // save position before
+            savePosition();
 
             BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
                     mListView.findViewHolderForLayoutPosition(layoutPosition);
             //noinspection ConstantConditions
             int absPos = holder.absolutePosition;
 
-            // save position before
-            savePosition();
-
             // get the builder from the current cursor; expand/collapse and save the new position
             BooklistBuilder booklistBuilder = mModel.getBuilder();
             if (booklistBuilder != null) {
                 booklistBuilder.expandNodes(topLevel, expand);
                 // save position after
-                savePosition(booklistBuilder.getListPosition(absPos));
+                mModel.savePosition(booklistBuilder.getListPosition(absPos), mListView);
 
                 // pass in the new cursor and display the list.
                 displayList(booklistBuilder.getNewListCursor(), null);
@@ -938,7 +933,6 @@ public class BooksOnBookshelf
             Log.d(TAG, "initBookList", new Throwable());
         }
 
-        LocaleUtils.insanityCheck(this);
         // go create
         mModel.initBookList(this);
         mProgressBar.setVisibility(View.VISIBLE);
@@ -1008,14 +1002,10 @@ public class BooksOnBookshelf
 
         //noinspection ConstantConditions
         final int count = mModel.getListCursor().getCount();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "EXIT|displayList|count=" + count);
-        }
-
         // Restore saved position
         if (mModel.getTopRow() >= count) {
             // the list is shorter than it used to be, just scroll to the end
-            savePosition(count - 1);
+            mModel.savePosition(count - 1, mListView);
             mLayoutManager.scrollToPosition(mModel.getTopRow());
         } else {
             mLayoutManager.scrollToPositionWithOffset(mModel.getTopRow(), mModel.getTopRowOffset());
@@ -1577,13 +1567,6 @@ public class BooksOnBookshelf
     /**
      * Save current position information.
      */
-    private void savePosition(final int topRow) {
-        if (!isDestroyed()) {
-            mModel.savePosition(topRow, mListView);
-        }
-    }
-
-    /** Convenience method for {@link #savePosition(int)}. */
     private void savePosition() {
         if (!isDestroyed()) {
             mModel.savePosition(mLayoutManager.findFirstVisibleItemPosition(), mListView);

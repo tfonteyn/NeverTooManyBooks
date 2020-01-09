@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -653,7 +653,7 @@ public class BooklistStyle
     private String createUniqueName(@NonNull final Context appContext) {
         mUuid = UUID.randomUUID().toString();
         appContext.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
-                  .edit().putString(Prefs.pk_bob_uuid, mUuid).apply();
+                  .edit().putString(Prefs.PK_STYLE_UUID, mUuid).apply();
         return mUuid;
     }
 

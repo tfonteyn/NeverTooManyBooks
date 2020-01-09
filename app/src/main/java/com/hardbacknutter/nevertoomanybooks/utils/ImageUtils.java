@@ -497,7 +497,7 @@ public final class ImageUtils {
         File file = StorageUtils.getTempCoverFile(context, fullName);
 
         while (retry > 0) {
-            try (TerminatorConnection con = TerminatorConnection.openConnection(context, url)) {
+            try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
                 file = StorageUtils.saveInputStreamToFile(context, con.getInputStream(), file);
                 return file != null ? file.getAbsolutePath() : null;
 
@@ -536,7 +536,7 @@ public final class ImageUtils {
         int retry = NR_OF_TRIES;
 
         while (retry > 0) {
-            try (TerminatorConnection con = TerminatorConnection.openConnection(context, url);
+            try (TerminatorConnection con = TerminatorConnection.open(context, url);
                  ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                 // Save the output to a byte output stream
                 byte[] buffer = new byte[BUFFER_SIZE];

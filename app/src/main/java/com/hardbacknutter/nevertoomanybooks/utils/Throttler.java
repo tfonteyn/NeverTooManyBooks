@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,16 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Define as a static.
+ * <pre>
+ * {@code
+ *     @NonNull
+ *     private static final Throttler THROTTLER = new Throttler();
+ * }
+ * </pre>
+ * Use where needed: {@code THROTTLER.waitUntilRequestAllowed(); }
+ */
 public class Throttler {
 
     //    /** Log tag. */

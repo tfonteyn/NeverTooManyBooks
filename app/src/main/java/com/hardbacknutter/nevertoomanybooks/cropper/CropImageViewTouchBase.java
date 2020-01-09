@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -148,7 +148,7 @@ public abstract class CropImageViewTouchBase
             return;
         }
 
-        int type = PIntString.getListPreference(Prefs.pk_compat_image_cropper_layer_type,
+        int type = PIntString.getListPreference(Prefs.pk_image_cropper_layer_type,
                                                 LAYER_TYPE_USE_DEFAULT);
         if (type == LAYER_TYPE_USE_DEFAULT) {
             return;

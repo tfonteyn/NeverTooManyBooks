@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -163,8 +163,8 @@ public final class TerminatorConnection
      */
     @WorkerThread
     @NonNull
-    public static TerminatorConnection openConnection(@NonNull final Context appContext,
-                                                      @NonNull final String urlStr)
+    public static TerminatorConnection open(@NonNull final Context appContext,
+                                            @NonNull final String urlStr)
             throws IOException {
         try {
             TerminatorConnection tCon = new TerminatorConnection(appContext, urlStr);

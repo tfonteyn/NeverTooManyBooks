@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -141,7 +141,7 @@ public class SearchTask
     /**
      * Set flag.
      *
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      */
     void setFetchThumbnail(@Nullable final boolean[] fetchThumbnail) {
         if (fetchThumbnail == null || fetchThumbnail.length == 0) {
@@ -154,16 +154,16 @@ public class SearchTask
     @Override
     @Nullable
     protected Bundle doInBackground(final Void... voids) {
-        Context localContext = App.getLocalizedAppContext();
-        Thread.currentThread().setName("SearchTask "
-                                       + localContext.getString(mSearchEngine.getNameResId()));
+        Context localizedAppContext = App.getLocalizedAppContext();
+        Thread.currentThread()
+              .setName(TAG + ' ' + localizedAppContext.getString(mSearchEngine.getNameResId()));
 
         publishProgress(new TaskListener.ProgressMessage(mTaskId, mProgressTitle));
 
         try {
             // can we reach the site ?
-            NetworkUtils.poke(localContext,
-                              mSearchEngine.getUrl(localContext),
+            NetworkUtils.poke(localizedAppContext,
+                              mSearchEngine.getUrl(localizedAppContext),
                               mSearchEngine.getConnectTimeoutMs());
 
             Bundle bookData;
@@ -177,27 +177,28 @@ public class SearchTask
             if (mNativeId != null && !mNativeId.isEmpty()
                 && mSearchEngine instanceof SearchEngine.ByNativeId) {
                 bookData = ((SearchEngine.ByNativeId) mSearchEngine)
-                        .searchByNativeId(localContext, mNativeId, mFetchThumbnail);
+                        .searchByNativeId(localizedAppContext, mNativeId, mFetchThumbnail);
 
                 // If we have a valid ISBN, ...
             } else if (ISBN.isValidIsbn(mIsbn)
                        && mSearchEngine instanceof SearchEngine.ByIsbn) {
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                        .searchByIsbn(localContext, mIsbn, mFetchThumbnail);
+                        .searchByIsbn(localizedAppContext, mIsbn, mFetchThumbnail);
 
                 // If we have a generic barcode, ...
             } else if (mIsbn != null && !mIsbn.isEmpty()
                        && mSearchEngine instanceof SearchEngine.ByBarcode) {
                 bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                        .searchByIsbn(localContext, mIsbn, mFetchThumbnail);
+                        .searchByIsbn(localizedAppContext, mIsbn, mFetchThumbnail);
 
                 // The implementation is supposed to check the data, so no more checks here.
             } else if (mSearchEngine instanceof SearchEngine.ByText) {
                 bookData = ((SearchEngine.ByText) mSearchEngine)
-                        .search(localContext, mIsbn, mAuthor, mTitle, mPublisher, mFetchThumbnail);
+                        .search(localizedAppContext, mIsbn, mAuthor, mTitle, mPublisher,
+                                mFetchThumbnail);
 
             } else {
-                String name = localContext.getString(mSearchEngine.getNameResId());
+                String name = localizedAppContext.getString(mSearchEngine.getNameResId());
                 throw new IllegalStateException("search engine " + name
                                                 + " does not implement any search?");
             }
@@ -209,7 +210,7 @@ public class SearchTask
             return bookData;
 
         } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
-            Logger.error(localContext, TAG, e);
+            Logger.error(localizedAppContext, TAG, e);
             mException = e;
             return null;
         }

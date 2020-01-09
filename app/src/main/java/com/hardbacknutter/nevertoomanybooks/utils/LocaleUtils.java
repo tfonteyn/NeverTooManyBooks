@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -299,7 +299,7 @@ public final class LocaleUtils {
         return context;
     }
 
-    public static void insanityCheck(@NonNull final Context context) {
+    private static void insanityCheck(@NonNull final Context context) {
         String persistedIso3 = createLocale(getPersistedLocaleSpec(context)).getISO3Language();
         String conIso3 = getConfiguredLocale(context).getISO3Language();
         String defIso3 = Locale.getDefault().getISO3Language();

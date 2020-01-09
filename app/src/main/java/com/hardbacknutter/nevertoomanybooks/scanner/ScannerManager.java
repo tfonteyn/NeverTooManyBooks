@@ -71,8 +71,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * NEWTHINGS: adding a scanner
  * - implement the {@link Scanner} interface
  * - create a {@link ScannerFactory} for it and add to {@link #SCANNER_FACTORIES}
+ * - add a new identifier here below
  * - add string/number to res/arrays/pe_scanning_preferred_scanner
- * - (optional) add to {@link #ALL_ACTIONS} and add a new identifier here below.
+ * - (optional) add to {@link #ALL_ACTIONS}.
  */
 public final class ScannerManager {
 
@@ -88,13 +89,13 @@ public final class ScannerManager {
             };
 
     /** Unique ID's to associate with each supported scanner intent. */
-    public static final int EMBEDDED_ZXING = 0;
-    public static final int GOOGLE_PLAY_SERVICES = 1;
-    public static final int ZXING = 2;
-    public static final int ZXING_COMPATIBLE = 3;
-    public static final int PIC2SHOP = 4;
+    private static final int EMBEDDED_ZXING = 0;
+    private static final int GOOGLE_PLAY_SERVICES = 1;
+    private static final int ZXING = 2;
+    private static final int ZXING_COMPATIBLE = 3;
+    private static final int PIC2SHOP = 4;
 
-    public static final int DEFAULT = EMBEDDED_ZXING;
+    private static final int DEFAULT = EMBEDDED_ZXING;
 
     /** Collection of ScannerFactory objects. */
     private static final SparseArray<Class> SCANNER_FACTORIES = new SparseArray<>();

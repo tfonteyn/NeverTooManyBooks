@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,9 +54,6 @@ public class StripInfoManager
 
     /** This is a Dutch language website. */
     public static final Locale SITE_LOCALE = new Locale("nl", "BE");
-//    /** Preferences prefix. */
-//    private static final String PREF_PREFIX = "stripinfo.";
-
 
     /** base urls. */
     public static final String BASE_URL = "https://stripinfo.be";

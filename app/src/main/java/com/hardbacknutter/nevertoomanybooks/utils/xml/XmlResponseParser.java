@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
@@ -57,7 +58,7 @@ public class XmlResponseParser
     /** Temporary storage for inter-tag text. */
     private final StringBuilder mBuilder = new StringBuilder();
     /** Stack of parsed tags giving context to the XML parser. */
-    private final ArrayList<ElementContext> mParents = new ArrayList<>();
+    private final List<ElementContext> mParents = new ArrayList<>();
 
     /**
      * Constructor. Requires a filter tree.

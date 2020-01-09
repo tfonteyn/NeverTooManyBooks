@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,10 +80,10 @@ public class Edition {
     @Override
     @NonNull
     public String toString() {
-        return "Edition{" +
-               "isfdbId=" + isfdbId +
-               ", isbn=`" + isbn + '`' +
-               ", doc? =" + (doc != null) +
-               '}';
+        return "Edition{"
+               + "isfdbId=" + isfdbId
+               + ", isbn=`" + isbn + '`'
+               + ", doc? =" + (doc != null)
+               + '}';
     }
 }

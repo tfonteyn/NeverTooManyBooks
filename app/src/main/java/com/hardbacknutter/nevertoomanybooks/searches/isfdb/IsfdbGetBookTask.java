@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,7 +99,7 @@ public class IsfdbGetBookTask
     @Nullable
     @WorkerThread
     protected Bundle doInBackground(final Void... params) {
-        Thread.currentThread().setName("IsfdbGetBookTask");
+        Thread.currentThread().setName(TAG);
         Context localContext = App.getLocalizedAppContext();
 
         try {

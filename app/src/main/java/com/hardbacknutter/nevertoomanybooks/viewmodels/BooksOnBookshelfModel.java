@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -643,6 +643,18 @@ public class BooksOnBookshelfModel
         mDesiredCentralBookId = bookId;
     }
 
+    /**
+     * Convenience method to hide the internals.
+     * <p>
+     * Get the target rows based on the current book position.
+     *
+     * @return RowDetails
+     */
+    @Nullable
+    public ArrayList<BooklistBuilder.RowDetails> getTargetRows() {
+        //noinspection ConstantConditions
+        return getBuilder().getTargetRows(mDesiredCentralBookId);
+    }
     /**
      * Check if this book is lend out, or not.
      *

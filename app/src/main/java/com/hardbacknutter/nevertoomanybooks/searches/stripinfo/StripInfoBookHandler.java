@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -211,8 +211,8 @@ public class StripInfoBookHandler
      * Get the book using the site native book id.
      *
      * @param nativeId       to search
-     * @param bookData       to populate
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to populate
      *
      * @return Bundle with book data
      *
@@ -236,8 +236,8 @@ public class StripInfoBookHandler
      * Fetch a book.
      *
      * @param path           to load
-     * @param bookData       to populate
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param bookData       Bundle to populate
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      *
      * @return Bundle with book data
      *
@@ -266,8 +266,8 @@ public class StripInfoBookHandler
      * Parses the downloaded {@link #mDoc}.
      * We only parse the <strong>first book</strong> found.
      *
-     * @param bookData       to populate
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param bookData       Bundle to populate
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      */
@@ -452,8 +452,8 @@ public class StripInfoBookHandler
      * A multi result page was returned. Try and parse it.
      * The <strong>first book</strong> link will be extracted and retries.
      *
-     * @param bookData       to populate
-     * @param fetchThumbnail whether to get thumbnails as well
+     * @param bookData       Bundle to populate
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      *
@@ -530,7 +530,7 @@ public class StripInfoBookHandler
      * This means we cannot implement {@link SearchEngine.CoverByIsbn}.
      *
      * @param url      fully qualified url
-     * @param bookData destination bundle
+     * @param bookData Bundle to populate
      * @param cIdx     0..n image index
      */
     private void fetchCover(@NonNull final String url,
@@ -606,7 +606,7 @@ public class StripInfoBookHandler
      * Extract the site native id from the url.
      *
      * @param titleUrlElement element containing the book url
-     * @param bookData        bundle to add to
+     * @param bookData        Bundle to populate
      */
     private void processSiteNativeId(@NonNull final Element titleUrlElement,
                                      @NonNull final Bundle bookData) {
@@ -741,7 +741,7 @@ public class StripInfoBookHandler
      *
      * @param td       label td
      * @param key      for this field
-     * @param bookData bundle to add to
+     * @param bookData bundle to populate
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -764,7 +764,7 @@ public class StripInfoBookHandler
      * - the color scheme of the comic.
      *
      * @param td       label td
-     * @param bookData bundle to add to
+     * @param bookData bundle to populate
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
@@ -888,7 +888,7 @@ public class StripInfoBookHandler
      * capture it.
      *
      * @param item     description element, containing 1+ sections
-     * @param bookData bundle to add to
+     * @param bookData bundle to populate
      */
     private void processDescription(@NonNull final Element item,
                                     @NonNull final Bundle bookData) {

@@ -61,18 +61,21 @@ public final class Prefs {
     public static final int STARTUP_BACKUP_COUNTDOWN = 5;
     /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
     public static final String PREF_STARTUP_BACKUP_COUNTDOWN = "startup.backupCountdown";
-
     /**
-     * Unique name. This is a stored in our preference file (with the same name)
+     * Style unique name. This is a stored in our preference file (with the same name)
      * and is used for backup/restore purposes as the 'ID'.
      */
-    public static final String pk_bob_uuid = "style.booklist.uuid";
+    public static final String PK_STYLE_UUID = "style.booklist.uuid";
+
+
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_author = "psk_style_author";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_series = "psk_style_series";
     /** PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_barcode_scanner = "psk_barcode_scanner";
+
+
     /** Preference Key. */
     public static final String pk_ui_locale = "ui.locale";
     public static final String pk_ui_theme = "ui.theme";
@@ -80,9 +83,9 @@ public final class Prefs {
     public static final String pk_tabs_edit_book_native_id = "edit.book.tab.nativeId";
 
     public static final String pk_network_allow_metered = "network.allow.metered";
-    public static final String pk_scanner_preferred = "scanner.preferred";
     public static final String pk_search_form_advanced = "search.form.advanced";
 
+    public static final String pk_scanner_preferred = "scanner.preferred";
     public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
     public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
     public static final String pk_sounds_scan_found_barcode = "sounds.scan.barcode.found";
@@ -93,13 +96,13 @@ public final class Prefs {
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
     public static final String pk_camera_image_action = "camera.image.action";
 
-    public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
     public static final String pk_image_cache_resized = "image.cache.resized";
+    public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
+    public static final String pk_image_cropper_layer_type = "compat.image.cropper.viewlayertype";
+
     public static final String pk_bob_levels_rebuild_state = "style.booklist.levels.rebuild.state";
     public static final String pk_bob_levels_default = "style.booklist.levels.default";
     public static final String pk_bob_use_task_for_extras = "style.booklist.task.extras";
-    public static final String pk_compat_image_cropper_layer_type =
-            "compat.image.cropper.viewlayertype";
     public static final String pk_bob_style_name = "style.booklist.name";
     public static final String pk_bob_groups = "style.booklist.groups";
     public static final String pk_bob_preferred_style = "style.booklist.preferred";

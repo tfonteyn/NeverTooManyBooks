@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -224,9 +224,7 @@ public class App
      */
     @NonNull
     public static Context getLocalizedAppContext() {
-        Context context = LocaleUtils.applyLocale(sInstance.getApplicationContext());
-        LocaleUtils.insanityCheck(context);
-        return context;
+        return LocaleUtils.applyLocale(sInstance.getApplicationContext());
     }
 
     /**

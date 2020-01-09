@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,8 @@ public class ShowBookByIdApiHandler
      * Perform a search and handle the results.
      *
      * @param id             the GoodReads book aka "work" id to get
-     * @param fetchThumbnail Set to {@code true} if we want to get a thumbnail
+     * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+     * @param bookData       Bundle to save results in (passed in to allow mocking)
      *
      * @return the Bundle of book data.
      *

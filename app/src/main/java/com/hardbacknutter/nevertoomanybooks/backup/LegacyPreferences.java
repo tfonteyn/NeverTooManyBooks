@@ -42,7 +42,6 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -67,6 +66,8 @@ public final class LegacyPreferences {
      * Refactoring brought a cleanup and re-structuring of the preferences.
      * Some of these are real migrations,
      * some just for aesthetics's making the key's naming standard.
+     *
+     * Not all keys are migrated.
      *
      * @param context Current context
      */
@@ -131,29 +132,6 @@ public final class LegacyPreferences {
 
                     case "SoundManager.BeepIfScannedIsbnValid":
                         ed.putBoolean(Prefs.pk_sounds_scan_isbn_valid, (Boolean) oldValue);
-                        break;
-
-                    case "ScannerManager.PreferredScanner":
-                        // original code:
-                        // public static final int SCANNER_ZXING_COMPATIBLE = 1;
-                        // public static final int SCANNER_PIC2SHOP = 2;
-                        // public static final int SCANNER_ZXING = 3;
-                        int scanner = (Integer) oldValue;
-                        switch (scanner) {
-                            case 1:
-                                scanner = ScannerManager.ZXING_COMPATIBLE;
-                                break;
-                            case 2:
-                                scanner = ScannerManager.PIC2SHOP;
-                                break;
-                            case 3:
-                                scanner = ScannerManager.ZXING;
-                                break;
-                            default:
-                                scanner = ScannerManager.DEFAULT;
-                                break;
-                        }
-                        ed.putString(Prefs.pk_scanner_preferred, String.valueOf(scanner));
                         break;
 
                     case "App.CropFrameWholeImage":

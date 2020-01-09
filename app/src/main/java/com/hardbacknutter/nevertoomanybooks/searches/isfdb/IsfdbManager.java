@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -236,17 +236,16 @@ public class IsfdbManager
 
     @NonNull
     @Override
-    public ArrayList<String> getAlternativeEditions(@NonNull final Context appContext,
-                                                    @NonNull final String isbn) {
+    public List<String> getAlternativeEditions(@NonNull final Context appContext,
+                                               @NonNull final String isbn) {
 
         // the resulting data we'll return
-        ArrayList<String> isbnList = new ArrayList<>();
+        List<String> isbnList = new ArrayList<>();
         // add the original isbn
         isbnList.add(isbn);
 
-        ArrayList<Edition> editions;
         try {
-            editions = new IsfdbEditionsHandler(appContext).fetch(isbn);
+            List<Edition> editions = new IsfdbEditionsHandler(appContext).fetch(isbn);
             for (Edition edition : editions) {
                 if (edition.isbn != null) {
                     isbnList.add(edition.isbn);

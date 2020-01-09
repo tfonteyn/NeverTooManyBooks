@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,6 +40,7 @@ import androidx.annotation.WorkerThread;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.CoverBrowserFragment;
@@ -89,13 +90,13 @@ public interface SearchEngine {
     /**
      * Get the root/website url.
      *
-     * @param appContext Application context
+     * @param context Current context
      *
      * @return url, including scheme.
      */
     @AnyThread
     @NonNull
-    String getUrl(@NonNull Context appContext);
+    String getUrl(@NonNull Context context);
 
 
     default int getConnectTimeoutMs() {
@@ -187,7 +188,7 @@ public interface SearchEngine {
          *
          * @param localizedAppContext Localised application context
          * @param nativeId            the native id (as a String) for this particular search site.
-         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail.
+         * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
          *                            The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
@@ -214,7 +215,7 @@ public interface SearchEngine {
          * @param isbn                to search for, <strong>will</strong> be valid
          *                            unless the engine implements {@link ByBarcode},
          *                            in that case it <strong>may</strong> be generic/invalid.
-         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail.
+         * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
          *                            The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
@@ -258,7 +259,7 @@ public interface SearchEngine {
          * @param publisher           optional and in addition to author/title.
          *                            i.e. author and/or title must be valid;
          *                            only then the publisher is taken into account.
-         * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail.
+         * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
          *                            The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
@@ -320,7 +321,7 @@ public interface SearchEngine {
          *
          * @param appContext Application context
          * @param isbn       to search for, <strong>must</strong> be valid.
-         * @param bookData   bundle to populate with the image file spec
+         * @param bookData   Bundle to populate
          */
         @WorkerThread
         default void getCoverImage(@NonNull final Context appContext,
@@ -444,7 +445,7 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        ArrayList<String> getAlternativeEditions(@NonNull Context appContext,
-                                                 @NonNull String isbn);
+        List<String> getAlternativeEditions(@NonNull Context appContext,
+                                            @NonNull String isbn);
     }
 }
