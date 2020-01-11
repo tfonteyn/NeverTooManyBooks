@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * Fetch alternative edition isbn's.
  */
 public class SearchEditionsTask
-        extends TaskBase<ArrayList<String>> {
+        extends TaskBase<Void, ArrayList<String>> {
 
     @NonNull
     private final String mIsbn;
@@ -69,6 +69,7 @@ public class SearchEditionsTask
                 throw new IllegalStateException("isbn must be valid");
             }
         }
+
         mIsbn = isbnStr;
     }
 

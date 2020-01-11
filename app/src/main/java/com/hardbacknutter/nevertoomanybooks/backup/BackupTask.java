@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * Calls the default {@link  BackupManager#getWriter} to create a backup.
  */
 public class BackupTask
-        extends TaskBase<ExportHelper> {
+        extends TaskBase<Void, ExportHelper> {
 
     /** Log tag. */
     private static final String TAG = "BackupTask";

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
  * Task result: Integer: # books processed (i.e. not # books imported which could be lower)
  */
 public class ImportCSVTask
-        extends TaskBase<ImportHelper> {
+        extends TaskBase<Void, ImportHelper> {
 
     /** Log tag. */
     private static final String TAG = "ImportCSVTask";
@@ -94,20 +94,20 @@ public class ImportCSVTask
     protected ImportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("ImportCSVTask");
 
-        Context localContext = App.getLocalizedAppContext();
+        Context localizedAppContext = App.getLocalizedAppContext();
 
-        try (InputStream is = localContext.getContentResolver().openInputStream(mUri)) {
+        try (InputStream is = localizedAppContext.getContentResolver().openInputStream(mUri)) {
             if (is == null) {
                 throw new IOException("InputStream was NULL");
             }
 
-            mImportHelper.addResults(mImporter.doBooks(localContext, is,
+            mImportHelper.addResults(mImporter.doBooks(localizedAppContext, is,
                                                        null, getProgressListener()));
 
             return mImportHelper;
 
         } catch (@NonNull final IOException | ImportException e) {
-            Logger.error(localContext, TAG, e);
+            Logger.error(localizedAppContext, TAG, e);
             mException = e;
             return mImportHelper;
         } finally {

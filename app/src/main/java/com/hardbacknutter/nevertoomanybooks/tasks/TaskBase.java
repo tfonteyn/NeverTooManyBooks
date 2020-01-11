@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,19 +45,23 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
 
 /**
  * The base for a task with our standard setup.
+ * <br>
+ * <br>The Progress parameter is always {@link TaskListener.ProgressMessage}.
  *
+ * @param <Params> the type of the parameters sent to the task upon execution.
  * @param <Result> the type of the result of the background computation.
  */
-public abstract class TaskBase<Result>
-        extends AsyncTask<Void, TaskListener.ProgressMessage, Result>
+public abstract class TaskBase<Params, Result>
+        extends AsyncTask<Params, TaskListener.ProgressMessage, Result>
         implements ProgressDialogFragment.Cancellable {
 
     /** Log tag. */
     private static final String TAG = "TaskBase";
 
     /** id set at construction time, passed back in all messages. */
-    protected final int mTaskId;
+    private final int mTaskId;
 
+    /** A listener that will forward incoming messages to {@link AsyncTask#publishProgress}. */
     private final ProgressListener<TaskListener.ProgressMessage> mProgressListener
             = new ProgressListener<TaskListener.ProgressMessage>() {
 
@@ -115,6 +119,7 @@ public abstract class TaskBase<Result>
     @Nullable
     protected Exception mException;
 
+    /** The client listener where to send our results to. */
     @NonNull
     private WeakReference<TaskListener<Result>> mTaskListener;
 
@@ -146,7 +151,7 @@ public abstract class TaskBase<Result>
      *
      * @return task ID
      */
-    public int getId() {
+    public int getTaskId() {
         return mTaskId;
     }
 

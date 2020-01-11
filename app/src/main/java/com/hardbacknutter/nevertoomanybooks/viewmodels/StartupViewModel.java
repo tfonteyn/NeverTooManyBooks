@@ -297,10 +297,10 @@ public class StartupViewModel
         }
     }
 
-    private void startTask(@NonNull final TaskBase<Boolean> task,
+    private void startTask(@NonNull final TaskBase<Void, Boolean> task,
                            final boolean inParallel) {
         synchronized (mAllTasks) {
-            mAllTasks.add(task.getId());
+            mAllTasks.add(task.getTaskId());
             if (inParallel) {
                 task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
@@ -314,7 +314,7 @@ public class StartupViewModel
      * Only build once per Locale.
      */
     static class BuildLanguageMappingsTask
-            extends TaskBase<Boolean> {
+            extends TaskBase<Void, Boolean> {
 
         /**
          * Constructor.
@@ -334,10 +334,10 @@ public class StartupViewModel
             Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
             }
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
-                    R.string.progress_msg_optimizing)));
+            publishProgress(new TaskListener.ProgressMessage(
+                    getTaskId(), localContext.getString(R.string.progress_msg_optimizing)));
             try {
                 LanguageUtils.createLanguageMappingCache(localContext);
                 return true;
@@ -363,7 +363,7 @@ public class StartupViewModel
      * Request download for engine barcode
      */
     static class PreloadGoogleScanner
-            extends TaskBase<Boolean> {
+            extends TaskBase<Void, Boolean> {
 
         PreloadGoogleScanner(final int taskId,
                              @NonNull final TaskListener<Boolean> taskListener) {
@@ -387,7 +387,7 @@ public class StartupViewModel
      * Data cleaning. Done on each startup.
      */
     static class DBCleanerTask
-            extends TaskBase<Boolean> {
+            extends TaskBase<Void, Boolean> {
 
         /** Database Access. */
         @NonNull
@@ -415,10 +415,10 @@ public class StartupViewModel
             Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
             }
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
-                    R.string.progress_msg_optimizing)));
+            publishProgress(new TaskListener.ProgressMessage(
+                    getTaskId(), localContext.getString(R.string.progress_msg_optimizing)));
             try {
                 DBCleaner cleaner = new DBCleaner(mDb);
 
@@ -446,7 +446,7 @@ public class StartupViewModel
      * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
      */
     static class RebuildFtsTask
-            extends TaskBase<Boolean> {
+            extends TaskBase<Void, Boolean> {
 
         /** Database Access. */
         @NonNull
@@ -474,9 +474,9 @@ public class StartupViewModel
             Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
             }
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
+            publishProgress(new TaskListener.ProgressMessage(getTaskId(), localContext.getString(
                     R.string.progress_msg_rebuilding_search_index)));
             try {
                 mDb.rebuildFts();
@@ -499,7 +499,7 @@ public class StartupViewModel
      * Task to rebuild all OrderBy columns in background.
      */
     static class RebuildOrderByTitleColumnsTask
-            extends TaskBase<Boolean> {
+            extends TaskBase<Void, Boolean> {
 
         /** Database Access. */
         @NonNull
@@ -527,10 +527,10 @@ public class StartupViewModel
             Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
             }
             // incorrect progress message, but it's half-true.
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
+            publishProgress(new TaskListener.ProgressMessage(getTaskId(), localContext.getString(
                     R.string.progress_msg_rebuilding_search_index)));
             try {
                 boolean reorder = Prefs.reorderTitleForSorting(localContext);
@@ -552,7 +552,7 @@ public class StartupViewModel
      * Run 'analyse' on our databases.
      */
     static class AnalyzeDbTask
-            extends TaskBase<Boolean> {
+            extends TaskBase<Void, Boolean> {
 
         /** Database Access. */
         @NonNull
@@ -581,9 +581,9 @@ public class StartupViewModel
             Context localContext = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getId());
+                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
             }
-            publishProgress(new TaskListener.ProgressMessage(mTaskId, localContext.getString(
+            publishProgress(new TaskListener.ProgressMessage(getTaskId(), localContext.getString(
                     R.string.progress_msg_optimizing)));
             try {
                 // small hack to make sure we always update the triggers.

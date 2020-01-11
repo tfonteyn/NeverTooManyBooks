@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 
 public class FetchWorksTask
-        extends TaskBase<List<GoodreadsWork>> {
+        extends TaskBase<Void, List<GoodreadsWork>> {
 
     private static final String TAG = "FetchWorksTask";
 

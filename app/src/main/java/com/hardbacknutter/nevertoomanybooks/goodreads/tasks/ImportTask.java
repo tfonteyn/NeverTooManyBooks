@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the real work.
  */
 public class ImportTask
-        extends TaskBase<Integer> {
+        extends TaskBase<Void, Integer> {
 
     /** Log tag. */
     private static final String TAG = "ImportTask";

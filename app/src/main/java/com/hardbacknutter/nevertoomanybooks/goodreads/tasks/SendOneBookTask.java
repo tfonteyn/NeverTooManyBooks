@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * {@link SendBooksLegacyTask}. The core of the task is (should be) identical.
  */
 public class SendOneBookTask
-        extends TaskBase<Integer> {
+        extends TaskBase<Void, Integer> {
 
     /** Log tag. */
     private static final String TAG = "SendOneBookTask";
@@ -99,7 +99,7 @@ public class SendOneBookTask
                         return R.string.progress_end_cancelled;
                     }
                     publishProgress(new TaskListener.ProgressMessage(
-                            mTaskId, localContext.getString(R.string.progress_msg_sending)));
+                            getTaskId(), localContext.getString(R.string.progress_msg_sending)));
                     result = grManager.sendOneBook(localContext, db, bookCursor);
                     if (result == GoodreadsManager.ExportResult.sent) {
                         // Record the update

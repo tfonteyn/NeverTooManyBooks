@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
  * Hard coded not to fetch any images.
  */
 public class IsfdbGetBookTask
-        extends TaskBase<Bundle> {
+        extends TaskBase<Void, Bundle> {
 
     /** Log tag. */
     private static final String TAG = "IsfdbGetBookTask";

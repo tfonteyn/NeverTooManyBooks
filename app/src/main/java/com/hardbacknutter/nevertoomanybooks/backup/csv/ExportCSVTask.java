@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public class ExportCSVTask
-        extends TaskBase<ExportHelper> {
+        extends TaskBase<Void, ExportHelper> {
 
     /** Log tag. */
     private static final String TAG = "ExportCSVTask";

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -151,8 +151,8 @@ public class GoodreadsAdminFragment
         Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
         //noinspection ConstantConditions
-        TaskBase<Integer> task = new ImportTask(getContext(), isSync,
-                                                mGoodreadsTaskModel.getTaskListener());
+        TaskBase<Void, Integer> task = new ImportTask(getContext(), isSync,
+                                                      mGoodreadsTaskModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.gr_title_sync_with_goodreads, false, false, 0);
@@ -168,8 +168,8 @@ public class GoodreadsAdminFragment
         Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
         //noinspection ConstantConditions
-        TaskBase<Integer> task = new SendBooksTask(getContext(), updatesOnly,
-                                                   mGoodreadsTaskModel.getTaskListener());
+        TaskBase<Void, Integer> task = new SendBooksTask(getContext(), updatesOnly,
+                                                         mGoodreadsTaskModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.gr_title_send_book, false, false, 0);

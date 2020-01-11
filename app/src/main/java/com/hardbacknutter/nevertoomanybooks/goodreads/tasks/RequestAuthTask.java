@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * Before we can access Goodreads, we must authorize our application to do so.
  */
 public class RequestAuthTask
-        extends TaskBase<Integer> {
+        extends TaskBase<Void, Integer> {
 
     /** Log tag. */
     private static final String TAG = "RequestAuthTask";

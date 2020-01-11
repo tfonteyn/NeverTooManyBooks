@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 public class RestoreTask
-        extends TaskBase<ImportHelper> {
+        extends TaskBase<Void, ImportHelper> {
 
     /** Log tag. */
     private static final String TAG = "RestoreTask";
