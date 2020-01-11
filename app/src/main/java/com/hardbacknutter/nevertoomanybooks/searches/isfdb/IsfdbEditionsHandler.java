@@ -203,13 +203,18 @@ public class IsfdbEditionsHandler
             if (edLink != null) {
                 String url = edLink.attr("href");
                 if (url != null) {
-                    // 4th column: ISBN/Catalog ID
                     String isbnStr = null;
-                    ISBN isbn = ISBN.createISBN(tr.child(4).text());
-                    if (isbn != null && isbn.isValid()) {
-                        isbnStr = isbn.asText();
+                    // 4th column: ISBN/Catalog ID
+                    String catNr = tr.child(4).text();
+                    if (!catNr.isEmpty()) {
+                        ISBN isbn = ISBN.createISBN(catNr);
+                        if (isbn.isValid(true)) {
+                            isbnStr = isbn.asText();
+                        }
                     }
+
                     mEditions.add(new Edition(stripNumber(url, '?'), isbnStr));
+
                 }
             }
         }

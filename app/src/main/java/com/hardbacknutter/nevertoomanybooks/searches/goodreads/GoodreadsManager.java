@@ -620,7 +620,6 @@ public class GoodreadsManager
             throws CredentialsException, BookNotFoundException, IOException {
 
         long bookId = bookCursor.getLong(DBDefinitions.KEY_PK_ID);
-        String isbnStr = bookCursor.getString(DBDefinitions.KEY_ISBN);
 
         // Get the list of shelves from Goodreads. This is cached per instance of GoodreadsManager.
         GoodreadsShelves grShelfList = getShelves();
@@ -642,15 +641,18 @@ public class GoodreadsManager
 
         // wasn't there, see if we can find it using the ISBN instead.
         if (grBookId == 0) {
+            String isbnStr = bookCursor.getString(DBDefinitions.KEY_ISBN);
+            if (isbnStr.isEmpty()) {
+                return ExportResult.noIsbn;
+            }
             ISBN isbn = ISBN.createISBN(isbnStr);
-            if (isbn == null || !isbn.isValid()) {
+            if (!isbn.isValid(true)) {
                 return ExportResult.noIsbn;
             }
 
             // Get the book details using ISBN
             boolean[] thumbs = {false, false};
-            //noinspection ConstantConditions
-            grBook = getBookByIsbn(context, isbn.asText(), thumbs, new Bundle());
+            grBook = getBookByIsbn(context, isbn, thumbs, new Bundle());
             if (grBook.containsKey(DBDefinitions.KEY_EID_GOODREADS_BOOK)) {
                 grBookId = grBook.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
             }
@@ -783,13 +785,18 @@ public class GoodreadsManager
                                @NonNull final boolean[] fetchThumbnail)
             throws CredentialsException, IOException {
 
-        try {
-            return getBookByIsbn(localizedAppContext, isbnStr, fetchThumbnail, new Bundle());
+        if (!isbnStr.isEmpty()) {
+            ISBN isbn = ISBN.createISBN(isbnStr);
+            if (isbn.isValid(true)) {
+                try {
+                    return getBookByIsbn(localizedAppContext, isbn, fetchThumbnail, new Bundle());
 
-        } catch (@NonNull final BookNotFoundException e) {
-            // to bad.
-            return new Bundle();
+                } catch (@NonNull final BookNotFoundException ignore) {
+                    // ignore
+                }
+            }
         }
+        return new Bundle();
     }
 
     @NonNull
@@ -821,7 +828,7 @@ public class GoodreadsManager
     @Override
     @WorkerThread
     public Bundle search(@NonNull final Context localizedAppContext,
-                         @Nullable final String isbn,
+                         @Nullable final String code,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
@@ -913,9 +920,10 @@ public class GoodreadsManager
      * Wrapper to search for a book.
      *
      * @param context        Current context
-     * @param isbnStr        to search for
+     * @param isbn           ISBN to use, must be valid
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to save results in (passed in to allow mocking)
+     *
      * @return Bundle of GoodreadsWork objects
      *
      * @throws CredentialsException  with GoodReads
@@ -924,20 +932,13 @@ public class GoodreadsManager
      */
     @NonNull
     private Bundle getBookByIsbn(@NonNull final Context context,
-                                 @NonNull final String isbnStr,
+                                 @NonNull final ISBN isbn,
                                  @NonNull final boolean[] fetchThumbnail,
                                  @NonNull final Bundle bookData)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        ISBN isbn = ISBN.createISBN(isbnStr);
-        if (isbn != null && isbn.isValid()) {
-            ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(context, this);
-            //noinspection ConstantConditions
-            return api.get(isbn.asText(), fetchThumbnail, bookData);
-
-        } else {
-            throw new BookNotFoundException(isbnStr);
-        }
+        ShowBookByIsbnApiHandler api = new ShowBookByIsbnApiHandler(context, this);
+        return api.get(isbn, fetchThumbnail, bookData);
     }
 
     /**

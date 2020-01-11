@@ -69,9 +69,10 @@ public class ShowBookByIsbnApiHandler
     /**
      * Perform a search and handle the results.
      *
-     * @param isbnStr        ISBN to search for
+     * @param isbn           ISBN to use, must be valid
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
-     * @param bookData         Bundle to save results in (passed in to allow mocking)
+     * @param bookData       Bundle to save results in (passed in to allow mocking)
+     *
      * @return the Bundle of book data.
      *
      * @throws CredentialsException  with GoodReads
@@ -79,18 +80,12 @@ public class ShowBookByIsbnApiHandler
      * @throws IOException           on other failures
      */
     @NonNull
-    public Bundle get(@NonNull final String isbnStr,
+    public Bundle get(@NonNull final ISBN isbn,
                       @NonNull final boolean[] fetchThumbnail,
                       @NonNull final Bundle bookData)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        ISBN isbn = ISBN.createISBN(isbnStr);
-        if (isbn != null && isbn.isValid()) {
-            String url = String.format(URL, isbn.asText(), mManager.getDevKey());
-            return getBookData(url, fetchThumbnail, bookData);
-
-        } else {
-            throw new BookNotFoundException(isbnStr);
-        }
+        String url = String.format(URL, isbn.asText(), mManager.getDevKey());
+        return getBookData(url, fetchThumbnail, bookData);
     }
 }

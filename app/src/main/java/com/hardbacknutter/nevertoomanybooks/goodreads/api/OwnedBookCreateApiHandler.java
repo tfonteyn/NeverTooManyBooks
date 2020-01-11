@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,7 @@ public class OwnedBookCreateApiHandler
 
 
     /**
-     * @param isbnStr      the book
+     * @param isbn         ISBN to use, must be valid
      * @param dateAcquired (optional)
      *
      * @return the Goodreads book ID
@@ -82,21 +82,14 @@ public class OwnedBookCreateApiHandler
      * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
      * @throws IOException           on other failures
      */
-    public long create(@NonNull final String isbnStr,
+    public long create(@NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        ISBN isbn = ISBN.createISBN(isbnStr);
-        if (isbn != null && isbn.isValid()) {
-            IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
-            //noinspection ConstantConditions
-            long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
-            create(grBookId, dateAcquired);
-            return grBookId;
-
-        } else {
-            throw new BookNotFoundException(isbnStr);
-        }
+        IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
+        long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
+        create(grBookId, dateAcquired);
+        return grBookId;
     }
 
     /**

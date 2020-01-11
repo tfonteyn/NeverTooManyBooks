@@ -157,6 +157,11 @@ public final class AmazonManager
         return fetchBook(localizedAppContext, "isbn=" + nativeId, fetchThumbnail, new Bundle());
     }
 
+    /**
+     * Also handles {@link SearchEngine.ByBarcode}.
+     * <p>
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
@@ -175,7 +180,7 @@ public final class AmazonManager
     @NonNull
     @WorkerThread
     public Bundle search(@NonNull final Context localizedAppContext,
-                         @Nullable final String isbn,
+                         @Nullable final String code,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,

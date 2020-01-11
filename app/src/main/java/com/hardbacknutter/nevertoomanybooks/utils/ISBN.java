@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -153,60 +153,73 @@ public class ISBN {
     /** The type of code, determined at creation time. */
     @NonNull
     private final Type mType;
-    /** the code as a pure text string. {@code null} for invalid codes. */
-    @Nullable
+    /** the code as a pure text string. The raw input string for invalid codes. */
+    @NonNull
     private final String mAsText;
     /** kept for faster conversion between formats. {@code null} for invalid codes. */
     @Nullable
     private final List<Integer> mDigits;
 
     /**
+     * Constructor for a strict ISBN.
+     * Accepts {@code null}.
+     * Accepts (and removes) ' ' and '-' characters.
+     *
+     * @param str string to digest
+     */
+    public ISBN(@Nullable final String str) {
+        this(str, true);
+    }
+
+    /**
      * Constructor.
-     * <p>
+     * Accepts {@code null}.
      * Accepts (and removes) ' ' and '-' characters.
      *
      * @param str        string to digest
      * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
      */
-    public ISBN(@NonNull final CharSequence str,
+    public ISBN(@Nullable final String str,
                 final boolean strictIsbn) {
-
-        String cleanStr = WHITESPACE_PATTERN.matcher(str).replaceAll("");
 
         List<Integer> digits = null;
         Type type = null;
 
-        // Determine the digits and the type.
-        try {
-            digits = toDigits(cleanStr);
-            type = getType(digits);
-            if (type == Type.UPC_A) {
-                // is this UPC_A convertible to ISBN ?
-                String isbnPrefix = UPC_2_ISBN_PREFIX.get(cleanStr.substring(0, 6));
-                if (isbnPrefix != null) {
-                    // yes, convert to ISBN-10
-                    digits = toDigits(isbnPrefix + cleanStr.substring(12));
-                    digits.add(calculateIsbn10Checksum(digits));
-                    type = Type.ISBN10;
+        if (str != null && !str.isEmpty()) {
+            String cleanStr = WHITESPACE_PATTERN.matcher(str).replaceAll("");
+            if (!cleanStr.isEmpty()) {
+                // Determine the digits and the type.
+                try {
+                    digits = toDigits(cleanStr);
+                    type = getType(digits);
+
+                    if (type == Type.UPC_A) {
+                        // is this UPC_A convertible to ISBN ?
+                        String isbnPrefix = UPC_2_ISBN_PREFIX.get(cleanStr.substring(0, 6));
+                        if (isbnPrefix != null) {
+                            // yes, convert to ISBN-10
+                            digits = toDigits(isbnPrefix + cleanStr.substring(12));
+                            digits.add(calculateIsbn10Checksum(digits));
+                            type = Type.ISBN10;
+                        }
+                    }
+                } catch (@NonNull final NumberFormatException e) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISBN) {
+                        Log.d(TAG, "str=" + str, e);
+                    }
+                }
+
+                // strict ISBN required?
+                if (strictIsbn && type != Type.ISBN10 && type != Type.ISBN13) {
+                    type = Type.INVALID;
                 }
             }
-
-        } catch (@NonNull final NumberFormatException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISBN) {
-                Log.d(TAG, "str=" + str, e);
-            }
         }
 
-        // are we limited to ISBN?
-        if (strictIsbn) {
-            if (type != Type.ISBN10 && type != Type.ISBN13) {
-                type = Type.INVALID;
-            }
-        }
-
+        // Make sure the internal status is uniform.
         if (type == null || type == Type.INVALID) {
             mDigits = null;
-            mAsText = null;
+            mAsText = str != null ? str : "";
             mType = Type.INVALID;
 
         } else {
@@ -219,7 +232,7 @@ public class ISBN {
     /**
      * Constructor.
      *
-     * <ul>Accepts:
+     * <ul>Accepts as valid:
      * <li>ISBN-10</li>
      * <li>ISBN-13</li>
      * <li>EAN-13</li>
@@ -229,19 +242,18 @@ public class ISBN {
      * Accepts (and removes) ' ' and '-' characters.
      *
      * @param str the string to digest
+     *
+     * @return instance
      */
-    @Nullable
-    public static ISBN create(@Nullable final String str) {
-        if (str == null || str.isEmpty()) {
-            return null;
-        }
+    @NonNull
+    public static ISBN create(@NonNull final String str) {
         return new ISBN(str, false);
     }
 
     /**
      * Constructor.
      *
-     * <ul>Accepts:
+     * <ul>Accepts as valid:
      * <li>ISBN-10</li>
      * <li>ISBN-13</li>
      * <li>UPC_A <strong>if convertible to ISBN-10</strong></li>
@@ -255,13 +267,10 @@ public class ISBN {
      *
      * @param isbnStr the string to digest
      *
-     * @return instance, or {@code null} if the given isbnStr was {@code null} or empty.
+     * @return instance
      */
-    @Nullable
-    public static ISBN createISBN(@Nullable final String isbnStr) {
-        if (isbnStr == null || isbnStr.isEmpty()) {
-            return null;
-        }
+    @NonNull
+    public static ISBN createISBN(@NonNull final String isbnStr) {
         return new ISBN(isbnStr, true);
     }
 
@@ -283,12 +292,12 @@ public class ISBN {
 
         // Full check needed ...if either one is invalid, we consider them different
         ISBN o1 = new ISBN(isbnStr1, strictIsbn);
-        if (!o1.isValid()) {
+        if (!o1.isValid(strictIsbn)) {
             return false;
         }
 
         ISBN o2 = new ISBN(isbnStr2, strictIsbn);
-        if (!o2.isValid()) {
+        if (!o2.isValid(strictIsbn)) {
             return false;
         }
 
@@ -296,7 +305,7 @@ public class ISBN {
     }
 
     /**
-     * Convenience method to check validity of an ISBN when there is no need to keep the object.
+     * Convenience method to check validity when there is no need to keep the object.
      *
      * @param isbnStr to check
      *
@@ -306,17 +315,36 @@ public class ISBN {
         if (isbnStr == null || isbnStr.isEmpty()) {
             return false;
         }
-        ISBN isbn = ISBN.createISBN(isbnStr);
-        return isbn != null && isbn.isValid();
+        return new ISBN(isbnStr, true).isValid(true);
+    }
+
+    /**
+     * Convenience method to check validity when there is no need to keep the object.
+     *
+     * @param code to check
+     *
+     * @return validity
+     */
+    public static boolean isValid(@Nullable final String code) {
+        if (code == null || code.isEmpty()) {
+            return false;
+        }
+        return new ISBN(code, false).isValid(false);
     }
 
     /**
      * Check if we have a valid code. Does not check for a specific type.
      *
+     * @param strictIsbn Flag: {@code true} to strictly allow ISBN codes.
+     *
      * @return validity
      */
-    public boolean isValid() {
-        return mType != Type.INVALID;
+    public boolean isValid(final boolean strictIsbn) {
+        if (strictIsbn) {
+            return mType == Type.ISBN13 || mType == Type.ISBN10;
+        } else {
+            return mType != Type.INVALID;
+        }
     }
 
     @VisibleForTesting
@@ -329,16 +357,15 @@ public class ISBN {
     }
 
     public boolean isIsbn10Compat() {
-        //noinspection ConstantConditions
         return mType == Type.ISBN10 || (mType == Type.ISBN13 && mAsText.startsWith("978"));
     }
 
     /**
      * Get the code as a text string based on the original type. No conversions are done.
      *
-     * @return string, or {@code null} if the code type is {@link Type#INVALID}
+     * @return string
      */
-    @Nullable
+    @NonNull
     public String asText() {
         return mAsText;
     }
@@ -351,19 +378,18 @@ public class ISBN {
      *
      * @param type to convert to
      *
-     * @return string, or {@code null} if the code type is {@link Type#INVALID}
+     * @return string
      *
      * @throws NumberFormatException on failure
      */
-    @Nullable
+    @NonNull
     public String asText(@NonNull final Type type)
             throws NumberFormatException {
 
-        if (mType == Type.INVALID) {
-            return null;
-        }
-
         switch (type) {
+            case INVALID:
+                return mAsText;
+
             case ISBN13: {
                 // already in ISBN-13 format?
                 if (mType == Type.ISBN13) {
@@ -371,26 +397,24 @@ public class ISBN {
                 }
 
                 // Must be ISBN10 or we cannot convert
-                if (mType != Type.ISBN10) {
-                    throw new NumberFormatException(
-                            String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+                if (mType == Type.ISBN10) {
+                    List<Integer> digits = new ArrayList<>();
+                    // standard prefix 978
+                    digits.add(9);
+                    digits.add(7);
+                    digits.add(8);
+
+                    // copy the first 9 digits
+                    for (int i = 0; i < 9; i++) {
+                        //noinspection ConstantConditions
+                        digits.add(mDigits.get(i));
+                    }
+                    // and add the new checksum
+                    digits.add(calculateEan13Checksum(digits));
+
+                    return concat(digits);
                 }
-
-                List<Integer> digits = new ArrayList<>();
-                // standard prefix 978
-                digits.add(9);
-                digits.add(7);
-                digits.add(8);
-
-                // copy the first 9 digits
-                for (int i = 0; i < 9; i++) {
-                    //noinspection ConstantConditions
-                    digits.add(mDigits.get(i));
-                }
-                // and add the new checksum
-                digits.add(calculateEan13Checksum(digits));
-
-                return concat(digits);
+                break;
             }
             case ISBN10: {
                 // already in ISBN-10 format?
@@ -399,49 +423,42 @@ public class ISBN {
                 }
 
                 // must be ISBN13 *AND* compatible with converting to ISBN10
-                //noinspection ConstantConditions
-                if (mType != Type.ISBN13 && mAsText.startsWith("978")) {
-                    throw new NumberFormatException(
-                            String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
-                }
+                if (mType == Type.ISBN13 || !mAsText.startsWith("978")) {
+                    // drop the first 3 digits, and copy the next 9.
+                    List<Integer> digits = new ArrayList<>();
+                    for (int i = 3; i < 12; i++) {
+                        //noinspection ConstantConditions
+                        digits.add(mDigits.get(i));
+                    }
+                    // and add the new checksum
+                    digits.add(calculateIsbn10Checksum(digits));
 
-                // drop the first 3 digits, and copy the next 9.
-                List<Integer> digits = new ArrayList<>();
-                for (int i = 3; i < 12; i++) {
-                    //noinspection ConstantConditions
-                    digits.add(mDigits.get(i));
+                    return concat(digits);
                 }
-                // and add the new checksum
-                digits.add(calculateIsbn10Checksum(digits));
-
-                return concat(digits);
+                break;
             }
 
             case EAN13:
                 // No conversion
                 if (mType == Type.EAN13) {
                     return mAsText;
-                } else {
-                    throw new NumberFormatException(
-                            String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
                 }
+                break;
 
             case UPC_A:
                 // No conversion
                 if (mType == Type.UPC_A) {
                     return mAsText;
-                } else {
-                    throw new NumberFormatException(
-                            String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
                 }
+                break;
 
-            case INVALID:
             default:
-                throw new NumberFormatException(
-                        String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+                break;
         }
-    }
 
+        throw new NumberFormatException(
+                String.format(ERROR_UNABLE_TO_CONVERT, mType, type));
+    }
 
     /**
      * Converts a string containing digits 0..9 and 10 == 'X'/'x' to a list of digits.

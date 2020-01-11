@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
@@ -226,26 +227,30 @@ public class EditBookFragment
         }
 
         if (book.isNew()) {
-            String isbn = book.getString(DBDefinitions.KEY_ISBN);
+            String isbnStr = book.getString(DBDefinitions.KEY_ISBN);
             // Check if the book already exists
-            if (!isbn.isEmpty() && ((mBookModel.getDb().getBookIdFromIsbn(isbn) > 0))) {
-                //noinspection ConstantConditions
-                new AlertDialog.Builder(getContext())
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .setTitle(R.string.title_duplicate_book)
-                        .setMessage(R.string.confirm_duplicate_book_message)
-                        // this dialog is important. Make sure the user pays some attention
-                        .setCancelable(false)
-                        // User aborts this edit
-                        .setNegativeButton(android.R.string.cancel, (dialog, which) ->
-                                getActivity().finish())
-                        // User wants to continue editing this book
-                        .setNeutralButton(R.string.edit, (dialog, which) -> dialog.dismiss())
-                        // User wants to add regardless
-                        .setPositiveButton(R.string.btn_confirm_add, (dialog, which) -> saveBook())
-                        .create()
-                        .show();
-                return;
+            if (!isbnStr.isEmpty()) {
+                ISBN isbn = ISBN.createISBN(isbnStr);
+                if (mBookModel.getDb().getBookIdFromIsbn(isbn) > 0) {
+                    //noinspection ConstantConditions
+                    new AlertDialog.Builder(getContext())
+                            .setIconAttribute(android.R.attr.alertDialogIcon)
+                            .setTitle(R.string.title_duplicate_book)
+                            .setMessage(R.string.confirm_duplicate_book_message)
+                            // this dialog is important. Make sure the user pays some attention
+                            .setCancelable(false)
+                            // User aborts this edit
+                            .setNegativeButton(android.R.string.cancel, (dialog, which) ->
+                                    getActivity().finish())
+                            // User wants to continue editing this book
+                            .setNeutralButton(R.string.edit, (dialog, which) -> dialog.dismiss())
+                            // User wants to add regardless
+                            .setPositiveButton(R.string.btn_confirm_add,
+                                               (dialog, which) -> saveBook())
+                            .create()
+                            .show();
+                    return;
+                }
             }
         }
 

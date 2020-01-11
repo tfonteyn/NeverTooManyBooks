@@ -155,7 +155,7 @@ public class IsfdbManager
     @Override
     @WorkerThread
     public Bundle search(@NonNull final Context localizedAppContext,
-                         @Nullable final String isbn,
+                         @Nullable final String code,
                          @Nullable final String author,
                          @Nullable final String title,
                          @Nullable final String publisher,

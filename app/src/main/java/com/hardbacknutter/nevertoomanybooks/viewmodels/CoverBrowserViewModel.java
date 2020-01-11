@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -166,7 +166,7 @@ public class CoverBrowserViewModel
     public void fetchEditions() {
         SearchEditionsTask task = new SearchEditionsTask(mBaseIsbn, mEditionTaskListener);
         synchronized (mAllTasks) {
-            mAllTasks.put(task.getId(), task);
+            mAllTasks.put(task.getTaskId(), task);
         }
         task.execute();
     }
@@ -195,7 +195,7 @@ public class CoverBrowserViewModel
         GetGalleryImageTask task = new GetGalleryImageTask(isbn, mCIdx,
                                                            mFileManager, mImageTaskListener);
         synchronized (mAllTasks) {
-            mAllTasks.put(task.getId(), task);
+            mAllTasks.put(task.getTaskId(), task);
         }
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -215,7 +215,7 @@ public class CoverBrowserViewModel
         GetSwitcherImageTask task = new GetSwitcherImageTask(fileInfo, mCIdx, mFileManager,
                                                              mImageTaskListener);
         synchronized (mAllTasks) {
-            mAllTasks.put(task.getId(), task);
+            mAllTasks.put(task.getTaskId(), task);
         }
         // use the alternative executor, so we get a result back without
         // waiting on the gallery tasks.
@@ -532,7 +532,7 @@ public class CoverBrowserViewModel
      * Fetch a thumbnail and stick it into the gallery.
      */
     static class GetGalleryImageTask
-            extends TaskBase<FileInfo> {
+            extends TaskBase<Void, FileInfo> {
 
         @NonNull
         private final String mIsbn;
@@ -559,8 +559,7 @@ public class CoverBrowserViewModel
 
             // sanity check
             if (BuildConfig.DEBUG /* always */) {
-                ISBN isbn = ISBN.createISBN(isbnStr);
-                if (isbn == null || !isbn.isValid()) {
+                if (!ISBN.isValidIsbn(isbnStr)) {
                     throw new IllegalStateException("isbn must be valid");
                 }
             }
@@ -596,7 +595,7 @@ public class CoverBrowserViewModel
      * Fetch a full-size image and stick it into the ImageSwitcher.
      */
     static class GetSwitcherImageTask
-            extends TaskBase<FileInfo> {
+            extends TaskBase<Void, FileInfo> {
 
         @NonNull
         private final FileInfo mFileInfo;
@@ -623,8 +622,7 @@ public class CoverBrowserViewModel
 
             // sanity check
             if (BuildConfig.DEBUG /* always */) {
-                ISBN isbn = ISBN.createISBN(fileInfo.isbn);
-                if (isbn == null || !isbn.isValid()) {
+                if (!ISBN.isValidIsbn(fileInfo.isbn)) {
                     throw new IllegalStateException("isbn must be valid");
                 }
             }

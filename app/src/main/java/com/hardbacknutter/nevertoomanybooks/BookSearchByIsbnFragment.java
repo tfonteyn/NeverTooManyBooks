@@ -343,7 +343,7 @@ public class BookSearchByIsbnFragment
         ISBN code = new ISBN(userEntry, strictIsbn);
 
         // not a valid code ?
-        if (!code.isValid()) {
+        if (!code.isValid(strictIsbn)) {
             if (mScanMode) {
                 //noinspection ConstantConditions
                 mScannerModel.onInvalidBeep(getContext());
@@ -362,9 +362,7 @@ public class BookSearchByIsbnFragment
         }
 
         // at this point, we know we have a searchable code
-        String isbnSearchText = code.asText();
-        //noinspection ConstantConditions
-        mSearchCoordinator.setIsbnSearchText(isbnSearchText);
+        mSearchCoordinator.setIsbnSearchText(code.asText());
 
         if (strictIsbn && mScanMode) {
             //noinspection ConstantConditions
@@ -372,7 +370,7 @@ public class BookSearchByIsbnFragment
         }
 
         // See if ISBN already exists in our database, if not then start the search.
-        final long existingId = mDb.getBookIdFromIsbn(isbnSearchText);
+        final long existingId = mDb.getBookIdFromIsbn(code);
         if (existingId == 0) {
             startSearch();
         } else {

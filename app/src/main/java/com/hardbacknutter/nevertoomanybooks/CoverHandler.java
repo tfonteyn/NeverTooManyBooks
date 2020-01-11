@@ -428,27 +428,29 @@ public class CoverHandler {
      */
     private void startCoverBrowser() {
         // getting alternative editions is limited to LibraryThing and ISFDB for now.
-        // Remind the user that LT is rather essential.
+        // ISFDB is obviously limited to their specific genre,
+        // so remind the user that LT is rather essential.
         if (!LibraryThingManager.hasKey(mContext)) {
             LibraryThingManager.alertRegistrationNeeded(mContext, false, "cover_browser");
             return;
         }
 
-        ISBN isbn = ISBN.createISBN(mIsbnView.getText().toString());
-        if (isbn != null && isbn.isValid()) {
-            // pass in the index, as we'll need it to know which image we need to handle.
-            //noinspection ConstantConditions
-            CoverBrowserFragment coverBrowser = CoverBrowserFragment
-                    .newInstance(isbn.asText(), mCIdx);
-            // we must use the same fragment manager as the hosting fragment...
-            coverBrowser.show(mFragment.getParentFragmentManager(), CoverBrowserFragment.TAG);
-            // ... as the coverBrowser will send its results directly to that fragment.
-            coverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
-
-        } else {
-            Snackbar.make(mCoverView, R.string.warning_requires_isbn,
-                          Snackbar.LENGTH_LONG).show();
+        String isbnStr = mIsbnView.getText().toString();
+        if (!isbnStr.isEmpty()) {
+            ISBN isbn = ISBN.createISBN(isbnStr);
+            if (isbn.isValid(true)) {
+                CoverBrowserFragment coverBrowser = CoverBrowserFragment
+                        .newInstance(isbn.asText(), mCIdx);
+                // we must use the same fragment manager as the hosting fragment...
+                coverBrowser.show(mFragment.getParentFragmentManager(), CoverBrowserFragment.TAG);
+                // ... as the coverBrowser will send its results directly to that fragment.
+                coverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
+                return;
+            }
         }
+
+        Snackbar.make(mCoverView, R.string.warning_requires_isbn,
+                      Snackbar.LENGTH_LONG).show();
     }
 
     /**

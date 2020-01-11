@@ -84,6 +84,11 @@ public class StripInfoManager
         return BASE_URL;
     }
 
+    /**
+     * Also handles {@link SearchEngine.ByBarcode}.
+     * <p>
+     * {@inheritDoc}
+     */
     @NonNull
     @Override
     public Bundle searchByIsbn(@NonNull final Context localizedAppContext,

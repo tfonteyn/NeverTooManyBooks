@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -99,8 +99,8 @@ public class IsbnValidationTextWatcher
         boolean valid = false;
         if (len == 10 || len == 13
             || (len == 12 && !mStrictIsbn)) {
-            ISBN isbn = new ISBN(codeStr, mStrictIsbn);
-            valid = isbn.isValid();
+            ISBN code = new ISBN(codeStr, mStrictIsbn);
+            valid = code.isValid(mStrictIsbn);
         }
 
         Drawable[] ds = mTextView.getCompoundDrawablesRelative();

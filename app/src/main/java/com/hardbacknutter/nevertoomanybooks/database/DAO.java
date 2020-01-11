@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1798,15 +1798,14 @@ public class DAO
     /**
      * Search for a book by the given ISBN.
      *
-     * @param isbnStr to search for
+     * @param isbn to search for; can be generic
      *
      * @return book id, or 0 if not found
      */
-    public long getBookIdFromIsbn(@NonNull final String isbnStr) {
+    public long getBookIdFromIsbn(@NonNull final ISBN isbn) {
         SynchronizedStatement stmt;
-        ISBN isbn = ISBN.createISBN(isbnStr);
         // if the string is an ISBN-10 or ISBN-13, we search on both formats
-        if (isbn != null && isbn.isIsbn10Compat()) {
+        if (isbn.isIsbn10Compat()) {
             stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_2);
             if (stmt == null) {
                 stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_2, SqlGet.BOOK_ID_BY_ISBN2);
@@ -1819,14 +1818,14 @@ public class DAO
             }
 
         } else {
-            // otherwise just on the string as-is.
+            // otherwise just on the string as-is; regardless of validity
             stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_1);
             if (stmt == null) {
                 stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_1, SqlGet.BOOK_ID_BY_ISBN);
             }
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                stmt.bindString(1, isbnStr);
+                stmt.bindString(1, isbn.asText());
                 return stmt.simpleQueryForLongOrZero();
             }
         }

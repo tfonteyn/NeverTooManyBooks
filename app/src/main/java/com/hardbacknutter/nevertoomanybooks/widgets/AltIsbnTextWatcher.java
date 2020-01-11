@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,7 +85,7 @@ public class AltIsbnTextWatcher
         switch (isbnStr.length()) {
             case 13: {
                 ISBN isbn = ISBN.createISBN(isbnStr);
-                if (isbn != null && isbn.isIsbn10Compat()) {
+                if (isbn.isIsbn10Compat()) {
                     mAltIsbn = isbn.asText(ISBN.Type.ISBN10);
                     mAltIsbnButton.setEnabled(true);
                     return;
@@ -94,7 +94,7 @@ public class AltIsbnTextWatcher
             }
             case 10: {
                 ISBN isbn = ISBN.createISBN(isbnStr);
-                if (isbn != null && isbn.isValid()) {
+                if (isbn.isValid(true)) {
                     mAltIsbn = isbn.asText(ISBN.Type.ISBN13);
                     mAltIsbnButton.setEnabled(true);
                     return;

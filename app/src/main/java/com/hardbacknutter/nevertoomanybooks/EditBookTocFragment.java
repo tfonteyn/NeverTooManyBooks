@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -393,20 +393,20 @@ public class EditBookTocFragment
                     return true;
                 }
 
-                ISBN isbn = ISBN.createISBN(mIsbn);
-                if (isbn != null && isbn.isValid()) {
-                    //noinspection ConstantConditions
-                    Snackbar.make(getView(), R.string.progress_msg_connecting,
-                                  Snackbar.LENGTH_LONG).show();
-                    //noinspection ConstantConditions
-                    IsfdbGetEditionsTask task =
-                            new IsfdbGetEditionsTask(isbn.asText(),
-                                                     mIsfdbEditionResultsListener);
-                    mIsfdbTaskModel.setTask(task);
-                    task.execute();
-                    return true;
+                if (mIsbn != null && !mIsbn.isEmpty()) {
+                    ISBN isbn = ISBN.createISBN(mIsbn);
+                    if (isbn.isValid(true)) {
+                        //noinspection ConstantConditions
+                        Snackbar.make(getView(), R.string.progress_msg_connecting,
+                                      Snackbar.LENGTH_LONG).show();
+                        IsfdbGetEditionsTask task =
+                                new IsfdbGetEditionsTask(isbn.asText(),
+                                                         mIsfdbEditionResultsListener);
+                        mIsfdbTaskModel.setTask(task);
+                        task.execute();
+                        return true;
+                    }
                 }
-
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.warning_requires_isbn,
                               Snackbar.LENGTH_LONG).show();
