@@ -270,7 +270,7 @@
             android:key="edit.book.tab.nativeId"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/allow_edit_native_id" />
+            android:title="@string/pt_allow_edit_native_id" />
 
         <!-- URGENT: this is temporary.. until it's decided what UI to go for. -->
         <SwitchPreference

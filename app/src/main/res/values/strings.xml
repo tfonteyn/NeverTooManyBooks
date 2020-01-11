@@ -158,9 +158,22 @@
         book record, or are importing someone else\'s books, ensure the uuid field is present
         or the id field is blank.
     </string>
-    <string name="warning_book_not_found">Unable to find the specified book</string>
 
-    <string name="warning_no_search_data_for_active_sites">No valid search data for active sites.</string>
+    <!-- Importing a CSV book list partially failed with more then 10 lines failing.
+     Only 10 line numbers will be listed -->
+    <string name="warning_import_csv_failed_lines_lots">
+        CSV parsing failed for lines %1$s and others.
+    </string>
+    <!-- Importing a CSV book list partially failed with less then 10 lines failing -->
+    <string name="warning_import_csv_failed_lines_some">
+        CSV parsing failed for lines %1$s.
+    </string>
+
+    <string name="warning_book_not_found">Unable to find the specified book.</string>
+
+    <string name="warning_no_search_data_for_active_sites">
+        No valid search data for active sites.
+    </string>
 
     <string name="warning_immediate_global_changes">
         NOTE: All saved changes apply instantly and globally.
@@ -169,7 +182,9 @@
     <!-- some unique field already exists; e.g. accidentally creating a duplicate Bookshelf -->
     <string name="warning_x_already_exists">%1$s already exists.</string>
 
-    <string name="warning_enable_at_least_1_website">Enable at least one website for each category.</string>
+    <string name="warning_enable_at_least_1_website">
+        Enable at least one website for each category.
+    </string>
 
     <string name="warning_select_at_least_1_group">Select at least one group.</string>
     <string name="warning_select_at_least_1_field">Select at least one field to update.</string>
@@ -225,7 +240,10 @@
     <!-- displayed when the user changes their sorting preference.
         When doing this, the sorting information in the database needs to be rebuild.
     -->
-    <string name="warning_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue ?</string>
+    <string name="warning_rebuild_orderby_columns">
+        This will rebuild the sorting data when the app is restarted.
+        Are you sure you want to continue ?
+    </string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
@@ -837,6 +855,10 @@
         This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
 
+    <!-- SwitchPreference - Some web sites expose their native website book id.
+         Allow the user to lookup books using such an ID, and manually modify them. -->
+    <string name="pt_allow_edit_native_id">Allow editing native website book id</string>
+
 
     <!-- ####################################################################################### -->
     <!-- == Style preference settings == -->
@@ -1403,6 +1425,7 @@
     <string name="lbl_read">Read</string>
     <string name="lbl_unread">Unread</string>
 
+    <string name="lbl_barcode">Barcode</string>
 
     <!-- Label used in the list of Field visibility preferences. -->
     <string name="lbl_lending">Lending</string>
@@ -1567,7 +1590,5 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
-    <string name="allow_edit_native_id">Allow editing native website book id</string>
-    <string name="lbl_barcode">Barcode</string>
 
 </resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -634,5 +634,7 @@
     <string name="lbl_barcode">Barcode</string>
     <string name="lbl_authors">Συγγραφείς</string>
     <string name="lbl_series_multiple">Σειρά</string>
+    <string name="pv_scanner_embedded">Εσωτερικός</string>
+    <string name="pt_allow_edit_native_id">Να επιτρέπεται η επεξεργασία του εγγενούς αναγνωριστικού ιστοτόπου ιστοτόπου.</string>
 
 </resources>

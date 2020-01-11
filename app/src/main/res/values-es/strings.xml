@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -640,5 +640,7 @@
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_authors">Autores</string>
     <string name="lbl_series_multiple">Serie</string>
+    <string name="pv_scanner_embedded">Interno</string>
+    <string name="pt_allow_edit_native_id">Permitir editar la identificación del libro nativo del sitio</string>
 
 </resources>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -645,5 +645,7 @@
     <string name="lbl_barcode">Barcode</string>
     <string name="lbl_authors">Auteurs</string>
     <string name="lbl_series_multiple">Reeksen</string>
+    <string name="pv_scanner_embedded">Intern</string>
+    <string name="pt_allow_edit_native_id">Sta bewerken van native website-boek-ID toe.</string>
 
 </resources>
