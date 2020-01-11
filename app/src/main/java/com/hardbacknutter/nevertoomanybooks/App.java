@@ -546,8 +546,9 @@ public class App
     }
 
     @SuppressWarnings("unused")
-    public static boolean isRtl(@NonNull final Locale locale) {
-        return TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL;
+    public static boolean isRtl() {
+        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault())
+               == View.LAYOUT_DIRECTION_RTL;
     }
 
     /**

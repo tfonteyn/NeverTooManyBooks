@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.system.ErrnoException;
 import android.system.OsConstants;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -518,6 +519,19 @@ public class ImportExportFragment
             msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
 
+        int failed = results.failedCsvLines.size();
+        if (failed > 0) {
+            msg.append("\n\n• ");
+            if (failed > 10) {
+                // keep it sensible, list only 10 line numbers.
+                msg.append(getString(R.string.warning_import_csv_failed_lines_lots,
+                                     TextUtils.join(", ", results.failedCsvLines.subList(0, 9))));
+            } else {
+                msg.append(getString(R.string.warning_import_csv_failed_lines_some,
+                                     TextUtils.join(", ", results.failedCsvLines)));
+            }
+        }
+
         //noinspection ConstantConditions
         new AlertDialog.Builder(getContext())
                 .setTitle(titleId)
@@ -754,8 +768,7 @@ public class ImportExportFragment
         }
 
         if (offerEmail) {
-            msg.append("\n\n")
-               .append(getString(R.string.confirm_email_export));
+            msg.append("\n\n").append(getString(R.string.confirm_email_export));
         }
 
         //noinspection ConstantConditions

@@ -68,7 +68,11 @@ public class CameraHelper {
     private int mRotationAngle;
     /** by default, we tell the camera to give us full-size pictures. */
     private boolean mUseFullSize = true;
+    /** Needed while checking permissions. */
+    @SuppressWarnings("FieldNotUsedInToString")
     private Fragment mFragment;
+    /** Needed while checking permissions. */
+    @SuppressWarnings("FieldNotUsedInToString")
     private int mRequestCode;
 
     /**

@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -43,10 +44,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.CoverBrowserFragment;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -212,9 +213,7 @@ public interface SearchEngine {
          * Called by the {@link SearchCoordinator#search}.
          *
          * @param localizedAppContext Localised application context
-         * @param isbn                to search for, <strong>will</strong> be valid
-         *                            unless the engine implements {@link ByBarcode},
-         *                            in that case it <strong>may</strong> be generic/invalid.
+         * @param isbn                to search for, <strong>will</strong> be valid.
          * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
          *                            The array is guaranteed to have at least one element.
          *
@@ -233,12 +232,35 @@ public interface SearchEngine {
 
     /**
      * Optional.
-     * Marker interface to indicate the engine can search generic bar codes,
-     * aside of strict ISBN only.
+     * The engine can search generic bar codes, aside of strict ISBN only.
+     * <p>
+     * The default implementation provided uses the {@link #searchByIsbn}.
+     * Override when needed.
      */
     interface ByBarcode
             extends ByIsbn {
 
+        /**
+         * Called by the {@link SearchCoordinator#search}.
+         *
+         * @param localizedAppContext Localised application context
+         * @param barcode             to search for, <strong>will</strong> be valid.
+         * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
+         *                            The array is guaranteed to have at least one element.
+         *
+         * @return bundle with book data. Can be empty, but never {@code null}.
+         *
+         * @throws CredentialsException for sites which require credentials
+         * @throws IOException          on other failures
+         */
+        @WorkerThread
+        @NonNull
+        default Bundle searchByBarcode(@NonNull final Context localizedAppContext,
+                                       @NonNull final String barcode,
+                                       @NonNull final boolean[] fetchThumbnail)
+                throws CredentialsException, IOException {
+            return searchByIsbn(localizedAppContext, barcode, fetchThumbnail);
+        }
     }
 
     /** Optional. */
@@ -248,12 +270,12 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          * <p>
-         * The isbn might or might not be valid.
+         * The code might or might not be valid.
          * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
          * @param localizedAppContext Localised application context
-         * @param isbn                to search for
+         * @param code                isbn, barcode or generic code to search for
          * @param author              to search for
          * @param title               to search for
          * @param publisher           optional and in addition to author/title.
@@ -270,7 +292,7 @@ public interface SearchEngine {
         @WorkerThread
         @NonNull
         Bundle search(@NonNull Context localizedAppContext,
-                      @Nullable String isbn,
+                      @Nullable String code,
                       @Nullable String author,
                       @Nullable String title,
                       @Nullable String publisher,
@@ -355,8 +377,7 @@ public interface SearchEngine {
          * There is normally no need to call this method directly, except when you
          * override {@link #getCoverImage(Context, String, int, ImageSize)}.
          * <br><br>
-         * Do NOT use if the site either does not support returning images during search,
-         * or does not support isbn searches.
+         * Do NOT use if the site either does not support returning images during search.
          * <br><br>
          * A search for the book is done, with the 'fetchThumbnail' flag set to true.
          * Any {@link IOException} or {@link CredentialsException} thrown are ignored and
@@ -379,21 +400,22 @@ public interface SearchEngine {
 
             try {
                 Bundle bookData;
-                // If we have a valid ISBN, and the engine supports it, we can search.
+                // If we have a valid ISBN, and the engine supports it, search.
                 if (ISBN.isValidIsbn(isbnStr) && this instanceof SearchEngine.ByIsbn) {
                     bookData = ((SearchEngine.ByIsbn) this)
                             .searchByIsbn(appContext, isbnStr, fetchThumbnail);
 
                     // If we have a generic barcode, ...
-                } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByBarcode) {
-                    bookData = ((SearchEngine.ByIsbn) this)
-                            .searchByIsbn(appContext, isbnStr, fetchThumbnail);
+                } else if (ISBN.isValid(isbnStr) && this instanceof SearchEngine.ByBarcode) {
+                    bookData = ((SearchEngine.ByBarcode) this)
+                            .searchByBarcode(appContext, isbnStr, fetchThumbnail);
 
-                    // otherwise we pass a non-empty (but invalid) isbn on regardless.
+                    // otherwise we pass a non-empty (but invalid) code on regardless.
                     // if the engine supports text mode.
                 } else if (!isbnStr.isEmpty() && this instanceof SearchEngine.ByText) {
                     bookData = ((SearchEngine.ByText) this)
                             .search(appContext, isbnStr, "", "", "", fetchThumbnail);
+
                 } else {
                     // don't throw here; this is a fallback method allowed to fail.
                     return null;
@@ -412,7 +434,9 @@ public interface SearchEngine {
                 }
 
             } catch (@NonNull final CredentialsException | IOException e) {
-                Logger.error(appContext, TAG, e);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "", e);
+                }
             }
 
             return null;

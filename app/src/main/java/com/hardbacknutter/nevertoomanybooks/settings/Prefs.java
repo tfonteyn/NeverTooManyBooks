@@ -92,6 +92,7 @@ public final class Prefs {
 
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
+    public static final String pk_search_isbn_force_10 = "search.byIsbn.force.10";
 
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
     public static final String pk_camera_image_action = "camera.image.action";

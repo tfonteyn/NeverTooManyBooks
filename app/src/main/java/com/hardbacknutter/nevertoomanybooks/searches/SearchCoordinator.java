@@ -43,6 +43,7 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -64,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
@@ -101,20 +103,19 @@ public class SearchCoordinator
     /** List of Tasks being managed by *this* object. */
     @NonNull
     private final Collection<SearchTask> mActiveTasks = new HashSet<>();
-    /**
-     * Results from the search tasks.
-     * <p>
-     * key: site id (== task id)
-     */
+
+    /** Accumulates the results from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
     @NonNull
     private final Map<Integer, Bundle> mSearchResults = new HashMap<>();
 
+    /** Accumulates the last message from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
     @NonNull
     private final Map<Integer, TaskListener.FinishMessage<Bundle>>
             mSearchFinishedMessages = Collections.synchronizedMap(new HashMap<>());
 
+    /** Accumulates the results from <strong>individual</strong> search tasks. */
     @SuppressLint("UseSparseArrays")
     @NonNull
     private final Map<Integer, TaskListener.ProgressMessage>
@@ -131,26 +132,26 @@ public class SearchCoordinator
     private SiteList mSiteList;
     /** Base message for progress updates. */
     private String mBaseMessage;
-    /** Flag */
+    /** Flag indicating at least one search is currently running. */
     private boolean mIsSearchActive;
     /** Flag indicating we're shutting down. */
     private boolean mIsCancelled;
-    /**
-     * Indicates original ISBN/EAN is really present and valid.
-     * Being ISBN or EAN depends on {@link #mStrictIsbn}.
-     */
-    private boolean mHasValidIsbnOrEAN;
-    /** {@code true} for strict ISBN checking, {@code false} for also allowing EAN-13. */
-    private boolean mStrictIsbn = true;
     /** Whether of not to fetch thumbnails. */
     @Nullable
     private boolean[] mFetchThumbnail;
     /** Flag indicating searches will be non-concurrent until an ISBN is found. */
-    private boolean mWaitingForIsbn;
+    private boolean mWaitingForExactCode;
 
-    /** Original ISBN for search. */
+
+    /** Original ISBN text for search. */
     @NonNull
     private String mIsbnSearchText = "";
+    /** {@code true} for strict ISBN checking, {@code false} for also allowing generic code. */
+    private boolean mStrictIsbn = true;
+
+    /** Created by {@link #prepareSearch(Context)}. NonNull afterwards. */
+    private ISBN mIsbn;
+
     /** Site native id for search. */
     @Nullable
     private SparseArray<String> mNativeIdSearchText;
@@ -166,11 +167,18 @@ public class SearchCoordinator
 
     /** Accumulated book data. */
     private Bundle mBookData;
+
+    /** DEBUG timer. */
     private long mSearchStartTime;
+    /** DEBUG timer. */
     private SparseLongArray mSearchTasksStartTime;
+    /** DEBUG timer. */
     private SparseLongArray mSearchTasksEndTime;
 
-    /** Listen for <strong>individual</strong> search tasks. */
+    /** Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search. */
+    private boolean mForceIsbn10;
+
+    /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Bundle> message) {
@@ -195,7 +203,7 @@ public class SearchCoordinator
                 }
                 FinishMessage<Bundle> scFinished = new FinishMessage<>(
                         R.id.TASK_ID_SEARCH_COORDINATOR,
-                        (mIsCancelled ? TaskStatus.Cancelled : TaskStatus.Success),
+                        mIsCancelled ? TaskStatus.Cancelled : TaskStatus.Success,
                         mBookData, null);
 
                 mSearchCoordinatorFinishedMessage.setValue(scFinished);
@@ -293,6 +301,9 @@ public class SearchCoordinator
                 mMappers.add(new ColorMapper());
             }
 
+            mForceIsbn10 = PreferenceManager.getDefaultSharedPreferences(context)
+                                            .getBoolean(Prefs.pk_search_isbn_force_10, false);
+
             if (args != null) {
                 boolean thumbs = App.isUsed(UniqueId.BKEY_THUMBNAIL);
                 mFetchThumbnail = new boolean[2];
@@ -375,14 +386,14 @@ public class SearchCoordinator
         // and update our listener.
         mSearchCoordinatorProgressMessage.setValue(accumulateProgress());
 
-        if (mWaitingForIsbn) {
+        if (mWaitingForExactCode) {
             if (hasIsbn(message.result)) {
-                mWaitingForIsbn = false;
+                mWaitingForExactCode = false;
                 // replace the search text with the (we hope) exact isbn
                 mIsbnSearchText = message.result.getString(DBDefinitions.KEY_ISBN, "");
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "onSearchTaskFinished|isbn=" + mIsbnSearchText);
+                    Log.d(TAG, "onSearchTaskFinished|mWaitingForExactCode|isbn=" + mIsbnSearchText);
                 }
 
                 // Start the others...even if they have run before.
@@ -398,7 +409,7 @@ public class SearchCoordinator
         // Remove the finished task from our list
         synchronized (mActiveTasks) {
             for (SearchTask searchTask : mActiveTasks) {
-                if (searchTask.getId() == message.taskId) {
+                if (searchTask.getTaskId() == message.taskId) {
                     mActiveTasks.remove(searchTask);
                     break;
                 }
@@ -411,7 +422,7 @@ public class SearchCoordinator
                            + SearchSites.getName(message.taskId));
                 for (SearchTask searchTask : mActiveTasks) {
                     Log.d(TAG, "mSearchTaskListener.onFinished|running="
-                               + SearchSites.getName(searchTask.getId()));
+                               + SearchSites.getName(searchTask.getTaskId()));
                 }
             }
         }
@@ -573,13 +584,13 @@ public class SearchCoordinator
     /**
      * Start a search.
      * <p>
-     * If there is a valid ISBN/EAN code, we start a concurrent search on all sites.
+     * If there is a valid ISBN/code, we start a concurrent search on all sites.
      * When all sites are searched, we're done.
      * <p>
      * Otherwise, we start a serial search using author/title (and optional publisher)
-     * until we find an ISBN or until we searched all sites.
-     * Once/if an ISBN is found, the serial search is abandoned, and a new concurrent search
-     * is started on all sites using the ISBN.
+     * until we find an ISBN/code or until we searched all sites.
+     * Once/if an ISBN/code is found, the serial search is abandoned, and a new concurrent search
+     * is started on all sites using the ISBN/code.
      *
      * @param context Current context
      *
@@ -588,19 +599,20 @@ public class SearchCoordinator
     public boolean search(@NonNull final Context context) {
         prepareSearch(context);
 
-        // we have a valid ISBN *OR* EAN.
-        if (!mIsbnSearchText.isEmpty() && (mHasValidIsbnOrEAN || !mStrictIsbn)
-            // or we have one or more nativeIds
-            || mNativeIdSearchText != null && mNativeIdSearchText.size() > 0) {
+        // If we have one or more native ids
+        if ((mNativeIdSearchText != null && mNativeIdSearchText.size() > 0)
+            // or we have a valid code
+            || mIsbn.isValid(mStrictIsbn)) {
 
             // then start a concurrent search
-            mWaitingForIsbn = false;
+            mWaitingForExactCode = false;
             mIsSearchActive = startSearch(context, mSiteList.getSites(true));
 
         } else {
-            // We really want to ensure we get the same book from each, so if the isbn is
-            // NOT PRESENT, search the sites one at a time until we get an isbn.
-            mWaitingForIsbn = true;
+            // We really want to ensure we get the same book from each,
+            // so if the ISBN/code is NOT PRESENT, search the sites
+            // one at a time until we get a ISBN/code.
+            mWaitingForExactCode = true;
             mIsSearchActive = startNextSearch(context);
         }
 
@@ -654,7 +666,7 @@ public class SearchCoordinator
         }
 
         // reset flags
-        mWaitingForIsbn = false;
+        mWaitingForExactCode = false;
         mIsCancelled = false;
         mIsSearchActive = false;
 
@@ -664,17 +676,13 @@ public class SearchCoordinator
         // no synchronized needed here
         mSearchFinishedMessages.clear();
 
-        if (mIsbnSearchText.isEmpty()) {
-            mHasValidIsbnOrEAN = false;
-        } else {
-            mHasValidIsbnOrEAN = new ISBN(mIsbnSearchText, mStrictIsbn).isValid();
-        }
+        mIsbn = new ISBN(mIsbnSearchText, mStrictIsbn);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "prepareSearch"
                        + "|mNativeId=" + mNativeIdSearchText
-                       + "|mIsbn=" + mIsbnSearchText
-                       + "|mHasValidIsbnOrEAN=" + mHasValidIsbnOrEAN
+                       + "|mIsbnSearchText=" + mIsbnSearchText
+                       + "|mIsbn=" + mIsbn
                        + "|mStrictIsbn=" + mStrictIsbn
                        + "|mAuthor=" + mAuthorSearchText
                        + "|mTitle=" + mTitleSearchText
@@ -770,38 +778,43 @@ public class SearchCoordinator
             nativeId = mNativeIdSearchText.get(site.id);
         }
 
-        boolean canSearch =
-                // if we have a native id, and the engine supports it, we can search.
-                (nativeId != null
-                 && (searchEngine instanceof SearchEngine.ByNativeId))
-                ||
-                // If we have a valid ISBN, ...
-                (mHasValidIsbnOrEAN && mStrictIsbn
-                 && (searchEngine instanceof SearchEngine.ByIsbn))
-                ||
-                // If we have a generic barcode, ...
-                ((!mIsbnSearchText.isEmpty() && !mStrictIsbn)
-                 && (searchEngine instanceof SearchEngine.ByBarcode))
-                ||
-                // The implementation is supposed to check the data, so no more checks here.
-                (searchEngine instanceof SearchEngine.ByText);
+        SearchTask task = new SearchTask(context, site.id, searchEngine, mSearchTaskListener);
+        task.setFetchThumbnail(mFetchThumbnail);
+        SearchTask.By how;
 
-        if (!canSearch) {
+        if (nativeId != null && !nativeId.isEmpty()
+            && (searchEngine instanceof SearchEngine.ByNativeId)) {
+            how = SearchTask.By.NativeId;
+            task.setNativeId(nativeId);
+
+        } else if (mIsbn.isValid(true)
+                   && (searchEngine instanceof SearchEngine.ByIsbn)) {
+            how = SearchTask.By.ISBN;
+            if (mForceIsbn10 && mIsbn.isIsbn10Compat()) {
+                task.setIsbn(mIsbn.asText(ISBN.Type.ISBN10));
+            } else {
+                task.setIsbn(mIsbn.asText());
+            }
+
+        } else if (mIsbn.isValid(false)
+                   && (searchEngine instanceof SearchEngine.ByBarcode)) {
+            how = SearchTask.By.Barcode;
+            task.setIsbn(mIsbn.asText());
+
+        } else if (searchEngine instanceof SearchEngine.ByText) {
+            how = SearchTask.By.Text;
+            task.setIsbn(mIsbn.asText());
+            task.setAuthor(mAuthorSearchText);
+            task.setTitle(mTitleSearchText);
+            task.setPublisher(mPublisherSearchText);
+
+        } else {
+            // search data and engine have nothing in common, abort silently.
             return false;
         }
 
-        SearchTask task = new SearchTask(context, site.id, searchEngine, mSearchTaskListener);
-
-        task.setFetchThumbnail(mFetchThumbnail);
-
-        task.setNativeId(nativeId);
-        task.setIsbn(mIsbnSearchText);
-        task.setAuthor(mAuthorSearchText);
-        task.setTitle(mTitleSearchText);
-        task.setPublisher(mPublisherSearchText);
-
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            mSearchTasksStartTime.put(task.getId(), System.nanoTime());
+            mSearchTasksStartTime.put(task.getTaskId(), System.nanoTime());
         }
 
         synchronized (mActiveTasks) {
@@ -810,7 +823,7 @@ public class SearchCoordinator
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
             Log.d(TAG, "startSearch|site=" + site);
         }
-        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, how);
         return true;
     }
 
@@ -825,7 +838,7 @@ public class SearchCoordinator
         final Collection<Integer> sites = new ArrayList<>();
 
         // determine the order of the sites which should give us the most reliable data.
-        if (mHasValidIsbnOrEAN && mStrictIsbn) {
+        if (mIsbn.isValid(true)) {
             // If an ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
             final Collection<Integer> uncertain = new ArrayList<>();
@@ -834,22 +847,22 @@ public class SearchCoordinator
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
                         String isbnFound = bookData.getString(DBDefinitions.KEY_ISBN);
-
+                        // do they match?
+                        if (isbnFound != null && !isbnFound.isEmpty()
+                            && mIsbn.equals(ISBN.createISBN(isbnFound))) {
+                            sites.add(site.id);
+                        }
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                             Log.d(TAG, "accumulateResults"
-                                       + "|mIsbn" + mIsbnSearchText
+                                       + "|mIsbn" + mIsbn
                                        + "|isbnFound" + isbnFound);
-                        }
-
-                        if (ISBN.matches(mIsbnSearchText, isbnFound, true)) {
-                            sites.add(site.id);
                         }
                     } else {
                         uncertain.add(site.id);
                     }
                 }
             }
-            // good results come first, less reliable ones last in the list.
+            // now add the less reliable ones at the end of the list.
             sites.addAll(uncertain);
             // Add the passed ISBN first;
             // avoids overwriting with potentially different isbn from the sites
@@ -1158,6 +1171,8 @@ public class SearchCoordinator
 
     /**
      * Creates {@link TaskListener.ProgressMessage} with the global/total progress of all tasks.
+     *
+     * @return instance
      */
     @NonNull
     private TaskListener.ProgressMessage accumulateProgress() {

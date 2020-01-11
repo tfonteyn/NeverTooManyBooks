@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -41,14 +42,13 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 
 /**
  * Searches a single {@link SearchEngine}.
  */
 public class SearchTask
-        extends TaskBase<Bundle> {
+        extends TaskBase<SearchTask.By, Bundle> {
 
     /** Log tag. */
     private static final String TAG = "SearchTask";
@@ -65,6 +65,12 @@ public class SearchTask
 
     /** search criteria. */
     @Nullable
+    private String mNativeId;
+    /** search criteria. */
+    @Nullable
+    private String mIsbnStr;
+    /** search criteria. */
+    @Nullable
     private String mAuthor;
     /** search criteria. */
     @Nullable
@@ -72,25 +78,20 @@ public class SearchTask
     /** search criteria. */
     @Nullable
     private String mPublisher;
-    /** search criteria. */
-    @Nullable
-    private String mIsbn;
-    /** search criteria. */
-    @Nullable
-    private String mNativeId;
 
     /**
      * Constructor. Will search according to passed parameters.
      * <ol>
      * <li>native id</li>
      * <li>valid ISBN</li>
-     * <li>generic barcode</li>
+     * <li>valid barcode</li>
      * <li>text</li>
      * </ol>
      *
      * @param context      Localized context
      * @param taskId       identifier
      * @param searchEngine the search site engine
+     * @param taskListener for the results
      */
     SearchTask(@NonNull final Context context,
                final int taskId,
@@ -104,6 +105,8 @@ public class SearchTask
     }
 
     /**
+     * Set/reset the criteria.
+     *
      * @param nativeId to search for
      */
     void setNativeId(@Nullable final String nativeId) {
@@ -111,35 +114,43 @@ public class SearchTask
     }
 
     /**
-     * @param isbn to search for
+     * Set/reset the criteria.
+     *
+     * @param isbnStr to search for
      */
-    void setIsbn(@NonNull final String isbn) {
-        mIsbn = isbn;
+    void setIsbn(@Nullable final String isbnStr) {
+        mIsbnStr = isbnStr;
     }
 
     /**
+     * Set/reset the criteria.
+     *
      * @param author to search for
      */
-    void setAuthor(@NonNull final String author) {
+    void setAuthor(@Nullable final String author) {
         mAuthor = author;
     }
 
     /**
+     * Set/reset the criteria.
+     *
      * @param title to search for
      */
-    void setTitle(@NonNull final String title) {
+    void setTitle(@Nullable final String title) {
         mTitle = title;
     }
 
     /**
+     * Set/reset the criteria.
+     *
      * @param publisher to search for
      */
-    void setPublisher(@NonNull final String publisher) {
+    void setPublisher(@Nullable final String publisher) {
         mPublisher = publisher;
     }
 
     /**
-     * Set flag.
+     * Set/reset the criteria.
      *
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      */
@@ -153,12 +164,12 @@ public class SearchTask
 
     @Override
     @Nullable
-    protected Bundle doInBackground(final Void... voids) {
+    protected Bundle doInBackground(@NonNull final SearchTask.By... by) {
         Context localizedAppContext = App.getLocalizedAppContext();
         Thread.currentThread()
               .setName(TAG + ' ' + localizedAppContext.getString(mSearchEngine.getNameResId()));
 
-        publishProgress(new TaskListener.ProgressMessage(mTaskId, mProgressTitle));
+        publishProgress(new TaskListener.ProgressMessage(getTaskId(), mProgressTitle));
 
         try {
             // can we reach the site ?
@@ -166,41 +177,43 @@ public class SearchTask
                               mSearchEngine.getUrl(localizedAppContext),
                               mSearchEngine.getConnectTimeoutMs());
 
-            Bundle bookData;
-
-            // sanity/paranoia check, see #setFetchThumbnail
+            // sanity check, see #setFetchThumbnail
             if (mFetchThumbnail == null) {
                 mFetchThumbnail = new boolean[2];
             }
 
-            // if we have a native id, and the engine supports it, we can search.
-            if (mNativeId != null && !mNativeId.isEmpty()
-                && mSearchEngine instanceof SearchEngine.ByNativeId) {
-                bookData = ((SearchEngine.ByNativeId) mSearchEngine)
-                        .searchByNativeId(localizedAppContext, mNativeId, mFetchThumbnail);
+            Bundle bookData;
 
-                // If we have a valid ISBN, ...
-            } else if (ISBN.isValidIsbn(mIsbn)
-                       && mSearchEngine instanceof SearchEngine.ByIsbn) {
-                bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                        .searchByIsbn(localizedAppContext, mIsbn, mFetchThumbnail);
+            switch (by[0]) {
+                case NativeId:
+                    Objects.requireNonNull(mNativeId);
+                    bookData = ((SearchEngine.ByNativeId) mSearchEngine)
+                            .searchByNativeId(localizedAppContext, mNativeId, mFetchThumbnail);
+                    break;
 
-                // If we have a generic barcode, ...
-            } else if (mIsbn != null && !mIsbn.isEmpty()
-                       && mSearchEngine instanceof SearchEngine.ByBarcode) {
-                bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                        .searchByIsbn(localizedAppContext, mIsbn, mFetchThumbnail);
+                case ISBN:
+                    Objects.requireNonNull(mIsbnStr);
+                    bookData = ((SearchEngine.ByIsbn) mSearchEngine)
+                            .searchByIsbn(localizedAppContext, mIsbnStr, mFetchThumbnail);
+                    break;
 
-                // The implementation is supposed to check the data, so no more checks here.
-            } else if (mSearchEngine instanceof SearchEngine.ByText) {
-                bookData = ((SearchEngine.ByText) mSearchEngine)
-                        .search(localizedAppContext, mIsbn, mAuthor, mTitle, mPublisher,
-                                mFetchThumbnail);
+                case Barcode:
+                    Objects.requireNonNull(mIsbnStr);
+                    bookData = ((SearchEngine.ByBarcode) mSearchEngine)
+                            .searchByBarcode(localizedAppContext, mIsbnStr, mFetchThumbnail);
+                    break;
 
-            } else {
-                String name = localizedAppContext.getString(mSearchEngine.getNameResId());
-                throw new IllegalStateException("search engine " + name
-                                                + " does not implement any search?");
+                case Text:
+                    bookData = ((SearchEngine.ByText) mSearchEngine)
+                            .search(localizedAppContext, mIsbnStr, mAuthor, mTitle, mPublisher,
+                                    mFetchThumbnail);
+                    break;
+
+                default:
+                    // we should never get here...
+                    String name = localizedAppContext.getString(mSearchEngine.getNameResId());
+                    throw new IllegalStateException("SearchEngine " + name
+                                                    + " does not implement By=" + by[0]);
             }
 
             if (!bookData.isEmpty()) {
@@ -214,5 +227,9 @@ public class SearchTask
             mException = e;
             return null;
         }
+    }
+
+    public enum By {
+        NativeId, ISBN, Barcode, Text
     }
 }

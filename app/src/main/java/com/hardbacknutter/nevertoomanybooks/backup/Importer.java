@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,8 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Interface definition for an importer.
@@ -98,6 +100,8 @@ public interface Importer
         /** #styles we imported. */
         public int styles;
 
+        public final List<Integer> failedCsvLines = new ArrayList<>();
+
         @Override
         @NonNull
         public String toString() {
@@ -109,6 +113,7 @@ public interface Importer
                    + ", coversCreated=" + coversCreated
                    + ", coversUpdated=" + coversUpdated
                    + ", styles=" + styles
+                   + ", failedCsvLines=" + failedCsvLines
                    + '}';
         }
     }

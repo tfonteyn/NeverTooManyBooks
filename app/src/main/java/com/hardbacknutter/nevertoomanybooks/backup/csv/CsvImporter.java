@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -101,7 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  * <li>'(' and ')' are used to add numbers or dates (between the brackets) to items.
  * e.g. TOC entries can contain a date, Series will have the book number,... </li>
  * </ul>
- *
+ * <p>
  * Space characters are encoded for Authors names while exporting,
  * but it's not strictly needed although some exotic names might get mangled;
  * when in doubt, escape.
@@ -116,10 +117,6 @@ public class CsvImporter
     private static final int PROGRESS_UPDATE_INTERVAL = 200;
 
     private static final int BUFFER_SIZE = 32768;
-
-    private static final char QUOTE_CHAR = '"';
-    private static final char ESCAPE_CHAR = '\\';
-    private static final char SEPARATOR = ',';
 
     private static final String STRINGED_ID = DBDefinitions.KEY_PK_ID;
 
@@ -192,8 +189,15 @@ public class CsvImporter
         }
 
         final Book book = new Book();
-        // first line in import are the column names
-        final String[] csvColumnNames = returnRow(importedList.get(0), true);
+        // first line in import must be the column names
+        final String[] csvColumnNames;
+        try {
+            csvColumnNames = parseRow(importedList.get(0), true);
+        } catch (@NonNull final ParseException e) {
+            // if we cannot even parse the column header, give up.
+            throw new ImportException(R.string.error_import_failed);
+        }
+
         // Store the names so we can check what is present
         for (int i = 0; i < csvColumnNames.length; i++) {
             csvColumnNames[i] = csvColumnNames[i].toLowerCase(App.getSystemLocale());
@@ -240,8 +244,8 @@ public class CsvImporter
         final boolean updateOnlyIfNewer;
         if ((mSettings.options & ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             if (!book.containsKey(DBDefinitions.KEY_DATE_LAST_UPDATED)) {
-                throw new IllegalArgumentException(
-                        "Imported data does not contain " + DBDefinitions.KEY_DATE_LAST_UPDATED);
+                throw new ImportException(R.string.error_import_csv_file_must_contain_columns_x,
+                                          DBDefinitions.KEY_DATE_LAST_UPDATED);
             }
             updateOnlyIfNewer = true;
         } else {
@@ -256,9 +260,9 @@ public class CsvImporter
         // Count the nr of books in between.
         int delta = 0;
 
-        // Iterate through each imported row
         SyncLock txLock = null;
         try {
+            // Iterate through each imported row
             while (row < importedList.size() && !progressListener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
@@ -272,36 +276,39 @@ public class CsvImporter
                 }
                 txRowCount++;
 
-                // Get row
-                final String[] csvDataRow = returnRow(importedList.get(row), fullEscaping);
-                // clear book (avoiding construction another object) and add each field
-                book.clear();
-                // read all columns of the current row into the Bundle
-                //note that some of them require further processing before being valid.
-                for (int i = 0; i < csvColumnNames.length; i++) {
-                    book.putString(csvColumnNames[i], csvDataRow[i]);
-                }
-
-                // Validate ID's
-                BookIds bids = new BookIds(book);
-
-                // check title
-                requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
-
-                // check any of the Author variations columns.
-                handleAuthors(context, mDb, book);
-                // check the dedicated Series column, or check if the title contains a series part.
-                handleSeries(context, mDb, book);
-                // check any of the Bookshelf variations columns.
-                handleBookshelves(context, mDb, book);
-
-                // optional
-                if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
-                    handleAnthology(context, mDb, book);
-                }
-
-                // ready to update/insert into the database
                 try {
+                    final String[] csvDataRow = parseRow(importedList.get(row), fullEscaping);
+                    // clear book (avoiding construction another object)
+                    book.clear();
+                    // Read all columns of the current row into the Bundle.
+                    // Note that some of them require further processing before being valid.
+                    // Throws IndexOutOfBoundsException if the number of fields does
+                    // not match the number of column headers.
+                    for (int i = 0; i < csvColumnNames.length; i++) {
+                        book.putString(csvColumnNames[i], csvDataRow[i]);
+                    }
+
+                    // Validate ID's
+                    BookIds bids = new BookIds(book);
+
+                    // check title
+                    requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
+
+                    // check any of the Author variations columns.
+                    handleAuthors(context, mDb, book);
+                    // check the dedicated Series column,
+                    // or if the book title contains a series part.
+                    handleSeries(context, mDb, book);
+                    // check any of the Bookshelf variations columns.
+                    handleBookshelves(context, mDb, book);
+
+                    // optional
+                    if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
+                        handleAnthology(context, mDb, book);
+                    }
+
+                    // The data is ready to be send to the database
+
                     // Save the original id from the file for use in checking for images
                     long bookIdFromFile = bids.bookId;
                     // go!
@@ -316,7 +323,9 @@ public class CsvImporter
                                                               mDb.getBookUuid(bids.bookId));
                         }
                     }
-                } catch (@NonNull final IOException | SQLiteDoneException e) {
+                } catch (@NonNull final SQLiteDoneException
+                        | ParseException | IndexOutOfBoundsException e) {
+                    mResults.failedCsvLines.add(row);
                     Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
@@ -334,7 +343,7 @@ public class CsvImporter
                 }
                 delta++;
                 row++;
-            } // end while
+            }
         } finally {
             if (mDb.inTransaction()) {
                 mDb.setTransactionSuccessful();
@@ -347,10 +356,7 @@ public class CsvImporter
         mResults.booksProcessed = row - 1;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Log.d(TAG, "EXIT|doBooks|Csv Import successful"
-                       + "|processed=" + mResults.booksProcessed
-                       + "|created=" + mResults.booksCreated
-                       + "|updated=" + mResults.booksUpdated);
+            Log.d(TAG, "EXIT|doBooks|Csv Import successful|" + mResults);
         }
         return mResults;
     }
@@ -455,7 +461,7 @@ public class CsvImporter
             encodedList = book.getString(LEGACY_BOOKSHELF_TEXT_COLUMN);
         }
 
-        ArrayList<Bookshelf> list = CsvCoder.getBookshelfCoder().decode(encodedList);
+        ArrayList<Bookshelf> list = CsvCoder.getBookshelfCoder().decodeList(encodedList);
         if (!list.isEmpty()) {
             // fix the ID's
             ItemWithFixableId.pruneList(list, context, db, Locale.getDefault(), false);
@@ -509,7 +515,7 @@ public class CsvImporter
             list = new ArrayList<>();
             list.add(Author.createUnknownAuthor(context));
         } else {
-            list = CsvCoder.getAuthorCoder().decode(encodedList);
+            list = CsvCoder.getAuthorCoder().decodeList(encodedList);
             ItemWithFixableId.pruneList(list, context, db, Locale.getDefault(), false);
         }
 
@@ -546,7 +552,7 @@ public class CsvImporter
 
         // Handle the series
         Locale bookLocale = book.getLocale(context);
-        ArrayList<Series> list = CsvCoder.getSeriesCoder().decode(encodedList);
+        ArrayList<Series> list = CsvCoder.getSeriesCoder().decodeList(encodedList);
 
         // run in batch mode, i.e. force using the bookLocale;
         // otherwise the import is far to slow and of little benefit.
@@ -572,7 +578,7 @@ public class CsvImporter
 
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
         if (!encodedList.isEmpty()) {
-            ArrayList<TocEntry> list = CsvCoder.getTocCoder().decode(encodedList);
+            ArrayList<TocEntry> list = CsvCoder.getTocCoder().decodeList(encodedList);
             if (!list.isEmpty()) {
                 // fix the ID's
                 ItemWithFixableId.pruneList(list, context, db, book.getLocale(context), false);
@@ -586,37 +592,39 @@ public class CsvImporter
 
     /**
      * This CSV parser is not a complete parser, but it will parse files exported by older
-     * versions. At some stage in the future it would be good to allow full CSV export
-     * and import to allow for escape('\') chars so that cr/lf can be preserved.
+     * versions.
      *
-     * @param row          with CSV
+     * @param row          with CSV fields
      * @param fullEscaping if {@code true} handle the import as a version 3.4+;
      *                     if {@code false} handle as an earlier version.
      *
      * @return an array representing the row
+     *
+     * @throws ParseException on failure
      */
     @NonNull
-    private String[] returnRow(@NonNull final String row,
-                               final boolean fullEscaping) {
-        // Need to handle double quotes etc
+    private String[] parseRow(@NonNull final String row,
+                              final boolean fullEscaping)
+            throws ParseException {
+        // Fields found in row
+        final Collection<String> fields = new ArrayList<>();
+        // Temporary storage for current field
+        StringBuilder sb = new StringBuilder();
 
         // Current position
         int pos = 0;
         // In a quoted string
-        boolean inQuote = false;
+        boolean inQuotes = false;
         // Found an escape char
-        boolean inEsc = false;
+        boolean isEsc = false;
         // 'Current' char
         char c;
-        // 'Next' char
-        char next = (row.isEmpty()) ? '\0' : row.charAt(0);
         // Last position in row
         int endPos = row.length() - 1;
-        // Array of fields found in row
-        final Collection<String> fields = new ArrayList<>();
-        // Temp. storage for current field
-        StringBuilder sb = new StringBuilder();
+        // 'Next' char
+        char next = (row.isEmpty()) ? '\0' : row.charAt(0);
 
+        // '\0' is used as (and artificial) null character indicating end-of-string.
         while (next != '\0') {
             // Get current and next char
             c = next;
@@ -626,15 +634,35 @@ public class CsvImporter
                 next = '\0';
             }
 
-            // If we are 'escaped', just append the char, handling special cases
-            if (inEsc) {
-                sb.append(unescape(c));
-                inEsc = false;
-            } else if (inQuote) {
+            if (isEsc) {
                 switch (c) {
-                    case QUOTE_CHAR:
-                        if (next == QUOTE_CHAR) {
-                            // Double-quote: Advance one more and append a single quote
+                    case '\\':
+                        sb.append('\\');
+                        break;
+
+                    case 'r':
+                        sb.append('\r');
+                        break;
+
+                    case 't':
+                        sb.append('\t');
+                        break;
+
+                    case 'n':
+                        sb.append('\n');
+                        break;
+
+                    default:
+                        sb.append(c);
+                        break;
+                }
+                isEsc = false;
+
+            } else if (inQuotes) {
+                switch (c) {
+                    case '"':
+                        if (next == '"') {
+                            // substitute two successive quotes with one quote
                             pos++;
                             if (pos < endPos) {
                                 next = row.charAt(pos + 1);
@@ -642,47 +670,53 @@ public class CsvImporter
                                 next = '\0';
                             }
                             sb.append(c);
+
                         } else {
-                            // Leave the quote
-                            inQuote = false;
+                            // end of quoted string
+                            inQuotes = false;
                         }
                         break;
-                    case ESCAPE_CHAR:
+
+                    case '\\':
                         if (fullEscaping) {
-                            inEsc = true;
+                            isEsc = true;
                         } else {
                             sb.append(c);
                         }
                         break;
+
                     default:
                         sb.append(c);
                         break;
                 }
             } else {
                 // This is just a raw string; no escape or quote active.
-                // Ignore leading space.
+                // Ignore leading whitespace.
                 if ((c != ' ' && c != '\t') || sb.length() != 0) {
                     switch (c) {
-                        case QUOTE_CHAR:
+                        case '"':
                             if (sb.length() > 0) {
-                                // Fields with quotes MUST be quoted...
-                                throw new IllegalArgumentException();
+                                // Fields with inner quotes MUST be escaped
+                                throw new ParseException("unescaped quote", pos);
                             } else {
-                                inQuote = true;
+                                inQuotes = true;
                             }
                             break;
-                        case ESCAPE_CHAR:
+
+                        case '\\':
                             if (fullEscaping) {
-                                inEsc = true;
+                                isEsc = true;
                             } else {
                                 sb.append(c);
                             }
                             break;
-                        case SEPARATOR:
-                            // Add this field and reset it.
+
+                        case ',':
+                            // Add this field and reset for the next.
                             fields.add(sb.toString());
                             sb = new StringBuilder();
                             break;
+
                         default:
                             sb.append(c);
                             break;
@@ -700,21 +734,6 @@ public class CsvImporter
         fields.toArray(imported);
 
         return imported;
-    }
-
-    private char unescape(final char c) {
-        switch (c) {
-            case 'r':
-                return '\r';
-            case 't':
-                return '\t';
-            case 'n':
-                return '\n';
-            default:
-                // Handle simple escapes. We could go further and allow arbitrary numeric chars by
-                // testing for numeric sequences here but that is beyond the scope of this app.
-                return c;
-        }
     }
 
     /**

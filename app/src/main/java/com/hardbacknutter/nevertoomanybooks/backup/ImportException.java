@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,6 +39,10 @@ public class ImportException
         extends FormattedMessageException {
 
     private static final long serialVersionUID = -1890286839718300179L;
+
+    public ImportException(@StringRes final int stringId) {
+        super(stringId);
+    }
 
     public ImportException(@StringRes final int stringId,
                            @NonNull final Object... args) {
