@@ -176,7 +176,7 @@ public class SearchCoordinator
     private SparseLongArray mSearchTasksEndTime;
 
     /** Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search. */
-    private boolean mForceIsbn10;
+    private boolean mPreferIsbn10;
 
     /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
@@ -301,8 +301,8 @@ public class SearchCoordinator
                 mMappers.add(new ColorMapper());
             }
 
-            mForceIsbn10 = PreferenceManager.getDefaultSharedPreferences(context)
-                                            .getBoolean(Prefs.pk_search_isbn_force_10, false);
+            mPreferIsbn10 = PreferenceManager.getDefaultSharedPreferences(context)
+                                             .getBoolean(Prefs.pk_search_isbn_prefer_10, false);
 
             if (args != null) {
                 boolean thumbs = App.isUsed(UniqueId.BKEY_THUMBNAIL);
@@ -790,7 +790,7 @@ public class SearchCoordinator
         } else if (mIsbn.isValid(true)
                    && (searchEngine instanceof SearchEngine.ByIsbn)) {
             how = SearchTask.By.ISBN;
-            if (mForceIsbn10 && mIsbn.isIsbn10Compat()) {
+            if (mPreferIsbn10 && mIsbn.isIsbn10Compat()) {
                 task.setIsbn(mIsbn.asText(ISBN.Type.ISBN10));
             } else {
                 task.setIsbn(mIsbn.asText());
