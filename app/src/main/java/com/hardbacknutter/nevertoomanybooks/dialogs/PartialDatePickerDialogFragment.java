@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -114,15 +114,15 @@ public class PartialDatePickerDialogFragment
      * Constructor.
      *
      * @param fieldId       the field whose content we want to edit
-     * @param currentValue  the current value of the field
      * @param dialogTitleId resource id for the dialog title
+     * @param currentValue  the current value of the field
      * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
      *
      * @return the new instance
      */
     public static PartialDatePickerDialogFragment newInstance(@IdRes final int fieldId,
-                                                              @NonNull final String currentValue,
                                                               @StringRes final int dialogTitleId,
+                                                              @NonNull final String currentValue,
                                                               final boolean todayIfNone) {
         String date;
         if (todayIfNone && currentValue.isEmpty()) {

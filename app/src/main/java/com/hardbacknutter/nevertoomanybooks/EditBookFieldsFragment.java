@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
  */
 public class EditBookFieldsFragment
-        extends EditBookBaseFragment<Bookshelf> {
+        extends EditBookBaseFragment {
 
     /** Log tag. */
     public static final String TAG = "EditBookFieldsFragment";

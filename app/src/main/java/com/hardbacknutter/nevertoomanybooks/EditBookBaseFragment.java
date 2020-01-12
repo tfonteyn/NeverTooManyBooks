@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.FieldPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -65,30 +64,28 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * {@link EditBookPublicationFragment}
  * {@link EditBookNotesFragment}
  * {@link EditBookTocFragment}
- *
- * FIXME: we support only ONE checklist dialog on each Fragment.
- * @param <T> type of the {@link CheckListItem}
  */
-public abstract class EditBookBaseFragment<T>
+public abstract class EditBookBaseFragment
         extends BookBaseFragment
         implements DataEditor<Book> {
 
     /** The fields collection. */
     private Fields mFields;
 
-    private final CheckListDialogFragment.CheckListResultsListener<T>
+    private final CheckListDialogFragment.CheckListResultsListener
             mCheckListResultsListener = (destinationFieldId, list) -> {
         Book book = mBookModel.getBook();
-
         if (destinationFieldId == R.id.bookshelves) {
+            //noinspection unchecked
             ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
-            getFields().getField(destinationFieldId)
+            getFields().getField(R.id.bookshelves)
                        .setValue(Csv.join(", ", bsList, Bookshelf::getName));
 
         } else if (destinationFieldId == R.id.edition) {
+            //noinspection unchecked
             book.putEditions((ArrayList<Integer>) list);
-            getFields().getField(destinationFieldId)
+            getFields().getField(R.id.edition)
                        .setValue(book.getLong(DBDefinitions.KEY_EDITION_BITMASK));
         }
     };
@@ -108,7 +105,7 @@ public abstract class EditBookBaseFragment<T>
 
         } else if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
             //noinspection unchecked
-            ((CheckListDialogFragment<T>) childFragment)
+            ((CheckListDialogFragment) childFragment)
                     .setListener(mCheckListResultsListener);
         }
     }
@@ -202,6 +199,7 @@ public abstract class EditBookBaseFragment<T>
      * Note that a {@link ValuePicker} uses a plain AlertDialog.
      *
      * @param field         {@link Field} to edit
+     * @param fieldView     view to connect
      * @param dialogTitleId title of the dialog box.
      * @param fieldButtonId field/button to bind the PickListener to (can be same as fieldId)
      * @param list          list of strings to choose from.
@@ -245,6 +243,7 @@ public abstract class EditBookBaseFragment<T>
      * Setup a date picker with the passed field.
      *
      * @param field         {@link Field} to edit
+     * @param fieldView     view to connect
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
      */
@@ -255,7 +254,7 @@ public abstract class EditBookBaseFragment<T>
         // only bother when it's in use
         if (field.isUsed()) {
             fieldView.setOnClickListener(v -> PartialDatePickerDialogFragment
-                    .newInstance(field.getId(), field.getValue(), dialogTitleId, todayIfNone)
+                    .newInstance(fieldView.getId(), dialogTitleId, field.getValue(), todayIfNone)
                     .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG));
         }
     }
@@ -264,19 +263,20 @@ public abstract class EditBookBaseFragment<T>
      * Setup a checklist picker with the passed field.
      *
      * @param field         {@link Field} to edit
+     * @param fieldView     view to connect
      * @param dialogTitleId title of the dialog box.
      * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter}
      *                      interface to get the *current* list
      */
-    void initCheckListEditor(@NonNull final Field<?> field,
-                             @NonNull final View fieldView,
-                             @StringRes final int dialogTitleId,
-                             @NonNull final
-                             CheckListDialogFragment.CheckListEditorListGetter<T> listGetter) {
+    <CT> void initCheckListEditor(@NonNull final Field<?> field,
+                                  @NonNull final View fieldView,
+                                  @StringRes final int dialogTitleId,
+                                  @NonNull final CheckListDialogFragment
+                                          .CheckListEditorListGetter<CT> listGetter) {
         // only bother when it's in use
         if (field.isUsed()) {
             fieldView.setOnClickListener(v -> CheckListDialogFragment
-                    .newInstance(field.getId(), dialogTitleId, listGetter)
+                    .newInstance(fieldView.getId(), dialogTitleId, listGetter)
                     .show(getChildFragmentManager(), CheckListDialogFragment.TAG));
         }
     }

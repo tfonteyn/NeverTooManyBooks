@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,6 @@ import androidx.fragment.app.DialogFragment;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -80,8 +79,7 @@ public class CheckListDialogFragment<T>
 
     /** identifier of the field this dialog is bound to. */
     @IdRes
-    private
-    int mDestinationFieldId;
+    private int mDestinationFieldId;
 
     /**
      * Constructor.
@@ -129,7 +127,7 @@ public class CheckListDialogFragment<T>
         View root = layoutInflater.inflate(R.layout.dialog_edit_checklist, null);
 
         // Takes the list of items and create a list of checkboxes in the display.
-        ViewGroup body = root.findViewById(R.id.content);
+        ViewGroup body = root.findViewById(android.R.id.list);
         for (CheckListItem item : mList) {
             CompoundButton buttonView = new CheckBox(getContext());
             buttonView.setChecked(item.isChecked());
@@ -217,7 +215,7 @@ public class CheckListDialogFragment<T>
          *                           (non-checked options have been removed)
          */
         void onCheckListEditorSave(int destinationFieldId,
-                                   @NonNull List<T> list);
+                                   @NonNull ArrayList<T> list);
     }
 
     /**

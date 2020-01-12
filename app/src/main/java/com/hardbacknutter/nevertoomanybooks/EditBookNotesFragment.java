@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
  * This class is called by {@link EditBookFragment} and displays the Notes Tab.
  */
 public class EditBookNotesFragment
-        extends EditBookBaseFragment<Integer> {
+        extends EditBookBaseFragment {
 
     private View mReadCbx;
     private View mSignedCbx;
