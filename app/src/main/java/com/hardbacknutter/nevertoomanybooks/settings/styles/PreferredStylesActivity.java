@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings;
+package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
 import android.content.Context;
@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.PreferredStylesViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -94,10 +95,10 @@ public class PreferredStylesActivity
     /** The ViewModel. */
     private PreferredStylesViewModel mModel;
 
+    /** Saves the order after each change. */
     private final SimpleAdapterDataObserver mAdapterDataObserver = new SimpleAdapterDataObserver() {
         @Override
         public void onChanged() {
-            // we save the order after each change.
             mModel.saveMenuOrder(PreferredStylesActivity.this);
         }
     };
@@ -365,9 +366,10 @@ public class PreferredStylesActivity
         /**
          * Constructor.
          *
-         * @param context           Current context
-         * @param items             List of styles
-         * @param dragStartListener Listener to handle the user moving rows up and down
+         * @param context               Current context
+         * @param items                 List of styles
+         * @param initialSelectedItemId initially selected item id
+         * @param dragStartListener     Listener to handle the user moving rows up and down
          */
         BooklistStylesAdapter(@NonNull final Context context,
                               @NonNull final List<BooklistStyle> items,

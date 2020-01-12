@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,18 +38,22 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 /**
  * Used/defined in xml/preferences.xml
  */
-public class ImagesPreferencesFragment
+public class ImagesPreferenceFragment
         extends BasePreferenceFragment {
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
                                     final String rootKey) {
 
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.pg_thumbnails);
-
         setPreferencesFromResource(R.xml.preferences_images, rootKey);
 
+        initListeners();
+    }
+
+    /**
+     * Hook up specific listeners/preferences.
+     */
+    private void initListeners() {
         // Purge image cache database table.
         Preference preference = findPreference(Prefs.psk_purge_image_cache);
         if (preference != null) {
@@ -67,5 +71,4 @@ public class ImagesPreferencesFragment
             });
         }
     }
-
 }

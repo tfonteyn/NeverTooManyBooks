@@ -25,36 +25,37 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings;
+package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.XmlRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference;
 
 /**
- * Used/defined in xml/preferences.xml
+ * Used/defined in xml/preferences_styles.xml
  */
-public class FieldVisibilityPreferenceFragment
-        extends BasePreferenceFragment {
+public class StyleFiltersFragment
+        extends StyleBaseFragment {
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState,
-                                    final String rootKey) {
-
-        setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
+    @XmlRes
+    protected int getLayoutId() {
+        return R.xml.preferences_styles_filters;
     }
 
     @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
-                                          @NonNull final String key) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
+        super.onCreatePreferences(savedInstanceState, rootKey);
 
-        mResultDataModel.putExtra(BaseActivity.BKEY_RECREATE, true);
-        super.onSharedPreferenceChanged(sharedPreferences, key);
+        BitmaskPreference preference = findPreference(Prefs.pk_bob_filter_editions);
+        if (preference != null) {
+            preference.setNotInUseSummary(R.string.bookshelf_all_books);
+        }
     }
 }

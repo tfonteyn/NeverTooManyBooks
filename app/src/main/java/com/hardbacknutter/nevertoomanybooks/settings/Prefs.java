@@ -92,7 +92,7 @@ public final class Prefs {
 
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
-    public static final String pk_search_isbn_force_10 = "search.byIsbn.force.10";
+    public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
 
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
     public static final String pk_camera_image_action = "camera.image.action";
@@ -161,11 +161,11 @@ public final class Prefs {
     /** Global settings - Credentials. */
     static final String psk_credentials_library_thing = "psk_credentials_library_thing";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    static final String psk_style_filters = "psk_style_filters";
+    public static final String psk_style_filters = "psk_style_filters";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    static final String psk_style_show_details = "psk_style_show_details";
+    public static final String psk_style_show_details = "psk_style_show_details";
+
     static final String pk_reformat_titles_sort = "reformat.titles.sort";
-    @SuppressWarnings("WeakerAccess")
     static final String pk_reformat_titles_display = "reformat.titles.display";
 
     /** Global settings - Purge action. */

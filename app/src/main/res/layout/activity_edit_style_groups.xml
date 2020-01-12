@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".settings.StyleGroupsActivity"
+    tools:context=".settings.styles.StyleGroupsActivity"
     >
 
     <include layout="@layout/inc_appbar" />

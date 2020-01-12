@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings;
+package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
  * Settings editor for a Style.
@@ -86,7 +87,6 @@ public class StylePreferenceFragment
     /**
      * Hook up specific listeners/preferences.
      */
-    @SuppressWarnings("SameReturnValue")
     private void initListeners() {
         Preference preference;
 
@@ -124,7 +124,7 @@ public class StylePreferenceFragment
      * Reminder: prefs lookups can return {@code null} as the screen swaps in and out sub screens.
      */
     @Override
-    void updateSummary(@NonNull final String key) {
+    protected void updateSummary(@NonNull final String key) {
         switch (key) {
             case Prefs.pk_bob_font_scale: {
                 SeekBarPreference preference = findPreference(key);

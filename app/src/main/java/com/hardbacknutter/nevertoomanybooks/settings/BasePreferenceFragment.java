@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import android.text.TextUtils;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -47,6 +48,7 @@ import java.util.Arrays;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
+import com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference;
 
 /**
  * Base settings page.
@@ -59,10 +61,13 @@ public abstract class BasePreferenceFragment
 
     /** Log tag. */
     private static final String TAG = "BasePreferenceFragment";
+    private static final String DIALOG_FRAGMENT_TAG = TAG + ":dialog";
+
+    private static final int REQ_BITMASK_DIALOG = 0;
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
-    ResultDataModel mResultDataModel;
+    protected ResultDataModel mResultDataModel;
     @Nullable
     private String mAutoScrollToKey;
 
@@ -102,6 +107,31 @@ public abstract class BasePreferenceFragment
         }
     }
 
+    /**
+     * BitmaskPreference get a custom Dialog were the neutral button displays
+     * the "unused" option.
+     * <p>
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDisplayPreferenceDialog(@NonNull final Preference preference) {
+        if (preference instanceof BitmaskPreference) {
+            // check if dialog is already showing
+            if (getParentFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+                return;
+            }
+
+            final DialogFragment f = BitmaskPreference.BitmaskPreferenceDialogFragment
+                    .newInstance((BitmaskPreference) preference);
+
+            f.setTargetFragment(this, REQ_BITMASK_DIALOG);
+            f.show(getParentFragmentManager(), DIALOG_FRAGMENT_TAG);
+            return;
+        }
+
+        super.onDisplayPreferenceDialog(preference);
+    }
+
     @Override
     public void onPause() {
         getPreferenceScreen().getSharedPreferences()
@@ -112,12 +142,12 @@ public abstract class BasePreferenceFragment
     /**
      * Update the summary for the given key.
      * <p>
-     * TODO: implement {@link Preference.SummaryProvider}
+     * TODO: maybe implement {@link Preference.SummaryProvider}
      *
      * @param key for preference.
      */
     @CallSuper
-    void updateSummary(@NonNull final String key) {
+    protected void updateSummary(@NonNull final String key) {
         Preference preference = findPreference(key);
         if (preference != null) {
             preference.setSummary(getValueAsString(preference));
@@ -134,12 +164,22 @@ public abstract class BasePreferenceFragment
     @NonNull
     private CharSequence getValueAsString(@NonNull final Preference preference) {
         if (preference instanceof ListPreference) {
-            return ((ListPreference) preference).getEntry();
-
-        } else if (preference instanceof EditTextPreference) {
+            CharSequence value = ((ListPreference) preference).getEntry();
+            return value != null ? value : getString(R.string.hint_empty_field);
+        }
+        if (preference instanceof EditTextPreference) {
             return ((EditTextPreference) preference).getText();
+        }
 
-        } else if (preference instanceof MultiSelectListPreference) {
+        if (preference instanceof BitmaskPreference) {
+            BitmaskPreference bmp = (BitmaskPreference) preference;
+            if (!bmp.isUsed()) {
+                return bmp.getNotInUseSummary();
+            }
+            // if it is in use, drop through to MultiSelectListPreference
+        }
+
+        if (preference instanceof MultiSelectListPreference) {
             MultiSelectListPreference msp = (MultiSelectListPreference) preference;
             StringBuilder text = new StringBuilder();
             for (String s : msp.getValues()) {
@@ -165,7 +205,7 @@ public abstract class BasePreferenceFragment
             if (text.length() > 0) {
                 return text;
             } else {
-                // the preference has no values set; but that is a VALID setting and will be used.
+                // the preference has no values set, but that is a VALID setting and will be used.
                 return preference.getContext().getString(R.string.none);
             }
         } else {

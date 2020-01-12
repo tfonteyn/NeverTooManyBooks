@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.AttributeSet;
 
@@ -38,19 +37,32 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.MultiSelectListPreferenceDialogFragmentCompat;
+import androidx.preference.PreferenceDialogFragmentCompat;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment;
 
 /**
- * Handles a secondary preference key to enable/disabled the actual preference.
+ * Handles a secondary preference key (originalKey + ".active")
+ * to enable/disabled the actual preference.
  * <p>
- * See {@link com.hardbacknutter.nevertoomanybooks.settings.StyleFiltersFragment}.
+ * See {@link StyleFiltersFragment}.
  */
 public class BitmaskPreference
         extends MultiSelectListPreference {
 
     /** See {@link com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter}. */
     private static final String ACTIVE = ".active";
+
+    /** The summary resource to display if the preference is set to "don't use". */
+    @StringRes
+    private int mNotUsedSummary = R.string.unused;
+    @Nullable
+    private Boolean mIsUsed;
 
     public BitmaskPreference(@NonNull final Context context,
                              @Nullable final AttributeSet attrs,
@@ -74,45 +86,85 @@ public class BitmaskPreference
         super(context);
     }
 
+    @NonNull
+    public String getNotInUseSummary() {
+        if (mNotUsedSummary != 0) {
+            return getContext().getString(mNotUsedSummary);
+        } else {
+            return "";
+        }
+    }
+
+    public void setNotInUseSummary(@StringRes final int notUsedSummary) {
+        mNotUsedSummary = notUsedSummary;
+    }
+
     public boolean isUsed() {
-        return getSharedPreferences().getBoolean(getKey() + ACTIVE, false);
+        if (mIsUsed == null) {
+            mIsUsed = getSharedPreferences().getBoolean(getKey() + ACTIVE, false);
+        }
+        return mIsUsed;
     }
 
     public void setUsed(final boolean used) {
-        SharedPreferences.Editor ed = getSharedPreferences().edit();
-        ed.putBoolean(getKey() + ACTIVE, used).apply();
-        if (!used) {
-            ed.remove(getKey());
+        mIsUsed = used;
+    }
+
+    @Override
+    public void setValues(final Set<String> values) {
+        if (isUsed()) {
+            getSharedPreferences().edit().putBoolean(getKey() + ACTIVE, true).apply();
+            super.setValues(values);
+        } else {
+            getSharedPreferences().edit().remove(getKey() + ACTIVE).remove(getKey()).apply();
         }
-        ed.apply();
     }
 
     /**
      * Custom dialog showing a 3rd button with an "unused" to deactivate the entire bitmask.
+     * FIXME: prepare a dedicated layout with a 'disable' switch and an info message for the Bitmask
+     * <p>
+     * Base code taken from {@link MultiSelectListPreferenceDialogFragmentCompat}
      */
     public static class BitmaskPreferenceDialogFragment
-            extends MultiSelectListPreferenceDialogFragmentCompat {
+            extends PreferenceDialogFragmentCompat {
 
-        private static final String BKEY_UNUSED_STRING_ID = "unusedStrId";
+        private static final String TAG = "BitmaskPreferenceDialog";
+        private static final String BKEY_UNUSED_STRING = TAG + ":unusedStr";
 
-        /** Default text for the neutral button. */
-        @StringRes
-        private int mUnusedStringId = R.string.unused;
+        private static final String SAVE_STATE_VALUES = TAG + ":values";
+        private static final String SAVE_STATE_CHANGED = TAG + ":changed";
+        private static final String SAVE_STATE_ENTRIES = TAG + ":entries";
+        private static final String SAVE_STATE_ENTRY_VALUES = TAG + ":entryValues";
+
+        private final Set<String> mNewValues = new HashSet<>();
+        private boolean mPreferenceChanged;
+        private CharSequence[] mEntries;
+        private CharSequence[] mEntryValues;
+
+        /** Text for the neutral button. */
+        @Nullable
+        private String mUnusedString;
+
+        /**
+         * Set to {@code true} when the user clicks the NeutralButton.
+         * Passed to the actual preference in {@link #onDialogClosed(boolean)}.
+         */
+        private boolean mUnused;
 
         /**
          * Constructor.
          *
-         * @param key            for the preference
-         * @param unusedStringId string to use for the 'unused' button.
+         * @param preference for this dialog
          *
          * @return instance
          */
-        public static BitmaskPreferenceDialogFragment newInstance(@NonNull final String key,
-                                                                  final int unusedStringId) {
+        public static BitmaskPreferenceDialogFragment newInstance(@NonNull final
+                                                                  BitmaskPreference preference) {
             final BitmaskPreferenceDialogFragment fragment = new BitmaskPreferenceDialogFragment();
             final Bundle args = new Bundle(2);
-            args.putString(ARG_KEY, key);
-            args.putInt(BKEY_UNUSED_STRING_ID, unusedStringId);
+            args.putString(ARG_KEY, preference.getKey());
+            args.putString(BKEY_UNUSED_STRING, preference.getNotInUseSummary());
             fragment.setArguments(args);
             return fragment;
         }
@@ -123,34 +175,94 @@ public class BitmaskPreference
 
             Bundle args = getArguments();
             if (args != null) {
-                mUnusedStringId = args.getInt(BKEY_UNUSED_STRING_ID, R.string.unused);
+                mUnusedString = args.getString(BKEY_UNUSED_STRING);
             }
+            if (mUnusedString == null) {
+                mUnusedString = getString(R.string.unused);
+            }
+
+            if (savedInstanceState == null) {
+                final MultiSelectListPreference preference = getListPreference();
+
+                if (preference.getEntries() == null || preference.getEntryValues() == null) {
+                    throw new IllegalStateException(
+                            "MultiSelectListPreference requires an entries array and " +
+                            "an entryValues array.");
+                }
+
+                mNewValues.clear();
+                mNewValues.addAll(preference.getValues());
+                mPreferenceChanged = false;
+                mEntries = preference.getEntries();
+                mEntryValues = preference.getEntryValues();
+            } else {
+                mNewValues.clear();
+                //noinspection ConstantConditions
+                mNewValues.addAll(savedInstanceState.getStringArrayList(SAVE_STATE_VALUES));
+                mPreferenceChanged = savedInstanceState.getBoolean(SAVE_STATE_CHANGED, false);
+                mEntries = savedInstanceState.getCharSequenceArray(SAVE_STATE_ENTRIES);
+                mEntryValues = savedInstanceState.getCharSequenceArray(SAVE_STATE_ENTRY_VALUES);
+            }
+        }
+
+        @Override
+        public void onSaveInstanceState(@NonNull Bundle outState) {
+            super.onSaveInstanceState(outState);
+            outState.putStringArrayList(SAVE_STATE_VALUES, new ArrayList<>(mNewValues));
+            outState.putBoolean(SAVE_STATE_CHANGED, mPreferenceChanged);
+            outState.putCharSequenceArray(SAVE_STATE_ENTRIES, mEntries);
+            outState.putCharSequenceArray(SAVE_STATE_ENTRY_VALUES, mEntryValues);
+        }
+
+        @NonNull
+        private BitmaskPreference getListPreference() {
+            return (BitmaskPreference) getPreference();
         }
 
         @Override
         protected void onPrepareDialogBuilder(@NonNull final AlertDialog.Builder builder) {
-//            builder.setMessage(getString(R.string.info_bitmask_preference,
-//                               getString(mUnusedStringId)));
-            builder.setNeutralButton(mUnusedStringId, (dialog, which) -> {
-                final BitmaskPreference preference = (BitmaskPreference) getPreference();
-                preference.setUsed(false);
-                preference.getValues().clear();
-            });
             super.onPrepareDialogBuilder(builder);
+            // FIXME: the default builder uses a mutually exclusive message/listView.
+            // builder.setMessage(getString(R.string.info_bitmask_preference,
+            //                    getString(mUnusedString)));
+            builder.setNeutralButton(mUnusedString, (dialog, which) -> mUnused = true);
+
+            final int entryCount = mEntryValues.length;
+            final boolean[] checkedItems = new boolean[entryCount];
+            for (int i = 0; i < entryCount; i++) {
+                checkedItems[i] = mNewValues.contains(mEntryValues[i].toString());
+            }
+            builder.setMultiChoiceItems(mEntries, checkedItems, (dialog, which, isChecked) -> {
+                if (isChecked) {
+                    mPreferenceChanged |= mNewValues.add(mEntryValues[which].toString());
+                } else {
+                    mPreferenceChanged |= mNewValues.remove(mEntryValues[which].toString());
+                }
+            });
         }
 
         @Override
-        public void onDialogClosed(final boolean positiveResult) {
-            final BitmaskPreference preference = (BitmaskPreference) getPreference();
-            if (preference.isUsed()) {
-                // handle ok/cancel buttons as normal.
-                if (positiveResult) {
-                    preference.setUsed(true);
-                }
-                super.onDialogClosed(positiveResult);
-            } else {
-                super.onDialogClosed(false);
+        public void onDialogClosed(boolean positiveResult) {
+            final BitmaskPreference preference = getListPreference();
+
+            // a tat annoying... we only get whether the user clicked the BUTTON_POSITIVE
+            // or not; which is why we need to use the mUnused variable.
+            if (positiveResult) {
+                // BUTTON_POSITIVE
+                preference.setUsed(true);
+            } else if (mUnused) {
+                // BUTTON_NEUTRAL
+                preference.setUsed(false);
+                preference.getValues().clear();
             }
+
+            if (positiveResult || mUnused) {
+                if (preference.callChangeListener(mNewValues)) {
+                    preference.setValues(mNewValues);
+                }
+            }
+
+            mPreferenceChanged = false;
         }
     }
 }

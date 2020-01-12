@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ In August 2018, this project was forked from:
+  ~ Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+  ~
+  ~ Without their original creation, this project would not exist in its
+  ~ current form. It was however largely rewritten/refactored and any
+  ~ comments on this fork should be directed at HardBackNutter and not
+  ~ at the original creators.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/lbl_advanced_options">
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_tab"
+            android:key="edit.book.tab.nativeId"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_allow_edit_native_id" />
+
+        <!-- URGENT: this is temporary.. until it's decided what UI to go for. -->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_tab"
+            android:key="tmp.edit.book.tab.authSer"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="show Auth/Series as tabs" />
+
+        <Preference
+            android:icon="@drawable/ic_close"
+            android:key="psk_purge_blns"
+            android:title="@string/lbl_purge_blns"
+            />
+
+        <Preference
+            android:icon="@drawable/ic_close"
+            android:key="psk_purge_files"
+            android:title="@string/lbl_purge_files"
+            />
+
+        <Preference
+            android:icon="@drawable/ic_undo"
+            android:key="psk_tip_reset_all"
+            android:title="@string/tip_reset_all"
+            />
+
+        <Preference
+            android:icon="@drawable/ic_send"
+            android:key="psk_send_debug_info"
+            android:title="@string/lbl_send_debug_info"
+            />
+    </PreferenceCategory>
+</PreferenceScreen>

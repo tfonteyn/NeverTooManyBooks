@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -53,14 +53,14 @@
             android:icon="@drawable/ic_filter_list"
             android:key="psk_style_filters"
             android:title="@string/pg_filters"
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.StyleFiltersFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment"
             />
 
         <Preference
             android:icon="@drawable/ic_details"
             android:key="psk_style_show_details"
             android:title="@string/pg_bob_show_details"
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.StyleExtraFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleExtraFragment"
             />
 
         <MultiSelectListPreference

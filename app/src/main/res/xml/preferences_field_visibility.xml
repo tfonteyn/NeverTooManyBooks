@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,200 +27,201 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- is there a better way to set a screen title ? -->
-    <PreferenceCategory
-        android:title="@string/info_manage_fields">
-    </PreferenceCategory>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.hardbacknutter.nevertoomanybooks.widgets.ExtPreferenceCategory
+        android:icon="@drawable/ic_visibility"
+        android:summary="@string/info_manage_fields"
+        android:title="@string/pg_ui_field_visibility">
 
-    <!-- NEWTHINGS: new fields visibility.
-         Third part of the key name **MUST** be equal to the DOM column name. -->
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.isbn"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_isbn" />
+        <!-- NEWTHINGS: new fields visibility.
+             Third part of the key name **MUST** be equal to the DOM column name. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.isbn"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_isbn" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.thumbnail"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_cover" />
-
-
-    <!-- Authors are always visible, but the user can hide the type. -->
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.author_type"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_author_type" />
-
-    <!-- Series name includes Series 'isComplete' and Series number. -->
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.series_name"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_series" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.anthology"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_table_of_content" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.description"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_description" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.thumbnail"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_cover" />
 
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.publisher"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_publisher" />
+        <!-- Authors are always visible, but the user can hide the type. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.author_type"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_author_type" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.date_published"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_date_published" />
+        <!-- Series name includes Series 'isComplete' and Series number. -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.series_name"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_series" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.first_publication"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_first_publication" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.anthology"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_table_of_content" />
 
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.format"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_format" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.color"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_color" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.genre"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_genre" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.language"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_language" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.pages"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_pages" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.list_price"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_price_listed" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.bookshelf"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_bookshelf" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.loaned_to"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_lending" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.notes"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_personal_notes" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.location"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_location_long" />
-
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.price_paid"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_price_paid" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.description"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_description" />
 
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.read"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_is_read" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.publisher"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_publisher" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.read_start"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_read_start" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.date_published"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_date_published" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.read_end"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_read_end" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.first_publication"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_first_publication" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.edition_bm"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_edition" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.signed"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_is_signed" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.format"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_format" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="fields.visibility.rating"
-        android:summaryOff="@string/no"
-        android:summaryOn="@string/yes"
-        android:title="@string/lbl_rating" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.color"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_color" />
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.genre"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_genre" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.language"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_language" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.pages"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_pages" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.list_price"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_price_listed" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.bookshelf"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_bookshelf" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.loaned_to"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_lending" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.notes"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_personal_notes" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.location"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_location_long" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.price_paid"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_price_paid" />
+
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.read"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_is_read" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.read_start"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_read_start" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.read_end"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_read_end" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.edition_bm"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_edition" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.signed"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_is_signed" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.rating"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_rating" />
+    </com.hardbacknutter.nevertoomanybooks.widgets.ExtPreferenceCategory>
 </PreferenceScreen>

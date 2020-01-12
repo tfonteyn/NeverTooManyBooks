@@ -34,27 +34,65 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 /**
  * Used/defined in xml/preferences.xml
  */
-public class FieldVisibilityPreferenceFragment
+public class BarcodePreferenceFragment
         extends BasePreferenceFragment {
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
                                     final String rootKey) {
 
-        setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
+        setPreferencesFromResource(R.xml.preferences_barcodes, rootKey);
     }
 
     @Override
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
+        switch (key) {
+            case Prefs.pk_scanner_preferred:
+                //noinspection ConstantConditions
+                ScannerManager.installScanner(getActivity(), success -> {
+                    if (!success) {
+                        //noinspection ConstantConditions
+                        ScannerManager.setDefaultScanner(getContext());
+                    }
+                });
+                mResultDataModel.putExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, true);
+                break;
 
-        mResultDataModel.putExtra(BaseActivity.BKEY_RECREATE, true);
+            case Prefs.pk_sounds_scan_found_barcode:
+                if (sharedPreferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.zxing_beep);
+                }
+                break;
+
+            case Prefs.pk_sounds_scan_isbn_valid:
+                if (sharedPreferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.beep_high);
+                }
+                break;
+
+            case Prefs.pk_sounds_scan_isbn_invalid:
+                if (sharedPreferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.beep_low);
+                }
+                break;
+
+
+            default:
+                break;
+        }
+
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 }

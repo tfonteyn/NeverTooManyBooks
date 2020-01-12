@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StylePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
@@ -75,8 +76,6 @@ public class SettingsActivity
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setTitle(R.string.lbl_settings);
 
         String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
         if (tag == null) {
@@ -114,6 +113,9 @@ public class SettingsActivity
     @Override
     public void onResume() {
         super.onResume();
+
+        setTitle(R.string.lbl_settings);
+
         PreferenceManager.getDefaultSharedPreferences(this)
                          .registerOnSharedPreferenceChangeListener(this);
     }

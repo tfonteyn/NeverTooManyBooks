@@ -39,10 +39,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
+
     <PreferenceCategory
         android:title="@string/pg_ui">
         <!-- The language list contains Locale string IDs in contrast to other
-             ListPreference which use 0,1... -->
+     ListPreference which use 0,1... -->
         <ListPreference
             android:defaultValue="system"
             android:entries="@array/pe_ui_language"
@@ -61,10 +62,10 @@
             android:title="@string/pt_ui_theme" />
 
         <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
             android:icon="@drawable/ic_visibility"
             android:key="psk_fields_visibility"
             android:title="@string/pg_ui_field_visibility"
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
             />
 
         <SwitchPreference
@@ -83,13 +84,6 @@
             android:summaryOn="@string/lbl_local_search_advanced"
             android:title="@string/pt_search_form" />
     </PreferenceCategory>
-
-    <Preference
-        android:icon="@drawable/ic_image"
-        android:key="psk_thumbnails"
-        android:title="@string/pg_thumbnails"
-        android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferencesFragment"
-        />
 
     <PreferenceCategory
         android:title="@string/lbl_format">
@@ -121,7 +115,7 @@
         <!--  android:icon="@drawable/ic_details"-->
         <!--  android:key="psk_styles"-->
         <!--  android:title="@string/lbl_styles"-->
-        <!--  android:fragment="com.hardbacknutter.nevertoomanybooks.settings.StylePreferenceFragment"-->
+        <!--  android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StylePreferenceFragment"-->
         <!--  />-->
 
         <!-- the state of the list when starting the app. -->
@@ -134,157 +128,35 @@
             android:key="style.booklist.levels.rebuild.state"
             android:title="@string/pt_bob_list_rebuild_state" />
 
-        <Preference
-            android:icon="@drawable/ic_close"
-            android:key="psk_purge_blns"
-            android:title="@string/lbl_purge_blns"
-            />
-
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:key="psk_barcode_scanner"
-        android:title="@string/pg_barcode_scanner">
+    <PreferenceCategory>
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.WebSearchesPreferenceFragment"
+            android:icon="@drawable/ic_search"
+            android:key="psk_web_searches"
+            android:title="@string/pg_internet_search"
+            />
 
-        <!-- default ScannerManager.DEFAULT  -->
-        <ListPreference
-            android:defaultValue="0"
-            android:entries="@array/pe_scanning_preferred_scanner"
-            android:entryValues="@array/pv_scanning_preferred_scanner"
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferenceFragment"
+            android:icon="@drawable/ic_image"
+            android:key="psk_thumbnails"
+            android:title="@string/pg_thumbnails"
+            />
+
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment"
             android:icon="@drawable/ic_barcode"
-            android:key="scanner.preferred"
-            android:title="@string/pt_scanning_preferred_scanner" />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_surround_sound"
-            android:key="sounds.scan.barcode.found"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_scanning_beep_when_barcode_found" />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_surround_sound"
-            android:key="sounds.scan.isbn.invalid"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_scanning_beep_if_isbn_invalid" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_surround_sound"
-            android:key="sounds.scan.isbn.valid"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_scanning_beep_if_isbn_valid" />
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/pg_internet_search">
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_perm_data_setting"
-            android:key="network.allow.metered"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_allow_mobile_data" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_edit"
-            android:key="search.reformat.format"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_reformat_format" />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_edit"
-            android:key="search.reformat.color"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_reformat_color" />
-
-        <!-- starts a dedicated Activity. -->
-        <Preference
-            android:icon="@drawable/ic_sort"
-            android:key="psk_search_site_order"
-            android:summary="@string/pt_website_order_and_enable"
-            android:title="@string/lbl_websites">
-        </Preference>
-
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.AmazonPreferencesFragment"
-            android:icon="@drawable/ic_find_in_page"
-            android:key="psk_search_site_amazon"
-            android:summary="@string/pt_site_settings"
-            android:title="@string/site_amazon">
-
-        </Preference>
-
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment"
-            android:icon="@drawable/ic_find_in_page"
-            android:key="psk_search_site_isfdb"
-            android:summary="@string/pt_site_settings"
-            android:title="@string/site_isfdb">
-
-        </Preference>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/lbl_credentials">
-        <Preference
-            android:icon="@drawable/ic_goodreads"
-            android:key="psk_credentials_goodreads"
-            android:title="@string/site_goodreads">
-        </Preference>
-
-        <Preference
-            android:icon="@drawable/ic_librarything"
-            android:key="psk_credentials_library_thing"
-            android:title="@string/site_library_thing">
-        </Preference>
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/lbl_advanced_options">
-
-        <Preference
-            android:icon="@drawable/ic_undo"
-            android:key="psk_tip_reset_all"
-            android:title="@string/tip_reset_all"
+            android:key="psk_barcode"
+            android:title="@string/pg_barcode_scanner"
             />
 
         <Preference
-            android:icon="@drawable/ic_close"
-            android:key="psk_purge_files"
-            android:title="@string/lbl_purge_files"
-            />
-
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_tab"
-            android:key="edit.book.tab.nativeId"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_allow_edit_native_id" />
-
-        <!-- URGENT: this is temporary.. until it's decided what UI to go for. -->
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_tab"
-            android:key="tmp.edit.book.tab.authSer"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="show Auth/Series as tabs" />
-
-        <Preference
-            android:icon="@drawable/ic_send"
-            android:key="psk_send_debug_info"
-            android:title="@string/lbl_send_debug_info"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.AdvancedPreferenceFragment"
+            android:icon="@drawable/ic_settings"
+            android:key="psk_advanced_options"
+            android:title="@string/lbl_advanced_options"
             />
     </PreferenceCategory>
 </PreferenceScreen>
