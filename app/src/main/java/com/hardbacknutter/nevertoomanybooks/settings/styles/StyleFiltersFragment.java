@@ -55,7 +55,7 @@ public class StyleFiltersFragment
 
         BitmaskPreference preference = findPreference(Prefs.pk_bob_filter_editions);
         if (preference != null) {
-            preference.setNotInUseSummary(R.string.bookshelf_all_books);
+            preference.setNotSetSummary(R.string.bookshelf_all_books);
         }
     }
 }

@@ -230,7 +230,6 @@ public class Bookshelf
         mId = id;
     }
 
-
     @Override
     public String getLabel(@NonNull final Context context) {
         return mName;

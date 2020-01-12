@@ -31,8 +31,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -59,9 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItemBase;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
@@ -70,6 +67,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * Represents the underlying data for a book.
+ *
+ * URGENT: add condition field for book and for dust-cover
+ * fine/new
+ * very good
+ * good
+ * good with bad spine == acceptable?
+ * acceptable
+ * garbage
  */
 public class Book
         extends DataManager
@@ -488,48 +493,67 @@ public class Book
      *
      * @param db Database Access
      *
-     * @return the list
+     * @return list with {@link SelectableItem}
      */
     @NonNull
-    public ArrayList<CheckListItem<Bookshelf>> getEditableBookshelvesList(@NonNull final DAO db) {
-
-        ArrayList<CheckListItem<Bookshelf>> list = new ArrayList<>();
+    public ArrayList<CheckListItem> getEditableBookshelvesList(@NonNull final DAO db) {
+        ArrayList<CheckListItem> list = new ArrayList<>();
         // get the list of all shelves the book is currently on.
         List<Bookshelf> currentShelves = getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         // Loop through all bookshelves in the database and build the list for this book
         for (Bookshelf bookshelf : db.getBookshelves()) {
-            list.add(new BookshelfCheckListItem(bookshelf, currentShelves.contains(bookshelf)));
+            boolean selected = currentShelves.contains(bookshelf);
+            list.add(new SelectableItem(bookshelf.getName(), bookshelf.getId(), selected));
         }
         return list;
+    }
+
+    /**
+     * Set the Bookshelves.
+     *
+     * @param db    Database Access
+     * @param items List of {@link SelectableItem}, each representing a Bookshelf
+     */
+    public void putBookshelves(@NonNull final DAO db,
+                               @NonNull final Iterable<CheckListItem> items) {
+        ArrayList<Bookshelf> currentShelves = new ArrayList<>();
+        for (CheckListItem item : items) {
+            long bookshelfId = ((SelectableItem) item).getItemId();
+            currentShelves.add(db.getBookshelf(bookshelfId));
+        }
+
+        putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, currentShelves);
     }
 
     /**
      * Gets a complete list of Editions each reflecting the book being that edition or not.
      *
-     * @return the list
+     * @param context Current context
+     *
+     * @return list with {@link SelectableItem}
      */
     @NonNull
-    public ArrayList<CheckListItem<Integer>> getEditableEditionList() {
-
-        ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
+    public ArrayList<CheckListItem> getEditableEditionList(@NonNull final Context context) {
+        ArrayList<CheckListItem> list = new ArrayList<>();
+        // key: bit; value: labelId
         for (Map.Entry<Integer, Integer> entry : EDITIONS.entrySet()) {
             Integer key = entry.getKey();
             boolean selected = (key & getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0;
-            list.add(new BitmaskItem(key, entry.getValue(), selected));
+            list.add(new SelectableItem(context.getString(entry.getValue()), key, selected));
         }
         return list;
     }
 
     /**
-     * Convenience method to set the Edition.
+     * Set the Edition.
      *
-     * @param editions List of integers, each representing a single bit==edition
+     * @param items List of {@link SelectableItem}, each representing a single bit==edition
      */
-    public void putEditions(@NonNull final Iterable<Integer> editions) {
+    public void putEditions(@NonNull final Iterable<CheckListItem> items) {
         @Edition
         int bitmask = 0;
-        for (Integer bit : editions) {
-            bitmask |= bit;
+        for (CheckListItem item : items) {
+            bitmask |= ((SelectableItem) item).getItemId();
         }
 
         bitmask &= EDITIONS_MASK;
@@ -752,60 +776,5 @@ public class Book
     })
     public @interface Edition {
 
-    }
-
-    /**
-     * Used to edit the {@link Bookshelf}'s this Book is on.
-     */
-    public static class BookshelfCheckListItem
-            extends CheckListItemBase<Bookshelf>
-            implements Parcelable {
-
-        /** {@link Parcelable}. */
-        public static final Creator<BookshelfCheckListItem> CREATOR =
-                new Creator<BookshelfCheckListItem>() {
-                    @Override
-                    public BookshelfCheckListItem createFromParcel(@NonNull final Parcel source) {
-                        return new BookshelfCheckListItem(source);
-                    }
-
-                    @Override
-                    public BookshelfCheckListItem[] newArray(final int size) {
-                        return new BookshelfCheckListItem[size];
-                    }
-                };
-
-        /**
-         * Constructor.
-         *
-         * @param item     the item to encapsulate
-         * @param selected the current status
-         */
-        BookshelfCheckListItem(@NonNull final Bookshelf item,
-                               final boolean selected) {
-            super(item, selected);
-        }
-
-        /**
-         * {@link Parcelable} Constructor.
-         *
-         * @param in Parcel to construct the object from
-         */
-        private BookshelfCheckListItem(@NonNull final Parcel in) {
-            super(in);
-            item = in.readParcelable(getClass().getClassLoader());
-        }
-
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            super.writeToParcel(dest, flags);
-            dest.writeParcelable(item, flags);
-        }
-
-        @NonNull
-        public String getLabel(@NonNull final Context context) {
-            return getItem().getName();
-        }
     }
 }

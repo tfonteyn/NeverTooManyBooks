@@ -201,7 +201,7 @@
     <string name="hint_btn_drag_handle">Trascina per riordinare questo elenco.</string>
     <string name="warning_requires_date">Si prega di aggiungere una data valida.</string>
     <string name="hint_developer_key">Chiave sviluppatore</string>
-    <string name="hint_empty_field">(vuoto)</string>
+    <string name="hint_empty_field">(Vuoto)</string>
     <string name="hint_search_text">Testo e/o ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="import_export_option_csv">Libri (*.csv)</string>
@@ -640,5 +640,8 @@
     <string name="lbl_series_multiple">Collezione</string>
     <string name="pv_scanner_embedded">Interno</string>
     <string name="pt_allow_edit_native_id">Consenti la modifica dell\'ID libro del sito Web nativo.</string>
+    <string name="hint_not_set">(Non impostato)</string>
+    <string name="pt_search_prefer_isbn10">Usa ISBN-10 quando possibile</string>
+    <string name="pt_scanning_beep_on_barcode_found">Segnale acustico quando viene trovato un codice a barre</string>
 
 </resources>

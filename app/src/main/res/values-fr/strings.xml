@@ -206,7 +206,7 @@
     <string name="hint_btn_drag_handle">Faites glisser pour réorganiser cette liste.</string>
     <string name="warning_requires_date">S\'il vous plaît ajouter une date valide.</string>
     <string name="hint_developer_key">Clé développeur</string>
-    <string name="hint_empty_field">(vide)</string>
+    <string name="hint_empty_field">(Vide)</string>
     <string name="hint_search_text">Texte et/ou ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
     <string name="import_export_option_csv">Livres (*.csv)</string>
@@ -645,5 +645,8 @@
     <string name="lbl_series_multiple">Séries</string>
     <string name="pv_scanner_embedded">Interne</string>
     <string name="pt_allow_edit_native_id">Autoriser la modification de l\'ID du livre du site Web natif.</string>
+    <string name="hint_not_set">(Non définie)</string>
+    <string name="pt_search_prefer_isbn10">Utilisez ISBN-10 lorsque cela est possible</string>
+    <string name="pt_scanning_beep_on_barcode_found">Bip lorsqu\'un code-barres est trouvé</string>
 
 </resources>

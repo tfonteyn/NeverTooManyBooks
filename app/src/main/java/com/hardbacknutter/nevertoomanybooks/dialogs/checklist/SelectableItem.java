@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,42 +32,47 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
-public class BitmaskItem
-        extends CheckListItemBase<Integer>
-        implements Parcelable {
+/**
+ * Default implementation of {@link CheckListItem} encapsulating a {@code long}.
+ */
+public class SelectableItem
+        implements CheckListItem {
 
     /** {@link Parcelable}. */
-    public static final Creator<BitmaskItem> CREATOR =
-            new Creator<BitmaskItem>() {
+    public static final Creator<SelectableItem> CREATOR =
+            new Creator<SelectableItem>() {
                 @Override
-                public BitmaskItem createFromParcel(@NonNull final Parcel source) {
-                    return new BitmaskItem(source);
+                public SelectableItem createFromParcel(@NonNull final Parcel source) {
+                    return new SelectableItem(source);
                 }
 
                 @Override
-                public BitmaskItem[] newArray(final int size) {
-                    return new BitmaskItem[size];
+                public SelectableItem[] newArray(final int size) {
+                    return new SelectableItem[size];
                 }
             };
 
-    /** resource id for the label to display. */
-    @StringRes
-    private final int mLabelId;
+    /** Label to display. */
+    private final String mLabel;
+    /** The item we're encapsulating. */
+    private final long mItemId;
+    /** Status of this item. */
+    private boolean mSelected;
 
     /**
      * Constructor.
      *
-     * @param bitMask  the item to encapsulate
-     * @param labelId  resource id for the label to display
+     * @param label    to display
+     * @param itemId   the item to represent
      * @param selected the current status
      */
-    public BitmaskItem(@NonNull final Integer bitMask,
-                       @StringRes final int labelId,
-                       final boolean selected) {
-        super(bitMask, selected);
-        mLabelId = labelId;
+    public SelectableItem(@NonNull final String label,
+                          final long itemId,
+                          final boolean selected) {
+        mItemId = itemId;
+        mSelected = selected;
+        mLabel = label;
     }
 
     /**
@@ -75,22 +80,42 @@ public class BitmaskItem
      *
      * @param in Parcel to construct the object from
      */
-    private BitmaskItem(@NonNull final Parcel in) {
-        super(in);
-        item = in.readInt();
-        mLabelId = in.readInt();
+    private SelectableItem(@NonNull final Parcel in) {
+        mItemId = in.readLong();
+        mLabel = in.readString();
+        mSelected = in.readInt() != 0;
+    }
+
+    public long getItemId() {
+        return mItemId;
+    }
+
+    @Override
+    public String getLabel(@NonNull final Context context) {
+        return mLabel;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return mSelected;
+    }
+
+    @Override
+    public void setSelected(final boolean selected) {
+        mSelected = selected;
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeInt(item);
-        dest.writeInt(mLabelId);
+        dest.writeLong(mItemId);
+        dest.writeString(mLabel);
+        dest.writeInt(mSelected ? 1 : 0);
     }
 
+    @SuppressWarnings("SameReturnValue")
     @Override
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
+    public int describeContents() {
+        return 0;
     }
 }

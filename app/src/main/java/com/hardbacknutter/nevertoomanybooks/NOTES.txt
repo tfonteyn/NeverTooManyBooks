@@ -43,7 +43,6 @@ Alternatively migrate to using BigDecimal as a short term solution.
 TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter when appropriate.
 
 ENHANCE: image url loading... keep DIY, or move to Glide (v4.10.0 is using androidx)
- or Picasso (seems to move to Kotlin)
 
 Issues checked: 834 down to 677 (inc)
 
@@ -60,8 +59,6 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/812 - syn Goodreads 
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/317 - Add statistics to 'About' tab
 
 Searches
-ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/67  - https://openlibrary.org/developers/api
-==> see notes in OpenLibraryManager.java
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/546 - WorldCat support
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/348 - ISSN (serials)
 ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/723 - add book by search: allow publisher + present list of finds instead of using first found.
@@ -114,6 +111,7 @@ https://github.com/eleybourn/Book-Catalogue/issues/323 - Add Field for Editions
 https://github.com/eleybourn/Book-Catalogue/issues/281 - A field for copyright date
 https://github.com/eleybourn/Book-Catalogue/issues/239 - Currency field in list price
 https://github.com/eleybourn/Book-Catalogue/issues/113 - Add a 'Date Bought' Field
+https://github.com/eleybourn/Book-Catalogue/issues/67  - https://openlibrary.org/developers/api
 
 https://github.com/eleybourn/Book-Catalogue/issues/804 - custom location for cover images
 --> images now in private app files folder. Having them in public storage is to slippery

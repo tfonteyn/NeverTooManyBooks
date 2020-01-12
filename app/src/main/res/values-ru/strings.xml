@@ -199,7 +199,7 @@
     <string name="hint_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
     <string name="warning_requires_date">Пожалуйста, добавьте действительную дату.</string>
     <string name="hint_developer_key">Ключ разработчика</string>
-    <string name="hint_empty_field">(пусто)</string>
+    <string name="hint_empty_field">(Пусто)</string>
     <string name="hint_search_text">Текст и/или ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
     <string name="import_export_option_csv">книги (*.csv)</string>
@@ -635,5 +635,8 @@
     <string name="lbl_series_multiple">Серии</string>
     <string name="pv_scanner_embedded">внутренний</string>
     <string name="pt_allow_edit_native_id">Разрешить редактировать родной идентификатор книги сайта.</string>
+    <string name="hint_not_set">(Не указано)</string>
+    <string name="pt_search_prefer_isbn10">Используйте ISBN-10, когда это возможно</string>
+    <string name="pt_scanning_beep_on_barcode_found">Звуковой сигнал, когда штрих-код найден</string>
 
 </resources>

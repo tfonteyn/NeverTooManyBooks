@@ -200,7 +200,7 @@
     <string name="hint_btn_drag_handle">Przeciągnij mnie, aby zmienić kolejność tej listy.</string>
     <string name="warning_requires_date">Dodaj prawidłową datę.</string>
     <string name="hint_developer_key">Klucz deweloperski</string>
-    <string name="hint_empty_field">(Nie ustawiony)</string>
+    <string name="hint_empty_field">(Puste)</string>
     <string name="hint_search_text">Tekst i / lub ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
     <string name="import_export_option_csv">Książki (*.csv)</string>
@@ -636,4 +636,7 @@
     <string name="lbl_series_multiple">Serial</string>
     <string name="pv_scanner_embedded">Wewnętrzny</string>
     <string name="pt_allow_edit_native_id">Zezwalaj na edycję natywnego identyfikatora książki w witrynie.</string>
+    <string name="hint_not_set">(Nie ustawiono)</string>
+    <string name="pt_search_prefer_isbn10">Jeśli to możliwe, użyj ISBN-10</string>
+    <string name="pt_scanning_beep_on_barcode_found">Sygnał dźwiękowy po znalezieniu kodu kreskowego</string>
 </resources>

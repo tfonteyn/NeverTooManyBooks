@@ -195,7 +195,7 @@
     <string name="hint_btn_drag_handle">Σύρετε με για να αναδιατάξετε αυτήν τη λίστα.</string>
     <string name="warning_requires_date">Προσθέστε μια έγκυρη ημερομηνία.</string>
     <string name="hint_developer_key">Κλειδί Developer</string>
-    <string name="hint_empty_field">(άδειο)</string>
+    <string name="hint_empty_field">(Κενή)</string>
     <string name="hint_search_text">Κείμενο και/ή ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="import_export_option_csv">βιβλία (*.csv)</string>
@@ -635,5 +635,8 @@
     <string name="lbl_series_multiple">Σειρά</string>
     <string name="pv_scanner_embedded">Εσωτερικός</string>
     <string name="pt_allow_edit_native_id">Να επιτρέπεται η επεξεργασία του εγγενούς αναγνωριστικού ιστοτόπου ιστοτόπου.</string>
+    <string name="hint_not_set">(Δεν έχει οριστεί)</string>
+    <string name="pt_search_prefer_isbn10">Χρησιμοποιήστε ISBN-10 όταν είναι δυνατόν</string>
+    <string name="pt_scanning_beep_on_barcode_found">Μπιπ, όταν βρεθεί ένας γραμμωτός κώδικας</string>
 
 </resources>

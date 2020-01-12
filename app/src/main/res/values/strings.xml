@@ -1159,8 +1159,14 @@
     <!-- Goodreads search specific -->
     <string name="hint_search_text">Text and/or ISBN</string>
 
-    <!-- generic place holder text for booklist rows. URGENT: copy translations from android source code-->
+    <!-- generic place holder text for EMPTY fields.
+         Different from NOT SET in Translations.
+         Copy from android-29#keyguard_accessibility_widget_empty_slot -->
     <string name="hint_empty_field">(Not Set)</string>
+    <!-- generic place holder text for fields which are NOT SET.
+         Different from EMPTY in Translations.
+          Copy from androidx.preferences# not_set -->
+    <string name="hint_not_set">(Not Set)</string>
 
     <!-- specific place holder text for Rating rows. -->
     <string name="hint_empty_rating">(Not rated)</string>
@@ -1280,6 +1286,7 @@
     <string name="no">No</string>
     <string name="help">Help</string>
     <string name="edit">Edit</string>
+    <!-- Copy from android-29#unknownName -->
     <string name="unknown">Unknown</string>
     <string name="done">Done</string>
     <string name="X_swap">Swap</string>

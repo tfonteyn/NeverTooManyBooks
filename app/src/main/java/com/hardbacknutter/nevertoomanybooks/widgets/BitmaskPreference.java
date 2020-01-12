@@ -60,9 +60,9 @@ public class BitmaskPreference
 
     /** The summary resource to display if the preference is set to "don't use". */
     @StringRes
-    private int mNotUsedSummary = R.string.unused;
+    private int mNotSetSummary = R.string.unused;
     @Nullable
-    private Boolean mIsUsed;
+    private Boolean mActive;
 
     public BitmaskPreference(@NonNull final Context context,
                              @Nullable final AttributeSet attrs,
@@ -86,33 +86,45 @@ public class BitmaskPreference
         super(context);
     }
 
+    /**
+     * The summary to display when the value is <strong>not set</strong>.
+     * This is different from when the value is set to all-blank.
+     *
+     * @return string
+     */
     @NonNull
-    public String getNotInUseSummary() {
-        if (mNotUsedSummary != 0) {
-            return getContext().getString(mNotUsedSummary);
+    public String getNotSetSummary() {
+        if (mNotSetSummary != 0) {
+            return getContext().getString(mNotSetSummary);
         } else {
             return "";
         }
     }
 
-    public void setNotInUseSummary(@StringRes final int notUsedSummary) {
-        mNotUsedSummary = notUsedSummary;
+    /**
+     * The summary to display when the value is <strong>not set</strong>.
+     * This is different from when the value is set to all-blank.
+     *
+     * @param notSetSummary string resource id
+     */
+    public void setNotSetSummary(@StringRes final int notSetSummary) {
+        mNotSetSummary = notSetSummary;
     }
 
-    public boolean isUsed() {
-        if (mIsUsed == null) {
-            mIsUsed = getSharedPreferences().getBoolean(getKey() + ACTIVE, false);
+    public boolean isActive() {
+        if (mActive == null) {
+            mActive = getSharedPreferences().getBoolean(getKey() + ACTIVE, false);
         }
-        return mIsUsed;
+        return mActive;
     }
 
-    public void setUsed(final boolean used) {
-        mIsUsed = used;
+    public void setActive(final boolean active) {
+        mActive = active;
     }
 
     @Override
     public void setValues(final Set<String> values) {
-        if (isUsed()) {
+        if (isActive()) {
             getSharedPreferences().edit().putBoolean(getKey() + ACTIVE, true).apply();
             super.setValues(values);
         } else {
@@ -130,7 +142,7 @@ public class BitmaskPreference
             extends PreferenceDialogFragmentCompat {
 
         private static final String TAG = "BitmaskPreferenceDialog";
-        private static final String BKEY_UNUSED_STRING = TAG + ":unusedStr";
+        private static final String BKEY_NOT_SET_STRING = TAG + ":notSetStr";
 
         private static final String SAVE_STATE_VALUES = TAG + ":values";
         private static final String SAVE_STATE_CHANGED = TAG + ":changed";
@@ -144,7 +156,7 @@ public class BitmaskPreference
 
         /** Text for the neutral button. */
         @Nullable
-        private String mUnusedString;
+        private String mNotSetString;
 
         /**
          * Set to {@code true} when the user clicks the NeutralButton.
@@ -164,7 +176,7 @@ public class BitmaskPreference
             final BitmaskPreferenceDialogFragment fragment = new BitmaskPreferenceDialogFragment();
             final Bundle args = new Bundle(2);
             args.putString(ARG_KEY, preference.getKey());
-            args.putString(BKEY_UNUSED_STRING, preference.getNotInUseSummary());
+            args.putString(BKEY_NOT_SET_STRING, preference.getNotSetSummary());
             fragment.setArguments(args);
             return fragment;
         }
@@ -175,10 +187,10 @@ public class BitmaskPreference
 
             Bundle args = getArguments();
             if (args != null) {
-                mUnusedString = args.getString(BKEY_UNUSED_STRING);
+                mNotSetString = args.getString(BKEY_NOT_SET_STRING);
             }
-            if (mUnusedString == null) {
-                mUnusedString = getString(R.string.unused);
+            if (mNotSetString == null) {
+                mNotSetString = getString(R.string.unused);
             }
 
             if (savedInstanceState == null) {
@@ -224,8 +236,8 @@ public class BitmaskPreference
             super.onPrepareDialogBuilder(builder);
             // FIXME: the default builder uses a mutually exclusive message/listView.
             // builder.setMessage(getString(R.string.info_bitmask_preference,
-            //                    getString(mUnusedString)));
-            builder.setNeutralButton(mUnusedString, (dialog, which) -> mUnused = true);
+            //                    getString(mNotSetString)));
+            builder.setNeutralButton(mNotSetString, (dialog, which) -> mUnused = true);
 
             final int entryCount = mEntryValues.length;
             final boolean[] checkedItems = new boolean[entryCount];
@@ -249,10 +261,10 @@ public class BitmaskPreference
             // or not; which is why we need to use the mUnused variable.
             if (positiveResult) {
                 // BUTTON_POSITIVE
-                preference.setUsed(true);
+                preference.setActive(true);
             } else if (mUnused) {
                 // BUTTON_NEUTRAL
-                preference.setUsed(false);
+                preference.setActive(false);
                 preference.getValues().clear();
             }
 

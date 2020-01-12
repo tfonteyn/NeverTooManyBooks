@@ -202,7 +202,7 @@
     <string name="hint_btn_drag_handle">Arrástrame para reordenar esta lista.</string>
     <string name="warning_requires_date">Por favor agregue una fecha válida.</string>
     <string name="hint_developer_key">Clave de desarrollador (Developer Key)</string>
-    <string name="hint_empty_field">(vacío)</string>
+    <string name="hint_empty_field">(Vacío)</string>
     <string name="hint_search_text">Texto y/o ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
     <string name="import_export_option_csv">Los libros (*.csv)</string>
@@ -641,5 +641,8 @@
     <string name="lbl_series_multiple">Serie</string>
     <string name="pv_scanner_embedded">Interno</string>
     <string name="pt_allow_edit_native_id">Permitir editar la identificación del libro nativo del sitio</string>
+    <string name="hint_not_set">(Sin definir)</string>
+    <string name="pt_search_prefer_isbn10">Use ISBN-10 cuando sea posible</string>
+    <string name="pt_scanning_beep_on_barcode_found">Pitido cuando se encuentra un código de barras</string>
 
 </resources>

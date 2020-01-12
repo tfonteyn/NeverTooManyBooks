@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,18 +33,10 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 /**
- * TODO: this is overkill.
- *
- * @param <T> - type of item in the checklist
+ * As used by {@link CheckListDialogFragment}.
  */
-public interface CheckListItem<T>
+public interface CheckListItem
         extends Parcelable {
-
-    T getItem();
-
-    boolean isChecked();
-
-    void setChecked(boolean selected);
 
     /**
      * Get the user friendly label to display.
@@ -54,4 +46,18 @@ public interface CheckListItem<T>
      * @return the label to use in a {@link CheckListDialogFragment}.
      */
     String getLabel(@NonNull Context context);
+
+    /**
+     * Getter.
+     *
+     * @return status
+     */
+    boolean isSelected();
+
+    /**
+     * Setter.
+     *
+     * @param selected status
+     */
+    void setSelected(boolean selected);
 }

@@ -206,7 +206,7 @@
     <string name="hint_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
     <string name="warning_requires_date">Geef een geldige datum in.</string>
     <string name="hint_developer_key">Ontwikkelaarssleutel</string>
-    <string name="hint_empty_field">(leeg)</string>
+    <string name="hint_empty_field">(Leeg)</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
     <string name="import_export_option_csv">Boeken (*.csv)</string>
@@ -646,5 +646,8 @@
     <string name="lbl_series_multiple">Reeksen</string>
     <string name="pv_scanner_embedded">Intern</string>
     <string name="pt_allow_edit_native_id">Sta bewerken van native website-boek-ID toe.</string>
+    <string name="hint_not_set">(Niet ingesteld)</string>
+    <string name="pt_search_prefer_isbn10">Gebruik ISBN-10 indien mogelijk</string>
+    <string name="pt_scanning_beep_on_barcode_found">Beep wanneer een streepjescode wordt gevonden</string>
 
 </resources>

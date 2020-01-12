@@ -199,7 +199,7 @@
     <string name="hint_btn_drag_handle">Bu listeyi yeniden düzenlemek için beni sürükleyin.</string>
     <string name="warning_requires_date">Lütfen geçerli bir tarih ekleyin.</string>
     <string name="hint_developer_key">Geliştirici anahtarı</string>
-    <string name="hint_empty_field">(boş)</string>
+    <string name="hint_empty_field">(Boş)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="import_export_option_csv">Kitaplar (*.csv)</string>
@@ -636,5 +636,8 @@
     <string name="lbl_series_multiple">Dizi</string>
     <string name="pv_scanner_embedded">İç</string>
     <string name="pt_allow_edit_native_id">Yerel web sitesi kitap kimliğinin düzenlenmesine izin ver.</string>
+    <string name="hint_not_set">(Ayarlanmadı)</string>
+    <string name="pt_search_prefer_isbn10">Mümkün olduğunda ISBN-10 kullanın</string>
+    <string name="pt_scanning_beep_on_barcode_found">Bir barkod bulunduğunda bip sesi</string>
 
 </resources>

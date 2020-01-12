@@ -57,14 +57,20 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * DialogFragment to edit a list of checkbox options.
+ * DialogFragment to edit a list of {@link CheckListItem} options.
  * <p>
- * This is really overkill.. maybe time to switch back to a simple Dialog.
- * https://developer.android.com/guide/topics/ui/dialogs
- *
- * @param <T> type to use for {@link CheckListItem}
+ * Replacement for the AlertDialog with multipleChoice setup.
+ * <ul>Pro:
+ * <li>Single item list instead of 2 arrays.</li>
+ * <li>Item can be anything as long as it implements {@link CheckListItem}</li>
+ * <li>Default implementation {@link SelectableItem} encapsulates a long<br>
+ * which can be used to represent an id, number, bit in bitmask, ... </li>
+ * <li>Layout easy to enhance.</li>
+ * </ul>
+ * <p>
+ * Con: the items <strong>must</strong> be Parcelable.
  */
-public class CheckListDialogFragment<T>
+public class CheckListDialogFragment
         extends DialogFragment {
 
     /** Log tag. */
@@ -74,8 +80,8 @@ public class CheckListDialogFragment<T>
     private static final String BKEY_CHECK_LIST = TAG + ":list";
 
     /** The list of items to display. Object + checkbox. */
-    private ArrayList<CheckListItem<T>> mList;
-    private WeakReference<CheckListResultsListener<T>> mListener;
+    private ArrayList<CheckListItem> mList;
+    private WeakReference<CheckListResultsListener> mListener;
 
     /** identifier of the field this dialog is bound to. */
     @IdRes
@@ -86,21 +92,20 @@ public class CheckListDialogFragment<T>
      *
      * @param fieldId       the field whose content we want to edit
      * @param dialogTitleId resource id for the dialog title
-     * @param listGetter    callback interface for getting the list to use.
-     * @param <T>           type of the {@link CheckListItem}
+     * @param items         list of items
      *
      * @return the new instance
      */
-    public static <T> CheckListDialogFragment<T> newInstance(
+    public static CheckListDialogFragment newInstance(
             @IdRes final int fieldId,
             @StringRes final int dialogTitleId,
-            @NonNull final CheckListEditorListGetter<T> listGetter) {
+            @NonNull final ArrayList<CheckListItem> items) {
 
-        CheckListDialogFragment<T> frag = new CheckListDialogFragment<>();
+        CheckListDialogFragment frag = new CheckListDialogFragment();
         Bundle args = new Bundle(3);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
-        args.putParcelableArrayList(BKEY_CHECK_LIST, listGetter.getList());
+        args.putParcelableArrayList(BKEY_CHECK_LIST, items);
         frag.setArguments(args);
         return frag;
     }
@@ -130,10 +135,10 @@ public class CheckListDialogFragment<T>
         ViewGroup body = root.findViewById(android.R.id.list);
         for (CheckListItem item : mList) {
             CompoundButton buttonView = new CheckBox(getContext());
-            buttonView.setChecked(item.isChecked());
+            buttonView.setChecked(item.isSelected());
             //noinspection ConstantConditions
             buttonView.setText(item.getLabel(getContext()));
-            buttonView.setOnCheckedChangeListener((v, isChecked) -> item.setChecked(isChecked));
+            buttonView.setOnCheckedChangeListener((v, isChecked) -> item.setSelected(isChecked));
             body.addView(buttonView);
         }
 
@@ -145,7 +150,7 @@ public class CheckListDialogFragment<T>
                         .setPositiveButton(android.R.string.ok, (d, which) -> {
                             if (mListener.get() != null) {
                                 mListener.get().onCheckListEditorSave(mDestinationFieldId,
-                                                                      extractList(mList));
+                                                                      getSelectedItems(mList));
                             } else {
                                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                                     Log.d(TAG, "onCheckListEditorSave|"
@@ -174,18 +179,19 @@ public class CheckListDialogFragment<T>
     }
 
     /**
-     * Access the list of {@link CheckListItem} and extract the actual items.
+     * Get the list of selected items.
      *
      * @param list to dissect
      *
-     * @return the extracted list
+     * @return filtered list
      */
     @NonNull
-    private ArrayList<T> extractList(@NonNull final Collection<CheckListItem<T>> list) {
-        final ArrayList<T> result = new ArrayList<>(list.size());
-        for (CheckListItem<T> entry : list) {
-            if (entry.isChecked()) {
-                result.add(entry.getItem());
+    private ArrayList<CheckListItem>
+    getSelectedItems(@NonNull final Collection<CheckListItem> list) {
+        final ArrayList<CheckListItem> result = new ArrayList<>(list.size());
+        for (CheckListItem entry : list) {
+            if (entry.isSelected()) {
+                result.add(entry);
             }
         }
         return result;
@@ -196,16 +202,14 @@ public class CheckListDialogFragment<T>
      *
      * @param listener the object to send the result to.
      */
-    public void setListener(@NonNull final CheckListResultsListener<T> listener) {
+    public void setListener(@NonNull final CheckListResultsListener listener) {
         mListener = new WeakReference<>(listener);
     }
 
     /**
      * Listener interface to receive notifications when dialog is closed by any means.
-     *
-     * @param <T> - type of item in the checklist
      */
-    public interface CheckListResultsListener<T> {
+    public interface CheckListResultsListener {
 
         /**
          * reports the results after this dialog was confirmed.
@@ -215,16 +219,16 @@ public class CheckListDialogFragment<T>
          *                           (non-checked options have been removed)
          */
         void onCheckListEditorSave(int destinationFieldId,
-                                   @NonNull ArrayList<T> list);
+                                   @NonNull ArrayList<CheckListItem> list);
     }
 
     /**
      * Loads the {@link CheckListDialogFragment} with the *current* list,
-     * e.g. not the state of the list at init time.
+     * e.g. not the state of the list at definition time, but the one at creation time.
      */
-    public interface CheckListEditorListGetter<T> {
+    public interface ListGetter {
 
         @NonNull
-        ArrayList<CheckListItem<T>> getList();
+        ArrayList<CheckListItem> getList();
     }
 }

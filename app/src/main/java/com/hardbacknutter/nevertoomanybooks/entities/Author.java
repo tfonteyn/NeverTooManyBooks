@@ -54,8 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.BitmaskItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -408,16 +408,16 @@ public class Author
     /**
      * Gets a complete list of Types each reflecting the Author being that type or not.
      *
-     * @return the list
+     * @return list with {@link SelectableItem}
      */
     @NonNull
-    public ArrayList<CheckListItem<Integer>> getEditableTypeList() {
+    public ArrayList<CheckListItem> getEditableTypeList(@NonNull final Context context) {
 
-        ArrayList<CheckListItem<Integer>> list = new ArrayList<>();
+        ArrayList<CheckListItem> list = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : TYPES.entrySet()) {
             Integer key = entry.getKey();
             boolean selected = (key & mType) != 0;
-            list.add(new BitmaskItem(key, entry.getValue(), selected));
+            list.add(new SelectableItem(context.getString(entry.getValue()), key, selected));
         }
         return list;
     }

@@ -201,7 +201,7 @@
     <string name="hint_btn_drag_handle">Přetažením tohoto seznamu změníte pořadí.</string>
     <string name="warning_requires_date">Zadejte prosím platné datum.</string>
     <string name="hint_developer_key">Vývojářský klíč</string>
-    <string name="hint_empty_field">(prázdné)</string>
+    <string name="hint_empty_field">(Prázdné)</string>
     <string name="hint_search_text">Vložit a/nebo ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
     <string name="import_export_option_csv">Knihy (*.csv)</string>
@@ -524,7 +524,7 @@
     <string name="title_select_image">Zvolit obrázek</string>
     <string name="title_select_style">Zvolit styl</string>
     <string name="title_send_mail">Poslat e-mailem…</string>
-    <string name="unknown">Neznámý</string>
+    <string name="unknown">Není známo</string>
     <string name="vldt_blank_required_for_x">Prázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_boolean_expected_for_x">Očekávána pravdivostní hodnota (0,1,t,f,true,false) pro „%1$s“</string>
     <string name="vldt_date_expected_for_x">Očekáváno datum pro „%1$s“</string>
@@ -637,5 +637,8 @@
     <string name="lbl_series_multiple">Série</string>
     <string name="pv_scanner_embedded">Vnitřní</string>
     <string name="pt_allow_edit_native_id">Povolit úpravy ID nativní webové knihy.</string>
+    <string name="hint_not_set">(Nenastaveno)</string>
+    <string name="pt_search_prefer_isbn10">Pokud je to možné, použijte ISBN-10</string>
+    <string name="pt_scanning_beep_on_barcode_found">Při nalezení čárového kódu pípne</string>
 
 </resources>

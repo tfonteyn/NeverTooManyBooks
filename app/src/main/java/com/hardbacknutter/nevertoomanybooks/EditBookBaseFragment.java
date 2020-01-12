@@ -38,7 +38,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -76,15 +75,15 @@ public abstract class EditBookBaseFragment
             mCheckListResultsListener = (destinationFieldId, list) -> {
         Book book = mBookModel.getBook();
         if (destinationFieldId == R.id.bookshelves) {
-            //noinspection unchecked
-            ArrayList<Bookshelf> bsList = (ArrayList<Bookshelf>) list;
-            book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
+            // store
+            book.putBookshelves(mBookModel.getDb(), list);
+            // and refresh on screen
             getFields().getField(R.id.bookshelves)
-                       .setValue(Csv.join(", ", bsList, Bookshelf::getName));
+                       .setValue(Csv.join(", ", book.getParcelableArrayList(
+                               UniqueId.BKEY_BOOKSHELF_ARRAY), Bookshelf::getName));
 
         } else if (destinationFieldId == R.id.edition) {
-            //noinspection unchecked
-            book.putEditions((ArrayList<Integer>) list);
+            book.putEditions(list);
             getFields().getField(R.id.edition)
                        .setValue(book.getLong(DBDefinitions.KEY_EDITION_BITMASK));
         }
@@ -104,7 +103,6 @@ public abstract class EditBookBaseFragment
                     .setListener(mPartialDatePickerResultsListener);
 
         } else if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
-            //noinspection unchecked
             ((CheckListDialogFragment) childFragment)
                     .setListener(mCheckListResultsListener);
         }
@@ -265,18 +263,17 @@ public abstract class EditBookBaseFragment
      * @param field         {@link Field} to edit
      * @param fieldView     view to connect
      * @param dialogTitleId title of the dialog box.
-     * @param listGetter    {@link CheckListDialogFragment.CheckListEditorListGetter}
+     * @param listGetter    {@link CheckListDialogFragment.ListGetter}
      *                      interface to get the *current* list
      */
-    <CT> void initCheckListEditor(@NonNull final Field<?> field,
-                                  @NonNull final View fieldView,
-                                  @StringRes final int dialogTitleId,
-                                  @NonNull final CheckListDialogFragment
-                                          .CheckListEditorListGetter<CT> listGetter) {
+    void initCheckListEditor(@NonNull final Field<?> field,
+                             @NonNull final View fieldView,
+                             @StringRes final int dialogTitleId,
+                             @NonNull final CheckListDialogFragment.ListGetter listGetter) {
         // only bother when it's in use
         if (field.isUsed()) {
             fieldView.setOnClickListener(v -> CheckListDialogFragment
-                    .newInstance(fieldView.getId(), dialogTitleId, listGetter)
+                    .newInstance(fieldView.getId(), dialogTitleId, listGetter.getList())
                     .show(getChildFragmentManager(), CheckListDialogFragment.TAG));
         }
     }

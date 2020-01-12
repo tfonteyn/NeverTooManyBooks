@@ -165,7 +165,7 @@ public abstract class BasePreferenceFragment
     private CharSequence getValueAsString(@NonNull final Preference preference) {
         if (preference instanceof ListPreference) {
             CharSequence value = ((ListPreference) preference).getEntry();
-            return value != null ? value : getString(R.string.hint_empty_field);
+            return value != null ? value : getString(R.string.hint_not_set);
         }
         if (preference instanceof EditTextPreference) {
             return ((EditTextPreference) preference).getText();
@@ -173,8 +173,8 @@ public abstract class BasePreferenceFragment
 
         if (preference instanceof BitmaskPreference) {
             BitmaskPreference bmp = (BitmaskPreference) preference;
-            if (!bmp.isUsed()) {
-                return bmp.getNotInUseSummary();
+            if (!bmp.isActive()) {
+                return bmp.getNotSetSummary();
             }
             // if it is in use, drop through to MultiSelectListPreference
         }

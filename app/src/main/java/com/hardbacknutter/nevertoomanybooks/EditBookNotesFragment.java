@@ -140,7 +140,7 @@ public class EditBookNotesFragment
                 .setFormatter(new Fields.BitMaskFormatter(Book.getEditions(getContext())))
                 .setRelatedFields(R.id.lbl_edition);
         initCheckListEditor(editionsField, mEditionView, R.string.lbl_edition, () ->
-                mBookModel.getBook().getEditableEditionList());
+                mBookModel.getBook().getEditableEditionList(getContext()));
 
         field = fields
                 .addString(mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)

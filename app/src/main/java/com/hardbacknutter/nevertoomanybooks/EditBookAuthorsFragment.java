@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -407,6 +408,7 @@ public class EditBookAuthorsFragment
             // Reminder: *always* use the activity inflater here.
             //noinspection ConstantConditions
             LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+            @SuppressLint("InflateParams")
             View root = layoutInflater.inflate(R.layout.dialog_edit_book_author, null);
 
 
