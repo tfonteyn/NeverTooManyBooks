@@ -206,7 +206,6 @@
     <string name="hint_btn_drag_handle">Faites glisser pour réorganiser cette liste.</string>
     <string name="warning_requires_date">S\'il vous plaît ajouter une date valide.</string>
     <string name="hint_developer_key">Clé développeur</string>
-    <string name="hint_field_not_set">Non défini</string>
     <string name="hint_empty_field">(vide)</string>
     <string name="hint_search_text">Texte et/ou ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
@@ -447,8 +446,8 @@
     <string name="pt_bob_thumbnails_scale">Taille de l\'image dans les listes</string>
     <string name="pt_reformat_titles_summary_original">Le titre</string>
     <string name="pt_reformat_titles_summary_reformatted">titre, Le</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Beeper si l\'ISBN scanné est invalide</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Beeper si l\'ISBN scanné est valide</string>
+    <string name="pt_scanning_beep_on_invalid">Beeper si l\'ISBN scanné est invalide</string>
+    <string name="pt_scanning_beep_on_valid">Beeper si l\'ISBN scanné est valide</string>
     <string name="pt_scanning_preferred_scanner">Scanner préféré</string>
     <string name="pt_search_uses_publisher">La recherche utilise l\'éditeur</string>
     <string name="pt_thumbnail_cropper_layer_type">Recadrage «Layer Type»</string>

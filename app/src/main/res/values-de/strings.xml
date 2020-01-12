@@ -204,7 +204,6 @@
     <string name="hint_btn_drag_handle">Ziehen Sie, um diese Liste neu zu ordnen.</string>
     <string name="warning_requires_date">Bitte geben Sie ein gültiges Datum an.</string>
     <string name="hint_developer_key">Entwicklerschlüssel</string>
-    <string name="hint_field_not_set">Nicht gesetzt</string>
     <string name="hint_empty_field">(leer)</string>
     <string name="hint_search_text">Text und/oder ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s</string>
@@ -445,8 +444,8 @@
     <string name="pt_bob_thumbnails_scale">Bildgröße in Listen</string>
     <string name="pt_reformat_titles_summary_original">Der Titel</string>
     <string name="pt_reformat_titles_summary_reformatted">Titel, Der</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Tonsignal bei gültig gescannter ISBN</string>
+    <string name="pt_scanning_beep_on_invalid">Tonsignal, falls die gescannte ISBN ungültig ist</string>
+    <string name="pt_scanning_beep_on_valid">Tonsignal bei gültig gescannter ISBN</string>
     <string name="pt_scanning_preferred_scanner">Bevorzugter Scanner</string>
     <string name="pt_search_uses_publisher">Suche verwendet Verleger</string>
     <string name="pt_thumbnail_cropper_layer_type">Zuschneiden „Layer Type“</string>

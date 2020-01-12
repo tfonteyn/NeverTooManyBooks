@@ -200,7 +200,6 @@
     <string name="hint_btn_drag_handle">Przeciągnij mnie, aby zmienić kolejność tej listy.</string>
     <string name="warning_requires_date">Dodaj prawidłową datę.</string>
     <string name="hint_developer_key">Klucz deweloperski</string>
-    <string name="hint_field_not_set">Nie wybrany(a)</string>
     <string name="hint_empty_field">(Nie ustawiony)</string>
     <string name="hint_search_text">Tekst i / lub ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
@@ -439,8 +438,8 @@
     <string name="pt_bob_thumbnails_show">Pokaż miniaturki</string>
     <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
     <string name="pt_bob_thumbnails_scale">Rozmiar obrazu na listach</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Sygnał dźwiękowy, jeśli zeskanowany numer ISBN jest nieprawidłowy</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Sygnał dźwiękowy, jeśli skanowany numer ISBN jest prawidłowy</string>
+    <string name="pt_scanning_beep_on_invalid">Sygnał dźwiękowy, jeśli zeskanowany numer ISBN jest nieprawidłowy</string>
+    <string name="pt_scanning_beep_on_valid">Sygnał dźwiękowy, jeśli skanowany numer ISBN jest prawidłowy</string>
     <string name="pt_scanning_preferred_scanner">Preferowany skaner</string>
     <string name="pt_search_uses_publisher">Wyszukiwanie używa wydawcy</string>
     <string name="pt_thumbnail_cropper_layer_type">przytnij obraz „Layer Type”</string>

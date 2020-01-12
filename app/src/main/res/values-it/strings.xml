@@ -201,7 +201,6 @@
     <string name="hint_btn_drag_handle">Trascina per riordinare questo elenco.</string>
     <string name="warning_requires_date">Si prega di aggiungere una data valida.</string>
     <string name="hint_developer_key">Chiave sviluppatore</string>
-    <string name="hint_field_not_set">Non impostato</string>
     <string name="hint_empty_field">(vuoto)</string>
     <string name="hint_search_text">Testo e/o ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
@@ -442,8 +441,8 @@
     <string name="pt_bob_thumbnails_scale">Dimensione miniature in elenchi</string>
     <string name="pt_reformat_titles_summary_original">Il titolo</string>
     <string name="pt_reformat_titles_summary_reformatted">titolo, Il</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Suona se il codice ISBN acquisito non è valido</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Suona se il codice ISBN acquisito è valido</string>
+    <string name="pt_scanning_beep_on_invalid">Suona se il codice ISBN acquisito non è valido</string>
+    <string name="pt_scanning_beep_on_valid">Suona se il codice ISBN acquisito è valido</string>
     <string name="pt_scanning_preferred_scanner">Programma Preferito</string>
     <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
     <string name="pt_thumbnail_cropper_layer_type">Ritaglia «Layer Type»</string>

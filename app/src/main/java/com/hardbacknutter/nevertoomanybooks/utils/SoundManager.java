@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 
 public final class SoundManager {
 
@@ -48,16 +47,8 @@ public final class SoundManager {
     private SoundManager() {
     }
 
-    public static void beepLow(@NonNull final Context context) {
-        playFile(context, R.raw.beep_low);
-    }
-
-    public static void beepHigh(@NonNull final Context context) {
-        playFile(context, R.raw.beep_high);
-    }
-
-    private static void playFile(@NonNull final Context context,
-                                 @RawRes final int resId) {
+    public static void playFile(@NonNull final Context context,
+                                @RawRes final int resId) {
         try {
             AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
             MediaPlayer player = new MediaPlayer();

@@ -226,7 +226,7 @@ public class ScannerViewModel
      */
     public void onValidBeep(@NonNull final Context context) {
         if (ScannerManager.isBeepOnValid(context)) {
-            SoundManager.beepHigh(context);
+            SoundManager.playFile(context, R.raw.beep_high);
         }
     }
 
@@ -237,7 +237,7 @@ public class ScannerViewModel
      */
     public void onInvalidBeep(@NonNull final Context context) {
         if (ScannerManager.isBeepOnInvalid(context)) {
-            SoundManager.beepLow(context);
+            SoundManager.playFile(context, R.raw.beep_low);
         }
     }
 

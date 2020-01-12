@@ -206,7 +206,6 @@
     <string name="hint_btn_drag_handle">Sleep om deze lijst opnieuw te ordenen.</string>
     <string name="warning_requires_date">Geef een geldige datum in.</string>
     <string name="hint_developer_key">Ontwikkelaarssleutel</string>
-    <string name="hint_field_not_set">Niet Ingevuld</string>
     <string name="hint_empty_field">(leeg)</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
@@ -447,8 +446,8 @@
     <string name="pt_bob_thumbnails_scale">Miniaturen grootte in lijsten</string>
     <string name="pt_reformat_titles_summary_original">De titel</string>
     <string name="pt_reformat_titles_summary_reformatted">titel, De</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Beep als het gescande ISBN ongeldig is</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Beep als gescande ISBN geldig is</string>
+    <string name="pt_scanning_beep_on_invalid">Beep als het gescande ISBN ongeldig is</string>
+    <string name="pt_scanning_beep_on_valid">Beep als gescande ISBN geldig is</string>
     <string name="pt_scanning_preferred_scanner">Voorkeur Scanner</string>
     <string name="pt_search_uses_publisher">Zoeken maakt gebruik van de uitgever</string>
     <string name="pt_thumbnail_cropper_layer_type">Bijsnijden „Layer Type”</string>

@@ -787,18 +787,17 @@
 
     <!-- Preference Category -->
     <string name="pg_barcode_scanner">Barcode scanner</string>
-    <!-- SwitchPreference -->
-    <string name="pt_scanning_beep_if_isbn_invalid">Beep if scanned ISBN is invalid</string>
-    <!-- SwitchPreference -->
-    <string name="pt_scanning_beep_if_isbn_valid">Beep if scanned ISBN is valid</string>
-    <!-- SwitchPreference - Embedded & ZXing only.-->
-    <string name="pt_scanning_beep_when_barcode_found">Beep when a barcode is found</string>
-
-
     <!-- ListPreference - the barcode scanner to use-->
     <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
     <string name="pv_scanner_zxing_compatible">Zxing Compatible Scanner</string>
     <string name="pv_scanner_embedded">Internal</string>
+    <!-- SwitchPreference - Embedded & ZXing only.-->
+    <string name="pt_scanning_beep_on_barcode_found">Beep when a barcode is found</string>
+    <!-- SwitchPreference -->
+    <string name="pt_scanning_beep_on_valid">Beep if scanned ISBN is valid</string>
+    <!-- SwitchPreference -->
+    <string name="pt_scanning_beep_on_invalid">Beep if scanned ISBN is invalid</string>
+
 
     <string name="pt_search_form">Local Search Form</string>
 
@@ -1160,10 +1159,7 @@
     <!-- Goodreads search specific -->
     <string name="hint_search_text">Text and/or ISBN</string>
 
-    <!-- generic hint text for DataEntryButton (see styles.xml) fields. -->
-    <string name="hint_field_not_set">Not Set</string>
-
-    <!-- generic place holder text for booklist rows. -->
+    <!-- generic place holder text for booklist rows. URGENT: copy translations from android source code-->
     <string name="hint_empty_field">(Not Set)</string>
 
     <!-- specific place holder text for Rating rows. -->
@@ -1590,5 +1586,6 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
+    <string name="pt_search_prefer_isbn10">Use ISBN-10 when possible</string>
 
 </resources>

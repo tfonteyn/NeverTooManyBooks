@@ -199,7 +199,6 @@
     <string name="hint_btn_drag_handle">Bu listeyi yeniden düzenlemek için beni sürükleyin.</string>
     <string name="warning_requires_date">Lütfen geçerli bir tarih ekleyin.</string>
     <string name="hint_developer_key">Geliştirici anahtarı</string>
-    <string name="hint_field_not_set">Ayarlı değil</string>
     <string name="hint_empty_field">(boş)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
@@ -438,8 +437,8 @@
     <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_bob_thumbnails_scale">Listelerdeki görüntü boyutu</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Taranan ISBN geçerli değil ise biple</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Taranan ISBN geçerli ise biple</string>
+    <string name="pt_scanning_beep_on_invalid">Taranan ISBN geçerli değil ise biple</string>
+    <string name="pt_scanning_beep_on_valid">Taranan ISBN geçerli ise biple</string>
     <string name="pt_scanning_preferred_scanner">Yeğlenen Tarayıcı</string>
     <string name="pt_search_uses_publisher">Arama yayıncı kullanıyor</string>
     <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp “Layer Type”</string>

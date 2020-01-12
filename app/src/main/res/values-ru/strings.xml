@@ -199,7 +199,6 @@
     <string name="hint_btn_drag_handle">Перетащите меня, чтобы изменить порядок в этом списке.</string>
     <string name="warning_requires_date">Пожалуйста, добавьте действительную дату.</string>
     <string name="hint_developer_key">Ключ разработчика</string>
-    <string name="hint_field_not_set">Не установлено</string>
     <string name="hint_empty_field">(пусто)</string>
     <string name="hint_search_text">Текст и/или ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
@@ -438,8 +437,8 @@
     <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
     <string name="pt_collect_series_info_from_toc">Собрать информацию серии из оглавления</string>
     <string name="pt_bob_thumbnails_scale">Размер изображения в списках</string>
-    <string name="pt_scanning_beep_if_isbn_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
-    <string name="pt_scanning_beep_if_isbn_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
+    <string name="pt_scanning_beep_on_invalid">Подать звуковой сигнал, если сканируемый ISBN не правильный</string>
+    <string name="pt_scanning_beep_on_valid">Подать звуковой сигнал, если сканируемый ISBN правильный</string>
     <string name="pt_scanning_preferred_scanner">Предпочтительный сканер</string>
     <string name="pt_search_uses_publisher">Поиск использует издатель</string>
     <string name="pt_thumbnail_cropper_layer_type">Обрезать «Layer Type»</string>
