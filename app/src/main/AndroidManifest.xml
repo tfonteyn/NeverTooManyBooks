@@ -53,6 +53,10 @@
     <!-- for the LOAN functionality -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
+    <!-- https://github.com/tfonteyn/zxing-android-embedded states
+        this is needed. It works without for me. -->
+    <!--    <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />-->
+
     <!-- API 24:  android:networkSecurityConfig="@xml/network_security_config" -->
     <application
         android:name="com.hardbacknutter.nevertoomanybooks.App"
@@ -159,9 +163,9 @@
         <!-- main/global preferences -->
         <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity" />
         <!-- Edit the user preferred booklist styles -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.PreferredStylesActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity" />
         <!-- Edit the groups for a style. -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.StyleGroupsActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleGroupsActivity" />
 
         <!-- Search Sites configuration -->
         <activity
