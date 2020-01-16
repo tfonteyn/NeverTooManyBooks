@@ -51,9 +51,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -247,17 +247,17 @@ public class Author
     /**
      * Full constructor.
      *
-     * @param id     ID of the Author in the database.
-     * @param mapper for the cursor.
+     * @param id        ID of the Author in the database.
+     * @param cursorRow with data
      */
     public Author(final long id,
-                  @NonNull final CursorMapper mapper) {
+                  @NonNull final CursorRow cursorRow) {
         mId = id;
-        mFamilyName = mapper.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
-        mGivenNames = mapper.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-        mIsComplete = mapper.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-        if (mapper.contains(DBDefinitions.KEY_AUTHOR_TYPE)) {
-            mType = mapper.getInt(DBDefinitions.KEY_AUTHOR_TYPE);
+        mFamilyName = cursorRow.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+        mGivenNames = cursorRow.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
+        mIsComplete = cursorRow.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+        if (cursorRow.contains(DBDefinitions.KEY_AUTHOR_TYPE)) {
+            mType = cursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE);
         }
     }
 

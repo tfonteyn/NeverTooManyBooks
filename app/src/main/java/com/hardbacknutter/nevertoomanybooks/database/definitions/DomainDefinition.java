@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,13 +70,19 @@ public class DomainDefinition
     private final String mType;
     @NonNull
     private final List<String> mConstraints = new ArrayList<>();
+
+    /** This domain represents a primary key. */
+    private final boolean mIsPrimaryKey;
+    /**
+     * This domain is pre-prepared for sorting;
+     * i.e. the values are stripped of spaces etc.. before being stored.
+     */
+    private final boolean mIsPrePreparedOrderBy;
+
     /** Holds a 'REFERENCES' clause (if any). */
     @Nullable
     private String mReferences;
 
-    private boolean mIsPrimaryKey;
-
-    private boolean mIsPrePreparedOrderBy;
 
     /**
      * Create a PRIMARY KEY column.
@@ -84,10 +90,7 @@ public class DomainDefinition
      * @param name column name
      */
     public DomainDefinition(@NonNull final String name) {
-        mName = name;
-        mType = ColumnInfo.TYPE_INTEGER;
-        mIsPrimaryKey = true;
-        mConstraints.add(NOT_NULL);
+        this(name, true, ColumnInfo.TYPE_INTEGER, true, false);
     }
 
     /**
@@ -98,8 +101,7 @@ public class DomainDefinition
      */
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type) {
-        this.mName = name;
-        mType = type;
+        this(name, false, type, false, false);
     }
 
     /**
@@ -112,8 +114,44 @@ public class DomainDefinition
     public DomainDefinition(@NonNull final String name,
                             @NonNull final String type,
                             final boolean notNull) {
+        this(name, false, type, notNull, false);
+    }
+
+    /**
+     * Simple column with optional NOT NULL constraint and
+     * a flag to indicate it's pre-prepared for sorting.
+     *
+     * @param name               column name
+     * @param type               column type (text, int, float, ...)
+     * @param notNull            {@code true} if this column should never be {@code null}
+     * @param prePreparedOrderBy {@code true} if this domain is in fact pre-prepared for sorting.
+     *                           i.e. the values are stripped of spaces etc.. before being stored.
+     */
+    public DomainDefinition(@NonNull final String name,
+                            @NonNull final String type,
+                            final boolean notNull,
+                            final boolean prePreparedOrderBy) {
+        this(name, false, type, notNull, prePreparedOrderBy);
+    }
+
+    /**
+     * Full, private constructor.
+     *
+     * @param name               column name
+     * @param isPrimaryKey       Flag
+     * @param type               column type (text, int, float, ...)
+     * @param notNull            {@code true} if this column should never be {@code null}
+     * @param prePreparedOrderBy {@code true} if this domain is in fact pre-prepared for sorting.
+     */
+    private DomainDefinition(@NonNull final String name,
+                             final boolean isPrimaryKey,
+                             @NonNull final String type,
+                             final boolean notNull,
+                             final boolean prePreparedOrderBy) {
         mName = name;
         mType = type;
+        mIsPrimaryKey = isPrimaryKey;
+        mIsPrePreparedOrderBy = prePreparedOrderBy;
         if (notNull) {
             mConstraints.add(NOT_NULL);
         }
@@ -131,6 +169,8 @@ public class DomainDefinition
                             @Nullable final String... constraints) {
         mName = name;
         mType = type;
+        mIsPrimaryKey = false;
+        mIsPrePreparedOrderBy = false;
         if (notNull) {
             mConstraints.add(NOT_NULL);
         }
@@ -247,19 +287,19 @@ public class DomainDefinition
         return mIsPrePreparedOrderBy;
     }
 
-    /**
-     * Set a flag that this domain is in fact pre-prepared for sorting.
-     * i.e. the values are stripped of spaces etc.. before being stored.
-     *
-     * @param prePreparedOrderBy Flag
-     *
-     * @return this for chaining.
-     */
-    @NonNull
-    public DomainDefinition setPrePreparedOrderBy(final boolean prePreparedOrderBy) {
-        mIsPrePreparedOrderBy = prePreparedOrderBy;
-        return this;
-    }
+//    /**
+//     * Set a flag that this domain is in fact pre-prepared for sorting.
+//     * i.e. the values are stripped of spaces etc.. before being stored.
+//     *
+//     * @param prePreparedOrderBy Flag
+//     *
+//     * @return this for chaining.
+//     */
+//    @NonNull
+//    public DomainDefinition setPrePreparedOrderBy(final boolean prePreparedOrderBy) {
+//        mIsPrePreparedOrderBy = prePreparedOrderBy;
+//        return this;
+//    }
 
     /**
      * Convenience method to check if this domain is TEXT based.

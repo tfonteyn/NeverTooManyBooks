@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.SparseArray;
@@ -53,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -114,7 +114,7 @@ public class UpdateFieldsModel
 
     private int mCurrentProgressCounter;
     private int mCurrentCursorCount;
-    private BookCursor mCurrentCursor;
+    private Cursor mCurrentCursor;
 
     /** Observable. */
     @NonNull
@@ -361,6 +361,9 @@ public class UpdateFieldsModel
     private boolean nextBook(@NonNull final Context context) {
 
         try {
+            int idCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
+            int langCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
+
             // loop/skip until we start a search for a book.
             while (mCurrentCursor.moveToNext() && !mIsCancelled) {
 
@@ -378,7 +381,6 @@ public class UpdateFieldsModel
 
                 // always add the language to the ORIGINAL data if we have one,
                 // so we can use it for the Locale details when processing the results.
-                int langCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
                 if (langCol > 0) {
                     String lang = mCurrentCursor.getString(langCol);
                     if (lang != null && !lang.isEmpty()) {
@@ -387,7 +389,7 @@ public class UpdateFieldsModel
                 }
 
                 // Get the book ID
-                mCurrentBookId = mCurrentCursor.getId();
+                mCurrentBookId = mCurrentCursor.getLong(idCol);
 
                 // Get the array data about the book
                 mCurrentBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,

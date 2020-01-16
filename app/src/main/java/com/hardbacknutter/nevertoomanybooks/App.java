@@ -71,7 +71,6 @@ import org.acra.file.Directory;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -643,10 +642,6 @@ public class App
     public void onCreate() {
         // preserve startup==system Locale
         sSystemInitialLocale = Locale.getDefault();
-
-        // create the singleton QueueManager
-        QueueManager.init();
-
         super.onCreate();
     }
 

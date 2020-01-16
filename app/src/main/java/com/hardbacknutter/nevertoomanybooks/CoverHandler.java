@@ -201,7 +201,7 @@ public class CoverHandler {
         // we only support alternative edition covers for the front cover.
         menu.findItem(R.id.MENU_THUMB_ADD_ALT_EDITIONS).setEnabled(mCIdx == 0);
 
-        new MenuPicker<>(mContext, title, menu, null, CoverHandler.this::onViewContextItemSelected)
+        new MenuPicker<>(mContext, title, menu, mCIdx, CoverHandler.this::onViewContextItemSelected)
                 .show();
     }
 
@@ -210,14 +210,15 @@ public class CoverHandler {
      * Reminder: the 'menuItem' here *is* the 'item'.
      *
      * @param menuItem that the user selected
+     * @param position in the list (i.e. mCIdx)
      *
      * @return {@code true} if handled here.
      */
     private boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
-                                              @Nullable final Void aVoid) {
+                                              @NonNull final Integer position) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_DELETE: {
-                deleteCoverFile();
+                deleteCoverFile(mContext);
                 return true;
             }
             case R.id.SUBMENU_THUMB_ROTATE: {
@@ -396,15 +397,17 @@ public class CoverHandler {
 
     /**
      * Delete the image.
+     *
+     * @param context Current context
      */
-    private void deleteCoverFile() {
+    private void deleteCoverFile(@NonNull final Context context) {
         StorageUtils.deleteFile(getCoverFile());
 
         // Ensure that the cached images for this book are deleted (if present).
         // Yes, this means we also delete the ones where != index, but we don't care; it's a cache.
         String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
         if (!uuid.isEmpty()) {
-            CoversDAO.delete(uuid);
+            CoversDAO.delete(context, uuid);
         }
         // replace the old image with a placeholder.
         ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,

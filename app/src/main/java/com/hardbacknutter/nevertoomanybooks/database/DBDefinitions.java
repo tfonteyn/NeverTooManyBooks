@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -333,7 +333,7 @@ public final class DBDefinitions {
      */
     public static final DomainDefinition DOM_BL_SERIES_NUM_FLOAT;
     /** {@link BooklistBuilder}. */
-    public static final DomainDefinition DOM_BL_ABSOLUTE_POSITION;
+    public static final DomainDefinition DOM_BL_LIST_VIEW_ROW_LINE_PLUS1;
     /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link BooklistBuilder}. */
     public static final DomainDefinition DOM_BL_NODE_KIND;
     /**
@@ -471,7 +471,11 @@ public final class DBDefinitions {
     public static final String KEY_BL_BOOK_COUNT = "book_count";
     public static final String KEY_BL_PRIMARY_SERIES_COUNT = "prim_ser_cnt";
 
-    public static final String KEY_BL_ABSOLUTE_POSITION = "abs_pos";
+    /**
+     * BooklistBuilder: an alias for the RowState table rowId
+     * listViewRowPosition = rowId -1.
+     */
+    public static final String KEY_BL_LIST_VIEW_ROW_ID = "lv_row_id";
 
     public static final String KEY_BL_ROOT_KEY = "root_key";
     public static final String KEY_BL_REAL_ROW_ID = "real_row_id";
@@ -565,8 +569,8 @@ public final class DBDefinitions {
         DOM_TITLE =
                 new DomainDefinition(KEY_TITLE, ColumnInfo.TYPE_TEXT, true);
         DOM_TITLE_OB =
-                new DomainDefinition(KEY_TITLE + COLUMN_SUFFIX_ORDER_BY, ColumnInfo.TYPE_TEXT, true)
-                        .setPrePreparedOrderBy(true)
+                new DomainDefinition(KEY_TITLE + COLUMN_SUFFIX_ORDER_BY,
+                                     ColumnInfo.TYPE_TEXT, true, true)
                         .setDefaultEmptyString();
 
         DOM_DATE_FIRST_PUB =
@@ -595,8 +599,7 @@ public final class DBDefinitions {
 
         DOM_AUTHOR_FAMILY_NAME_OB =
                 new DomainDefinition(KEY_AUTHOR_FAMILY_NAME + COLUMN_SUFFIX_ORDER_BY,
-                                     ColumnInfo.TYPE_TEXT, true)
-                        .setPrePreparedOrderBy(true)
+                                     ColumnInfo.TYPE_TEXT, true, true)
                         .setDefaultEmptyString();
 
         DOM_AUTHOR_GIVEN_NAMES =
@@ -605,8 +608,7 @@ public final class DBDefinitions {
 
         DOM_AUTHOR_GIVEN_NAMES_OB =
                 new DomainDefinition(KEY_AUTHOR_GIVEN_NAMES + COLUMN_SUFFIX_ORDER_BY,
-                                     ColumnInfo.TYPE_TEXT, true)
-                        .setPrePreparedOrderBy(true)
+                                     ColumnInfo.TYPE_TEXT, true, true)
                         .setDefaultEmptyString();
 
         DOM_AUTHOR_IS_COMPLETE =
@@ -627,8 +629,7 @@ public final class DBDefinitions {
                 new DomainDefinition(KEY_SERIES_TITLE, ColumnInfo.TYPE_TEXT, true);
         DOM_SERIES_TITLE_OB =
                 new DomainDefinition(KEY_SERIES_TITLE + COLUMN_SUFFIX_ORDER_BY,
-                                     ColumnInfo.TYPE_TEXT, true)
-                        .setPrePreparedOrderBy(true)
+                                     ColumnInfo.TYPE_TEXT, true, true)
                         .setDefaultEmptyString();
         DOM_SERIES_IS_COMPLETE =
                 new DomainDefinition(KEY_SERIES_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN, true)
@@ -859,8 +860,8 @@ public final class DBDefinitions {
 
         DOM_BL_SERIES_NUM_FLOAT =
                 new DomainDefinition(KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL);
-        DOM_BL_ABSOLUTE_POSITION =
-                new DomainDefinition(KEY_BL_ABSOLUTE_POSITION, ColumnInfo.TYPE_INTEGER, true);
+        DOM_BL_LIST_VIEW_ROW_LINE_PLUS1 =
+                new DomainDefinition(KEY_BL_LIST_VIEW_ROW_ID, ColumnInfo.TYPE_INTEGER, true);
         DOM_BL_NODE_KIND =
                 new DomainDefinition(KEY_BL_NODE_KIND, ColumnInfo.TYPE_INTEGER, true);
         DOM_BL_ROOT_KEY =
@@ -1140,36 +1141,26 @@ public final class DBDefinitions {
         //TODO: figure out indexes
 
         /*
-        Not used as defined here, see {@link RowStateTable).
-
          * Keep track of level/expand/visible for each row in TMP_TBL_BOOK_LIST.
          *
          * {@link BooklistBuilder}
          */
-        TMP_TBL_BOOK_LIST_ROW_STATE.addDomains(DOM_PK_ID,
-                                               // FK to TMP_TBL_BOOK_LIST
-                                               DOM_FK_BOOK_BL_ROW_ID,
-                                               DOM_BL_ROOT_KEY,
-                                               // Node data
-                                               DOM_BL_NODE_LEVEL,
-                                               DOM_BL_NODE_KIND,
-                                               DOM_BL_NODE_VISIBLE,
-                                               DOM_BL_NODE_EXPANDED
-                                              )
-                                   .setPrimaryKey(DOM_PK_ID)
-                                   // Essential for main query! If not present, will make getCount()
-                                   // take ages because main query is a cross without index.
-                                   .addIndex(DOM_FK_BOOK_BL_ROW_ID, true, DOM_FK_BOOK_BL_ROW_ID)
-
-                                   // BooklistBuilder#getPreserveNodesInsertSql()
-                                   .addIndex(DOM_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE)
-
-                                   .addIndex("NODE_DATA",
-                                             false,
-                                             DOM_BL_ROOT_KEY,
-                                             DOM_BL_NODE_LEVEL,
-                                             DOM_BL_NODE_EXPANDED
-                                            );
+        TMP_TBL_BOOK_LIST_ROW_STATE
+                .addDomains(DOM_PK_ID,
+                            // FK to TMP_TBL_BOOK_LIST
+                            DOM_FK_BOOK_BL_ROW_ID,
+                            DOM_BL_ROOT_KEY,
+                            // Node data
+                            DOM_BL_NODE_LEVEL,
+                            DOM_BL_NODE_KIND,
+                            DOM_BL_NODE_VISIBLE,
+                            DOM_BL_NODE_EXPANDED
+                           )
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DOM_FK_BOOK_BL_ROW_ID, true, DOM_FK_BOOK_BL_ROW_ID)
+                .addIndex(DOM_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE)
+                .addIndex("NODE_DATA", false,
+                          DOM_BL_ROOT_KEY, DOM_BL_NODE_LEVEL, DOM_BL_NODE_EXPANDED);
 
         // do ***NOT*** add the reference here. It will be added *after* cloning in BooklistBuilder.
         // as the TMP_TBL_BOOK_LIST name will have an instance specific suffix.

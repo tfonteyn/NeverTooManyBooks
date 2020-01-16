@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -122,40 +123,39 @@ public class TableDefinition
 
     /**
      * Given a list of table, create the database (tables + indexes).
-     * <p>
-     * All tables will be created with constraints active.
+     * Constraints and references will be active.
      *
-     * @param db     Blank database
+     * @param db     SQLiteDatabase
      * @param tables Table list
      */
-    public static void createTables(@NonNull final SynchronizedDb db,
+    public static void createTables(@NonNull final SQLiteDatabase db,
                                     @NonNull final TableDefinition... tables) {
         for (TableDefinition table : tables) {
-            table.create(db, true);
-            table.createIndices(db);
+            table.create(db);
         }
     }
 
     /**
-     * Drop the passed table, if it exists.
+     * Create this table and it's indexes.
+     * Constraints and references will be active.
      *
-     * @param db   Database Access
-     * @param name name of the table to drop
+     * @param db SQLiteDatabase
      */
-    private static void drop(@NonNull final SynchronizedDb db,
-                             @NonNull final String name) {
-        db.execSQL("DROP TABLE IF EXISTS " + name);
+    public void create(@NonNull final SQLiteDatabase db) {
+        db.execSQL(getSqlCreateStatement(mName, true, true, false));
+        for (IndexDefinition index : getIndexes()) {
+            index.create(db);
+        }
     }
 
     /**
-     * Create this table. Don't forget to call {@link #createIndices} if needed.
+     * Create this table. Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
      *
      * @param db              Database in which to create table
      * @param withConstraints Indicates if fields should have constraints applied
      *
      * @return this for chaining
      */
-    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public TableDefinition create(@NonNull final SynchronizedDb db,
                                   final boolean withConstraints) {
@@ -164,7 +164,25 @@ public class TableDefinition
     }
 
     /**
-     * Create this table. Don't forget to call {@link #createIndices} if needed.
+     * Drop this table (if it exists) and (re)create it.
+     * Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
+     *
+     * @param db              Database in which to drop/create table
+     * @param withConstraints Indicates if fields should have constraints applied
+     *
+     * @return this for chaining
+     */
+    @NonNull
+    public TableDefinition recreate(@NonNull final SynchronizedDb db,
+                                    final boolean withConstraints) {
+        // Drop the table in case there is an orphaned instance.
+        db.drop(mName);
+        db.execSQL(getSqlCreateStatement(mName, withConstraints, true, false));
+        return this;
+    }
+
+    /**
+     * Create this table. Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
      *
      * @param db                  Database in which to create table
      * @param withConstraints     Indicates if fields should have constraints applied
@@ -181,27 +199,12 @@ public class TableDefinition
         return this;
     }
 
-    /**
-     * Create all indices defined for this table.
-     *
-     * @param db Database
-     *
-     * @return TableDefinition (for chaining)
-     */
-    @SuppressWarnings("UnusedReturnValue")
     @NonNull
     public TableDefinition createIndices(@NonNull final SynchronizedDb db) {
         for (IndexDefinition index : getIndexes()) {
             index.create(db);
         }
         return this;
-    }
-
-    /**
-     * Drop this table from the passed database.
-     */
-    public void drop(@NonNull final SynchronizedDb db) {
-        drop(db, mName);
     }
 
     /**
@@ -841,7 +844,7 @@ public class TableDefinition
 
             String sql = "SELECT * FROM " + mName + " ORDER BY " + orderBy + " LIMIT " + limit;
             try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
-                StringBuilder columnHeading = new StringBuilder();
+                StringBuilder columnHeading = new StringBuilder("\n");
                 String[] columnNames = cursor.getColumnNames();
                 for (String column : columnNames) {
                     columnHeading.append(String.format("%-12s  ", column));

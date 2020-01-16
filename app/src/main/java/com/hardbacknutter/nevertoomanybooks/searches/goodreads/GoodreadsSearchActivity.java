@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.searches.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,9 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -268,12 +269,13 @@ public class GoodreadsSearchActivity
 
                 mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
                 if (mBookId > 0) {
-                    try (BookCursor bookCursor = mDb.fetchBookById(mBookId)) {
-                        if (bookCursor.moveToFirst()) {
-                            mAuthorText = bookCursor.getString(
+                    try (Cursor cursor = mDb.fetchBookById(mBookId)) {
+                        if (cursor.moveToFirst()) {
+                            final CursorRow cursorRow = new CursorRow(cursor);
+                            mAuthorText = cursorRow.getString(
                                     DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
-                            mTitleText = bookCursor.getString(DBDefinitions.KEY_TITLE);
-                            mIsbnText = bookCursor.getString(DBDefinitions.KEY_ISBN);
+                            mTitleText = cursorRow.getString(DBDefinitions.KEY_TITLE);
+                            mIsbnText = cursorRow.getString(DBDefinitions.KEY_ISBN);
                         } else {
                             mBookNoLongerExists.setValue(true);
                         }

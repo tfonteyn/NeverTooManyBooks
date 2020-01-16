@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,11 +27,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDAO.ScheduledTask;
 
@@ -95,7 +98,8 @@ class Queue
      * Main worker thread logic.
      */
     public void run() {
-        try (TaskQueueDAO taskQueueDAO = new TaskQueueDAO()) {
+        Context context = App.getAppContext();
+        try (TaskQueueDAO taskQueueDAO = new TaskQueueDAO(context)) {
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
                 Task task;
@@ -132,7 +136,7 @@ class Queue
                 }
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
-            Logger.error(TAG, e);
+            Logger.error(context, TAG, e);
         } finally {
             try {
                 // Just in case (the queue manager does check the queue before doing the delete).

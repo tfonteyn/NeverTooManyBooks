@@ -934,15 +934,8 @@ public class BookDetailsFragment
             // Make sure we have considerably more X-velocity than Y-velocity;
             // otherwise it might be a scroll.
             if (Math.abs(velocityX / velocityY) > 2) {
-                boolean moved;
                 // Work out which way to move, and do it.
-                if (velocityX > 0) {
-                    moved = fbl.movePrev();
-                } else {
-                    moved = fbl.moveNext();
-                }
-
-                if (moved) {
+                if (fbl.move(velocityX <= 0)) {
                     long bookId = fbl.getBookId();
                     // only reload if it's a different book
                     if (bookId != mBookModel.getBook().getId()) {

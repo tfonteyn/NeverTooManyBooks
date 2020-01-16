@@ -64,7 +64,8 @@ public class ImagesPreferenceFragment
                         .setTitle(R.string.lbl_purge_image_cache)
                         .setMessage(R.string.lbl_purge_image_cache)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) -> CoversDAO.deleteAll())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                CoversDAO.deleteAll(getContext()))
                         .create()
                         .show();
                 return true;

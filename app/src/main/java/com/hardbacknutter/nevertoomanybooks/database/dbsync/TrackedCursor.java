@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.cursors;
+package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -35,7 +35,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.Closeable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,22 +43,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * DEBUG CLASS to help cursor leakage.
  * <p>
- * By using TrackedCursorFactory it is possible to use this class to analyze when and
+ * By using TrackedCursor it is possible to analyze when and
  * where cursors are being allocated, and whether they are being de-allocated in a timely
  * fashion.
  * <p>
  * Most code is removed by BuildConfig.DEBUG for production.
  */
 public class TrackedCursor
-        extends SynchronizedCursor
-        implements Closeable {
+        extends SynchronizedCursor {
 
     /** Log tag. */
     private static final String TAG = "TrackedCursor";
@@ -88,10 +84,10 @@ public class TrackedCursor
     /** DEBUG: Indicates close() has been called. */
     private boolean mCloseWasCalled;
 
-    public TrackedCursor(@NonNull final SQLiteCursorDriver driver,
-                         @NonNull final String editTable,
-                         @NonNull final SQLiteQuery query,
-                         @NonNull final Synchronizer sync) {
+    TrackedCursor(@NonNull final SQLiteCursorDriver driver,
+                  @NonNull final String editTable,
+                  @NonNull final SQLiteQuery query,
+                  @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,9 +29,11 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.TrackedCursor;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
@@ -80,7 +82,7 @@ public final class DEBUG_SWITCHES {
     static final boolean BOB_INIT_BOOK_LIST = false;
     /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
     public static final boolean BOOK_LIST_NODE_STATE = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor}. */
+    /** {@link BooklistCursor}. */
     public static final boolean BOB_PSEUDO_CURSOR = false;
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
@@ -112,7 +114,7 @@ public final class DEBUG_SWITCHES {
     /** {@link DAO}. Global replace Author/Series/... */
     public static final boolean DAO_GLOBAL_REPLACE = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor}. */
+    /** {@link TrackedCursor}. */
     public static final boolean TRACKED_CURSOR = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.database.dbsync}. */
     public static final boolean DB_SYNC = false;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -36,8 +37,9 @@ import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -124,19 +126,19 @@ class SendBooksLegacyTask
                            @NonNull final GoodreadsManager grManager) {
 
         try (DAO db = new DAO(TAG);
-             BookCursor bookCursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
-
-            mTotalBooks = bookCursor.getCount() + mCount;
+             Cursor cursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
+            final CursorRow cursorRow = new CursorRow(cursor);
+            mTotalBooks = cursor.getCount() + mCount;
             boolean needsRetryReset = true;
-            while (bookCursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, grManager, db, bookCursor)) {
+            while (cursor.moveToNext()) {
+                if (!sendOneBook(queueManager, context, grManager, db, cursorRow)) {
                     // quit on error
                     return false;
                 }
 
                 // Update internal status
                 mCount++;
-                mLastId = bookCursor.getId();
+                mLastId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
                 // If we have done one successfully, reset the counter so a
                 // subsequent network error does not result in a long delay
                 if (needsRetryReset) {

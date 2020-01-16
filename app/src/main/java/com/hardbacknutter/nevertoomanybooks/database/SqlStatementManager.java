@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -146,7 +146,8 @@ public class SqlStatementManager
         final long t = System.nanoTime();
         stmt = db.compileStatement(sql);
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG + "|" + mInstanceName, "compileStatement (ns) t=" + (System.nanoTime() - t));
+            Log.d(TAG + "|" + mInstanceName, "compileStatement"
+                                             + "|completed in " + (System.nanoTime() - t) + " ns");
         }
         mStatements.put(name, stmt);
         return stmt;

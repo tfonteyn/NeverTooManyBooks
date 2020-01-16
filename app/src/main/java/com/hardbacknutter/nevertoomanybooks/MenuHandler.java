@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,8 +35,8 @@ import android.view.SubMenu;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
@@ -62,20 +62,20 @@ final class MenuHandler {
     }
 
     static void prepareOptionalMenus(@NonNull final Menu menu,
-                                     @NonNull final CursorMapper row) {
+                                     @NonNull final CursorRow cursorRow) {
 
         SparseArray<String> nativeIds = new SparseArray<>();
         for (String key : DBDefinitions.NATIVE_ID_KEYS) {
-            String value = row.getString(key);
+            String value = cursorRow.getString(key);
             if (!value.isEmpty() && !"0".equals(value)) {
                 nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
             }
         }
 
-        boolean hasAuthor = row.contains(DBDefinitions.KEY_FK_AUTHOR)
-                            && row.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
-        boolean hasSeries = row.contains(DBDefinitions.KEY_FK_SERIES)
-                            && row.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+        boolean hasAuthor = cursorRow.contains(DBDefinitions.KEY_FK_AUTHOR)
+                            && cursorRow.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
+        boolean hasSeries = cursorRow.contains(DBDefinitions.KEY_FK_SERIES)
+                            && cursorRow.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
 
         prepareOpenOnWebsiteMenu(menu, nativeIds);
         prepareOpenOnWebsiteAmazonMenu(menu, hasAuthor, hasSeries);
@@ -176,31 +176,35 @@ final class MenuHandler {
 
     static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
                                             @NonNull final MenuItem menuItem,
-                                            @NonNull final CursorMapper row) {
+                                            @NonNull final CursorRow cursorRow) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
                 GoodreadsManager
-                        .openWebsite(context, row.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                        .openWebsite(context,
+                                     cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
                 IsfdbManager
-                        .openWebsite(context, row.getLong(DBDefinitions.KEY_EID_ISFDB));
+                        .openWebsite(context, cursorRow.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
                 LibraryThingManager
-                        .openWebsite(context, row.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
+                        .openWebsite(context,
+                                     cursorRow.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
                 OpenLibraryManager
-                        .openWebsite(context, row.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
+                        .openWebsite(context,
+                                     cursorRow.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
                 StripInfoManager
-                        .openWebsite(context, row.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
+                        .openWebsite(context,
+                                     cursorRow.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
                 return true;
 
             //NEWTHINGS: add new site specific ID: add case

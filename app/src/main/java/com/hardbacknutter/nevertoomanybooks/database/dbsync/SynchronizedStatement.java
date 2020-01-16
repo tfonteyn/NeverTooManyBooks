@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -311,7 +311,8 @@ public class SynchronizedStatement
             return mStatement.simpleQueryForString();
         } catch (@NonNull final SQLiteDoneException e) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|NULL");
+                // This is not necessarily an error, but only to track this result.
+                Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|result=NULL");
             }
             return null;
         } finally {

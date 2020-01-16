@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,7 +52,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -100,9 +100,8 @@ public final class CoversDAO
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
     /** Static Factory object to create the custom cursor. */
-    private static final SQLiteDatabase.CursorFactory TRACKED_CURSOR_FACTORY =
-            (db, masterQuery, editTable, query) -> new TrackedCursor(masterQuery, editTable, query,
-                                                                     SYNCHRONIZER);
+    private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
+            (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
 
     /** Statement names. */
     private static final String STMT_EXISTS = "mExistsStmt";
@@ -181,13 +180,13 @@ public final class CoversDAO
      * <p>
      * Reminder: we always use the *application* context for the database connection.
      */
-    private static CoversDAO getInstance() {
+    private static CoversDAO getInstance(@NonNull final Context context) {
         if (sCoversDAO == null) {
             sCoversDAO = new CoversDAO();
         }
         // check each time, as it might have failed last time but might work now.
         if (sSyncedDb == null) {
-            sCoversDAO.open();
+            sCoversDAO.open(context);
         }
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
@@ -236,7 +235,7 @@ public final class CoversDAO
                                   final int maxWidth,
                                   final int maxHeight) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance()) {
+        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return null;
             }
@@ -267,10 +266,14 @@ public final class CoversDAO
      * // bad UUID's...this has happened.
      * // String whereClause = DOM_CACHE_ID + " GLOB '" + DAO.encodeString(uuid) + ".*'";
      * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
+     *
+     * @param context Current context
+     * @param uuid    to delete
      */
-    public static void delete(@NonNull final String uuid) {
+    public static void delete(@NonNull final Context context,
+                              @NonNull final String uuid) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance()) {
+        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
@@ -285,9 +288,9 @@ public final class CoversDAO
     /**
      * delete all rows.
      */
-    public static void deleteAll() {
+    public static void deleteAll(@NonNull final Context context) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance()) {
+        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
@@ -300,9 +303,9 @@ public final class CoversDAO
     /**
      * Analyze the database.
      */
-    public static void analyze() {
+    public static void analyze(@NonNull final Context context) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance()) {
+        try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
@@ -312,8 +315,8 @@ public final class CoversDAO
         }
     }
 
-    private void open() {
-        SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(TRACKED_CURSOR_FACTORY);
+    private void open(@NonNull final Context context) {
+        SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(context);
         // Try to connect.
         try {
             sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
@@ -322,14 +325,14 @@ public final class CoversDAO
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "Failed to open covers db", e);
             }
-            // retry...
+            // recreate a new one.
             try {
-                App.getAppContext().deleteDatabase(COVERS_DATABASE_NAME);
-
+                context.deleteDatabase(COVERS_DATABASE_NAME);
                 sSyncedDb = new SynchronizedDb(coversHelper, SYNCHRONIZER);
+
             } catch (@NonNull final RuntimeException e2) {
-                // If we fail after creating a new DB, log and give up.
-                Logger.error(TAG, e2, "Covers database unavailable");
+                // If we fail after trying to create a new DB, log and give up.
+                Logger.error(context, TAG, e2, "Covers database unavailable");
             }
         }
     }
@@ -424,25 +427,25 @@ public final class CoversDAO
         private static CoversDbHelper sCoversDbHelper;
 
         /**
-         * Singleton.
+         * Constructor.
          *
-         * @param factory CursorFactory: to use for creating cursor objects
+         * @param context Current context
          */
-        private CoversDbHelper(@SuppressWarnings("SameParameterValue")
-                               @NonNull final SQLiteDatabase.CursorFactory factory) {
-            // *always* use the app context!
-            super(App.getAppContext(), COVERS_DATABASE_NAME, factory, COVERS_DATABASE_VERSION);
+        private CoversDbHelper(@NonNull final Context context) {
+            super(context.getApplicationContext(),
+                  COVERS_DATABASE_NAME, CURSOR_FACTORY, COVERS_DATABASE_VERSION);
         }
 
         /**
-         * @param factory CursorFactory: to use for creating cursor objects
+         * Singleton Constructor.
+         *
+         * @param context Current context
          *
          * @return the instance
          */
-        static CoversDbHelper getInstance(@SuppressWarnings("SameParameterValue")
-                                          @NonNull final SQLiteDatabase.CursorFactory factory) {
+        static CoversDbHelper getInstance(@NonNull final Context context) {
             if (sCoversDbHelper == null) {
-                sCoversDbHelper = new CoversDbHelper(factory);
+                sCoversDbHelper = new CoversDbHelper(context);
             }
             return sCoversDbHelper;
         }
@@ -456,7 +459,7 @@ public final class CoversDAO
          */
         @Override
         public void onCreate(@NonNull final SQLiteDatabase db) {
-            TableDefinition.createTables(new SynchronizedDb(db, SYNCHRONIZER), TBL_IMAGE);
+            TableDefinition.createTables(db, TBL_IMAGE);
         }
 
         /**
@@ -535,9 +538,11 @@ public final class CoversDAO
         protected Void doInBackground(final Void... params) {
             Thread.currentThread().setName("ImageCacheWriterTask");
 
+            Context context = App.getAppContext();
+
             RUNNING_TASKS.incrementAndGet();
 
-            try (CoversDAO coversDBAdapter = getInstance()) {
+            try (CoversDAO coversDBAdapter = getInstance(context)) {
                 coversDBAdapter.saveFile(mUuid, mIndex, mBitmap, mMaxWidth, mMaxHeight);
             }
 

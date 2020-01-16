@@ -91,6 +91,7 @@ public class GlobalPreferenceFragment
                         })
                         .create()
                         .show();
+                // Do not let the system update the preference value.
                 return false;
             });
         }

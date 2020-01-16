@@ -605,7 +605,7 @@
     <string name="pv_bob_header_style_name">Nom du style</string>
     <string name="warning_rebuild_orderby_columns">Cela reconstruira les données de tri au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
     <string name="pt_bob_list_state_expansion_level">Liste de livres d\'expansion par défaut</string>
-    <string name="menu_level_reset">Niveau d\'expansion préféré</string>
+    <string name="menu_level_preferred_collapse">Niveau d\'expansion préféré</string>
     <string name="hint_empty_rating">(Non classé)</string>
     <string name="hint_empty_language">(Aucune langue renseignée)</string>
     <string name="hint_empty_series">(Pas de série)</string>

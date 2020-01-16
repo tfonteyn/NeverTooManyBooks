@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -184,20 +184,23 @@ public class EditBookshelvesFragment
             .setIcon(R.drawable.ic_delete);
 
         String title = bookshelf.getName();
-        new MenuPicker<>(getContext(), title, menu, bookshelf, this::onContextItemSelected)
+        new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
     }
 
     /**
      * Using {@link ValuePicker} for context menus.
      *
-     * @param menuItem  that was selected
-     * @param bookshelf in the list
+     * @param menuItem that was selected
+     * @param position in the list
      *
      * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final Bookshelf bookshelf) {
+                                          @NonNull final Integer position) {
+
+        Bookshelf bookshelf = mModel.getBookshelf(position);
+
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT:
                 editItem(bookshelf);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import android.database.Cursor;
 import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -105,6 +106,11 @@ public class IndexDefinition {
         }
     }
 
+    @NonNull
+    public String getName() {
+        return mName;
+    }
+
     /**
      * @return UNIQUE flag.
      */
@@ -121,16 +127,12 @@ public class IndexDefinition {
     }
 
     /**
-     * Drop the index, if it exists.
+     * Create the index.
      *
-     * @param db      Database Access
-     *
-     * @return this for chaining
+     * @param db SQLiteDatabase
      */
-    @NonNull
-    public IndexDefinition drop(@NonNull final SynchronizedDb db) {
-        db.execSQL("DROP INDEX IF EXISTS " + mName);
-        return this;
+    public void create(@NonNull final SQLiteDatabase db) {
+        db.execSQL(getSqlCreateStatement());
     }
 
     /**

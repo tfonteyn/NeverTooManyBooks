@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database.cursors;
+package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -36,22 +36,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.ColumnNotPresentException;
 
 /**
  * A handy wrapper allowing to fetch columns by name.
  * <p>
  * <strong>Note:</strong> converts {@code null} Strings to an empty String.
  * <p>
- * Tip: when using a CursorMapper as a parameter to a constructor, e.g.
- * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, CursorMapper)}
+ * Tip: when using a CursorRow as a parameter to a constructor, e.g.
+ * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, CursorRow)}
  * always pass the id additionally/separately. This gives the calling code a change to use
  * for example the foreign key id.
  */
-public class CursorMapper {
+public class CursorRow {
 
     /** Log tag. */
-    private static final String TAG = "CursorMapper";
+    private static final String TAG = "CursorRow";
 
     /** the mapped cursor. */
     private final Cursor mCursor;
@@ -63,14 +62,14 @@ public class CursorMapper {
      *
      * @param cursor to read from
      */
-    public CursorMapper(@NonNull final Cursor cursor) {
+    public CursorRow(@NonNull final Cursor cursor) {
         mCursor = cursor;
     }
 
     /**
      * @param domainName the domain to get
      *
-     * @return {@code true} if this mapper contains the specified domain.
+     * @return {@code true} if this cursor contains the specified domain.
      */
     public boolean contains(@NonNull final String domainName) {
         return mCursor.getColumnIndex(domainName) > -1;

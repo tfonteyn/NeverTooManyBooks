@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -89,10 +90,11 @@ public final class QueueManager {
     private final MessageHandler mMessageHandler;
 
     /**
-     * Reminder: as we're a singleton, we cannot cache the Context.
-     * That would cause memory leaks according to Android docs.
+     * Constructor.
+     *
+     * @param context Current context
      */
-    private QueueManager() {
+    private QueueManager(@NonNull final Context context) {
         if (sInstance != null) {
             // This is an essential requirement because (a) synchronization will not work with
             // more than one and (b) we want to store a static reference in the class.
@@ -105,7 +107,7 @@ public final class QueueManager {
         // setup the handler with access to ourselves
         mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
-        mTaskQueueDAO = new TaskQueueDAO();
+        mTaskQueueDAO = new TaskQueueDAO(context);
 
         // Get active queues.
         synchronized (this) {
@@ -120,14 +122,21 @@ public final class QueueManager {
         initializeQueue(Q_SMALL_JOBS);
     }
 
-    public static void init() {
+    /**
+     * Constructor. Called from {@link com.hardbacknutter.nevertoomanybooks.StartupActivity}
+     * so processing can start immediately after startup.
+     *
+     * @param context Current context
+     */
+    public static void create(@NonNull final Context context) {
         if (sInstance == null) {
-            sInstance = new QueueManager();
+            sInstance = new QueueManager(context);
         }
     }
 
     public static QueueManager getQueueManager() {
         if (sInstance == null) {
+            // do not lazy initialize here. We want the QueueManager running at startup.
             throw new IllegalStateException("init was not called?");
         }
         return sInstance;

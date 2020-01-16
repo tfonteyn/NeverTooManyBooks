@@ -43,9 +43,9 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 
 /**
  * Represents a Bookshelf.
@@ -138,14 +138,14 @@ public class Bookshelf
     /**
      * Full constructor.
      *
-     * @param id     the Bookshelf id
-     * @param mapper a cursor mapper.
+     * @param id        the Bookshelf id
+     * @param cursorRow with data
      */
     public Bookshelf(final long id,
-                     @NonNull final CursorMapper mapper) {
+                     @NonNull final CursorRow cursorRow) {
         mId = id;
-        mName = mapper.getString(DBDefinitions.KEY_BOOKSHELF);
-        mStyleUuid = mapper.getString(DBDefinitions.KEY_UUID);
+        mName = cursorRow.getString(DBDefinitions.KEY_BOOKSHELF);
+        mStyleUuid = cursorRow.getString(DBDefinitions.KEY_UUID);
     }
 
     /**

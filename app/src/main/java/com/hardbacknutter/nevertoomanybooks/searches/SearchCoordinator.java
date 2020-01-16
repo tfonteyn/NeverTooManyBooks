@@ -1202,7 +1202,7 @@ public class SearchCoordinator
                 for (TaskListener.ProgressMessage progressMessage : mSearchProgressMessages
                         .values()) {
                     progressMax += progressMessage.maxPosition;
-                    progressCount += progressMessage.absPosition;
+                    progressCount += progressMessage.position;
                 }
 
             }

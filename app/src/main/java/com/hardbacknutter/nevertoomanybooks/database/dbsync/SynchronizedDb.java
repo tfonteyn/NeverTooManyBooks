@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,9 +62,19 @@ public class SynchronizedDb {
     private final SQLiteDatabase mSqlDb;
     /** Sync object to use. */
     @NonNull
-    private final Synchronizer mSync;
-    /** Factory object to create the custom cursor. Can not be static because it needs mSync. */
-    private final SQLiteDatabase.CursorFactory mCursorFactory = new SynchronizedCursorFactory();
+    private final Synchronizer mSynchronizer;
+
+    /** Factory object to create the custom cursor. */
+    private final SQLiteDatabase.CursorFactory mCursorFactory = new SQLiteDatabase.CursorFactory() {
+        @Override
+        @NonNull
+        public SynchronizedCursor newCursor(@NonNull final SQLiteDatabase db,
+                                            @NonNull final SQLiteCursorDriver masterQuery,
+                                            @NonNull final String editTable,
+                                            @NonNull final SQLiteQuery query) {
+            return new SynchronizedCursor(masterQuery, editTable, query, mSynchronizer);
+        }
+    };
     /** Currently held transaction lock, if any. */
     @Nullable
     private Synchronizer.SyncLock mTxLock;
@@ -75,23 +85,23 @@ public class SynchronizedDb {
      * may block another thread, or vice versa.
      *
      * @param db   Underlying database
-     * @param sync Synchronizer to use
+     * @param synchronizer Synchronizer to use
      */
     public SynchronizedDb(@NonNull final SQLiteDatabase db,
-                          @NonNull final Synchronizer sync) {
+                          @NonNull final Synchronizer synchronizer) {
         mSqlDb = db;
-        mSync = sync;
+        mSynchronizer = synchronizer;
     }
 
     /**
      * Constructor.
      *
      * @param helper SQLiteOpenHelper to open underlying database
-     * @param sync   Synchronizer to use
+     * @param synchronizer   Synchronizer to use
      */
     public SynchronizedDb(@NonNull final SQLiteOpenHelper helper,
-                          @NonNull final Synchronizer sync) {
-        mSync = sync;
+                          @NonNull final Synchronizer synchronizer) {
+        mSynchronizer = synchronizer;
         mSqlDb = openWithRetries(helper);
     }
 
@@ -99,7 +109,7 @@ public class SynchronizedDb {
      * Constructor.
      *
      * @param helper            SQLiteOpenHelper to open underlying database
-     * @param sync              Synchronizer to use
+     * @param synchronizer              Synchronizer to use
      * @param preparedStmtCache the number or prepared statements to cache.
      *                          The javadoc for setMaxSqlCacheSize says the default is 10,
      *                          but if you follow the source code, you end up in
@@ -108,9 +118,9 @@ public class SynchronizedDb {
      *                          Do NOT set the size to less than 25.
      */
     public SynchronizedDb(@NonNull final SQLiteOpenHelper helper,
-                          @NonNull final Synchronizer sync,
+                          @NonNull final Synchronizer synchronizer,
                           final int preparedStmtCache) {
-        mSync = sync;
+        mSynchronizer = synchronizer;
         mSqlDb = openWithRetries(helper);
 
         // only set when bigger than default
@@ -152,7 +162,7 @@ public class SynchronizedDb {
         int retriesLeft = 10;
 
         do {
-            Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
+            Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
             try {
                 SQLiteDatabase db = opener.getWritableDatabase();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
@@ -244,7 +254,7 @@ public class SynchronizedDb {
                         @Nullable final String orderBy) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock == null) {
-            txLock = mSync.getSharedLock();
+            txLock = mSynchronizer.getSharedLock();
         }
 
         try {
@@ -271,7 +281,7 @@ public class SynchronizedDb {
                 throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
-            txLock = mSync.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         // reminder: insert does not throw exceptions for the actual insert.
@@ -313,7 +323,7 @@ public class SynchronizedDb {
                 throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
-            txLock = mSync.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         // reminder: update does not throw exceptions for the actual update.
@@ -329,6 +339,15 @@ public class SynchronizedDb {
                 txLock.unlock();
             }
         }
+    }
+
+    /**
+     * Drop the given table, if it exists.
+     *
+     * @param tableName to drop
+     */
+    public void drop(@NonNull final String tableName) {
+        execSQL("DROP TABLE IF EXISTS " + tableName);
     }
 
     /**
@@ -351,7 +370,7 @@ public class SynchronizedDb {
                 throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
         } else {
-            txLock = mSync.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         // reminder: delete does not throw exceptions for the actual delete.
@@ -384,12 +403,12 @@ public class SynchronizedDb {
                                        @Nullable final String[] selectionArgs) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock == null) {
-            txLock = mSync.getSharedLock();
+            txLock = mSynchronizer.getSharedLock();
         }
 
         try {
             return (SynchronizedCursor) mSqlDb.rawQueryWithFactory(mCursorFactory, sql,
-                                                                   selectionArgs, "");
+                                                                   selectionArgs, null);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -417,10 +436,10 @@ public class SynchronizedDb {
     public Cursor rawQueryWithFactory(@NonNull final SQLiteDatabase.CursorFactory cursorFactory,
                                       @NonNull final String sql,
                                       @Nullable final String[] selectionArgs,
-                                      @NonNull final String editTable) {
+                                      @Nullable final String editTable) {
         Synchronizer.SyncLock txLock = null;
         if (mTxLock == null) {
-            txLock = mSync.getSharedLock();
+            txLock = mSynchronizer.getSharedLock();
         }
         try {
             return mSqlDb.rawQueryWithFactory(cursorFactory, sql, selectionArgs, editTable);
@@ -446,7 +465,7 @@ public class SynchronizedDb {
                 }
                 mSqlDb.execSQL(sql);
             } else {
-                Synchronizer.SyncLock txLock = mSync.getExclusiveLock();
+                Synchronizer.SyncLock txLock = mSynchronizer.getExclusiveLock();
                 try {
                     mSqlDb.execSQL(sql);
                 } finally {
@@ -471,7 +490,7 @@ public class SynchronizedDb {
                 throw new TransactionException("Compile inside shared TX");
             }
         } else {
-            txLock = mSync.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
 
         try {
@@ -535,9 +554,9 @@ public class SynchronizedDb {
     public Synchronizer.SyncLock beginTransaction(final boolean isUpdate) {
         Synchronizer.SyncLock txLock;
         if (isUpdate) {
-            txLock = mSync.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         } else {
-            txLock = mSync.getSharedLock();
+            txLock = mSynchronizer.getSharedLock();
         }
         // We have the lock, but if the real beginTransaction() throws an exception,
         // we need to release the lock.
@@ -616,7 +635,7 @@ public class SynchronizedDb {
      */
     @NonNull
     Synchronizer getSynchronizer() {
-        return mSync;
+        return mSynchronizer;
     }
 
     /**
@@ -661,20 +680,4 @@ public class SynchronizedDb {
         }
     }
 
-    /**
-     * Factory for Synchronized Cursor objects.
-     * This can be subclassed by other Cursor implementations.
-     */
-    class SynchronizedCursorFactory
-            implements SQLiteDatabase.CursorFactory {
-
-        @Override
-        @NonNull
-        public SynchronizedCursor newCursor(@NonNull final SQLiteDatabase db,
-                                            @NonNull final SQLiteCursorDriver masterQuery,
-                                            @NonNull final String editTable,
-                                            @NonNull final SQLiteQuery query) {
-            return new SynchronizedCursor(masterQuery, editTable, query, mSync);
-        }
-    }
 }

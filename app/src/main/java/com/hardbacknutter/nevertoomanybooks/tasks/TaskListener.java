@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -131,7 +131,7 @@ public interface TaskListener<Result> {
          * Absolute position for the progressbar,
          * should be ignored if a mode change was requested with indeterminate.
          */
-        public final int absPosition;
+        public final int position;
 
         /** Optional text to display. */
         @Nullable
@@ -140,14 +140,14 @@ public interface TaskListener<Result> {
         public ProgressMessage(final int taskId,
                                @Nullable final Boolean indeterminate,
                                final int maxPosition,
-                               final int absPosition,
+                               final int position,
                                @Nullable final String text) {
             this.taskId = taskId;
             this.text = text;
 
             this.indeterminate = indeterminate;
             this.maxPosition = maxPosition;
-            this.absPosition = absPosition;
+            this.position = position;
         }
 
         public ProgressMessage(final int taskId,
@@ -157,7 +157,7 @@ public interface TaskListener<Result> {
 
             this.indeterminate = null;
             this.maxPosition = 0;
-            this.absPosition = 0;
+            this.position = 0;
         }
 
         @Override
@@ -167,7 +167,7 @@ public interface TaskListener<Result> {
                    + "taskId=" + taskId
                    + ", indeterminate=" + indeterminate
                    + ", maxPosition=" + maxPosition
-                   + ", absPosition=" + absPosition
+                   + ", position=" + position
                    + ", text=" + text
                    + '}';
         }

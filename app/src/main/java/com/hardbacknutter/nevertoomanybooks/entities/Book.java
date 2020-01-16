@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * Represents the underlying data for a book.
- *
+ * <p>
  * URGENT: add condition field for book and for dust-cover
  * fine/new
  * very good
@@ -465,12 +465,10 @@ public class Book
             return this;
         }
 
-        try (BookCursor bookCursor = db.fetchBookById(bookId)) {
+        try (Cursor bookCursor = db.fetchBookById(bookId)) {
             if (bookCursor.moveToFirst()) {
                 // clean slate
                 clear();
-                // allow the BookCursor to retrieve the real column types.
-                bookCursor.setDb(db);
                 // Put all cursor fields in collection
                 putAll(bookCursor);
                 // load lists (or init with empty lists)

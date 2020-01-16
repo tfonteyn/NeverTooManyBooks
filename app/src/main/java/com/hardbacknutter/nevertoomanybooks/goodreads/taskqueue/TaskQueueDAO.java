@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -41,7 +42,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
 
@@ -82,17 +82,18 @@ class TaskQueueDAO
     private final Collection<SQLiteStatement> mStatements = new ArrayList<>();
     /** Static Factory object to create the custom cursor. */
     private final CursorFactory mEventsCursorFactory = (db, masterQuery, editTable, query) ->
-                                                               new EventsCursor(masterQuery,
-                                                                                editTable,
-                                                                                query);
+            new EventsCursor(masterQuery,
+                             editTable,
+                             query);
     private SQLiteStatement mCheckTaskExistsStmt;
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
-    TaskQueueDAO() {
-        // Always use the app context here!
-        mTaskQueueDBHelper = new TaskQueueDBHelper(App.getAppContext());
+    TaskQueueDAO(@NonNull final Context context) {
+        mTaskQueueDBHelper = new TaskQueueDBHelper(context);
     }
 
     /**

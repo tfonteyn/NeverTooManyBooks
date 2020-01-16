@@ -594,7 +594,7 @@ public class StartupViewModel
 
                 mDb.analyze();
                 if (mDoCoversDb) {
-                    CoversDAO.analyze();
+                    CoversDAO.analyze(localContext);
                 }
                 return true;
 

@@ -1009,7 +1009,7 @@ public class BooklistStyle
      * @return group
      */
     @NonNull
-    BooklistGroup getGroupAt(final int index) {
+    public BooklistGroup getGroupAt(final int index) {
         return mStyleGroups.getGroups().get(index);
     }
 
@@ -1019,7 +1019,7 @@ public class BooklistStyle
      * @return kind
      */
     @BooklistGroup.RowKind.Id
-    int getGroupKindAt(final int index) {
+    public int getGroupKindAt(final int index) {
         return mStyleGroups.getGroupKindAt(index);
     }
 

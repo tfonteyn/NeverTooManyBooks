@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,11 +28,12 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
@@ -80,9 +81,10 @@ class SendOneBookLegacyTask
                            @NonNull final GoodreadsManager grManager) {
 
         try (DAO db = new DAO(TAG);
-             BookCursor bookCursor = db.fetchBookForExportToGoodreads(mBookId)) {
-            while (bookCursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, grManager, db, bookCursor)) {
+             Cursor cursor = db.fetchBookForExportToGoodreads(mBookId)) {
+            final CursorRow cursorRow = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                if (!sendOneBook(queueManager, context, grManager, db, cursorRow)) {
                     // quit on error
                     return false;
                 }

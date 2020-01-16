@@ -62,9 +62,9 @@ import oauth.signpost.http.HttpParameters;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -590,7 +590,7 @@ public class GoodreadsManager
 
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
-     * <ul>The bookCursorRow row has to have:
+     * <ul>The book has to have:
      * <li>{@link DBDefinitions#KEY_PK_ID}</li>
      * <li>{@link DBDefinitions#KEY_EID_GOODREADS_BOOK}</li>
      * <li>{@link DBDefinitions#KEY_ISBN}</li>
@@ -602,9 +602,9 @@ public class GoodreadsManager
      * <p>
      * See {@link DAO#fetchBookForExportToGoodreads}
      *
-     * @param context    Current context
-     * @param db         Database Access
-     * @param bookCursor single book to send
+     * @param context   Current context
+     * @param db        Database Access
+     * @param cursorRow with book data to send
      *
      * @return Disposition of book
      *
@@ -616,10 +616,10 @@ public class GoodreadsManager
     @WorkerThread
     public ExportResult sendOneBook(@NonNull final Context context,
                                     @NonNull final DAO db,
-                                    @NonNull final BookCursor bookCursor)
+                                    @NonNull final CursorRow cursorRow)
             throws CredentialsException, BookNotFoundException, IOException {
 
-        long bookId = bookCursor.getLong(DBDefinitions.KEY_PK_ID);
+        long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
 
         // Get the list of shelves from Goodreads. This is cached per instance of GoodreadsManager.
         GoodreadsShelves grShelfList = getShelves();
@@ -629,7 +629,7 @@ public class GoodreadsManager
 
         // See if the book already has a Goodreads id and if it is valid.
         try {
-            grBookId = bookCursor.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+            grBookId = cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
             if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
                 boolean[] thumbs = {false, false};
@@ -641,7 +641,7 @@ public class GoodreadsManager
 
         // wasn't there, see if we can find it using the ISBN instead.
         if (grBookId == 0) {
-            String isbnStr = bookCursor.getString(DBDefinitions.KEY_ISBN);
+            String isbnStr = cursorRow.getString(DBDefinitions.KEY_ISBN);
             if (isbnStr.isEmpty()) {
                 return ExportResult.noIsbn;
             }
@@ -700,7 +700,7 @@ public class GoodreadsManager
             // because review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;
-                if (bookCursor.getInt(DBDefinitions.KEY_READ) != 0) {
+                if (cursorRow.getInt(DBDefinitions.KEY_READ) != 0) {
                     pseudoShelf = "Read";
                 } else {
                     pseudoShelf = "To Read";
@@ -767,11 +767,11 @@ public class GoodreadsManager
 
             // Now update the remaining review details.
             updateReview(reviewId,
-                         bookCursor.getBoolean(DBDefinitions.KEY_READ),
-                         bookCursor.getString(DBDefinitions.KEY_READ_START),
-                         bookCursor.getString(DBDefinitions.KEY_READ_END),
-                         (int) bookCursor.getDouble(DBDefinitions.KEY_RATING),
-                         bookCursor.getString(DBDefinitions.KEY_PRIVATE_NOTES),
+                         cursorRow.getBoolean(DBDefinitions.KEY_READ),
+                         cursorRow.getString(DBDefinitions.KEY_READ_START),
+                         cursorRow.getString(DBDefinitions.KEY_READ_END),
+                         (int) cursorRow.getDouble(DBDefinitions.KEY_RATING),
+                         cursorRow.getString(DBDefinitions.KEY_PRIVATE_NOTES),
                          null);
 
             return ExportResult.sent;

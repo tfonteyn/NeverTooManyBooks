@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -37,9 +37,14 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@id/MENU_LEVEL_RESET"
-        android:icon="@drawable/ic_refresh"
-        android:title="@string/menu_level_reset" />
+        android:id="@id/MENU_LEVEL_PREFERRED_EXPAND"
+        android:icon="@drawable/ic_unfold_more"
+        android:title="@string/menu_level_preferred_expand" />
+
+    <item
+        android:id="@id/MENU_LEVEL_PREFERRED_COLLAPSE"
+        android:icon="@drawable/ic_unfold_less"
+        android:title="@string/menu_level_preferred_collapse" />
 
     <item
         android:id="@id/MENU_LEVEL_EXPAND"

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -126,9 +126,9 @@ public final class DBHelper
     private static DBHelper sInstance;
 
     /**
-     * Constructor.
+     * Singleton Constructor.
      *
-     * @param context      to use for locating paths to the database
+     * @param context Current context
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
      */
@@ -138,7 +138,7 @@ public final class DBHelper
                      @SuppressWarnings("SameParameterValue")
                      @NonNull final Synchronizer synchronizer) {
 
-        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
+        super(context.getApplicationContext(), DATABASE_NAME, factory, DATABASE_VERSION);
         sSynchronizer = synchronizer;
     }
 
@@ -157,8 +157,7 @@ public final class DBHelper
                                        @SuppressWarnings("SameParameterValue")
                                        @NonNull final Synchronizer synchronizer) {
         if (sInstance == null) {
-            // ALWAYS use the app context here!
-            sInstance = new DBHelper(context.getApplicationContext(), factory, synchronizer);
+            sInstance = new DBHelper(context, factory, synchronizer);
         }
         return sInstance;
     }
@@ -227,7 +226,7 @@ public final class DBHelper
 
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
-        TableDefinition.createTables(syncedDb,
+        TableDefinition.createTables(db,
                                      // app tables
                                      TBL_BOOKLIST_STYLES,
                                      // basic user data tables
@@ -252,26 +251,26 @@ public final class DBHelper
         prepareStylesTable(db);
 
         // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
-        syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                         + '(' + DOM_PK_ID
-                         + ',' + DOM_BOOKSHELF
-                         + ',' + DOM_FK_STYLE
-                         + ") VALUES ("
-                         + Bookshelf.ALL_BOOKS
-                         + ",'" + localContext.getString(R.string.bookshelf_all_books)
-                         + "'," + BooklistStyle.DEFAULT_STYLE_ID
-                         + ')');
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                   + '(' + DOM_PK_ID
+                   + ',' + DOM_BOOKSHELF
+                   + ',' + DOM_FK_STYLE
+                   + ") VALUES ("
+                   + Bookshelf.ALL_BOOKS
+                   + ",'" + localContext.getString(R.string.bookshelf_all_books)
+                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                   + ')');
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
-        syncedDb.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                         + '(' + DOM_PK_ID
-                         + ',' + DOM_BOOKSHELF
-                         + ',' + DOM_FK_STYLE
-                         + ") VALUES ("
-                         + Bookshelf.DEFAULT_ID
-                         + ",'" + localContext.getString(R.string.bookshelf_my_books)
-                         + "'," + BooklistStyle.DEFAULT_STYLE_ID
-                         + ')');
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                   + '(' + DOM_PK_ID
+                   + ',' + DOM_BOOKSHELF
+                   + ',' + DOM_FK_STYLE
+                   + ") VALUES ("
+                   + Bookshelf.DEFAULT_ID
+                   + ",'" + localContext.getString(R.string.bookshelf_my_books)
+                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                   + ')');
 
         //reminder: FTS columns don't need a type nor constraints
         //IMPORTANT: withConstraints MUST BE false

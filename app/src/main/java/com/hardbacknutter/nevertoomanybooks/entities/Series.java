@@ -48,9 +48,9 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -219,17 +219,17 @@ public class Series
     /**
      * Full constructor with optional book number.
      *
-     * @param id     ID of the Series in the database.
-     * @param mapper for the cursor.
+     * @param id        ID of the Series in the database.
+     * @param cursorRow with data
      */
     public Series(final long id,
-                  @NonNull final CursorMapper mapper) {
+                  @NonNull final CursorRow cursorRow) {
         mId = id;
-        mTitle = mapper.getString(DBDefinitions.KEY_SERIES_TITLE);
-        mIsComplete = mapper.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+        mTitle = cursorRow.getString(DBDefinitions.KEY_SERIES_TITLE);
+        mIsComplete = cursorRow.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
         // optional domain, not always used.
-        if (mapper.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
-            mNumber = mapper.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
+        if (cursorRow.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
+            mNumber = cursorRow.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
         } else {
             mNumber = "";
         }

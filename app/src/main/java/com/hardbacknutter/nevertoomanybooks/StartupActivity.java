@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,6 +50,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
@@ -94,6 +95,9 @@ public class StartupActivity
      */
     protected void attachBaseContext(@NonNull final Context base) {
         super.attachBaseContext(LocaleUtils.applyLocale(base));
+
+        // create the singleton QueueManager
+        QueueManager.create(base);
     }
 
     @Override

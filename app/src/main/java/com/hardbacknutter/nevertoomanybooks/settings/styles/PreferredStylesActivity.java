@@ -265,7 +265,7 @@ public class PreferredStylesActivity
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);
-        new MenuPicker<>(this, title, menu, style, this::onContextItemSelected)
+        new MenuPicker<>(this, title, menu, position, this::onContextItemSelected)
                 .show();
     }
 
@@ -273,12 +273,14 @@ public class PreferredStylesActivity
      * Using {@link ValuePicker} for context menus.
      *
      * @param menuItem that was selected
-     * @param style    in the list
+     * @param position in the list
      *
      * @return {@code true} if handled.
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final BooklistStyle style) {
+                                          @NonNull final Integer position) {
+
+        BooklistStyle style = mModel.getList().get(position);
 
         switch (menuItem.getItemId()) {
 

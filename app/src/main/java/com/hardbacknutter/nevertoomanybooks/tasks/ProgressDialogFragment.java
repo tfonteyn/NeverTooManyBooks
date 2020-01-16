@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -231,7 +231,7 @@ public class ProgressDialogFragment
         }
 
         // always set these, even when (currently) in indeterminate mode.
-        setAbsPosition(message.absPosition);
+        setPosition(message.position);
         setMax(message.maxPosition);
 
         if (message.text != null) {
@@ -244,32 +244,32 @@ public class ProgressDialogFragment
      * Set the progress max value.
      * <p>
      * Don't update the view here, as we could be in a WorkerThread.
-     * It will get updated at the next (@link #setAbsPosition}
+     * It will get updated at the next (@link #setPosition}
      *
      * @param max the new maximum position
      */
     @AnyThread
     private void setMax(final int max) {
         mMax = max;
-        // trigger the next setAbsPosition to update the max value.
+        // trigger the next setPosition to update the max value.
         mUpdateMax = true;
     }
 
     /**
      * Update the absolute position of progress, and if needed the max position.
      *
-     * @param absPosition of progress
+     * @param position of progress
      */
     @UiThread
-    private void setAbsPosition(@Nullable final Integer absPosition) {
+    private void setPosition(@Nullable final Integer position) {
         if (mProgressBar != null) {
             if (mUpdateMax && (mMax != mProgressBar.getMax())) {
                 mProgressBar.setMax(mMax);
                 mUpdateMax = false;
             }
 
-            if (absPosition != null && (absPosition != mProgressBar.getProgress())) {
-                mProgressBar.setProgress(absPosition);
+            if (position != null && (position != mProgressBar.getProgress())) {
+                mProgressBar.setProgress(position);
             }
         }
     }

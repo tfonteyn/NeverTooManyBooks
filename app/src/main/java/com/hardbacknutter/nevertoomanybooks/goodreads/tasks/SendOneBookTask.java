@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
 import android.content.Context;
+import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
@@ -36,8 +37,8 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
@@ -93,14 +94,16 @@ public class SendOneBookTask
             }
 
             try (DAO db = new DAO(TAG);
-                 BookCursor bookCursor = db.fetchBookForExportToGoodreads(mBookId)) {
-                if (bookCursor.moveToFirst()) {
+                 Cursor cursor = db.fetchBookForExportToGoodreads(mBookId)) {
+                if (cursor.moveToFirst()) {
                     if (isCancelled()) {
                         return R.string.progress_end_cancelled;
                     }
                     publishProgress(new TaskListener.ProgressMessage(
                             getTaskId(), localContext.getString(R.string.progress_msg_sending)));
-                    result = grManager.sendOneBook(localContext, db, bookCursor);
+
+                    final CursorRow cursorRow = new CursorRow(cursor);
+                    result = grManager.sendOneBook(localContext, db, cursorRow);
                     if (result == GoodreadsManager.ExportResult.sent) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);

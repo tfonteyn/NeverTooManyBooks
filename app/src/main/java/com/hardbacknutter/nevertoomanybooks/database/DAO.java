@@ -32,7 +32,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
@@ -67,9 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -233,16 +231,15 @@ public class DAO
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
 
-    /** Static Factory object to create our custom cursor. */
-    private static final CursorFactory CURSOR_FACTORY =
-            (db, masterQuery, editTable, query) ->
-                    new TrackedCursor(masterQuery, editTable, query, SYNCHRONIZER);
-
-    /** Static Factory object to create our custom cursor. */
+    /** Static Factory object to create a {@link SynchronizedCursor} cursor. */
     @NonNull
-    private static final CursorFactory BOOKS_CURSOR_FACTORY =
-            (db, masterQuery, editTable, query) ->
-                    new BookCursor(masterQuery, editTable, query, SYNCHRONIZER);
+    private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
+            (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
+
+    /** Static Factory object to create an {@link ExtCursor} cursor. */
+    @NonNull
+    private static final SQLiteDatabase.CursorFactory EXT_CURSOR_FACTORY =
+            (db, d, et, q) -> new ExtCursor(d, et, q, SYNCHRONIZER);
 
     /** Column alias. */
     private static final String COLUMN_ALIAS_NR_OF_SERIES = "_num_series";
@@ -300,7 +297,7 @@ public class DAO
     private static SynchronizedDb sSyncedDb;
 
     /** a cache for statements, where they are pre-compiled. */
-    private final SqlStatementManager mStatements;
+    private final SqlStatementManager mSqlStatementManager;
     @NonNull
     private final String mInstanceName;
     /** used by finalize so close does not get called twice. */
@@ -316,22 +313,23 @@ public class DAO
      */
     public DAO(@NonNull final String name) {
         mInstanceName = name;
+
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "DAO=" + mInstanceName + "|Constructor");
         }
 
-        // the SQLiteOpenHelper
+        // static SQLiteOpenHelper
         if (sDbHelper == null) {
             sDbHelper = DBHelper.getInstance(App.getAppContext(), CURSOR_FACTORY, SYNCHRONIZER);
         }
 
-        // Get the DB wrapper
+        // static DB wrapper
         if (sSyncedDb == null) {
             sSyncedDb = new SynchronizedDb(sDbHelper, SYNCHRONIZER);
         }
 
         // statements are instance based/managed
-        mStatements = new SqlStatementManager(sSyncedDb, "DAO=" + mInstanceName);
+        mSqlStatementManager = new SqlStatementManager(sSyncedDb, "DAO=" + mInstanceName);
     }
 
     /**
@@ -384,10 +382,10 @@ public class DAO
      * @param sinceDate to select all books added/modified since that date.
      *                  Set to {@code null} for *all* books.
      *
-     * @return BookCursor over all books, authors, etc
+     * @return Cursor over all books, authors, etc
      */
     @NonNull
-    public BookCursor fetchBooksForExport(@Nullable final Date sinceDate) {
+    public Cursor fetchBooksForExport(@Nullable final Date sinceDate) {
         String whereClause;
         if (sinceDate == null) {
             whereClause = "";
@@ -396,9 +394,8 @@ public class DAO
                           + ">'" + DateUtils.utcSqlDateTime(sinceDate) + '\'';
         }
 
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(
-                BOOKS_CURSOR_FACTORY, SqlAllBooks.withPrimaryAuthorAndSeries(whereClause),
-                null, "");
+        String sql = SqlAllBooks.withPrimaryAuthorAndSeries(whereClause);
+        return sSyncedDb.rawQuery(sql, null);
     }
 
     /**
@@ -574,10 +571,10 @@ public class DAO
      * @param bookId the book
      */
     public void setGoodreadsSyncDate(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_GOODREADS_SYNC_DATE);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_UPDATE_GOODREADS_SYNC_DATE);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_UPDATE_GOODREADS_SYNC_DATE,
-                                   SqlUpdate.GOODREADS_LAST_SYNC_DATE);
+            stmt = mSqlStatementManager.add(STMT_UPDATE_GOODREADS_SYNC_DATE,
+                                            SqlUpdate.GOODREADS_LAST_SYNC_DATE);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -601,9 +598,9 @@ public class DAO
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "DAO=" + mInstanceName + "|close");
         }
-        if (mStatements != null) {
+        if (mSqlStatementManager != null) {
             // the close() will perform a clear, ready to be re-used.
-            mStatements.close();
+            mSqlStatementManager.close();
         }
         mCloseWasCalled = true;
     }
@@ -671,9 +668,9 @@ public class DAO
      */
     @SuppressWarnings("UnusedReturnValue")
     public int deleteTocEntry(final long id) {
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_TOC_ENTRY);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_TOC_ENTRY);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_TOC_ENTRY, SqlDelete.TOC_ENTRY);
+            stmt = mSqlStatementManager.add(STMT_DELETE_TOC_ENTRY, SqlDelete.TOC_ENTRY);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -692,10 +689,10 @@ public class DAO
      */
     @SuppressWarnings("UnusedReturnValue")
     private int deleteBookTocEntryByBookId(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK_TOC_ENTRIES);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_TOC_ENTRIES);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_BOOK_TOC_ENTRIES,
-                                   SqlDelete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
+            stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_TOC_ENTRIES,
+                                            SqlDelete.BOOK_TOC_ENTRIES_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -721,9 +718,9 @@ public class DAO
 
         Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
 
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_TOC_ENTRY_ID);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_TOC_ENTRY_ID);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_TOC_ENTRY_ID, SqlGet.TOC_ENTRY_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_TOC_ENTRY_ID, SqlGet.TOC_ENTRY_ID);
         }
 
         String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
@@ -781,16 +778,16 @@ public class DAO
                 return list;
             }
 
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow cursorRow = new CursorRow(cursor);
 
             while (cursor.moveToNext()) {
                 TocEntry tocEntry =
-                        new TocEntry(mapper.getLong(DOM_PK_ID.getName()),
+                        new TocEntry(cursorRow.getLong(DOM_PK_ID.getName()),
                                      author,
-                                     mapper.getString(DOM_TITLE.getName()),
-                                     mapper.getString(DOM_DATE_FIRST_PUB.getName()),
-                                     mapper.getString(VDOM_TOC_TYPE.getName()).charAt(0),
-                                     mapper.getInt(DOM_BL_BOOK_COUNT.getName()));
+                                     cursorRow.getString(DOM_TITLE.getName()),
+                                     cursorRow.getString(DOM_DATE_FIRST_PUB.getName()),
+                                     cursorRow.getString(VDOM_TOC_TYPE.getName()).charAt(0),
+                                     cursorRow.getInt(DOM_BL_BOOK_COUNT.getName()));
                 list.add(tocEntry);
             }
         }
@@ -811,9 +808,9 @@ public class DAO
 
         Locale authorLocale = author.getLocale(context, this, Locale.getDefault());
 
-        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_AUTHOR);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_INSERT_AUTHOR, SqlInsert.AUTHOR);
+            stmt = mSqlStatementManager.add(STMT_INSERT_AUTHOR, SqlInsert.AUTHOR);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -901,9 +898,9 @@ public class DAO
     public Author getAuthor(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.AUTHOR_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow row = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return new Author(id, mapper);
+                return new Author(id, row);
             } else {
                 return null;
             }
@@ -927,9 +924,9 @@ public class DAO
 
         Locale authorLocale = author.getLocale(context, this, fallbackLocale);
 
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_AUTHOR_ID);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_AUTHOR_ID);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_AUTHOR_ID, SqlGet.AUTHOR_ID_BY_NAME);
+            stmt = mSqlStatementManager.add(STMT_GET_AUTHOR_ID, SqlGet.AUTHOR_ID_BY_NAME);
         }
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -981,10 +978,10 @@ public class DAO
     @SuppressWarnings("UnusedReturnValue")
     private int updateAuthorOnTocEntry(final long from,
                                        final long to) {
-        SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES,
-                                   SqlUpdate.AUTHOR_ON_TOC_ENTRIES);
+            stmt = mSqlStatementManager.add(STMT_UPDATE_AUTHOR_ON_TOC_ENTRIES,
+                                            SqlUpdate.AUTHOR_ON_TOC_ENTRIES);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -1361,9 +1358,9 @@ public class DAO
      * @return id of the book, or 0 'new' if not found
      */
     public long getBookIdFromUuid(@NonNull final String uuid) {
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_UUID);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_UUID);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_UUID, SqlGet.BOOK_ID_BY_UUID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_UUID, SqlGet.BOOK_ID_BY_UUID);
         }
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -1382,10 +1379,10 @@ public class DAO
      */
     @Nullable
     public String getBookLastUpdateDate(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_UPDATE_DATE);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UPDATE_DATE);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_BOOK_UPDATE_DATE,
-                                   SqlSelect.LAST_UPDATE_DATE_BY_BOOK_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_UPDATE_DATE,
+                                            SqlSelect.LAST_UPDATE_DATE_BY_BOOK_ID);
         }
 
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
@@ -1412,9 +1409,9 @@ public class DAO
         if (bookId == 0) {
             throw new IllegalArgumentException("cannot get uuid for id==0");
         }
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_UUID);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_UUID);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_BOOK_UUID, SqlGet.BOOK_UUID_BY_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_UUID, SqlGet.BOOK_UUID_BY_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -1432,10 +1429,9 @@ public class DAO
      */
     @Nullable
     public String getBookTitle(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_TITLE);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_TITLE);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_BOOK_TITLE,
-                                   SqlGet.BOOK_TITLE_BY_BOOK_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_TITLE, SqlGet.BOOK_TITLE_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -1453,10 +1449,9 @@ public class DAO
      */
     @Nullable
     public String getBookIsbn(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOK_ISBN);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOK_ISBN);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_BOOK_ISBN,
-                                   SqlGet.BOOK_ISBN_BY_BOOK_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_BOOK_ISBN, SqlGet.BOOK_ISBN_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -1487,9 +1482,9 @@ public class DAO
         int rowsAffected = 0;
         SyncLock txLock = sSyncedDb.beginTransaction(true);
         try {
-            SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK);
+            SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK);
             if (stmt == null) {
-                stmt = mStatements.add(STMT_DELETE_BOOK, SqlDelete.BOOK_BY_ID);
+                stmt = mSqlStatementManager.add(STMT_DELETE_BOOK, SqlDelete.BOOK_BY_ID);
             }
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
@@ -1525,7 +1520,7 @@ public class DAO
             }
 
             // remove from cache
-            CoversDAO.delete(uuid);
+            CoversDAO.delete(context, uuid);
         }
     }
 
@@ -1806,9 +1801,10 @@ public class DAO
         SynchronizedStatement stmt;
         // if the string is an ISBN-10 or ISBN-13, we search on both formats
         if (isbn.isIsbn10Compat()) {
-            stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_2);
+            stmt = mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_ISBN_2);
             if (stmt == null) {
-                stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_2, SqlGet.BOOK_ID_BY_ISBN2);
+                stmt = mSqlStatementManager
+                        .add(STMT_GET_BOOK_ID_FROM_ISBN_2, SqlGet.BOOK_ID_BY_ISBN2);
             }
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
@@ -1819,9 +1815,10 @@ public class DAO
 
         } else {
             // otherwise just on the string as-is; regardless of validity
-            stmt = mStatements.get(STMT_GET_BOOK_ID_FROM_ISBN_1);
+            stmt = mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_ISBN_1);
             if (stmt == null) {
-                stmt = mStatements.add(STMT_GET_BOOK_ID_FROM_ISBN_1, SqlGet.BOOK_ID_BY_ISBN);
+                stmt = mSqlStatementManager
+                        .add(STMT_GET_BOOK_ID_FROM_ISBN_1, SqlGet.BOOK_ID_BY_ISBN);
             }
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
@@ -1839,9 +1836,9 @@ public class DAO
      * @return {@code true} if exists
      */
     public boolean bookExists(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_CHECK_BOOK_EXISTS);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_CHECK_BOOK_EXISTS);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_CHECK_BOOK_EXISTS, SqlSelect.BOOK_EXISTS);
+            stmt = mSqlStatementManager.add(STMT_CHECK_BOOK_EXISTS, SqlSelect.BOOK_EXISTS);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -1882,9 +1879,9 @@ public class DAO
             return;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_BOOK_SERIES);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_SERIES);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_INSERT_BOOK_SERIES, SqlInsert.BOOK_SERIES);
+            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_SERIES, SqlInsert.BOOK_SERIES);
         }
 
         // The list MAY contain duplicates (e.g. from Internet lookups of multiple
@@ -1930,9 +1927,10 @@ public class DAO
      */
     @SuppressWarnings("UnusedReturnValue")
     private int deleteBookSeriesByBookId(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK_SERIES);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_SERIES);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_BOOK_SERIES, SqlDelete.BOOK_SERIES_BY_BOOK_ID);
+            stmt = mSqlStatementManager
+                    .add(STMT_DELETE_BOOK_SERIES, SqlDelete.BOOK_SERIES_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -1968,9 +1966,9 @@ public class DAO
 
         long position = 0;
 
-        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_BOOK_TOC_ENTRY);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_TOC_ENTRY);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_INSERT_BOOK_TOC_ENTRY, SqlInsert.BOOK_TOC_ENTRY);
+            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_TOC_ENTRY, SqlInsert.BOOK_TOC_ENTRY);
         }
 
         for (TocEntry tocEntry : list) {
@@ -2049,9 +2047,9 @@ public class DAO
 
         Locale tocLocale = tocEntry.getLocale(context, this, bookLocale);
 
-        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_TOC_ENTRY);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_TOC_ENTRY);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_INSERT_TOC_ENTRY, SqlInsert.TOC_ENTRY);
+            stmt = mSqlStatementManager.add(STMT_INSERT_TOC_ENTRY, SqlInsert.TOC_ENTRY);
         }
 
         String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
@@ -2099,9 +2097,9 @@ public class DAO
             return;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_BOOK_AUTHORS);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_AUTHORS);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_INSERT_BOOK_AUTHORS, SqlInsert.BOOK_AUTHOR);
+            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_AUTHORS, SqlInsert.BOOK_AUTHOR);
         }
 
         // The list MAY contain duplicates (e.g. from Internet lookups of multiple
@@ -2145,9 +2143,10 @@ public class DAO
      */
     @SuppressWarnings("UnusedReturnValue")
     private int deleteBookAuthorByBookId(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK_AUTHORS);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_AUTHORS);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_BOOK_AUTHORS, SqlDelete.BOOK_AUTHOR_BY_BOOK_ID);
+            stmt = mSqlStatementManager
+                    .add(STMT_DELETE_BOOK_AUTHORS, SqlDelete.BOOK_AUTHOR_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -2188,9 +2187,9 @@ public class DAO
             return;
         }
 
-        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_BOOK_BOOKSHELF);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_BOOK_BOOKSHELF);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_INSERT_BOOK_BOOKSHELF, SqlInsert.BOOK_BOOKSHELF);
+            stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_BOOKSHELF, SqlInsert.BOOK_BOOKSHELF);
         }
 
         for (Bookshelf bookshelf : bookshelves) {
@@ -2224,10 +2223,10 @@ public class DAO
      */
     @SuppressWarnings("UnusedReturnValue")
     private int deleteBookBookshelfByBookId(@IntRange(from = 1) final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_BOOK_BOOKSHELF);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_BOOK_BOOKSHELF);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_BOOK_BOOKSHELF,
-                                   SqlDelete.BOOK_BOOKSHELF_BY_BOOK_ID);
+            stmt = mSqlStatementManager.add(STMT_DELETE_BOOK_BOOKSHELF,
+                                            SqlDelete.BOOK_BOOKSHELF_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -2251,15 +2250,15 @@ public class DAO
             if (cursor.getCount() == 0) {
                 return list;
             }
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow cursorRow = new CursorRow(cursor);
 
             while (cursor.moveToNext()) {
-                Author author = new Author(mapper.getLong(DOM_FK_AUTHOR.getName()), mapper);
+                Author author = new Author(cursorRow.getLong(DOM_FK_AUTHOR.getName()), cursorRow);
 
-                list.add(new TocEntry(mapper.getLong(DOM_PK_ID.getName()),
+                list.add(new TocEntry(cursorRow.getLong(DOM_PK_ID.getName()),
                                       author,
-                                      mapper.getString(DOM_TITLE.getName()),
-                                      mapper.getString(DOM_DATE_FIRST_PUB.getName()),
+                                      cursorRow.getString(DOM_TITLE.getName()),
+                                      cursorRow.getString(DOM_DATE_FIRST_PUB.getName()),
                                       TocEntry.Type.TYPE_BOOK, 1));
             }
         }
@@ -2382,9 +2381,9 @@ public class DAO
         ArrayList<Author> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.AUTHORS_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow row = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Author(mapper.getLong(DOM_PK_ID.getName()), mapper));
+                list.add(new Author(row.getLong(DOM_PK_ID.getName()), row));
             }
         }
         return list;
@@ -2405,31 +2404,37 @@ public class DAO
             if (cursor.getCount() == 0) {
                 return list;
             }
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow cursorRow = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Series(mapper.getLong(DOM_PK_ID.getName()), mapper));
+                list.add(new Series(cursorRow.getLong(DOM_PK_ID.getName()), cursorRow));
             }
         }
         return list;
     }
 
     /**
-     * Return a {@link BookCursor} for the given {@link Book} id.
+     * Return a Cursor for the given {@link Book} id.
      * The caller can retrieve columns as needed.
+     *
+     * <strong>Note:</strong> the cursor will in fact be a {@link ExtCursor}
+     * enforcing database table based column types.
      *
      * @param bookId to retrieve
      *
-     * @return {@link BookCursor} containing all records, if any
+     * @return Cursor containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBookById(final long bookId) {
+    public Cursor fetchBookById(final long bookId) {
         String sql = SqlAllBooks.withAllAuthorsAndSeries(TBL_BOOKS.dot(DOM_PK_ID) + "=?");
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(
-                BOOKS_CURSOR_FACTORY, sql, new String[]{String.valueOf(bookId)}, "");
+        ExtCursor cursor = (ExtCursor) sSyncedDb.rawQueryWithFactory(
+                EXT_CURSOR_FACTORY, sql, new String[]{String.valueOf(bookId)}, null);
+        // force the ExtCursor to retrieve the real column types.
+        cursor.setDb(this, TBL_BOOKS);
+        return cursor;
     }
 
     /**
-     * Return a {@link BookCursor} for the given list of {@link Book} ID's.
+     * Return a Cursor for the given list of {@link Book} ID's.
      * The caller can retrieve columns as needed.
      * <p>
      * Full Author and Series are added.
@@ -2439,11 +2444,11 @@ public class DAO
      *                          This allows to fetch a subset of the requested set.
      *                          Pass in 0 to get the full set.
      *
-     * @return {@link BookCursor} containing all records, if any
+     * @return Cursor containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBooks(@Nullable final List<Long> bookIds,
-                                 final long fromBookIdOnwards) {
+    public Cursor fetchBooks(@Nullable final List<Long> bookIds,
+                             final long fromBookIdOnwards) {
         String whereClause;
         if (bookIds == null || bookIds.isEmpty()) {
             // all books starting from the given id
@@ -2464,20 +2469,19 @@ public class DAO
         String sql = SqlAllBooks.withAllAuthorsAndSeries(whereClause)
                      + " ORDER BY " + TBL_BOOKS.dot(DOM_PK_ID);
 
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(
-                BOOKS_CURSOR_FACTORY, sql, null, "");
+        return sSyncedDb.rawQuery(sql, null);
     }
 
     /**
-     * Return a {@link BookCursor} for the given ISBN.
+     * Return an Cursor for the given ISBN.
      * <strong>Note:</strong> MAY RETURN MORE THAN ONE BOOK
      *
      * @param isbnList list of ISBN(s) to retrieve
      *
-     * @return {@link BookCursor} containing all records, if any
+     * @return Cursor containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
+    public Cursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
         if (isbnList.isEmpty()) {
             throw new IllegalArgumentException("isbnList was empty");
         }
@@ -2494,8 +2498,7 @@ public class DAO
         }
 
         String sql = SqlAllBooks.withAllAuthorsAndSeries(whereClause.toString());
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(
-                BOOKS_CURSOR_FACTORY, sql, null, "");
+        return sSyncedDb.rawQuery(sql, null);
     }
 
     /**
@@ -2605,9 +2608,10 @@ public class DAO
      * @return the id, or 0 (i.e. 'new') when not found
      */
     public long getBookshelfId(@NonNull final Bookshelf bookshelf) {
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOKSHELF_ID_BY_NAME);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOKSHELF_ID_BY_NAME);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_BOOKSHELF_ID_BY_NAME, SqlGet.BOOKSHELF_ID_BY_NAME);
+            stmt = mSqlStatementManager
+                    .add(STMT_GET_BOOKSHELF_ID_BY_NAME, SqlGet.BOOKSHELF_ID_BY_NAME);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -2628,9 +2632,9 @@ public class DAO
 
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_NAME,
                                                 new String[]{name})) {
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow row = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper);
+                return new Bookshelf(row.getLong(DOM_PK_ID.getName()), row);
             }
             return null;
         }
@@ -2647,9 +2651,9 @@ public class DAO
     public Bookshelf getBookshelf(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow cursorRow = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper);
+                return new Bookshelf(cursorRow.getLong(DOM_PK_ID.getName()), cursorRow);
             }
             return null;
         }
@@ -2716,9 +2720,9 @@ public class DAO
                      + " ORDER BY lower(" + DOM_BOOKSHELF + ')' + COLLATION;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow row = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper));
+                list.add(new Bookshelf(row.getLong(DOM_PK_ID.getName()), row));
             }
         }
         return list;
@@ -2735,9 +2739,9 @@ public class DAO
         ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow cursorRow = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Bookshelf(mapper.getLong(DOM_PK_ID.getName()), mapper));
+                list.add(new Bookshelf(cursorRow.getLong(DOM_PK_ID.getName()), cursorRow));
             }
             return list;
         }
@@ -2764,10 +2768,10 @@ public class DAO
             if (cursor.getCount() == 0) {
                 return list;
             }
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow row = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                long id = mapper.getLong(DOM_PK_ID.getName());
-                String uuid = mapper.getString(DOM_UUID.getName());
+                long id = row.getLong(DOM_PK_ID.getName());
+                String uuid = row.getString(DOM_UUID.getName());
                 list.put(uuid, new BooklistStyle(id, uuid));
             }
         }
@@ -2782,9 +2786,10 @@ public class DAO
      * @return id
      */
     public long getStyleIdByUuid(@NonNull final String uuid) {
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_BOOKLIST_STYLE);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_BOOKLIST_STYLE);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_BOOKLIST_STYLE, SqlGet.BOOKLIST_STYLE_ID_BY_UUID);
+            stmt = mSqlStatementManager
+                    .add(STMT_GET_BOOKLIST_STYLE, SqlGet.BOOKLIST_STYLE_ID_BY_UUID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3004,9 +3009,9 @@ public class DAO
      */
     @Nullable
     public String getLoaneeByBookId(final long bookId) {
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_LOANEE_BY_BOOK_ID);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_LOANEE_BY_BOOK_ID);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_LOANEE_BY_BOOK_ID, SqlGet.LOANEE_BY_BOOK_ID);
+            stmt = mSqlStatementManager.add(STMT_GET_LOANEE_BY_BOOK_ID, SqlGet.LOANEE_BY_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3156,9 +3161,9 @@ public class DAO
 
         Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
-        SynchronizedStatement stmt = mStatements.get(STMT_INSERT_SERIES);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_SERIES);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
+            stmt = mSqlStatementManager.add(STMT_INSERT_SERIES, SqlInsert.SERIES);
         }
 
         String obTitle = series.reorderTitleForSorting(context, seriesLocale);
@@ -3242,9 +3247,9 @@ public class DAO
                             final long id) {
 
         // delete the Series itself, this will cascade and delete the links to the books as well.
-        SynchronizedStatement stmt = mStatements.get(STMT_DELETE_SERIES);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_DELETE_SERIES);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_DELETE_SERIES, SqlDelete.SERIES_BY_ID);
+            stmt = mSqlStatementManager.add(STMT_DELETE_SERIES, SqlDelete.SERIES_BY_ID);
         }
 
         int rowsAffected;
@@ -3282,9 +3287,9 @@ public class DAO
     public Series getSeries(final long id) {
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.SERIES_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
-            CursorMapper mapper = new CursorMapper(cursor);
+            final CursorRow cursorRow = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
-                return new Series(id, mapper);
+                return new Series(id, cursorRow);
             }
             return null;
         }
@@ -3325,9 +3330,9 @@ public class DAO
 
         Locale seriesLocale = series.getLocale(context, this, bookLocale);
 
-        SynchronizedStatement stmt = mStatements.get(STMT_GET_SERIES_ID);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_GET_SERIES_ID);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_GET_SERIES_ID, SqlGet.SERIES_ID_BY_NAME);
+            stmt = mSqlStatementManager.add(STMT_GET_SERIES_ID, SqlGet.SERIES_ID_BY_NAME);
         }
 
         String obTitle = series.reorderTitleForSorting(context, seriesLocale);
@@ -3426,9 +3431,10 @@ public class DAO
     public void setGoodreadsBookId(final long bookId,
                                    final long goodreadsBookId) {
 
-        SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_GOODREADS_BOOK_ID);
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_UPDATE_GOODREADS_BOOK_ID);
         if (stmt == null) {
-            stmt = mStatements.add(STMT_UPDATE_GOODREADS_BOOK_ID, SqlUpdate.GOODREADS_BOOK_ID);
+            stmt = mSqlStatementManager
+                    .add(STMT_UPDATE_GOODREADS_BOOK_ID, SqlUpdate.GOODREADS_BOOK_ID);
         }
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
@@ -3439,19 +3445,18 @@ public class DAO
     }
 
     /**
-     * Return a {@link BookCursor} for the given Goodreads book Id.
+     * Return an {@link ExtCursor} for the given Goodreads book Id.
      * <strong>Note:</strong> MAY RETURN MORE THAN ONE BOOK
      *
      * @param grBookId to retrieve
      *
-     * @return {@link BookCursor} containing all records, if any
+     * @return Cursor containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBooksByGoodreadsBookId(final long grBookId) {
-        String sql = SqlAllBooks
-                .withAllAuthorsAndSeries(TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(
-                BOOKS_CURSOR_FACTORY, sql, new String[]{String.valueOf(grBookId)}, "");
+    public Cursor fetchBooksByGoodreadsBookId(final long grBookId) {
+        String sql = SqlAllBooks.withAllAuthorsAndSeries(
+                TBL_BOOKS.dot(DOM_BOOK_GOODREADS_ID) + "=?");
+        return sSyncedDb.rawQuery(sql, new String[]{String.valueOf(grBookId)});
     }
 
     /**
@@ -3462,11 +3467,11 @@ public class DAO
      * @param updatesOnly true, if we only want the updated records
      *                    since the last sync with Goodreads
      *
-     * @return {@link BookCursor} containing all records, if any
+     * @return Cursor containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBooksForExportToGoodreads(final long startId,
-                                                     final boolean updatesOnly) {
+    public Cursor fetchBooksForExportToGoodreads(final long startId,
+                                                 final boolean updatesOnly) {
         String sql = SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND
                      + " WHERE " + DOM_PK_ID + ">?";
 
@@ -3477,9 +3482,7 @@ public class DAO
         // the order by is used to be able to restart an export.
         sql += " ORDER BY " + DOM_PK_ID;
 
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(BOOKS_CURSOR_FACTORY, sql,
-                                                          new String[]{String.valueOf(startId)},
-                                                          "");
+        return sSyncedDb.rawQuery(sql, new String[]{String.valueOf(startId)});
     }
 
     /**
@@ -3487,15 +3490,12 @@ public class DAO
      *
      * @param bookId to retrieve
      *
-     * @return {@link BookCursor} containing all records, if any
+     * @return Cursor containing all records, if any
      */
     @NonNull
-    public BookCursor fetchBookForExportToGoodreads(final long bookId) {
-        return (BookCursor) sSyncedDb.rawQueryWithFactory(
-                BOOKS_CURSOR_FACTORY,
-                SqlSelect.GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID,
-                new String[]{String.valueOf(bookId)},
-                "");
+    public Cursor fetchBookForExportToGoodreads(final long bookId) {
+        return sSyncedDb.rawQuery(SqlSelect.GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID,
+                                  new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -3715,10 +3715,10 @@ public class DAO
      * <strong>Note:</strong> This assumes a specific order for query parameters.
      * If modified, then update {@link SqlFTS#INSERT_BODY}, {@link SqlFTS#UPDATE}
      *
-     * @param bookCursor Cursor of books to update
-     * @param stmt       Statement to execute (insert or update)
+     * @param cursor Cursor of books to update
+     * @param stmt   Statement to execute (insert or update)
      */
-    private void ftsSendBooks(@NonNull final BookCursor bookCursor,
+    private void ftsSendBooks(@NonNull final Cursor cursor,
                               @NonNull final SynchronizedStatement stmt) {
 
         if (!sSyncedDb.inTransaction()) {
@@ -3739,19 +3739,20 @@ public class DAO
         int colTOCEntryAuthorInfo = -2;
         int colTOCEntryInfo = -2;
 
+        final CursorRow row = new CursorRow(cursor);
         // Process each book
-        while (bookCursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             // Reset authors/series/title
             authorText.setLength(0);
             seriesText.setLength(0);
             titleText.setLength(0);
 
-            titleText.append(bookCursor.getString(DOM_TITLE.getName())).append(";");
+            titleText.append(row.getString(DOM_TITLE.getName())).append(";");
 
             // Get list of authors
             try (Cursor authors = sSyncedDb.rawQuery(
                     SqlFTS.GET_AUTHORS_BY_BOOK_ID,
-                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.getName()))})) {
+                    new String[]{String.valueOf(row.getLong(DOM_PK_ID.getName()))})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndex(DOM_AUTHOR_GIVEN_NAMES.getName());
@@ -3771,7 +3772,7 @@ public class DAO
             // Get list of series
             try (Cursor series = sSyncedDb.rawQuery(
                     SqlFTS.GET_SERIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.getName()))})) {
+                    new String[]{String.valueOf(row.getLong(DOM_PK_ID.getName()))})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = series.getColumnIndexOrThrow(SqlFTS.DOM_SERIES_INFO);
@@ -3786,7 +3787,7 @@ public class DAO
             // Get list of anthology data (author and title)
             try (Cursor tocEntries = sSyncedDb.rawQuery(
                     SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(bookCursor.getLong(DOM_PK_ID.getName()))})) {
+                    new String[]{String.valueOf(row.getLong(DOM_PK_ID.getName()))})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
                     colTOCEntryAuthorInfo =
@@ -3809,14 +3810,14 @@ public class DAO
                 bindStringOrNull(stmt, 1, authorText.toString());
                 bindStringOrNull(stmt, 2, titleText.toString());
                 bindStringOrNull(stmt, 3, seriesText.toString());
-                bindStringOrNull(stmt, 4, bookCursor.getString(DOM_BOOK_DESCRIPTION.getName()));
-                bindStringOrNull(stmt, 5, bookCursor.getString(DOM_BOOK_PRIVATE_NOTES.getName()));
-                bindStringOrNull(stmt, 6, bookCursor.getString(DOM_BOOK_PUBLISHER.getName()));
-                bindStringOrNull(stmt, 7, bookCursor.getString(DOM_BOOK_GENRE.getName()));
-                bindStringOrNull(stmt, 8, bookCursor.getString(DOM_BOOK_LOCATION.getName()));
-                bindStringOrNull(stmt, 9, bookCursor.getString(DOM_BOOK_ISBN.getName()));
+                bindStringOrNull(stmt, 4, row.getString(DOM_BOOK_DESCRIPTION.getName()));
+                bindStringOrNull(stmt, 5, row.getString(DOM_BOOK_PRIVATE_NOTES.getName()));
+                bindStringOrNull(stmt, 6, row.getString(DOM_BOOK_PUBLISHER.getName()));
+                bindStringOrNull(stmt, 7, row.getString(DOM_BOOK_GENRE.getName()));
+                bindStringOrNull(stmt, 8, row.getString(DOM_BOOK_LOCATION.getName()));
+                bindStringOrNull(stmt, 9, row.getString(DOM_BOOK_ISBN.getName()));
                 // DOM_PK_DOCID
-                stmt.bindLong(10, bookCursor.getLong(DOM_PK_ID.getName()));
+                stmt.bindLong(10, row.getLong(DOM_PK_ID.getName()));
 
                 stmt.execute();
             }
@@ -3857,7 +3858,7 @@ public class DAO
      * Transaction: required
      *
      * @param context Current context
-     * @param bookId the book to add to FTS
+     * @param bookId  the book to add to FTS
      */
     private void insertFts(@NonNull final Context context,
                            final long bookId) {
@@ -3867,15 +3868,14 @@ public class DAO
         }
 
         try {
-            SynchronizedStatement stmt = mStatements.get(STMT_INSERT_FTS);
+            SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_FTS);
             if (stmt == null) {
-                stmt = mStatements.add(STMT_INSERT_FTS, SqlFTS.INSERT);
+                stmt = mSqlStatementManager.add(STMT_INSERT_FTS, SqlFTS.INSERT);
             }
 
-            try (BookCursor bookCursor = (BookCursor) sSyncedDb.rawQueryWithFactory(
-                    BOOKS_CURSOR_FACTORY,
-                    SqlSelect.BOOK_BY_ID, new String[]{String.valueOf(bookId)}, "")) {
-                ftsSendBooks(bookCursor, stmt);
+            try (Cursor cursor = sSyncedDb
+                    .rawQuery(SqlSelect.BOOK_BY_ID, new String[]{String.valueOf(bookId)})) {
+                ftsSendBooks(cursor, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -3899,14 +3899,13 @@ public class DAO
         }
 
         try {
-            SynchronizedStatement stmt = mStatements.get(STMT_UPDATE_FTS);
+            SynchronizedStatement stmt = mSqlStatementManager.get(STMT_UPDATE_FTS);
             if (stmt == null) {
-                stmt = mStatements.add(STMT_UPDATE_FTS, SqlFTS.UPDATE);
+                stmt = mSqlStatementManager.add(STMT_UPDATE_FTS, SqlFTS.UPDATE);
             }
-            try (BookCursor bookCursor = (BookCursor) sSyncedDb.rawQueryWithFactory(
-                    BOOKS_CURSOR_FACTORY,
-                    SqlSelect.BOOK_BY_ID, new String[]{String.valueOf(bookId)}, "")) {
-                ftsSendBooks(bookCursor, stmt);
+            try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOK_BY_ID,
+                                                    new String[]{String.valueOf(bookId)})) {
+                ftsSendBooks(cursor, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
@@ -3960,16 +3959,13 @@ public class DAO
         SyncLock txLock = sSyncedDb.beginTransaction(true);
 
         try {
-            // Drop the table in case there is an orphaned instance.
-            ftsTemp.drop(sSyncedDb);
             //IMPORTANT: withConstraints MUST BE false
-            ftsTemp.create(sSyncedDb, false);
+            ftsTemp.recreate(sSyncedDb, false);
 
             try (SynchronizedStatement insert = sSyncedDb.compileStatement(
                     "INSERT INTO " + ftsTemp.getName() + SqlFTS.INSERT_BODY);
-                 BookCursor bookCursor = (BookCursor) sSyncedDb.rawQueryWithFactory(
-                         BOOKS_CURSOR_FACTORY, SqlSelectFullTable.BOOKS, null, "")) {
-                ftsSendBooks(bookCursor, insert);
+                 Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOKS, null)) {
+                ftsSendBooks(cursor, insert);
             }
 
             sSyncedDb.setTransactionSuccessful();
@@ -3986,7 +3982,7 @@ public class DAO
             //  Delete old table and rename the new table
             if (!gotError) {
                 // Drop old table, ready for rename
-                TBL_BOOKS_FTS.drop(sSyncedDb);
+                sSyncedDb.drop(TBL_BOOKS_FTS.getName());
                 sSyncedDb.execSQL("ALTER TABLE " + ftsTemp + " RENAME TO " + TBL_BOOKS_FTS);
             }
         }

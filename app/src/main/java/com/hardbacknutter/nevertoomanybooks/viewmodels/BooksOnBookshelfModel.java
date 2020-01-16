@@ -59,13 +59,14 @@ import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.TrackedCursor;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.TrackedCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -188,13 +189,13 @@ public class BooksOnBookshelfModel
             };
     /** Current displayed list cursor. */
     @Nullable
-    private BooklistPseudoCursor mCursor;
+    private BooklistCursor mCursor;
 
     @Override
     protected void onCleared() {
 
         if (mCursor != null) {
-            mCursor.getBuilder().close();
+            mCursor.getBooklistBuilder().close();
             mCursor.close();
         }
 
@@ -338,17 +339,13 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Set the style and position.
+     * Should be called after a style change.
      *
-     * @param context  Current context
-     * @param style    that was selected
-     * @param topRow   the top row to store
-     * @param listView used to derive the top row offset
+     * @param context Current context
+     * @param style   that was selected
      */
     public void onStyleChanged(@NonNull final Context context,
-                               @NonNull final BooklistStyle style,
-                               final int topRow,
-                               @NonNull final RecyclerView listView) {
+                               @NonNull final BooklistStyle style) {
         Objects.requireNonNull(mCurrentBookshelf);
 
         // save the new bookshelf/style combination
@@ -358,13 +355,6 @@ public class BooksOnBookshelfModel
         // Set the rebuild state like this is the first time in, which it sort of is,
         // given we are changing style.
         mRebuildState = BooklistBuilder.getPreferredListRebuildState();
-
-        /* There is very little ability to preserve position when going from
-         * a list sorted by Author/Series to on sorted by unread/addedDate/publisher.
-         * Keeping the current row/pos is probably the most useful thing we can
-         * do since we *may* come back to a similar list.
-         */
-        savePosition(topRow, listView);
     }
 
     public int getTopRow() {
@@ -398,11 +388,11 @@ public class BooksOnBookshelfModel
      * in length by, potentially, n*2 items. The current code will return to the old position
      * in the list after such an operation...which will be too far down.
      *
-     * @param topRow   the position of the top visible row in the list
      * @param listView used to derive the top row offset
+     * @param topRow   the position of the top visible row in the list
      */
-    public void savePosition(final int topRow,
-                             @NonNull final RecyclerView listView) {
+    public void saveListPosition(@NonNull final RecyclerView listView,
+                                 final int topRow) {
         if (mListHasBeenLoaded) {
             mTopRow = topRow;
             View topView = listView.getChildAt(0);
@@ -431,7 +421,7 @@ public class BooksOnBookshelfModel
         BooklistStyle style = mCurrentBookshelf.getStyle(context, mDb);
 
         // get a new builder and add the required extra domains
-        BooklistBuilder blb = new BooklistBuilder(style);
+        BooklistBuilder blb = new BooklistBuilder(mCurrentBookshelf, style);
 
         // Title for displaying + the book language
         blb.addExtraDomain(DBDefinitions.DOM_TITLE,
@@ -550,9 +540,6 @@ public class BooksOnBookshelfModel
             }
         }
 
-        // Always limit to the current bookshelf.
-        blb.setBookshelf(mCurrentBookshelf);
-
         // if we have a list of ID's, ignore other criteria.
         if (mSearchCriteria.hasIdList()) {
             blb.setFilterOnBookIdList(mSearchCriteria.bookList);
@@ -592,18 +579,12 @@ public class BooksOnBookshelfModel
     }
 
     @Nullable
-    public BooklistPseudoCursor getListCursor() {
+    public BooklistCursor getListCursor() {
         return mCursor;
     }
 
-    public void setListCursor(@NonNull final BooklistPseudoCursor listCursor) {
+    public void setListCursor(@NonNull final BooklistCursor listCursor) {
         mCursor = listCursor;
-    }
-
-    /** Convenience method. */
-    @Nullable
-    public BooklistBuilder getBuilder() {
-        return mCursor != null ? mCursor.getBuilder() : null;
     }
 
     /**
@@ -633,7 +614,6 @@ public class BooksOnBookshelfModel
         return mListHasBeenLoaded;
     }
 
-
     /**
      * Set the <strong>desired</strong> book id to position the list.
      *
@@ -644,30 +624,18 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Convenience method to hide the internals.
-     * <p>
-     * Get the target rows based on the current book position.
-     *
-     * @return RowDetails
-     */
-    @Nullable
-    public ArrayList<BooklistBuilder.RowDetails> getTargetRows() {
-        //noinspection ConstantConditions
-        return getBuilder().getTargetRows(mDesiredCentralBookId);
-    }
-    /**
      * Check if this book is lend out, or not.
      *
-     * @param mapper cursor row with book data
+     * @param cursorRow with data
      *
      * @return {@code true} if this book is available for lending.
      */
-    public boolean isAvailable(@NonNull final CursorMapper mapper) {
+    public boolean isAvailable(@NonNull final CursorRow cursorRow) {
         String loanee;
-        if (mapper.contains(DBDefinitions.KEY_LOANEE)) {
-            loanee = mapper.getString(DBDefinitions.KEY_LOANEE);
+        if (cursorRow.contains(DBDefinitions.KEY_LOANEE)) {
+            loanee = cursorRow.getString(DBDefinitions.KEY_LOANEE);
         } else {
-            loanee = mDb.getLoaneeByBookId(mapper.getLong(DBDefinitions.KEY_FK_BOOK));
+            loanee = mDb.getLoaneeByBookId(cursorRow.getLong(DBDefinitions.KEY_FK_BOOK));
         }
         return (loanee == null) || loanee.isEmpty();
     }
@@ -675,25 +643,25 @@ public class BooksOnBookshelfModel
     /**
      * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
      *
-     * @param context Current context
-     * @param mapper  cursor row with book data
+     * @param context   Current context
+     * @param cursorRow with data
      *
      * @return formatted Author name
      */
     @Nullable
     public String getAuthorFromRow(@NonNull final Context context,
-                                   @NonNull final CursorMapper mapper) {
-        if (mapper.contains(DBDefinitions.KEY_FK_AUTHOR)
-            && mapper.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0) {
-            Author author = mDb.getAuthor(mapper.getLong(DBDefinitions.KEY_FK_AUTHOR));
+                                   @NonNull final CursorRow cursorRow) {
+        if (cursorRow.contains(DBDefinitions.KEY_FK_AUTHOR)
+            && cursorRow.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0) {
+            Author author = mDb.getAuthor(cursorRow.getLong(DBDefinitions.KEY_FK_AUTHOR));
             if (author != null) {
                 return author.getLabel(context);
             }
 
-        } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_KIND)
+        } else if (cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND)
                    == BooklistGroup.RowKind.BOOK) {
             List<Author> authors = mDb.getAuthorsByBookId(
-                    mapper.getLong(DBDefinitions.KEY_FK_BOOK));
+                    cursorRow.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
                 return authors.get(0).getLabel(context);
             }
@@ -704,22 +672,22 @@ public class BooksOnBookshelfModel
     /**
      * Get the Series name.
      *
-     * @param mapper cursor row with book data
+     * @param cursorRow with book data
      *
      * @return the unformatted Series name (i.e. without the number)
      */
     @Nullable
-    public String getSeriesFromRow(@NonNull final CursorMapper mapper) {
-        if (mapper.contains(DBDefinitions.KEY_FK_SERIES)
-            && mapper.getLong(DBDefinitions.KEY_FK_SERIES) > 0) {
-            Series series = mDb.getSeries(mapper.getLong(DBDefinitions.KEY_FK_SERIES));
+    public String getSeriesFromRow(@NonNull final CursorRow cursorRow) {
+        if (cursorRow.contains(DBDefinitions.KEY_FK_SERIES)
+            && cursorRow.getLong(DBDefinitions.KEY_FK_SERIES) > 0) {
+            Series series = mDb.getSeries(cursorRow.getLong(DBDefinitions.KEY_FK_SERIES));
             if (series != null) {
                 return series.getTitle();
             }
-        } else if (mapper.getInt(DBDefinitions.KEY_BL_NODE_KIND)
+        } else if (cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND)
                    == BooklistGroup.RowKind.BOOK) {
             ArrayList<Series> series =
-                    mDb.getSeriesByBookId(mapper.getLong(DBDefinitions.KEY_FK_BOOK));
+                    mDb.getSeriesByBookId(cursorRow.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0).getTitle();
             }
@@ -727,16 +695,9 @@ public class BooksOnBookshelfModel
         return null;
     }
 
-
     @NonNull
     public SearchCriteria getSearchCriteria() {
         return mSearchCriteria;
-    }
-
-    @NonNull
-    public ArrayList<Long> getCurrentBookIdList() {
-        //noinspection ConstantConditions
-        return mCursor.getBuilder().getCurrentBookIdList();
     }
 
     public void restoreCurrentBookshelf(@NonNull final Context context) {
@@ -772,6 +733,50 @@ public class BooksOnBookshelfModel
             mGoodreadsTaskListener = new GoodreadsTaskListener(mUserMessage, mNeedsGoodreads);
         }
         return mGoodreadsTaskListener;
+    }
+
+    public void safeClose(@Nullable final BooklistCursor cursorToClose) {
+        BooklistBuilder.closeCursor(cursorToClose, mCursor);
+    }
+
+    @Nullable
+    public ArrayList<RowStateDAO.ListRowDetails> getTargetRows() {
+        //noinspection ConstantConditions
+        return mCursor.getBooklistBuilder().getTargetRows(mDesiredCentralBookId);
+    }
+
+    public boolean toggleNode(final int rowId) {
+        //noinspection ConstantConditions
+        return mCursor.getBooklistBuilder().toggleNode(rowId);
+    }
+
+    @NonNull
+    public BooklistCursor getNewListCursor() {
+        //noinspection ConstantConditions
+        return mCursor.getBooklistBuilder().getNewListCursor();
+    }
+
+    @NonNull
+    public ArrayList<Long> getCurrentBookIdList() {
+        //noinspection ConstantConditions
+        return mCursor.getBooklistBuilder().getCurrentBookIdList();
+    }
+
+    @NonNull
+    public String createFlattenedBooklist() {
+        //noinspection ConstantConditions
+        return mCursor.getBooklistBuilder().createFlattenedBooklist();
+    }
+
+    public int getListPosition(final int rowId) {
+        //noinspection ConstantConditions
+        return mCursor.getBooklistBuilder().getListPosition(rowId);
+    }
+
+    public void expandAllNodes(final int topLevel,
+                               final boolean expand) {
+        //noinspection ConstantConditions
+        mCursor.getBooklistBuilder().expandAllNodes(topLevel, expand);
     }
 
     /**
@@ -957,9 +962,9 @@ public class BooksOnBookshelfModel
         @NonNull
         private final BuilderHolder mHolder;
         @Nullable
-        private final BooklistPseudoCursor mCurrentListCursor;
+        private final BooklistCursor mCurrentListCursor;
         /** Resulting Cursor. */
-        private BooklistPseudoCursor tempListCursor;
+        private BooklistCursor mTempListCursor;
 
         /**
          * Constructor.
@@ -972,7 +977,7 @@ public class BooksOnBookshelfModel
          */
         @UiThread
         GetBookListTask(@NonNull final BooklistBuilder bookListBuilder,
-                        @Nullable final BooklistPseudoCursor currentListCursor,
+                        @Nullable final BooklistCursor currentListCursor,
                         final long desiredCentralBookId,
                         @BooklistBuilder.ListRebuildMode final int listState,
                         final TaskListener<BuilderHolder> taskListener) {
@@ -1006,15 +1011,17 @@ public class BooksOnBookshelfModel
                 mHolder.desiredCentralBookId = 0;
 
                 // Now we have the expanded groups as needed, get the list cursor
-                tempListCursor = mBuilder.getNewListCursor();
+                // The cursor will hold a reference to the builder.
+                mTempListCursor = mBuilder.getNewListCursor();
                 // get a count() from the cursor in background task because the setAdapter()
                 // call will do a count() and potentially block the UI thread while it
                 // pages through the entire cursor. Doing it here makes subsequent calls faster.
-                tempListCursor.getCount();
+                mTempListCursor.getCount();
+
+                // Set the results.
+                mHolder.resultListCursor = mTempListCursor;
                 mHolder.resultDistinctBookCount = mBuilder.getDistinctBookCount();
                 mHolder.resultTotalBookCount = mBuilder.getBookCount();
-                // Set the results.
-                mHolder.resultListCursor = tempListCursor;
 
             } catch (@NonNull final Exception e) {
                 // catch ALL exceptions, so we get them logged for certain.
@@ -1037,14 +1044,7 @@ public class BooksOnBookshelfModel
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "cleanup", mException);
             }
-            if (tempListCursor != null && tempListCursor != mCurrentListCursor) {
-                if (mCurrentListCursor == null
-                    || (!tempListCursor.getBuilder().equals(mCurrentListCursor.getBuilder()))) {
-                    tempListCursor.getBuilder().close();
-                }
-                tempListCursor.close();
-            }
-            tempListCursor = null;
+            BooklistBuilder.closeCursor(mTempListCursor, mCurrentListCursor);
         }
     }
 
@@ -1061,7 +1061,7 @@ public class BooksOnBookshelfModel
          * Resulting Cursor; can be {@code null} if the list did not get build.
          */
         @Nullable
-        BooklistPseudoCursor resultListCursor;
+        BooklistCursor resultListCursor;
 
         /**
          * output field. Pre-fetched from the resultListCursor's builder.
@@ -1079,7 +1079,7 @@ public class BooksOnBookshelfModel
          * Should be ignored if resultListCursor is {@code null}
          */
         @Nullable
-        ArrayList<BooklistBuilder.RowDetails> resultTargetRows;
+        ArrayList<RowStateDAO.ListRowDetails> resultTargetRows;
 
         /**
          * Constructor: these are the fields we need as input.
@@ -1091,12 +1091,12 @@ public class BooksOnBookshelfModel
         }
 
         @Nullable
-        public BooklistPseudoCursor getResultListCursor() {
+        public BooklistCursor getResultListCursor() {
             return resultListCursor;
         }
 
         @Nullable
-        public List<BooklistBuilder.RowDetails> getResultTargetRows() {
+        public List<RowStateDAO.ListRowDetails> getResultTargetRows() {
             return resultTargetRows;
         }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -111,6 +111,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_TITLE_LETTER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -286,7 +287,7 @@ public class BooklistGroup
     }
 
     @NonNull
-    DomainDefinition getFormattedDomain() {
+    public DomainDefinition getFormattedDomain() {
         return RowKind.get(mId).getFormattedDomain();
     }
 
@@ -656,7 +657,8 @@ public class BooklistGroup
         static {
             RowKind rowKind;
 
-            rowKind = new RowKind(BOOK, R.string.lbl_book, "");
+            rowKind = new RowKind(BOOK, R.string.lbl_book, "")
+                    .setFormattedDomain(DOM_TITLE, TBL_BOOKS.dot(DOM_TITLE));
             ALL_KINDS.put(rowKind.mId, rowKind);
 
 
@@ -910,7 +912,8 @@ public class BooklistGroup
          * @param id      for this row
          * @param source  text to reformat
          *
-         * @return reformatted text
+         * @return Formatted string, or original string when no special format
+         *         was needed or on any failure
          */
         @NonNull
         public static String format(@NonNull final Context context,
@@ -1055,7 +1058,6 @@ public class BooklistGroup
          */
         @NonNull
         public DomainDefinition getFormattedDomain() {
-            // Domain will never be {@code null}, except for a BOOK.
             return Objects.requireNonNull(mFormattedDomain);
         }
 

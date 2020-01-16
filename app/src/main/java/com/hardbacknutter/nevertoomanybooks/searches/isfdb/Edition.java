@@ -33,7 +33,7 @@ import androidx.annotation.Nullable;
 import org.jsoup.nodes.Document;
 
 /**
- * A data class for holding the ISFDB native book id and its (optional) doc (web page).
+ * A value class for holding the ISFDB native book id and its (optional) doc (web page).
  */
 public class Edition {
 

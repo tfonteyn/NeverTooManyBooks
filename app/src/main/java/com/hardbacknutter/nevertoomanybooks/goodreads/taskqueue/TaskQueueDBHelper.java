@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -116,12 +116,12 @@ class TaskQueueDBHelper
             };
 
     /**
-     * Constructor. Call superclass using locally defined name & version.
+     * Constructor.
      *
-     * @param context the Application Context (as a param, to allow testing)
+     * @param context Current context
      */
     TaskQueueDBHelper(@NonNull final Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override

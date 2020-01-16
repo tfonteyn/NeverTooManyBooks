@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,25 +68,26 @@ public final class UpgradeDatabase {
     }
 
     /**
-     * Renames the original table, recreates it, and loads the data into the new table.
+     * Rename the given table, recreate it, load the data into the new table, drop the old table.
      *
      * @param db              Database Access
-     * @param tableToRecreate the table
+     * @param table           the table
      * @param withConstraints Indicates if fields should have constraints applied
      * @param toRemove        (optional) List of fields to be removed from the source table
      */
     static void recreateAndReloadTable(@NonNull final SynchronizedDb db,
-                                       @NonNull final TableDefinition tableToRecreate,
+                                       @NonNull final TableDefinition table,
                                        final boolean withConstraints,
                                        @NonNull final String... toRemove) {
-        final String tableName = tableToRecreate.getName();
-        final String tempName = "recreate_tmp";
-        db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempName);
-        tableToRecreate.create(db, withConstraints);
-        tableToRecreate.createIndices(db);
+        final String tableName = table.getName();
+        final String tempSource = "source_tmp";
+        db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempSource);
+
+        table.create(db, withConstraints)
+             .createIndices(db);
         // This handles re-ordered fields etc.
-        copyTableSafely(db, tempName, tableName, toRemove);
-        db.execSQL("DROP TABLE " + tempName);
+        copyTableSafely(db, tempSource, tableName, toRemove);
+        db.execSQL("DROP TABLE " + tempSource);
     }
 
     /**
@@ -139,7 +140,7 @@ public final class UpgradeDatabase {
 
     /**
      * NOT USED RIGHT NOW. BEFORE USING SHOULD BE ENHANCED WITH PREPROCESS_TITLE IF NEEDED
-     *
+     * <p>
      * Create and populate the 'order by' column.
      * This method is used/meant for use during upgrades.
      * <p>
@@ -160,8 +161,8 @@ public final class UpgradeDatabase {
 
         try (SQLiteStatement update = db.compileStatement(updateSql);
              Cursor cursor = db.rawQuery("SELECT " + DBDefinitions.DOM_PK_ID
-                                      + ',' + source + " FROM " + table,
-                                      null)) {
+                                         + ',' + source + " FROM " + table,
+                                         null)) {
             while (cursor.moveToNext()) {
                 final long id = cursor.getLong(0);
                 final String in = cursor.getString(1);

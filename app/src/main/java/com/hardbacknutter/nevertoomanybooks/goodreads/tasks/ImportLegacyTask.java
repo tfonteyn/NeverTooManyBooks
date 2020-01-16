@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
@@ -54,9 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -315,37 +316,38 @@ class ImportLegacyTask
 
         // Find the books in our database - there may be more than one!
         // First look by Goodreads book ID
-        BookCursor bookCursor = db.fetchBooksByGoodreadsBookId(grBookId);
+        Cursor cursor = db.fetchBooksByGoodreadsBookId(grBookId);
         try {
-            boolean found = bookCursor.moveToFirst();
+            boolean found = cursor.moveToFirst();
             if (!found) {
                 // Not found by Goodreads id, look via ISBNs
-                bookCursor.close();
-                bookCursor = null;
+                cursor.close();
+                cursor = null;
 
                 List<String> list = extractIsbnList(review);
                 if (!list.isEmpty()) {
-                    bookCursor = db.fetchBooksByIsbnList(list);
-                    found = bookCursor.moveToFirst();
+                    cursor = db.fetchBooksByIsbnList(list);
+                    found = cursor.moveToFirst();
                 }
             }
 
             if (found) {
                 // If found, update all related books
+                final CursorRow cursorRow = new CursorRow(cursor);
                 do {
                     // Check for abort
                     if (isAborting()) {
                         break;
                     }
-                    updateBook(context, db, bookCursor, review);
-                } while (bookCursor.moveToNext());
+                    updateBook(context, db, cursorRow, review);
+                } while (cursor.moveToNext());
             } else {
                 // Create the book
                 insertBook(context, db, review);
             }
         } finally {
-            if (bookCursor != null) {
-                bookCursor.close();
+            if (cursor != null) {
+                cursor.close();
             }
         }
     }
@@ -403,16 +405,18 @@ class ImportLegacyTask
      */
     private void updateBook(@NonNull final Context context,
                             @NonNull final DAO db,
-                            @NonNull final BookCursor bookCursor,
+                            @NonNull final CursorRow cursorRow,
                             @NonNull final Bundle review) {
-        // Get last date book was sent to Goodreads (may be null)
-        String lastGrSync = bookCursor.getString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE);
+
+
         // If the review has an 'updated' date, then see if we can compare to book
         if (review.containsKey(ReviewsListApiHandler.ReviewField.UPDATED)) {
             String lastUpdate = review.getString(ReviewField.UPDATED);
             // If last update in Goodreads was before last Goodreads sync of book,
             // then don't bother updating book.
             // This typically happens if the last update in Goodreads was from us.
+            // Get last date book was sent to Goodreads (may be null)
+            String lastGrSync = cursorRow.getString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE);
             if (lastUpdate != null && lastUpdate.compareTo(lastGrSync) < 0) {
                 return;
             }
@@ -420,9 +424,9 @@ class ImportLegacyTask
 
         // We build a new book bundle each time since it will build on the existing
         // data for the given book (taken from the cursor), not just replace it.
-        Book book = new Book(buildBundle(context, db, bookCursor, review));
-        db.updateBook(context, bookCursor.getLong(DBDefinitions.KEY_PK_ID), book,
-                      DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+        long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
+        Book book = new Book(buildBundle(context, db, bookId, review));
+        db.updateBook(context, bookId, book, DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
@@ -435,7 +439,7 @@ class ImportLegacyTask
                             @NonNull final DAO db,
                             @NonNull final Bundle review) {
 
-        Book book = new Book(buildBundle(context, db, null, review));
+        Book book = new Book(buildBundle(context, db, 0, review));
         long id = db.insertBook(context, book);
 
         if (id > 0) {
@@ -464,7 +468,7 @@ class ImportLegacyTask
     @NonNull
     private Bundle buildBundle(@NonNull final Context context,
                                @NonNull final DAO db,
-                               @Nullable final BookCursor bookCursor,
+                               final long bookId,
                                @NonNull final Bundle review) {
 
         // The ListReviewsApi does not return the Book language. We explicitly name the Locale
@@ -552,12 +556,12 @@ class ImportLegacyTask
             return bookData;
         }
         ArrayList<Author> authors;
-        if (bookCursor == null) {
+        if (bookId == 0) {
             // It's a new book. Start a clean list.
             authors = new ArrayList<>();
         } else {
             // it's an update. Get current Authors.
-            authors = db.getAuthorsByBookId(bookCursor.getLong(DBDefinitions.KEY_PK_ID));
+            authors = db.getAuthorsByBookId(bookId);
         }
 
         for (Bundle grAuthor : grAuthors) {
@@ -586,13 +590,12 @@ class ImportLegacyTask
                     String seriesTitleWithNumber = matcher.group(2);
                     if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
                         ArrayList<Series> seriesList;
-                        if (bookCursor == null) {
+                        if (bookId == 0) {
                             // It's a new book. Start a clean list.
                             seriesList = new ArrayList<>();
                         } else {
                             // it's an update. Get current Series.
-                            seriesList = db.getSeriesByBookId(
-                                    bookCursor.getLong(DBDefinitions.KEY_PK_ID));
+                            seriesList = db.getSeriesByBookId(bookId);
                         }
 
                         Series newSeries = Series.fromString(seriesTitleWithNumber);
@@ -620,12 +623,12 @@ class ImportLegacyTask
             //ArrayList<Bookshelf> bsList = new ArrayList<>();
             //--- begin 2019-02-04 ----
             ArrayList<Bookshelf> bsList;
-            if (bookCursor == null) {
+            if (bookId == 0) {
                 // It's a new book. Start a clean list.
                 bsList = new ArrayList<>();
             } else {
                 // it's an update. Get current Bookshelves.
-                bsList = db.getBookshelvesByBookId(bookCursor.getLong(DBDefinitions.KEY_PK_ID));
+                bsList = db.getBookshelvesByBookId(bookId);
             }
             // --- end 2019-02-04 ---
 
@@ -648,7 +651,7 @@ class ImportLegacyTask
         /*
          * New books only: use the Goodreads added date + get the thumbnail
          */
-        if (bookCursor == null) {
+        if (bookId == 0) {
             // Use the Goodreads added date for new books
             addStringIfNonBlank(review, ReviewField.ADDED,
                                 bookData, DBDefinitions.KEY_DATE_ADDED);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
@@ -62,7 +61,7 @@ public final class TasksCursor
         implements BindableItemCursor, Closeable {
 
     /** Static Factory object to create the custom cursor. */
-    private static final CursorFactory CURSOR_FACTORY =
+    private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
             (db, masterQuery, editTable, query) -> new TasksCursor(masterQuery, editTable, query);
 
     private static final String ALL_TASKS_QUERY =

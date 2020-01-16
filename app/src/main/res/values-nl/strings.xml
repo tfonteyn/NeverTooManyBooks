@@ -220,7 +220,7 @@
     <string name="info_authorized">Geautoriseerd</string>
     <string name="info_cleanup_files_text">Permanent te verwijderen bestanden nemen %1$s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
-    <string name="X_info_install_scanner">Om ISBN-streepjescodes te scannen, tik je hieronder om een van deze streepjescodescanner-applicaties te installeren.</string>
+    <string name="X_info_install_scanner">Om barcodes te scannen, tik je hieronder om een van deze applicaties te installeren.</string>
     <string name="info_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="info_not_authorized">Niet geautoriseerd</string>
     <string name="info_registration_benefits">Deze functie profiteert van registratie bij %1$s.\nWil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
@@ -348,7 +348,7 @@
     <string name="lt_url_text_register">Registeren bij LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_about">Over deze App</string>
-    <string name="fab_add_book_by_barcode_scan">Scan streepjescode</string>
+    <string name="fab_add_book_by_barcode_scan">Scan barcode</string>
     <string name="fab_add_book_by_isbn">Invullen ISBN</string>
     <string name="fab_add_book_manually">Handmatig toevoegen</string>
     <string name="menu_amazon_books_by_author">Boeken van deze auteur</string>
@@ -404,7 +404,7 @@
     <string name="pg_general">Algemeen</string>
     <string name="pg_style_groups">Groeperingen</string>
     <string name="pt_bob_titles_sort">Sorteer titels op</string>
-    <string name="pg_barcode_scanner">Streepjescodescanner</string>
+    <string name="pg_barcode_scanner">Barcode scanner</string>
     <string name="pg_thumbnails">Miniaturen</string>
     <string name="pg_ui">Gebruikersinterface</string>
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
@@ -498,7 +498,7 @@
     <string name="tip_background_task_events">Vanaf hier kan je de gebeurtenissen zien die zijn geassocieerd met op de achtergrond lopende taken. Tikken op een gebeurtenis laat je een aantal acties uitvoeren die samenhangen met die gebeurtenis.</string>
     <string name="tip_background_tasks">Vanaf deze plaats kan je de lopende taken zien en eveneens vorige taken die met fouten of ander vermeldingswaardige gebeurtenissen zijn beëindigd. Tikken op een taak laat je de bijbehorende gebeurtenissen zien en ook de taak laten verwijderen (samen met de gerelateerde gebeurtenissen).</string>
     <string name="tip_book_list">Tikken op een boek zal de details van het boek tonen, lang drukken op een titel in de lijst geeft verdere opties.</string>
-    <string name="tip_book_search_by_text">Toevoegen van boeken via ISBN is veel preciezer dan toevoegen via auteur en titel en verdient meestal de voorkeur. De juiste streepjescode kan je meestal vinden aan de achterkant van de boekomslag.</string>
+    <string name="tip_book_search_by_text">Toevoegen van boeken via ISBN is veel preciezer dan toevoegen via auteur en titel en verdient meestal de voorkeur. De juiste barcode kan je meestal vinden aan de achterkant van de boekomslag.</string>
     <string name="tip_booklist_style_groups">Je kan dit scherm gebruiken om de hiërarchie van koppen voor een specifieke stijl van een boekenlijst te wijzigen. Een vinkje geeft aan dat de kop in de lijst wordt weergegeven, verwijder het vinkje om het te verbergen en vice versa. Je kan de hiërarchie opnieuw rangschikken door het pictogram uiterst rechts van elke rij omhoog of omlaag te slepen.</string>
     <string name="tip_booklist_style_menu">Dit menu laat je de lijststijl selecteren.\n\n Je kan het menu ook aanpassen of je eigen lijststijl aanmaken door te tikken op „Aanpassen” onderaan de lijst.</string>
     <string name="tip_booklist_style_properties">Je kan dit scherm gebruiken om de kenmerken van een specifieke stijl van de boekenlijst in te stellen. Je kan de naam wijzigen, de groeperingen bewerken om de hiërarchie te wijzigen en een aantal andere voorkeuren aanpassen om een stijl te bouwen die je nuttig acht. Het is ook mogelijk om filters te gebruiken om de selectie van boeken te wijzigen die in de lijst worden weergegeven. bijv. om alleen boeken op te halen die je nog niet hebt gelezen en meer.</string>
@@ -523,7 +523,7 @@
     <string name="title_edit_style">Stijl bewerken</string>
     <string name="X_title_import">Importeren</string>
     <string name="title_import_book_data">Boeken Importeren</string>
-    <string name="X_title_install_scan">Streepjescode Scanner Installeren</string>
+    <string name="X_title_install_scan">Barcode Scanner Installeren</string>
     <string name="title_registration">LibraryThing Registratie</string>
     <string name="title_scope_of_change">Omvang van de verandering</string>
     <string name="hint_system_search">auteur, titel of ISBN</string>
@@ -545,10 +545,10 @@
     <string name="warning_requires_isbn">Voor deze actie is een geldig ISBN-nummer vereist.</string>
     <string name="warning_author_already_in_list">Auteur staat al in de lijst</string>
     <string name="warning_backup_request">Wil je  een back-up van uw database op uw SD kaart maken?</string>
-    <string name="info_bad_scanner">Het lijkt er op dat de door jouw gebruikte streepjescode scanner applicatie niet compatibel is met &APP_NAME;.</string>
-    <string name="info_install_scanner_recommendation">Wij kunnen de Zxing streepjescode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
+    <string name="info_bad_scanner">Het lijkt er op dat de door jouw gebruikte barcode scanner applicatie niet compatibel is met &APP_NAME;.</string>
+    <string name="info_install_scanner_recommendation">Wij kunnen de Zxing barcode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
-    <string name="tip_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste streepjescode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
+    <string name="tip_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste barcode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
     <string name="X_warning_book_was_deleted_uc">DIT BOEK IS VERWIJDERD</string>
     <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden</string>
     <string name="warning_cover_copy_failed">Afbeelding kon niet gekopiërt worden</string>
@@ -605,7 +605,7 @@
     <string name="pv_bob_header_style_name">Stijl naam</string>
     <string name="warning_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="pt_bob_list_state_expansion_level">Standaard boekenlijst niveau</string>
-    <string name="menu_level_reset">Voorkeur expansieniveau</string>
+    <string name="menu_level_preferred_collapse">Voorkeur expansieniveau</string>
     <string name="hint_empty_rating">(niet beoordeeld)</string>
     <string name="hint_empty_language">(Geen taal ingevuld)</string>
     <string name="hint_empty_series">(Geen reeks)</string>
@@ -648,6 +648,6 @@
     <string name="pt_allow_edit_native_id">Sta bewerken van native website-boek-ID toe.</string>
     <string name="hint_not_set">(Niet ingesteld)</string>
     <string name="pt_search_prefer_isbn10">Gebruik ISBN-10 indien mogelijk</string>
-    <string name="pt_scanning_beep_on_barcode_found">Beep wanneer een streepjescode wordt gevonden</string>
+    <string name="pt_scanning_beep_on_barcode_found">Beep wanneer een barcode wordt gevonden</string>
 
 </resources>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,7 +86,7 @@ public class MenuPicker<T>
      * @param message          (optional) message to display above the menu
      * @param menu             the menu options to show
      * @param userObject       (optional) a reference free to set/use by the caller
-     * @param listener         callback handler with the MenuItem the user chooses + the position
+     * @param listener         callback handler with the MenuItem the user chooses + the userObject
      */
     private MenuPicker(@NonNull final Context context,
                        @Nullable final CharSequence title,
@@ -117,6 +117,11 @@ public class MenuPicker<T>
     public interface ContextItemSelected<T> {
 
         /**
+         * Callback handler.
+         *
+         * <strong>Note:</strong> the userObject is normally the item position in the list,
+         * an int; but we might as well keep this flexible.
+         *
          * @param menuItem   that was selected
          * @param userObject that the caller passed in when creating the context menu
          *

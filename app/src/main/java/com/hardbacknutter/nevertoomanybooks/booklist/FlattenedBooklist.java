@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,10 +29,13 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
@@ -48,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * Construction is done in two steps:
  * <ol>
  * <li>Create the table, fill it with data<br>
- * {@link #createTable(SynchronizedDb, int, TableDefinition, TableDefinition)}</li>
+ * {@link #createTable(SynchronizedDb, int, TableDefinition)}</li>
  * <li>Use the normal constructor with the table name from step 1 to start using the table</li>
  * </ol>
  * Reminder: moveNext/Prev SQL concatenates/splits two columns.
@@ -62,29 +65,28 @@ public class FlattenedBooklist
     /** Log tag. */
     private static final String TAG = "FlattenedBooklist";
 
+    /** divider to convert nanoseconds to milliseconds. */
+    private static final int NANO_TO_MILLIS = 1_000_000;
+
     /** Name for the 'next' statement. */
     private static final String STMT_NEXT = "next";
     /** Name for the 'prev' statement. */
     private static final String STMT_PREV = "prev";
     /** Name for the 'move-to' statement. */
     private static final String STMT_MOVE = "move";
-    /** Name for the 'absolute-position' statement. */
-    private static final String STMT_POSITION = "position";
     /** The underlying database. We need this to keep the table alive. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
     /** Collection of statements compiled for this object. */
     @NonNull
-    private final SqlStatementManager mStatements;
-    /**
-     * Underlying table definition.
-     * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
-     */
+    private final SqlStatementManager mSqlStatementManager;
+    /** Underlying table definition. */
     @NonNull
     private TableDefinition mTable;
-    /** Default position (before first element). */
-    private long mPosition = -1;
-    /** Book id from the currently selected row. */
+
+    /** Current position; used to navigate around with next/prev. */
+    private long mRowId = -1;
+    /** Book id at the currently selected row. */
     private long mBookId;
     /** DEBUG: Indicates close() has been called. */
     private boolean mCloseWasCalled;
@@ -97,76 +99,175 @@ public class FlattenedBooklist
      */
     public FlattenedBooklist(@NonNull final DAO db,
                              @NonNull final String tableName) {
-        TableDefinition table = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
-        table.setName(tableName);
-
         mSyncedDb = db.getUnderlyingDatabase();
-        mTable = table;
-        mStatements = new SqlStatementManager(mSyncedDb, TAG);
+        mTable = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
+        mTable.setName(tableName);
+
+        mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG);
     }
 
     /**
      * Create a flattened table of ordered book ID's based on the underlying list.
+     * Any old data is removed before the new table is created.
      *
-     * @param syncedDb the database
-     * @param id       counter which will be used to create the table name
+     * @param syncedDb   the database
+     * @param instanceId counter which will be used to create the table name
      *
      * @return the created table.
      */
     @NonNull
     static TableDefinition createTable(@NonNull final SynchronizedDb syncedDb,
-                                       final int id,
-                                       @NonNull final TableDefinition listTable,
-                                       @NonNull final TableDefinition rowStateTable) {
+                                       final int instanceId,
+                                       @NonNull final TableDefinition listTable) {
 
-        TableDefinition table = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
-        table.setName(table.getName() + id);
+        TableDefinition navTable = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
+        navTable.setName(navTable.getName() + instanceId);
 
-        // Drop the table in case there is an orphaned instance.
-        table.drop(syncedDb);
         //IMPORTANT: withConstraints MUST BE false
-        table.create(syncedDb, false);
+        navTable.recreate(syncedDb, false);
 
-        String sql = "INSERT INTO " + table
-                     + " (" + DBDefinitions.DOM_PK_ID
-                     + ',' + DBDefinitions.DOM_FK_BOOK
-                     + ") SELECT "
-                     + rowStateTable.dot(DBDefinitions.DOM_PK_ID)
-                     + ',' + listTable.dot(DBDefinitions.DOM_FK_BOOK)
-                     + " FROM " + listTable.ref() + listTable.join(rowStateTable)
+        final long t00 = System.nanoTime();
+
+        String sql = "INSERT INTO " + navTable
+                     + " (" + DBDefinitions.DOM_PK_ID + ',' + DBDefinitions.DOM_FK_BOOK + ")"
+                     + " SELECT "
+                     + DBDefinitions.DOM_PK_ID + ',' + DBDefinitions.DOM_FK_BOOK
+                     + " FROM " + listTable
                      // all rows which are NOT a book will contain null
-                     + " WHERE " + listTable.dot(DBDefinitions.DOM_FK_BOOK) + " NOT NULL"
-                     // alternative (which is faster?)
-                     // + " WHERE " + listTable.dot(DBDefinitions.DOM_BL_NODE_KIND)
-                     // + '=' + BooklistGroup.RowKind.BOOK
-                     + " ORDER BY " + rowStateTable.dot(DBDefinitions.DOM_PK_ID);
+                     + " WHERE " + DBDefinitions.DOM_FK_BOOK + " NOT NULL"
+                     + " ORDER BY " + DBDefinitions.DOM_PK_ID;
 
         try (SynchronizedStatement stmt = syncedDb.compileStatement(sql)) {
             stmt.executeInsert();
         }
 
-        return table;
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+            Log.d(TAG, "createTable|completed in "
+                       + (System.nanoTime() - t00) / NANO_TO_MILLIS + " ms");
+        }
+        return navTable;
     }
 
+    /**
+     * Get the current book.
+     *
+     * @return bookId, or {@code 0} if the last move operation failed.
+     */
     public long getBookId() {
         return mBookId;
     }
 
     /**
-     * Passed a statement update the 'current' row details based on the columns returned.
+     * Move to the specified book row, based on the row ID, not the book id or row number.
+     * The row id should be the row number in the table, including header-related rows.
+     *
+     * @param bookId to move to
+     *
+     * @return {@code true} on success
+     */
+    public boolean moveTo(final long bookId) {
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_MOVE);
+        if (stmt == null) {
+            String sql = "SELECT "
+                         + DBDefinitions.DOM_PK_ID + " || '/' || " + DBDefinitions.DOM_FK_BOOK
+                         + " FROM " + mTable
+                         + " WHERE " + DBDefinitions.DOM_FK_BOOK + "=?";
+            stmt = mSqlStatementManager.add(STMT_MOVE, sql);
+        }
+        stmt.bindLong(1, bookId);
+        return execAndParse(stmt);
+    }
+
+    /**
+     * Move to the next, or previous book depending on the given direction.
+     *
+     * @param forward {@code true} to move to the next book, {@code false} for the previous book.
+     *
+     * @return {@code true} on success
+     */
+    public boolean move(final boolean forward) {
+        if (forward) {
+            return moveNext();
+        } else {
+            return movePrev();
+        }
+    }
+    /**
+     * Move to the next book row.
+     *
+     * @return {@code true} on success
+     */
+    private boolean moveNext() {
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_NEXT);
+        if (stmt == null) {
+            String sql = "SELECT "
+                         + DBDefinitions.DOM_PK_ID + " || '/' || " + DBDefinitions.DOM_FK_BOOK
+                         + " FROM " + mTable
+                         + " WHERE " + DBDefinitions.DOM_PK_ID + ">?"
+                         + " ORDER BY " + DBDefinitions.DOM_PK_ID + " ASC LIMIT 1";
+            stmt = mSqlStatementManager.add(STMT_NEXT, sql);
+        }
+        stmt.bindLong(1, mRowId);
+        return execAndParse(stmt);
+    }
+
+    /**
+     * Move to the previous book row.
+     *
+     * @return {@code true} on success
+     */
+    private boolean movePrev() {
+        SynchronizedStatement stmt = mSqlStatementManager.get(STMT_PREV);
+        if (stmt == null) {
+            String sql = "SELECT "
+                         + DBDefinitions.DOM_PK_ID + " || '/' || " + DBDefinitions.DOM_FK_BOOK
+                         + " FROM " + mTable
+                         + " WHERE " + DBDefinitions.DOM_PK_ID + "<?"
+                         + " ORDER BY " + DBDefinitions.DOM_PK_ID + " DESC LIMIT 1";
+            stmt = mSqlStatementManager.add(STMT_PREV, sql);
+        }
+        stmt.bindLong(1, mRowId);
+        return execAndParse(stmt);
+    }
+
+    /**
+     * Move to the first row.
+     *
+     * @return {@code true} on success
+     */
+    @SuppressWarnings("unused")
+    public boolean moveFirst() {
+        mRowId = -1;
+        return moveNext();
+    }
+
+    /**
+     * Move to the last row.
+     *
+     * @return {@code true} on success
+     */
+    @SuppressWarnings("unused")
+    public boolean moveLast() {
+        mRowId = Long.MAX_VALUE;
+        return movePrev();
+    }
+
+    /**
+     * Execute the passed statement and update the current row details.
      *
      * @param stmt to execute
      *
-     * @return {@code true} if we have set position and bookId successfully.
+     * @return {@code true} on success
      */
-    private boolean fetchBookIdAndPosition(@NonNull final SynchronizedStatement stmt) {
+    private boolean execAndParse(@NonNull final SynchronizedStatement stmt) {
         try {
-            // Get a pair of ID's separated by a '/'
             final String[] data = stmt.simpleQueryForString().split("/");
-            mPosition = Long.parseLong(data[0]);
+            mRowId = Long.parseLong(data[0]);
             mBookId = Long.parseLong(data[1]);
             return true;
+
         } catch (@NonNull final SQLiteDoneException ignore) {
+            mBookId = 0;
             return false;
         }
     }
@@ -183,160 +284,14 @@ public class FlattenedBooklist
     }
 
     /**
-     * Move to the next book row.
-     *
-     * @return {@code true}if successful
-     */
-    public boolean moveNext() {
-        SynchronizedStatement stmt = mStatements.get(STMT_NEXT);
-        if (stmt == null) {
-            String sql = "SELECT "
-                         + mTable.dot(DBDefinitions.DOM_PK_ID)
-                         + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
-                         + " FROM " + mTable.ref()
-                         + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + ">?"
-                         + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK) + "<>COALESCE(?,-1)"
-                         + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " ASC LIMIT 1";
-            stmt = mStatements.add(STMT_NEXT, sql);
-        }
-        stmt.bindLong(1, mPosition);
-        if (mBookId != 0) {
-            stmt.bindLong(2, mBookId);
-        } else {
-            stmt.bindNull(2);
-        }
-
-        return fetchBookIdAndPosition(stmt);
-    }
-
-    /**
-     * Move to the previous book row.
-     *
-     * @return {@code true}if successful
-     */
-    public boolean movePrev() {
-        SynchronizedStatement stmt = mStatements.get(STMT_PREV);
-        if (stmt == null) {
-            String sql = "SELECT "
-                         + mTable.dot(DBDefinitions.DOM_PK_ID)
-                         + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
-                         + " FROM " + mTable.ref()
-                         + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<?"
-                         + " AND " + mTable.dot(DBDefinitions.DOM_FK_BOOK) + "<>COALESCE(?,-1)"
-                         + " ORDER BY " + mTable.dot(DBDefinitions.DOM_PK_ID) + " DESC LIMIT 1";
-            stmt = mStatements.add(STMT_PREV, sql);
-        }
-        stmt.bindLong(1, mPosition);
-        if (mBookId != 0) {
-            stmt.bindLong(2, mBookId);
-        } else {
-            stmt.bindNull(2);
-        }
-
-        return fetchBookIdAndPosition(stmt);
-    }
-
-    /**
-     * Move to the specified book row, based on the row ID, not the book id or row number.
-     * The row id should be the row number in the table, including header-related rows.
-     *
-     * @param position to move to
-     *
-     * @return {@code true} if successful
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean moveTo(final int position) {
-        SynchronizedStatement stmt = mStatements.get(STMT_MOVE);
-        if (stmt == null) {
-            String sql = "SELECT "
-                         + mTable.dot(DBDefinitions.DOM_PK_ID)
-                         + " || '/' || " + mTable.dot(DBDefinitions.DOM_FK_BOOK)
-                         + " FROM " + mTable.ref()
-                         + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "=?";
-            stmt = mStatements.add(STMT_MOVE, sql);
-        }
-        stmt.bindLong(1, position);
-
-        if (fetchBookIdAndPosition(stmt)) {
-            return true;
-        } else {
-            long posSav = mPosition;
-            mPosition = position;
-            if (moveNext() || movePrev()) {
-                return true;
-            } else {
-                mPosition = posSav;
-                return false;
-            }
-        }
-    }
-
-    /**
-     * Move to the first row.
-     *
-     * @return {@code true}if successful
-     */
-    @SuppressWarnings("unused")
-    public boolean moveFirst() {
-        mPosition = -1;
-        mBookId = 0;
-        return moveNext();
-    }
-
-    /**
-     * Move to the last row.
-     *
-     * @return {@code true}if successful
-     */
-    @SuppressWarnings("unused")
-    public boolean moveLast() {
-        mPosition = Long.MAX_VALUE;
-        mBookId = 0;
-        return movePrev();
-    }
-
-    /**
-     * Get the underlying row position (row ID).
-     *
-     * @return position
-     */
-    @SuppressWarnings("unused")
-    public long getPosition() {
-        return mPosition;
-    }
-
-    /**
-     * Get the position of the current record in the table.
-     *
-     * @return position
-     */
-    @SuppressWarnings("unused")
-    public long getAbsolutePosition() {
-        SynchronizedStatement stmt = mStatements.get(STMT_POSITION);
-        if (stmt == null) {
-            String sql = "SELECT COUNT(*) FROM " + mTable.ref()
-                         + " WHERE " + mTable.dot(DBDefinitions.DOM_PK_ID) + "<=?";
-            stmt = mStatements.add(STMT_POSITION, sql);
-        }
-        stmt.bindLong(1, mPosition);
-        return stmt.count();
-    }
-
-    /**
      * Release resource-consuming stuff.
      */
     @Override
     public void close() {
         mCloseWasCalled = true;
-        mStatements.close();
-    }
-
-    /**
-     * Cleanup the underlying table.
-     * It's a temp table, but cleaning up prevents 'old' tables hanging around far to long.
-     */
-    public void deleteData() {
-        mTable.drop(mSyncedDb);
+        mSqlStatementManager.close();
+        // It's a temp table, but cleaning up prevents 'old' tables hanging around far to long.
+        mSyncedDb.drop(mTable.getName());
         // force to null, so if we access the table again, we'll crash on purpose!
         //noinspection ConstantConditions
         mTable = null;

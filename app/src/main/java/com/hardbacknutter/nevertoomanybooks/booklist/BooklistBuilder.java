@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,12 +28,10 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -71,12 +69,10 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_ABSOLUTE_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_LIST_VIEW_ROW_LINE_PLUS1;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KIND;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_PRIMARY_SERIES_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_ROOT_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_NUM_FLOAT;
@@ -92,10 +88,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK_BL_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_STYLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE_AS_BOOLEAN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
@@ -109,7 +102,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
@@ -118,9 +110,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TB
 /**
  * Class used to build and populate temporary tables with details of a flattened book
  * list used to display books in a list control and perform operation like
- * 'expand/collapse' on pseudo nodes in the list.
- *
- * <strong>ENHANCE:</strong> implement {@link #mRebuildStmts}.
+ * 'expand/collapse' on nodes in the list.
+ * <p>
+ * A BooklistBuilder has a 1:n relation to {@link BooklistCursor} objects.
+ * Right now (2020-01-16) it's a 1:2 relation,
+ * i.e. two cursors with the same builder can exist: the current cursor, and a new cursor
+ * which is going to replace the old cursor. See {@link #closeCursor}.
+ * Cursors hold a reference to the BooklistBuilder.
  */
 public class BooklistBuilder
         implements AutoCloseable {
@@ -143,8 +139,6 @@ public class BooklistBuilder
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
-
-    private static final String INITIAL_INSERT_FOR_REBUILD_STMT = "mInitialInsertSqlForRebuild";
 
     // not in use for now
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
@@ -170,30 +164,15 @@ public class BooklistBuilder
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Map<String, ExtraDomainDetails> mExtraDomains = new HashMap<>();
+
+    /** the list of Filters. */
+    private final Collection<Filter> mFilters = new ArrayList<>();
+    /** Show only books on this bookshelf. */
+    private final Bookshelf mBookshelf;
     /** Style to use while building the list. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final BooklistStyle mStyle;
-    /**
-     * Instance-based cursor factory so that the builder can be associated with the cursor
-     * and the rowView. We could probably send less context, but in the first instance this
-     * guarantees we get all the info we need downstream.
-     */
-    @SuppressWarnings("FieldNotUsedInToString")
-    private final CursorFactory mBooklistCursorFactory =
-            (db, masterQuery, editTable, query) ->
-                    new BooklistCursor(masterQuery, editTable, query,
-                                       DAO.getSynchronizer(), BooklistBuilder.this);
-    /** the list of Filters. */
-    private final Collection<Filter> mFilters = new ArrayList<>();
-
-    /**
-     * Collection of statements used to {@link #rebuild()}.
-     * All statements added to this collection <strong>must</strong> also be added
-     * to {@link #mStatementManager} and needs to be re-usable WITHOUT parameter binding.
-     */
-    private final Collection<SynchronizedStatement> mRebuildStmts = new ArrayList<>();
-
     /**
      * The temp table representing the booklist for the current bookshelf/style.
      * <p>
@@ -203,42 +182,41 @@ public class BooklistBuilder
     private TableDefinition mListTable;
     @SuppressWarnings("FieldNotUsedInToString")
     private TableDefinition mFlatNavigationTable;
-
     /**
      * The temp table holding the state (expand,visibility,...) for all rows in the list-table.
      * <p>
      * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
     @SuppressWarnings("FieldNotUsedInToString")
-    private
-    RowStateTable mRowStateTable;
-
-
+    private RowStateDAO mRowStateDAO;
     /** Table used by the triggers to store the snapshot of the most recent/current row headings. */
     @SuppressWarnings("FieldNotUsedInToString")
     private TableDefinition mTriggerHelperTable;
     /** used in debug. */
     @SuppressWarnings("FieldNotUsedInToString")
     private boolean mDebugReferenceDecremented;
-    /** Show only books on this bookshelf. */
-    private Bookshelf mBookshelf;
     /** DEBUG: Indicates close() has been called. */
     private boolean mCloseWasCalled;
 
     /**
      * Constructor.
      *
-     * @param style Booklist style to use
+     * @param bookshelf to use
+     * @param style     Booklist style to use;
+     *                  this is the resolved style as used by the passed bookshelf
      */
-    public BooklistBuilder(@NonNull final BooklistStyle style) {
+    public BooklistBuilder(@NonNull final Bookshelf bookshelf,
+                           @NonNull final BooklistStyle style) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Log.d(TAG, "ENTER|BooklistBuilder"
+                       + "|bookshelf=" + bookshelf.getName()
+                       + "|style=" + style.getUuid()
                        + "|instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
         }
         // Allocate ID
         mInstanceId = ID_COUNTER.incrementAndGet();
 
-        // Save the requested style
+        mBookshelf = bookshelf;
         mStyle = style;
 
         // Get the database and create a statements collection
@@ -259,16 +237,33 @@ public class BooklistBuilder
     }
 
     /**
+     * Close the 'cursorToClose' in a safe way, checking the BooklistBuilder is not used
+     * by the 'currentCursor'.
+     *
+     * @param cursorToClose the one to close
+     * @param currentCursor the one to check
+     */
+    public static void closeCursor(@Nullable final BooklistCursor cursorToClose,
+                                   @Nullable final BooklistCursor currentCursor) {
+        if (cursorToClose != null && cursorToClose != currentCursor) {
+            BooklistBuilder blbToClose = cursorToClose.getBooklistBuilder();
+            if (currentCursor == null || !blbToClose.equals(currentCursor.getBooklistBuilder())) {
+                blbToClose.close();
+            }
+            cursorToClose.close();
+        }
+    }
+
+    /**
      * Create a flattened table (a snapshot!) of ordered book ID's based on the underlying list.
+     * Any old data is removed before the new table is created.
      *
      * @return the name of the created table.
      */
     @NonNull
     public String createFlattenedBooklist() {
-
         mFlatNavigationTable = FlattenedBooklist.createTable(mSyncedDb, mInstanceId,
-                                                             mListTable, mRowStateTable);
-
+                                                             mListTable);
         return mFlatNavigationTable.getName();
     }
 
@@ -363,16 +358,6 @@ public class BooklistBuilder
     }
 
     /**
-     * Set the filter to return only books on this bookshelf.
-     * If set to 0, return books from all shelves.
-     *
-     * @param bookshelf only books on this shelf.
-     */
-    public void setBookshelf(@NonNull final Bookshelf bookshelf) {
-        mBookshelf = bookshelf;
-    }
-
-    /**
      * The where clause will add a "AND books._id IN (list)".
      * Be careful when combining with other criteria as you might get less than expected
      * <p>
@@ -383,27 +368,6 @@ public class BooklistBuilder
     public void setFilterOnBookIdList(@Nullable final List<Long> filter) {
         if (filter != null && !filter.isEmpty()) {
             mFilters.add(new ListOfValuesFilter<>(TBL_BOOKS, DOM_PK_ID, filter));
-        }
-    }
-
-    /**
-     * Drop and recreate all the data based on previous criteria.
-     */
-    public void rebuild() {
-        // Drop the table in case there is an orphaned instance.
-        mListTable.drop(mSyncedDb);
-        //IMPORTANT: withConstraints MUST BE false
-        mListTable.create(mSyncedDb, false);
-
-        mRowStateTable.drop(mSyncedDb);
-        // indices are created after the table is populated.
-        mRowStateTable.create(mSyncedDb, true, false);
-
-        for (SynchronizedStatement stmt : mRebuildStmts) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "rebuild|mRebuildStmts" + stmt);
-            }
-            stmt.execute();
         }
     }
 
@@ -424,32 +388,17 @@ public class BooklistBuilder
         mListTable = TMP_TBL_BOOK_LIST.clone();
         mListTable.setName(mListTable.getName() + mInstanceId);
 
-        mRowStateTable = new RowStateTable(mSyncedDb, mStatementManager, mInstanceId);
-
-        // link the two tables via the actual row ID
-        // We use this for joins, but it's not enforced with constraints.
-        mRowStateTable.addReference(mListTable, DOM_FK_BOOK_BL_ROW_ID);
-
-        // Will be created on first usage.
+        // Will be (re)created on first usage.
         mFlatNavigationTable = null;
 
-        mTriggerHelperTable = new TableDefinition(mListTable + "_th")
-                .setAlias("tht");
-        // Allow debug mode to use standard tables so we can export and inspect the content.
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
-            mTriggerHelperTable.setType(TableDefinition.TableType.Standard);
-        } else {
-            mTriggerHelperTable.setType(TableDefinition.TableType.Temporary);
-        }
-
         // Start building the table domains
-        final BuildHelper helper = new BuildHelper(mListTable, mStyle);
 
         // Will use default increment
         mListTable.addDomain(DOM_PK_ID);
-        // Will use expression based on first group (rowKindPrefix/rowValue); determined later
+        // Will use expression based on groups (rowKindPrefix/rowValue); determined later
         mListTable.addDomain(DOM_BL_ROOT_KEY);
 
+        final BuildHelper helper = new BuildHelper(mListTable, mStyle);
         // not sorted
         helper.addDomain(DOM_BL_NODE_LEVEL, String.valueOf(mStyle.groupCount() + 1),
                          BuildHelper.FLAG_NONE);
@@ -476,77 +425,54 @@ public class BooklistBuilder
         }
         // After adding the groups, we now know if we have a Bookshelf group or not.
 
-        // If we want a specific shelf, we  need to filter on it.
+        // If we want a specific Bookshelf, make sure to filter on it.
         if (!mBookshelf.isAllBooks()) {
-            if (!helper.hasBookshelfGroup()) {
-                // We DO NOT have bookshelves as a group
-                // So tell the helper we DO need to join with the bookshelves table
-                helper.setJoinWithBookshelves();
-                // and add a specific filter to get only the requested shelf.
-                mFilters.add(() -> '(' + TBL_BOOKSHELF.dot(DOM_PK_ID)
-                                   + '=' + mBookshelf.getId() + ')');
-
-            }
-            //else {
-            //URGENT: we're listing ONE Bookshelf.. and have bookshelves as a filter
-            // confused.... this is wrong
-            // Commented out as a TEST
-            // We DO have bookshelves as a group
-            // Add an 'exists' filter.
-//                mFilters.add(() -> "EXISTS(SELECT NULL FROM "
-//                                   + TBL_BOOK_BOOKSHELF.ref() + TBL_BOOK_BOOKSHELF.join(TBL_BOOKS)
-//                                   + " WHERE " + TBL_BOOK_BOOKSHELF.dot(DOM_FK_BOOKSHELF)
-//                                   + '=' + mBookshelf.getId()
-//                                   + ')');
-            //}
+            helper.ensureBookshelfGroup(mBookshelf.getId());
         }
 
-        // Last step in preparing the domains: add any caller-specified extras (e.g. title).
+        // add any caller-specified extras (e.g. title).
         for (ExtraDomainDetails edd : mExtraDomains.values()) {
             helper.addDomain(edd.domain, edd.sourceExpression, edd.flags);
         }
 
-        // With all domains setup, we can now (re)create the list-table
+        // and finally, add the filters to be used for the WHERE clause
+        helper.addFilters(mFilters);
 
-        // Drop the table in case there is an orphaned instance.
-        mListTable.drop(mSyncedDb);
-        //IMPORTANT: withConstraints MUST BE false
-        mListTable.create(mSyncedDb, false);
-
-        final long t01_table_created = System.nanoTime();
+        final long t01_domains_done = System.nanoTime();
 
         // Construct the initial insert statement components.
-        final BaseSql baseSql = helper.build();
-        baseSql.addJoins(helper);
-        baseSql.addWhere(mFilters, mStyle.getFilters());
-        baseSql.addOrderBy(helper.getSortedDomains(), mSyncedDb.isCollationCaseSensitive());
+        String initialInsertSql = helper.buildSql(mSyncedDb.isCollationCaseSensitive());
 
-        final long t02_base_sql_build = System.nanoTime();
-
-        mRebuildStmts.clear();
+        final long t02_base_insert_prepared = System.nanoTime();
 
         // We are good to go.
-        long t03_base_insert_prepared = 0;
+        long t03_list_table_created = 0;
         long t04_base_insert_executed = 0;
         long t05_listTable_analyzed = 0;
-        long t06_stateTable_build = 0;
-        long t07_stateTable_idx_created = 0;
-        long t08_stateTable_analyzed = 0;
+        long t06_stateTable_created = 0;
 
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
+            //IMPORTANT: withConstraints MUST BE false
+            mListTable.recreate(mSyncedDb, false)
+                      .createIndices(mSyncedDb);
+
+            t03_list_table_created = System.nanoTime();
+
             // get the triggers in place, ready to act on our upcoming initial insert.
             createTriggers(helper.getSortedDomains());
 
+            //TEST: this is a temporary test. of an index on list table.
+            // Need to add some timers
+//            if (!mSyncedDb.isCollationCaseSensitive()) {
+//                // mListTable.addIndex("SDI", false, helper.getSortedDomains());
+//                mSyncedDb.execSQL("CREATE INDEX " + mListTable + "_IX1 ON " + mListTable
+//                                  + "(" + helper.getSortedDomainsIndexColumns() + ")");
+//            }
+
             // Build the lowest level summary using our initial insert statement
-            SynchronizedStatement initialInsertStmt = mStatementManager
-                    .add(INITIAL_INSERT_FOR_REBUILD_STMT, baseSql.build());
-            mRebuildStmts.add(initialInsertStmt);
-
-            t03_base_insert_prepared = System.nanoTime();
-
             // The triggers will do the rest.
-            initialInsertStmt.executeInsert();
+            mSyncedDb.execSQL(initialInsertSql);
 
             t04_base_insert_executed = System.nanoTime();
 
@@ -555,27 +481,17 @@ public class BooklistBuilder
 
             t05_listTable_analyzed = System.nanoTime();
 
-            // build the row-state aka navigation table
-            // we drop the table just in case there is a leftover table with the same name.
-            // (due to previous crash maybe)
-            mRowStateTable.drop(mSyncedDb);
-            // indices will be created after the table is populated.
-            mRowStateTable.create(mSyncedDb, true, false);
+            // build the row-state table for expansion/visibility tracking
+            // clean up previously used table (if any)
+            if (mRowStateDAO != null) {
+                mRowStateDAO.close();
+            }
 
-            populateRowStateTable(listState);
+            mRowStateDAO = new RowStateDAO(mSyncedDb, mInstanceId,
+                                           mBookshelf, mStyle);
+            mRowStateDAO.build(mListTable, listState);
 
-            t06_stateTable_build = System.nanoTime();
-
-            // create the indexes we need. Doing this AFTER the data got inserted has
-            // proven to be faster:
-            // populate 50ms + indexing 50ms; versus 120ms if creating the indexes before.
-            mRowStateTable.createIndices(mSyncedDb);
-
-            t07_stateTable_idx_created = System.nanoTime();
-
-            mSyncedDb.analyze(mRowStateTable);
-
-            t08_stateTable_analyzed = System.nanoTime();
+            t06_stateTable_created = System.nanoTime();
 
             mSyncedDb.setTransactionSuccessful();
 
@@ -586,39 +502,30 @@ public class BooklistBuilder
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "build|" +
                            String.format(Locale.UK, ""
-                                                    + "\ntable created         : %5d"
-                                                    + "\nbase sql build        : %5d"
+                                                    + "\ndomains setup        : %5d"
+                                                    + "\nbuild insert         : %5d"
 
-                                                    + "\nbase insert prepared  : %5d"
-                                                    + "\nbase insert executed  : %5d"
-                                                    + "\nbase analyzed         : %5d"
+                                                    + "\nlist table created   : %5d"
+                                                    + "\nbase insert executed : %5d"
+                                                    + "\nlist table analyzed  : %5d"
 
-                                                    + "\nstateTable build      : %5d"
-                                                    + "\nstateTable idx created: %5d"
-                                                    + "\nstateTable analyzed   : %5d"
-                                                    + "\n============================="
-                                                    + "\nTotal time in ms      : %5d",
+                                                    + "\nstate table build    : %5d"
+                                                    + "\n============================"
+                                                    + "\nTotal time in ms     : %5d",
 
-                                         (t01_table_created - t00)
+                                         (t01_domains_done - t00)
                                          / NANO_TO_MILLIS,
-                                         (t02_base_sql_build - t01_table_created)
+                                         (t02_base_insert_prepared - t01_domains_done)
                                          / NANO_TO_MILLIS,
-
-                                         (t03_base_insert_prepared - t02_base_sql_build)
+                                         (t03_list_table_created - t02_base_insert_prepared)
                                          / NANO_TO_MILLIS,
-                                         (t04_base_insert_executed - t03_base_insert_prepared)
+                                         (t04_base_insert_executed - t03_list_table_created)
                                          / NANO_TO_MILLIS,
                                          (t05_listTable_analyzed - t04_base_insert_executed)
                                          / NANO_TO_MILLIS,
-
-                                         (t06_stateTable_build - t05_listTable_analyzed)
+                                         (t06_stateTable_created - t05_listTable_analyzed)
                                          / NANO_TO_MILLIS,
-                                         (t07_stateTable_idx_created - t06_stateTable_build)
-                                         / NANO_TO_MILLIS,
-                                         (t08_stateTable_analyzed - t07_stateTable_idx_created)
-                                         / NANO_TO_MILLIS,
-                                         (System.nanoTime() - t00)
-                                         / NANO_TO_MILLIS
+                                         (System.nanoTime() - t00) / NANO_TO_MILLIS
                                         )
                      );
             }
@@ -636,6 +543,15 @@ public class BooklistBuilder
      * @param sortedDomains the domains we need to sort by, in order.
      */
     private void createTriggers(@NonNull final Iterable<SortedDomains> sortedDomains) {
+
+        mTriggerHelperTable = new TableDefinition(mListTable + "_th")
+                .setAlias("tht");
+        // Allow debug mode to use standard tables so we can export and inspect the content.
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
+            mTriggerHelperTable.setType(TableDefinition.TableType.Standard);
+        } else {
+            mTriggerHelperTable.setType(TableDefinition.TableType.Temporary);
+        }
 
         // SQL statement to update the 'current' table
         StringBuilder valuesColumns = new StringBuilder();
@@ -663,10 +579,8 @@ public class BooklistBuilder
          *
          * This is just a simple technique to provide persistent context to the trigger.
          */
-        // Drop the table in case there is an orphaned instance.
-        mTriggerHelperTable.drop(mSyncedDb);
         //IMPORTANT: withConstraints MUST BE false
-        mTriggerHelperTable.create(mSyncedDb, false);
+        mTriggerHelperTable.recreate(mSyncedDb, false);
 
         /*
          * For each grouping, starting with the lowest, build a trigger to update the next
@@ -751,160 +665,6 @@ public class BooklistBuilder
     }
 
     /**
-     * Build a lookup table to match row sort position to row ID. This is used to
-     * match a specific book (or other row in result set) to a position directly
-     * without having to scan the database. This is especially useful in
-     * expand/collapse operations.
-     *
-     * @param listState Desired list state
-     */
-    private void populateRowStateTable(@ListRebuildMode final int listState) {
-
-        // the table is ordered at insert time, so the row id *is* the order.
-        String baseSql = "INSERT INTO " + mRowStateTable
-                         + " (" + DOM_FK_BOOK_BL_ROW_ID
-                         + ',' + DOM_BL_ROOT_KEY
-                         + ',' + DOM_BL_NODE_LEVEL
-                         + ',' + DOM_BL_NODE_KIND
-
-                         + ',' + DOM_BL_NODE_VISIBLE
-                         + ',' + DOM_BL_NODE_EXPANDED
-                         + ')'
-                         + " SELECT DISTINCT "
-                         + mListTable.dot(DOM_PK_ID)
-                         + ',' + mListTable.dot(DOM_BL_ROOT_KEY)
-                         + ',' + mListTable.dot(DOM_BL_NODE_LEVEL)
-                         + ',' + mListTable.dot(DOM_BL_NODE_KIND)
-                         + "\n";
-
-        // On first-time builds, get the Preferences-based list
-        switch (listState) {
-            case PREF_REBUILD_ALWAYS_EXPANDED: {
-                String sql = baseSql
-                             // DOM_BL_NODE_VISIBLE: all visible
-                             + ",1"
-                             // DOM_BL_NODE_EXPANDED: all expanded
-                             + ",1"
-                             + " FROM " + mListTable.ref()
-                             + " ORDER BY " + mListTable.dot(DOM_PK_ID);
-
-                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    int rowsUpdated = stmt.executeUpdateDelete();
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Log.d(TAG, "PREF_REBUILD_ALWAYS_EXPANDED"
-                                   + "|rowsUpdated=" + rowsUpdated
-                                   + "|sql=" + sql);
-                    }
-                }
-                break;
-            }
-            case PREF_REBUILD_ALWAYS_COLLAPSED: {
-                String sql = baseSql
-                             // DOM_BL_NODE_VISIBLE:
-                             + ",CASE"
-                             // level 1 visible
-                             + " WHEN " + DOM_BL_NODE_LEVEL + "=1 THEN 1"
-                             // and all other levels invisible.
-                             + " ELSE 0"
-                             + " END"
-                             // 'AS' for SQL readability/debug only
-                             + " AS " + DOM_BL_NODE_VISIBLE
-
-                             // DOM_BL_NODE_EXPANDED: all nodes collapsed
-                             + ",0"
-                             + "\n"
-                             + " FROM " + mListTable.ref()
-                             + " ORDER BY " + mListTable.dot(DOM_PK_ID);
-
-                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    int rowsUpdated = stmt.executeUpdateDelete();
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Log.d(TAG, "PREF_REBUILD_ALWAYS_COLLAPSED"
-                                   + "|rowsUpdated=" + rowsUpdated
-                                   + "|sql=" + sql);
-                    }
-                }
-                break;
-            }
-            case PREF_REBUILD_SAVED_STATE: {
-                // SQL to rebuild with state preserved.
-                // IMPORTANT: we concat the sql with the bookshelf and style id's.
-                // should bind those obviously, but current (and non-functional) mRebuildStmts
-                // requires statements without parameters.
-                String sql =
-                        baseSql
-                        // *all* rows in TBL_BOOK_LIST_NODE_STATE are considered visible!
-                        // ergo, all others are invisible but level 1 is always visible.
-
-                        // DOM_BL_NODE_VISIBLE
-                        + ",CASE"
-                        // level 1 is always visible
-                        + " WHEN " + mListTable.dot(DOM_BL_NODE_LEVEL) + "=1 THEN 1"
-                        // if the row is not present, hide it.
-                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY) + " IS NULL"
-                        + /* */ " THEN 0"
-                        // all others are visible
-                        + /* */ " ELSE 1"
-                        + " END"
-                        // 'AS' for SQL readability/debug only
-                        + " AS " + DOM_BL_NODE_VISIBLE
-                        + "\n"
-
-                        // DOM_BL_NODE_EXPANDED
-                        + ",CASE"
-                        // if the row is not present, collapse it.
-                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY) + " IS NULL"
-                        + /* */ " THEN 0"
-                        //  Otherwise use the stored state
-                        + /* */ " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_EXPANDED)
-                        + " END"
-                        // 'AS' for SQL readability/debug only
-                        + " AS " + DOM_BL_NODE_EXPANDED
-                        + "\n"
-
-                        + " FROM " + mListTable.ref()
-                        // note this is a pure OUTER JOIN and not a where-clause
-                        + " LEFT OUTER JOIN " + TBL_BOOK_LIST_NODE_STATE.ref()
-                        + " ON "
-                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_BOOKSHELF)
-                        + '=' + mBookshelf.getId()
-                        + " AND "
-                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_FK_STYLE)
-                        + '=' + mStyle.getId()
-                        + " AND "
-                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_NODE_LEVEL)
-                        + '=' + mListTable.dot(DOM_BL_NODE_LEVEL)
-                        + " AND "
-                        + TBL_BOOK_LIST_NODE_STATE.dot(DOM_BL_ROOT_KEY)
-                        + '=' + mListTable.dot(DOM_BL_ROOT_KEY)
-
-                        + " ORDER BY " + mListTable.dot(DOM_PK_ID);
-
-                // Use already-defined SQL for preserve state.
-                try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    int rowsUpdated = stmt.executeUpdateDelete();
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Log.d(TAG, "PREF_REBUILD_SAVED_STATE"
-                                   + "|rowsUpdated=" + rowsUpdated
-                                   + "|sql=" + sql);
-                    }
-                }
-                break;
-            }
-            case PREF_REBUILD_PREFERRED_STATE: {
-                expandNodes(mStyle.getTopLevel(), false);
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "PREF_REBUILD_PREFERRED_STATE");
-                }
-                break;
-            }
-
-            default:
-                throw new UnexpectedValueException(listState);
-        }
-    }
-
-    /**
      * Get the style used by this builder.
      *
      * @return the style
@@ -914,116 +674,24 @@ public class BooklistBuilder
         return mStyle;
     }
 
-    /**
-     * Gets a 'window' on the result set, starting at 'position' and 'size' rows.
-     * We only retrieve visible rows.
-     *
-     * @param position the offset
-     * @param pageSize the amount of results maximum to return (SQL LIMIT clause)
-     *
-     * @return a list cursor starting at a given offset, using a given limit.
-     */
+    /** Wrapper for {@link RowStateDAO#getOffsetCursor}. */
     @NonNull
-    BooklistCursor getOffsetCursor(final int position,
-                                   @SuppressWarnings("SameParameterValue") final int pageSize) {
-        // Get the domains
-        StringBuilder domains = new StringBuilder();
-        final String prefix = mListTable.getAlias() + '.';
+    Cursor getOffsetCursor(final int position,
+                           @SuppressWarnings("SameParameterValue") final int pageSize) {
 
-        for (DomainDefinition domain : mListTable.getDomains()) {
-            domains.append(prefix).append(domain.getName())
-                   .append(" AS ").append(domain.getName()).append(',');
-        }
-
-        // Build the SQL, adding DOM_BL_ABSOLUTE_POSITION.
-        String sql = "SELECT " + domains
-                     + " (" + mRowStateTable.dot(DOM_PK_ID) + " -1) AS " + DOM_BL_ABSOLUTE_POSITION
-
-                     + " FROM " + mListTable.ref() + mListTable.join(mRowStateTable)
-                     + " WHERE " + mRowStateTable.dot(DOM_BL_NODE_VISIBLE) + "=1"
-                     + " ORDER BY " + mRowStateTable.dot(DOM_PK_ID)
-                     + " LIMIT " + pageSize + " OFFSET " + position;
-
-        return (BooklistCursor) mSyncedDb.rawQueryWithFactory(mBooklistCursorFactory, sql,
-                                                              null, "");
+        return mRowStateDAO.getOffsetCursor(mListTable, position, pageSize);
     }
 
     /**
      * Get a new list cursor.
      *
-     * @return a {@link BooklistPseudoCursor} instead of a real cursor.
+     * @return a {@link BooklistCursor} instead of a real cursor.
      */
     @NonNull
-    public BooklistPseudoCursor getNewListCursor() {
-        return new BooklistPseudoCursor(this);
+    public BooklistCursor getNewListCursor() {
+        return new BooklistCursor(this);
     }
 
-    /**
-     * Get all positions, and the row info for that position,
-     * at which the specified book appears.
-     *
-     * @param bookId the book to find
-     *
-     * @return Array of row details, including absolute positions, visibility and level.
-     * Can be empty, but never {@code null}.
-     */
-    @NonNull
-    private ArrayList<RowDetails> getBookPositions(final long bookId) {
-        String sql = "SELECT "
-                     + mRowStateTable.dot(DOM_PK_ID)
-                     + ',' + mRowStateTable.dot(DOM_BL_NODE_VISIBLE)
-                     + ',' + mRowStateTable.dot(DOM_BL_NODE_LEVEL)
-                     + " FROM " + mListTable.ref() + mListTable.join(mRowStateTable)
-                     + " WHERE " + mListTable.dot(DOM_FK_BOOK) + "=?";
-
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
-            ArrayList<RowDetails> rows = new ArrayList<>(cursor.getCount());
-            while (cursor.moveToNext()) {
-                int absPos = cursor.getInt(0) - 1;
-                boolean visible = cursor.getInt(1) == 1;
-                int level = cursor.getInt(2);
-                rows.add(new RowDetails(absPos, mRowStateTable.getListPosition(absPos),
-                                        visible, level));
-            }
-            return rows;
-        }
-    }
-
-    /**
-     * Find the visible root node for a given absolute position and ensure it is visible.
-     *
-     * @param row we want to become visible
-     */
-    private void ensureAbsolutePositionIsVisible(@NonNull final RowDetails row) {
-
-        // If <0 then no previous node.
-        if (row.absolutePosition < 0) {
-            return;
-        }
-
-        // Get the root node (level==1) 'before' the given row.
-        String sql = "SELECT " + DOM_PK_ID + ',' + DOM_BL_NODE_EXPANDED
-                     + " FROM " + mRowStateTable
-                     + " WHERE " + DOM_BL_NODE_LEVEL + "=1" + " AND " + DOM_PK_ID + "<=?"
-                     + " ORDER BY " + DOM_PK_ID + " DESC LIMIT 1";
-
-        // rowId's start at 1, but positions at 0
-        long rowId = row.absolutePosition + 1;
-
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(rowId)})) {
-            if (cursor.moveToFirst()) {
-                // Get the root node and expanded flag
-                long rootId = cursor.getLong(0);
-                boolean rootIsExpanded = cursor.getLong(1) != 0;
-
-                // If root node is not the node we are checking,
-                // and root node is not expanded, expand it.
-                if (rootId != rowId && !rootIsExpanded) {
-                    expandNode(rootId, NodeNextState.Expand);
-                }
-            }
-        }
-    }
 
     /**
      * Try to sync the previously selected book ID.
@@ -1033,22 +701,23 @@ public class BooklistBuilder
      * @return the target rows, or {@code null} if none.
      */
     @Nullable
-    public ArrayList<RowDetails> getTargetRows(final long bookId) {
+    public ArrayList<RowStateDAO.ListRowDetails> getTargetRows(final long bookId) {
         // no input, no output...
         if (bookId == 0) {
             return null;
         }
 
         // get all positions of the book
-        ArrayList<RowDetails> rows = getBookPositions(bookId);
+        ArrayList<RowStateDAO.ListRowDetails> rows =
+                mRowStateDAO.getBookPositions(mListTable, bookId);
 
         if (rows.isEmpty()) {
             return null;
         }
 
         // First, get the ones that are currently visible...
-        ArrayList<RowDetails> visibleRows = new ArrayList<>();
-        for (RowDetails row : rows) {
+        ArrayList<RowStateDAO.ListRowDetails> visibleRows = new ArrayList<>();
+        for (RowStateDAO.ListRowDetails row : rows) {
             if (row.visible) {
                 visibleRows.add(row);
             }
@@ -1060,14 +729,14 @@ public class BooklistBuilder
 
         } else {
             // Make them all visible
-            for (RowDetails row : rows) {
-                if (!row.visible) {
-                    ensureAbsolutePositionIsVisible(row);
+            for (RowStateDAO.ListRowDetails row : rows) {
+                if (!row.visible && row.rowId >= 0) {
+                    mRowStateDAO.ensureRowIsVisible(row.rowId, row.level);
                 }
             }
             // Recalculate all positions
-            for (RowDetails row : rows) {
-                row.listPosition = mRowStateTable.getListPosition(row.absolutePosition);
+            for (RowStateDAO.ListRowDetails row : rows) {
+                row.listPosition = mRowStateDAO.getListPosition(row.rowId);
             }
         }
 
@@ -1075,296 +744,143 @@ public class BooklistBuilder
     }
 
     /**
-     * Expand or collapse <strong>all</strong> nodes.
+     * Get the full list of all Books (their id only) which are currently in the list table.
      *
-     * @param topLevel the desired top-level which must be kept visible
-     * @param expand   the state to apply to levels 'below' the topLevel (level > topLevel)
+     * @return list of book ids
      */
-    public void expandNodes(@IntRange(from = 1) final int topLevel,
-                            final boolean expand) {
+    @NonNull
+    public ArrayList<Long> getCurrentBookIdList() {
+        String sql = "SELECT " + DBDefinitions.KEY_FK_BOOK
+                     + " FROM " + mListTable.getName()
+                     + " WHERE " + DOM_BL_NODE_KIND + "=?"
+                     + " ORDER BY " + DBDefinitions.KEY_FK_BOOK;
 
-        SyncLock txLock = null;
-        try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+        try (Cursor cursor = mSyncedDb
+                .rawQuery(sql, new String[]{String.valueOf(BooklistGroup.RowKind.BOOK)})) {
+            ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
+            if (cursor.moveToFirst()) {
+                do {
+                    long id = (long) cursor.getInt(0);
+                    rows.add(id);
+                } while (cursor.moveToNext());
+                return rows;
+            } else {
+                return new ArrayList<>();
             }
+        }
+    }
 
-            final long t0 = System.nanoTime();
+    /**
+     * Get the list of column names that will be in the list for cursor implementations.
+     *
+     * @return array with column names
+     */
+    @NonNull
+    String[] getListColumnNames() {
+        // Get the domains
+        List<DomainDefinition> domains = mListTable.getDomains();
+        // Make the array +1 so we can add DOM_BL_LIST_VIEW_ROW_LINE_PLUS1
+        String[] names = new String[domains.size() + 1];
+        for (int i = 0; i < domains.size(); i++) {
+            names[i] = domains.get(i).getName();
+        }
 
-            // in-memory expansion
-            mRowStateTable.expandNodes(expand, topLevel);
+        names[domains.size()] = DOM_BL_LIST_VIEW_ROW_LINE_PLUS1.getName();
+        return names;
+    }
 
-            // Store the state of all nodes.
-            preserveAllNodes();
-
+    /**
+     * Count the number of <strong>distinct</strong> book records in the list.
+     *
+     * @return count
+     */
+    public int getDistinctBookCount() {
+        final long t0 = System.nanoTime();
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                "SELECT COUNT(DISTINCT " + DOM_FK_BOOK + ")"
+                + " FROM " + mListTable.getName()
+                + " WHERE " + DOM_BL_NODE_KIND + "=?")) {
+            stmt.bindLong(1, BooklistGroup.RowKind.BOOK);
+            long count = stmt.count();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "expandNodes"
+                Log.d(TAG, "getDistinctBookCount"
+                           + "|count=" + count
                            + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
             }
-
-            if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
-            }
+            return (int) count;
         }
     }
 
     /**
-     * Expand, collapse or toggle the status of the node at the specified absolute position.
+     * Count the total number of book records in the list.
      *
-     * @param rowId      of the node in the list
-     * @param nodeStatus one of {@link NodeNextState}
-     *
-     * @return {@code true} if the new state is expanded, {@code false} if collapsed.
+     * @return count
      */
-    public boolean expandNode(final long rowId,
-                              @NonNull final NodeNextState nodeStatus) {
-
-        // future state of the affected rows.
-        boolean expand;
-
-        SyncLock txLock = null;
-        try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+    public int getBookCount() {
+        final long t0 = System.nanoTime();
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                "SELECT COUNT(*)"
+                + " FROM " + mListTable.getName()
+                + " WHERE " + DOM_BL_NODE_KIND + "=?")) {
+            stmt.bindLong(1, BooklistGroup.RowKind.BOOK);
+            long count = stmt.count();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
+                Log.d(TAG, "getBookCount"
+                           + "|count=" + count
+                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
             }
-
-            // Get the current state of the node for the given row id.
-            String sql = "SELECT " + DOM_BL_NODE_LEVEL + ',' + DOM_BL_NODE_EXPANDED
-                         + " FROM " + mRowStateTable.ref()
-                         + " WHERE " + mRowStateTable.dot(DOM_PK_ID) + "=?";
-
-            int rowLevel;
-            boolean rowIsExpanded;
-
-            try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(rowId)})) {
-                if (cursor.moveToFirst()) {
-                    rowLevel = cursor.getInt(0);
-                    rowIsExpanded = cursor.getInt(1) != 0;
-                } else {
-                    throw new IllegalStateException("rowId not found: " + rowId);
-                }
-            }
-
-            // Decide what the new state for the nodes should be.
-            switch (nodeStatus) {
-                case Collapse:
-                    expand = false;
-                    break;
-                case Expand:
-                    expand = true;
-                    break;
-
-                case Toggle:
-                default:
-                    expand = !rowIsExpanded;
-                    break;
-            }
-
-            // expand/collapse until we get to a node on the same level.
-            long endRowId = mRowStateTable.expandNodes(expand, rowId, rowLevel);
-
-            // Store the state of these nodes.
-            preserveNodes(rowId, rowLevel, endRowId);
-
-            if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
-            }
-        }
-
-        return expand;
-    }
-
-    /**
-     * Get the base insert statement for
-     * {@link #preserveAllNodes()} and {@link #preserveNodes(long, long, long)}.
-     *
-     * @return sql insert
-     */
-    private String getNodesInsertSql() {
-        return ("INSERT INTO " + TBL_BOOK_LIST_NODE_STATE
-                + " (" + DOM_FK_BOOKSHELF
-                + ',' + DOM_FK_STYLE
-
-                + ',' + DOM_BL_ROOT_KEY
-                + ',' + DOM_BL_NODE_LEVEL
-                + ',' + DOM_BL_NODE_KIND
-                + ',' + DOM_BL_NODE_EXPANDED
-                + ')'
-                + " SELECT DISTINCT "
-                + "?"
-                + ",?"
-                + ',' + DOM_BL_ROOT_KEY
-                + ',' + DOM_BL_NODE_LEVEL
-                + ',' + DOM_BL_NODE_KIND
-                + ',' + DOM_BL_NODE_EXPANDED)
-
-               + " FROM " + mRowStateTable
-               // only store visible rows; all others will be considered non-visible and collapsed.
-               + " WHERE " + DOM_BL_NODE_VISIBLE + "=1";
-    }
-
-    /**
-     * Save the state for all nodes to permanent storage.
-     * We only store visible nodes and their expansion state.
-     *
-     * <strong>Note:</strong> always uses the current bookshelf/style
-     */
-    private void preserveAllNodes() {
-        SyncLock txLock = null;
-        try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
-            }
-
-            // delete all rows for the current bookshelf/style
-            String sql = "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE
-                         + " WHERE " + DOM_FK_BOOKSHELF + "=?"
-                         + " AND " + DOM_FK_STYLE + "=?";
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                stmt.bindLong(1, mBookshelf.getId());
-                stmt.bindLong(2, mStyle.getId());
-
-                int rowsDeleted = stmt.executeUpdateDelete();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "preserveAllNodes"
-                               + "|bookshelfId=" + mBookshelf.getId()
-                               + "|rowsDeleted=" + rowsDeleted);
-                }
-            }
-
-            // Read all visible nodes, and send them to the permanent table.
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(getNodesInsertSql())) {
-                stmt.bindLong(1, mBookshelf.getId());
-                stmt.bindLong(2, mStyle.getId());
-
-                int rowsUpdated = stmt.executeUpdateDelete();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "preserveAllNodes"
-                               + "|bookshelfId=" + mBookshelf.getId()
-                               + "|styleId=" + mStyle.getId()
-                               + "|rowsUpdated=" + rowsUpdated);
-                }
-            }
-            if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
-            }
+            return (int) count;
         }
     }
 
     /**
-     * Save the state for a single node to permanent storage.
+     * Wrapper for {@link RowStateDAO#countVisibleRows()}.
      *
-     * <strong>Note:</strong> always uses the current bookshelf/style
-     *
-     * @param startRow      between this row (inclusive)
-     * @param startRowLevel level
-     * @param endRow        and this row (exclusive)
+     * @return count
      */
-    private void preserveNodes(final long startRow,
-                               final long startRowLevel,
-                               final long endRow) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-            Log.d(TAG, "preserveNodes"
-                       + "|startRow=" + startRow
-                       + "|startRowLevel=" + startRowLevel
-                       + "|endRow=" + endRow);
-        }
+    int countVisibleRows() {
+        return mRowStateDAO.countVisibleRows();
+    }
 
-        SyncLock txLock = null;
-        try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
-            }
+    /**
+     * Wrapper for {@link RowStateDAO#getListPosition}.
+     *
+     * @param rowId to check
+     *
+     * @return Actual list position.
+     */
+    public int getListPosition(final int rowId) {
+        return mRowStateDAO.getListPosition(rowId);
+    }
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                TBL_BOOK_LIST_NODE_STATE
-                        .dumpTable(mSyncedDb, "preserveNodes", "before delete", 10,
-                                   DOM_BL_ROOT_KEY.getName() + " DESC");
-            }
+    /** Wrapper for {@link RowStateDAO}. */
+    public void expandAllNodes(final int topLevel,
+                               final boolean expand) {
+        mRowStateDAO.expandAllNodes(topLevel, expand);
+    }
 
-            // delete the given rows (inc. start, excl. end) and level
-            // for the current bookshelf/style
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE
-                    + " WHERE " + DOM_FK_BOOKSHELF + "=?"
-                    + " AND " + DOM_FK_STYLE + "=?"
-                    // leave the parent levels untouched
-                    + " AND " + DOM_BL_NODE_LEVEL + ">=" + startRowLevel
-                    + " AND " + DOM_BL_ROOT_KEY + " IN ("
-                    + " SELECT DISTINCT " + DOM_BL_ROOT_KEY + " FROM " + mRowStateTable
-                    + " WHERE " + DOM_PK_ID + ">=? AND " + DOM_PK_ID + "<?"
-                    + ")")) {
-                stmt.bindLong(1, mBookshelf.getId());
-                stmt.bindLong(2, mStyle.getId());
-
-                stmt.bindLong(3, startRow);
-                stmt.bindLong(4, endRow);
-
-                int rowsDeleted = stmt.executeUpdateDelete();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "preserveNodes|rowsDeleted=" + rowsDeleted);
-                }
-            }
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                TBL_BOOK_LIST_NODE_STATE
-                        .dumpTable(mSyncedDb, "preserveNodes", "delete done", 10,
-                                   DOM_BL_ROOT_KEY.getName() + " DESC");
-            }
-
-            // Read all nodes below the given node (again inc. start, excl. end),
-            // and send them to the permanent table.
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    getNodesInsertSql()
-                    + " AND " + DOM_PK_ID + ">=? AND " + DOM_PK_ID + "<?")) {
-                stmt.bindLong(1, mBookshelf.getId());
-                stmt.bindLong(2, mStyle.getId());
-
-                stmt.bindLong(3, startRow);
-                stmt.bindLong(4, endRow);
-
-                int rowsInserted = stmt.executeUpdateDelete();
-
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                    Log.d(TAG, "preserveNodes|rowsInserted=" + rowsInserted);
-                }
-            }
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                TBL_BOOK_LIST_NODE_STATE
-                        .dumpTable(mSyncedDb, "preserveNodes", "insert done", 10,
-                                   DOM_BL_ROOT_KEY.getName() + " DESC");
-            }
-
-            if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
-            }
-        } finally {
-            if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
-            }
-        }
+    /**
+     * Wrapper for {@link RowStateDAO}.
+     *
+     * @param leafRowId of the node in the list
+     */
+    public boolean toggleNode(final long leafRowId) {
+        // Yes, we could just take the hard coded arguments one level down,
+        // but keeping it this way allows future enhancements.
+        return mRowStateDAO.setNode(leafRowId,
+                                    RowStateDAO.DesiredNodeState.Toggle,
+                                    // if the new state is expand, also expand all children
+                                    true, true,
+                                    // for all child levels
+                                    Integer.MAX_VALUE);
     }
 
     /**
      * Close the builder.
      * <p>
      * RuntimeException are caught and ignored.
+     * <p>
+     * We cleanup temporary tables simply to free up no longer needed resources NOW.
      */
     @Override
     public void close() {
@@ -1373,13 +889,17 @@ public class BooklistBuilder
         if (!mStatementManager.isEmpty()) {
             mStatementManager.close();
         }
-
-        if (mRowStateTable != null) {
-            mRowStateTable.drop(mSyncedDb);
+        if (mRowStateDAO != null) {
+            mRowStateDAO.close();
         }
-
+        if (mFlatNavigationTable != null) {
+            mSyncedDb.drop(mFlatNavigationTable.getName());
+        }
         if (mListTable != null) {
-            mListTable.drop(mSyncedDb);
+            mSyncedDb.drop(mListTable.getName());
+        }
+        if (mTriggerHelperTable != null) {
+            mSyncedDb.drop(mTriggerHelperTable.getName());
         }
 
         mDb.close();
@@ -1420,7 +940,6 @@ public class BooklistBuilder
         return "BooklistBuilder{"
                + "mInstanceId=" + mInstanceId
                + ", mCloseWasCalled=" + mCloseWasCalled
-               + ", mRebuildStmts=" + mRebuildStmts
                + ", mFilters=" + mFilters
                + ", mBookshelf=" + mBookshelf
                + '}';
@@ -1441,123 +960,6 @@ public class BooklistBuilder
         super.finalize();
     }
 
-    /**
-     * Get the full list of all Books (their id only) which are currently in the list table.
-     *
-     * @return list of book ids
-     */
-    @NonNull
-    public ArrayList<Long> getCurrentBookIdList() {
-        String sql = "SELECT " + DBDefinitions.KEY_FK_BOOK
-                     + " FROM " + mListTable
-                     + " WHERE " + DOM_BL_NODE_KIND + '=' + BooklistGroup.RowKind.BOOK
-                     + " ORDER BY " + DBDefinitions.KEY_FK_BOOK;
-
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
-            ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
-            if (cursor.moveToFirst()) {
-                do {
-                    long id = (long) cursor.getInt(0);
-                    rows.add(id);
-                } while (cursor.moveToNext());
-                return rows;
-            } else {
-                return new ArrayList<>();
-            }
-        }
-    }
-
-    /**
-     * Get the list of column names that will be in the list for cursor implementations.
-     *
-     * @return array with column names
-     */
-    @NonNull
-    String[] getListColumnNames() {
-        // Get the domains
-        List<DomainDefinition> domains = mListTable.getDomains();
-        // Make the array +1 so we can add DOM_BL_ABSOLUTE_POSITION
-        String[] names = new String[domains.size() + 1];
-        // Copy domains
-        for (int i = 0; i < domains.size(); i++) {
-            names[i] = domains.get(i).getName();
-        }
-
-        names[domains.size()] = DOM_BL_ABSOLUTE_POSITION.getName();
-        return names;
-    }
-
-    /**
-     * Wrapper for {@link RowStateTable#getListPosition(int)}.
-     *
-     * @param absolutePosition Abs. position to check
-     *
-     * @return Actual list position.
-     */
-    public int getListPosition(final int absolutePosition) {
-        return mRowStateTable.getListPosition(absolutePosition);
-    }
-
-    /**
-     * Count the number of <strong>distinct</strong> book records in the list.
-     *
-     * @return count
-     */
-    public int getDistinctBookCount() {
-        final long t0 = System.nanoTime();
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                "SELECT COUNT(DISTINCT " + DOM_FK_BOOK + ") FROM " + mListTable
-//              + " WHERE " + DOM_BL_NODE_LEVEL + "=?");
-                + " WHERE " + DOM_BL_NODE_KIND + '=' + BooklistGroup.RowKind.BOOK)) {
-//            stmt.bindLong(1, mStyle.groupCount() + 1);
-            long count = stmt.count();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "getDistinctBookCount"
-                           + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
-            }
-            return (int) count;
-        }
-    }
-
-    /**
-     * Count the total number of book records in the list.
-     *
-     * @return count
-     */
-    public int getBookCount() {
-        final long t0 = System.nanoTime();
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                "SELECT COUNT(*) FROM " + mListTable
-//               + " WHERE " + DOM_BL_NODE_LEVEL + "=?");
-                + " WHERE " + DOM_BL_NODE_KIND + '=' + BooklistGroup.RowKind.BOOK)) {
-//            stmt.bindLong(1, mStyle.groupCount() + 1);
-            long count = stmt.count();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "getBookCount"
-                           + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
-            }
-            return (int) count;
-        }
-    }
-
-    /**
-     * Wrapper for {@link RowStateTable#countVisibleRows()}.
-     *
-     * @return count
-     */
-    int countVisibleRows() {
-        return mRowStateTable.countVisibleRows();
-    }
-
-    /**
-     * The state the note should be switched to.
-     */
-    public enum NodeNextState {
-        Toggle, Expand, Collapse
-    }
-
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({PREF_REBUILD_SAVED_STATE,
              PREF_REBUILD_ALWAYS_EXPANDED,
@@ -1568,32 +970,9 @@ public class BooklistBuilder
     }
 
     /**
-     * A data class containing details of a single row.
+     * A value class for domain + desc/asc sorting flag.
      */
-    public static class RowDetails {
-
-        @SuppressWarnings("WeakerAccess")
-        public final int absolutePosition;
-        @IntRange(from = 1)
-        public final int level;
-        public final boolean visible;
-        public Integer listPosition;
-
-        RowDetails(final int absolutePosition,
-                   final int listPosition,
-                   final boolean visible,
-                   @IntRange(from = 1) final int level) {
-            this.absolutePosition = absolutePosition;
-            this.listPosition = listPosition;
-            this.visible = visible;
-            this.level = level;
-        }
-    }
-
-    /**
-     * A data class for domain + desc/asc sorting flag.
-     */
-    private static class SortedDomains {
+    public static class SortedDomains {
 
         @NonNull
         final DomainDefinition domain;
@@ -1607,7 +986,7 @@ public class BooklistBuilder
     }
 
     /**
-     * A data class of extra domains requested by caller before the build() method is called.
+     * A value class of extra domains requested by caller before the build() method is called.
      */
     private static class ExtraDomainDetails {
 
@@ -1627,199 +1006,6 @@ public class BooklistBuilder
             this.domain = domain;
             this.sourceExpression = sourceExpression;
             this.flags = flags;
-        }
-    }
-
-    /**
-     * Store and process components of the SQL required to build the list.
-     */
-    private static final class BaseSql {
-
-        /** destination table. */
-        private final String mDestinationTableName;
-        /** Columns in the current list table. */
-        @NonNull
-        private final String mDestinationColumns;
-        /** Columns from the original tables. */
-        @NonNull
-        private final String mSourceColumns;
-
-        /** FROM clause; Tables and joins. */
-        private String mFromClause;
-        /** WHERE clause; includes the WHERE keyword. Alternatively, an empty string. */
-        private String mWhereClause;
-        /** ORDER BY clause; list of column names. */
-        private String mOrderByClause;
-
-        BaseSql(@NonNull final String destinationTableName,
-                @NonNull final String destinationColumns,
-                @NonNull final String sourceColumns) {
-            mDestinationTableName = destinationTableName;
-            mDestinationColumns = destinationColumns;
-            mSourceColumns = sourceColumns;
-        }
-
-        /**
-         * Build the 'join' statement based on the groups and extra criteria.
-         * <ul>Always joined are:
-         * <li>{@link DBDefinitions#TBL_BOOK_AUTHOR}<br>{@link DBDefinitions#TBL_AUTHORS}</li>
-         * <li>{@link DBDefinitions#TBL_BOOK_SERIES}<br>{@link DBDefinitions#TBL_SERIES}</li>
-         * </ul>
-         * <ul>Optionally joined with:
-         * <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}<br>{@link DBDefinitions#TBL_BOOKSHELF}</li>
-         * <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
-         * </ul>
-         *
-         * @param buildHelper info about the joins to be made.
-         */
-        void addJoins(@NonNull final BuildHelper buildHelper) {
-
-            Joiner joiner;
-
-            // If there is a bookshelf specified, start the join there.
-            // Otherwise, start with the BOOKS table.
-            if (buildHelper.hasBookshelfGroup()) {
-                joiner = new Joiner(TBL_BOOKSHELF)
-                        .join(TBL_BOOKSHELF, TBL_BOOK_BOOKSHELF)
-                        .join(TBL_BOOK_BOOKSHELF, TBL_BOOKS);
-            } else {
-                joiner = new Joiner(TBL_BOOKS);
-            }
-
-            // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-            if (buildHelper.hasLoaneeGroup() || App.isUsed(DBDefinitions.KEY_LOANEE)) {
-                // so get the loanee name, or a {@code null} for available books.
-                joiner.leftOuterJoin(TBL_BOOKS, TBL_BOOK_LOANEE);
-            }
-
-            // Join with the Author using the link table between Book and Author.
-            joiner.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
-
-            BooklistGroup.BooklistAuthorGroup authorGroup = buildHelper.getAuthorGroup();
-
-            // Join with the primary Author (i.e. position 1) if needed.
-            if (authorGroup == null || !authorGroup.showAll()) {
-                joiner.append(" AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + "=1");
-            }
-
-            // Join with Authors to make the names available
-            joiner.join(TBL_BOOK_AUTHOR, TBL_AUTHORS);
-
-            // Join with the Series using the link table between Book and Series.
-            joiner.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
-
-            // Join with the primary Series if needed.
-            BooklistGroup.BooklistSeriesGroup seriesGroupGroup = buildHelper.getSeriesGroup();
-            if (seriesGroupGroup == null || !seriesGroupGroup.showAll()) {
-                joiner.append(" AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + "=1");
-            }
-
-            // Join with Series to make the titles available
-            joiner.leftOuterJoin(TBL_BOOK_SERIES, TBL_SERIES);
-
-            mFromClause = joiner.build();
-        }
-
-        /**
-         * Create the WHERE clause based on all filters.
-         *
-         * @param activeFilters   filter which are assumed to be active; will always be added
-         * @param optionalFilters optional filters which will only be added if they are active
-         */
-        void addWhere(@NonNull final Iterable<Filter> activeFilters,
-                      @Nullable final Iterable<Filter> optionalFilters) {
-            StringBuilder where = new StringBuilder();
-
-            for (Filter filter : activeFilters) {
-                if (where.length() != 0) {
-                    where.append(" AND ");
-                }
-                where.append(' ').append(filter.getExpression());
-            }
-
-            if (optionalFilters != null) {
-                for (Filter filter : optionalFilters) {
-                    if (filter.isActive()) {
-                        if (where.length() != 0) {
-                            where.append(" AND ");
-                        }
-                        where.append(' ').append(filter.getExpression());
-                    }
-                }
-            }
-            // all done
-            if (where.length() > 0) {
-                mWhereClause = where.insert(0, " WHERE ").toString();
-            } else {
-                mWhereClause = "";
-            }
-        }
-
-        /**
-         * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement, or index.
-         * <p>
-         * If the {@link DAO#COLLATION} is case-sensitive, we wrap the columns in "lower()"
-         *
-         * @param sortedDomains the list of sorted domains from the builder
-         * @param collationIsCs if {@code true} then we'll adjust the case here
-         */
-        void addOrderBy(@NonNull final Iterable<SortedDomains> sortedDomains,
-                        final boolean collationIsCs) {
-            final StringBuilder sortCols = new StringBuilder();
-            final StringBuilder indexCols = new StringBuilder();
-
-            for (SortedDomains sdi : sortedDomains) {
-                indexCols.append(sdi.domain.getName());
-                if (sdi.domain.isText()) {
-                    indexCols.append(DAO.COLLATION);
-                    // The order of this if/elseif/else is important, don't merge branch 1 and 3!
-                    if (sdi.domain.isPrePreparedOrderBy()) {
-                        // always use a pre-prepared order-by column as-is
-                        sortCols.append(sdi.domain.getName());
-
-                    } else if (collationIsCs) {
-                        // *If* collations is case-sensitive, lowercase it.
-                        sortCols.append("lower(").append(sdi.domain.getName()).append(')');
-
-                    } else {
-                        // hope for the best. This case might not handle non-[A..Z0..9] as expected
-                        sortCols.append(sdi.domain.getName());
-                    }
-
-                    sortCols.append(DAO.COLLATION);
-                } else {
-                    sortCols.append(sdi.domain.getName());
-                }
-                if (sdi.isDescending) {
-                    indexCols.append(" DESC");
-                    sortCols.append(" DESC");
-                }
-                sortCols.append(',');
-                indexCols.append(',');
-            }
-
-            sortCols.append(DOM_BL_NODE_LEVEL);
-            indexCols.append(DOM_BL_NODE_LEVEL);
-
-            mOrderByClause = sortCols.toString();
-        }
-
-        /**
-         * Constructs the INSERT INTO statement for the base build.
-         *
-         * @return INSERT INTO statement
-         */
-        @NonNull
-        String build() {
-            String sql = "INSERT INTO " + mDestinationTableName + '(' + mDestinationColumns + ')'
-                         + " SELECT " + mSourceColumns
-                         + " FROM " + mFromClause + mWhereClause
-                         + " ORDER BY " + mOrderByClause;
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "build|sql=" + sql);
-            }
-            return sql;
         }
     }
 
@@ -1850,6 +1036,9 @@ public class BooklistBuilder
         private final Map<DomainDefinition, String> mExpressions = new HashMap<>();
         /** Domains belonging the current group including its outer groups. */
         private final ArrayList<DomainDefinition> mGroupDomains = new ArrayList<>();
+        /** the list of Filters. */
+        private final Collection<Filter> mFilters = new ArrayList<>();
+
         /**
          * Domains that form part of the sort key.
          * These are typically a reduced set of the GROUP domains since the group domains
@@ -1858,6 +1047,7 @@ public class BooklistBuilder
         private final ArrayList<SortedDomains> mSortedDomains = new ArrayList<>();
         /** The set is used as a simple mechanism to prevent duplicate domains. */
         private final Collection<DomainDefinition> mSortedColumnsSet = new HashSet<>();
+
         /** Will be set to appropriate Group if an Author group exists in style. */
         private BooklistGroup.BooklistAuthorGroup mAuthorGroup;
         /** Will be set to appropriate Group if a Series group exists in style. */
@@ -1877,6 +1067,9 @@ public class BooklistBuilder
                             @NonNull final BooklistStyle style) {
             mDestinationTable = destinationTable;
             mStyle = style;
+            // copy filter references, but not the actual style filter list
+            // as we'll be adding to the local list
+            mFilters.addAll(mStyle.getFilters());
         }
 
         /**
@@ -2171,6 +1364,29 @@ public class BooklistBuilder
         }
 
         /**
+         * Add Filters.
+         *
+         * @param filters list of filters; only active filters will be added
+         */
+        void addFilters(@NonNull final Collection<Filter> filters) {
+            mFilters.addAll(filters);
+        }
+
+        /**
+         * Ensure we have a Bookshelf group; but if not, then add a filter with the given
+         * bookshelf id.
+         *
+         * @param bookshelfId to filter on if there is no Bookshelf group.
+         */
+        void ensureBookshelfGroup(final long bookshelfId) {
+            if (!mHasBookshelfGroup) {
+                mHasBookshelfGroup = true;
+                // add a specific filter to get only the requested shelf.
+                mFilters.add(() -> '(' + TBL_BOOKSHELF.dot(DOM_PK_ID) + '=' + bookshelfId + ')');
+            }
+        }
+
+        /**
          * Since BooklistGroup objects are processed in order, this allows us to get
          * the fields applicable to the currently processed group, including its outer groups.
          * Hence why it is cloned -- subsequent domains will modify this collection.
@@ -2178,9 +1394,9 @@ public class BooklistBuilder
          * @return a clone of the current-group domains.
          */
         @NonNull
-        @SuppressWarnings("unchecked")
         ArrayList<DomainDefinition> getDomainsForCurrentGroup() {
             //shallow copy, is enough
+            //noinspection unchecked
             return (ArrayList<DomainDefinition>) mGroupDomains.clone();
         }
 
@@ -2195,18 +1411,13 @@ public class BooklistBuilder
         }
 
         /**
-         * Using the collected domain info, create the various SQL phrases used
-         * to build the resulting flat list table and build the portion of the SQL
-         * that does the initial table load.
-         * <p>
-         * 'INSERT INTO [mListTable] (mDomains) SELECT [expressions] FROM'
-         * <p>
-         * The from-clause, where-clause and order-by-clause are build later.
+         * Using the collected domain info, create the various SQL phrases used to build
+         * the resulting flat list table and build the SQL that does the initial table load.
          *
-         * @return BaseSql structure
+         * @return initial insert statement
          */
         @NonNull
-        BaseSql build() {
+        String buildSql(final boolean collationIsCs) {
 
             // List of column names for the INSERT INTO... clause
             StringBuilder destColumns = new StringBuilder();
@@ -2232,13 +1443,31 @@ public class BooklistBuilder
             destColumns.append(',').append(DOM_BL_ROOT_KEY.getName());
             sourceColumns.append(',').append(buildRootKeyColumn());
 
-            return new BaseSql(mDestinationTable.getName(),
-                               destColumns.toString(),
-                               sourceColumns.toString());
+//            return new BaseSql(mDestinationTable.getName(),
+//                               destColumns.toString(),
+//                               sourceColumns.toString())
+//                    .from(mAuthorGroup,
+//                          mSeriesGroup,
+//                          mHasBookshelfGroup,
+//                          mHasLoaneeGroup)
+//                    .where(mFilters)
+//                    .orderBy(mSortedDomains, collationIsCs)
+//                    .build();
+
+            String sql = "INSERT INTO " + mDestinationTable.getName() + '(' + destColumns + ')'
+                         + " SELECT " + sourceColumns
+                         + " FROM " + buildFrom()
+                         + buildWhere()
+                         + " ORDER BY " + buildOrderBy(collationIsCs);
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
+                Log.d(TAG, "build|sql=" + sql);
+            }
+            return sql;
         }
 
         /**
-         * Build the expression for the key column.
+         * Create the expression for the key column.
          *
          * @return column expression
          */
@@ -2247,37 +1476,148 @@ public class BooklistBuilder
 
             for (BooklistGroup group : mStyle.getGroups()) {
                 BooklistGroup.CompoundKey key = group.getCompoundKey();
-                keyColumn.append("'/")
-                         .append(key.getPrefix())
+                keyColumn.append("'/").append(key.getPrefix())
                          // null becomes an empty String
                          .append("/'||COALESCE(").append(key.getExpression()).append(",'')||");
-
             }
             int len = keyColumn.length();
             return keyColumn.delete(len - 2, len).toString();
         }
 
+        /**
+         * Create the FROM clause based on the groups and extra criteria.
+         * <ul>Always joined are:
+         * <li>{@link DBDefinitions#TBL_BOOK_AUTHOR}<br>{@link DBDefinitions#TBL_AUTHORS}</li>
+         * <li>{@link DBDefinitions#TBL_BOOK_SERIES}<br>{@link DBDefinitions#TBL_SERIES}</li>
+         * </ul>
+         * <ul>Optionally joined with:
+         * <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}<br>{@link DBDefinitions#TBL_BOOKSHELF}</li>
+         * <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
+         * </ul>
+         */
+        private String buildFrom() {
+            Joiner mJoiner;
+            // If there is a bookshelf specified, start the join there.
+            // Otherwise, start with the BOOKS table.
+            if (mHasBookshelfGroup) {
+                mJoiner = new Joiner(TBL_BOOKSHELF)
+                        .join(TBL_BOOKSHELF, TBL_BOOK_BOOKSHELF)
+                        .join(TBL_BOOK_BOOKSHELF, TBL_BOOKS);
+            } else {
+                mJoiner = new Joiner(TBL_BOOKS);
+            }
 
-        @Nullable
-        BooklistGroup.BooklistAuthorGroup getAuthorGroup() {
-            return mAuthorGroup;
+            // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
+            if (mHasLoaneeGroup || App.isUsed(DBDefinitions.KEY_LOANEE)) {
+                // so get the loanee name, or a {@code null} for available books.
+                mJoiner.leftOuterJoin(TBL_BOOKS, TBL_BOOK_LOANEE);
+            }
+
+
+            // Join with the link table between Book and Author.
+            mJoiner.join(TBL_BOOKS, TBL_BOOK_AUTHOR);
+            // Join with the primary Author (i.e. position 1) if needed.
+            if (mAuthorGroup == null || !mAuthorGroup.showAll()) {
+                mJoiner.append(" AND " + TBL_BOOK_AUTHOR.dot(DOM_BOOK_AUTHOR_POSITION) + "=1");
+            }
+            // Join with Authors to make the names available
+            mJoiner.join(TBL_BOOK_AUTHOR, TBL_AUTHORS);
+
+
+            // Join with the link table between Book and Series.
+            mJoiner.leftOuterJoin(TBL_BOOKS, TBL_BOOK_SERIES);
+            // Join with the primary Series (i.e. position 1) if needed.
+            if (mSeriesGroup == null || !mSeriesGroup.showAll()) {
+                mJoiner.append(" AND " + TBL_BOOK_SERIES.dot(DOM_BOOK_SERIES_POSITION) + "=1");
+            }
+            // Join with Series to make the titles available
+            mJoiner.leftOuterJoin(TBL_BOOK_SERIES, TBL_SERIES);
+
+            return mJoiner.build();
         }
 
-        @Nullable
-        BooklistGroup.BooklistSeriesGroup getSeriesGroup() {
-            return mSeriesGroup;
+        /**
+         * Create the WHERE clause based on all filters.
+         */
+        private String buildWhere() {
+            StringBuilder where = new StringBuilder();
+
+            for (Filter filter : mFilters) {
+                if (filter.isActive()) {
+                    if (where.length() != 0) {
+                        where.append(" AND ");
+                    }
+                    where.append(' ').append(filter.getExpression());
+                }
+            }
+
+            if (where.length() > 0) {
+                return where.insert(0, " WHERE ").toString();
+            } else {
+                return "";
+            }
         }
 
-        boolean hasBookshelfGroup() {
-            return mHasBookshelfGroup;
+        /**
+         * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement.
+         * <p>
+         * If the {@link DAO#COLLATION} is case-sensitive, we wrap the columns in "lower()"
+         *
+         * @param collationIsCs if {@code true} then we'll adjust the case here
+         */
+        private String buildOrderBy(final boolean collationIsCs) {
+            // List of column names appropriate for 'ORDER BY' clause
+            final StringBuilder sortCols = new StringBuilder();
+            for (SortedDomains sdi : mSortedDomains) {
+                if (sdi.domain.isText()) {
+                    // The order of this if/elseif/else is important, don't merge branch 1 and 3!
+                    if (sdi.domain.isPrePreparedOrderBy()) {
+                        // always use a pre-prepared order-by column as-is
+                        sortCols.append(sdi.domain.getName());
+
+                    } else if (collationIsCs) {
+                        // *If* collations is case-sensitive, lowercase it.
+                        sortCols.append("lower(").append(sdi.domain.getName()).append(')');
+
+                    } else {
+                        // hope for the best. This case might not handle non-[A..Z0..9] as expected
+                        sortCols.append(sdi.domain.getName());
+                    }
+
+                    sortCols.append(DAO.COLLATION);
+                } else {
+                    sortCols.append(sdi.domain.getName());
+                }
+                if (sdi.isDescending) {
+                    sortCols.append(" DESC");
+                }
+                sortCols.append(',');
+            }
+
+            sortCols.append(DOM_BL_NODE_LEVEL);
+
+            return sortCols.toString();
         }
 
-        boolean hasLoaneeGroup() {
-            return mHasLoaneeGroup;
-        }
+        /**
+         * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement.
+         */
+        private String getSortedDomainsIndexColumns() {
+            // List of column names appropriate for 'CREATE INDEX' column list
+            final StringBuilder indexCols = new StringBuilder();
 
-        void setJoinWithBookshelves() {
-            mHasBookshelfGroup = true;
+            for (SortedDomains sdi : mSortedDomains) {
+                indexCols.append(sdi.domain.getName());
+                if (sdi.domain.isText()) {
+                    indexCols.append(DAO.COLLATION);
+                }
+                if (sdi.isDescending) {
+                    indexCols.append(" DESC");
+                }
+                indexCols.append(',');
+            }
+
+            return indexCols.append(DOM_BL_NODE_LEVEL).toString();
         }
 
         /**
@@ -2296,384 +1636,4 @@ public class BooklistBuilder
         }
     }
 
-    private static class RowStateTable
-            extends TableDefinition {
-
-        private static final String BASE_NAME =
-                DBDefinitions.DB_TN_BOOK_LIST_PREFIX + "_row_state_tmp_";
-
-        private static final String ALIAS = "bl_rs";
-
-        private static final String STMT_UPD_SINGLE_NODE = ALIAS + ":updNode";
-
-        private static final String STMT_UPD_NODES_BETWEEN = ALIAS + ":updNodesBetween";
-
-        private static final String STMT_GET_NEXT_NODE_AT_SAME_LEVEL = ALIAS + ":nextNode";
-
-        private static final String STMT_GET_POSITION_VISIBILITY = ALIAS + ":getPosCheckVisible";
-        private static final String STMT_GET_POSITION = ALIAS + ":getPos";
-
-        private static final String STMT_COUNT_VIS_ROWS = ALIAS + ":countVisRows";
-
-        @NonNull
-        private final SynchronizedDb mSyncedDb;
-
-        /** This is a reference only. Cleanup is done by the owner of this object. */
-        @NonNull
-        private final SqlStatementManager mStatementManager;
-
-        /**
-         * Constructor.
-         *
-         * @param syncedDb         database
-         * @param statementManager to use
-         * @param id               unique id to be used as suffix on the table name.
-         */
-        RowStateTable(@NonNull final SynchronizedDb syncedDb,
-                      @NonNull final SqlStatementManager statementManager,
-                      final int id) {
-
-            super(BASE_NAME + id);
-            setAlias(ALIAS);
-
-            mSyncedDb = syncedDb;
-            mStatementManager = statementManager;
-
-            // Allow debug mode to use standard tables so we can export and inspect the content.
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLES) {
-                setType(TableType.Standard);
-            } else {
-                setType(TableType.Temporary);
-            }
-
-            addDomains(DOM_PK_ID,
-                       // FK to TMP_TBL_BOOK_LIST
-                       DOM_FK_BOOK_BL_ROW_ID,
-                       DOM_BL_ROOT_KEY,
-                       // Node data
-                       DOM_BL_NODE_LEVEL,
-                       DOM_BL_NODE_KIND,
-                       DOM_BL_NODE_VISIBLE,
-                       DOM_BL_NODE_EXPANDED
-                      );
-
-            setPrimaryKey(DOM_PK_ID);
-
-            // Essential for main query! If not present, will make getCount()
-            // take ages because main query is a cross without index.
-            addIndex(DOM_FK_BOOK_BL_ROW_ID, true, DOM_FK_BOOK_BL_ROW_ID);
-
-            // #getNodesInsertSql()
-            addIndex(DOM_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE);
-
-            addIndex("NODE_DATA",
-                     false,
-                     DOM_BL_ROOT_KEY,
-                     DOM_BL_NODE_LEVEL,
-                     DOM_BL_NODE_EXPANDED
-                    );
-        }
-
-        /**
-         * Given an absolute position, return the actual list position for a row taking into
-         * account invisible rows.
-         *
-         * @param absolutePosition Abs. position to check
-         *
-         * @return Actual list position.
-         */
-        int getListPosition(final int absolutePosition) {
-
-            final long rowId = absolutePosition + 1;
-
-            // Check the absolute position is visible
-            SynchronizedStatement stmt = mStatementManager.get(STMT_GET_POSITION_VISIBILITY);
-            if (stmt == null) {
-                stmt = mStatementManager.add(STMT_GET_POSITION_VISIBILITY,
-                                             "SELECT " + DOM_BL_NODE_VISIBLE + " FROM " + getName()
-                                             + " WHERE " + DOM_PK_ID + "=?");
-            }
-
-            boolean isVisible;
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
-                stmt.bindLong(1, rowId);
-                isVisible = stmt.simpleQueryForLongOrZero() == 1;
-            }
-
-            // Count the number of *visible* rows *before* the specified one.
-            stmt = mStatementManager.get(STMT_GET_POSITION);
-            if (stmt == null) {
-                stmt = mStatementManager.add(STMT_GET_POSITION,
-                                             "SELECT COUNT(*) FROM " + getName()
-                                             + " WHERE " + DOM_BL_NODE_VISIBLE + "=1"
-                                             + " AND " + DOM_PK_ID + "<?");
-            }
-            int newPos;
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
-                stmt.bindLong(1, rowId);
-                newPos = (int) stmt.count();
-            }
-
-            // If specified row is visible, then the position is the count,
-            // otherwise the previous visible row, i.e. count-1 (or the top row)
-            if (isVisible) {
-                return newPos;
-            } else {
-                return newPos > 0 ? newPos - 1 : 0;
-            }
-        }
-
-        /**
-         * Get the logical count of rows.
-         * <p>
-         * All pseudo list cursors work with the static data in the temp table.
-         * So we can use a simple query rather than scanning the entire result set.
-         *
-         * @return count
-         */
-        int countVisibleRows() {
-            SynchronizedStatement stmt = mStatementManager.get(STMT_COUNT_VIS_ROWS);
-            if (stmt == null) {
-                stmt = mStatementManager.add(STMT_COUNT_VIS_ROWS,
-                                             "SELECT COUNT(*) FROM " + getName()
-                                             + " WHERE " + DOM_BL_NODE_VISIBLE + "=1");
-            }
-
-            final long t0 = System.nanoTime();
-            long count;
-
-            // no params here, so don't need synchronized... but leave as reminder
-            //        synchronized (stmt) {
-            count = stmt.count();
-            //        }
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "countVisibleRows"
-                           + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
-            }
-            return (int) count;
-        }
-
-        /**
-         * Expand or collapse <strong>all</strong> nodes.
-         * <p>
-         * For topLevel == 1, we fully expand/collapse <strong>all</strong> rows/levels.
-         * For a topLevel > 1, we set levels above the top-level always expanded/visible,
-         * and levels below as demanded.
-         *
-         * @param expand   the state to apply to levels 'below' the top-level
-         * @param topLevel the desired top-level which must be kept visible
-         */
-        void expandNodes(final boolean expand,
-                         @IntRange(from = 1) final int topLevel) {
-            if (topLevel == 1) {
-                if (expand) {
-                    // expand and show all levels
-                    updateNodes(true, true, ">=", 1);
-                } else {
-                    // collapse level 1, but keep it visible.
-                    updateNodes(false, true, "=", 1);
-                    // collapse and hide all levels above 1
-                    updateNodes(false, false, ">", 1);
-                }
-            } else /* topLevel > 1 */ {
-                // always expand and show levels less then the defined top-level.
-                updateNodes(true, true, "<", topLevel);
-
-                // collapse the specified level, but keep it visible.
-                updateNodes(false, true, "=", topLevel);
-
-                // collapse and hide all levels starting from the topLevel
-                updateNodes(false, false, ">", topLevel);
-            }
-        }
-
-        /**
-         * Expand or collapse all nodes <strong>between</strong> the given row and
-         * the next row at the same level.
-         *
-         * @param expand   state to set
-         * @param rowId    to expand/collapse
-         * @param rowLevel level of the row
-         */
-        long expandNodes(final boolean expand,
-                         final long rowId,
-                         final int rowLevel) {
-
-            // Find the next row at the same level. We need to update all nodes in between
-            long endRow = findNextRowId(rowId, rowLevel);
-
-            //TODO: optimize when expand==true -> combine the two updates
-
-            // expand/collapse the specified row, but keep it visible.
-            updateNode(rowId, expand, true);
-
-            // Update the intervening nodes; this excludes the start and end row
-            // visibility matches expansion state
-            updateNodes(expand, /* visible: */ expand, rowId, endRow);
-
-            return endRow;
-        }
-
-        /**
-         * Find the next row ('after' the given row) at the given level (or lower).
-         *
-         * @param startRowId    from where to start looking
-         * @param startRowLevel level to look for
-         *
-         * @return endRowId
-         */
-        private long findNextRowId(final long startRowId,
-                                   final int startRowLevel) {
-
-            SynchronizedStatement stmt = mStatementManager.get(STMT_GET_NEXT_NODE_AT_SAME_LEVEL);
-            if (stmt == null) {
-                stmt = mStatementManager.add(
-                        STMT_GET_NEXT_NODE_AT_SAME_LEVEL,
-                        // the COALESCE(max(" + DOM_PK_ID + "),-1) prevents a SQLiteDoneException
-                        // It catches the end-of-list situation.
-                        "SELECT COALESCE(Max(" + DOM_PK_ID + "),-1) FROM "
-                        + "(SELECT " + DOM_PK_ID + " FROM " + this.ref()
-                        + " WHERE " + this.dot(DOM_PK_ID) + ">?"
-                        + " AND " + this.dot(DOM_BL_NODE_LEVEL) + "<=?"
-                        + " ORDER BY " + DOM_PK_ID + " LIMIT 1)");
-            }
-
-            long nextRowId;
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
-                stmt.bindLong(1, startRowId);
-                stmt.bindLong(2, startRowLevel);
-                nextRowId = stmt.simpleQueryForLong();
-            }
-
-            // if there was no next node, use the end of the list.
-            if (nextRowId < 0) {
-                nextRowId = Long.MAX_VALUE;
-            }
-            return nextRowId;
-        }
-
-        /**
-         * Update a single node.
-         *
-         * @param rowId   the row/node to update
-         * @param expand  state to set
-         * @param visible visibility to set
-         */
-        private void updateNode(final long rowId,
-                                final boolean expand,
-                                @SuppressWarnings("SameParameterValue") final boolean visible) {
-            SynchronizedStatement stmt = mStatementManager.get(STMT_UPD_SINGLE_NODE);
-            if (stmt == null) {
-                stmt = mStatementManager.add(
-                        STMT_UPD_SINGLE_NODE,
-                        "UPDATE " + getName() + " SET "
-                        + DOM_BL_NODE_EXPANDED + "=?" + ',' + DOM_BL_NODE_VISIBLE + "=?"
-                        + " WHERE " + DOM_PK_ID + "=?");
-            }
-
-            int rowsUpdated;
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
-                stmt.bindBoolean(1, expand);
-                stmt.bindBoolean(2, visible);
-                stmt.bindLong(3, rowId);
-                rowsUpdated = stmt.executeUpdateDelete();
-            }
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "updateNodes"
-                           + "|expand=" + expand
-                           + "|visible=" + visible
-                           + "|rowId=" + rowId
-                           + "|rowsUpdated=" + rowsUpdated);
-            }
-        }
-
-        /**
-         * Update the nodes between the two given rows; excluding the start and end row.
-         *
-         * @param expand   state to set
-         * @param visible  visibility to set
-         * @param startRow between this row
-         * @param endRow   and this row
-         */
-        private void updateNodes(final boolean expand,
-                                 final boolean visible,
-                                 final long startRow,
-                                 final long endRow) {
-            SynchronizedStatement stmt = mStatementManager.get(STMT_UPD_NODES_BETWEEN);
-            if (stmt == null) {
-                stmt = mStatementManager.add(
-                        STMT_UPD_NODES_BETWEEN,
-                        "UPDATE " + getName() + " SET "
-                        + DOM_BL_NODE_EXPANDED + "=?," + DOM_BL_NODE_VISIBLE + "=?"
-                        + " WHERE " + DOM_PK_ID + ">?" + " AND " + DOM_PK_ID + "<?");
-            }
-
-            int rowsUpdated;
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
-                stmt.bindBoolean(1, expand);
-                stmt.bindBoolean(2, visible);
-
-                stmt.bindLong(3, startRow);
-                stmt.bindLong(4, endRow);
-
-                rowsUpdated = stmt.executeUpdateDelete();
-            }
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "updateNodes"
-                           + "|expand=" + expand
-                           + "|visible=" + visible
-                           + "|startRow=" + startRow
-                           + "|endRow=" + endRow
-                           + "|rowsUpdated=" + rowsUpdated);
-            }
-        }
-
-        /**
-         * Update the nodes for the given status and level.
-         *
-         * @param expand       state to set
-         * @param visible      visibility to set
-         * @param levelOperand one of "<", "=", ">", "<=" or ">="
-         * @param level        the level
-         */
-        private void updateNodes(final boolean expand,
-                                 final boolean visible,
-                                 @NonNull final CharSequence levelOperand,
-                                 @IntRange(from = 1) final int level) {
-            if (BuildConfig.DEBUG /* always */) {
-                // developer sanity check
-                if (!"< = > <= >=".contains(levelOperand)) {
-                    throw new IllegalArgumentException();
-                }
-            }
-
-            //Note to self: levelOperand is concatenated, so do not cache this stmt.
-            String sql = "UPDATE " + getName() + " SET "
-                         + DOM_BL_NODE_EXPANDED + "=?," + DOM_BL_NODE_VISIBLE + "=?"
-                         + " WHERE " + DOM_BL_NODE_LEVEL + levelOperand + "?";
-
-            int rowsUpdated;
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                stmt.bindBoolean(1, expand);
-                stmt.bindBoolean(2, visible);
-                stmt.bindLong(3, level);
-                rowsUpdated = stmt.executeUpdateDelete();
-            }
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "updateNodes"
-                           + "|expand=" + expand
-                           + "|visible=" + visible
-                           + "|level" + levelOperand + level
-                           + "|rowsUpdated=" + rowsUpdated);
-            }
-        }
-    }
 }

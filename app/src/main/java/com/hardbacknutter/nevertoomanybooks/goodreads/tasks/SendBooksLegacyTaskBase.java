@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,9 +47,9 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.EditBookActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.BookCursor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItemCursor;
@@ -142,12 +142,12 @@ abstract class SendBooksLegacyTaskBase
                         @NonNull final Context context,
                         @NonNull final GoodreadsManager grManager,
                         @NonNull final DAO db,
-                        @NonNull final BookCursor bookCursor) {
+                        @NonNull final CursorRow cursorRow) {
 
         GoodreadsManager.ExportResult result;
         Exception exportException = null;
         try {
-            result = grManager.sendOneBook(context, db, bookCursor);
+            result = grManager.sendOneBook(context, db, cursorRow);
 
         } catch (@NonNull final CredentialsException e) {
             result = GoodreadsManager.ExportResult.credentialsError;
@@ -163,7 +163,7 @@ abstract class SendBooksLegacyTaskBase
             exportException = e;
         }
 
-        long bookId = bookCursor.getLong(DBDefinitions.KEY_PK_ID);
+        long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
 
         switch (result) {
             case sent:

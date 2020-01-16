@@ -70,14 +70,14 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.RowDetails;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistMappedCursorRow;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistPseudoCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO.ListRowDetails;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.cursors.CursorMapper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StylePickerDialogFragment;
@@ -195,24 +195,24 @@ public class BooksOnBookshelf
         // changes were made to a single book
 //        if (bookId > 0) {
 //            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
-//                savePosition();
+//                saveListPosition();
 //                initBookList();
 //
 //          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
 //                if (data != null) {
 //                    String loanee = data.getString(DBDefinitions.KEY_LOANEE);
 //                }
-//                savePosition();
+//                saveListPosition();
 //                initBookList();
 //
 //            } else if ((fieldsChanged & BookChangedListener.BOOK_DELETED) != 0) {
-//                savePosition();
+//                saveListPosition();
 //                initBookList();
 //            }
 //        } else {
 //            // changes (Author, Series, ...) were made to (potentially) the whole list
 //            if (fieldsChanged != 0) {
-//                savePosition();
+//                saveListPosition();
 //                initBookList();
 //            }
 //        }
@@ -223,15 +223,93 @@ public class BooksOnBookshelf
             new StylePickerDialogFragment.StyleChangedListener() {
                 public void onStyleChanged(@NonNull final BooklistStyle style) {
                     // store the new data
-                    mModel.onStyleChanged(BooksOnBookshelf.this,
-                                          style,
-                                          mLayoutManager.findFirstVisibleItemPosition(),
-                                          mListView);
+                    mModel.onStyleChanged(BooksOnBookshelf.this, style);
+                    // There is very little ability to preserve position when going from
+                    // a list sorted by Author/Series to on sorted by unread/addedDate/publisher.
+                    // Keeping the current row/pos is probably the most useful thing we can
+                    // do since we *may* come back to a similar list.
+                    savePosition();
                     // and do a rebuild
                     initBookList();
                 }
             };
 
+    /** Listener for clicks on the list. */
+    private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener
+            = new BooklistAdapter.OnRowClickedListener() {
+
+        /**
+         * User clicked on a row.
+         * <ul>
+         * <li>Book: open the details screen.</li>
+         * <li>Not a book: expand/collapse the section as appropriate.</li>
+         * </ul>
+         *
+         * @param position  The position of the item within the adapter's data set.
+         * @param holder    the ViewHolder for the row
+         */
+        @Override
+        public void onItemClick(final int position,
+                                @NonNull final BooklistAdapter.RowViewHolder holder) {
+
+            // If it's a book, open the details screen.
+            if (holder instanceof BooklistAdapter.BookHolder) {
+                BooklistAdapter.BookHolder bookHolder = (BooklistAdapter.BookHolder) holder;
+
+                String navTableName = mModel.createFlattenedBooklist();
+                Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class)
+                        .putExtra(DBDefinitions.KEY_PK_ID, bookHolder.bookId)
+                        .putExtra(BookDetailsFragmentModel.BKEY_FLAT_BOOKLIST_TABLE, navTableName);
+                startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
+
+            } else {
+                // Else it's a level, expand/collapse recursively.
+                boolean isExpanded = mModel.toggleNode(holder.rowId);
+
+                // make sure the cursor has valid rows for the new position.
+                mModel.getListCursor().requery();
+                mAdapter.notifyDataSetChanged();
+
+                if (isExpanded) {
+                    // if the user expanded the line at the bottom of the screen,
+                    int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                    if ((position + 1 == lastPos) || (position == lastPos)) {
+                        // then we move the list a minimum of 2 positions upwards
+                        // to make the expanded rows visible. Using 3 for comfort.
+                        mListView.scrollToPosition(position + 3);
+                    }
+                }
+            }
+        }
+
+        /**
+         * User long-clicked on a row. Bring up a context menu as appropriate.
+         *
+         * @param position The position of the item within the adapter's data set.
+         * @param holder the ViewHolder for the row
+         */
+        @Override
+        public boolean onItemLongClick(final int position,
+                                       @NonNull final BooklistAdapter.RowViewHolder holder) {
+
+            final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
+            // build/check the menu for this row
+            if (onCreateContextMenu(menu)) {
+                // we have a menu to show, adjust the title depending the type.
+                String title;
+                if (holder instanceof BooklistAdapter.BookHolder) {
+                    title = ((BooklistAdapter.BookHolder) holder).title;
+                } else {
+                    title = mAdapter.getLevelText(BooksOnBookshelf.this, holder.level);
+                }
+                // bring up the context menu
+                new MenuPicker<>(BooksOnBookshelf.this, title, menu, position,
+                                 BooksOnBookshelf.this::onContextItemSelected)
+                        .show();
+            }
+            return true;
+        }
+    };
     /** Whether to show level-header - this depends on the current style. */
     private boolean mShowLevelHeaders;
     /** Define a scroller to update header detail when the top row changes. */
@@ -241,7 +319,7 @@ public class BooksOnBookshelf
                                        final int dx,
                                        final int dy) {
                     int currentTopRow = mLayoutManager.findFirstVisibleItemPosition();
-                    // Need to check isDestroyed() because BooklistPseudoCursor misbehaves when
+                    // Need to check isDestroyed() because BooklistCursor misbehaves when
                     // activity terminates and closes cursor
                     if (mModel.getLastTopRow() != currentTopRow
                         && !isDestroyed()
@@ -250,12 +328,10 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
     private View mFabOverlay;
-
     /** Define a scroller to show, or collapse/hide the FAB. */
     private final RecyclerView.OnScrollListener mUpdateFABVisibility =
             new RecyclerView.OnScrollListener() {
@@ -512,6 +588,12 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
+
+        boolean showECPreferred = (mModel.getCurrentStyle(this).getTopLevel() > 1);
+
+        menu.findItem(R.id.MENU_LEVEL_PREFERRED_EXPAND).setVisible(showECPreferred);
+        menu.findItem(R.id.MENU_LEVEL_PREFERRED_COLLAPSE).setVisible(showECPreferred);
+
         menu.findItem(R.id.MENU_CLEAR_FILTERS).setEnabled(!mModel.getSearchCriteria().isEmpty());
 
         hideFABMenu();
@@ -530,16 +612,20 @@ public class BooksOnBookshelf
                 TipManager.display(this, R.string.tip_booklist_style_menu, this::showStylePicker);
                 return true;
 
-            case R.id.MENU_LEVEL_RESET:
-                expandNodes(mModel.getCurrentStyle(this).getTopLevel(), false);
+            case R.id.MENU_LEVEL_PREFERRED_EXPAND:
+                expandAllNodes(mModel.getCurrentStyle(this).getTopLevel(), true);
+                return true;
+
+            case R.id.MENU_LEVEL_PREFERRED_COLLAPSE:
+                expandAllNodes(mModel.getCurrentStyle(this).getTopLevel(), false);
                 return true;
 
             case R.id.MENU_LEVEL_EXPAND:
-                expandNodes(1, true);
+                expandAllNodes(1, true);
                 return true;
 
             case R.id.MENU_LEVEL_COLLAPSE:
-                expandNodes(1, false);
+                expandAllNodes(1, false);
                 return true;
 
             case R.id.MENU_CLEAR_FILTERS: {
@@ -805,10 +891,9 @@ public class BooksOnBookshelf
             }
 
             //URGENT: temporary debug: fix the rebuild.
-            Snackbar.make(mListView, "reusing existing list", Snackbar.LENGTH_SHORT);
+            Snackbar.make(mListView, "reusing existing list", Snackbar.LENGTH_LONG);
             //initBookList();
-            //noinspection ConstantConditions
-            displayList(mModel.getBuilder().getNewListCursor(), mModel.getTargetRows());
+            displayList(mModel.getNewListCursor(), mModel.getTargetRows());
         }
 
         // always reset for next iteration.
@@ -860,32 +945,31 @@ public class BooksOnBookshelf
      * Expand/Collapse the current position in the list.
      *
      * @param topLevel the desired top-level which must be kept visible
-     * @param expand   {@code true} to expand, {@code false} to collapse
+     * @param expand   desired state
      */
-    private void expandNodes(@IntRange(from = 1) final int topLevel,
-                             final boolean expand) {
+    private void expandAllNodes(@IntRange(from = 1) final int topLevel,
+                                final boolean expand) {
 
         int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
         if (layoutPosition != RecyclerView.NO_POSITION) {
-            // save position before
+            // save current position
             savePosition();
 
+            // set new states
+            mModel.expandAllNodes(topLevel, expand);
+
+            // Save the top row position.
+            // We need to get the holder to read the rowId from.
+            // This row is NOT necessarily the same as the cursor position
+            // of the booklistBuilder's cursor.
             BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
                     mListView.findViewHolderForLayoutPosition(layoutPosition);
             //noinspection ConstantConditions
-            int absPos = holder.absolutePosition;
+            mModel.saveListPosition(mListView, mModel.getListPosition(holder.rowId));
 
-            // get the builder from the current cursor; expand/collapse and save the new position
-            BooklistBuilder booklistBuilder = mModel.getBuilder();
-            if (booklistBuilder != null) {
-                booklistBuilder.expandNodes(topLevel, expand);
-                // save position after
-                mModel.savePosition(booklistBuilder.getListPosition(absPos), mListView);
-
-                // pass in the new cursor and display the list.
-                displayList(booklistBuilder.getNewListCursor(), null);
-            }
+            // Finally pass in a new cursor and display the list.
+            displayList(mModel.getNewListCursor(), null);
         }
     }
 
@@ -947,33 +1031,22 @@ public class BooksOnBookshelf
      *
      * @param holder the results to display.
      */
-    private void onDisplayList(
-            @Nullable final BooksOnBookshelfModel.BuilderHolder holder) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "ENTER|onDisplayList"
-                       + "|holder=" + holder);
-        }
-
+    private void onDisplayList(@Nullable final BooksOnBookshelfModel.BuilderHolder holder) {
         // *always* ...
         mProgressBar.setVisibility(View.GONE);
 
         if (holder != null) {
             // check if we have a valid cursor before using it.
-            BooklistPseudoCursor resultListCursor = holder.getResultListCursor();
-            if (resultListCursor != null
-                && !resultListCursor.isClosed()) {
-                // process the new cursor (and close the old one)
+            BooklistCursor resultListCursor = holder.getResultListCursor();
+            if (resultListCursor != null && !resultListCursor.isClosed()) {
                 displayList(resultListCursor, holder.getResultTargetRows());
                 return;
             }
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "ENTER|onDisplayList|restoring old cursor");
-        }
-
         // If we did not get a new cursor, recreate the adapter using the old one.
         // See #onResume: we cleared the adapter, but not the old cursor.
+        // The adapter will be set on the view, which will trigger a refresh.
         initAdapter(mModel.getListCursor());
     }
 
@@ -983,8 +1056,8 @@ public class BooksOnBookshelf
      * @param newListCursor New cursor to use
      * @param targetRows    if set, change the position to targetRows.
      */
-    private void displayList(@NonNull final BooklistPseudoCursor newListCursor,
-                             @Nullable final List<RowDetails> targetRows) {
+    private void displayList(@NonNull final BooklistCursor newListCursor,
+                             @Nullable final List<ListRowDetails> targetRows) {
 
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
@@ -993,23 +1066,25 @@ public class BooksOnBookshelf
 
         // Save the old list so we can close it later; will be null at app start.
         @Nullable
-        final BooklistPseudoCursor oldCursor = mModel.getListCursor();
+        final BooklistCursor oldCursor = mModel.getListCursor();
 
         // and set the new list
         mModel.setListCursor(newListCursor);
         // create and hookup the list adapter.
-        initAdapter(mModel.getListCursor());
+        initAdapter(newListCursor);
 
-        //noinspection ConstantConditions
-        final int count = mModel.getListCursor().getCount();
+        final int count = newListCursor.getCount();
         // Restore saved position
         if (mModel.getTopRow() >= count) {
             // the list is shorter than it used to be, just scroll to the end
-            mModel.savePosition(count - 1, mListView);
             mLayoutManager.scrollToPosition(mModel.getTopRow());
+            // and save the updated position
+            mModel.saveListPosition(mListView, count - 1);
+
         } else {
             mLayoutManager.scrollToPositionWithOffset(mModel.getTopRow(), mModel.getTopRowOffset());
         }
+        // URGENT: the stored row might not be visible
 
         // If a target position array is set, then queue a runnable to set the position
         // once we know how many items appear in a typical view and we can tell
@@ -1030,10 +1105,7 @@ public class BooksOnBookshelf
 
         // all set, we can close the old list
         if (oldCursor != null) {
-            if (!oldCursor.getBuilder().equals(mModel.getBuilder())) {
-                oldCursor.getBuilder().close();
-            }
-            oldCursor.close();
+            mModel.safeClose(oldCursor);
         }
     }
 
@@ -1050,8 +1122,8 @@ public class BooksOnBookshelf
             return;
         }
         mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(this), mModel.getDb(), cursor);
-        mAdapter.setOnItemClickListener(this::onItemClick);
-        mAdapter.setOnItemLongClickListener(this::onItemLongClick);
+
+        mAdapter.setOnRowClickedListener(mOnRowClickedListener);
         mListView.setAdapter(mAdapter);
     }
 
@@ -1063,7 +1135,7 @@ public class BooksOnBookshelf
      *
      * @param targetRows list of rows of which we want one to be visible to the user.
      */
-    private void fixPositionWhenDrawn(@NonNull final List<RowDetails> targetRows) {
+    private void fixPositionWhenDrawn(@NonNull final List<RowStateDAO.ListRowDetails> targetRows) {
         // Find the actual extend of the current view and get centre.
         final int first = mLayoutManager.findFirstVisibleItemPosition();
         final int last = mLayoutManager.findLastVisibleItemPosition();
@@ -1104,150 +1176,63 @@ public class BooksOnBookshelf
     }
 
     /**
-     * User clicked on a row.
-     * <ul>
-     * <li>Book: open the details screen.</li>
-     * <li>Not a book: expand/collapse the section as appropriate.</li>
-     * </ul>
-     *
-     * @param view clicked on
-     */
-    private void onItemClick(@NonNull final View view) {
-        int position = (int) view.getTag(R.id.TAG_POSITION);
-
-        final BooklistPseudoCursor cursor = mModel.getListCursor();
-        // no need to check the position first, i.e. if the user can click it, then it's there.
-        //noinspection ConstantConditions
-        cursor.moveToPosition(position);
-
-        CursorMapper mapper = cursor.getCursorMapper();
-
-        // If it's a book, open the details screen.
-        if (mapper.getInt(DBDefinitions.KEY_BL_NODE_KIND) == BooklistGroup.RowKind.BOOK) {
-            long bookId = mapper.getLong(DBDefinitions.KEY_FK_BOOK);
-
-            String listTableName = cursor.getBuilder().createFlattenedBooklist();
-            Intent intent = new Intent(this, BookDetailsActivity.class)
-                    .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                    .putExtra(BookDetailsFragmentModel.BKEY_FLAT_BOOKLIST_TABLE, listTableName)
-                    .putExtra(BookDetailsFragmentModel.BKEY_FLAT_BOOKLIST_POSITION, position);
-            startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
-
-        } else {
-            // Else it's a level, expand/collapse.
-            long absPos = mapper.getInt(DBDefinitions.KEY_BL_ABSOLUTE_POSITION);
-            // positions start at 0, rowId's start at 1.
-            boolean isExpanded = cursor
-                    .getBuilder().expandNode(absPos + 1, BooklistBuilder.NodeNextState.Toggle);
-
-            // make sure the cursor has valid rows for the new position.
-            cursor.requery();
-            mAdapter.notifyDataSetChanged();
-
-            if (isExpanded) {
-                // if the user expands the line at the bottom of the screen,
-                int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                if ((position + 1 == lastPos) || (position == lastPos)) {
-                    // then we move the list a minimum of 2 positions upwards. 3 for comfort.
-                    mListView.scrollToPosition(position + 3);
-                }
-            }
-        }
-    }
-
-    /**
-     * User long-clicked on a row. Bring up a context menu as appropriate.
-     *
-     * @param view clicked on
-     */
-    private boolean onItemLongClick(@NonNull final View view) {
-        final int position = (int) view.getTag(R.id.TAG_POSITION);
-
-        // no need to check the position first, i.e. if the user can click it, then it's there.
-        final BooklistPseudoCursor cursor = mModel.getListCursor();
-        //noinspection ConstantConditions
-        cursor.moveToPosition(position);
-
-        final BooklistMappedCursorRow cursorRow = cursor.getCursorRow();
-        final CursorMapper rowMapper = cursorRow.getCursorMapper();
-
-        final Menu menu = MenuPicker.createMenu(this);
-        // build/check the menu for this row
-        if (onCreateContextMenu(menu, rowMapper)) {
-            // we have a menu to show
-            String title;
-
-            if (rowMapper.getInt(DBDefinitions.KEY_BL_NODE_KIND) == BooklistGroup.RowKind.BOOK) {
-                title = rowMapper.getString(DBDefinitions.KEY_TITLE);
-            } else {
-                title = cursorRow.getLevelText(this,
-                                               rowMapper.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
-            }
-            // bring up the context menu
-            new MenuPicker<>(this, title, menu, rowMapper, this::onContextItemSelected)
-                    .show();
-        }
-        return true;
-    }
-
-    /**
      * Create a context menu based on row kind.
-     *
-     * @param cursorMapper Cursor row pointing to current row for this context menu
      *
      * @return {@code true} if there actually is a menu to show.
      * {@code false} if not OR if the only menus would be the 'search Amazon' set.
      */
-    private boolean onCreateContextMenu(@NonNull final Menu /* in/out */ menu,
-                                        @NonNull final CursorMapper cursorMapper) {
+    private boolean onCreateContextMenu(@NonNull final Menu menu) {
         menu.clear();
 
-        final int rowKind = cursorMapper.getInt(DBDefinitions.KEY_BL_NODE_KIND);
+        //noinspection ConstantConditions
+        final CursorRow cursorRow = new CursorRow(mModel.getListCursor());
+
+        final int rowKind = cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND);
         switch (rowKind) {
             case BooklistGroup.RowKind.BOOK: {
                 getMenuInflater().inflate(R.menu.co_book, menu);
 
-                boolean isRead = cursorMapper.getBoolean(DBDefinitions.KEY_READ);
+                boolean isRead = cursorRow.getBoolean(DBDefinitions.KEY_READ);
                 menu.findItem(R.id.MENU_BOOK_READ).setVisible(!isRead);
                 menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
                 boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
-                boolean isAvailable = mModel.isAvailable(cursorMapper);
+                boolean isAvailable = mModel.isAvailable(cursorRow);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(lendingIsUsed && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(lendingIsUsed && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
                     .setVisible(GoodreadsManager.isShowSyncMenus(this));
 
-                MenuHandler.prepareOptionalMenus(menu, cursorMapper);
+                MenuHandler.prepareOptionalMenus(menu, cursorRow);
                 break;
             }
             case BooklistGroup.RowKind.AUTHOR: {
                 getMenuInflater().inflate(R.menu.c_author, menu);
 
-                boolean complete = cursorMapper.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                boolean complete = cursorRow.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
-                MenuHandler.prepareOptionalMenus(menu, cursorMapper);
+                MenuHandler.prepareOptionalMenus(menu, cursorRow);
                 break;
             }
             case BooklistGroup.RowKind.SERIES: {
-                if (cursorMapper.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
+                if (cursorRow.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
                     getMenuInflater().inflate(R.menu.c_series, menu);
 
                     boolean complete =
-                            cursorMapper.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                            cursorRow.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
                     menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
-                    MenuHandler.prepareOptionalMenus(menu, cursorMapper);
+                    MenuHandler.prepareOptionalMenus(menu, cursorRow);
                 }
                 break;
             }
             case BooklistGroup.RowKind.PUBLISHER: {
-                if (!cursorMapper.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
+                if (!cursorRow.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1256,7 +1241,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.LANGUAGE: {
-                if (!cursorMapper.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
+                if (!cursorRow.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1265,7 +1250,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.LOCATION: {
-                if (!cursorMapper.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
+                if (!cursorRow.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1274,7 +1259,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.GENRE: {
-                if (!cursorMapper.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
+                if (!cursorRow.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1283,7 +1268,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.FORMAT: {
-                if (!cursorMapper.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
+                if (!cursorRow.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1292,7 +1277,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.COLOR: {
-                if (!cursorMapper.getString(DBDefinitions.KEY_COLOR).isEmpty()) {
+                if (!cursorRow.getString(DBDefinitions.KEY_COLOR).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1301,9 +1286,6 @@ public class BooksOnBookshelf
                 break;
             }
             default: {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "rowKind=" + rowKind);
-                }
                 break;
             }
         }
@@ -1315,18 +1297,21 @@ public class BooksOnBookshelf
     /**
      * Using {@link ValuePicker} for context menus.
      *
-     * @param menuItem  that was selected
-     * @param rowMapper Row view pointing to current row for this context menu
+     * @param menuItem that was selected
+     * @param position in the list
      *
      * @return {@code true} if handled.
      */
     @SuppressWarnings("UnusedReturnValue")
-    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                          @NonNull final CursorMapper rowMapper) {
+    public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+                                         @NonNull final Integer position) {
+
+        //noinspection ConstantConditions
+        final CursorRow row = new CursorRow(mModel.getListCursor());
 
         FragmentManager fm = getSupportFragmentManager();
 
-        final long bookId = rowMapper.getLong(DBDefinitions.KEY_FK_BOOK);
+        final long bookId = row.getLong(DBDefinitions.KEY_FK_BOOK);
 
         switch (menuItem.getItemId()) {
 
@@ -1337,7 +1322,7 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_BOOK_DELETE: {
-                String title = rowMapper.getString(DBDefinitions.KEY_TITLE);
+                String title = row.getString(DBDefinitions.KEY_TITLE);
                 List<Author> authors = mModel.getDb().getAuthorsByBookId(bookId);
                 StandardDialogs.deleteBookAlert(this, title, authors, () -> {
                     mModel.getDb().deleteBook(this, bookId);
@@ -1358,7 +1343,7 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle the read status
                 if (mModel.getDb()
-                          .setBookRead(bookId, !rowMapper.getBoolean(DBDefinitions.KEY_READ))) {
+                          .setBookRead(bookId, !row.getBoolean(DBDefinitions.KEY_READ))) {
                     mBookChangedListener.onBookChanged(bookId, BookChangedListener.BOOK_READ, null);
                 }
                 return true;
@@ -1368,8 +1353,8 @@ public class BooksOnBookshelf
 
             case R.id.MENU_BOOK_LOAN_ADD: {
                 LendBookDialogFragment.newInstance(bookId,
-                                                   rowMapper.getLong(DBDefinitions.KEY_FK_AUTHOR),
-                                                   rowMapper.getString(DBDefinitions.KEY_TITLE))
+                                                   row.getLong(DBDefinitions.KEY_FK_AUTHOR),
+                                                   row.getString(DBDefinitions.KEY_TITLE))
                                       .show(fm, LendBookDialogFragment.TAG);
                 return true;
             }
@@ -1402,31 +1387,31 @@ public class BooksOnBookshelf
                         .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG);
 
                 ArrayList<Long> bookIds;
-                switch (rowMapper.getInt(DBDefinitions.KEY_BL_NODE_KIND)) {
+                switch (row.getInt(DBDefinitions.KEY_BL_NODE_KIND)) {
 
                     case BooklistGroup.RowKind.BOOK: {
                         bookIds = new ArrayList<>();
                         bookIds.add(bookId);
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
-                                        rowMapper.getString(DBDefinitions.KEY_TITLE));
+                                        row.getString(DBDefinitions.KEY_TITLE));
                         break;
                     }
                     case BooklistGroup.RowKind.AUTHOR: {
                         bookIds = mModel.getDb().getBookIdsByAuthor(
-                                rowMapper.getLong(DBDefinitions.KEY_FK_AUTHOR));
+                                row.getLong(DBDefinitions.KEY_FK_AUTHOR));
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
-                                        rowMapper.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                                        row.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                         break;
                     }
                     case BooklistGroup.RowKind.SERIES: {
                         bookIds = mModel.getDb().getBookIdsBySeries(
-                                rowMapper.getLong(DBDefinitions.KEY_FK_SERIES));
+                                row.getLong(DBDefinitions.KEY_FK_SERIES));
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
-                                        rowMapper.getString(DBDefinitions.KEY_SERIES_TITLE));
+                                        row.getString(DBDefinitions.KEY_SERIES_TITLE));
                         break;
                     }
                     case BooklistGroup.RowKind.PUBLISHER: {
-                        String publisher = rowMapper.getString(DBDefinitions.KEY_PUBLISHER);
+                        String publisher = row.getString(DBDefinitions.KEY_PUBLISHER);
                         bookIds = mModel.getDb().getBookIdsByPublisher(publisher);
                         intent.putExtra(UniqueId.BKEY_DIALOG_TITLE, publisher);
                         break;
@@ -1435,7 +1420,7 @@ public class BooksOnBookshelf
                         if (BuildConfig.DEBUG /* always */) {
                             Log.d(TAG, "onContextItemSelected"
                                        + "|MENU_BOOK_UPDATE_FROM_INTERNET not supported"
-                                       + "|RowKind=" + rowMapper
+                                       + "|RowKind=" + row
                                                .getInt(DBDefinitions.KEY_BL_NODE_KIND));
                         }
                         return true;
@@ -1450,7 +1435,7 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
             case R.id.MENU_SERIES_EDIT: {
-                long seriesId = rowMapper.getLong(DBDefinitions.KEY_FK_SERIES);
+                long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
                 //noinspection ConstantConditions
                 EditSeriesDialogFragment.newInstance(mModel.getDb().getSeries(seriesId))
                                         .show(fm, EditSeriesDialogFragment.TAG);
@@ -1458,9 +1443,9 @@ public class BooksOnBookshelf
             }
             case R.id.MENU_SERIES_SET_COMPLETE:
             case R.id.MENU_SERIES_SET_INCOMPLETE: {
-                long seriesId = rowMapper.getLong(DBDefinitions.KEY_FK_SERIES);
+                long seriesId = row.getLong(DBDefinitions.KEY_FK_SERIES);
                 // toggle the complete status
-                boolean status = !rowMapper.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                boolean status = !row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
                 if (mModel.getDb().setSeriesComplete(seriesId, status)) {
                     mBookChangedListener.onBookChanged(0, BookChangedListener.SERIES, null);
                 }
@@ -1468,7 +1453,7 @@ public class BooksOnBookshelf
             }
             case R.id.MENU_SERIES_DELETE: {
                 Series series = mModel.getDb()
-                                      .getSeries(rowMapper.getLong(DBDefinitions.KEY_FK_SERIES));
+                                      .getSeries(row.getLong(DBDefinitions.KEY_FK_SERIES));
                 if (series != null) {
                     StandardDialogs.deleteSeriesAlert(this, series, () -> {
                         mModel.getDb().deleteSeries(this, series.getId());
@@ -1482,13 +1467,13 @@ public class BooksOnBookshelf
             case R.id.MENU_AUTHOR_WORKS: {
                 Intent intent = new Intent(this, AuthorWorksActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID,
-                                  rowMapper.getLong(DBDefinitions.KEY_FK_AUTHOR));
+                                  row.getLong(DBDefinitions.KEY_FK_AUTHOR));
                 startActivityForResult(intent, UniqueId.REQ_AUTHOR_WORKS);
                 return true;
             }
 
             case R.id.MENU_AUTHOR_EDIT: {
-                long authorId = rowMapper.getLong(DBDefinitions.KEY_FK_AUTHOR);
+                long authorId = row.getLong(DBDefinitions.KEY_FK_AUTHOR);
                 //noinspection ConstantConditions
                 EditAuthorDialogFragment.newInstance(mModel.getDb().getAuthor(authorId))
                                         .show(fm, EditAuthorDialogFragment.TAG);
@@ -1497,9 +1482,9 @@ public class BooksOnBookshelf
             }
             case R.id.MENU_AUTHOR_SET_COMPLETE:
             case R.id.MENU_AUTHOR_SET_INCOMPLETE: {
-                long authorId = rowMapper.getLong(DBDefinitions.KEY_FK_AUTHOR);
+                long authorId = row.getLong(DBDefinitions.KEY_FK_AUTHOR);
                 // toggle the complete status
-                boolean status = !rowMapper.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                boolean status = !row.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
                 if (mModel.getDb().setAuthorComplete(authorId, status)) {
                     mBookChangedListener.onBookChanged(0, BookChangedListener.AUTHOR, null);
                 }
@@ -1509,7 +1494,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_PUBLISHER_EDIT: {
                 Publisher publisher = new Publisher(
-                        rowMapper.getString(DBDefinitions.KEY_PUBLISHER));
+                        row.getString(DBDefinitions.KEY_PUBLISHER));
                 EditPublisherDialogFragment.newInstance(publisher)
                                            .show(fm, EditPublisherDialogFragment.TAG);
 
@@ -1519,48 +1504,48 @@ public class BooksOnBookshelf
 
             case R.id.MENU_FORMAT_EDIT: {
                 new EditFormatDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowMapper.getString(DBDefinitions.KEY_FORMAT));
+                        .edit(row.getString(DBDefinitions.KEY_FORMAT));
                 return true;
             }
             case R.id.MENU_COLOR_EDIT: {
                 new EditColorDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowMapper.getString(DBDefinitions.KEY_COLOR));
+                        .edit(row.getString(DBDefinitions.KEY_COLOR));
                 return true;
             }
             case R.id.MENU_GENRE_EDIT: {
                 new EditGenreDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowMapper.getString(DBDefinitions.KEY_GENRE));
+                        .edit(row.getString(DBDefinitions.KEY_GENRE));
                 return true;
             }
             case R.id.MENU_LANGUAGE_EDIT: {
                 new EditLanguageDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowMapper.getString(DBDefinitions.KEY_LANGUAGE));
+                        .edit(row.getString(DBDefinitions.KEY_LANGUAGE));
                 return true;
             }
             case R.id.MENU_LOCATION_EDIT: {
                 new EditLocationDialog(this, mModel.getDb(), mBookChangedListener)
-                        .edit(rowMapper.getString(DBDefinitions.KEY_LOCATION));
+                        .edit(row.getString(DBDefinitions.KEY_LOCATION));
                 return true;
             }
 
             /* ********************************************************************************** */
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                AmazonManager.openWebsite(this, mModel.getAuthorFromRow(this, rowMapper), null);
+                AmazonManager.openWebsite(this, mModel.getAuthorFromRow(this, row), null);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                AmazonManager.openWebsite(this, null, mModel.getSeriesFromRow(rowMapper));
+                AmazonManager.openWebsite(this, null, mModel.getSeriesFromRow(row));
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                 AmazonManager.openWebsite(this,
-                                          mModel.getAuthorFromRow(this, rowMapper),
-                                          mModel.getSeriesFromRow(rowMapper));
+                                          mModel.getAuthorFromRow(this, row),
+                                          mModel.getSeriesFromRow(row));
                 return true;
             }
 
             default:
-                return MenuHandler.handleOpenOnWebsiteMenus(this, menuItem, rowMapper);
+                return MenuHandler.handleOpenOnWebsiteMenus(this, menuItem, row);
         }
     }
 
@@ -1569,7 +1554,7 @@ public class BooksOnBookshelf
      */
     private void savePosition() {
         if (!isDestroyed()) {
-            mModel.savePosition(mLayoutManager.findFirstVisibleItemPosition(), mListView);
+            mModel.saveListPosition(mListView, mLayoutManager.findFirstVisibleItemPosition());
         }
     }
 
@@ -1712,19 +1697,16 @@ public class BooksOnBookshelf
         // use visibility which was set in {@link #setHeaderLevelTextVisibility}
         if (mHeaderTextView[0].getVisibility() == View.VISIBLE
             || mHeaderTextView[1].getVisibility() == View.VISIBLE) {
-
-            BooklistPseudoCursor cursor = mModel.getListCursor();
             //noinspection ConstantConditions
-            if (cursor.moveToPosition(mModel.getLastTopRow())) {
-                BooklistMappedCursorRow row = cursor.getCursorRow();
-
-                String[] lines = row.getLevelText(this);
+            if (mModel.getListCursor().moveToPosition(mModel.getLastTopRow())) {
+                String[] lines = mAdapter.getLevelText(this);
                 for (int i = 0; i < lines.length; i++) {
                     if (mHeaderTextView[i].getVisibility() == View.VISIBLE) {
-                        mHeaderTextView[i].setText(row.getLevelText(this, i + 1));
+                        mHeaderTextView[i].setText(lines[i]);
                     }
                 }
             }
         }
     }
+
 }

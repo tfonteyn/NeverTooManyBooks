@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,21 +50,12 @@ public class BookDetailsFragmentModel
 
     /** Table name of the {@link FlattenedBooklist}. */
     public static final String BKEY_FLAT_BOOKLIST_TABLE = TAG + ":FBL_Table";
-    /** Position in the {@link FlattenedBooklist} of this book. Used for left/right swipes. */
-    public static final String BKEY_FLAT_BOOKLIST_POSITION = TAG + ":FBL_Position";
-    /** The fields collection. */
-    @NonNull
-    private final Fields mFields = new Fields();
     @Nullable
     private FlattenedBooklist mFlattenedBooklist;
 
-    @Override
-    protected void onCleared() {
-        if (mFlattenedBooklist != null) {
-            mFlattenedBooklist.close();
-            mFlattenedBooklist.deleteData();
-        }
-    }
+    /** The fields collection. */
+    @NonNull
+    private final Fields mFields = new Fields();
 
     /**
      * Pseudo constructor.
@@ -83,41 +74,15 @@ public class BookDetailsFragmentModel
                 return;
             }
             // no list ?
-            String listTableName = args.getString(BKEY_FLAT_BOOKLIST_TABLE);
-            if (listTableName == null || listTableName.isEmpty()) {
+            String navTableName = args.getString(BKEY_FLAT_BOOKLIST_TABLE);
+            if (navTableName == null || navTableName.isEmpty()) {
                 return;
             }
 
-            // looks like we have a list, but...
-            mFlattenedBooklist = new FlattenedBooklist(db, listTableName);
-            // Check to see it really exists. The underlying table disappeared once in testing
-            // which is hard to explain; it theoretically should only happen if the app closes
-            // the database (DAO#sSyncedDb)
-            // or if the activity pauses with 'isFinishing()' returning true.
-            //
-            // Last seen: 2019-10-25. Solution: don't cache the table in the Builder,
-            // but recreate on each call.
-            if (!mFlattenedBooklist.exists()) {
+            mFlattenedBooklist = new FlattenedBooklist(db, navTableName);
+            if (!mFlattenedBooklist.moveTo(bookId)) {
+                // book not found ? eh? Destroy the table!
                 mFlattenedBooklist.close();
-                mFlattenedBooklist = null;
-                return;
-            }
-
-            // ok, we absolutely have a list, get the position we need to be on.
-            int pos = args.getInt(BKEY_FLAT_BOOKLIST_POSITION, 0);
-
-            mFlattenedBooklist.moveTo(pos);
-            // the book might have moved around. So see if we can find it.
-            while (mFlattenedBooklist.getBookId() != bookId) {
-                if (!mFlattenedBooklist.moveNext()) {
-                    break;
-                }
-            }
-
-            if (mFlattenedBooklist.getBookId() != bookId) {
-                // book not found ? eh? give up...
-                mFlattenedBooklist.close();
-                mFlattenedBooklist.deleteData();
                 mFlattenedBooklist = null;
             }
         }
