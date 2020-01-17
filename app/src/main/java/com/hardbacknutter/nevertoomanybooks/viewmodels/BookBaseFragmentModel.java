@@ -260,9 +260,12 @@ public class BookBaseFragmentModel
                     String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
                     if (!fileSpec.isEmpty()) {
                         File downloadedFile = new File(fileSpec);
-                        File destination = StorageUtils
-                                .getCoverFileForUuid(context, mDb.getBookUuid(id), cIdx);
-                        StorageUtils.renameFile(downloadedFile, destination);
+                        String uuid = mDb.getBookUuid(id);
+                        if (uuid != null) {
+                            File destination = StorageUtils
+                                    .getCoverFileForUuid(context, uuid, cIdx);
+                            StorageUtils.renameFile(downloadedFile, destination);
+                        }
                     }
                 }
             }

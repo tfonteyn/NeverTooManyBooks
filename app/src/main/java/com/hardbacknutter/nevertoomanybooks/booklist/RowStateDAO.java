@@ -854,8 +854,7 @@ public class RowStateDAO {
         if (stmt == null) {
             stmt = mStatementManager.add(
                     STMT_GET_NEXT_NODE_AT_SAME_LEVEL,
-                    // get first row matching, or -1 for end-of-list
-                    "SELECT COALESCE(" + DOM_PK_ID + ",-1) FROM " + mTable.getName()
+                    "SELECT " + DOM_PK_ID + " FROM " + mTable.getName()
                     + " WHERE " + DOM_PK_ID + ">?" + " AND " + DOM_BL_NODE_LEVEL + "<=?"
                     + " ORDER BY " + DOM_PK_ID + " LIMIT 1");
         }
@@ -865,11 +864,11 @@ public class RowStateDAO {
         synchronized (stmt) {
             stmt.bindLong(1, rowId);
             stmt.bindLong(2, level);
-            nextRowId = stmt.simpleQueryForLong();
+            nextRowId = stmt.simpleQueryForLongOrZero();
         }
 
         // if there was no next node, use the end of the list.
-        if (nextRowId < 0) {
+        if (nextRowId <= 0) {
             nextRowId = Long.MAX_VALUE;
         }
         return nextRowId;

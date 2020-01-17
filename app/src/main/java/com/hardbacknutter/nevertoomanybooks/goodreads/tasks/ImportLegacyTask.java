@@ -447,9 +447,12 @@ class ImportLegacyTask
                 String fileSpec = book.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
                 if (!fileSpec.isEmpty()) {
                     File downloadedFile = new File(fileSpec);
-                    File destination = StorageUtils.getCoverFileForUuid(context,
-                                                                        db.getBookUuid(id), cIdx);
-                    StorageUtils.renameFile(downloadedFile, destination);
+
+                    String uuid = db.getBookUuid(id);
+                    if (uuid != null) {
+                        File destination = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+                        StorageUtils.renameFile(downloadedFile, destination);
+                    }
                 }
             }
 

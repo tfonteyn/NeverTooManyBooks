@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
@@ -192,6 +191,7 @@ public class FlattenedBooklist
             return movePrev();
         }
     }
+
     /**
      * Move to the next book row.
      *
@@ -260,13 +260,14 @@ public class FlattenedBooklist
      * @return {@code true} on success
      */
     private boolean execAndParse(@NonNull final SynchronizedStatement stmt) {
-        try {
-            final String[] data = stmt.simpleQueryForString().split("/");
+        final String result = stmt.simpleQueryForStringOrNull();
+        if (result != null) {
+            final String[] data = result.split("/");
             mRowId = Long.parseLong(data[0]);
             mBookId = Long.parseLong(data[1]);
             return true;
 
-        } catch (@NonNull final SQLiteDoneException ignore) {
+        } else {
             mBookId = 0;
             return false;
         }

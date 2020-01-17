@@ -209,6 +209,8 @@ public class SynchronizedStatement
      * <p>
      * Execute a statement that returns a 1 by 1 table with a numeric value.
      *
+     * @see #simpleQueryForLongOrZero()
+     *
      * @return The result of the query.
      *
      * @throws SQLiteDoneException if the query returns zero rows
@@ -219,7 +221,7 @@ public class SynchronizedStatement
         try {
             long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Log.d(TAG, "simpleQueryForLong|" + mStatement + "|result: " + result);
+                Log.d(TAG, "simpleQueryForLong|" + mStatement + "|result=" + result);
             }
             return result;
         } finally {
@@ -241,7 +243,7 @@ public class SynchronizedStatement
         try {
             long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Log.d(TAG, "simpleQueryForLongOrZero|" + mStatement + "|result: " + result);
+                Log.d(TAG, "simpleQueryForLongOrZero|" + mStatement + "|result=" + result);
             }
             return result;
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -275,6 +277,8 @@ public class SynchronizedStatement
      * <p>
      * Execute a statement that returns a 1 by 1 table with a text value.
      *
+     * @see #simpleQueryForStringOrNull()
+     *
      * @return The result of the query.
      *
      * @throws SQLiteDoneException if the query returns zero rows
@@ -285,8 +289,9 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             String result = mStatement.simpleQueryForString();
+
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
-                Log.d(TAG, "simpleQueryForString|" + mStatement + '|' + result);
+                Log.d(TAG, "simpleQueryForString|" + mStatement + "|result=" + result);
             }
             return result;
 
@@ -309,9 +314,9 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             return mStatement.simpleQueryForString();
+
         } catch (@NonNull final SQLiteDoneException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                // This is not necessarily an error, but only to track this result.
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
                 Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|result=NULL");
             }
             return null;

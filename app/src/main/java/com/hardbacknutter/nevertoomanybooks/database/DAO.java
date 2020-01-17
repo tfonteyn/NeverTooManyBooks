@@ -33,7 +33,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -1396,14 +1395,13 @@ public class DAO
      *
      * @param bookId of the book
      *
-     * @return the book UUID
+     * @return the book UUID, or {@code null} if not found/failure
      *
      * @throws IllegalArgumentException if the bookId==0
-     * @throws SQLiteDoneException      if zero rows found, which should never happen... flw.
      */
-    @NonNull
+    @Nullable
     public String getBookUuid(final long bookId)
-            throws SQLiteDoneException, IllegalArgumentException {
+            throws IllegalArgumentException {
         // sanity check
         if (bookId == 0) {
             throw new IllegalArgumentException("cannot get uuid for id==0");
@@ -1415,7 +1413,7 @@ public class DAO
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, bookId);
-            return stmt.simpleQueryForString();
+            return stmt.simpleQueryForStringOrNull();
         }
     }
 
@@ -1470,13 +1468,8 @@ public class DAO
     @SuppressWarnings("UnusedReturnValue")
     public int deleteBook(@NonNull final Context context,
                           final long bookId) {
-        String uuid = null;
-        try {
-            // need the UUID to delete the thumbnail.
-            uuid = getBookUuid(bookId);
-        } catch (@NonNull final SQLiteDoneException e) {
-            Logger.error(context, TAG, e, "Failed to get book UUID");
-        }
+
+        String uuid = getBookUuid(bookId);
 
         int rowsAffected = 0;
         SyncLock txLock = sSyncedDb.beginTransaction(true);

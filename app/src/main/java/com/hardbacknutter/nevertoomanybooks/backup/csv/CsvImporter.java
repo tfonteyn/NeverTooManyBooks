@@ -319,8 +319,10 @@ public class CsvImporter
                         if (!bids.uuid.isEmpty()) {
                             coverFinder.copyOrRenameCoverFile(bids.uuid);
                         } else {
-                            coverFinder.copyOrRenameCoverFile(bookIdFromFile,
-                                                              mDb.getBookUuid(bids.bookId));
+                            String uuid = mDb.getBookUuid(bids.bookId);
+                            if (uuid != null) {
+                                coverFinder.copyOrRenameCoverFile(bookIdFromFile, uuid);
+                            }
                         }
                     }
                 } catch (@NonNull final SQLiteDoneException
