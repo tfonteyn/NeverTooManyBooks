@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,76 +27,73 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.core.widget.NestedScrollView
+<!--<androidx.core.widget.NestedScrollView-->
+<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
+<!--    tools:context=".AdminActivity"-->
+<!--    >-->
+
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:layout_margin="@dimen/border1"
+    android:orientation="vertical"
     tools:context=".AdminActivity"
     >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/border1"
-        android:orientation="vertical"
-        >
+    <!-- DATA IMPORT/EXPORT -->
 
-        <!-- DATA IMPORT/EXPORT -->
+    <TextView
+        style="@style/Label.Header.Small"
+        android:text="@string/lbl_data_import_export"
+        />
 
-        <TextView
-            style="@style/Label.Header.Small"
-            android:text="@string/lbl_data_import_export"
-            />
+    <TextView
+        android:id="@+id/lbl_backup"
+        style="@style/OptionRow.Menu"
+        android:drawableStart="@drawable/ic_sd_storage"
+        android:text="@string/lbl_backup_to_archive"
+        />
 
-        <TextView
-            android:id="@+id/lbl_backup"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_sd_storage"
-            android:text="@string/lbl_backup_to_archive"
-            />
+    <TextView
+        android:id="@+id/lbl_import_from_archive"
+        style="@style/OptionRow.Menu"
+        android:drawableStart="@drawable/ic_file_download"
+        android:text="@string/lbl_import_from_archive"
+        />
 
-        <TextView
-            android:id="@+id/lbl_import_from_archive"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_file_download"
-            android:text="@string/lbl_import_from_archive"
-            />
+    <TextView
+        android:id="@+id/lbl_export"
+        style="@style/OptionRow.Menu"
+        android:drawableStart="@drawable/ic_sd_storage"
+        android:text="@string/lbl_export_to_csv"
+        />
 
-        <TextView
-            android:id="@+id/lbl_export"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_sd_storage"
-            android:text="@string/lbl_export_to_csv"
-            />
+    <TextView
+        android:id="@+id/lbl_import"
+        style="@style/OptionRow.Menu"
+        android:drawableStart="@drawable/ic_file_download"
+        android:text="@string/lbl_import_from_csv"
+        />
 
-        <TextView
-            android:id="@+id/lbl_import"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_file_download"
-            android:text="@string/lbl_import_from_csv"
-            />
+    <!-- ADVANCED OPTIONS Header -->
 
-        <!-- ADVANCED OPTIONS Header -->
+    <TextView
+        style="@style/Label.Header.Small"
+        android:text="@string/lbl_advanced_options"
+        />
 
-        <TextView
-            style="@style/Label.Header.Small"
-            android:text="@string/lbl_advanced_options"
-            />
-
-        <TextView
-            android:id="@+id/lbl_copy_database"
-            style="@style/OptionRow.Menu"
-            android:drawableStart="@drawable/ic_sd_storage"
-            android:text="@string/lbl_copy_database"
-            />
-
-        <TextView
-            android:id="@+id/lbl_copy_database_blurb"
-            style="@style/OptionRow.Menu.Blurb"
-            android:text="@string/lbl_copy_database_blurb"
-            />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+    <TextView
+        android:id="@+id/lbl_copy_database"
+        style="@style/OptionRow.Menu"
+        android:drawableStart="@drawable/ic_sd_storage"
+        android:text="@string/lbl_copy_database"
+        />
+</LinearLayout>
+    <!--</androidx.core.widget.NestedScrollView>-->

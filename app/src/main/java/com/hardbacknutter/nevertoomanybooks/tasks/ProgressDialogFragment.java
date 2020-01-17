@@ -319,6 +319,7 @@ public class ProgressDialogFragment
 //        super.onDestroyView();
 //    }
 
+    /** TODO: come up with a better name. */
     public interface Cancellable {
 
         @SuppressWarnings("SameReturnValue")
