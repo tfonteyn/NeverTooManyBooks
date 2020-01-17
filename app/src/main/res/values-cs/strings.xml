@@ -597,7 +597,7 @@
     <string name="pv_bob_header_style_name">Název stylu</string>
     <string name="warning_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
     <string name="pt_bob_list_state_expansion_level">Výchozí seznam rozšiřujících knih</string>
-    <string name="menu_level_preferred_collapse">Upřednostňovaná úroveň expanze</string>
+    <string name="menu_level_preferred_collapse">Sbalte se na preferovanou úroveň</string>
     <string name="hint_empty_rating">(Nehodnoceno)</string>
     <string name="hint_empty_language">(Není vyplněn žádný jazyk)</string>
     <string name="hint_empty_series">(Bez série)</string>
@@ -640,5 +640,6 @@
     <string name="hint_not_set">(Nenastaveno)</string>
     <string name="pt_search_prefer_isbn10">Pokud je to možné, použijte ISBN-10</string>
     <string name="pt_scanning_beep_on_barcode_found">Při nalezení čárového kódu pípne</string>
+    <string name="menu_level_preferred_expand">Rozbalte na preferovanou úroveň</string>
 
 </resources>

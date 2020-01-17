@@ -595,7 +595,7 @@
     <string name="pv_bob_header_style_name">Название стиля</string>
     <string name="warning_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
     <string name="pt_bob_list_state_expansion_level">Расширение списка книг по умолчанию</string>
-    <string name="menu_level_preferred_collapse">Предпочтительный уровень расширения</string>
+    <string name="menu_level_preferred_collapse">Свернуть до предпочтительного уровня</string>
     <string name="hint_empty_rating">(без рейтинга)</string>
     <string name="hint_empty_language">(Язык не указан)</string>
     <string name="hint_empty_series">(Нет серии)</string>
@@ -638,5 +638,6 @@
     <string name="hint_not_set">(Не указано)</string>
     <string name="pt_search_prefer_isbn10">Используйте ISBN-10, когда это возможно</string>
     <string name="pt_scanning_beep_on_barcode_found">Звуковой сигнал, когда штрих-код найден</string>
+    <string name="menu_level_preferred_expand">Развернуть до предпочтительного уровня</string>
 
 </resources>

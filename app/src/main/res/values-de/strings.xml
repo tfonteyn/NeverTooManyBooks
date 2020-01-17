@@ -603,7 +603,7 @@
     <string name="pv_bob_header_style_name">Stilname</string>
     <string name="warning_rebuild_orderby_columns">Dadurch werden die Sortierdaten neu erstellt, wenn die App neu gestartet wird. Bist du dir sicher, dass du weitermachen willst ?</string>
     <string name="pt_bob_list_state_expansion_level">Standard-Buchlistenebene</string>
-    <string name="menu_level_preferred_collapse">Bevorzugte Ausbaustufe</string>
+    <string name="menu_level_preferred_collapse">Auf die bevorzugte Ebene reduzieren</string>
     <string name="hint_empty_rating">(nicht bewertet)</string>
     <string name="hint_empty_language">(Keine Sprache ausgefüllt)</string>
     <string name="hint_empty_series">(Keine Serie)</string>
@@ -647,4 +647,5 @@
     <string name="hint_not_set">(Nicht festgelegt)</string>
     <string name="pt_search_prefer_isbn10">Wenn möglich verwende ISBN-10</string>
     <string name="pt_scanning_beep_on_barcode_found">Piepton, wenn ein Barcode gefunden wird</string>
+    <string name="menu_level_preferred_expand">Erweitern Sie auf die bevorzugte Ebene</string>
 </resources>

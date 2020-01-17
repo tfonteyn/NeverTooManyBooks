@@ -596,7 +596,7 @@
     <string name="pv_bob_header_style_name">Nazwa stylu</string>
     <string name="warning_rebuild_orderby_columns">Spowoduje to odbudowanie danych sortowania po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="pt_bob_list_state_expansion_level">Domyślne rozszerzenie listy książek</string>
-    <string name="menu_level_preferred_collapse">Preferowany poziom ekspansji</string>
+    <string name="menu_level_preferred_collapse">Zwiń do preferowanego poziomu</string>
     <string name="hint_empty_rating">(Nie oceniony)</string>
     <string name="hint_empty_language">(Bez wypełnionego języka)</string>
     <string name="hint_empty_series">(Bez serii)</string>
@@ -639,4 +639,5 @@
     <string name="hint_not_set">(Nie ustawiono)</string>
     <string name="pt_search_prefer_isbn10">Jeśli to możliwe, użyj ISBN-10</string>
     <string name="pt_scanning_beep_on_barcode_found">Sygnał dźwiękowy po znalezieniu kodu kreskowego</string>
+    <string name="menu_level_preferred_expand">Rozwiń do preferowanego poziomu</string>
 </resources>

@@ -37,7 +37,7 @@
     <string name="pe_bob_list_rebuild_state_preferred">Gebruik voorkeur instelling</string>
     <string name="pe_bob_list_rebuild_state_preserve">Huidige status behouden</string>
     <string name="pe_bob_list_rebuild_state_expanded">Alles uitvouwen</string>
-    <string name="pe_bob_list_rebuild_state_collapsed">Alles inklappen</string>
+    <string name="pe_bob_list_rebuild_state_collapsed">Alles samenvouwen</string>
 
     <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
     <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
@@ -362,7 +362,7 @@
     <string name="menu_booklist_styles">Boekenlijst Stijlen</string>
     <string name="menu_bookshelves">Boekenplanken</string>
     <string name="menu_clear_search_filters">Filters verwijderen</string>
-    <string name="menu_level_collapse">Alles inklappen</string>
+    <string name="menu_level_collapse">Alles samenvouwen</string>
     <string name="menu_cover_replace_from_camera">Van Camera…</string>
     <string name="menu_cover_replace_from_gallery">Van Galerij…</string>
     <string name="menu_cover_crop">Bijsnijden</string>
@@ -605,7 +605,7 @@
     <string name="pv_bob_header_style_name">Stijl naam</string>
     <string name="warning_rebuild_orderby_columns">Hiermee worden de sorteergegevens opnieuw opgebouwd wanneer de app opnieuw wordt gestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="pt_bob_list_state_expansion_level">Standaard boekenlijst niveau</string>
-    <string name="menu_level_preferred_collapse">Voorkeur expansieniveau</string>
+    <string name="menu_level_preferred_collapse">Samenvouwen tot voorkeursniveau</string>
     <string name="hint_empty_rating">(niet beoordeeld)</string>
     <string name="hint_empty_language">(Geen taal ingevuld)</string>
     <string name="hint_empty_series">(Geen reeks)</string>
@@ -649,5 +649,6 @@
     <string name="hint_not_set">(Niet ingesteld)</string>
     <string name="pt_search_prefer_isbn10">Gebruik ISBN-10 indien mogelijk</string>
     <string name="pt_scanning_beep_on_barcode_found">Beep wanneer een barcode wordt gevonden</string>
+    <string name="menu_level_preferred_expand">Uitvouwen tot voorkeursniveau</string>
 
 </resources>

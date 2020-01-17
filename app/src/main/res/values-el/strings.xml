@@ -594,7 +594,7 @@
     <string name="pv_bob_header_style_name">Όνομα στυλ</string>
     <string name="warning_rebuild_orderby_columns">Αυτό θα επαναδημιουργήσει τα δεδομένα ταξινόμησης κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="pt_bob_list_state_expansion_level">Προεπιλογή επέκτασης λίστας</string>
-    <string name="menu_level_preferred_collapse">Προτιμώμενο επίπεδο επέκτασης</string>
+    <string name="menu_level_preferred_collapse">Σύμπτυξη στο προτιμώμενο επίπεδο</string>
     <string name="hint_empty_rating">(δεν έχει αξιολογηθεί)</string>
     <string name="hint_empty_language">(Δεν υπάρχει πλήρης γλώσσα)</string>
     <string name="hint_empty_series">(Χωρίς σειρά)</string>
@@ -638,5 +638,6 @@
     <string name="hint_not_set">(Δεν έχει οριστεί)</string>
     <string name="pt_search_prefer_isbn10">Χρησιμοποιήστε ISBN-10 όταν είναι δυνατόν</string>
     <string name="pt_scanning_beep_on_barcode_found">Μπιπ, όταν βρεθεί ένας γραμμωτός κώδικας</string>
+    <string name="menu_level_preferred_expand">Επέκταση σε προτιμώμενο επίπεδο</string>
 
 </resources>
