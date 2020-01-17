@@ -33,7 +33,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -88,10 +87,13 @@ public class BooksOnBookshelfModel
 
     private static final String PREF_PREFIX = "booklist.";
 
-    /** Preference name - Saved position of last top row. */
-    private static final String PREF_BOB_TOP_ROW = PREF_PREFIX + "top.row";
+    /** Preference name - Saved adapter position of current top row. */
+    private static final String PREF_BOB_TOP_ITEM_POSITION = PREF_PREFIX + "top.row";
+    /** Preference name - Saved rowId of current top row. */
+    private static final String PREF_BOB_TOP_ROW_ID = PREF_PREFIX + "top.rowId";
     /** Preference name - Saved position of last top row offset from view top. */
-    private static final String PREF_BOB_TOP_ROW_OFFSET = PREF_PREFIX + "top.offset";
+    private static final String PREF_BOB_TOP_VIEW_OFFSET = PREF_PREFIX + "top.offset";
+
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     /** Allows progress message from a task to update the user. */
@@ -140,16 +142,21 @@ public class BooksOnBookshelfModel
      */
     private long mDesiredCentralBookId;
 
-    /** Used by onScroll to detect when the top row has actually changed. */
-    private int mLastTopRow = -1;
-    /** Saved position of top row. */
-    private int mTopRow;
     /**
-     * Saved position of last top row offset from view top.
-     * <p>
+     * Saved adapter position of top row.
+     * See {@link LinearLayoutManager#scrollToPosition(int)}
+     */
+    private int mItemPosition = RecyclerView.NO_POSITION;
+
+    /**
+     * Saved view offset of top row.
      * See {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
-    private int mTopRowOffset;
+    private int mTopViewOffset;
+
+    /** Used by onScroll to detect when the top row has actually changed. */
+    private int mPreviousFirstVisibleItemPosition = RecyclerView.NO_POSITION;
+
     /** Preferred booklist state in next rebuild. */
     @BooklistBuilder.ListRebuildMode
     private int mRebuildState;
@@ -190,6 +197,7 @@ public class BooksOnBookshelfModel
     /** Current displayed list cursor. */
     @Nullable
     private BooklistCursor mCursor;
+    private long mTopRowRowId;
 
     @Override
     protected void onCleared() {
@@ -241,8 +249,10 @@ public class BooksOnBookshelfModel
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // Restore list position on bookshelf
-        mTopRow = prefs.getInt(PREF_BOB_TOP_ROW, 0);
-        mTopRowOffset = prefs.getInt(PREF_BOB_TOP_ROW_OFFSET, 0);
+        mTopRowRowId = prefs.getLong(PREF_BOB_TOP_ROW_ID, 0);
+
+        mItemPosition = prefs.getInt(PREF_BOB_TOP_ITEM_POSITION, RecyclerView.NO_POSITION);
+        mTopViewOffset = prefs.getInt(PREF_BOB_TOP_VIEW_OFFSET, 0);
     }
 
     /**
@@ -357,20 +367,24 @@ public class BooksOnBookshelfModel
         mRebuildState = BooklistBuilder.getPreferredListRebuildState();
     }
 
-    public int getTopRow() {
-        return mTopRow;
+    public int getItemPosition() {
+        return mItemPosition;
     }
 
-    public int getTopRowOffset() {
-        return mTopRowOffset;
+    public long getTopRowRowId() {
+        return mTopRowRowId;
     }
 
-    public int getLastTopRow() {
-        return mLastTopRow;
+    public int getTopViewOffset() {
+        return mTopViewOffset;
     }
 
-    public void setLastTopRow(final int lastTopRow) {
-        mLastTopRow = lastTopRow;
+    public int getPreviousFirstVisibleItemPosition() {
+        return mPreviousFirstVisibleItemPosition;
+    }
+
+    public void setPreviousFirstVisibleItemPosition(final int adapterPosition) {
+        mPreviousFirstVisibleItemPosition = adapterPosition;
     }
 
     public void setRebuildState(final int rebuildState) {
@@ -378,34 +392,25 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Save current position information in the preferences, including view nodes that are expanded.
+     * Save current position information in the preferences.
      * We do this to preserve this data across application shutdown/startup.
-     *
-     * <p>
-     * ENHANCE: Handle positions a little better when books are deleted.
-     * <p>
-     * Deleting a book by 'n' authors from the last author in list results in the list decreasing
-     * in length by, potentially, n*2 items. The current code will return to the old position
-     * in the list after such an operation...which will be too far down.
-     *
-     * @param listView used to derive the top row offset
-     * @param topRow   the position of the top visible row in the list
      */
-    public void saveListPosition(@NonNull final RecyclerView listView,
-                                 final int topRow) {
-        if (mListHasBeenLoaded) {
-            mTopRow = topRow;
-            View topView = listView.getChildAt(0);
-            if (topView != null) {
-                mTopRowOffset = topView.getTop();
-            } else {
-                mTopRowOffset = 0;
-            }
+    public void saveListPosition(@NonNull final Context context,
+                                 final int position,
+                                 final long rowId,
+                                 final int topViewOffset) {
 
-            Context context = listView.getContext();
+
+        if (mListHasBeenLoaded) {
+            mItemPosition = position;
+            mTopRowRowId = rowId;
+
+            mTopViewOffset = topViewOffset;
+
             PreferenceManager.getDefaultSharedPreferences(context).edit()
-                             .putInt(PREF_BOB_TOP_ROW, mTopRow)
-                             .putInt(PREF_BOB_TOP_ROW_OFFSET, mTopRowOffset)
+                             .putInt(PREF_BOB_TOP_ITEM_POSITION, mItemPosition)
+                             .putLong(PREF_BOB_TOP_ROW_ID, mTopRowRowId)
+                             .putInt(PREF_BOB_TOP_VIEW_OFFSET, mTopViewOffset)
                              .apply();
         }
     }
@@ -745,7 +750,7 @@ public class BooksOnBookshelfModel
         return mCursor.getBooklistBuilder().getTargetRows(mDesiredCentralBookId);
     }
 
-    public boolean toggleNode(final int rowId) {
+    public boolean toggleNode(final long rowId) {
         //noinspection ConstantConditions
         return mCursor.getBooklistBuilder().toggleNode(rowId);
     }
@@ -768,7 +773,7 @@ public class BooksOnBookshelfModel
         return mCursor.getBooklistBuilder().createFlattenedBooklist();
     }
 
-    public int getListPosition(final int rowId) {
+    public int getListPosition(final long rowId) {
         //noinspection ConstantConditions
         return mCursor.getBooklistBuilder().getListPosition(rowId);
     }

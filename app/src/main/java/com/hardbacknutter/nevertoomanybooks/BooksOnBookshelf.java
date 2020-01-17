@@ -189,7 +189,7 @@ public class BooksOnBookshelf
                        + "|fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
                        + "|data=" + data);
         }
-        savePosition();
+        saveListPosition();
         initBookList();
 
         // changes were made to a single book
@@ -228,7 +228,7 @@ public class BooksOnBookshelf
                     // a list sorted by Author/Series to on sorted by unread/addedDate/publisher.
                     // Keeping the current row/pos is probably the most useful thing we can
                     // do since we *may* come back to a similar list.
-                    savePosition();
+                    saveListPosition();
                     // and do a rebuild
                     initBookList();
                 }
@@ -245,26 +245,31 @@ public class BooksOnBookshelf
          * <li>Not a book: expand/collapse the section as appropriate.</li>
          * </ul>
          *
-         * @param position  The position of the item within the adapter's data set.
-         * @param holder    the ViewHolder for the row
+         * {@inheritDoc}
          */
         @Override
-        public void onItemClick(final int position,
-                                @NonNull final BooklistAdapter.RowViewHolder holder) {
+        public void onItemClick(final int position) {
+
+            // Move the cursor, so we can read the data for this row.
+            // No need to check the position first, i.e. if the user can click it, then it's there.
+            final Cursor cursor = mModel.getListCursor();
+            //noinspection ConstantConditions
+            cursor.moveToPosition(position);
+            CursorRow cursorRow = new CursorRow(cursor);
 
             // If it's a book, open the details screen.
-            if (holder instanceof BooklistAdapter.BookHolder) {
-                BooklistAdapter.BookHolder bookHolder = (BooklistAdapter.BookHolder) holder;
-
+            if (cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND) == BooklistGroup.RowKind.BOOK) {
+                long bookId = cursorRow.getLong(DBDefinitions.KEY_FK_BOOK);
                 String navTableName = mModel.createFlattenedBooklist();
                 Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class)
-                        .putExtra(DBDefinitions.KEY_PK_ID, bookHolder.bookId)
+                        .putExtra(DBDefinitions.KEY_PK_ID, bookId)
                         .putExtra(BookDetailsFragmentModel.BKEY_FLAT_BOOKLIST_TABLE, navTableName);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
             } else {
                 // Else it's a level, expand/collapse recursively.
-                boolean isExpanded = mModel.toggleNode(holder.rowId);
+                long rowId = cursorRow.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
+                boolean isExpanded = mModel.toggleNode(rowId);
 
                 // make sure the cursor has valid rows for the new position.
                 mModel.getListCursor().requery();
@@ -285,23 +290,24 @@ public class BooksOnBookshelf
         /**
          * User long-clicked on a row. Bring up a context menu as appropriate.
          *
-         * @param position The position of the item within the adapter's data set.
-         * @param holder the ViewHolder for the row
+         * {@inheritDoc}
          */
         @Override
-        public boolean onItemLongClick(final int position,
-                                       @NonNull final BooklistAdapter.RowViewHolder holder) {
+        public boolean onItemLongClick(final int position) {
+
+            // Move the cursor, so we can read the data for this row.
+            // No need to check the position first, i.e. if the user can click it, then it's there.
+            final Cursor cursor = mModel.getListCursor();
+            //noinspection ConstantConditions
+            cursor.moveToPosition(position);
+            CursorRow cursorRow = new CursorRow(cursor);
 
             final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
             // build/check the menu for this row
             if (onCreateContextMenu(menu)) {
-                // we have a menu to show, adjust the title depending the type.
-                String title;
-                if (holder instanceof BooklistAdapter.BookHolder) {
-                    title = ((BooklistAdapter.BookHolder) holder).title;
-                } else {
-                    title = mAdapter.getLevelText(BooksOnBookshelf.this, holder.level);
-                }
+                int level = cursorRow.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+                // we have a menu to show, adjust the title depending the level.
+                String title = mAdapter.getLevelText(BooksOnBookshelf.this, level);
                 // bring up the context menu
                 new MenuPicker<>(BooksOnBookshelf.this, title, menu, position,
                                  BooksOnBookshelf.this::onContextItemSelected)
@@ -318,13 +324,13 @@ public class BooksOnBookshelf
                 public void onScrolled(@NonNull final RecyclerView recyclerView,
                                        final int dx,
                                        final int dy) {
-                    int currentTopRow = mLayoutManager.findFirstVisibleItemPosition();
                     // Need to check isDestroyed() because BooklistCursor misbehaves when
                     // activity terminates and closes cursor
-                    if (mModel.getLastTopRow() != currentTopRow
+                    if (mModel.getPreviousFirstVisibleItemPosition()
+                        != mLayoutManager.findFirstVisibleItemPosition()
                         && !isDestroyed()
                         && mShowLevelHeaders) {
-                        setHeaderLevelText(currentTopRow);
+                        setHeaderLevelText();
                     }
                 }
             };
@@ -913,7 +919,7 @@ public class BooksOnBookshelf
     @CallSuper
     public void onPause() {
         hideFABMenu();
-        savePosition();
+        saveListPosition();
         super.onPause();
     }
 
@@ -949,25 +955,14 @@ public class BooksOnBookshelf
      */
     private void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                 final boolean expand) {
-
-        int layoutPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         // It is possible that the list will be empty, if so, ignore
-        if (layoutPosition != RecyclerView.NO_POSITION) {
-            // save current position
-            savePosition();
-
+        if (mLayoutManager.findFirstCompletelyVisibleItemPosition() != RecyclerView.NO_POSITION) {
+            // save current position in case anything goes wrong during expanding
+            saveListPosition();
             // set new states
             mModel.expandAllNodes(topLevel, expand);
-
-            // Save the top row position.
-            // We need to get the holder to read the rowId from.
-            // This row is NOT necessarily the same as the cursor position
-            // of the booklistBuilder's cursor.
-            BooklistAdapter.RowViewHolder holder = (BooklistAdapter.RowViewHolder)
-                    mListView.findViewHolderForLayoutPosition(layoutPosition);
-            //noinspection ConstantConditions
-            mModel.saveListPosition(mListView, mModel.getListPosition(holder.rowId));
-
+            // Save the new top row position.
+            saveListPosition();
             // Finally pass in a new cursor and display the list.
             displayList(mModel.getNewListCursor(), null);
         }
@@ -1074,33 +1069,55 @@ public class BooksOnBookshelf
         initAdapter(newListCursor);
 
         final int count = newListCursor.getCount();
-        // Restore saved position
-        if (mModel.getTopRow() >= count) {
+        // Scroll to the saved position
+        if (mModel.getItemPosition() >= count) {
             // the list is shorter than it used to be, just scroll to the end
-            mLayoutManager.scrollToPosition(mModel.getTopRow());
-            // and save the updated position
-            mModel.saveListPosition(mListView, count - 1);
-
+            mLayoutManager.scrollToPosition(mModel.getItemPosition());
         } else {
-            mLayoutManager.scrollToPositionWithOffset(mModel.getTopRow(), mModel.getTopRowOffset());
-        }
-        // URGENT: the stored row might not be visible
+            // the desired values are related to the 'old' adapter/cursor.
+            int desiredPosition = mModel.getItemPosition();
+            long desiredRowId = mModel.getTopRowRowId();
+            // need to map those to the new adapter/cursor. Ideally they will be the same.
+            long actualRowId = mAdapter.getItemId(desiredPosition);
+            int actualPosition = desiredPosition;
 
-        // If a target position array is set, then queue a runnable to set the position
-        // once we know how many items appear in a typical view and we can tell
-        // if it is already in the view.
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "desiredPosition=" + desiredPosition
+                           + "|desiredRowId=" + desiredRowId
+                           + "|actualRowId=" + actualRowId);
+            }
+
+            // but if they are not equal,
+            if (actualRowId != desiredRowId) {
+                // URGENT: the intention is to FIND the correct position obviously;
+                //  --/++ are placeholders
+                if (actualRowId < desiredRowId) {
+                    actualPosition++;
+                } else {
+                    // actualRowId > desiredRowId
+                    actualPosition--;
+                }
+            }
+            if (actualPosition < 0) {
+                actualPosition = 0;
+            }
+            mLayoutManager.scrollToPositionWithOffset(actualPosition, mModel.getTopViewOffset());
+        }
+
+        // and save the updated position
+        saveListPosition();
+
+        // If a target position array is set, then queue a runnable to scroll to the target
+        // best suited depending on what rows are (by then) currently visible
         if (targetRows != null) {
-            mListView.post(() -> fixPositionWhenDrawn(targetRows));
+            mListView.post(() -> scrollToTarget(targetRows));
         }
 
         // Prepare the list header fields.
-        setHeaderStyleName();
-        setHeaderFilterText();
-        setHeaderBookCount();
-        mShowLevelHeaders = setHeaderLevelTextVisibility();
+        mShowLevelHeaders = initHeaders();
         // Set the initial details to the current first visible row (if any).
         if (count > 0 && mShowLevelHeaders) {
-            setHeaderLevelText(mModel.getTopRow());
+            setHeaderLevelText();
         }
 
         // all set, we can close the old list
@@ -1135,11 +1152,11 @@ public class BooksOnBookshelf
      *
      * @param targetRows list of rows of which we want one to be visible to the user.
      */
-    private void fixPositionWhenDrawn(@NonNull final List<RowStateDAO.ListRowDetails> targetRows) {
+    private void scrollToTarget(@NonNull final List<RowStateDAO.ListRowDetails> targetRows) {
         // Find the actual extend of the current view and get centre.
-        final int first = mLayoutManager.findFirstVisibleItemPosition();
-        final int last = mLayoutManager.findLastVisibleItemPosition();
-        final int centre = (last + first) / 2;
+        final int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+        final int lastVisibleItemPosition = mLayoutManager.findLastVisibleItemPosition();
+        final int centre = (lastVisibleItemPosition + firstVisibleItemPosition) / 2;
 
         // Get the first 'target' and make it 'best candidate'
         int best = targetRows.get(0).listPosition;
@@ -1156,19 +1173,17 @@ public class BooksOnBookshelf
             }
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-            Log.d(TAG, "fixPositionWhenDrawn"
-                       + "|first=" + first
+            Log.d(TAG, "scrollToTarget"
+                       + "|firstVisibleItemPosition=" + firstVisibleItemPosition
                        + "|centre=" + centre
-                       + "|last=" + last
+                       + "|lastVisibleItemPosition=" + lastVisibleItemPosition
                        + "|best=" + best);
         }
 
         // If the 'best' row is not in view, or at the edge, scroll it into view.
-        if (best <= first || last <= best) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_FIX_POSITION) {
-                Log.d(TAG, "fixPositionWhenDrawn|Adjusting position");
-            }
-            mLayoutManager.scrollToPositionWithOffset(best, 0);
+        if (best <= firstVisibleItemPosition || lastVisibleItemPosition <= best) {
+            mLayoutManager.scrollToPosition(best);
+
             // Without this call some positioning may be off by one row.
             final int newPos = best;
             mListView.post(() -> mListView.smoothScrollToPosition(newPos));
@@ -1552,9 +1567,21 @@ public class BooksOnBookshelf
     /**
      * Save current position information.
      */
-    private void savePosition() {
+    private void saveListPosition() {
         if (!isDestroyed()) {
-            mModel.saveListPosition(mListView, mLayoutManager.findFirstVisibleItemPosition());
+            int position = mLayoutManager.findFirstVisibleItemPosition();
+            long rowId = mAdapter.getItemId(position);
+
+            // This is just the number of pixels offset of the first visible row.
+            int topViewOffset;
+            View topView = mListView.getChildAt(0);
+            if (topView != null) {
+                topViewOffset = topView.getTop();
+            } else {
+                topViewOffset = 0;
+            }
+
+            mModel.saveListPosition(this, position, rowId, topViewOffset);
         }
     }
 
@@ -1658,11 +1685,15 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Checks and sets visibility for the header lines.
+     * Prepare visibility for the header lines and set the fixed header fields.
      *
-     * @return {@code true} if the style supports any level at all.
+     * @return {@code true} if level-texts are used.
      */
-    private boolean setHeaderLevelTextVisibility() {
+    private boolean initHeaders() {
+        setHeaderStyleName();
+        setHeaderFilterText();
+        setHeaderBookCount();
+
         BooklistStyle style = mModel.getCurrentStyle(this);
 
         boolean atLeastOne = false;
@@ -1684,21 +1715,20 @@ public class BooksOnBookshelf
 
     /**
      * Update the list header to match the current top item.
-     *
-     * @param currentTopRow Top row which is visible
      */
-    private void setHeaderLevelText(@IntRange(from = 0) final int currentTopRow) {
-        if (currentTopRow >= 0) {
-            mModel.setLastTopRow(currentTopRow);
-        } else {
-            mModel.setLastTopRow(0);
+    private void setHeaderLevelText() {
+        int adapterPosition = mLayoutManager.findFirstVisibleItemPosition();
+        if (adapterPosition != RecyclerView.NO_POSITION) {
+            mModel.setPreviousFirstVisibleItemPosition(adapterPosition);
         }
 
-        // use visibility which was set in {@link #setHeaderLevelTextVisibility}
+        // use visibility which was set in {@link #initHeaders}
         if (mHeaderTextView[0].getVisibility() == View.VISIBLE
             || mHeaderTextView[1].getVisibility() == View.VISIBLE) {
+
+            Cursor cursor = mModel.getListCursor();
             //noinspection ConstantConditions
-            if (mModel.getListCursor().moveToPosition(mModel.getLastTopRow())) {
+            if (cursor.moveToPosition(adapterPosition)) {
                 String[] lines = mAdapter.getLevelText(this);
                 for (int i = 0; i < lines.length; i++) {
                     if (mHeaderTextView[i].getVisibility() == View.VISIBLE) {

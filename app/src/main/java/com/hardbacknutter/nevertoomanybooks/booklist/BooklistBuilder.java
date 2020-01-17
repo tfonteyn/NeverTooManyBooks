@@ -849,7 +849,7 @@ public class BooklistBuilder
      *
      * @return Actual list position.
      */
-    public int getListPosition(final int rowId) {
+    public int getListPosition(final long rowId) {
         return mRowStateDAO.getListPosition(rowId);
     }
 
