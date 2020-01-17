@@ -51,10 +51,6 @@ public class IndexDefinition {
     /** SQL to get the names of all indexes. */
     private static final String SQL_GET_INDEX_NAMES =
             "SELECT name FROM sqlite_master WHERE type = 'index' AND sql is not null;";
-
-    /** Full name of index. */
-    @NonNull
-    private final String mName;
     /** Table to which index applies. */
     @NonNull
     private final TableDefinition mTable;
@@ -63,23 +59,26 @@ public class IndexDefinition {
     private final List<DomainDefinition> mDomains;
     /** Flag indicating index is unique. */
     private final boolean mIsUnique;
-
+    /** suffix to add to the table name. */
+    @NonNull
+    private final String mNameSuffix;
     /**
      * Constructor.
      *
-     * @param name    name of index
-     * @param unique  Flag indicating index is unique
-     * @param table   Table to which index applies
-     * @param domains Domains in index
+     * @param table      Table to which index applies
+     * @param nameSuffix suffix to add to the table name; together this will become the full name.
+     *                   The table name is read <strong>at actual creation time</strong>
+     * @param unique     Flag indicating index is unique
+     * @param domains    Domains in index
      */
-    IndexDefinition(@NonNull final String name,
+    IndexDefinition(@NonNull final TableDefinition table,
+                    @NonNull final String nameSuffix,
                     final boolean unique,
-                    @NonNull final TableDefinition table,
                     @NonNull final List<DomainDefinition> domains) {
-        mName = name;
+        mNameSuffix = nameSuffix;
         mIsUnique = unique;
         mTable = table;
-        // take a COPY
+        // take a COPY of the list
         mDomains = new ArrayList<>(domains);
     }
 
@@ -104,11 +103,6 @@ public class IndexDefinition {
                 }
             }
         }
-    }
-
-    @NonNull
-    public String getName() {
-        return mName;
     }
 
     /**
@@ -155,7 +149,8 @@ public class IndexDefinition {
         if (mIsUnique) {
             sql.append(" UNIQUE");
         }
-        sql.append(" INDEX ").append(mName).append(" ON ").append(mTable.getName())
+        sql.append(" INDEX ").append(mTable.getName()).append("_IDX_").append(mNameSuffix)
+           .append(" ON ").append(mTable.getName())
            .append('(').append(TextUtils.join(",", mDomains)).append(')');
 
         return sql.toString();

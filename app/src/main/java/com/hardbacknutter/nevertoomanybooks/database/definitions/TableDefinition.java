@@ -63,7 +63,10 @@ public class TableDefinition
             + "(SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + "
             + "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
 
-    /** List of index definitions for this table. */
+    /**
+     * List of index definitions for this table.
+     * We're using a map with the key being the suffixName, to avoid adding duplicates.
+     */
     private final Map<String, IndexDefinition> mIndexes =
             Collections.synchronizedMap(new HashMap<>());
 
@@ -90,8 +93,10 @@ public class TableDefinition
             Collections.synchronizedMap(new HashMap<>());
 
     /** Table name. */
+    @NonNull
     private String mName;
     /** Table alias. */
+    @Nullable
     private String mAlias;
     /** Table type. */
     @NonNull
@@ -330,7 +335,7 @@ public class TableDefinition
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition setAlias(@NonNull final String newAlias) {
+    public TableDefinition setAlias(@Nullable final String newAlias) {
         mAlias = newAlias;
         return this;
     }
@@ -588,8 +593,8 @@ public class TableDefinition
     /**
      * Add an index to this table.
      *
-     * @param localName unique name, local for this table, to give this index. Alphanumeric Only.
-     *                  The full name will become: tableName_IXi_localName
+     * @param localName unique suffix, local for this table, to add to the name of this index.
+     *                  Alphanumeric Only.
      * @param unique    FLag indicating index is UNIQUE
      * @param domains   List of domains index
      *
@@ -604,9 +609,9 @@ public class TableDefinition
             throw new IllegalStateException(
                     "Index with local name '" + localName + "' already defined");
         }
-        // Construct the full index name
-        String name = mName + "_IX" + (mIndexes.size() + 1) + '_' + localName;
-        mIndexes.put(localName, new IndexDefinition(name, unique, this, domains));
+        // The full index name will be construction at actual creation time.
+        String suffix = localName + '_' + (mIndexes.size() + 1);
+        mIndexes.put(localName, new IndexDefinition(this, suffix, unique, domains));
         return this;
     }
 
