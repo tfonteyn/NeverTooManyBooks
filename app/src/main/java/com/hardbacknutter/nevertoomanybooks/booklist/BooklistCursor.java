@@ -346,17 +346,18 @@ public class BooklistCursor
                 }
             }
 
-            // Set as the active cursor, and finally set its position correctly
+            // Set as the active cursor
             mActiveCursor = mCursors.get(cursorId);
-            mActiveCursor.moveToPosition(newPosition - cursorStartPos);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
                 Log.d(TAG, "EXIT|onMove"
                            + "|cursorId=" + cursorId
                            + "|mActiveCursor=" + mActiveCursor);
             }
+
+            // and finally set its position correctly
+            return mActiveCursor.moveToPosition(newPosition - cursorStartPos);
         }
-        return true;
     }
 
     @Override
