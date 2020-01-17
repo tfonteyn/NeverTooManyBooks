@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1718,7 +1718,9 @@ public class Fields {
         /**
          * set the field ids which should follow visibility with this Field.
          * <p>
-         * URGENT: redo this using androidx.constraintlayout.widget.Group
+         * <strong>Dev. note:</strong> this could be done using
+         * {@link androidx.constraintlayout.widget.Group}
+         * but that means creating a group for EACH field. That would be overkill.
          *
          * @param relatedFields labels etc
          */
@@ -1872,7 +1874,7 @@ public class Fields {
          * Set the value of this field from the passed DataManager.
          * Useful for getting access to raw data values from a saved data bundle.
          */
-        public void setValueFrom(@NonNull final DataManager source) {
+        void setValueFrom(@NonNull final DataManager source) {
             if (!mKey.isEmpty() && !mDoNoFetch) {
                 // do NOT call afterFieldChange, as this is the initial load
                 mFieldDataAccessor.setValue(source);

@@ -272,6 +272,7 @@ public class BooksOnBookshelf
                 boolean isExpanded = mModel.toggleNode(rowId);
 
                 // make sure the cursor has valid rows for the new position.
+                //noinspection ConstantConditions
                 mModel.getListCursor().requery();
                 mAdapter.notifyDataSetChanged();
 
@@ -305,8 +306,8 @@ public class BooksOnBookshelf
             final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
             // build/check the menu for this row
             if (onCreateContextMenu(menu)) {
+                // we have a menu to show, set the title according to the level.
                 int level = cursorRow.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
-                // we have a menu to show, adjust the title depending the level.
                 String title = mAdapter.getLevelText(BooksOnBookshelf.this, level);
                 // bring up the context menu
                 new MenuPicker<>(BooksOnBookshelf.this, title, menu, position,
@@ -896,8 +897,7 @@ public class BooksOnBookshelf
                 Log.d(TAG, "onResume|reusing existing list");
             }
 
-            //URGENT: temporary debug: fix the rebuild.
-            Snackbar.make(mListView, "reusing existing list", Snackbar.LENGTH_LONG);
+            //Snackbar.make(mListView, "reusing existing list", Snackbar.LENGTH_LONG);
             //initBookList();
             displayList(mModel.getNewListCursor(), mModel.getTargetRows());
         }

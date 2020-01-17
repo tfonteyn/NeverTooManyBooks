@@ -56,9 +56,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 /**
- * Amazon is now disabled/hidden as it can't work without the proxy from BookCatalogue.
- * FIXME: remove the dependency on that proxy.
+ * FIXME: Amazon is now disabled/hidden as it can't work without the proxy from BookCatalogue.
+ * Either implement the Amazon API, or migrate to using html parser.
  * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
+ *
+ * The {@link #openWebsite(Context, String, String)} is in use obviously.
  */
 public final class AmazonManager
         implements SearchEngine,

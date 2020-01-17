@@ -285,9 +285,8 @@ public class EditBookAuthorsFragment
                     ItemWithFixableId.pruneList(mList, getContext(), mBookModel.getDb(),
                                                 Locale.getDefault(), false);
 
-                    //URGENT: right now, the Book gets the updated author(s), but the TocEntries
-                    // remain using the old Author(s)
-                    // .
+                    //URGENT: updated author(s): Book gets them, but TocEntries remain using old set
+                    //
                     // A TocEntry is unique based on author and title_od.
                     // Updating the in-memory TOC list and/or the TocEntries stored in the database
                     // with the new author:
@@ -300,7 +299,10 @@ public class EditBookAuthorsFragment
                     // - update the TocEntry as-is... i.e. in the database?
                     // .. more headaches....
                     // .
-                    // SOLUTION: just ASK the user with a "mod toc" or "no"
+                    // SOLUTION one of:
+                    // - just ASK the user with a "mod toc" or "no"
+                    // - don't bother, assume this won't be needed very often and
+                    //   have the user will do it manually
 
                     mListAdapter.notifyDataSetChanged();
                 })

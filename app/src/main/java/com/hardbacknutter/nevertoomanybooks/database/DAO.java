@@ -1244,7 +1244,6 @@ public class DAO
 
     private void preprocessPrices(@NonNull final Context context,
                                   @NonNull final Book book) {
-        //TEST: source field as String.. does this ever happen after we changed prices to 'long' ?
         // handle a price without a currency.
         if (book.containsKey(DBDefinitions.KEY_PRICE_LISTED)
             && !book.containsKey(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)) {

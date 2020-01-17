@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,12 +68,11 @@ import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Cop
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
 /**
- * NEWTHINGS: This class must stay in sync with {@link UpdateFieldsModel}.
+ * Search the internet for one book or a list of books and download/update book data
+ * as per user choices.
  * <p>
  * TODO: re-introduce remembering the last id done, and restarting from that id onwards.
  * See {@link UpdateFieldsModel} mFromBookIdOnwards
- *
- * TEST: full testing needed
  */
 public class UpdateFieldsFragment
         extends Fragment {
