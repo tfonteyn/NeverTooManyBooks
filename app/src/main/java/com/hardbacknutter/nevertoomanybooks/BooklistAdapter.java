@@ -56,6 +56,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup.RowKind;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
@@ -109,6 +110,8 @@ public class BooklistAdapter
     /** The cursor is the equivalent of the 'list of items'. */
     @NonNull
     private final Cursor mCursor;
+    @NonNull
+    private final CursorRow mCursorRow;
 
     @Nullable
     private OnRowClickedListener mOnRowClickedListener;
@@ -129,7 +132,11 @@ public class BooklistAdapter
         mStyle = style;
         mDb = db;
         mCursor = cursor;
+        mCursor.moveToFirst();
+        mCursorRow = new CursorRow(mCursor);
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
+
+        setHasStableIds(true);
     }
 
     void setOnRowClickedListener(@Nullable final OnRowClickedListener onRowClickedListener) {
@@ -214,8 +221,7 @@ public class BooklistAdapter
     private View createView(@NonNull final ViewGroup parent,
                             @RowKind.Id final int viewType) {
 
-        final CursorRow cursorRow = new CursorRow(mCursor);
-        int level = cursorRow.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+        int level = mCursorRow.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         // Indent (0..) based on level (1..)
         int indent = level - 1;
 
@@ -283,36 +289,53 @@ public class BooklistAdapter
     public void onBindViewHolder(@NonNull final RowViewHolder holder,
                                  final int position) {
 
+        mCursor.moveToPosition(position);
+
+        holder.onClickTargetView.setTag(R.id.TAG_BL_POSITION, position);
+
         holder.onClickTargetView.setOnClickListener(v -> {
             if (mOnRowClickedListener != null) {
-                mOnRowClickedListener.onItemClick(position, holder);
+                Integer rowPos = (Integer) v.getTag(R.id.TAG_BL_POSITION);
+                Objects.requireNonNull(rowPos);
+                mOnRowClickedListener.onItemClick(rowPos);
             }
         });
 
         holder.onClickTargetView.setOnLongClickListener(v -> {
             if (mOnRowClickedListener != null) {
-                return mOnRowClickedListener.onItemLongClick(position, holder);
+                Integer rowPos = (Integer) v.getTag(R.id.TAG_BL_POSITION);
+                Objects.requireNonNull(rowPos);
+                return mOnRowClickedListener.onItemLongClick(rowPos);
             }
             return false;
         });
 
-        mCursor.moveToPosition(position);
-        final CursorRow row = new CursorRow(mCursor);
-        // actual binding depends on the type of row (i.e. holder), so let the holder do it.
-        holder.onBindViewHolder(row, mStyle);
+        // further binding depends on the type of row (i.e. holder).
+        holder.onBindViewHolder(mCursorRow, mStyle);
     }
 
     @Override
     @RowKind.Id
     public int getItemViewType(final int position) {
-        mCursor.moveToPosition(position);
-        final CursorRow cursorRow = new CursorRow(mCursor);
-        return cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND);
+        if (mCursor.moveToPosition(position)) {
+            return mCursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND);
+        } else {
+            return RowKind.BOOK;
+        }
     }
 
     @Override
     public int getItemCount() {
         return mCursor.getCount();
+    }
+
+    @Override
+    public long getItemId(final int position) {
+        if (hasStableIds() && mCursor.moveToPosition(position)) {
+            return mCursorRow.getLong(DBDefinitions.KEY_PK_ID);
+        } else {
+            return RecyclerView.NO_ID;
+        }
     }
 
     /**
@@ -362,7 +385,6 @@ public class BooklistAdapter
     @Override
     public String[] getSectionText(@NonNull final Context context,
                                    final int position) {
-
         // sanity check.
         if (position < 0 || position >= getItemCount()) {
             return null;
@@ -404,14 +426,7 @@ public class BooklistAdapter
     @Nullable
     String getLevelText(@NonNull final Context context,
                         @IntRange(from = 1) final int level) {
-        // sanity check.
-        if (BuildConfig.DEBUG /* always */) {
-            if (level > (mStyle.groupCount())) {
-                throw new IllegalArgumentException(
-                        "level=" + level + " > groupCount=" + mStyle.groupCount()
-                );
-            }
-        }
+
 
         //FIXME: from BoB, click book. Move sideways book to book
         // (up to BooklistCursor#CURSOR_SIZE times) then go Back to BoB
@@ -426,21 +441,34 @@ public class BooklistAdapter
         // at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
         // .getLevelText(BooklistMappedCursorRow.java:170)
 
-        int index = level - 1;
-        String columnName = mStyle.getGroupAt(index).getFormattedDomain().getName();
 
-        final CursorRow row = new CursorRow(mCursor);
-        try {
-            //booom
-            String text = row.getString(columnName);
-            int kind = mStyle.getGroupKindAt(index);
-            return RowKind.format(context, kind, text);
-        } catch (@NonNull final CursorIndexOutOfBoundsException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "|level=" + level + "|column=" + columnName, e);
+        // sanity check.
+        if (BuildConfig.DEBUG /* always */) {
+            if (level > (mStyle.groupCount() + 1)) {
+                throw new IllegalArgumentException(
+                        "level=" + level + "> (groupCount+1)=" + mStyle.groupCount() + 1);
             }
         }
 
+        try {
+            if (level > (mStyle.groupCount())) {
+                // it's a book.
+                return mCursorRow.getString(DBDefinitions.KEY_TITLE);
+
+            } else {
+                // it's a group.
+                int index = level - 1;
+                int kind = mStyle.getGroupKindAt(index);
+
+                String columnName = mStyle.getGroupAt(index).getFormattedDomain().getName();
+                String text = mCursorRow.getString(columnName);
+                return RowKind.format(context, kind, text);
+            }
+        } catch (@NonNull final CursorIndexOutOfBoundsException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "|level=" + level, e);
+            }
+        }
         return null;
     }
 
@@ -449,12 +477,20 @@ public class BooklistAdapter
      */
     public interface OnRowClickedListener {
 
-        default void onItemClick(final int position,
-                                 @NonNull final RowViewHolder holder) {
+        /**
+         * User clicked a row.
+         *
+         * @param position The position of the item within the adapter's data set.
+         */
+        default void onItemClick(final int position) {
         }
 
-        default boolean onItemLongClick(final int position,
-                                        @NonNull final RowViewHolder holder) {
+        /**
+         * User long-clicked a row.
+         *
+         * @param position The position of the item within the adapter's data set.
+         */
+        default boolean onItemLongClick(final int position) {
             return false;
         }
     }
@@ -540,7 +576,7 @@ public class BooklistAdapter
                         mResults.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, tmp);
                         // no author type for now.
 //                        mResults.putInt(DBDefinitions.KEY_AUTHOR_TYPE,
-//                                        cursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE));
+//                                        mCursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE));
                     }
                 }
 
@@ -646,16 +682,16 @@ public class BooklistAdapter
     }
 
     /**
-     * Base for all row Holder classes.
+     * Base for all row ViewHolder classes.
      */
-    public abstract static class RowViewHolder
+    abstract static class RowViewHolder
             extends RecyclerView.ViewHolder {
 
-        /** The level in {@link DBDefinitions#TMP_TBL_BOOK_LIST_ROW_STATE}. */
-        public int level;
-        /** The rowId in {@link DBDefinitions#TMP_TBL_BOOK_LIST_ROW_STATE}. */
-        int rowId;
-        /** The view to install on-click listeners on. Can be the same as the itemView. */
+        /**
+         * The view to install on-click listeners on. Can be the same as the itemView.
+         * This is also the view where we will add tags with rowId etc,
+         * as it is this View that will be passed to the onClick handlers.
+         */
         View onClickTargetView;
 
         /**
@@ -675,18 +711,16 @@ public class BooklistAdapter
          * Bind the data to the views in the holder.
          *
          * @param cursorRow with data to bind
-         * @param style   to use
+         * @param style     to use
          */
         @CallSuper
         void onBindViewHolder(@NonNull final CursorRow cursorRow,
                               @NonNull final BooklistStyle style) {
-            rowId = cursorRow.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-            level = cursorRow.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         }
     }
 
     /**
-     * Holder for a {@link RowKind#BOOK} row.
+     * ViewHolder for a {@link RowKind#BOOK} row.
      */
     public static class BookHolder
             extends RowViewHolder {
@@ -802,9 +836,6 @@ public class BooklistAdapter
                     }
                 };
 
-        public long bookId;
-        public String title;
-
         /**
          * Constructor.
          *
@@ -894,8 +925,7 @@ public class BooklistAdapter
                                      @NonNull final BooklistStyle style) {
             super.onBindViewHolder(cursorRow, style);
 
-            bookId = cursorRow.getLong(DBDefinitions.KEY_FK_BOOK);
-            title = cursorRow.getString(DBDefinitions.KEY_TITLE);
+            String title = cursorRow.getString(DBDefinitions.KEY_TITLE);
 
             if (mReorderTitle) {
                 Context context = mTitleView.getContext();
@@ -1085,7 +1115,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Holder to handle any field that can be displayed as a simple string.
+     * ViewHolder to handle any field that can be displayed as a simple string.
      * Assumes there is a 'name' TextView and an optional enclosing ViewGroup called ROW_INFO.
      */
     public static class GenericStringHolder
@@ -1161,7 +1191,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Holder for a row that displays a 'rating'.
+     * ViewHolder for a row that displays a 'rating'.
      */
     public static class RatingHolder
             extends GenericStringHolder {
@@ -1201,7 +1231,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Holder for a row that displays a 'language'.
+     * ViewHolder for a row that displays a 'language'.
      */
     public static class LanguageHolder
             extends GenericStringHolder {
@@ -1230,7 +1260,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Holder for a row that displays a 'read/unread' (as text) status.
+     * ViewHolder for a row that displays a 'read/unread' (as text) status.
      */
     public static class ReadUnreadHolder
             extends GenericStringHolder {
@@ -1258,7 +1288,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Holder for a row that displays a 'month'.
+     * ViewHolder for a row that displays a 'month'.
      * This code turns a month number into a Locale based month name.
      */
     public static class MonthHolder
@@ -1295,7 +1325,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Holder for a Series.
+     * ViewHolder for a Series.
      */
     public static class SeriesHolder
             extends CheckableStringHolder {
@@ -1337,7 +1367,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Holder for an Author.
+     * ViewHolder for an Author.
      */
     public static class AuthorHolder
             extends CheckableStringHolder {
@@ -1356,7 +1386,7 @@ public class BooklistAdapter
     }
 
     /**
-     * Holder for a row that displays a generic string, but with a 'lock' icon at the 'end'.
+     * ViewHolder for a row that displays a generic string, but with a 'lock' icon at the 'end'.
      */
     public abstract static class CheckableStringHolder
             extends GenericStringHolder {
