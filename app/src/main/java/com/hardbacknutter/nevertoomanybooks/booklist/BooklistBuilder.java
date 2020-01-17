@@ -457,18 +457,18 @@ public class BooklistBuilder
             mListTable.recreate(mSyncedDb, false)
                       .createIndices(mSyncedDb);
 
+            //TEST: index on list table.
+            if (!mSyncedDb.isCollationCaseSensitive()) {
+                // can't do this, IndexDefinition class does not support DESC columns for now.
+                // mListTable.addIndex("SDI", false, helper.getSortedDomains());
+                mSyncedDb.execSQL("CREATE INDEX " + mListTable + "_SDI ON " + mListTable
+                                  + "(" + helper.getSortedDomainsIndexColumns() + ")");
+            }
+
             t03_list_table_created = System.nanoTime();
 
             // get the triggers in place, ready to act on our upcoming initial insert.
             createTriggers(helper.getSortedDomains());
-
-            //TEST: this is a temporary test. of an index on list table.
-            // Need to add some timers
-//            if (!mSyncedDb.isCollationCaseSensitive()) {
-//                // mListTable.addIndex("SDI", false, helper.getSortedDomains());
-//                mSyncedDb.execSQL("CREATE INDEX " + mListTable + "_IX1 ON " + mListTable
-//                                  + "(" + helper.getSortedDomainsIndexColumns() + ")");
-//            }
 
             // Build the lowest level summary using our initial insert statement
             // The triggers will do the rest.
@@ -1600,10 +1600,9 @@ public class BooklistBuilder
         }
 
         /**
-         * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement.
+         * Process the 'sort-by' columns into a list suitable for an CREATE-INDEX statement.
          */
         private String getSortedDomainsIndexColumns() {
-            // List of column names appropriate for 'CREATE INDEX' column list
             final StringBuilder indexCols = new StringBuilder();
 
             for (SortedDomains sdi : mSortedDomains) {
