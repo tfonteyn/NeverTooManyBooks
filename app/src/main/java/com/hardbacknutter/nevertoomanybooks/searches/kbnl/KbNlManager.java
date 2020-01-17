@@ -68,13 +68,13 @@ public class KbNlManager
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
     /**
-     * RELEASE: Chrome 2019-08-12. Continuously update to latest version.
-     * The site does not return full data unless the user agent header is set to a valid browser.
+     * RELEASE: Chrome 2020-01-17. Continuously update to latest version.
+     * This site does not return full data unless the user agent header is set to a valid browser.
      */
     private static final String USER_AGENT =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/78.0.3904.97 Safari/537.36";
+            + " Chrome/79.0.3945.117 Safari/537.36";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
