@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -50,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
  * the column as defined at database creation time.<br>
  * Example: a 'date' column with content "1980" will report {@link Cursor#FIELD_TYPE_INTEGER}.
  * <p>
- * To enforce using the actual type, call {@link #setDb(DAO, TableDefinition)} before
+ * To enforce using the actual type, call {@link #setDb(SynchronizedDb, TableDefinition)} before
  * accessing anything.<br>
  * <strong>IMPORTANT:</strong> only gets the types from the table passed to {@link #getType}
  */
@@ -61,7 +62,7 @@ public class ExtCursor
 
     /** database reference so we can get table/column info. */
     @Nullable
-    private DAO mDb;
+    private SynchronizedDb mSyncedDb;
     @Nullable
     private TableDefinition mTableDefinition;
     /** Populated on first use. */
@@ -76,22 +77,23 @@ public class ExtCursor
      * @param query     Part of standard cursor constructor.
      * @param sync      Synchronizer object
      */
-    public ExtCursor(@NonNull final SQLiteCursorDriver driver,
-                     @NonNull final String editTable,
-                     @NonNull final SQLiteQuery query,
-                     @NonNull final Synchronizer sync) {
+    ExtCursor(@NonNull final SQLiteCursorDriver driver,
+              @NonNull final String editTable,
+              @NonNull final SQLiteQuery query,
+              @NonNull final Synchronizer sync) {
         super(driver, editTable, query, sync);
     }
 
     /**
      * See class docs.
      *
-     * @param db              Database Access; needed to get the real meta data for the columns.
+     * @param syncedDb        Database Access; needed to get the real meta data for the columns.
      * @param tableDefinition to read types from
      */
-    public void setDb(@NonNull final DAO db,
-                      @NonNull final TableDefinition tableDefinition) {
-        mDb = db;
+    void setDb(@NonNull final SynchronizedDb syncedDb,
+               @SuppressWarnings("SameParameterValue")
+               @NonNull final TableDefinition tableDefinition) {
+        mSyncedDb = syncedDb;
         mTableDefinition = tableDefinition;
     }
 
@@ -104,8 +106,8 @@ public class ExtCursor
     public int getType(final int columnIndex) {
 
         // initialise once.
-        if (mDb != null && mTableDefinition != null && mTableInfo == null) {
-            mTableInfo = mTableDefinition.getTableInfo(mDb.getUnderlyingDatabase());
+        if (mSyncedDb != null && mTableDefinition != null && mTableInfo == null) {
+            mTableInfo = mTableDefinition.getTableInfo(mSyncedDb);
         }
 
         if (mTableInfo != null) {

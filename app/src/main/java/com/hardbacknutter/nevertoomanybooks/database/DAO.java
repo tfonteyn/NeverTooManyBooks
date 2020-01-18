@@ -2421,7 +2421,7 @@ public class DAO
         ExtCursor cursor = (ExtCursor) sSyncedDb.rawQueryWithFactory(
                 EXT_CURSOR_FACTORY, sql, new String[]{String.valueOf(bookId)}, null);
         // force the ExtCursor to retrieve the real column types.
-        cursor.setDb(this, TBL_BOOKS);
+        cursor.setDb(sSyncedDb, TBL_BOOKS);
         return cursor;
     }
 
