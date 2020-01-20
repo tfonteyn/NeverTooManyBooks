@@ -212,6 +212,39 @@ public abstract class BaseActivity
     }
 
     /**
+     * Check if the Locale/Theme was changed, which will trigger the Activity to be recreated.
+     *
+     * @return {@code true} if a recreate was triggered.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean isGoingToRecreate() {
+        boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
+        if (localeChanged) {
+            LocaleUtils.onLocaleChanged();
+        }
+
+        if (sActivityRecreateStatus == ActivityStatus.NeedsRecreating
+            || App.isThemeChanged(mInitialThemeId) || localeChanged) {
+            setIsRecreating();
+            recreate();
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Log.d(TAG, "EXIT|BaseActivity.isGoingToRecreate|Recreate!");
+            }
+
+            return true;
+
+        } else {
+            // this is the second time we got here, so we have been re-created.
+            sActivityRecreateStatus = ActivityStatus.Running;
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Log.d(TAG, "EXIT|BaseActivity.isGoingToRecreate|Resuming");
+            }
+        }
+
+        return false;
+    }
+    /**
      * Manually load a fragment into the given container using add.
      * <p>
      * Not added to the BackStack.
@@ -286,39 +319,6 @@ public abstract class BaseActivity
             }
             ft.commit();
         }
-    }
-
-    /**
-     * Check if the Locale/Theme was changed, which will trigger the Activity to be recreated.
-     *
-     * @return {@code true} if a recreate was triggered.
-     */
-    public boolean isGoingToRecreate() {
-        boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
-        if (localeChanged) {
-            LocaleUtils.onLocaleChanged();
-        }
-
-        if (sActivityRecreateStatus == ActivityStatus.NeedsRecreating
-            || App.isThemeChanged(mInitialThemeId) || localeChanged) {
-            setIsRecreating();
-            recreate();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.isGoingToRecreate|Recreate!");
-            }
-
-            return true;
-
-        } else {
-            // this is the second time we got here, so we have been re-created.
-            sActivityRecreateStatus = ActivityStatus.Running;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.isGoingToRecreate|Resuming");
-            }
-        }
-
-        return false;
     }
 
     /**

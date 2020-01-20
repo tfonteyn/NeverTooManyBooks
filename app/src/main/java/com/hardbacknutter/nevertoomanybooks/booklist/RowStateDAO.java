@@ -56,10 +56,10 @@ import static com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.PREF
 import static com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.PREF_REBUILD_SAVED_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KIND;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_ROOT_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BL_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
@@ -182,7 +182,7 @@ public class RowStateDAO {
         // the table is ordered at insert time, so the row id *is* the order.
         String baseSql = "INSERT INTO " + mTable.getName()
                          + " (" + KEY_FK_BL_ROW_ID
-                         + ',' + KEY_BL_ROOT_KEY
+                         + ',' + KEY_BL_NODE_KEY
 
                          + ',' + KEY_BL_NODE_LEVEL
                          + ',' + KEY_BL_NODE_KIND
@@ -192,7 +192,7 @@ public class RowStateDAO {
                          + ')'
                          + " SELECT DISTINCT "
                          + listTable.dot(KEY_PK_ID)
-                         + ',' + listTable.dot(KEY_BL_ROOT_KEY)
+                         + ',' + listTable.dot(KEY_BL_NODE_KEY)
 
                          + ',' + listTable.dot(KEY_BL_NODE_LEVEL)
                          + ',' + listTable.dot(KEY_BL_NODE_KIND)
@@ -259,7 +259,7 @@ public class RowStateDAO {
                         // Level 1 is always visible
                         + " WHEN " + listTable.dot(KEY_BL_NODE_LEVEL) + "=1 THEN 1"
                         // if the row is not present, hide it.
-                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_ROOT_KEY) + " IS NULL"
+                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY) + " IS NULL"
                         + /* */ " THEN 0"
                         // All rows present are visible.
                         + /* */ " ELSE 1"
@@ -271,7 +271,7 @@ public class RowStateDAO {
                         // KEY_BL_NODE_EXPANDED
                         + ",CASE"
                         // if the row is not present, collapse it.
-                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_ROOT_KEY) + " IS NULL"
+                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY) + " IS NULL"
                         + /* */ " THEN 0"
                         //  Otherwise use the stored state
                         + /* */ " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_EXPANDED)
@@ -288,8 +288,8 @@ public class RowStateDAO {
                         + listTable.dot(KEY_BL_NODE_LEVEL)
                         + '=' + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_LEVEL)
                         + " AND "
-                        + listTable.dot(KEY_BL_ROOT_KEY)
-                        + '=' + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_ROOT_KEY)
+                        + listTable.dot(KEY_BL_NODE_KEY)
+                        + '=' + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY)
 
                         + " AND " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_FK_BOOKSHELF) + "=?"
                         + " AND " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_FK_STYLE) + "=?"
@@ -988,8 +988,8 @@ public class RowStateDAO {
                         // leave the parent levels untouched
                         + " AND " + KEY_BL_NODE_LEVEL + ">=?"
 
-                        + " AND " + KEY_BL_ROOT_KEY + " IN ("
-                        + " SELECT DISTINCT " + KEY_BL_ROOT_KEY + " FROM " + mTable.getName()
+                        + " AND " + KEY_BL_NODE_KEY + " IN ("
+                        + " SELECT DISTINCT " + KEY_BL_NODE_KEY + " FROM " + mTable.getName()
                         + " WHERE " + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<? )");
             }
 
@@ -1069,7 +1069,7 @@ public class RowStateDAO {
                 + " (" + KEY_FK_BOOKSHELF
                 + ',' + KEY_FK_STYLE
 
-                + ',' + KEY_BL_ROOT_KEY
+                + ',' + KEY_BL_NODE_KEY
                 + ',' + KEY_BL_NODE_LEVEL
                 + ',' + KEY_BL_NODE_KIND
                 + ',' + KEY_BL_NODE_EXPANDED
@@ -1077,7 +1077,7 @@ public class RowStateDAO {
                 + " SELECT DISTINCT "
                 + "?"
                 + ",?"
-                + ',' + KEY_BL_ROOT_KEY
+                + ',' + KEY_BL_NODE_KEY
                 + ',' + KEY_BL_NODE_LEVEL
                 + ',' + KEY_BL_NODE_KIND
                 + ',' + KEY_BL_NODE_EXPANDED)

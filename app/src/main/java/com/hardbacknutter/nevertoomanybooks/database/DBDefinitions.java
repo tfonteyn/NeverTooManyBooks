@@ -91,7 +91,7 @@ public final class DBDefinitions {
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
     /** Full text search; should NOT be added to {@link #ALL_TABLES}. */
-    public static final TableDefinition TBL_BOOKS_FTS;
+    public static final TableDefinition TBL_FTS_BOOKS;
     /** Keeps track of nodes in the list across application restarts. */
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
 
@@ -114,7 +114,7 @@ public final class DBDefinitions {
     /** Primary key. */
     public static final Domain DOM_PK_ID;
     /** FTS Primary key. */
-    public static final Domain DOM_PK_DOCID;
+    public static final Domain DOM_FTS_BOOKS_PK;
 
     /** Foreign key. */
     public static final Domain DOM_FK_AUTHOR;
@@ -182,7 +182,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_ISBN;
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
-    public static final Domain DOM_DATE_FIRST_PUB;
+    public static final Domain DOM_DATE_FIRST_PUBLICATION;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_PUBLISHER;
     /** {@link #TBL_BOOKS}. */
@@ -286,14 +286,14 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
     public static final Domain DOM_UUID;
 
-    /** Virtual. The type of a TOC entry. See {@link TocEntry.Type} */
-    public static final Domain DOM_TOC_TYPE;
-
     /**
-     * {@link #TBL_BOOKS_FTS}
+     * {@link #TBL_FTS_BOOKS}
      * specific formatted list; example: "stephen baxter;arthur c. clarke;"
      */
     public static final Domain DOM_FTS_AUTHOR_NAME;
+
+    /** Virtual: used in multiple places where books are counted. */
+    public static final Domain DOM_BOOK_COUNT;
 
     /* ======================================================================================
      *  {@link BooklistGroup.RowKind} domains.
@@ -349,41 +349,38 @@ public final class DBDefinitions {
      * so we can sort it numerically regardless of content.
      */
     public static final Domain DOM_BL_SERIES_NUM_FLOAT;
-    /** {@link BooklistBuilder}. */
-    public static final Domain DOM_BL_LIST_VIEW_ROW_ID;
-    /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link BooklistBuilder}. */
-    public static final Domain DOM_BL_NODE_KIND;
+    /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
+    public static final Domain DOM_BL_PRIMARY_SERIES_COUNT;
+
     /**
      * {@link #TBL_BOOK_LIST_NODE_STATE}
      * {@link #TMP_TBL_BOOK_LIST_ROW_STATE}
      * {@link BooklistBuilder}.
      * <p>
-     * Expression from the original tables that represent the key for the root level group.
+     * Expression from the original tables that represent the hierarchical key for the node.
      * Stored in each row and used to determine the expand/collapse results.
      */
-    public static final Domain DOM_BL_ROOT_KEY;
+    public static final Domain DOM_BL_NODE_KEY;
 
+    /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link BooklistBuilder}. */
+    public static final Domain DOM_BL_NODE_KIND;
     /** {@link #TMP_TBL_BOOK_LIST} {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_LEVEL;
-    /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
-    public static final Domain DOM_BL_BOOK_COUNT;
-    /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
-    public static final Domain DOM_BL_PRIMARY_SERIES_COUNT;
     /**
-     * {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder} is node expanded.
+     * {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}.
      * An expanded node, should always be visible!
      */
     public static final Domain DOM_BL_NODE_EXPANDED;
-    /** {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder} is node visible. */
+    /** {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_VISIBLE;
 
     /* ======================================================================================
-     *  Keys used as domain names and as Bundle keys.
+     *  Keys used as domain names / Bundle keys.
      * ====================================================================================== */
     /** Primary key. */
     public static final String KEY_PK_ID = "_id";
     /** Primary key. */
-    public static final String KEY_PK_DOCID = "docid";
+    public static final String KEY_FTS_BOOKS_PK = "docid";
 
     /** Foreign key. */
     public static final String KEY_FK_BOOK = "book";
@@ -453,8 +450,6 @@ public final class DBDefinitions {
     public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
     public static final String KEY_BOOK_SERIES_POSITION = "series_position";
 
-    /** {@link #TBL_TOC_ENTRIES}.  Virtual. The type of a TOC entry. See {@link TocEntry.Type} */
-    public static final String KEY_TOC_TYPE = "type";
     /** {@link #TBL_TOC_ENTRIES}. */
     public static final String KEY_BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
     /** {@link #TBL_BOOKS}. */
@@ -498,19 +493,15 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final String KEY_STYLE_IS_BUILTIN = "builtin";
-    /** {@link #TBL_BOOKS_FTS}. */
+    /** {@link #TBL_FTS_BOOKS}. */
     public static final String KEY_FTS_AUTHOR_NAME = "author_name";
 
     /** BooklistBuilder. */
     public static final String KEY_BL_SERIES_NUM_FLOAT = "ser_num_float";
-    public static final String KEY_BL_BOOK_COUNT = "book_count";
+    public static final String KEY_BOOK_COUNT = "book_count";
     public static final String KEY_BL_PRIMARY_SERIES_COUNT = "prim_ser_cnt";
-    /**
-     * BooklistBuilder: an alias for the RowState table rowId
-     * listViewRowPosition = rowId -1.
-     */
-    public static final String KEY_BL_LIST_VIEW_ROW_ID = "lv_row_id";
-    public static final String KEY_BL_ROOT_KEY = "root_key";
+
+    public static final String KEY_BL_NODE_KEY = "root_key";
     /** The foreign key in the row-state table, pointing to the list table. */
     public static final String KEY_FK_BL_ROW_ID = "real_row_id";
 
@@ -519,6 +510,34 @@ public final class DBDefinitions {
     public static final String KEY_BL_NODE_KIND = "kind";
     public static final String KEY_BL_NODE_VISIBLE = "visible";
     public static final String KEY_BL_NODE_EXPANDED = "expanded";
+
+    /* ======================================================================================
+     *  Keys used as column alias names / Bundle keys.
+     * ====================================================================================== */
+
+    /**
+     * Column alias.
+     * <p>
+     * BooklistBuilder: an alias for the {@link #TMP_TBL_BOOK_LIST_ROW_STATE} rowId
+     * listViewRowPosition = KEY_BL_LIST_VIEW_ROW_ID - 1.
+     * <p>
+     * DOM_BL_LIST_VIEW_ROW_ID =
+     * new Domain.Builder(KEY_BL_LIST_VIEW_ROW_ID, ColumnInfo.TYPE_INTEGER)
+     * .notNull().build();
+     */
+    public static final String KEY_BL_LIST_VIEW_ROW_ID = "lv_row_id";
+
+    /**
+     * Column alias.
+     * <p>
+     * The type of a TOC entry. See {@link TocEntry.Type}
+     * <p>
+     * DOM_TOC_TYPE =
+     * new Domain.Builder(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT).build();
+     */
+    public static final String KEY_TOC_TYPE = "type";
+
+
 
     static {
         // Suffix added to a column name to create a specific 'order by' copy of that column.
@@ -599,7 +618,11 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_TITLE_OB, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().prePreparedOrderBy().build();
 
-        DOM_DATE_FIRST_PUB =
+        DOM_DATE_PUBLISHED =
+                new Domain.Builder(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE)
+                        .notNull().withDefaultEmptyString().build();
+
+        DOM_DATE_FIRST_PUBLICATION =
                 new Domain.Builder(KEY_DATE_FIRST_PUBLICATION, ColumnInfo.TYPE_DATE)
                         .notNull().withDefaultEmptyString().build();
 
@@ -672,9 +695,7 @@ public final class DBDefinitions {
         DOM_BOOK_PUBLISHER =
                 new Domain.Builder(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().build();
-        DOM_DATE_PUBLISHED =
-                new Domain.Builder(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE)
-                        .notNull().withDefaultEmptyString().build();
+
         DOM_BOOK_PRINT_RUN =
                 new Domain.Builder(KEY_PRINT_RUN, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().build();
@@ -721,9 +742,6 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_EDITION_BITMASK, ColumnInfo.TYPE_INTEGER)
                         .notNull().withDefault(0).build();
 
-//        DOM_BOOK_IS_OWNED =
-//                new Domain.Builder(KEY_OWNED, ColumnInfo.TYPE_BOOLEAN)
-//                        .notNull().withDefault(0).build();
         DOM_BOOK_DATE_ACQUIRED =
                 new Domain.Builder(KEY_DATE_ACQUIRED, ColumnInfo.TYPE_DATE)
                         .notNull().withDefaultEmptyString().build();
@@ -790,12 +808,6 @@ public final class DBDefinitions {
                 .notNull().build();
 
         /* ======================================================================================
-         *  TOC domains
-         * ====================================================================================== */
-
-        DOM_TOC_TYPE = new Domain.Builder(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT).build();
-
-        /* ======================================================================================
          *  Link table domains
          * ====================================================================================== */
 
@@ -826,6 +838,39 @@ public final class DBDefinitions {
         DOM_STYLE_IS_BUILTIN =
                 new Domain.Builder(KEY_STYLE_IS_BUILTIN, ColumnInfo.TYPE_BOOLEAN)
                         .notNull().withDefault(0).build();
+
+        /* ======================================================================================
+         *  Virtual domains (column alias)
+         * ====================================================================================== */
+        DOM_BOOK_COUNT =
+                new Domain.Builder(KEY_BOOK_COUNT, ColumnInfo.TYPE_INTEGER).build();
+
+        /* ======================================================================================
+         *  BooklistBuilder domains
+         * ====================================================================================== */
+
+        DOM_BL_SERIES_NUM_FLOAT =
+                new Domain.Builder(KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL).build();
+
+        DOM_BL_PRIMARY_SERIES_COUNT =
+                new Domain.Builder(KEY_BL_PRIMARY_SERIES_COUNT, ColumnInfo.TYPE_INTEGER).build();
+        DOM_FK_BL_ROW_ID =
+                new Domain.Builder(KEY_FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER).build();
+
+
+        DOM_BL_NODE_KEY =
+                new Domain.Builder(KEY_BL_NODE_KEY, ColumnInfo.TYPE_TEXT).build();
+        DOM_BL_NODE_KIND =
+                new Domain.Builder(KEY_BL_NODE_KIND, ColumnInfo.TYPE_INTEGER).notNull().build();
+        DOM_BL_NODE_LEVEL =
+                new Domain.Builder(KEY_BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER).notNull().build();
+        DOM_BL_NODE_VISIBLE =
+                new Domain.Builder(KEY_BL_NODE_VISIBLE, ColumnInfo.TYPE_INTEGER)
+                        .withDefault(0).build();
+        DOM_BL_NODE_EXPANDED =
+                new Domain.Builder(KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
+                        .withDefault(0).build();
+
         /* ======================================================================================
          *  RowKind display-domains
          * ====================================================================================== */
@@ -882,34 +927,6 @@ public final class DBDefinitions {
                 new Domain.Builder("dd_pub_y", ColumnInfo.TYPE_INTEGER).build();
 
         /* ======================================================================================
-         *  BooklistBuilder domains
-         * ====================================================================================== */
-
-        DOM_BL_SERIES_NUM_FLOAT =
-                new Domain.Builder(KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL).build();
-        DOM_BL_LIST_VIEW_ROW_ID =
-                new Domain.Builder(KEY_BL_LIST_VIEW_ROW_ID, ColumnInfo.TYPE_INTEGER)
-                        .notNull().build();
-        DOM_BL_NODE_KIND =
-                new Domain.Builder(KEY_BL_NODE_KIND, ColumnInfo.TYPE_INTEGER).notNull().build();
-        DOM_BL_ROOT_KEY =
-                new Domain.Builder(KEY_BL_ROOT_KEY, ColumnInfo.TYPE_TEXT).build();
-        DOM_BL_NODE_LEVEL =
-                new Domain.Builder(KEY_BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER).notNull().build();
-        DOM_BL_BOOK_COUNT =
-                new Domain.Builder(KEY_BL_BOOK_COUNT, ColumnInfo.TYPE_INTEGER).build();
-        DOM_BL_PRIMARY_SERIES_COUNT =
-                new Domain.Builder(KEY_BL_PRIMARY_SERIES_COUNT, ColumnInfo.TYPE_INTEGER).build();
-        DOM_FK_BL_ROW_ID =
-                new Domain.Builder(KEY_FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER).build();
-        DOM_BL_NODE_VISIBLE =
-                new Domain.Builder(KEY_BL_NODE_VISIBLE, ColumnInfo.TYPE_INTEGER)
-                        .withDefault(0).build();
-        DOM_BL_NODE_EXPANDED =
-                new Domain.Builder(KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
-                        .withDefault(0).build();
-
-        /* ======================================================================================
          *  Book tables.
          * ====================================================================================== */
 
@@ -943,7 +960,7 @@ public final class DBDefinitions {
                              DOM_BOOK_ISBN,
                              DOM_BOOK_PUBLISHER,
                              DOM_DATE_PUBLISHED,
-                             DOM_DATE_FIRST_PUB,
+                             DOM_DATE_FIRST_PUBLICATION,
                              DOM_BOOK_PRINT_RUN,
 
                              DOM_BOOK_PRICE_LISTED,
@@ -1014,7 +1031,7 @@ public final class DBDefinitions {
                                    DOM_FK_AUTHOR,
                                    DOM_TITLE,
                                    DOM_TITLE_OB,
-                                   DOM_DATE_FIRST_PUB)
+                                   DOM_DATE_FIRST_PUBLICATION)
                        .setPrimaryKey(DOM_PK_ID)
                        .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
                        .addIndex(KEY_FK_AUTHOR, false, DOM_FK_AUTHOR)
@@ -1148,7 +1165,7 @@ public final class DBDefinitions {
                                             DOM_FK_BOOKSHELF,
                                             DOM_FK_STYLE,
 
-                                            DOM_BL_ROOT_KEY,
+                                            DOM_BL_NODE_KEY,
                                             DOM_BL_NODE_LEVEL,
                                             DOM_BL_NODE_KIND,
                                             DOM_BL_NODE_EXPANDED
@@ -1166,7 +1183,7 @@ public final class DBDefinitions {
          * Domains are added at runtime depending on how the list is build.
          */
         TMP_TBL_BOOK_LIST.addDomains(DOM_PK_ID,
-                                     DOM_BL_ROOT_KEY)
+                                     DOM_BL_NODE_KEY)
                          .setPrimaryKey(DOM_PK_ID);
         //TODO: figure out indexes
 
@@ -1179,7 +1196,7 @@ public final class DBDefinitions {
                 .addDomains(DOM_PK_ID,
                             // FK to TMP_TBL_BOOK_LIST
                             DOM_FK_BL_ROW_ID,
-                            DOM_BL_ROOT_KEY,
+                            DOM_BL_NODE_KEY,
                             // Node data
                             DOM_BL_NODE_LEVEL,
                             DOM_BL_NODE_KIND,
@@ -1190,7 +1207,7 @@ public final class DBDefinitions {
                 .addIndex(KEY_FK_BL_ROW_ID, true, DOM_FK_BL_ROW_ID)
                 .addIndex(KEY_BL_NODE_VISIBLE, false, DOM_BL_NODE_VISIBLE)
                 .addIndex("NODE_DATA", false,
-                          DOM_BL_ROOT_KEY, DOM_BL_NODE_LEVEL, DOM_BL_NODE_EXPANDED);
+                          DOM_BL_NODE_KEY, DOM_BL_NODE_LEVEL, DOM_BL_NODE_EXPANDED);
 
         // do ***NOT*** add the reference here. It will be added *after* cloning in BooklistBuilder.
         // as the TMP_TBL_BOOK_LIST name will have an instance specific suffix.
@@ -1214,10 +1231,10 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  FTS definitions
          * ====================================================================================== */
-        TBL_BOOKS_FTS = new TableDefinition("books_fts").setType(TableType.FTS3);
+        TBL_FTS_BOOKS = new TableDefinition("books_fts").setType(TableType.FTS3);
 
-        DOM_PK_DOCID =
-                new Domain.Builder(KEY_PK_DOCID, ColumnInfo.TYPE_INTEGER).primaryKey().build();
+        DOM_FTS_BOOKS_PK =
+                new Domain.Builder(KEY_FTS_BOOKS_PK, ColumnInfo.TYPE_INTEGER).primaryKey().build();
 
         DOM_FTS_AUTHOR_NAME =
                 new Domain.Builder(KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT).notNull().build();
@@ -1228,7 +1245,7 @@ public final class DBDefinitions {
          *
          * should NOT be added to {@link #ALL_TABLES}
          */
-        TBL_BOOKS_FTS.addDomains(DOM_FTS_AUTHOR_NAME,
+        TBL_FTS_BOOKS.addDomains(DOM_FTS_AUTHOR_NAME,
                                  DOM_TITLE,
                                  DOM_SERIES_TITLE,
                                  DOM_BOOK_ISBN,

@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
@@ -70,27 +69,28 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EI
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_STYLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_DOCID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FTS_BOOKS_PK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_BUILTIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS_FTS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
@@ -252,9 +252,9 @@ public final class DBHelper
 
         // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + DOM_PK_ID
-                   + ',' + DOM_BOOKSHELF
-                   + ',' + DOM_FK_STYLE
+                   + '(' + KEY_PK_ID
+                   + ',' + KEY_BOOKSHELF
+                   + ',' + KEY_FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
                    + ",'" + localContext.getString(R.string.bookshelf_all_books)
@@ -263,18 +263,17 @@ public final class DBHelper
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + DOM_PK_ID
-                   + ',' + DOM_BOOKSHELF
-                   + ',' + DOM_FK_STYLE
+                   + '(' + KEY_PK_ID
+                   + ',' + KEY_BOOKSHELF
+                   + ',' + KEY_FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.DEFAULT_ID
                    + ",'" + localContext.getString(R.string.bookshelf_my_books)
                    + "'," + BooklistStyle.DEFAULT_STYLE_ID
                    + ')');
 
-        //reminder: FTS columns don't need a type nor constraints
-        //IMPORTANT: withConstraints MUST BE false
-        TBL_BOOKS_FTS.create(syncedDb, false);
+        //IMPORTANT: withConstraints MUST BE false (FTS columns don't use a type/constraints)
+        TBL_FTS_BOOKS.create(syncedDb, false);
 
         createTriggers(syncedDb);
     }
@@ -288,9 +287,9 @@ public final class DBHelper
     private void prepareStylesTable(@NonNull final SQLiteDatabase db) {
         String sqlInsertStyles =
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
-                + '(' + DOM_PK_ID
-                + ',' + DOM_STYLE_IS_BUILTIN
-                + ',' + DOM_UUID
+                + '(' + KEY_PK_ID
+                + ',' + KEY_STYLE_IS_BUILTIN
+                + ',' + KEY_UUID
                 // 1==true
                 + ") VALUES(?,1,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
@@ -301,7 +300,7 @@ public final class DBHelper
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
                 if (BuildConfig.DEBUG /* always */) {
                     if (id == -1) {
-                        Log.d(TAG, "prepareStylesTable|Ignore debug message inserting -1 here");
+                        Log.d(TAG, "prepareStylesTable|Ignore debug message inserting -1 ^^^");
                     }
                 }
                 stmt.executeInsert();
@@ -559,8 +558,8 @@ public final class DBHelper
         name = "after_delete_on_" + TBL_BOOKS;
         body = " AFTER DELETE ON " + TBL_BOOKS + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  DELETE FROM " + TBL_BOOKS_FTS
-               + " WHERE " + DOM_PK_DOCID + '=' + "Old." + DOM_PK_ID + ";\n"
+               + "  DELETE FROM " + TBL_FTS_BOOKS
+               + " WHERE " + DOM_FTS_BOOKS_PK + '=' + "Old." + DOM_PK_ID + ";\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);

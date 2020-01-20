@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -221,12 +221,12 @@ public class DiacriticArrayAdapter<T>
                                   @LayoutRes int resource,
                                   @IdRes int textViewResourceId,
                                   @NonNull List<T> objects,
-                                  boolean objsFromResources) {
+                                  boolean objectsFromResources) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mResource = mDropDownResource = resource;
         mObjects = objects;
-        mObjectsFromResources = objsFromResources;
+        mObjectsFromResources = objectsFromResources;
         mFieldId = textViewResourceId;
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -378,10 +378,13 @@ public class AuthorWorksFragment
             // optional
             if (holder.firstPublicationView != null) {
                 String date = tocEntry.getFirstPublication();
-                if (date.isEmpty()) {
+                // "< 4" covers empty and illegal dates
+                if (date.length() < 4) {
                     holder.firstPublicationView.setVisibility(View.GONE);
                 } else {
-                    String fp = context.getString(R.string.brackets, date);
+                    // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
+                    // so cut the date to just the year.
+                    String fp = context.getString(R.string.brackets, date.substring(0, 4));
                     holder.firstPublicationView.setText(fp);
                     holder.firstPublicationView.setVisibility(View.VISIBLE);
                 }

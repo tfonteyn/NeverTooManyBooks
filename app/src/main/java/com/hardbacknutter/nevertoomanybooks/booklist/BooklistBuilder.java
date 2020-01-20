@@ -69,19 +69,19 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KIND;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_PRIMARY_SERIES_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_ROOT_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_NUM_FLOAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
@@ -94,9 +94,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KIND;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_ROOT_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
@@ -403,7 +403,7 @@ public class BooklistBuilder
         // Will use default increment
         mListTable.addDomain(DOM_PK_ID);
         // Will use expression based on groups (rowKindPrefix/rowValue); determined later
-        mListTable.addDomain(DOM_BL_ROOT_KEY);
+        mListTable.addDomain(DOM_BL_NODE_KEY);
 
         final BuildHelper helper = new BuildHelper(mListTable, mStyle);
         // not sorted
@@ -417,7 +417,7 @@ public class BooklistBuilder
 
         helper.addDomain(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID), BuildHelper.FLAG_NONE);
         // each row has a book count, for books this is obviously always == 1.
-        helper.addDomain(DOM_BL_BOOK_COUNT, "1", BuildHelper.FLAG_NONE);
+        helper.addDomain(DOM_BOOK_COUNT, "1", BuildHelper.FLAG_NONE);
 
         // We want the UUID for the book so we can get thumbnails
         helper.addDomain(DOM_BOOK_UUID, TBL_BOOKS.dot(KEY_BOOK_UUID), BuildHelper.FLAG_NONE);
@@ -603,13 +603,13 @@ public class BooklistBuilder
             StringBuilder listColumns = new StringBuilder()
                     .append(KEY_BL_NODE_LEVEL)
                     .append(',').append(KEY_BL_NODE_KIND)
-                    .append(',').append(KEY_BL_ROOT_KEY);
+                    .append(',').append(KEY_BL_NODE_KEY);
 
             // Create the VALUES clause for the next level up
             StringBuilder listValues = new StringBuilder()
                     .append(level)
                     .append(',').append(group.getId())
-                    .append(",New.").append(KEY_BL_ROOT_KEY);
+                    .append(",New.").append(KEY_BL_NODE_KEY);
 
             // Create the where-clause to detect if the next level up is already defined
             // (by checking the 'current' record/table)
@@ -1297,7 +1297,7 @@ public class BooklistBuilder
                               | BuildHelper.FLAG_SORTED
                               | BuildHelper.FLAG_SORT_DESCENDING);
 
-                    addDomain(DOM_DATE_FIRST_PUB, null,
+                    addDomain(DOM_DATE_FIRST_PUBLICATION, null,
                               BuildHelper.FLAG_SORTED
                               | BuildHelper.FLAG_SORT_DESCENDING);
                     break;
@@ -1441,7 +1441,7 @@ public class BooklistBuilder
             }
 
             // add the root key column
-            destColumns.append(',').append(KEY_BL_ROOT_KEY);
+            destColumns.append(',').append(KEY_BL_NODE_KEY);
             sourceColumns.append(',').append(buildRootKeyColumn());
 
 //            return new BaseSql(mDestinationTable.getName(),
