@@ -27,16 +27,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -45,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.IndexDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -55,17 +59,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GOODREADS_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISFDB_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LIBRARY_THING_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_GOODREADS_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_ISFDB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_LIBRARY_THING;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_OPEN_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_STRIP_INFO_BE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_STYLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_DOCID;
@@ -73,6 +76,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_BUILTIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -120,6 +127,11 @@ public final class DBHelper
             "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
             + " (" + DOM_TITLE + DAO.COLLATION + ')',
             };
+
+    /** SQL to get the names of all indexes. */
+    private static final String SQL_GET_INDEX_NAMES =
+            "SELECT name FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL";
+
     /** Readers/Writer lock for this database. */
     private static Synchronizer sSynchronizer;
     /** Singleton. */
@@ -128,7 +140,7 @@ public final class DBHelper
     /**
      * Singleton Constructor.
      *
-     * @param context Current context
+     * @param context      Current context
      * @param factory      the cursor factor
      * @param synchronizer needed in onCreate/onUpgrade
      */
@@ -174,33 +186,21 @@ public final class DBHelper
     }
 
     /**
-     * Run at installation time to add the builtin style ID's to the database.
-     * This allows foreign keys to work.
-     *
-     * @param db Database Access
+     * DEBUG only.
      */
-    private static void prepareStylesTable(@NonNull final SQLiteDatabase db) {
-        String sqlInsertStyles =
-                "INSERT INTO " + TBL_BOOKLIST_STYLES
-                + '(' + DOM_PK_ID
-                + ',' + DOM_STYLE_IS_BUILTIN
-                + ',' + DOM_UUID
-                // 1==true
-                + ") VALUES(?,1,?)";
-        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
-                stmt.bindLong(1, id);
-                stmt.bindString(2, BooklistStyle.Builtin.ID_UUID[-id]);
-
-                // oops... after inserting '-1' our debug logging will claim that insert failed.
-                if (BuildConfig.DEBUG /* always */) {
-                    if (id == -1) {
-                        Log.d(TAG, "prepareStylesTable|Ignore debug message inserting -1 here");
-                    }
+    @SuppressLint("LogConditional")
+    public static void dumpTempTableNames(@NonNull final SynchronizedDb syncedDb) {
+        String sql = "SELECT name FROM sqlite_temp_master WHERE type='table'";
+        Collection<String> names = new ArrayList<>();
+        try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
+            while (cursor.moveToNext()) {
+                String name = cursor.getString(0);
+                if (!name.startsWith("sqlite")) {
+                    names.add(name);
                 }
-                stmt.executeInsert();
             }
         }
+        Log.d(TAG, TextUtils.join(", ", names));
     }
 
     @Override
@@ -280,6 +280,36 @@ public final class DBHelper
     }
 
     /**
+     * Run at installation time to add the builtin style ID's to the database.
+     * This allows foreign keys to work.
+     *
+     * @param db Database Access
+     */
+    private void prepareStylesTable(@NonNull final SQLiteDatabase db) {
+        String sqlInsertStyles =
+                "INSERT INTO " + TBL_BOOKLIST_STYLES
+                + '(' + DOM_PK_ID
+                + ',' + DOM_STYLE_IS_BUILTIN
+                + ',' + DOM_UUID
+                // 1==true
+                + ") VALUES(?,1,?)";
+        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
+            for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
+                stmt.bindLong(1, id);
+                stmt.bindString(2, BooklistStyle.Builtin.ID_UUID[-id]);
+
+                // oops... after inserting '-1' our debug logging will claim that insert failed.
+                if (BuildConfig.DEBUG /* always */) {
+                    if (id == -1) {
+                        Log.d(TAG, "prepareStylesTable|Ignore debug message inserting -1 here");
+                    }
+                }
+                stmt.executeInsert();
+            }
+        }
+    }
+
+    /**
      * This function is called each time the database is upgraded.
      * It will run all upgrade scripts between the oldVersion and the newVersion.
      * <p>
@@ -332,6 +362,7 @@ public final class DBHelper
         createTriggers(syncedDb);
     }
 
+
     /**
      * Create all database triggers.
      *
@@ -374,8 +405,8 @@ public final class DBHelper
         name = "after_delete_on_" + TBL_BOOK_BOOKSHELF;
         body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -389,10 +420,10 @@ public final class DBHelper
         name = "after_update_on" + TBL_BOOKSHELF;
         body = " AFTER UPDATE ON " + TBL_BOOKSHELF + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + DOM_PK_ID + " IN \n"
-               + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_BOOKSHELF
-               + " WHERE " + DOM_FK_BOOKSHELF + "=Old." + DOM_PK_ID + ");\n"
+               + "  UPDATE " + TBL_BOOKS + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + KEY_PK_ID + " IN \n"
+               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_BOOKSHELF
+               + " WHERE " + KEY_FK_BOOKSHELF + "=Old." + KEY_PK_ID + ");\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -406,8 +437,8 @@ public final class DBHelper
 //        name = "after_delete_on_" + TBL_BOOK_AUTHOR;
 //        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR + " FOR EACH ROW\n"
 //                + " BEGIN\n"
-//                + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-//                + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
+//                + "  UPDATE " + TBL_BOOKS + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+//                + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
 //                + " END";
 //
 //        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -545,11 +576,11 @@ public final class DBHelper
                + " BEGIN\n"
                + "    UPDATE " + TBL_BOOKS + " SET "
                //NEWTHINGS: add new site specific ID: add a reset value
-               + /* */ DOM_BOOK_GOODREADS_ID + "=0"
-               + ',' + DOM_BOOK_ISFDB_ID + "=0"
-               + ',' + DOM_BOOK_LIBRARY_THING_ID + "=0"
-               + ',' + DOM_BOOK_OPEN_LIBRARY_ID + "=0"
-               + ',' + DOM_BOOK_STRIP_INFO_BE_ID + "=0"
+               + /* */ DOM_EID_GOODREADS_BOOK + "=0"
+               + ',' + DOM_EID_ISFDB + "=0"
+               + ',' + DOM_EID_LIBRARY_THING + "=0"
+               + ',' + DOM_EID_OPEN_LIBRARY + "=0"
+               + ',' + DOM_EID_STRIP_INFO_BE + "=0"
 
                + ',' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
                + /* */ " WHERE " + DOM_PK_ID + "=New." + DOM_PK_ID + ";\n"
@@ -573,7 +604,7 @@ public final class DBHelper
 
         if (recreate) {
             // clean slate
-            IndexDefinition.dropAllIndexes(syncedDb);
+            dropAllIndexes(syncedDb);
             // recreate the ones that are defined with the TableDefinition's
             for (TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
                 table.createIndices(syncedDb);
@@ -594,6 +625,28 @@ public final class DBHelper
             }
         }
         syncedDb.analyze();
+    }
+
+    /**
+     * Find and delete all indexes on all tables.
+     *
+     * @param db Database Access.
+     */
+    private void dropAllIndexes(@NonNull final SynchronizedDb db) {
+        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+            while (current.moveToNext()) {
+                String indexName = current.getString(0);
+                try {
+                    db.execSQL("DROP INDEX " + indexName);
+                } catch (@NonNull final SQLException e) {
+                    // bad sql is a developer issue... die!
+                    Logger.error(TAG, e);
+                    throw e;
+                } catch (@NonNull final RuntimeException e) {
+                    Logger.error(TAG, e, "Index deletion failed: " + indexName);
+                }
+            }
+        }
     }
 
     public static class UpgradeException

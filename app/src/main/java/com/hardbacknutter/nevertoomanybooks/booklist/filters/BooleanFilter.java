@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -64,7 +63,7 @@ public class BooleanFilter
                          final boolean isPersistent,
                          @SuppressWarnings("SameParameterValue") @NonNull
                          final TableDefinition table,
-                         @NonNull final DomainDefinition domain) {
+                         @NonNull final String domain) {
         super(labelId, key, uuid, isPersistent, table, domain);
     }
 

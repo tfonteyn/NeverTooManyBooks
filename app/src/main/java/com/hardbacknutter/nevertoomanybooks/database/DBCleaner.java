@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,20 +41,19 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_AUTHOR_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SERIES_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SIGNED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
@@ -178,8 +177,8 @@ public class DBCleaner {
 
 
         // make sure these are '0' or '1'
-        booleanCleanup(TBL_BOOKS, DOM_BOOK_READ, dryRun);
-        booleanCleanup(TBL_BOOKS, DOM_BOOK_SIGNED, dryRun);
+        booleanCleanup(TBL_BOOKS.getName(), KEY_READ, dryRun);
+        booleanCleanup(TBL_BOOKS.getName(), KEY_SIGNED, dryRun);
 
         //TODO: books table: search for invalid UUIDs, check if there is a file, rename/remove...
         // in particular if the UUID is surrounded with '' or ""
@@ -191,13 +190,13 @@ public class DBCleaner {
      * @param dryRun {@code true} to run the update.
      */
     private void bookBookshelf(final boolean dryRun) {
-        String select = "SELECT DISTINCT " + DOM_FK_BOOK
+        String select = "SELECT DISTINCT " + KEY_FK_BOOK
                         + " FROM " + TBL_BOOK_BOOKSHELF
                         + " WHERE " + DOM_FK_BOOKSHELF + "=NULL";
         toLog("ENTER", select);
         if (!dryRun) {
             String sql = "DELETE " + TBL_BOOK_BOOKSHELF
-                         + " WHERE " + DOM_FK_BOOKSHELF + "=NULL";
+                         + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
@@ -214,9 +213,9 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookAuthors(@NonNull final Context context) {
-        String sql = "SELECT " + DOM_FK_BOOK + " FROM "
-                     + "(SELECT " + DOM_FK_BOOK + ", MIN(" + DOM_BOOK_AUTHOR_POSITION + ") AS mp"
-                     + " FROM " + TBL_BOOK_AUTHOR + " GROUP BY " + DOM_FK_BOOK
+        String sql = "SELECT " + KEY_FK_BOOK + " FROM "
+                     + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_AUTHOR_POSITION + ") AS mp"
+                     + " FROM " + TBL_BOOK_AUTHOR + " GROUP BY " + KEY_FK_BOOK
                      + ") WHERE mp > 1";
 
         ArrayList<Long> bookIds = mDb.getIdList(sql);
@@ -254,9 +253,9 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookSeries(@NonNull final Context context) {
-        String sql = "SELECT " + DOM_FK_BOOK + " FROM "
-                     + "(SELECT " + DOM_FK_BOOK + ", MIN(" + DOM_BOOK_SERIES_POSITION + ") AS mp"
-                     + " FROM " + TBL_BOOK_SERIES + " GROUP BY " + DOM_FK_BOOK
+        String sql = "SELECT " + KEY_FK_BOOK + " FROM "
+                     + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_SERIES_POSITION + ") AS mp"
+                     + " FROM " + TBL_BOOK_SERIES + " GROUP BY " + KEY_FK_BOOK
                      + ") WHERE mp > 1";
 
         ArrayList<Long> bookIds = mDb.getIdList(sql);
@@ -297,9 +296,10 @@ public class DBCleaner {
      * @param column to check
      * @param dryRun {@code true} to run the update.
      */
-    public void booleanCleanup(@NonNull final TableDefinition table,
-                               @NonNull final DomainDefinition column,
-                               final boolean dryRun) {
+    private void booleanCleanup(@NonNull final String table,
+                                @NonNull final String column,
+                                final boolean dryRun) {
+
         String select = "SELECT DISTINCT " + column + " FROM " + table
                         + " WHERE " + column + " NOT IN ('0','1')";
 
@@ -328,8 +328,8 @@ public class DBCleaner {
      * @param column to check
      * @param dryRun {@code true} to run the update.
      */
-    public void nullString2empty(@NonNull final TableDefinition table,
-                                 @NonNull final DomainDefinition column,
+    public void nullString2empty(@NonNull final String table,
+                                 @NonNull final String column,
                                  final boolean dryRun) {
         String select = "SELECT DISTINCT " + column + " FROM " + table
                         + " WHERE " + column + "=NULL";

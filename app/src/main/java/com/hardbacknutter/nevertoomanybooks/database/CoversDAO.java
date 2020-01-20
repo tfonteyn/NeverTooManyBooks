@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -107,41 +107,49 @@ public final class CoversDAO
     private static final String STMT_EXISTS = "mExistsStmt";
 
     /* Domain definitions. */
+    private static final String CKEY_PK_ID = "_id";
+    private static final String CKEY_CACHE_ID = "filename";
+    private static final String CKEY_IMAGE = "image";
+    private static final String CKEY_DATE = "date";
+    private static final String CKEY_WIDTH = "width";
+    private static final String CKEY_HEIGHT = "height";
+
     /** TBL_IMAGE. */
-    private static final DomainDefinition DOM_PK_ID =
-            new DomainDefinition("_id");
+    private static final Domain DOM_PK_ID =
+            new Domain.Builder(CKEY_PK_ID, ColumnInfo.TYPE_INTEGER).primaryKey().build();
 
-    private static final DomainDefinition DOM_CACHE_ID =
-            new DomainDefinition("filename", ColumnInfo.TYPE_TEXT, true);
+    private static final Domain DOM_CACHE_ID =
+            new Domain.Builder(CKEY_CACHE_ID, ColumnInfo.TYPE_TEXT).notNull().build();
 
-    private static final DomainDefinition DOM_IMAGE =
-            new DomainDefinition("image", ColumnInfo.TYPE_BLOB, true);
+    private static final Domain DOM_IMAGE =
+            new Domain.Builder(CKEY_IMAGE, ColumnInfo.TYPE_BLOB).notNull().build();
 
-    private static final DomainDefinition DOM_DATE =
-            new DomainDefinition("date", ColumnInfo.TYPE_DATETIME, true)
-                    .setDefault("current_timestamp");
+    private static final Domain DOM_DATE =
+            new Domain.Builder(CKEY_DATE, ColumnInfo.TYPE_DATETIME)
+                    .notNull().withDefault("current_timestamp").build();
 
     /** The actual stored bitmap width. */
-    private static final DomainDefinition DOM_WIDTH =
-            new DomainDefinition("width", ColumnInfo.TYPE_INTEGER, true);
+    private static final Domain DOM_WIDTH =
+            new Domain.Builder(CKEY_WIDTH, ColumnInfo.TYPE_INTEGER).notNull().build();
 
     /** The actual stored bitmap height. */
-    private static final DomainDefinition DOM_HEIGHT =
-            new DomainDefinition("height", ColumnInfo.TYPE_INTEGER, true);
+    private static final Domain DOM_HEIGHT =
+            new Domain.Builder(CKEY_HEIGHT, ColumnInfo.TYPE_INTEGER).notNull().build();
 
     /** table definitions. */
     private static final TableDefinition TBL_IMAGE =
             new TableDefinition("image", DOM_PK_ID, DOM_IMAGE, DOM_DATE,
                                 DOM_WIDTH, DOM_HEIGHT, DOM_CACHE_ID);
-    private static final String SQL_GET_IMAGE = "SELECT " + DOM_IMAGE + " FROM " + TBL_IMAGE
-                                                + " WHERE " + DOM_CACHE_ID + "=? AND " + DOM_DATE
-                                                + ">?";
-    /**
-     * run a count for the desired file. 1 == exists, 0 == not there
-     */
+
+    /** Get a cached image. */
+    private static final String SQL_GET_IMAGE =
+            "SELECT " + CKEY_IMAGE + " FROM " + TBL_IMAGE
+            + " WHERE " + CKEY_CACHE_ID + "=? AND " + CKEY_DATE + ">?";
+
+    /** Run a count for the desired file. 1 == exists, 0 == not there. */
     private static final String SQL_COUNT_ID =
-            "SELECT COUNT(" + DOM_PK_ID + ") FROM " + TBL_IMAGE
-            + " WHERE " + DOM_CACHE_ID + "=?";
+            "SELECT COUNT(" + CKEY_PK_ID + ") FROM " + TBL_IMAGE
+            + " WHERE " + CKEY_CACHE_ID + "=?";
 
     /**
      * NOT DEBUG: close() will only really close all statements if INSTANCE_COUNTER == 0 is reached.
@@ -163,13 +171,13 @@ public final class CoversDAO
         TBL_IMAGE
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("id", true, DOM_PK_ID)
-                .addIndex(DOM_CACHE_ID, true, DOM_CACHE_ID)
-                .addIndex(DOM_CACHE_ID.getName() + '_' + DOM_DATE.getName(),
+                .addIndex(CKEY_CACHE_ID, true, DOM_CACHE_ID)
+                .addIndex(CKEY_CACHE_ID + '_' + CKEY_DATE,
                           true, DOM_CACHE_ID, DOM_DATE);
     }
 
     /** List of statements we create so we can clean them when the instance is closed. */
-    private final SqlStatementManager mStatements = new SqlStatementManager();
+    private SqlStatementManager mStatementManager;
 
     /** singleton. */
     private CoversDAO() {
@@ -177,8 +185,10 @@ public final class CoversDAO
 
     /**
      * Get the singleton instance.
-     * <p>
-     * Reminder: we always use the *application* context for the database connection.
+     *
+     * @param context Current context
+     *
+     * @return instance
      */
     private static CoversDAO getInstance(@NonNull final Context context) {
         if (sCoversDAO == null) {
@@ -187,6 +197,9 @@ public final class CoversDAO
         // check each time, as it might have failed last time but might work now.
         if (sSyncedDb == null) {
             sCoversDAO.open(context);
+            if (sSyncedDb != null) {
+                sCoversDAO.mStatementManager = new SqlStatementManager(sSyncedDb, TAG);
+            }
         }
 
         int noi = INSTANCE_COUNTER.incrementAndGet();
@@ -207,6 +220,8 @@ public final class CoversDAO
      * @param cIdx      0..n image index
      * @param maxWidth  used to construct the cacheId
      * @param maxHeight used to construct the cacheId
+     *
+     * @return cache id string
      */
     @NonNull
     private static String constructCacheId(@NonNull final String uuid,
@@ -264,7 +279,7 @@ public final class CoversDAO
      * The original code also had a 2nd 'delete' method with a different where clause:
      * // We use encodeString here because it's possible a user screws up the data and imports
      * // bad UUID's...this has happened.
-     * // String whereClause = DOM_CACHE_ID + " GLOB '" + DAO.encodeString(uuid) + ".*'";
+     * // String whereClause = CKEY_CACHE_ID + " GLOB '" + DAO.encodeString(uuid) + ".*'";
      * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
      *
      * @param context Current context
@@ -279,7 +294,7 @@ public final class CoversDAO
             }
             sSyncedDb.delete(TBL_IMAGE.getName(),
                              // starts with the uuid, remove all sizes and indexes
-                             DOM_CACHE_ID + " LIKE ?", new String[]{uuid + '%'});
+                             CKEY_CACHE_ID + " LIKE ?", new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
         }
@@ -287,6 +302,8 @@ public final class CoversDAO
 
     /**
      * delete all rows.
+     *
+     * @param context Current context
      */
     public static void deleteAll(@NonNull final Context context) {
         // safely initialise if needed
@@ -294,7 +311,7 @@ public final class CoversDAO
             if (sSyncedDb == null) {
                 return;
             }
-            sSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE);
+            sSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE.getName());
         } catch (@NonNull final SQLiteException e) {
             Logger.error(TAG, e);
         }
@@ -302,6 +319,8 @@ public final class CoversDAO
 
     /**
      * Analyze the database.
+     *
+     * @param context Current context
      */
     public static void analyze(@NonNull final Context context) {
         // safely initialise if needed
@@ -315,6 +334,11 @@ public final class CoversDAO
         }
     }
 
+    /**
+     * Open the database.
+     *
+     * @param context Current context
+     */
     private void open(@NonNull final Context context) {
         SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(context);
         // Try to connect.
@@ -354,7 +378,7 @@ public final class CoversDAO
 
             if (noi == 0) {
                 if (sSyncedDb != null) {
-                    mStatements.close();
+                    mStatementManager.close();
                 }
             }
         }
@@ -400,21 +424,21 @@ public final class CoversDAO
 
         String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
         ContentValues cv = new ContentValues();
-        cv.put(DOM_CACHE_ID.getName(), cacheId);
-        cv.put(DOM_IMAGE.getName(), image);
-        cv.put(DOM_WIDTH.getName(), bitmap.getHeight());
-        cv.put(DOM_HEIGHT.getName(), bitmap.getWidth());
+        cv.put(CKEY_CACHE_ID, cacheId);
+        cv.put(CKEY_IMAGE, image);
+        cv.put(CKEY_WIDTH, bitmap.getHeight());
+        cv.put(CKEY_HEIGHT, bitmap.getWidth());
 
-        SynchronizedStatement existsStmt = mStatements.get(STMT_EXISTS);
+        SynchronizedStatement existsStmt = mStatementManager.get(STMT_EXISTS);
         if (existsStmt == null) {
-            existsStmt = mStatements.add(sSyncedDb, STMT_EXISTS, SQL_COUNT_ID);
+            existsStmt = mStatementManager.add(STMT_EXISTS, SQL_COUNT_ID);
         }
         existsStmt.bindString(1, cacheId);
         if (existsStmt.count() == 0) {
             sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
         } else {
             sSyncedDb.update(TBL_IMAGE.getName(), cv,
-                             DOM_CACHE_ID.getName() + "=?", new String[]{cacheId});
+                             CKEY_CACHE_ID + "=?", new String[]{cacheId});
         }
     }
 
@@ -476,7 +500,7 @@ public final class CoversDAO
                            + "|Upgrading database: " + db.getPath());
             }
             // This is a cache, so no data needs preserving. Drop & recreate.
-            db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE);
+            db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE.getName());
             onCreate(db);
         }
     }
@@ -526,7 +550,9 @@ public final class CoversDAO
         }
 
         /**
-         * @return {@code true} if there is an active task in the queue.
+         * Check if there is an active task in the queue.
+         *
+         * @return {@code true} if there is
          */
         @UiThread
         public static boolean hasActiveTasks() {

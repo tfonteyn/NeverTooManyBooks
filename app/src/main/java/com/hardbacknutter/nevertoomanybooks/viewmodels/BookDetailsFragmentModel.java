@@ -82,7 +82,7 @@ public class BookDetailsFragmentModel
             mFlattenedBooklist = new FlattenedBooklist(db, navTableName);
             if (!mFlattenedBooklist.moveTo(bookId)) {
                 // book not found ? eh? Destroy the table!
-                mFlattenedBooklist.close();
+                mFlattenedBooklist.close(true);
                 mFlattenedBooklist = null;
             }
         }

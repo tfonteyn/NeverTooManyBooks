@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
-import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
@@ -38,30 +36,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Class to store an index using a table name and a list of domain definitions.
  */
 public class IndexDefinition {
 
-    /** Log tag. */
-    private static final String TAG = "IndexDefinition";
-
-    /** SQL to get the names of all indexes. */
-    private static final String SQL_GET_INDEX_NAMES =
-            "SELECT name FROM sqlite_master WHERE type = 'index' AND sql is not null;";
     /** Table to which index applies. */
     @NonNull
     private final TableDefinition mTable;
     /** Domains in index. */
     @NonNull
-    private final List<DomainDefinition> mDomains;
+    private final List<Domain> mDomains;
     /** Flag indicating index is unique. */
     private final boolean mIsUnique;
     /** suffix to add to the table name. */
     @NonNull
     private final String mNameSuffix;
+
     /**
      * Constructor.
      *
@@ -74,50 +66,34 @@ public class IndexDefinition {
     IndexDefinition(@NonNull final TableDefinition table,
                     @NonNull final String nameSuffix,
                     final boolean unique,
-                    @NonNull final List<DomainDefinition> domains) {
+                    @NonNull final List<Domain> domains) {
         mNameSuffix = nameSuffix;
         mIsUnique = unique;
         mTable = table;
-        // take a COPY of the list
+        // take a COPY of the list; but the domains themselves are references only.
         mDomains = new ArrayList<>(domains);
-    }
-
-    /**
-     * Find and delete all indexes on all tables.
-     *
-     * @param db Database Access.
-     */
-    public static void dropAllIndexes(@NonNull final SynchronizedDb db) {
-        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
-            while (current.moveToNext()) {
-                String indexName = current.getString(0);
-                try {
-                    db.execSQL("DROP INDEX " + indexName);
-                } catch (@NonNull final SQLException e) {
-                    // bad sql is a developer issue... die!
-                    Logger.error(TAG, e);
-                    throw e;
-                } catch (@NonNull final RuntimeException e) {
-                    Logger.error(TAG, e,
-                                 "Index deletion failed: " + indexName);
-                }
-            }
-        }
     }
 
     /**
      * @return UNIQUE flag.
      */
-    public boolean getUnique() {
+    boolean getUnique() {
         return mIsUnique;
     }
 
     /**
+     * Get a copy of the list with domains.
+     *
      * @return list of domains in index.
      */
     @NonNull
-    List<DomainDefinition> getDomains() {
-        return mDomains;
+    List<Domain> getDomains() {
+        return new ArrayList<>(mDomains);
+    }
+
+    @NonNull
+    String getNameSuffix() {
+        return mNameSuffix;
     }
 
     /**
@@ -126,7 +102,7 @@ public class IndexDefinition {
      * @param db SQLiteDatabase
      */
     public void create(@NonNull final SQLiteDatabase db) {
-        db.execSQL(getSqlCreateStatement());
+        db.execSQL(def());
     }
 
     /**
@@ -135,7 +111,7 @@ public class IndexDefinition {
      * @param db SynchronizedDb Database
      */
     public void create(@NonNull final SynchronizedDb db) {
-        db.execSQL(getSqlCreateStatement());
+        db.execSQL(def());
     }
 
     /**
@@ -144,7 +120,7 @@ public class IndexDefinition {
      * @return SQL Fragment
      */
     @NonNull
-    private String getSqlCreateStatement() {
+    private String def() {
         StringBuilder sql = new StringBuilder("CREATE");
         if (mIsUnique) {
             sql.append(" UNIQUE");

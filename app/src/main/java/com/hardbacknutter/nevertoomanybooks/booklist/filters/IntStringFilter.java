@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -51,7 +50,7 @@ public class IntStringFilter
     private final int mLabelId;
 
     private final TableDefinition mTable;
-    private final DomainDefinition mDomain;
+    private final String mDomain;
 
     /**
      * Constructor.
@@ -70,7 +69,7 @@ public class IntStringFilter
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
-                    @NonNull final DomainDefinition domain) {
+                    @NonNull final String domain) {
         super(key, uuid, isPersistent, P_NOT_USED);
         mLabelId = labelId;
         mTable = table;

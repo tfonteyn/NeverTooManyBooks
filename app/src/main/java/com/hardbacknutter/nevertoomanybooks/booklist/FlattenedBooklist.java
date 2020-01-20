@@ -36,12 +36,15 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR;
 
 /**
  * Class to provide a simple interface into a temporary table containing a list of book ID's in
@@ -58,8 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * only able to return a single column.
  * Alternative is to use a raw query, but those cannot be re-used (pre-compiled).
  */
-public class FlattenedBooklist
-        implements AutoCloseable {
+public class FlattenedBooklist {
 
     /** Log tag. */
     private static final String TAG = "FlattenedBooklist";
@@ -99,10 +101,10 @@ public class FlattenedBooklist
     public FlattenedBooklist(@NonNull final DAO db,
                              @NonNull final String tableName) {
         mSyncedDb = db.getUnderlyingDatabase();
-        mTable = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
+        mTable = new TableDefinition(TMP_TBL_BOOK_LIST_NAVIGATOR);
         mTable.setName(tableName);
 
-        mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG);
+        mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + tableName);
     }
 
     /**
@@ -112,14 +114,14 @@ public class FlattenedBooklist
      * @param syncedDb   the database
      * @param instanceId counter which will be used to create the table name
      *
-     * @return the created table.
+     * @return the created table name.
      */
     @NonNull
-    static TableDefinition createTable(@NonNull final SynchronizedDb syncedDb,
-                                       final int instanceId,
-                                       @NonNull final TableDefinition listTable) {
+    static String createTable(@NonNull final SynchronizedDb syncedDb,
+                              final int instanceId,
+                              @NonNull final TableDefinition listTable) {
 
-        TableDefinition navTable = DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR.clone();
+        TableDefinition navTable = new TableDefinition(TMP_TBL_BOOK_LIST_NAVIGATOR);
         navTable.setName(navTable.getName() + instanceId);
 
         //IMPORTANT: withConstraints MUST BE false
@@ -127,24 +129,24 @@ public class FlattenedBooklist
 
         final long t00 = System.nanoTime();
 
-        String sql = "INSERT INTO " + navTable
-                     + " (" + DBDefinitions.DOM_PK_ID + ',' + DBDefinitions.DOM_FK_BOOK + ")"
-                     + " SELECT "
-                     + DBDefinitions.DOM_PK_ID + ',' + DBDefinitions.DOM_FK_BOOK
-                     + " FROM " + listTable
+        String sql = "INSERT INTO " + navTable.getName()
+                     + " (" + KEY_PK_ID + ',' + KEY_FK_BOOK + ")"
+                     + " SELECT " + KEY_PK_ID + ',' + KEY_FK_BOOK
+                     + " FROM " + listTable.getName()
                      // all rows which are NOT a book will contain null
-                     + " WHERE " + DBDefinitions.DOM_FK_BOOK + " NOT NULL"
-                     + " ORDER BY " + DBDefinitions.DOM_PK_ID;
+                     + " WHERE " + KEY_FK_BOOK + " NOT NULL"
+                     + " ORDER BY " + KEY_PK_ID;
 
-        try (SynchronizedStatement stmt = syncedDb.compileStatement(sql)) {
-            stmt.executeInsert();
-        }
+        syncedDb.execSQL(sql);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG, "createTable|completed in "
+            Log.d(TAG, "createTable"
+                       + "|" + navTable.getName()
+                       + "|completed in "
                        + (System.nanoTime() - t00) / NANO_TO_MILLIS + " ms");
         }
-        return navTable;
+
+        return navTable.getName();
     }
 
     /**
@@ -167,10 +169,9 @@ public class FlattenedBooklist
     public boolean moveTo(final long bookId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_MOVE);
         if (stmt == null) {
-            String sql = "SELECT "
-                         + DBDefinitions.DOM_PK_ID + " || '/' || " + DBDefinitions.DOM_FK_BOOK
+            String sql = "SELECT " + KEY_PK_ID + " || '/' || " + KEY_FK_BOOK
                          + " FROM " + mTable
-                         + " WHERE " + DBDefinitions.DOM_FK_BOOK + "=?";
+                         + " WHERE " + KEY_FK_BOOK + "=?";
             stmt = mSqlStatementManager.add(STMT_MOVE, sql);
         }
         stmt.bindLong(1, bookId);
@@ -200,11 +201,10 @@ public class FlattenedBooklist
     private boolean moveNext() {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_NEXT);
         if (stmt == null) {
-            String sql = "SELECT "
-                         + DBDefinitions.DOM_PK_ID + " || '/' || " + DBDefinitions.DOM_FK_BOOK
+            String sql = "SELECT " + KEY_PK_ID + " || '/' || " + KEY_FK_BOOK
                          + " FROM " + mTable
-                         + " WHERE " + DBDefinitions.DOM_PK_ID + ">?"
-                         + " ORDER BY " + DBDefinitions.DOM_PK_ID + " ASC LIMIT 1";
+                         + " WHERE " + KEY_PK_ID + ">?"
+                         + " ORDER BY " + KEY_PK_ID + " ASC LIMIT 1";
             stmt = mSqlStatementManager.add(STMT_NEXT, sql);
         }
         stmt.bindLong(1, mRowId);
@@ -219,11 +219,10 @@ public class FlattenedBooklist
     private boolean movePrev() {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_PREV);
         if (stmt == null) {
-            String sql = "SELECT "
-                         + DBDefinitions.DOM_PK_ID + " || '/' || " + DBDefinitions.DOM_FK_BOOK
+            String sql = "SELECT " + KEY_PK_ID + " || '/' || " + KEY_FK_BOOK
                          + " FROM " + mTable
-                         + " WHERE " + DBDefinitions.DOM_PK_ID + "<?"
-                         + " ORDER BY " + DBDefinitions.DOM_PK_ID + " DESC LIMIT 1";
+                         + " WHERE " + KEY_PK_ID + "<?"
+                         + " ORDER BY " + KEY_PK_ID + " DESC LIMIT 1";
             stmt = mSqlStatementManager.add(STMT_PREV, sql);
         }
         stmt.bindLong(1, mRowId);
@@ -274,28 +273,23 @@ public class FlattenedBooklist
     }
 
     /**
-     * Check that the referenced table exists. This is important for resumed activities
-     * where the underlying database connection may have closed and the table been deleted
-     * as a result.
-     *
-     * @return {@code true} if the table exists.
-     */
-    public boolean exists() {
-        return mTable.exists(mSyncedDb);
-    }
-
-    /**
      * Release resource-consuming stuff.
+     * Optionally drop the table.
+     *
+     * @param drop Flag
      */
-    @Override
-    public void close() {
+    public void close(final boolean drop) {
+        String tableName = mTable.getName();
         mCloseWasCalled = true;
         mSqlStatementManager.close();
-        // It's a temp table, but cleaning up prevents 'old' tables hanging around far to long.
-        mSyncedDb.drop(mTable.getName());
-        // force to null, so if we access the table again, we'll crash on purpose!
         //noinspection ConstantConditions
         mTable = null;
+        if (drop) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "close|dropping table=" + tableName);
+            }
+            mSyncedDb.drop(tableName);
+        }
     }
 
     /**
@@ -307,8 +301,9 @@ public class FlattenedBooklist
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(TAG, "finalize|calling close()");
-            close();
+            Logger.warn(TAG, "finalize|calling close() on " + mTable.getName());
+            // Warning: do NOT drop the table here. It needs to survive beyond this object.
+            close(false);
         }
         super.finalize();
     }

@@ -33,12 +33,9 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -51,8 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * The purpose is not the actual caching of the statement for re-use in loops
  * (Android does that anyhow), but the handling of properly closing statements.
- * You do get extra caching across individual calls,
- * but not sure if that makes any impact.
+ * You do get extra caching across individual calls, but not sure if that makes any impact.
  * <p>
  * Typical usage:
  * <pre>
@@ -78,22 +74,22 @@ public class SqlStatementManager
 
     @NonNull
     private final Map<String, SynchronizedStatement> mStatements =
-            // not sure sync is needed. But this used to be a HashTable.
             Collections.synchronizedMap(new HashMap<>());
 
     /** The underlying database. */
-    @Nullable
+    @NonNull
     private final SynchronizedDb mSyncedDb;
     private final String mInstanceName;
 
-    SqlStatementManager() {
-        mSyncedDb = null;
-        mInstanceName = "";
-    }
-
-    public SqlStatementManager(@Nullable final SynchronizedDb db,
+    /**
+     * Constructor.
+     *
+     * @param syncedDb the database
+     * @param name     instance name; used for logging
+     */
+    public SqlStatementManager(@NonNull final SynchronizedDb syncedDb,
                                final String name) {
-        mSyncedDb = db;
+        mSyncedDb = syncedDb;
         mInstanceName = name;
     }
 
@@ -121,60 +117,21 @@ public class SqlStatementManager
     @NonNull
     public SynchronizedStatement add(@NonNull final String name,
                                      @NonNull final String sql) {
-        Objects.requireNonNull(mSyncedDb, "Database not set when SqlStatementManager created");
-        return add(mSyncedDb, name, sql);
-    }
-
-    /**
-     * Add a statement to the cache.
-     * If already present, will close the old one and replace it with the new one.
-     *
-     * @param name of the statement
-     * @param sql  of the statement
-     *
-     * @return the statement
-     */
-    @NonNull
-    public SynchronizedStatement add(@NonNull final SynchronizedDb db,
-                                     @NonNull final String name,
-                                     @NonNull final String sql) {
         SynchronizedStatement old = mStatements.get(name);
         if (old != null) {
             old.close();
         }
-        SynchronizedStatement stmt;
         final long t = System.nanoTime();
-        stmt = db.compileStatement(sql);
+        SynchronizedStatement stmt = mSyncedDb.compileStatement(sql);
+        mStatements.put(name, stmt);
+
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Log.d(TAG + "|" + mInstanceName, "compileStatement"
+                                             + "|" + name
                                              + "|completed in " + (System.nanoTime() - t) + " ns");
         }
-        mStatements.put(name, stmt);
+
         return stmt;
-    }
-
-    public boolean isEmpty() {
-        return mStatements.isEmpty();
-    }
-
-    /**
-     * Close and remove the given statements.
-     *
-     * @param names statement names
-     */
-    public void close(@NonNull final String... names) {
-        synchronized (mStatements) {
-            for (String name : names) {
-                try {
-                    SynchronizedStatement stmt = mStatements.get(name);
-                    if (stmt != null) {
-                        stmt.close();
-                        mStatements.remove(name);
-                    }
-                } catch (@NonNull final RuntimeException ignored) {
-                }
-            }
-        }
     }
 
     /**
@@ -184,15 +141,13 @@ public class SqlStatementManager
      */
     @Override
     public void close() {
-        synchronized (mStatements) {
-            for (SynchronizedStatement stmt : mStatements.values()) {
-                try {
-                    stmt.close();
-                } catch (@NonNull final RuntimeException ignored) {
-                }
+        for (SynchronizedStatement stmt : mStatements.values()) {
+            try {
+                stmt.close();
+            } catch (@NonNull final RuntimeException ignored) {
             }
-            mStatements.clear();
         }
+        mStatements.clear();
     }
 
     /**
@@ -204,19 +159,9 @@ public class SqlStatementManager
     protected void finalize()
             throws Throwable {
         if (!mStatements.isEmpty()) {
-            Logger.warn(TAG + "|" + mInstanceName, "finalize|calling close()");
+            Logger.warn(TAG, "finalize|calling close() on " + mInstanceName);
             close();
         }
         super.finalize();
-    }
-
-    /**
-     * DEBUG help.
-     *
-     * @return list of all the names of the managed statements
-     */
-    @NonNull
-    public List<String> getNames() {
-        return new ArrayList<>(mStatements.keySet());
     }
 }

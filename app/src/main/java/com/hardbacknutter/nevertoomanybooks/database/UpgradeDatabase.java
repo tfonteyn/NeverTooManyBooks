@@ -38,7 +38,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 
@@ -151,17 +151,18 @@ public final class UpgradeDatabase {
      */
     private static void addOrderByColumn(@NonNull final SQLiteDatabase db,
                                          @NonNull final TableDefinition table,
-                                         @NonNull final DomainDefinition source,
-                                         @NonNull final DomainDefinition destination) {
+                                         @NonNull final Domain source,
+                                         @NonNull final Domain destination) {
 
-        db.execSQL("ALTER TABLE " + table + " ADD " + destination + " text not null default ''");
+        db.execSQL("ALTER TABLE " + table.getName()
+                   + " ADD " + destination.getName() + " text NOT NULL default ''");
 
-        String updateSql = "UPDATE " + table + " SET " + destination + "=?"
-                           + " WHERE " + DBDefinitions.DOM_PK_ID + "=?";
+        String updateSql = "UPDATE " + table.getName() + " SET " + destination.getName() + "=?"
+                           + " WHERE " + DBDefinitions.KEY_PK_ID + "=?";
 
         try (SQLiteStatement update = db.compileStatement(updateSql);
-             Cursor cursor = db.rawQuery("SELECT " + DBDefinitions.DOM_PK_ID
-                                         + ',' + source + " FROM " + table,
+             Cursor cursor = db.rawQuery("SELECT " + DBDefinitions.KEY_PK_ID
+                                         + ',' + source.getName() + " FROM " + table.getName(),
                                          null)) {
             while (cursor.moveToNext()) {
                 final long id = cursor.getLong(0);

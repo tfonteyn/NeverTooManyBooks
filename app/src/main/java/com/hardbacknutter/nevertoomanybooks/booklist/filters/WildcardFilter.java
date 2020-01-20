@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -43,7 +42,7 @@ public class WildcardFilter
         implements Filter {
 
     private final TableDefinition mTable;
-    private final DomainDefinition mDomain;
+    private final String mDomain;
 
     private final String mCriteria;
 
@@ -55,7 +54,7 @@ public class WildcardFilter
      * @param criteria to use by the expression
      */
     public WildcardFilter(@NonNull final TableDefinition table,
-                          @NonNull final DomainDefinition domain,
+                          @NonNull final String domain,
                           @NonNull final String criteria) {
         mTable = table;
         mDomain = domain;
