@@ -301,7 +301,12 @@ public class CoverHandler {
                     if (source != null && source.exists()) {
                         // always store/display first.
                         File destination = getCoverFile();
+
+                        //URGENT: check file size and ask user if we should compress it
+                        // and add a preference to 'always compress if over certain size'
+
                         StorageUtils.renameFile(source, destination);
+
                         setImage(destination);
                         // anything else?
                         @CameraNextAction
@@ -420,7 +425,6 @@ public class CoverHandler {
             mCameraHelper = new CameraHelper();
             mCameraHelper.setRotationAngle(
                     PIntString.getListPreference(Prefs.pk_camera_image_autorotate, 0));
-            mCameraHelper.setUseFullSize(true);
         }
         mCameraHelper.startCamera(mFragment, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
     }

@@ -429,8 +429,7 @@ public class SynchronizedStatement
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(TAG, "finalize",
-                        "Closing unclosed statement:\n" + mStatement);
+            Logger.warn(TAG, "finalize|Closing unclosed statement:\n" + mStatement);
             if (mStatement != null) {
                 mStatement.close();
             }

@@ -114,7 +114,7 @@ public class ScannerViewModel
     private Scanner mScanner;
 
     /**
-     * DEBUG.
+     * DEBUG only.
      */
     public void fakeBarcodeScan(@NonNull final Context context,
                                 @Nullable final Intent data) {

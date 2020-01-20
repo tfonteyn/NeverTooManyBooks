@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -356,7 +356,7 @@ public final class SearchSites {
     }
 
     /**
-     * DEBUG method. Returns a text block containing potentially changed urls.
+     * Returns a text block containing potentially changed urls.
      *
      * @param context Current context
      *

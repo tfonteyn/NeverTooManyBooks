@@ -45,20 +45,20 @@ import java.util.Date;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_CATEGORY;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_EVENT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_EVENT_DATE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_EXCEPTION;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_FAILURE_REASON;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_NAME;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_PRIORITY;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_QUEUE_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_RETRY_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_RETRY_DATE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_STATUS_CODE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_TASK;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_TASK_ID;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_CATEGORY;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_EVENT;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_EVENT_DATE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_EXCEPTION;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_FAILURE_REASON;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_PRIORITY;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_QUEUE_ID;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_RETRY_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_RETRY_DATE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_STATUS_CODE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_TASK;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_TASK_ID;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.TBL_EVENT;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.TBL_QUEUE;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.TBL_TASK;
@@ -70,11 +70,11 @@ class TaskQueueDAO
         implements AutoCloseable {
 
     private static final String SQL_GET_QUEUE_ID =
-            "SELECT " + DOM_ID + " FROM " + TBL_QUEUE + " WHERE " + DOM_NAME + "=?";
+            "SELECT " + CKEY_PK_ID + " FROM " + TBL_QUEUE + " WHERE " + CKEY_NAME + "=?";
     private static final String SQL_GET_ALL_QUEUES =
-            "SELECT " + DOM_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + DOM_NAME;
+            "SELECT " + CKEY_NAME + " FROM " + TBL_QUEUE + " ORDER BY " + CKEY_NAME;
     private static final String SQL_COUNT_EVENTS =
-            "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + DOM_TASK_ID + "=?";
+            "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + CKEY_TASK_ID + "=?";
 
     @NonNull
     private final TaskQueueDBHelper mTaskQueueDBHelper;
@@ -156,14 +156,16 @@ class TaskQueueDAO
         SQLiteDatabase db = getDb();
 
         String baseSql = "SELECT j.* FROM " + TBL_QUEUE + " q"
-                         + " JOIN " + TBL_TASK + " j ON j." + DOM_QUEUE_ID + " = q." + DOM_ID
-                         + " WHERE j." + DOM_STATUS_CODE + "= 'Q'  AND q." + DOM_NAME + "=?";
+                         + " JOIN " + TBL_TASK + " j ON j." + CKEY_QUEUE_ID + " = q." + CKEY_PK_ID
+                         + " WHERE j." + CKEY_STATUS_CODE + "= 'Q'  AND q." + CKEY_NAME + "=?";
 
         // Query to check for any task that CAN run now, sorted by priority then date/id
         String canRunSql = baseSql
-                           + "  AND j." + DOM_RETRY_DATE + " <= ?"
-                           + "  ORDER BY "
-                           + DOM_PRIORITY + " ASC, " + DOM_RETRY_DATE + " ASC," + DOM_ID + " ASC"
+                           + " AND j." + CKEY_RETRY_DATE + " <= ?"
+                           + " ORDER BY "
+                           + CKEY_PRIORITY + " ASC,"
+                           + CKEY_RETRY_DATE + " ASC,"
+                           + CKEY_PK_ID + " ASC"
                            + " LIMIT 1";
 
         // Get next task that CAN RUN NOW
@@ -173,9 +175,11 @@ class TaskQueueDAO
             cursor.close();
             // There is no task available now. Look for one that is waiting.
             String sql = baseSql
-                         + "  AND j." + DOM_RETRY_DATE + " > ?"
+                         + "  AND j." + CKEY_RETRY_DATE + " > ?"
                          + "  ORDER BY "
-                         + DOM_RETRY_DATE + " ASC, " + DOM_PRIORITY + " ASC, " + DOM_ID + " ASC"
+                         + CKEY_RETRY_DATE + " ASC,"
+                         + CKEY_PRIORITY + " ASC,"
+                         + CKEY_PK_ID + " ASC"
                          + " LIMIT 1";
             cursor = db.rawQuery(sql, new String[]{queueName, currTimeStr});
         }
@@ -186,7 +190,7 @@ class TaskQueueDAO
             }
 
             // Find task details and create ScheduledTask object
-            int dateCol = cursor.getColumnIndex(DOM_RETRY_DATE);
+            int dateCol = cursor.getColumnIndex(CKEY_RETRY_DATE);
             Date retryDate = DateUtils.parseDate(cursor.getString(dateCol));
             if (retryDate == null) {
                 retryDate = new Date();
@@ -219,7 +223,7 @@ class TaskQueueDAO
         long id = getQueueId(queueName);
         if (id == 0) {
             ContentValues cv = new ContentValues();
-            cv.put(DOM_NAME, queueName);
+            cv.put(CKEY_NAME, queueName);
             getDb().insert(TBL_QUEUE, null, cv);
         }
     }
@@ -235,9 +239,9 @@ class TaskQueueDAO
      */
     void updateTask(@NonNull final Task task) {
         ContentValues cv = new ContentValues();
-        cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
-        cv.put(DOM_CATEGORY, task.getCategory());
-        getDb().update(TBL_TASK, cv, DOM_ID + "=?",
+        cv.put(CKEY_TASK, SerializationUtils.serializeObject(task));
+        cv.put(CKEY_CATEGORY, task.getCategory());
+        getDb().update(TBL_TASK, cv, CKEY_PK_ID + "=?",
                        new String[]{String.valueOf(task.getId())});
     }
 
@@ -255,9 +259,9 @@ class TaskQueueDAO
         }
 
         ContentValues cv = new ContentValues();
-        cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
-        cv.put(DOM_CATEGORY, task.getCategory());
-        cv.put(DOM_QUEUE_ID, queueId);
+        cv.put(CKEY_TASK, SerializationUtils.serializeObject(task));
+        cv.put(CKEY_CATEGORY, task.getCategory());
+        cv.put(CKEY_QUEUE_ID, queueId);
         long jobId = getDb().insert(TBL_TASK, null, cv);
         task.setId(jobId);
 
@@ -279,12 +283,12 @@ class TaskQueueDAO
                                          new String[]{String.valueOf(task.getId())})) {
             if (cursor.moveToFirst() && cursor.getLong(0) == 0) {
                 // Delete successful tasks with no events
-                db.delete(TBL_TASK, DOM_ID + " =?",
+                db.delete(TBL_TASK, CKEY_PK_ID + " =?",
                           new String[]{String.valueOf(task.getId())});
             } else {
                 // Just set is as successful
-                db.execSQL("UPDATE " + TBL_TASK + " SET " + DOM_STATUS_CODE + "= 'S'"
-                           + " WHERE " + DOM_ID + '=' + task.getId());
+                db.execSQL("UPDATE " + TBL_TASK + " SET " + CKEY_STATUS_CODE + "= 'S'"
+                           + " WHERE " + CKEY_PK_ID + '=' + task.getId());
             }
         }
     }
@@ -299,13 +303,13 @@ class TaskQueueDAO
         db.beginTransaction();
         try {
             // Remove Events attached to old tasks
-            String whereClause = DOM_TASK_ID + " IN ("
-                                 + "SELECT t." + DOM_ID + " FROM " + TBL_TASK + " t "
-                                 + " WHERE t." + DOM_RETRY_DATE + " < ?)";
+            String whereClause = CKEY_TASK_ID + " IN ("
+                                 + "SELECT t." + CKEY_PK_ID + " FROM " + TBL_TASK + " t "
+                                 + " WHERE t." + CKEY_RETRY_DATE + " < ?)";
             db.delete(TBL_EVENT, whereClause, new String[]{oneWeekAgo});
 
             // Remove old Tasks
-            db.delete(TBL_TASK, DOM_RETRY_DATE + " < ?", new String[]{oneWeekAgo});
+            db.delete(TBL_TASK, CKEY_RETRY_DATE + " < ?", new String[]{oneWeekAgo});
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -322,7 +326,7 @@ class TaskQueueDAO
 
         db.beginTransaction();
         try {
-            db.delete(TBL_EVENT, DOM_EVENT_DATE + " < ?", new String[]{oneWeekAgo});
+            db.delete(TBL_EVENT, CKEY_EVENT_DATE + " < ?", new String[]{oneWeekAgo});
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -335,15 +339,16 @@ class TaskQueueDAO
         db.beginTransaction();
         try {
             // Remove orphaned events -- should never be needed
-            String whereClause = "NOT " + DOM_TASK_ID + " IS NULL"
+            String whereClause = "NOT " + CKEY_TASK_ID + " IS NULL"
                                  + " AND NOT EXISTS(SELECT * FROM " + TBL_TASK + " t"
-                                 + " WHERE " + TBL_EVENT + '.' + DOM_TASK_ID + "=t." + DOM_ID + ')';
+                                 + " WHERE " + TBL_EVENT + '.' + CKEY_TASK_ID + "=t." + CKEY_PK_ID
+                                 + ')';
             db.delete(TBL_EVENT, whereClause, null);
 
             // Remove orphaned tasks THAT WERE SUCCESSFUL
             whereClause = "NOT EXISTS(SELECT * FROM " + TBL_EVENT + " e"
-                          + " WHERE e." + DOM_TASK_ID + '=' + TBL_TASK + '.' + DOM_ID + ')'
-                          + " AND " + DOM_STATUS_CODE + " = 'S'";
+                          + " WHERE e." + CKEY_TASK_ID + '=' + TBL_TASK + '.' + CKEY_PK_ID + ')'
+                          + " AND " + CKEY_STATUS_CODE + " = 'S'";
             db.delete(TBL_TASK, whereClause, null);
             db.setTransactionSuccessful();
         } finally {
@@ -369,10 +374,10 @@ class TaskQueueDAO
             cal.add(Calendar.SECOND, task.getRetryDelay());
             // Update record
             ContentValues cv = new ContentValues();
-            cv.put(DOM_RETRY_DATE, DateUtils.utcSqlDateTime(cal.getTime()));
-            cv.put(DOM_RETRY_COUNT, task.getRetries() + 1);
-            cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
-            getDb().update(TBL_TASK, cv, DOM_ID + "=?",
+            cv.put(CKEY_RETRY_DATE, DateUtils.utcSqlDateTime(cal.getTime()));
+            cv.put(CKEY_RETRY_COUNT, task.getRetries() + 1);
+            cv.put(CKEY_TASK, SerializationUtils.serializeObject(task));
+            getDb().update(TBL_TASK, cv, CKEY_PK_ID + "=?",
                            new String[]{String.valueOf(task.getId())});
         }
     }
@@ -389,15 +394,15 @@ class TaskQueueDAO
     void setTaskFail(@NonNull final Task task,
                      @NonNull final String message) {
         ContentValues cv = new ContentValues();
-        cv.put(DOM_FAILURE_REASON, message);
-        cv.put(DOM_STATUS_CODE, "F");
-        cv.put(DOM_TASK, SerializationUtils.serializeObject(task));
+        cv.put(CKEY_FAILURE_REASON, message);
+        cv.put(CKEY_STATUS_CODE, "F");
+        cv.put(CKEY_TASK, SerializationUtils.serializeObject(task));
         Exception e = task.getException();
         if (e != null) {
-            cv.put(DOM_EXCEPTION, SerializationUtils.serializeObject(e));
+            cv.put(CKEY_EXCEPTION, SerializationUtils.serializeObject(e));
         }
 
-        getDb().update(TBL_TASK, cv, DOM_ID + "=?",
+        getDb().update(TBL_TASK, cv, CKEY_PK_ID + "=?",
                        new String[]{String.valueOf(task.getId())});
     }
 
@@ -414,12 +419,12 @@ class TaskQueueDAO
 
         // Setup parameters for insert
         ContentValues cv = new ContentValues();
-        cv.put(DOM_TASK_ID, task.getId());
-        cv.put(DOM_EVENT, SerializationUtils.serializeObject(event));
+        cv.put(CKEY_TASK_ID, task.getId());
+        cv.put(CKEY_EVENT, SerializationUtils.serializeObject(event));
 
         // Construct statements we want
         if (mCheckTaskExistsStmt == null) {
-            String sql = "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + DOM_ID + "=?";
+            String sql = "SELECT COUNT(*) FROM " + TBL_TASK + " WHERE " + CKEY_PK_ID + "=?";
             mCheckTaskExistsStmt = db.compileStatement(sql);
             mStatements.add(mCheckTaskExistsStmt);
         }
@@ -449,8 +454,8 @@ class TaskQueueDAO
     @NonNull
     EventsCursor getTaskEvents(final long taskId) {
         String sql = "SELECT e.* FROM " + TBL_EVENT + " e "
-                     + " WHERE e." + DOM_TASK_ID + "=?"
-                     + " ORDER BY e." + DOM_ID + " ASC";
+                     + " WHERE e." + CKEY_TASK_ID + "=?"
+                     + " ORDER BY e." + CKEY_PK_ID + " ASC";
         return (EventsCursor) getDb().rawQueryWithFactory(mEventsCursorFactory, sql,
                                                           new String[]{String.valueOf(taskId)}, "");
     }
@@ -460,7 +465,7 @@ class TaskQueueDAO
      */
     @NonNull
     EventsCursor getAllEvents() {
-        String sql = "SELECT * FROM " + TBL_EVENT + " ORDER BY " + DOM_ID + " ASC";
+        String sql = "SELECT * FROM " + TBL_EVENT + " ORDER BY " + CKEY_PK_ID + " ASC";
         return (EventsCursor) getDb().rawQueryWithFactory(mEventsCursorFactory, sql, null, "");
     }
 
@@ -490,7 +495,7 @@ class TaskQueueDAO
      * @param id of Event to delete.
      */
     void deleteEvent(final long id) {
-        getDb().delete(TBL_EVENT, DOM_ID + "=?", new String[]{String.valueOf(id)});
+        getDb().delete(TBL_EVENT, CKEY_PK_ID + "=?", new String[]{String.valueOf(id)});
         cleanupOrphans();
     }
 
@@ -503,8 +508,8 @@ class TaskQueueDAO
         SQLiteDatabase db = getDb();
         db.beginTransaction();
         try {
-            db.delete(TBL_EVENT, DOM_TASK_ID + "=?", new String[]{String.valueOf(id)});
-            db.delete(TBL_TASK, DOM_ID + "=?", new String[]{String.valueOf(id)});
+            db.delete(TBL_EVENT, CKEY_TASK_ID + "=?", new String[]{String.valueOf(id)});
+            db.delete(TBL_TASK, CKEY_PK_ID + "=?", new String[]{String.valueOf(id)});
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();
@@ -553,9 +558,9 @@ class TaskQueueDAO
         ScheduledTask(final long timeUntilRunnable,
                       @NonNull final Cursor cursor) {
             this.timeUntilRunnable = timeUntilRunnable;
-            mRetries = cursor.getInt(cursor.getColumnIndex(DOM_RETRY_COUNT));
-            id = cursor.getInt(cursor.getColumnIndex(DOM_ID));
-            mBlob = cursor.getBlob(cursor.getColumnIndex(DOM_TASK));
+            mRetries = cursor.getInt(cursor.getColumnIndex(CKEY_RETRY_COUNT));
+            id = cursor.getInt(cursor.getColumnIndex(CKEY_PK_ID));
+            mBlob = cursor.getBlob(cursor.getColumnIndex(CKEY_TASK));
         }
 
         /**

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -246,28 +247,31 @@ public final class Logger {
     }
 
     /**
-     * DEBUG. Dump an InputStream to the console.
+     * DEBUG only.
+     * Dump an InputStream to the console.
      */
+    @SuppressLint("LogConditional")
     @SuppressWarnings("unused")
     public static void dump(@NonNull final String tag,
                             @NonNull final Object object,
                             @NonNull final InputStream inputStream) {
-        if (BuildConfig.DEBUG) {
-            try {
-                BufferedInputStream bis = new BufferedInputStream(inputStream);
-                ByteArrayOutputStream buf = new ByteArrayOutputStream();
-                int result = bis.read();
-                while (result != -1) {
-                    buf.write((byte) result);
-                    result = bis.read();
-                }
-                Log.d(tag, buf.toString("UTF-8"));
-            } catch (@NonNull final IOException e) {
-                Log.d(tag, "dumping failed: ", e);
+        try {
+            BufferedInputStream bis = new BufferedInputStream(inputStream);
+            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+            int result = bis.read();
+            while (result != -1) {
+                buf.write((byte) result);
+                result = bis.read();
             }
+            Log.d(tag, buf.toString("UTF-8"));
+        } catch (@NonNull final IOException e) {
+            Log.d(tag, "dumping failed: ", e);
         }
     }
 
+    /**
+     * DEBUG only.
+     */
     private static void debugArguments(@NonNull final String tag,
                                        @NonNull final Object fragmentOrActivity,
                                        @SuppressWarnings("SameParameterValue")
@@ -292,8 +296,7 @@ public final class Logger {
     }
 
     /**
-     * DEBUG
-     * <p>
+     * DEBUG only.
      * Format the passed bundle in a way that is convenient for display.
      *
      * @param bundle Bundle to format, strings will be trimmed before adding

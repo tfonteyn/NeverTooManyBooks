@@ -40,16 +40,16 @@ import java.util.Date;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_CATEGORY;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_EVENT_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_EXCEPTION;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_FAILURE_REASON;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_QUEUED_DATE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_RETRY_DATE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_STATUS_CODE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_TASK;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.DOM_TASK_ID;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_CATEGORY;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_EVENT_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_EXCEPTION;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_FAILURE_REASON;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_QUEUED_DATE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_RETRY_DATE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_STATUS_CODE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_TASK;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_TASK_ID;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.TBL_EVENT;
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.TBL_TASK;
 
@@ -67,20 +67,20 @@ public final class TasksCursor
     private static final String ALL_TASKS_QUERY =
             "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"
-            + " WHERE e." + DOM_TASK_ID + "=t." + DOM_ID
-            + ") AS " + DOM_EVENT_COUNT
+            + " WHERE e." + CKEY_TASK_ID + "=t." + CKEY_PK_ID
+            + ") AS " + CKEY_EVENT_COUNT
             + " FROM " + TBL_TASK + " t WHERE 1=1 %1$s"
-            + " ORDER BY " + DOM_ID + " DESC";
+            + " ORDER BY " + CKEY_PK_ID + " DESC";
 
     private static final String ACTIVE_TASKS_QUERY =
             "SELECT *, "
             + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"
-            + " WHERE e." + DOM_TASK_ID + "=t." + DOM_ID
-            + ") AS " + DOM_EVENT_COUNT
+            + " WHERE e." + CKEY_TASK_ID + "=t." + CKEY_PK_ID
+            + ") AS " + CKEY_EVENT_COUNT
             + " FROM " + TBL_TASK + " t "
-            + " WHERE NOT " + DOM_STATUS_CODE
+            + " WHERE NOT " + CKEY_STATUS_CODE
             + " IN ('S','F') %1$s"
-            + " ORDER BY " + DOM_ID + " DESC";
+            + " ORDER BY " + CKEY_PK_ID + " DESC";
 
     /** Column number of id column. */
     private static int sIdCol = -1;
@@ -118,7 +118,7 @@ public final class TasksCursor
                                   final long category) {
         return (TasksCursor) db.rawQueryWithFactory(
                 CURSOR_FACTORY,
-                String.format(ACTIVE_TASKS_QUERY, " AND " + DOM_CATEGORY + "=?"),
+                String.format(ACTIVE_TASKS_QUERY, " AND " + CKEY_CATEGORY + "=?"),
                 new String[]{String.valueOf(category)}, "");
     }
 
@@ -133,7 +133,7 @@ public final class TasksCursor
     @NonNull
     Date getQueuedDate() {
         if (sQueuedDateCol < 0) {
-            sQueuedDateCol = getColumnIndex(DOM_QUEUED_DATE);
+            sQueuedDateCol = getColumnIndex(CKEY_QUEUED_DATE);
         }
 
         Date date = DateUtils.parseDate(getString(sQueuedDateCol));
@@ -146,7 +146,7 @@ public final class TasksCursor
     @NonNull
     Date getRetryDate() {
         if (sRetryDateCol < 0) {
-            sRetryDateCol = getColumnIndex(DOM_RETRY_DATE);
+            sRetryDateCol = getColumnIndex(CKEY_RETRY_DATE);
         }
 
         Date date = DateUtils.parseDate(getString(sRetryDateCol));
@@ -158,7 +158,7 @@ public final class TasksCursor
 
     String getStatusCode() {
         if (sStatusCodeCol < 0) {
-            sStatusCodeCol = getColumnIndex(DOM_STATUS_CODE);
+            sStatusCodeCol = getColumnIndex(CKEY_STATUS_CODE);
         }
         return getString(sStatusCodeCol);
     }
@@ -170,7 +170,7 @@ public final class TasksCursor
      */
     public String getReason() {
         if (sReasonCol == -1) {
-            sReasonCol = getColumnIndex(DOM_FAILURE_REASON);
+            sReasonCol = getColumnIndex(CKEY_FAILURE_REASON);
         }
         return getString(sReasonCol);
     }
@@ -185,14 +185,14 @@ public final class TasksCursor
     public Exception getException()
             throws SerializationUtils.DeserializationException {
         if (sExceptionCol == -1) {
-            sExceptionCol = getColumnIndex(DOM_EXCEPTION);
+            sExceptionCol = getColumnIndex(CKEY_EXCEPTION);
         }
         return (Exception) SerializationUtils.deserializeObject(getBlob(sExceptionCol));
     }
 
     int getNoteCount() {
         if (sNoteCountCol < 0) {
-            sNoteCountCol = getColumnIndex(DOM_EVENT_COUNT);
+            sNoteCountCol = getColumnIndex(CKEY_EVENT_COUNT);
         }
         return getInt(sNoteCountCol);
     }
@@ -201,7 +201,7 @@ public final class TasksCursor
     @Override
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
         if (sTaskCol < 0) {
-            sTaskCol = getColumnIndex(DOM_TASK);
+            sTaskCol = getColumnIndex(CKEY_TASK);
         }
         Task task;
         byte[] blob = getBlob(sTaskCol);
@@ -217,7 +217,7 @@ public final class TasksCursor
     @Override
     public long getId() {
         if (sIdCol < 0) {
-            sIdCol = getColumnIndex(DOM_ID);
+            sIdCol = getColumnIndex(CKEY_PK_ID);
         }
         return getLong(sIdCol);
     }

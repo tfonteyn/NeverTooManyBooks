@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@ public class EventsCursor
     @NonNull
     public Date getEventDate() {
         if (sDateCol < 0) {
-            sDateCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT_DATE);
+            sDateCol = getColumnIndex(TaskQueueDBHelper.CKEY_EVENT_DATE);
         }
         Date date = DateUtils.parseDate(getString(sDateCol));
         if (date == null) {
@@ -108,7 +108,7 @@ public class EventsCursor
     @NonNull
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
         if (sEventCol < 0) {
-            sEventCol = getColumnIndex(TaskQueueDBHelper.DOM_EVENT);
+            sEventCol = getColumnIndex(TaskQueueDBHelper.CKEY_EVENT);
         }
         byte[] blob = getBlob(sEventCol);
         Event event;
@@ -128,7 +128,7 @@ public class EventsCursor
      */
     public long getId() {
         if (sIdCol < 0) {
-            sIdCol = getColumnIndex(TaskQueueDBHelper.DOM_ID);
+            sIdCol = getColumnIndex(TaskQueueDBHelper.CKEY_PK_ID);
         }
         return getLong(sIdCol);
     }

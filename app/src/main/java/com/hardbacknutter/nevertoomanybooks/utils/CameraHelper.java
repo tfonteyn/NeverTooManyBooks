@@ -203,6 +203,7 @@ public class CameraHelper {
 
                 file = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
                 try (OutputStream os = new FileOutputStream(file.getAbsoluteFile())) {
+                    // we don't actually compress, the preview file is presumably already small.
                     bm.compress(Bitmap.CompressFormat.PNG, 100, os);
                     return file;
 

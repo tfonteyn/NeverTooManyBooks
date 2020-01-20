@@ -108,6 +108,7 @@ public class GoogleBarcodeScanner
 
         if (mCameraHelper == null) {
             mCameraHelper = new CameraHelper();
+            // preview pictures might work... but will be very dependent on the camera quality
             mCameraHelper.setUseFullSize(true);
         }
         mCameraHelper.startCamera(fragment, requestCode);
