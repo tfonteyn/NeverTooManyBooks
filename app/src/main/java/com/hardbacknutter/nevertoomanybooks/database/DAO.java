@@ -106,9 +106,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_TYPE_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
@@ -135,13 +135,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_TOC_ENTRY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_AUTHOR_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOKS_PK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOCATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PAGES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_DOCID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED_CURRENCY;
@@ -169,12 +169,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS_FTS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
@@ -541,10 +541,9 @@ public class DAO
             return null;
         }
 
-        return "SELECT " + KEY_PK_DOCID
-               + " FROM " + TBL_BOOKS_FTS
-               + " WHERE " + TBL_BOOKS_FTS
-               + " MATCH '" + parameters.toString().trim() + '\'';
+        return "SELECT " + KEY_FTS_BOOKS_PK
+               + " FROM " + TBL_FTS_BOOKS
+               + " WHERE " + TBL_FTS_BOOKS + " MATCH '" + parameters.toString().trim() + '\'';
     }
 
     public void recreateTriggers() {
@@ -779,7 +778,7 @@ public class DAO
                                      cursorRow.getString(KEY_TITLE),
                                      cursorRow.getString(KEY_DATE_FIRST_PUBLICATION),
                                      cursorRow.getString(KEY_TOC_TYPE).charAt(0),
-                                     cursorRow.getInt(KEY_BL_BOOK_COUNT));
+                                     cursorRow.getInt(KEY_BOOK_COUNT));
                 list.add(tocEntry);
             }
         }
@@ -2233,13 +2232,12 @@ public class DAO
                                                 new String[]{String.valueOf(bookId)})) {
             final CursorRow cursorRow = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                Author author = new Author(cursorRow.getLong(KEY_FK_AUTHOR), cursorRow);
-
                 list.add(new TocEntry(cursorRow.getLong(KEY_PK_ID),
-                                      author,
+                                      new Author(cursorRow.getLong(KEY_FK_AUTHOR), cursorRow),
                                       cursorRow.getString(KEY_TITLE),
                                       cursorRow.getString(KEY_DATE_FIRST_PUBLICATION),
-                                      TocEntry.Type.TYPE_BOOK, 1));
+                                      TocEntry.Type.TYPE_BOOK,
+                                      cursorRow.getInt(KEY_BOOK_COUNT)));
             }
         }
         return list;
@@ -2247,7 +2245,7 @@ public class DAO
 
     /*
      * Bad idea. Instead use: Book book = Book.getBook(mDb, bookId);
-     * So you never get a {@code null} object!
+     * So you never get a {@code null} Book!
      *
      * Leaving commented as a reminder
      *
@@ -3792,7 +3790,7 @@ public class DAO
                 bindStringOrNull(stmt, 7, cursorRow.getString(KEY_GENRE));
                 bindStringOrNull(stmt, 8, cursorRow.getString(KEY_LOCATION));
                 bindStringOrNull(stmt, 9, cursorRow.getString(KEY_ISBN));
-                // DOM_PK_DOCID
+                // DOM_FTS_BOOKS_PK
                 stmt.bindLong(10, cursorRow.getLong(KEY_PK_ID));
 
                 stmt.execute();
@@ -3928,7 +3926,7 @@ public class DAO
         boolean gotError = false;
 
         // Make a copy of the FTS table definition for our temporary table.
-        TableDefinition ftsTemp = new TableDefinition(TBL_BOOKS_FTS);
+        TableDefinition ftsTemp = new TableDefinition(TBL_FTS_BOOKS);
         // Give it a new name
         ftsTemp.setName(ftsTemp.getName() + "_temp");
 
@@ -3958,8 +3956,8 @@ public class DAO
             //  Delete old table and rename the new table
             if (!gotError) {
                 // Drop old table, ready for rename
-                sSyncedDb.drop(TBL_BOOKS_FTS.getName());
-                sSyncedDb.execSQL("ALTER TABLE " + ftsTemp + " RENAME TO " + TBL_BOOKS_FTS);
+                sSyncedDb.drop(TBL_FTS_BOOKS.getName());
+                sSyncedDb.execSQL("ALTER TABLE " + ftsTemp + " RENAME TO " + TBL_FTS_BOOKS);
             }
         }
 
@@ -4500,8 +4498,7 @@ public class DAO
          * <p>
          * Just look for 4 leading numbers. We don't care about anything else.
          * <p>
-         * See <a href="https://www.sqlitetutorial.net/sqlite-glob/">
-         * https://www.sqlitetutorial.net/sqlite-glob/</a>
+         * See <a href="https://www.sqlitetutorial.net/sqlite-glob/">sqlite-glob</a>
          *
          * @param fieldSpec fully qualified field name
          * @param toLocal   if set, first convert the fieldSpec to local time from UTC
@@ -4815,6 +4812,13 @@ public class DAO
                 + ',' + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES)
                 + ',' + TBL_AUTHORS.dot(KEY_AUTHOR_IS_COMPLETE)
 
+                // count the number of books this TOC entry is present in.
+                + ',' + "(SELECT COUNT(*) FROM " + TBL_BOOK_TOC_ENTRIES
+                // use the full table name on the left as we need a full table scan
+                + " WHERE " + TBL_BOOK_TOC_ENTRIES.getName() + '.' + KEY_FK_TOC_ENTRY
+                // but filtered on the results from the main query (i.e. alias on the right).
+                + "=" + TBL_TOC_ENTRIES.dot(KEY_PK_ID) + ") AS " + KEY_BOOK_COUNT
+
                 + " FROM " + TBL_TOC_ENTRIES.ref()
                 + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
                 + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
@@ -4857,10 +4861,10 @@ public class DAO
                 + ',' + TBL_TOC_ENTRIES.dot(KEY_TITLE)
                 + ',' + TBL_TOC_ENTRIES.dot(KEY_TITLE_OB)
                 + ',' + TBL_TOC_ENTRIES.dot(KEY_DATE_FIRST_PUBLICATION)
-                + ", COUNT(" + TBL_TOC_ENTRIES.dot(KEY_PK_ID) + ") AS " + KEY_BL_BOOK_COUNT
+                // count the number of books this TOC entry is present in.
+                + ", COUNT(" + TBL_TOC_ENTRIES.dot(KEY_PK_ID) + ") AS " + KEY_BOOK_COUNT
 
-                + " FROM " + TBL_TOC_ENTRIES.ref()
-                + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
+                + " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
                 + " WHERE " + TBL_TOC_ENTRIES.dot(KEY_FK_AUTHOR) + "=?"
                 + " GROUP BY " + KEY_PK_ID;
 
@@ -4877,7 +4881,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dot(KEY_TITLE)
                 + ',' + TBL_BOOKS.dot(KEY_TITLE_OB)
                 + ',' + TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION)
-                + ",1 AS " + KEY_BL_BOOK_COUNT
+                + ",1 AS " + KEY_BOOK_COUNT
 
                 + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
                 + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?";
@@ -5437,15 +5441,15 @@ public class DAO
                 + ',' + KEY_GENRE
                 + ',' + KEY_LOCATION
                 + ',' + KEY_ISBN
-                + ',' + KEY_PK_DOCID
+                + ',' + KEY_FTS_BOOKS_PK
                 + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
 
         // The parameter order MUST match the order expected in UPDATE.
-        static final String INSERT = "INSERT INTO " + TBL_BOOKS_FTS + INSERT_BODY;
+        static final String INSERT = "INSERT INTO " + TBL_FTS_BOOKS + INSERT_BODY;
 
         // The parameter order MUST match the order expected in INSERT.
         static final String UPDATE =
-                "UPDATE " + TBL_BOOKS_FTS
+                "UPDATE " + TBL_FTS_BOOKS
                 + " SET " + KEY_FTS_AUTHOR_NAME + "=?"
                 + ',' + KEY_TITLE + "=?"
                 + ',' + KEY_SERIES_TITLE + "=?"
@@ -5455,6 +5459,6 @@ public class DAO
                 + ',' + KEY_GENRE + "=?"
                 + ',' + KEY_LOCATION + "=?"
                 + ',' + KEY_ISBN + "=?"
-                + " WHERE " + KEY_PK_DOCID + "=?";
+                + " WHERE " + KEY_FTS_BOOKS_PK + "=?";
     }
 }

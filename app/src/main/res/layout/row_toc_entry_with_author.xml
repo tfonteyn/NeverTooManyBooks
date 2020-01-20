@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -39,7 +39,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/indent2"
+        app:layout_constraintGuide_begin="@dimen/icon_button_width"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_multiple_books"
+        style="@style/Flag.MultipleBooks"
+        android:visibility="invisible"
+        app:layout_constraintBaseline_toBaselineOf="@id/title"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:checked="true"
+        tools:visibility="visible"
         />
 
     <!-- android:textIsSelectable="false" because we want to be able to click on the row -->

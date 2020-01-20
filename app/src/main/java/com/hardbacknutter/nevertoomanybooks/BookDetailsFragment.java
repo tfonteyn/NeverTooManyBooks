@@ -43,6 +43,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -872,30 +873,36 @@ public class BookDetailsFragment
 
         if (!tocList.isEmpty()) {
             Context context = getContext();
-            for (TocEntry item : tocList) {
+            for (TocEntry tocEntry : tocList) {
                 View rowView = getLayoutInflater().inflate(R.layout.row_toc_entry_with_author,
                                                            mTocView, false);
 
                 TextView titleView = rowView.findViewById(R.id.title);
                 TextView authorView = rowView.findViewById(R.id.author);
                 TextView firstPubView = rowView.findViewById(R.id.year);
+                CheckBox multipleBooksView = rowView.findViewById(R.id.cbx_multiple_books);
 
-                titleView.setText(item.getTitle());
+                titleView.setText(tocEntry.getTitle());
 
-                // optional
+                if (multipleBooksView != null) {
+                    boolean isSet = tocEntry.getBookCount() > 1;
+                    multipleBooksView.setChecked(isSet);
+                    multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                }
                 if (authorView != null) {
                     //noinspection ConstantConditions
-                    authorView.setText(item.getAuthor().getLabel(context));
+                    authorView.setText(tocEntry.getAuthor().getLabel(context));
                 }
-                // optional
                 if (firstPubView != null) {
-                    String year = item.getFirstPublication();
-                    if (year.isEmpty()) {
+                    String date = tocEntry.getFirstPublication();
+                    // "< 4" covers empty and illegal dates
+                    if (date.length() < 4) {
                         firstPubView.setVisibility(View.GONE);
                     } else {
                         firstPubView.setVisibility(View.VISIBLE);
+                        // show full date string (if available)
                         //noinspection ConstantConditions
-                        firstPubView.setText(context.getString(R.string.brackets, year));
+                        firstPubView.setText(context.getString(R.string.brackets, date));
                     }
                 }
                 mTocView.addView(rowView);
@@ -915,7 +922,7 @@ public class BookDetailsFragment
      * careful about possible clicks and scrolling.
      *
      * <a href="https://developer.android.com/training/gestures/detector.html#detect-a-subset-of-supported-gestures">
-     * https://developer.android.com/training/gestures/detector.html#detect-a-subset-of-supported-gestures</a>
+     *     detect-a-subset-of-supported-gestures</a>
      */
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {
