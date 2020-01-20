@@ -32,7 +32,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
@@ -62,6 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
 import com.hardbacknutter.nevertoomanybooks.ImportExportFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -198,6 +204,9 @@ public abstract class BaseActivity
         if (mDrawerLayout != null) {
             mNavigationView = findViewById(R.id.nav_view);
             mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+            if (BuildConfig.DEBUG /* always */) {
+                setNavigationItemVisibility(R.id.SUBMENU_DEBUG, true);
+            }
         }
     }
 
@@ -396,6 +405,11 @@ public abstract class BaseActivity
                 startActivity(new Intent(this, About.class));
                 return true;
             }
+
+            case R.id.SUBMENU_DEBUG: {
+                onDebugMenu();
+                return true;
+            }
             default:
                 return false;
         }
@@ -510,6 +524,55 @@ public abstract class BaseActivity
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
+    }
+
+    /**
+     * DEBUG only.
+     * Bring up a debug popup menu.
+     */
+    private void onDebugMenu() {
+        View v = findViewById(R.id.toolbar);
+        if (v == null) {
+            Toast.makeText(this, "debug popup nok", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        PopupMenu debugMenu = new PopupMenu(this, v);
+        Menu menu = debugMenu.getMenu();
+        menu.add(Menu.NONE, R.id.MENU_DEBUG_PREFS, 0, R.string.lbl_settings);
+        menu.add(Menu.NONE, R.id.MENU_DEBUG_DUMP_TEMP_TABLES, 0, "DUMP_TEMP_TABLES");
+        menu.add(Menu.NONE, R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE, 0,
+                 R.string.lbl_purge_blns);
+        debugMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.MENU_DEBUG_PREFS:
+                    Prefs.dumpPreferences(BaseActivity.this, null);
+                    return true;
+
+                case R.id.MENU_DEBUG_UNMANGLE:
+                    try (DAO db = new DAO(TAG)) {
+                        db.tempUnMangle(BaseActivity.this);
+                    }
+                    return true;
+
+                case R.id.MENU_DEBUG_DUMP_TEMP_TABLES:
+                    try (DAO db = new DAO(TAG)) {
+                        DBHelper.dumpTempTableNames(db.getUnderlyingDatabase());
+                    }
+                    break;
+
+                case R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE:
+                    try (DAO db = new DAO(TAG)) {
+                        db.purgeNodeStates();
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+            return false;
+        });
+
+        debugMenu.show();
     }
 
     private enum ActivityStatus {

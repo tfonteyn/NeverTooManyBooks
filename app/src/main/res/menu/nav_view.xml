@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -75,4 +75,10 @@
         android:id="@+id/nav_about"
         android:icon="@drawable/ic_info_outline"
         android:title="@string/menu_about" />
+
+    <item
+        android:id="@id/SUBMENU_DEBUG"
+        android:icon="@drawable/ic_help_outline"
+        android:title="@string/debug"
+        android:visible="false" />
 </menu>

@@ -151,7 +151,6 @@
 
     <!-- options menu -->
     <item name="MENU_RESET" type="id" />
-    <item name="MENU_PREFS_ASIN" type="id" />
 
     <!-- Scanner pick list -->
     <item name="MENU_SCANNER_EMBEDDED_ZXING" type="id" />
@@ -160,6 +159,9 @@
     <item name="MENU_SCANNER_ZXING_COMPATIBLE" type="id" />
     <item name="MENU_SCANNER_PIC2SHOP" type="id" />
 
+    <item name="MENU_SCAN_BARCODE" type="id" />
+
+
     <!-- debug options for the options menu; only shown in debug mode. -->
     <item name="SUBMENU_DEBUG" type="id" />
     <item name="MENU_DEBUG_PREFS" type="id" />
@@ -167,5 +169,7 @@
     <item name="MENU_DEBUG_TRACKER" type="id" />
     <item name="MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE" type="id" />
     <item name="MENU_DEBUG_UNMANGLE" type="id" />
-    <item name="MENU_SCAN_BARCODE" type="id" />
+    <item name="MENU_DEBUG_DUMP_TEMP_TABLES" type="id" />
+
+
 </resources>
