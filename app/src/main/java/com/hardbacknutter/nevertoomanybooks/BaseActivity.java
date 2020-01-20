@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.baseactivity;
+package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Context;
@@ -56,16 +56,6 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.About;
-import com.hardbacknutter.nevertoomanybooks.AdminActivity;
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.EditBookshelvesActivity;
-import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
-import com.hardbacknutter.nevertoomanybooks.ImportExportFragment;
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;

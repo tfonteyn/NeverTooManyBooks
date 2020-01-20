@@ -34,7 +34,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.baseactivity.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 
 /**
  * Used/defined in xml/preferences.xml
