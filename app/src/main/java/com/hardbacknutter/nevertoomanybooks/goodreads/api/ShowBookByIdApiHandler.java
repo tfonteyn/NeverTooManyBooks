@@ -41,8 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 /**
  * book.show   —   Get the reviews for a book given a Goodreads book id.
  *
- * <a href="https://www.goodreads.com/api/index#book.show">
- * https://www.goodreads.com/api/index#book.show</a>
+ * <a href="https://www.goodreads.com/api/index#book.show">book.show</a>
  */
 public class ShowBookByIdApiHandler
         extends ShowBookApiHandler {

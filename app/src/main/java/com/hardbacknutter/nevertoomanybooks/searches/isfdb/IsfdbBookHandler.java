@@ -93,8 +93,7 @@ public class IsfdbBookHandler
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
 
     /*
-     * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
-     *     http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type
+     * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">Publication_Type</a>
      *
      * ANTHOLOGY. A publication containing fiction by more than one author,
      * not written in collaboration

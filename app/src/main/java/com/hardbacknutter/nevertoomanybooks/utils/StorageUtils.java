@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -620,8 +620,7 @@ public final class StorageUtils {
     /**
      * Format a number of bytes in a human readable form.
      * <p>
-     * 2019-03-16: decimal as per IEC: <a href="https://en.wikipedia.org/wiki/File_size">
-     * https://en.wikipedia.org/wiki/File_size</a>
+     * 2019-03-16: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>
      *
      * @param context Current context
      * @param bytes   to format

@@ -57,12 +57,10 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  * https://developers.google.com/gdata/docs/2.0/reference
  * <p>
  * <p>
- * The new standard is:
- * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">
- * https://developers.google.com/books/docs/v1/getting_started?csw=1</a>
+ * The new API:
+ * <a href="https://developers.google.com/books/docs/v1/getting_started?csw=1">Getting started</a>
  *
- * T&C:
- * https://developers.google.com/books/terms.html
+ * <a href="https://developers.google.com/books/terms.html">T&C</a>
  * You may not charge users any fee for the use of your application,...
  * => so it seems if this SearchEngine is included, the entire app has to be free.
  *

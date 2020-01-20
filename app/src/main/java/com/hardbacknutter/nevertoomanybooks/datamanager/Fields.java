@@ -576,8 +576,8 @@ public class Fields {
 //                                   int start,
 //                                   int end,
 //                                   Spanned dest,
-//                                   int dstart,
-//                                   int dend) {
+//                                   int start,
+//                                   int end) {
 //
 //            Matcher matcher = mPattern.matcher(dest);
 //            if (!matcher.matches())

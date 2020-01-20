@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,8 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 /**
  * Handler for the "auth.user" call. Just gets the current user details.
  * <p>
- * <a href="https://www.goodreads.com/api/index#auth.user">
- * https://www.goodreads.com/api/index#auth.user</a>
+ * <a href="https://www.goodreads.com/api/index#auth.user">auth.user</a>
  */
 public class AuthUserApiHandler
         extends ApiHandler {

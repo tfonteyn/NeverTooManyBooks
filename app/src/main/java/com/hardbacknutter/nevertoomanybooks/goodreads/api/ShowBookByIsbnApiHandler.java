@@ -42,8 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 /**
  * book.show_by_isbn   —   Get the reviews for a book given an ISBN.
  *
- * <a href="https://www.goodreads.com/api/index#book.show_by_isbn">
- * https://www.goodreads.com/api/index#book.show_by_isbn</a>
+ * <a href="https://www.goodreads.com/api/index#book.show_by_isbn">book.show_by_isbn</a>
  */
 public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {

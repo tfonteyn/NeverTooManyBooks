@@ -45,8 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * <p>
  * owned_books.create   —   Add to books owned.
  *
- * <a href="https://www.goodreads.com/api/index#owned_books.create">
- * https://www.goodreads.com/api/index#owned_books.create</a>
+ * <a href="https://www.goodreads.com/api/index#owned_books.create">owned_books.create</a>
  */
 @SuppressWarnings("unused")
 public class OwnedBookCreateApiHandler

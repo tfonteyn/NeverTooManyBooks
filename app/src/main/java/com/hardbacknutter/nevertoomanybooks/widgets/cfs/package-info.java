@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,8 +72,8 @@
  * </pre>
  * <p>
  * A secondary issue is fixed by:
- * https://issuetracker.google.com/issues/64729576
- * https://github.com/caarmen/RecyclerViewBug/blob/hack/app/src/main/java/android/support/v7/widget/HackFastScroller.java
+ * <a href="https://issuetracker.google.com/issues/64729576">64729576</a>
+ * <a href="https://github.com/caarmen/RecyclerViewBug/blob/hack/app/src/main/java/android/support/v7/widget/HackFastScroller.java">HackFastScroller.java</a>
  * <p>
  * Class member:
  * <pre>

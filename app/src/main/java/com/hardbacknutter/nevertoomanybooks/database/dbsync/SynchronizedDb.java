@@ -136,7 +136,7 @@ public class SynchronizedDb {
      * <p>
      * About the SQLite version:
      * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
-     * https://developer.android.com/reference/android/database/sqlite/package-summary</a>
+     *     package-summary</a>
      * API 28   3.22.0
      * API 27   3.19.4
      * API 26   3.18.2

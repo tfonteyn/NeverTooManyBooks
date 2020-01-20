@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,8 +42,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 /**
- * <a href="https://github.com/konmik/nucleus/blob/master/nucleus-test-kit/src/main/java/mocks/ParcelMock.java">
- * https://github.com/konmik/nucleus/blob/master/nucleus-test-kit/src/main/java/mocks/ParcelMock.java</a>
+ * <a href="https://github.com/konmik/nucleus/blob/master/nucleus-test-kit/src/main/java/mocks/ParcelMock.java">ParcelMock</a>
  */
 public class ParcelMock {
 

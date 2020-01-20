@@ -49,20 +49,17 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
  * UPC_A numbers are converted to ISB-10 if possible.
  *
  * <p>
- * See <a href="http://en.wikipedia.org/wiki/International_Standard_Book_Number">
- * http://en.wikipedia.org/wiki/International_Standard_Book_Number</a>
+ * See <a href="http://en.wikipedia.org/wiki/International_Standard_Book_Number">ISBN</a>
  * <p>
  * ISBN stands for International Standard Book Number.
  * Every book is assigned a unique ISBN-10 and ISBN-13 when published.
  * <p>
- * <a href="https://www.amazon.com/gp/seller/asin-upc-isbn-info.html">
- * https://www.amazon.com/gp/seller/asin-upc-isbn-info.html</a>
+ * <a href="https://www.amazon.com/gp/seller/asin-upc-isbn-info.html">asin-upc-isbn</a>
  * <p>
  * Lots of info:
  * <a href="https://isbn-information.com">https://isbn-information.com</a>
  *
- * <a href="https://en.wikipedia.org/wiki/International_Article_Number#GS1_prefix">
- * https://en.wikipedia.org/wiki/International_Article_Number#GS1_prefix</a>
+ * <a href="https://en.wikipedia.org/wiki/International_Article_Number#GS1_prefix">EAN</a>
  * <p>
  * The EAN "country code" 978 (and later 979) has been allocated since the 1980s to reserve
  * a Unique Country Code (UCC) prefix for EAN identifiers of published books, regardless of
@@ -84,8 +81,7 @@ public class ISBN {
             "X can only be at the end of an ISBN-10";
     private static final String ERROR_INVALID_CHARACTER = "Invalid character: ";
     /**
-     * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">
-     * https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside</a>
+     * <a href="https://getsatisfaction.com/deliciousmonster/topics/cant-scan-a-barcode-with-5-digit-extension-no-barcodes-inside">Info</a>
      * <p>
      * The extended barcode combined with the UPC_A vendor prefix can be used to
      * reconstruct the ISBN.
@@ -96,8 +92,7 @@ public class ISBN {
      * The back cover has an extended UPC_A code "0 70999 00225 5 30054".
      * <p>
      * "070999" in the first part of the UPC_A means that the ISBN starts with "0-345"
-     * see <a href="https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map">
-     * https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map</a>
+     * see <a href="https://www.eblong.com/zarf/bookscan/shelvescripts/upc-map">upc-map</a>
      * making it a Ballantine book
      * That "00225" indicates the price
      * That gets us:

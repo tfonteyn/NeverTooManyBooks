@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,8 +65,7 @@ public final class CurrencyUtils {
      * The key in the map <strong>MUST be lowercase</strong>.
      * The value in the map <strong>MUST be uppercase</strong>.
      *
-     * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>
-     * https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language</a>
+     * <a href="https://en.wikipedia.org/wiki/List_of_territorial_entities_where_English_is_an_official_language>English</a>
      */
     private static void createCurrencyMap() {
         // allow re-creating
@@ -132,8 +131,7 @@ public final class CurrencyUtils {
      * UK Shilling was written as "1/-", for example:
      * three shillings and six pence => 3/6
      * It's used on the ISFDB web site. We convert it to modern GBP.
-     * <a href="https://en.wikipedia.org/wiki/Decimal_Day">
-     * https://en.wikipedia.org/wiki/Decimal_Day</a>
+     * <a href="https://en.wikipedia.org/wiki/Decimal_Day">Decimal_Day</a>
      *
      * @param locale            Locale to use for parsing the price string
      * @param priceWithCurrency price to decode, e.g. "Bf459", "$9.99", "EUR 66", ...

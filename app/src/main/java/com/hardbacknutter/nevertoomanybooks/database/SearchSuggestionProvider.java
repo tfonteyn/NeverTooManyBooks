@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 
 /**
  * <a href="https://developer.android.com/guide/topics/search/adding-custom-suggestions.html">
- * https://developer.android.com/guide/topics/search/adding-custom-suggestions.html</a>
+ *     adding-custom-suggestions.html</a>
  * <p>
  * This class is a bit of a hack as it override the SearchRecentSuggestionsProvider,
  * but then actually bypasses most of its functionality by overriding the query method.

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,8 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlDumpParser;
 /**
  * review.edit   —   Edit a review.
  *
- * <a href="https://www.goodreads.com/api/index#review.edit">
- * https://www.goodreads.com/api/index#review.edit</a>
+ * <a href="https://www.goodreads.com/api/index#review.edit">review.edit</a>
  *
  * The response actually contains the private notes; but there seems to be no way to *send* them.
  */

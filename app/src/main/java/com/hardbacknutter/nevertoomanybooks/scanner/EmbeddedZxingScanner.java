@@ -47,14 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * This object will start the embedded Zxing compatible scanner and extract the data
  * from the resulting intent when the activity completes.
  * <p>
- * <a href="https://github.com/journeyapps/zxing-android-embedded">
- * https://github.com/journeyapps/zxing-android-embedded</a>
+ * <a href="https://github.com/journeyapps/zxing-android-embedded">zxing-android-embedded</a>
  * <p>
- * Supported formats:
- * <a href="https://github.com/zxing/zxing/blob/master/core/src/main/java/com/google/zxing/BarcodeFormat.java">
- * https://github.com/zxing/zxing/blob/master/core/src/main/java/com/google/zxing/BarcodeFormat.java</a>
- * <p>
- * It also has a static method to check if the intent is present.
+ * <a href="https://github.com/zxing/zxing/blob/master/core/src/main/java/com/google/zxing/BarcodeFormat.java">Supported formats</a>
  */
 public final class EmbeddedZxingScanner
         implements Scanner {

@@ -67,12 +67,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
- * <a href="https://openlibrary.org/developers/api">https://openlibrary.org/developers/api</a>
+ * <a href="https://openlibrary.org/developers/api">API</a>
  * <p>
  * Initial testing... TLDR: works, but data not complete or not stable (maybe I am to harsh though)
  * <p>
- * <a href="https://openlibrary.org/dev/docs/api/books">
- * https://openlibrary.org/dev/docs/api/books</a>
+ * <a href="https://openlibrary.org/dev/docs/api/books">API books</a>
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
  * <ul>
  * <li> response format: jscmd=data:<br>
@@ -183,8 +182,7 @@ public class OpenLibraryManager
     }
 
     /**
-     * <a href="https://openlibrary.org/dev/docs/api/books">
-     * https://openlibrary.org/dev/docs/api/books</a>
+     * <a href="https://openlibrary.org/dev/docs/api/books">API books</a>
      * <br>
      * {@inheritDoc}
      */
@@ -236,8 +234,7 @@ public class OpenLibraryManager
     }
 
     /**
-     * <a href="https://openlibrary.org/dev/docs/api/covers">
-     * https://openlibrary.org/dev/docs/api/covers</a>
+     * <a href="https://openlibrary.org/dev/docs/api/covers">API covers</a>
      * <p>
      * {@code
      * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false

@@ -49,13 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.App;
  * Again the keypad only allowed the '.' to be used.
  * <p>
  * Known issue. Stated to be fixed in Android O == 8.0
- * <a href="https://issuetracker.google.com/issues/36907764">
- * https://issuetracker.google.com/issues/36907764</a>
- * <a href="https://issuetracker.google.com/issues/37015783">
- * https://issuetracker.google.com/issues/37015783</a>
+ * <a href="https://issuetracker.google.com/issues/36907764">36907764</a>
+ * <a href="https://issuetracker.google.com/issues/37015783">37015783</a>
  *
- * <a href="https://stackoverflow.com/questions/3821539/decimal-separator-comma-with-numberdecimal-inputtype-in-edittext">
- * https://stackoverflow.com/questions/3821539/decimal-separator-comma-with-numberdecimal-inputtype-in-edittext</a>
+ * <a href="https://stackoverflow.com/questions/3821539/decimal-separator-comma-with-numberdecimal-inputtype-in-edittext">stackoverflow</a>
  * <p>
  * But I test with Android 8.0 ... Americans just can't see beyond their border...
  * To be clear: parsing works fine; it's just the user not able to input the

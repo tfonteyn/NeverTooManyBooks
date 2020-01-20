@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,8 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 /**
  * search.books   —   Find books by title, author, or ISBN.
  *
- * <a href="https://www.goodreads.com/api/index#search.books">
- * https://www.goodreads.com/api/index#search.books</a>
+ * <a href="https://www.goodreads.com/api/index#search.books">search.books</a>
  */
 public class SearchBooksApiHandler
         extends ApiHandler {

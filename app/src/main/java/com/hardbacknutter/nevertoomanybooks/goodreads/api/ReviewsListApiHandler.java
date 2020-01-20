@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,8 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 /**
  * "reviews.list"   —   Get the books on a members shelf.
  *
- * <a href="https://www.goodreads.com/api/index#reviews.list">
- * https://www.goodreads.com/api/index#reviews.list</a>
+ * <a href="https://www.goodreads.com/api/index#reviews.list">reviews.list</a>
  *
  * <strong>IMPORTANT:</strong> Goodreads private notes are not included in this response.
  * So we cannot import them here.

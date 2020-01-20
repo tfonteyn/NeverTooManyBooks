@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,8 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 /**
  * shelves.list   —   Get a user's shelves.
  *
- * <a href="https://www.goodreads.com/api/index#shelves.list">
- * https://www.goodreads.com/api/index#shelves.list</a>
+ * <a href="https://www.goodreads.com/api/index#shelves.list">shelves.list</a>
  */
 public class ShelvesListApiHandler
         extends ApiHandler {

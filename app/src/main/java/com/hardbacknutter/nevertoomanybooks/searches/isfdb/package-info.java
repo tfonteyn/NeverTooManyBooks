@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,7 @@
  * (if searching for 'publications') a content the same as "title.cgi"
  * </p>
  * <p>
- * Web API: http://www.isfdb.org/wiki/index.php/Web_API
+ * <a href="http://www.isfdb.org/wiki/index.php/Web_API">Web API</a>
  * </p>
  * <p>
  * Data not available from the Web API, but can be scraped:

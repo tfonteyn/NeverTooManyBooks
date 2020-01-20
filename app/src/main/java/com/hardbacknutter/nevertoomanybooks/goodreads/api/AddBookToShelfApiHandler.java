@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,13 +48,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 /**
  * shelves.add_to_shelf   —   Add (or remove) a book to a shelf.
  *
- * <a href="https://www.goodreads.com/api/index#shelves.add_to_shelf">
- * https://www.goodreads.com/api/index#shelves.add_to_shelf</a>
+ * <a href="https://www.goodreads.com/api/index#shelves.add_to_shelf">shelves.add_to_shelf</a>
  * <p>
  * shelves.add_books_to_shelves   —   Add books to many shelves.
  *
  * <a href="https://www.goodreads.com/api/index#shelves.add_books_to_shelves">
- * https://www.goodreads.com/api/index#shelves.add_books_to_shelves</a>
+ *     shelves.add_books_to_shelves</a>
  * <p>
  * ENHANCE: Parse the result and store it against the bookshelf in the database.
  * Currently, this is not a simple thing to do because bookshelf naming rules in

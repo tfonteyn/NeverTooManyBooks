@@ -1546,7 +1546,7 @@ public class BooksOnBookshelf
      * Handle the standard search intent / suggestions click.
      *
      * <a href="https://developer.android.com/guide/topics/search/search-dialog#ReceivingTheQuery">
-     * https://developer.android.com/guide/topics/search/search-dialog#ReceivingTheQuery</a>
+     *     ReceivingTheQuery</a>
      */
     private void handleStandardSearchIntent() {
         String keywords = "";

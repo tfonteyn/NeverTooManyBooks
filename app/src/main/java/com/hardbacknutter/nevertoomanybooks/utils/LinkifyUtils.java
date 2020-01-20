@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,8 +44,7 @@ import androidx.annotation.NonNull;
  * this method preserves them.
  * <p>
  * See:
- * <a href="http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml">
- * http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml</a>
+ * <a href="http://stackoverflow.com/questions/14538113/using-linkify-addlinks-combine-with-html-fromhtml">stackoverflow</a>
  *
  * <pre>
  *     {@code

@@ -203,8 +203,7 @@ public class GoodreadsManager
     /**
      * Constructor.
      * <p>
-     * <a href="https://www.goodreads.com/api/documentation">
-     * https://www.goodreads.com/api/documentation</a>
+     * <a href="https://www.goodreads.com/api/documentation">api documentation</a>
      */
     public GoodreadsManager() {
         // Apache Commons HTTP

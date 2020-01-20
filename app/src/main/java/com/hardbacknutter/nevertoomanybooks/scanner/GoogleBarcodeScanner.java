@@ -48,10 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 
 /**
  * Using the Google Play Services to scan a barcode.
- * <a href="https://developers.google.com/android/guides/overview">
- * https://developers.google.com/android/guides/overview</a>
- * <a href="https://codelabs.developers.google.com/codelabs/bar-codes/#0">
- * https://codelabs.developers.google.com/codelabs/bar-codes/#0</a>
+ * <a href="https://developers.google.com/android/guides/overview">overview</a>
+ * <a href="https://codelabs.developers.google.com/codelabs/bar-codes/#0">bar-codes</a>
  */
 public class GoogleBarcodeScanner
         implements Scanner {

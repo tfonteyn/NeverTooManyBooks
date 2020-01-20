@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,8 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 /**
  * book.isbn_to_id   —   Get Goodreads book IDs given ISBNs.
  *
- * <a href="https://www.goodreads.com/api/index#book.isbn_to_id">
- * https://www.goodreads.com/api/index#book.isbn_to_id</a>
+ * <a href="https://www.goodreads.com/api/index#book.isbn_to_id">book.isbn_to_id</a>
  *
  * <strong>Note:</strong> THIS DOES NOT RETURN XML. The text output is the ID.
  */

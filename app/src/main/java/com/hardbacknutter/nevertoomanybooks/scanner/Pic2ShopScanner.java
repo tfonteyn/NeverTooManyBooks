@@ -45,9 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Based on the pic2shop client code at github, this object will start pic2shop and
  * extract the data from the resulting intent when the activity completes.
  * <p>
- * https://github.com/VisionSmarts/pic2shop-client
- * <p>
- * It also has a static method to check if the intent is present.
+ * <a href="https://github.com/VisionSmarts/pic2shop-client">pic2shop-client</a>
  *
  * 2020-01-08: disabled in preferences.
  */
@@ -124,8 +122,7 @@ public class Pic2ShopScanner
     /**
      * Pro version of the package.
      *
-     * <a href="https://en.wikipedia.org/wiki/Barcode#Types_of_barcodes">
-     * https://en.wikipedia.org/wiki/Barcode#Types_of_barcodes</a>
+     * <a href="https://en.wikipedia.org/wiki/Barcode#Types_of_barcodes">Types of bar codes</a>
      * The Pro package does not implement all those.
      * The example code at github lists:
      * String[] ALL_BARCODE_TYPES = {"EAN13","EAN8","UPCE","ITF","CODE39","CODE128","CODABAR","QR"};
