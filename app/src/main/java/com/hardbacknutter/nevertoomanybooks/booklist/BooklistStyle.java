@@ -577,35 +577,35 @@ public class BooklistStyle
                                           Prefs.pk_bob_filter_read,
                                           mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_BOOK_READ));
+                                          DBDefinitions.KEY_READ));
 
         mAllFilters.put(Prefs.pk_bob_filter_signed,
                         new BooleanFilter(R.string.lbl_signed,
                                           Prefs.pk_bob_filter_signed,
                                           mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_BOOK_SIGNED));
+                                          DBDefinitions.KEY_SIGNED));
 
         mAllFilters.put(Prefs.pk_bob_filter_anthology,
                         new BooleanFilter(R.string.lbl_anthology,
                                           Prefs.pk_bob_filter_anthology,
                                           mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_BOOK_TOC_BITMASK));
+                                          DBDefinitions.KEY_TOC_BITMASK));
 
         mAllFilters.put(Prefs.pk_bob_filter_loaned,
                         new BooleanFilter(R.string.lbl_loaned,
                                           Prefs.pk_bob_filter_loaned,
                                           mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_LOANEE));
+                                          DBDefinitions.KEY_LOANEE));
 
         mAllFilters.put(Prefs.pk_bob_filter_editions,
                         new BitmaskFilter(R.string.lbl_edition,
                                           Prefs.pk_bob_filter_editions,
                                           mUuid, isUserDefined(),
                                           DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.DOM_BOOK_EDITION_BITMASK));
+                                          DBDefinitions.KEY_EDITION_BITMASK));
     }
 
     @SuppressWarnings("SameReturnValue")

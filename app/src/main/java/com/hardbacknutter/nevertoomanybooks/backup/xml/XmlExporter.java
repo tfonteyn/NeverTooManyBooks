@@ -660,14 +660,14 @@ public class XmlExporter
               .append(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
-            final CursorRow row = new CursorRow(cursor);
+            final CursorRow cursorRow = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 writer.append('<' + XmlTags.XML_SERIES)
-                      .append(id(row.getLong(DBDefinitions.KEY_PK_ID)))
+                      .append(id(cursorRow.getLong(DBDefinitions.KEY_PK_ID)))
                       .append(attr(DBDefinitions.KEY_SERIES_TITLE,
-                                   row.getString(DBDefinitions.KEY_SERIES_TITLE)))
+                                   cursorRow.getString(DBDefinitions.KEY_SERIES_TITLE)))
                       .append(attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
-                                   row.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
+                                   cursorRow.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
                       .append("/>\n");
             }
         }
@@ -797,9 +797,9 @@ public class XmlExporter
                                    cursorRow.getLong(DBDefinitions.KEY_EID_ISFDB)))
                       .append(attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
                                    cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
-                      .append(attr(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE,
+                      .append(attr(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
                                    cursorRow.getString(
-                                           DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE)))
+                                           DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)))
 
                       // cross-linked with the loanee table
                       .append(attr(DBDefinitions.KEY_LOANEE,

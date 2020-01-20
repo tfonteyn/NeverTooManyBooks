@@ -4,7 +4,7 @@ https://www.oclc.org/developer/
 https://www.worldcat.org/affiliate/webservices/xisbn/app.jsp
 => format is the same as LibraryThing => SearchLibraryThingEditionHandler
 
-The xISBN Web service is free for non-commercial use when usage does not exceed 500 requests per day.
-More requests is a paying service.
+The xISBN Web service is free for non-commercial use when usage does not exceed 500 requests
+per day. More requests is a paying service.
 
 No plans to implement for now.

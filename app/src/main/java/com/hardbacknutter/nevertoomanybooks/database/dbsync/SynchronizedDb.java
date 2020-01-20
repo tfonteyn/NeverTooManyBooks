@@ -84,7 +84,7 @@ public class SynchronizedDb {
      * the methods that take a {@link SQLiteOpenHelper} object since opening the database
      * may block another thread, or vice versa.
      *
-     * @param db   Underlying database
+     * @param db           Underlying database
      * @param synchronizer Synchronizer to use
      */
     public SynchronizedDb(@NonNull final SQLiteDatabase db,
@@ -96,20 +96,20 @@ public class SynchronizedDb {
     /**
      * Constructor.
      *
-     * @param helper SQLiteOpenHelper to open underlying database
-     * @param synchronizer   Synchronizer to use
+     * @param sqLiteOpenHelper SQLiteOpenHelper to open underlying database
+     * @param synchronizer     Synchronizer to use
      */
-    public SynchronizedDb(@NonNull final SQLiteOpenHelper helper,
+    public SynchronizedDb(@NonNull final SQLiteOpenHelper sqLiteOpenHelper,
                           @NonNull final Synchronizer synchronizer) {
         mSynchronizer = synchronizer;
-        mSqlDb = openWithRetries(helper);
+        mSqlDb = openWithRetries(sqLiteOpenHelper);
     }
 
     /**
      * Constructor.
      *
-     * @param helper            SQLiteOpenHelper to open underlying database
-     * @param synchronizer              Synchronizer to use
+     * @param sqLiteOpenHelper  SQLiteOpenHelper to open underlying database
+     * @param synchronizer      Synchronizer to use
      * @param preparedStmtCache the number or prepared statements to cache.
      *                          The javadoc for setMaxSqlCacheSize says the default is 10,
      *                          but if you follow the source code, you end up in
@@ -117,11 +117,11 @@ public class SynchronizedDb {
      *                          where the default is in fact 25!
      *                          Do NOT set the size to less than 25.
      */
-    public SynchronizedDb(@NonNull final SQLiteOpenHelper helper,
+    public SynchronizedDb(@NonNull final SQLiteOpenHelper sqLiteOpenHelper,
                           @NonNull final Synchronizer synchronizer,
                           final int preparedStmtCache) {
         mSynchronizer = synchronizer;
-        mSqlDb = openWithRetries(helper);
+        mSqlDb = openWithRetries(sqLiteOpenHelper);
 
         // only set when bigger than default
         if ((preparedStmtCache > 25)
@@ -143,19 +143,15 @@ public class SynchronizedDb {
      * API 25   3.9.2
      * API 24   3.9.2
      * API 23   3.8.10.2 <=
-     * API 21   3.8.6
-     * API 11   3.7
-     * API 8    3.6
-     * API 3    3.5
-     * API 1    3.4
+     * <p>
      * But some device manufacturers include different versions of SQLite on their devices.
      *
-     * @param opener SQLiteOpenHelper interface
+     * @param sqLiteOpenHelper SQLiteOpenHelper interface
      *
      * @return a writable database
      */
     @NonNull
-    private SQLiteDatabase openWithRetries(@NonNull final SQLiteOpenHelper opener) {
+    private SQLiteDatabase openWithRetries(@NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
         // 10ms
         int wait = 10;
         // 2^10 * 10ms = 10.24sec (actually 2x that due to total wait time)
@@ -164,7 +160,7 @@ public class SynchronizedDb {
         do {
             Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
             try {
-                SQLiteDatabase db = opener.getWritableDatabase();
+                SQLiteDatabase db = sqLiteOpenHelper.getWritableDatabase();
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
                     Log.d(TAG, "openWithRetries"
                                + "|path=" + db.getPath()
@@ -195,7 +191,9 @@ public class SynchronizedDb {
         } while (true);
     }
 
-    /** DEBUG usage. */
+    /**
+     * DEBUG only.
+     */
     private void debugDumpInfo(@NonNull final SQLiteDatabase db) {
         String[] sql = {"select sqlite_version() AS sqlite_version",
                         "PRAGMA encoding",

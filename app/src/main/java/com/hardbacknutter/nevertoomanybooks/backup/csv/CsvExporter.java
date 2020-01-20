@@ -123,7 +123,7 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_EID_OPEN_LIBRARY + "\","
             + '"' + DBDefinitions.KEY_EID_ISFDB + "\","
             + '"' + DBDefinitions.KEY_EID_GOODREADS_BOOK + "\","
-            + '"' + DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE + "\""
+            + '"' + DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "\""
             + '\n';
 
 
@@ -256,7 +256,7 @@ public class CsvExporter
                   .append(format(cursorRow.getLong(DBDefinitions.KEY_EID_ISFDB)))
                   .append(format(cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
                   .append(format(
-                          cursorRow.getString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE)));
+                          cursorRow.getString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
 
                 // replace the comma at the end of the line with a '\n'
                 sb.replace(sb.length() - 1, sb.length(), "\n");

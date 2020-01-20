@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -44,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -145,7 +145,10 @@ public final class Prefs {
     public static final String pk_bob_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     public static final String pk_bob_filter_editions = "style.booklist.filter.editions";
-
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_style_filters = "psk_style_filters";
+    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
+    public static final String psk_style_show_details = "psk_style_show_details";
     /** Global settings - PreferenceScreen/PreferenceCategory Key. */
     static final String psk_search_site_order = "psk_search_site_order";
     /** Global settings - Purge action. */
@@ -160,11 +163,6 @@ public final class Prefs {
     static final String psk_credentials_goodreads = "psk_credentials_goodreads";
     /** Global settings - Credentials. */
     static final String psk_credentials_library_thing = "psk_credentials_library_thing";
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_filters = "psk_style_filters";
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_show_details = "psk_style_show_details";
-
     static final String pk_reformat_titles_sort = "reformat.titles.sort";
     static final String pk_reformat_titles_display = "reformat.titles.display";
 
@@ -266,31 +264,30 @@ public final class Prefs {
     }
 
     /**
-     * DEBUG method.
+     * DEBUG only.
      */
+    @SuppressLint("LogConditional")
     public static void dumpPreferences(@NonNull final Context context,
                                        @Nullable final String uuid) {
-        if (BuildConfig.DEBUG /* always */) {
-            Map<String, ?> map;
-            if (uuid != null) {
-                map = context.getSharedPreferences(uuid, Context.MODE_PRIVATE).getAll();
-            } else {
-                map = PreferenceManager.getDefaultSharedPreferences(context).getAll();
-            }
-            List<String> keyList = new ArrayList<>(map.keySet());
-            String[] keys = keyList.toArray(new String[]{});
-            Arrays.sort(keys);
-
-            StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
-                                                 + (uuid != null ? uuid : "global"));
-            for (String key : keys) {
-                Object value = map.get(key);
-                sb.append('\n').append(key).append('=').append(value);
-            }
-            sb.append("\n\n");
-
-            Log.d(TAG, "dumpPreferences|" + sb);
+        Map<String, ?> map;
+        if (uuid != null) {
+            map = context.getSharedPreferences(uuid, Context.MODE_PRIVATE).getAll();
+        } else {
+            map = PreferenceManager.getDefaultSharedPreferences(context).getAll();
         }
+        List<String> keyList = new ArrayList<>(map.keySet());
+        String[] keys = keyList.toArray(new String[]{});
+        Arrays.sort(keys);
+
+        StringBuilder sb = new StringBuilder("\n\nSharedPreferences: "
+                                             + (uuid != null ? uuid : "global"));
+        for (String key : keys) {
+            Object value = map.get(key);
+            sb.append('\n').append(key).append('=').append(value);
+        }
+        sb.append("\n\n");
+
+        Log.d(TAG, "dumpPreferences|" + sb);
     }
 
     /**

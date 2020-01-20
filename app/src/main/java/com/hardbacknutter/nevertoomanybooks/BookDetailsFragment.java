@@ -765,7 +765,7 @@ public class BookDetailsFragment
         final Context context = getContext();
         //noinspection ConstantConditions
         String authorLabel = author.getLabel(context);
-        if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+        if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
             String type = author.getTypeLabels(context);
             if (!type.isEmpty()) {
                 authorLabel += " <small><i>" + type + "</i></small>";

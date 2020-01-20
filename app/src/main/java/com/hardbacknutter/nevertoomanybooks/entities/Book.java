@@ -86,7 +86,7 @@ public class Book
     public static final int RATING_STARS = 5;
 
     /**
-     * {@link DBDefinitions#DOM_BOOK_TOC_BITMASK}
+     * {@link DBDefinitions#KEY_TOC_BITMASK}
      * <p>
      * 0b001 = indicates if a book has one (bit unset) or multiple (bit set) works
      * 0b010 = indicates if a book has one (bit unset) or multiple (bit set) authors.
@@ -106,7 +106,7 @@ public class Book
     /** first edition ever of this work/content/story. */
     public static final int EDITION_FIRST = 1;
     /*
-     * {@link DBDefinitions#DOM_BOOK_EDITION_BITMASK}.
+     * {@link DBDefinitions#KEY_EDITION_BITMASK}.
      * <p>
      * 0%00000000 = a generic edition, or we simply don't know what edition it is.
      * 0%00000001 = first edition
@@ -259,10 +259,11 @@ public class Book
     /**
      * Duplicate a book by putting APPLICABLE (not simply all of them) fields
      * in a Bundle ready for further processing.
+     * i.o.w. this is <strong>NOT</strong> a copy constructor.
      *
      * @return bundle with book data
      * <p>
-     * <b>Developer:</b> keep in sync with {@link DAO} .SqlColumns#BOOK
+     * <b>Developer:</b> keep in sync with {@link DAO} .SqlAllBooks#BOOK
      */
     @NonNull
     public Bundle duplicate() {
@@ -278,16 +279,16 @@ public class Book
         // but lets play this safe.
 
         // Do not copy any identifiers.
-        // DOM_PK_ID
-        // DOM_BOOK_UUID
-        // DOM_BOOK_LIBRARY_THING_ID
-        // DOM_BOOK_ISFDB_ID
-        // DOM_BOOK_GOODREADS_ID
+        // KEY_PK_ID
+        // KEY_BOOK_UUID
+        // KEY_EID_LIBRARY_THING
+        // KEY_EID_ISFDB
+        // KEY_EID_GOODREADS
         // ...
         // Do not copy these specific dates.
-        // DOM_BOOK_DATE_ADDED
-        // DOM_DATE_LAST_UPDATED
-        // DOM_BOOK_GOODREADS_LAST_SYNC_DATE
+        // KEY_BOOK_DATE_ADDED
+        // KEY_DATE_LAST_UPDATED
+        // KEY_BOOK_GOODREADS_LAST_SYNC_DATE
 
         bookData.putString(DBDefinitions.KEY_TITLE,
                            getString(DBDefinitions.KEY_TITLE));

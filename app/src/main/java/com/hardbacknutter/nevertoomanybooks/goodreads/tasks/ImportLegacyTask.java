@@ -416,7 +416,8 @@ class ImportLegacyTask
             // then don't bother updating book.
             // This typically happens if the last update in Goodreads was from us.
             // Get last date book was sent to Goodreads (may be null)
-            String lastGrSync = cursorRow.getString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE);
+            String lastGrSync = cursorRow.getString(
+                    DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE);
             if (lastUpdate != null && lastUpdate.compareTo(lastGrSync) < 0) {
                 return;
             }
@@ -688,7 +689,7 @@ class ImportLegacyTask
         // We need to set BOTH of these fields, otherwise the add/update method will set the
         // last_update_date for us, and that would be ahead of the Goodreads update date.
         String now = DateUtils.utcSqlDateTimeForToday();
-        bookData.putString(DBDefinitions.KEY_EID_GOODREADS_LAST_SYNC_DATE, now);
+        bookData.putString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE, now);
         bookData.putString(DBDefinitions.KEY_DATE_LAST_UPDATED, now);
 
         return bookData;

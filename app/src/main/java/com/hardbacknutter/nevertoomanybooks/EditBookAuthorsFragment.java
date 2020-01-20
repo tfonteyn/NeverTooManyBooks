@@ -330,7 +330,7 @@ public class EditBookAuthorsFragment
             authorSortView = itemView.findViewById(R.id.row_author_sort);
             authorTypeView = itemView.findViewById(R.id.row_author_type);
 
-            if (!App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+            if (!App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
                 authorTypeView.setVisibility(View.GONE);
             }
         }
@@ -389,7 +389,7 @@ public class EditBookAuthorsFragment
                 mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
                 mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
                                                             false);
-                mType = savedInstanceState.getInt(DBDefinitions.KEY_AUTHOR_TYPE);
+                mType = savedInstanceState.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
             }
         }
 
@@ -438,7 +438,7 @@ public class EditBookAuthorsFragment
 
             mUseTypeBtn = root.findViewById(R.id.use_author_type_button);
             if (mUseTypeBtn != null) {
-                boolean useAuthorType = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE);
+                boolean useAuthorType = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
                 Group authorTypeGroup = root.findViewById(R.id.author_type_group);
                 authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
                 if (useAuthorType) {
@@ -550,7 +550,7 @@ public class EditBookAuthorsFragment
             outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
             outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
             outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
-            outState.putInt(DBDefinitions.KEY_AUTHOR_TYPE, mType);
+            outState.putInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK, mType);
         }
 
         @Override
@@ -640,7 +640,7 @@ public class EditBookAuthorsFragment
                 holder.authorSortView.setVisibility(View.GONE);
             }
 
-            if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE)
+            if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)
                 && author.getType() != Author.TYPE_UNKNOWN) {
                 holder.authorTypeView.setText(author.getTypeLabels(context));
                 holder.authorTypeView.setVisibility(View.VISIBLE);

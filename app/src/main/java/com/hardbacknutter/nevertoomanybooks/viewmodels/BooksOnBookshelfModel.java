@@ -113,13 +113,13 @@ public class BooksOnBookshelfModel
     private final String BOOKSHELVES_CSV_SOURCE_EXPRESSION =
             "("
             + "SELECT GROUP_CONCAT("
-            + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.DOM_BOOKSHELF) + ",', ')"
+            + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.KEY_BOOKSHELF) + ",', ')"
             + " FROM "
             + DBDefinitions.TBL_BOOKSHELF.ref()
             + DBDefinitions.TBL_BOOKSHELF.join(DBDefinitions.TBL_BOOK_BOOKSHELF)
             + " WHERE "
-            + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_PK_ID) + "="
-            + DBDefinitions.TBL_BOOK_BOOKSHELF.dot(DBDefinitions.DOM_FK_BOOK)
+            + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PK_ID) + "="
+            + DBDefinitions.TBL_BOOK_BOOKSHELF.dot(DBDefinitions.KEY_FK_BOOK)
             + ")";
 
     /** Database Access. */
@@ -430,56 +430,56 @@ public class BooksOnBookshelfModel
 
         // Title for displaying + the book language
         blb.addExtraDomain(DBDefinitions.DOM_TITLE,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE),
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE),
                            false);
         // the language
         blb.addExtraDomain(DBDefinitions.DOM_BOOK_LANGUAGE,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LANGUAGE),
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LANGUAGE),
                            false);
 
         // Title for sorting
         blb.addExtraDomain(DBDefinitions.DOM_TITLE_OB,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_TITLE_OB),
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB),
                            true);
         // The read flag
         blb.addExtraDomain(DBDefinitions.DOM_BOOK_READ,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_READ),
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ),
                            false);
 
         // Always get the Author ID (the name is depending on style).
         blb.addExtraDomain(DBDefinitions.DOM_FK_AUTHOR,
-                           DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.DOM_FK_AUTHOR),
+                           DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR),
                            false);
 
         // external site ID's
         //NEWTHINGS: add new site specific ID: add
-        blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISFDB_ID,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISFDB_ID),
+        blb.addExtraDomain(DBDefinitions.DOM_EID_ISFDB,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_ISFDB),
                            false);
-        blb.addExtraDomain(DBDefinitions.DOM_BOOK_GOODREADS_ID,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_GOODREADS_ID),
+        blb.addExtraDomain(DBDefinitions.DOM_EID_GOODREADS_BOOK,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_GOODREADS_BOOK),
                            false);
-        blb.addExtraDomain(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LIBRARY_THING_ID),
+        blb.addExtraDomain(DBDefinitions.DOM_EID_LIBRARY_THING,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_LIBRARY_THING),
                            false);
-        blb.addExtraDomain(DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_STRIP_INFO_BE_ID),
+        blb.addExtraDomain(DBDefinitions.DOM_EID_STRIP_INFO_BE,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_STRIP_INFO_BE),
                            false);
-        blb.addExtraDomain(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID,
-                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_OPEN_LIBRARY_ID),
+        blb.addExtraDomain(DBDefinitions.DOM_EID_OPEN_LIBRARY,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_OPEN_LIBRARY),
                            false);
 
 
         if (style.isUsed(DBDefinitions.KEY_EDITION_BITMASK)) {
             // The edition bitmask
             blb.addExtraDomain(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_EDITION_BITMASK),
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK),
                                false);
         }
 
         if (style.isUsed(DBDefinitions.KEY_SIGNED)) {
             blb.addExtraDomain(DBDefinitions.DOM_BOOK_SIGNED,
-                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_SIGNED),
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED),
                                false);
         }
 
@@ -511,36 +511,36 @@ public class BooksOnBookshelfModel
                                    false);
             }
             // and for now, don't get the author type.
-//                if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_TYPE)) {
+//                if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
 //                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
 //                                      DBDefinitions.TBL_BOOK_AUTHOR
-//                                              .dot(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK),
+//                                              .dot(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK),
 //                                      false);
 //                }
 
             if (style.isExtraUsed(DBDefinitions.KEY_PUBLISHER)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_PUBLISHER),
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PUBLISHER),
                                    false);
             }
             if (style.isExtraUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
                 blb.addExtraDomain(DBDefinitions.DOM_DATE_PUBLISHED,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_DATE_PUBLISHED),
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED),
                                    false);
             }
             if (style.isExtraUsed(DBDefinitions.KEY_ISBN)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISBN,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_ISBN),
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN),
                                    false);
             }
             if (style.isExtraUsed(DBDefinitions.KEY_FORMAT)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_FORMAT,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_FORMAT),
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT),
                                    false);
             }
             if (style.isExtraUsed(DBDefinitions.KEY_LOCATION)) {
                 blb.addExtraDomain(DBDefinitions.DOM_BOOK_LOCATION,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.DOM_BOOK_LOCATION),
+                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION),
                                    false);
             }
         }

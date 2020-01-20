@@ -256,8 +256,8 @@ public class Author
         mFamilyName = cursorRow.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
         mGivenNames = cursorRow.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
         mIsComplete = cursorRow.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-        if (cursorRow.contains(DBDefinitions.KEY_AUTHOR_TYPE)) {
-            mType = cursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE);
+        if (cursorRow.contains(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
+            mType = cursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
         }
     }
 
@@ -528,7 +528,7 @@ public class Author
             data.put(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, true);
         }
         if (mType != Author.TYPE_UNKNOWN) {
-            data.put(DBDefinitions.KEY_AUTHOR_TYPE, mType);
+            data.put(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK, mType);
         }
     }
 
@@ -545,8 +545,8 @@ public class Author
             mIsComplete = data.optBoolean("complete");
         }
 
-        if (data.has(DBDefinitions.KEY_AUTHOR_TYPE)) {
-            setType(data.optInt(DBDefinitions.KEY_AUTHOR_TYPE));
+        if (data.has(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
+            setType(data.optInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK));
         } else if (data.has("type")) {
             setType(data.optInt("type"));
         }

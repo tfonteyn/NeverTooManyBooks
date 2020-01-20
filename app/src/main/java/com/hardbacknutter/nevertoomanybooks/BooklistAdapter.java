@@ -132,7 +132,7 @@ public class BooklistAdapter
         mStyle = style;
         mDb = db;
         mCursor = cursor;
-        mCursor.moveToFirst();
+//        mCursor.moveToFirst();
         mCursorRow = new CursorRow(mCursor);
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
 
@@ -489,6 +489,8 @@ public class BooklistAdapter
          * User long-clicked a row.
          *
          * @param position The position of the item within the adapter's data set.
+         *
+         * @return true if the callback consumed the long click, false otherwise.
          */
         default boolean onItemLongClick(final int position) {
             return false;
@@ -575,8 +577,8 @@ public class BooklistAdapter
                     if (!tmp.isEmpty()) {
                         mResults.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, tmp);
                         // no author type for now.
-//                        mResults.putInt(DBDefinitions.KEY_AUTHOR_TYPE,
-//                                        mCursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE));
+//                        mResults.putInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK,
+//                                        mCursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK));
                     }
                 }
 
@@ -1347,10 +1349,6 @@ public class BooklistAdapter
             mReorderTitle = Prefs.reorderTitleForDisplaying(itemView.getContext());
         }
 
-        /**
-         * @param text  String to display; can be {@code null} or empty
-         * @param level for this row
-         */
         @Override
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
