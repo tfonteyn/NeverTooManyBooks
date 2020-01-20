@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -128,6 +128,20 @@ public final class Site
     }
 
     /**
+     * Copy constructor.
+     *
+     * @param from object to copy
+     */
+    protected Site(@NonNull final Site from) {
+        id = from.id;
+        mEnabled = from.mEnabled;
+        mName = from.mName;
+        mPreferenceKey = from.mPreferenceKey;
+        // just copy the reference, it's a singleton.
+        mSearchEngine = from.mSearchEngine;
+    }
+
+    /**
      * {@link Parcelable} Constructor.
      *
      * @param in Parcel to construct the object from
@@ -208,16 +222,6 @@ public final class Site
         dest.writeInt(mEnabled ? 1 : 0);
         dest.writeString(mName);
         dest.writeString(mPreferenceKey);
-    }
-
-    @NonNull
-    Site getClone() {
-        Parcel parcel = Parcel.obtain();
-        writeToParcel(parcel, 0);
-        parcel.setDataPosition(0);
-        Site site = CREATOR.createFromParcel(parcel);
-        parcel.recycle();
-        return site;
     }
 
     @NonNull

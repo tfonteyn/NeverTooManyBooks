@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,6 +86,19 @@ public class SiteList
     }
 
     /**
+     * Copy constructor.
+     *
+     * @param list to copy
+     */
+    private SiteList(@NonNull final SiteList list) {
+        mType = list.mType;
+        mList = new ArrayList<>();
+        for (Site site : list.mList) {
+            mList.add(new Site(site));
+        }
+    }
+
+    /**
      * {@link Parcelable} Constructor.
      *
      * @param in Parcel to construct the object from
@@ -95,17 +108,6 @@ public class SiteList
         mType = in.readParcelable(Type.class.getClassLoader());
         mList = new ArrayList<>();
         in.readTypedList(mList, Site.CREATOR);
-    }
-
-    /**
-     * Copy constructor.
-     *
-     * @param list to copy
-     */
-    private SiteList(@NonNull final SiteList list) {
-        mType = list.mType;
-        //noinspection unchecked
-        mList = (ArrayList<Site>) list.mList.clone();
     }
 
     /**
