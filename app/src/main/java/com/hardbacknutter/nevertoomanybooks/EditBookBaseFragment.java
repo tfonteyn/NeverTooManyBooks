@@ -110,8 +110,8 @@ public abstract class EditBookBaseFragment
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        // We hide the tab bar for some screens. Make sure to set it visible here.
-        //URGENT: this is temporary.. until it's decided what UI to go for.
+        // We hide the tab bar when editing Authors/Series on pop-up screens.
+        // Make sure to set it visible here.
         //noinspection ConstantConditions
         View tabBarLayout = getActivity().findViewById(R.id.tab_panel);
         if (tabBarLayout != null) {

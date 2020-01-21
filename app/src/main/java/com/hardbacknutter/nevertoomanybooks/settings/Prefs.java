@@ -80,7 +80,8 @@ public final class Prefs {
     public static final String pk_ui_locale = "ui.locale";
     public static final String pk_ui_theme = "ui.theme";
 
-    public static final String pk_tabs_edit_book_native_id = "edit.book.tab.nativeId";
+    public static final String pk_edit_book_tabs_native_id = "edit.book.tab.nativeId";
+    public static final String pk_edit_book_tabs_authSer = "edit.book.tab.authSer";
 
     public static final String pk_network_allow_metered = "network.allow.metered";
     public static final String pk_search_form_advanced = "search.form.advanced";

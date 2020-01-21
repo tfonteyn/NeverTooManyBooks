@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -77,9 +76,6 @@ public class EditBookFragment
     /** Preset a tab index to display on opening. See {@link TabAdapter}. */
     @SuppressWarnings("WeakerAccess")
     public static final String REQUEST_BKEY_TAB = "tab";
-
-    //URGENT: this is temporary.. until it's decided what UI to go for.
-    static final String TMP_SHOW_TAB_AUTH_SER = "tmp.edit.book.tab.authSer";
 
     private ViewPager2 mViewPager;
     private TabAdapter mTabAdapter;
@@ -197,9 +193,10 @@ public class EditBookFragment
 
         // if we're NOT running in tabbed mode for authors/series, send them a save command too.
         //noinspection ConstantConditions
-        boolean showTabAuthSer = PreferenceManager.getDefaultSharedPreferences(getContext())
-                                                  .getBoolean(TMP_SHOW_TAB_AUTH_SER, false);
-        if (!showTabAuthSer) {
+        boolean showAuthSeriesOnTabs = PreferenceManager
+                .getDefaultSharedPreferences(getContext())
+                .getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
+        if (!showAuthSeriesOnTabs) {
             //noinspection ConstantConditions
             FragmentManager fm = getActivity().getSupportFragmentManager();
             Fragment frag = fm.findFragmentByTag(EditBookAuthorsFragment.TAG);
@@ -265,9 +262,8 @@ public class EditBookFragment
         //noinspection ConstantConditions
         mBookModel.saveBook(getContext());
 
-        Intent resultData = mBookModel.getActivityResultData();
         //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, resultData);
+        getActivity().setResult(Activity.RESULT_OK, mBookModel.getResultData());
         getActivity().finish();
     }
 
@@ -307,14 +303,11 @@ public class EditBookFragment
             //noinspection ConstantConditions
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-            boolean showTabNativeId = prefs.getBoolean(Prefs.pk_tabs_edit_book_native_id, false);
-
-            boolean showTabAuthSer = prefs.getBoolean(TMP_SHOW_TAB_AUTH_SER, false);
-
             mTabClasses.add(EditBookFieldsFragment.class);
             mTabTitles.add(R.string.tab_lbl_details);
 
-            if (showTabAuthSer) {
+            boolean showAuthSeriesOnTabs = prefs.getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
+            if (showAuthSeriesOnTabs) {
                 mTabClasses.add(EditBookAuthorsFragment.class);
                 mTabTitles.add(R.string.lbl_authors);
 
@@ -335,6 +328,7 @@ public class EditBookFragment
                 mTabTitles.add(R.string.tab_lbl_content);
             }
 
+            boolean showTabNativeId = prefs.getBoolean(Prefs.pk_edit_book_tabs_native_id, false);
             if (showTabNativeId) {
                 mTabClasses.add(EditBookNativeIdFragment.class);
                 mTabTitles.add(R.string.tab_lbl_ext_id);

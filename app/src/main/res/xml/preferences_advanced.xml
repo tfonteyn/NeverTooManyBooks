@@ -39,14 +39,13 @@
             android:summaryOn="@string/yes"
             android:title="@string/pt_allow_edit_native_id" />
 
-        <!-- URGENT: this is temporary.. until it's decided what UI to go for. -->
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_tab"
-            android:key="tmp.edit.book.tab.authSer"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="show Auth/Series as tabs" />
+            android:key="edit.book.tab.authSer"
+            android:summaryOff="@string/pt_edit_book_authors_series_popup"
+            android:summaryOn="@string/pt_edit_book_authors_series_tabs"
+            android:title="@string/pt_edit_book_authors_series" />
 
         <Preference
             android:icon="@drawable/ic_close"

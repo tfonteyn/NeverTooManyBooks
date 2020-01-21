@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -218,11 +219,11 @@ public class EditBookFieldsFragment
         }
 
         //noinspection ConstantConditions
-        boolean useAuthSerTabs = PreferenceManager
+        boolean showAuthSeriesOnTabs = PreferenceManager
                 .getDefaultSharedPreferences(getContext())
-                .getBoolean(EditBookFragment.TMP_SHOW_TAB_AUTH_SER, false);
+                .getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
 
-        if (!useAuthSerTabs) {
+        if (!showAuthSeriesOnTabs) {
             populateAuthorListField(book);
             populateSeriesListField(book);
         }
@@ -233,7 +234,7 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         getFields().resetVisibility(getView(), false, false);
 
-        if (useAuthSerTabs) {
+        if (showAuthSeriesOnTabs) {
             getFields().getField(mAuthorView).setVisibility(getView(), View.GONE);
             getFields().getField(mSeriesView).setVisibility(getView(), View.GONE);
         }

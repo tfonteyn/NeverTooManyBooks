@@ -46,6 +46,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.DialogFragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -117,12 +119,16 @@ public class EditBookAuthorsFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //URGENT: this is temporary.. until it's decided what UI to go for.
         //noinspection ConstantConditions
-        getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
+        boolean showAuthSeriesOnTabs = PreferenceManager
+                .getDefaultSharedPreferences(getContext())
+                .getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
+        if (!showAuthSeriesOnTabs) {
+            //noinspection ConstantConditions
+            getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
+        }
 
         List<String> names = mBookModel.getDb().getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED);
-        //noinspection ConstantConditions
         DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), android.R.layout.simple_dropdown_item_1line, names);
         mAuthorNameView.setAdapter(nameAdapter);

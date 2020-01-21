@@ -27,13 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
@@ -142,4 +146,20 @@ public class AdvancedPreferenceFragment
         }
     }
 
+    @Override
+    @CallSuper
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
+                                          @NonNull final String key) {
+        switch (key) {
+            case Prefs.pk_edit_book_tabs_authSer:
+            case Prefs.pk_edit_book_tabs_native_id:
+                mResultDataModel.putResultData(BaseActivity.BKEY_RECREATE, true);
+                break;
+
+            default:
+                break;
+        }
+
+        super.onSharedPreferenceChanged(sharedPreferences, key);
+    }
 }

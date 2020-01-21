@@ -478,7 +478,7 @@ public class BooksOnBookshelf
         mFabMenuItems[3].setOnClickListener(v -> startAddManually());
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean showTabNativeId = prefs.getBoolean(Prefs.pk_tabs_edit_book_native_id, false);
+        boolean showTabNativeId = prefs.getBoolean(Prefs.pk_edit_book_tabs_native_id, false);
         if (showTabNativeId) {
             mFabMenuItems[4] = findViewById(R.id.fab4);
             mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
@@ -1037,14 +1037,13 @@ public class BooksOnBookshelf
             long actualRowId = mAdapter.getItemId(desiredPosition);
             int actualPosition = desiredPosition;
 
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "desiredPosition=" + desiredPosition
-                           + "|desiredRowId=" + desiredRowId
-                           + "|actualRowId=" + actualRowId);
-            }
-
             // but if they are not equal,
             if (actualRowId != desiredRowId) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "desiredPosition=" + desiredPosition
+                               + "|desiredRowId=" + desiredRowId
+                               + "|actualRowId=" + actualRowId);
+                }
                 // URGENT: the intention is to FIND the correct position obviously;
                 //  --/++ are placeholders
                 if (actualRowId < desiredRowId) {

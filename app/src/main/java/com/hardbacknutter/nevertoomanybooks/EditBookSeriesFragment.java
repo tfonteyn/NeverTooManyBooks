@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,6 +42,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -112,11 +114,15 @@ public class EditBookSeriesFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //URGENT: this is temporary.. until it's decided what UI to go for.
         //noinspection ConstantConditions
-        getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
+        boolean showAuthSeriesOnTabs = PreferenceManager
+                .getDefaultSharedPreferences(getContext())
+                .getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
+        if (!showAuthSeriesOnTabs) {
+            //noinspection ConstantConditions
+            getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
+        }
 
-        //noinspection ConstantConditions
         DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), android.R.layout.simple_dropdown_item_1line,
                 mBookModel.getDb().getSeriesTitles());
