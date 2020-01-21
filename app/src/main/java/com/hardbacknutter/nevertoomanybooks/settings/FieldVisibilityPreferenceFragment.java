@@ -33,8 +33,8 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -54,7 +54,7 @@ public class FieldVisibilityPreferenceFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences sharedPreferences,
                                           @NonNull final String key) {
 
-        mResultDataModel.putExtra(BaseActivity.BKEY_RECREATE, true);
+        mResultDataModel.putResultData(BaseActivity.BKEY_RECREATE, true);
         super.onSharedPreferenceChanged(sharedPreferences, key);
     }
 }

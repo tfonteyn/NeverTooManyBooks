@@ -106,7 +106,7 @@ public class WebSearchesPreferenceFragment
         switch (requestCode) {
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultDataModel.putExtras(data);
+                    mResultDataModel.putResultData(data);
                 }
                 break;
 

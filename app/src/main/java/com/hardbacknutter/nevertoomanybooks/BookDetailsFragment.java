@@ -661,9 +661,8 @@ public class BookDetailsFragment
                 StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
                     mBookModel.deleteBook(getContext());
 
-                    Intent resultData = mBookModel.getActivityResultData();
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().setResult(Activity.RESULT_OK, mBookModel.getResultData());
                     getActivity().finish();
                 });
                 return true;

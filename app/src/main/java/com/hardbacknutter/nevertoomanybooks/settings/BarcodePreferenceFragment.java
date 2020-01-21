@@ -64,7 +64,7 @@ public class BarcodePreferenceFragment
                         ScannerManager.setDefaultScanner(getContext());
                     }
                 });
-                mResultDataModel.putExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, true);
+                mResultDataModel.putResultData(UniqueId.BKEY_SHOULD_INIT_SCANNER, true);
                 break;
 
             case Prefs.pk_sounds_scan_found_barcode:

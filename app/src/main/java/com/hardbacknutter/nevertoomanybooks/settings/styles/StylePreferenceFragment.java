@@ -216,8 +216,8 @@ public class StylePreferenceFragment
                     Objects.requireNonNull(data);
                     // replace the current style with the edited copy
                     mStyle = Objects.requireNonNull(data.getParcelableExtra(UniqueId.BKEY_STYLE));
-                    mResultDataModel.putExtra(UniqueId.BKEY_STYLE_MODIFIED, true);
-                    mResultDataModel.putExtra(UniqueId.BKEY_STYLE, mStyle);
+                    mResultDataModel.putResultData(UniqueId.BKEY_STYLE_MODIFIED, true);
+                    mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
                 }
                 break;
 

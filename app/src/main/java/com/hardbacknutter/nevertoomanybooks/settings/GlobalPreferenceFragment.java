@@ -38,8 +38,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -106,7 +106,7 @@ public class GlobalPreferenceFragment
             case Prefs.pk_ui_theme:
             case Prefs.pk_reformat_titles_sort:
             case Prefs.pk_reformat_titles_display:
-                mResultDataModel.putExtra(BaseActivity.BKEY_RECREATE, true);
+                mResultDataModel.putResultData(BaseActivity.BKEY_RECREATE, true);
                 break;
 
             default:

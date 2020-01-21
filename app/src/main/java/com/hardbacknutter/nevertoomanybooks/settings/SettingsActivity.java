@@ -45,11 +45,11 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StylePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -68,6 +68,8 @@ public class SettingsActivity
     /** Log tag. */
     private static final String TAG = "SettingsActivity";
 
+    private ResultDataModel mModel;
+
     @Override
     protected int getLayoutId() {
         return R.layout.activity_main_nav;
@@ -76,6 +78,8 @@ public class SettingsActivity
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mModel = new ViewModelProvider(this).get(ResultDataModel.class);
 
         String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
         if (tag == null) {
@@ -221,8 +225,7 @@ public class SettingsActivity
 
         // set the result (and again and again...). Also see the fragment method.
         // TODO: make the response conditional, not all changes warrant a recreate!
-        ResultDataModel resultDataModel = new ViewModelProvider(this).get(ResultDataModel.class);
-        resultDataModel.putExtra(BaseActivity.BKEY_RECREATE, true);
+        mModel.putResultData(BaseActivity.BKEY_RECREATE, true);
     }
 
     @Override
@@ -234,17 +237,14 @@ public class SettingsActivity
         }
 
         if (data != null) {
-            ResultDataModel resultDataModel =
-                    new ViewModelProvider(this).get(ResultDataModel.class);
-            resultDataModel.putExtras(data);
+            mModel.putResultData(data);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
     public void onBackPressed() {
-        ResultDataModel model = new ViewModelProvider(this).get(ResultDataModel.class);
-        setResult(Activity.RESULT_OK, model.getActivityResultData());
+        setResult(Activity.RESULT_OK, mModel.getResultData());
         super.onBackPressed();
     }
 }

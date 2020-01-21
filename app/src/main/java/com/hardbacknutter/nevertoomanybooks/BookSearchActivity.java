@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -137,8 +138,8 @@ public class BookSearchActivity
 
     @Override
     public void onBackPressed() {
-        ResultDataModel model = new ViewModelProvider(this).get(ResultDataModel.class);
-        setResult(Activity.RESULT_OK, model.getActivityResultData());
+        ActivityResultDataModel model = new ViewModelProvider(this).get(ResultDataModel.class);
+        setResult(Activity.RESULT_OK, model.getResultData());
         super.onBackPressed();
     }
 }

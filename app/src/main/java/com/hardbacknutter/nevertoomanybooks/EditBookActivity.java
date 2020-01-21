@@ -110,7 +110,7 @@ public class EditBookActivity
             StandardDialogs.unsavedEditsDialog(this, () -> {
                 // STILL send an OK and result data!
                 // The result data will contain the re-position book id.
-                setResult(Activity.RESULT_OK, model.getActivityResultData());
+                setResult(Activity.RESULT_OK, model.getResultData());
                 // we're really leaving, clean up
                 CoverHandler.deleteOrphanedCoverFiles(this);
                 finish();
@@ -118,7 +118,7 @@ public class EditBookActivity
             return;
         }
 
-        setResult(Activity.RESULT_OK, model.getActivityResultData());
+        setResult(Activity.RESULT_OK, model.getResultData());
         if (backStackEntryCount == 0) {
             // we're really leaving, clean up
             CoverHandler.deleteOrphanedCoverFiles(this);

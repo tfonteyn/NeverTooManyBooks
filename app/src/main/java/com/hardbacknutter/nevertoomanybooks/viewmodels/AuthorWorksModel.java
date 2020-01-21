@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,7 +34,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -49,17 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 
 public class AuthorWorksModel
-        extends ViewModel
-        implements ActivityResultDataModel {
+        extends ResultDataModel {
 
     private static final String TAG = "AuthorWorksModel";
 
     /** Database Access. */
     private DAO mDb;
-
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultData = new Intent();
 
     @Nullable
     private Author mAuthor;
@@ -107,12 +100,6 @@ public class AuthorWorksModel
         }
     }
 
-    @NonNull
-    @Override
-    public Intent getActivityResultData() {
-        return mResultData;
-    }
-
     public void loadTocEntries(final boolean withTocEntries,
                                final boolean withBooks) {
         mWithTocEntries = withTocEntries;
@@ -145,7 +132,7 @@ public class AuthorWorksModel
             case Book:
                 if (mDb.deleteBook(context, item.getId()) == 1) {
                     mTocEntries.remove(item);
-                    mResultData.putExtra(UniqueId.BKEY_BOOK_DELETED, true);
+                    putResultData(UniqueId.BKEY_BOOK_DELETED, true);
                 }
                 break;
 

@@ -105,13 +105,13 @@ public abstract class StyleBaseFragment
         // always pass the non-global style back; whether existing or new.
         // so even if the user makes no changes, we still send it back!
         if (!mStyle.getUuid().isEmpty()) {
-            mResultDataModel.putExtra(UniqueId.BKEY_STYLE, mStyle);
+            mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
         }
 
         // always pass the template id back; not currently used here.
         Bundle args = getArguments();
         if (args != null) {
-            mResultDataModel.putExtra(BKEY_TEMPLATE_ID, args.getLong(BKEY_TEMPLATE_ID));
+            mResultDataModel.putResultData(BKEY_TEMPLATE_ID, args.getLong(BKEY_TEMPLATE_ID));
         }
 
         @SuppressWarnings("ConstantConditions")
@@ -134,8 +134,8 @@ public abstract class StyleBaseFragment
         super.onSharedPreferenceChanged(sharedPreferences, key);
 
         // set the result (and again and again...)
-        mResultDataModel.putExtra(UniqueId.BKEY_STYLE_MODIFIED, true);
-        mResultDataModel.putExtra(UniqueId.BKEY_STYLE, mStyle);
+        mResultDataModel.putResultData(UniqueId.BKEY_STYLE_MODIFIED, true);
+        mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
     }
 
 }

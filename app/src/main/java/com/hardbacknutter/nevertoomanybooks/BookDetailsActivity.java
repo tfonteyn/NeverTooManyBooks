@@ -70,7 +70,7 @@ public class BookDetailsActivity
         ActivityResultDataModel model = new ViewModelProvider(this)
                 .get(BookBaseFragmentModel.class);
         // Set the current visible book id as the Activity result data.
-        setResult(Activity.RESULT_OK, model.getActivityResultData());
+        setResult(Activity.RESULT_OK, model.getResultData());
         super.onBackPressed();
     }
 

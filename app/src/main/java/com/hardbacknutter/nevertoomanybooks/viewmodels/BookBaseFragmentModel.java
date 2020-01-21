@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,7 +35,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,21 +61,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * Holds the fields collection.
  */
 public class BookBaseFragmentModel
-        extends ViewModel
-        implements ActivityResultDataModel {
+        extends ResultDataModel {
 
     /** Log tag. */
     private static final String TAG = "BookBaseFragmentModel";
 
     private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultData = new Intent();
+
     /** Database Access. */
     private DAO mDb;
     /** Flag to indicate we're dirty. */
     private boolean mIsDirty;
+
     /**
      * The Book this model represents. The only time this can be {@code null}
      * is when this model is just initialized, or when the Book was deleted.
@@ -152,17 +148,13 @@ public class BookBaseFragmentModel
 
     @NonNull
     @Override
-    public Intent getActivityResultData() {
+    public Intent getResultData() {
         // always set the *current* book, so the BoB list can reposition correctly.
         if (mBook != null) {
-            mResultData.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
+            putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
         }
 
-        return mResultData;
-    }
-
-    public void putResultData(@NonNull final Intent data) {
-        mResultData.putExtras(data);
+        return super.getResultData();
     }
 
     /**
@@ -273,8 +265,8 @@ public class BookBaseFragmentModel
             mDb.updateBook(context, mBook.getId(), mBook, 0);
         }
 
-        mResultData.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
-        mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
+        putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
+        putResultData(UniqueId.BKEY_BOOK_MODIFIED, true);
     }
 
     /**
@@ -284,7 +276,7 @@ public class BookBaseFragmentModel
      */
     public void deleteBook(@NonNull final Context context) {
         mDb.deleteBook(context, mBook.getId());
-        mResultData.putExtra(UniqueId.BKEY_BOOK_DELETED, true);
+        putResultData(UniqueId.BKEY_BOOK_DELETED, true);
         mBook = null;
     }
 
@@ -325,7 +317,7 @@ public class BookBaseFragmentModel
      * @return the current/new 'read' status.
      */
     public boolean toggleRead() {
-        mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED, true);
+        putResultData(UniqueId.BKEY_BOOK_MODIFIED, true);
         return mBook.setRead(mDb, !mBook.getBoolean(DBDefinitions.KEY_READ));
     }
 

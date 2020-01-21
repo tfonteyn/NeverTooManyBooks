@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -271,7 +271,7 @@ public abstract class BookSearchBaseFragment
             }
             case UniqueId.REQ_BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultDataModel.putExtras(data);
+                    mResultDataModel.putResultData(data);
                 }
                 break;
             }

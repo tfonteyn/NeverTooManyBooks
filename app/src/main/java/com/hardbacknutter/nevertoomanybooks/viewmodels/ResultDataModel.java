@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,8 +37,6 @@ import androidx.lifecycle.ViewModel;
 /**
  * A model that allows multiple fragments and the activity all
  * to share a single data Intent to calling {@link android.app.Activity#setResult(int, Intent)}.
- * Can be used if it's inconvenient to add mResultData/getActivityResultData()
- * to an existing ViewModel.
  *
  * <strong>Note:</strong> should always be created in the Activity scope.
  */
@@ -52,31 +50,31 @@ public class ResultDataModel
 
     @Override
     @NonNull
-    public Intent getActivityResultData() {
+    public Intent getResultData() {
         return mResultData;
     }
 
-    public void putExtra(@NonNull final String name,
-                         final boolean value) {
-        mResultData.putExtra(name, value);
-    }
-
-    public void putExtra(@NonNull final String name,
-                         final int value) {
-        mResultData.putExtra(name, value);
-    }
-
-    public void putExtra(@NonNull final String name,
-                         final long value) {
-        mResultData.putExtra(name, value);
-    }
-
-    public void putExtra(@NonNull final String name,
-                         @NonNull final Parcelable value) {
-        mResultData.putExtra(name, value);
-    }
-
-    public void putExtras(@NonNull final Intent data) {
+    public void putResultData(@NonNull final Intent data) {
         mResultData.putExtras(data);
+    }
+
+    public void putResultData(@NonNull final String name,
+                              final boolean value) {
+        mResultData.putExtra(name, value);
+    }
+
+    public void putResultData(@NonNull final String name,
+                              final int value) {
+        mResultData.putExtra(name, value);
+    }
+
+    public void putResultData(@NonNull final String name,
+                              final long value) {
+        mResultData.putExtra(name, value);
+    }
+
+    public void putResultData(@NonNull final String name,
+                              @NonNull final Parcelable value) {
+        mResultData.putExtra(name, value);
     }
 }

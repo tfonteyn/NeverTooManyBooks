@@ -205,7 +205,7 @@ public class ImportExportFragment
         }
         // collect all data for passing to the calling Activity
         if (data != null) {
-            mResultDataModel.putExtras(data);
+            mResultDataModel.putResultData(data);
         }
 
         switch (requestCode) {
@@ -525,10 +525,11 @@ public class ImportExportFragment
                 .setTitle(titleId)
                 .setMessage(msg)
                 .setPositiveButton(R.string.done, (dialog, which) -> {
-                    mResultDataModel.putExtra(UniqueId.BKEY_IMPORT_RESULT, importHelper.options);
-                    Intent resultData = mResultDataModel.getActivityResultData();
+                    mResultDataModel.putResultData(UniqueId.BKEY_IMPORT_RESULT,
+                                                   importHelper.options);
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            mResultDataModel.getResultData());
                     getActivity().finish();
                 })
                 .create()
@@ -760,10 +761,10 @@ public class ImportExportFragment
                 .setTitle(R.string.progress_end_backup_success)
                 .setMessage(msg)
                 .setPositiveButton(R.string.done, (d, which) -> {
-                    mResultDataModel.putExtra(UniqueId.BKEY_EXPORT_RESULT, exportHelper.options);
-                    Intent resultData = mResultDataModel.getActivityResultData();
+                    mResultDataModel.putResultData(UniqueId.BKEY_EXPORT_RESULT,
+                                                   exportHelper.options);
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().setResult(Activity.RESULT_OK, mResultDataModel.getResultData());
                     getActivity().finish();
                 })
                 .create();
