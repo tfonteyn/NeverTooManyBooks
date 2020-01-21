@@ -640,5 +640,8 @@
     <string name="pt_search_prefer_isbn10">Mümkün olduğunda ISBN-10 kullanın</string>
     <string name="pt_scanning_beep_on_barcode_found">Bir barkod bulunduğunda bip sesi</string>
     <string name="menu_level_preferred_expand">Tercih edilen düzeye genişlet</string>
+    <string name="pt_edit_book_authors_series">Kitap Yazarlarını ve Serilerini Düzenle</string>
+    <string name="pt_edit_book_authors_series_tabs">ayrı sekmelerde</string>
+    <string name="pt_edit_book_authors_series_popup">açılır ekranlarda</string>
 
 </resources>

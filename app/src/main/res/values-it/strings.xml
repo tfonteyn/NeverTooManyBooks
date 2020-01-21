@@ -644,5 +644,8 @@
     <string name="pt_search_prefer_isbn10">Usa ISBN-10 quando possibile</string>
     <string name="pt_scanning_beep_on_barcode_found">Segnale acustico quando viene trovato un codice a barre</string>
     <string name="menu_level_preferred_expand">Espandere al livello preferito</string>
+    <string name="pt_edit_book_authors_series">Modifica autori e serie di libri</string>
+    <string name="pt_edit_book_authors_series_tabs">in schede separate</string>
+    <string name="pt_edit_book_authors_series_popup">su schermi pop-up</string>
 
 </resources>

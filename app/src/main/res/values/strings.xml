@@ -850,9 +850,22 @@
         This is not always desirable, as they use "AND" to combine the terms.
         So by default this is switched off. -->
     <string name="pt_search_uses_publisher">Search uses publisher</string>
+
+    <!-- SwitchPreference - when an ISBN-13 number is entered for searching,
+         this option forces (if possible) the search to convert it to an ISBN-10
+         for the actual search. The data itself will keep using what the user entered.
+    -->
+    <string name="pt_search_prefer_isbn10">Use ISBN-10 when possible</string>
+
     <!-- SwitchPreference - search engines can collect Series information from the toc.
         This is not always desirable, and by default switched off. -->
     <string name="pt_collect_series_info_from_toc">Collect Series info from TOC</string>
+
+    <!-- SwitchPreference -->
+    <string name="pt_edit_book_authors_series">Edit Book Authors &amp; Series</string>
+    <string name="pt_edit_book_authors_series_tabs">on separate tabs</string>
+    <string name="pt_edit_book_authors_series_popup">on popup screens</string>
+
 
     <!-- SwitchPreference - Some web sites expose their native website book id.
          Allow the user to lookup books using such an ID, and manually modify them. -->
@@ -1204,7 +1217,7 @@
     <string name="size_xx_large">2X-Large</string>
 
     <!-- ####################################################################################### -->
-    <!-- == Book format names. Used to unify terminology from internet websites.  == -->
+    <!-- == Book format and color names. Used to unify terminology from internet websites.    == -->
     <!-- ####################################################################################### -->
     <!--  book format - traditional 'hardcover' also known as 'hardback' -->
     <string name="book_format_hardcover">Hardcover</string>
@@ -1224,6 +1237,10 @@
     <string name="book_format_ebook">eBook</string>
     <!-- book format used if a website indicates it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
+
+    <!-- Colors; used by mainly for comics. -->
+    <string name="book_color_full_color">Colored</string>
+    <string name="book_color_uncolored">Black &amp; white</string>
 
     <!-- ####################################################################################### -->
     <!-- == Defaults for bookshelf names == -->
@@ -1580,9 +1597,6 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
 
 
-    <!-- Colors; used by mainly for comics. -->
-    <string name="book_color_full_color">Colored</string>
-    <string name="book_color_uncolored">Black &amp; white</string>
     <!-- uncolored, but with 1 or 2 support-colors.
          e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Uncolored + support color</string>
@@ -1595,6 +1609,5 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
-    <string name="pt_search_prefer_isbn10">Use ISBN-10 when possible</string>
 
 </resources>

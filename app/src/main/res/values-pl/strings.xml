@@ -640,4 +640,7 @@
     <string name="pt_search_prefer_isbn10">Jeśli to możliwe, użyj ISBN-10</string>
     <string name="pt_scanning_beep_on_barcode_found">Sygnał dźwiękowy po znalezieniu kodu kreskowego</string>
     <string name="menu_level_preferred_expand">Rozwiń do preferowanego poziomu</string>
+    <string name="pt_edit_book_authors_series">Edytuj autorów książek i seriale</string>
+    <string name="pt_edit_book_authors_series_tabs">w osobnych zakładkach</string>
+    <string name="pt_edit_book_authors_series_popup">na ekranach podręcznych</string>
 </resources>

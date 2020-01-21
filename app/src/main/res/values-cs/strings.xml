@@ -641,5 +641,8 @@
     <string name="pt_search_prefer_isbn10">Pokud je to možné, použijte ISBN-10</string>
     <string name="pt_scanning_beep_on_barcode_found">Při nalezení čárového kódu pípne</string>
     <string name="menu_level_preferred_expand">Rozbalte na preferovanou úroveň</string>
+    <string name="pt_edit_book_authors_series">Upravit autory knih a série</string>
+    <string name="pt_edit_book_authors_series_tabs">na samostatných kartách</string>
+    <string name="pt_edit_book_authors_series_popup">na vyskakovacích obrazovkách</string>
 
 </resources>

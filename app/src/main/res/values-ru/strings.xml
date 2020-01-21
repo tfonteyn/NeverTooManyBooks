@@ -639,5 +639,8 @@
     <string name="pt_search_prefer_isbn10">Используйте ISBN-10, когда это возможно</string>
     <string name="pt_scanning_beep_on_barcode_found">Звуковой сигнал, когда штрих-код найден</string>
     <string name="menu_level_preferred_expand">Развернуть до предпочтительного уровня</string>
+    <string name="pt_edit_book_authors_series">Редактировать книгу авторов и серий</string>
+    <string name="pt_edit_book_authors_series_tabs">в отдельных вкладках</string>
+    <string name="pt_edit_book_authors_series_popup">на всплывающих экранах</string>
 
 </resources>

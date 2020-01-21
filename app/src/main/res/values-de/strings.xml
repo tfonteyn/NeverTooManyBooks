@@ -648,4 +648,7 @@
     <string name="pt_search_prefer_isbn10">Wenn möglich verwende ISBN-10</string>
     <string name="pt_scanning_beep_on_barcode_found">Piepton, wenn ein Barcode gefunden wird</string>
     <string name="menu_level_preferred_expand">Erweitern Sie auf die bevorzugte Ebene</string>
+    <string name="pt_edit_book_authors_series">Buchautoren und -serien bearbeiten</string>
+    <string name="pt_edit_book_authors_series_tabs">in separaten Registerkarten</string>
+    <string name="pt_edit_book_authors_series_popup">auf Popup-Fenster</string>
 </resources>

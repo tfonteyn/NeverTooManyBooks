@@ -639,5 +639,8 @@
     <string name="pt_search_prefer_isbn10">Χρησιμοποιήστε ISBN-10 όταν είναι δυνατόν</string>
     <string name="pt_scanning_beep_on_barcode_found">Μπιπ, όταν βρεθεί ένας γραμμωτός κώδικας</string>
     <string name="menu_level_preferred_expand">Επέκταση σε προτιμώμενο επίπεδο</string>
+    <string name="pt_edit_book_authors_series">Επεξεργασία συγγραφέων και σειρών βιβλίων</string>
+    <string name="pt_edit_book_authors_series_tabs">σε ξεχωριστές καρτέλες</string>
+    <string name="pt_edit_book_authors_series_popup">σε αναδυόμενες οθόνες</string>
 
 </resources>
