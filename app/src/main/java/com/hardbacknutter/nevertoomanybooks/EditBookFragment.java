@@ -279,9 +279,6 @@ public class EditBookFragment
         outState.putInt(REQUEST_BKEY_TAB, mViewPager.getCurrentItem());
     }
 
-    /**
-     * <strong>Implementation note</strong>:
-     */
     private static class TabAdapter
             extends FragmentStateAdapter {
 

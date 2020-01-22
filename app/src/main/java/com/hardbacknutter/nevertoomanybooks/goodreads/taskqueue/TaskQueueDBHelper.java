@@ -69,27 +69,27 @@ class TaskQueueDBHelper
     /** Collection of all table definitions. */
     private static final String[] TABLES = new String[]{
             "CREATE TABLE " + TBL_QUEUE + " ("
-            + CKEY_PK_ID + " integer primary key autoincrement,"
+            + CKEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
             + CKEY_NAME + " text)",
 
             "CREATE TABLE " + TBL_TASK + " ("
-            + CKEY_PK_ID + " integer primary key autoincrement,"
-            + CKEY_QUEUE_ID + " integer not null references " + TBL_QUEUE + ','
-            + CKEY_QUEUED_DATE + " datetime default current_timestamp,"
-            + CKEY_PRIORITY + " integer default 0,"
-            + CKEY_STATUS_CODE + " text default '" + Task.STATUS_QUEUED + "',"
-            + CKEY_CATEGORY + " integer default 0 not null,"
-            + CKEY_RETRY_DATE + " datetime default current_timestamp,"
-            + CKEY_RETRY_COUNT + " integer default 0,"
+            + CKEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
+            + CKEY_QUEUE_ID + " integer NOT NULL REFERENCES " + TBL_QUEUE + ','
+            + CKEY_QUEUED_DATE + " datetime DEFAULT current_timestamp,"
+            + CKEY_PRIORITY + " integer DEFAULT 0,"
+            + CKEY_STATUS_CODE + " text DEFAULT '" + Task.STATUS_QUEUED + "',"
+            + CKEY_CATEGORY + " integer DEFAULT 0 NOT NULL,"
+            + CKEY_RETRY_DATE + " datetime DEFAULT current_timestamp,"
+            + CKEY_RETRY_COUNT + " integer DEFAULT 0,"
             + CKEY_FAILURE_REASON + " text,"
             + CKEY_EXCEPTION + " blob,"
-            + CKEY_TASK + " blob not null)",
+            + CKEY_TASK + " blob NOT NULL)",
 
             "CREATE TABLE " + TBL_EVENT + " ("
-            + CKEY_PK_ID + " integer primary key autoincrement,\n"
-            + CKEY_TASK_ID + " integer references " + TBL_TASK + ','
-            + CKEY_EVENT + " blob not null,"
-            + CKEY_EVENT_DATE + " datetime default current_timestamp)",
+            + CKEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,\n"
+            + CKEY_TASK_ID + " integer REFERENCES " + TBL_TASK + ','
+            + CKEY_EVENT + " blob NOT NULL,"
+            + CKEY_EVENT_DATE + " datetime DEFAULT current_timestamp)",
             };
 
     private static final String[] INDEXES = new String[]{

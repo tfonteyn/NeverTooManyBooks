@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -191,7 +191,7 @@ public class SimpleXmlFilter {
      *
      * @param tag that starts
      *
-     * @return this for chaining
+     * @return SimpleXmlFilter (for chaining)
      */
     @NonNull
     public SimpleXmlFilter s(@NonNull final String tag) {

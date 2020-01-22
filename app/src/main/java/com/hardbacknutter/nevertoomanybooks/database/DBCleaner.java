@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
@@ -192,7 +191,7 @@ public class DBCleaner {
     private void bookBookshelf(final boolean dryRun) {
         String select = "SELECT DISTINCT " + KEY_FK_BOOK
                         + " FROM " + TBL_BOOK_BOOKSHELF
-                        + " WHERE " + DOM_FK_BOOKSHELF + "=NULL";
+                        + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
         toLog("ENTER", select);
         if (!dryRun) {
             String sql = "DELETE " + TBL_BOOK_BOOKSHELF
@@ -215,7 +214,7 @@ public class DBCleaner {
     public void bookAuthors(@NonNull final Context context) {
         String sql = "SELECT " + KEY_FK_BOOK + " FROM "
                      + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_AUTHOR_POSITION + ") AS mp"
-                     + " FROM " + TBL_BOOK_AUTHOR + " GROUP BY " + KEY_FK_BOOK
+                     + " FROM " + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + KEY_FK_BOOK
                      + ") WHERE mp > 1";
 
         ArrayList<Long> bookIds = mDb.getIdList(sql);
@@ -255,7 +254,7 @@ public class DBCleaner {
     public void bookSeries(@NonNull final Context context) {
         String sql = "SELECT " + KEY_FK_BOOK + " FROM "
                      + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_SERIES_POSITION + ") AS mp"
-                     + " FROM " + TBL_BOOK_SERIES + " GROUP BY " + KEY_FK_BOOK
+                     + " FROM " + TBL_BOOK_SERIES.getName() + " GROUP BY " + KEY_FK_BOOK
                      + ") WHERE mp > 1";
 
         ArrayList<Long> bookIds = mDb.getIdList(sql);

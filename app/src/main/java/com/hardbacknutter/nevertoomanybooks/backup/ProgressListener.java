@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,7 +81,7 @@ public interface ProgressListener<Progress> {
      * @param indeterminate true/false to enable the indeterminate mode,
      *                      or {@code null} to tell the receiver to use its initial mode.
      */
-    void setIndeterminate(@Nullable final Boolean indeterminate);
+    void setIndeterminate(@Nullable Boolean indeterminate);
 
     /**
      * Get the max position. Useful if a routine wants to adjust the max only if the

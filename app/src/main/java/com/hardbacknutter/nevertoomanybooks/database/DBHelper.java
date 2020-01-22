@@ -56,29 +56,26 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_GIVEN_NAMES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_GOODREADS_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_ISFDB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_LIBRARY_THING;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_OPEN_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_STRIP_INFO_BE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FTS_BOOKS_PK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_OPEN_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_STRIP_INFO_BE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOKS_PK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -119,13 +116,13 @@ public final class DBHelper
      * These (should) speed up SQL where we lookup the id by name/title.
      */
     private static final String[] DATABASE_CREATE_INDICES = {
-            "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS
-            + " (" + DOM_AUTHOR_FAMILY_NAME + DAO.COLLATION + ')',
-            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS
-            + " (" + DOM_AUTHOR_GIVEN_NAMES + DAO.COLLATION + ')',
+            "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS.getName()
+            + " (" + KEY_AUTHOR_FAMILY_NAME + DAO.COLLATION + ')',
+            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS.getName()
+            + " (" + KEY_AUTHOR_GIVEN_NAMES + DAO.COLLATION + ')',
 
-            "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS
-            + " (" + DOM_TITLE + DAO.COLLATION + ')',
+            "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS.getName()
+            + " (" + KEY_TITLE + DAO.COLLATION + ')',
             };
 
     /** SQL to get the names of all indexes. */
@@ -401,10 +398,11 @@ public final class DBHelper
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
-        name = "after_delete_on_" + TBL_BOOK_BOOKSHELF;
-        body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF + " FOR EACH ROW\n"
+        name = "after_delete_on_" + TBL_BOOK_BOOKSHELF.getName();
+        body = " AFTER DELETE ON " + TBL_BOOK_BOOKSHELF.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
                + " END";
 
@@ -416,12 +414,13 @@ public final class DBHelper
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
-        name = "after_update_on" + TBL_BOOKSHELF;
-        body = " AFTER UPDATE ON " + TBL_BOOKSHELF + " FOR EACH ROW\n"
+        name = "after_update_on" + TBL_BOOKSHELF.getName();
+        body = " AFTER UPDATE ON " + TBL_BOOKSHELF.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + " IN \n"
-               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_BOOKSHELF
+               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_BOOKSHELF.getName()
                + " WHERE " + KEY_FK_BOOKSHELF + "=Old." + KEY_PK_ID + ");\n"
                + " END";
 
@@ -433,10 +432,11 @@ public final class DBHelper
 //         *
 //         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
 //         */
-//        name = "after_delete_on_" + TBL_BOOK_AUTHOR;
-//        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR + " FOR EACH ROW\n"
+//        name = "after_delete_on_" + TBL_BOOK_AUTHOR.getName();
+//        body = " AFTER DELETE ON " + TBL_BOOK_AUTHOR.getName() + " FOR EACH ROW\n"
 //                + " BEGIN\n"
-//                + "  UPDATE " + TBL_BOOKS + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+//                + "  UPDATE " + TBL_BOOKS.getName()
+//                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
 //                + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
 //                + " END";
 //
@@ -452,21 +452,22 @@ public final class DBHelper
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
-        name = "after_update_on" + TBL_AUTHORS;
-        body = " AFTER UPDATE ON " + TBL_AUTHORS + " FOR EACH ROW\n"
+        name = "after_update_on" + TBL_AUTHORS.getName();
+        body = " AFTER UPDATE ON " + TBL_AUTHORS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
 
-               + " WHERE " + DOM_PK_ID + " IN \n"
+               + " WHERE " + KEY_PK_ID + " IN \n"
                // actual books by this Author
-               + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_AUTHOR
-               + " WHERE " + DOM_FK_AUTHOR + "=Old." + DOM_PK_ID + ")\n"
+               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
+               + " WHERE " + KEY_FK_AUTHOR + "=Old." + KEY_PK_ID + ")\n"
 
-               + " OR " + DOM_PK_ID + " IN \n"
+               + " OR " + KEY_PK_ID + " IN \n"
                // books with entries in anthologies by this Author
-               + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
+               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
                + TBL_BOOK_TOC_ENTRIES.join(TBL_TOC_ENTRIES)
-               + " WHERE " + DOM_FK_AUTHOR + "=Old." + DOM_PK_ID + ");\n"
+               + " WHERE " + KEY_FK_AUTHOR + "=Old." + KEY_PK_ID + ");\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -477,11 +478,12 @@ public final class DBHelper
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
-        name = "after_delete_on_" + TBL_BOOK_SERIES;
-        body = " AFTER DELETE ON " + TBL_BOOK_SERIES + " FOR EACH ROW\n"
+        name = "after_delete_on_" + TBL_BOOK_SERIES.getName();
+        body = " AFTER DELETE ON " + TBL_BOOK_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -492,13 +494,14 @@ public final class DBHelper
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
-        name = "after_update_on" + TBL_SERIES;
-        body = " AFTER UPDATE ON " + TBL_SERIES + " FOR EACH ROW\n"
+        name = "after_update_on" + TBL_SERIES.getName();
+        body = " AFTER UPDATE ON " + TBL_SERIES.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + DOM_PK_ID + " IN \n"
-               + "(SELECT " + DOM_FK_BOOK + " FROM " + TBL_BOOK_SERIES
-               + " WHERE " + DOM_FK_SERIES + "=Old." + DOM_PK_ID + ");\n"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + KEY_PK_ID + " IN \n"
+               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
+               + " WHERE " + KEY_FK_SERIES + "=Old." + KEY_PK_ID + ");\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -509,11 +512,12 @@ public final class DBHelper
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
-        name = "after_delete_on_" + TBL_BOOK_LOANEE;
-        body = " AFTER DELETE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
+        name = "after_delete_on_" + TBL_BOOK_LOANEE.getName();
+        body = " AFTER DELETE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + DOM_PK_ID + "=Old." + DOM_FK_BOOK + ";\n"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -524,11 +528,12 @@ public final class DBHelper
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
-        name = "after_update_on_" + TBL_BOOK_LOANEE;
-        body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
+        name = "after_update_on_" + TBL_BOOK_LOANEE.getName();
+        body = " AFTER UPDATE ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK + ";\n"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + KEY_PK_ID + "=New." + KEY_FK_BOOK + ";\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -539,11 +544,12 @@ public final class DBHelper
          *
          * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
          */
-        name = "after_insert_on_" + TBL_BOOK_LOANEE;
-        body = " AFTER INSERT ON " + TBL_BOOK_LOANEE + " FOR EACH ROW\n"
+        name = "after_insert_on_" + TBL_BOOK_LOANEE.getName();
+        body = " AFTER INSERT ON " + TBL_BOOK_LOANEE.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS + " SET " + DOM_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + DOM_PK_ID + "=New." + DOM_FK_BOOK + ";\n"
+               + "  UPDATE " + TBL_BOOKS.getName()
+               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
+               + " WHERE " + KEY_PK_ID + "=New." + KEY_FK_BOOK + ";\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -555,11 +561,11 @@ public final class DBHelper
          *
          * Delete the book from FTS.
          */
-        name = "after_delete_on_" + TBL_BOOKS;
-        body = " AFTER DELETE ON " + TBL_BOOKS + " FOR EACH ROW\n"
+        name = "after_delete_on_" + TBL_BOOKS.getName();
+        body = " AFTER DELETE ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
-               + "  DELETE FROM " + TBL_FTS_BOOKS
-               + " WHERE " + DOM_FTS_BOOKS_PK + '=' + "Old." + DOM_PK_ID + ";\n"
+               + "  DELETE FROM " + TBL_FTS_BOOKS.getName()
+               + " WHERE " + KEY_FTS_BOOKS_PK + '=' + "Old." + KEY_PK_ID + ";\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -569,20 +575,20 @@ public final class DBHelper
         /*
          * If the ISBN of a {@link Book) is changed, reset external ID's and sync dates.
          */
-        name = "after_update_of_" + DOM_BOOK_ISBN + "_on_" + TBL_BOOKS;
-        body = " AFTER UPDATE OF " + DOM_BOOK_ISBN + " ON " + TBL_BOOKS + " FOR EACH ROW\n"
-               + " WHEN New." + DOM_BOOK_ISBN + " <> Old." + DOM_BOOK_ISBN + '\n'
+        name = "after_update_of_" + KEY_ISBN + "_on_" + TBL_BOOKS.getName();
+        body = " AFTER UPDATE OF " + KEY_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
+               + " WHEN New." + KEY_ISBN + " <> Old." + KEY_ISBN + '\n'
                + " BEGIN\n"
-               + "    UPDATE " + TBL_BOOKS + " SET "
+               + "    UPDATE " + TBL_BOOKS.getName() + " SET "
                //NEWTHINGS: add new site specific ID: add a reset value
-               + /* */ DOM_EID_GOODREADS_BOOK + "=0"
-               + ',' + DOM_EID_ISFDB + "=0"
-               + ',' + DOM_EID_LIBRARY_THING + "=0"
-               + ',' + DOM_EID_OPEN_LIBRARY + "=0"
-               + ',' + DOM_EID_STRIP_INFO_BE + "=0"
+               + /* */ KEY_EID_GOODREADS_BOOK + "=0"
+               + ',' + KEY_EID_ISFDB + "=0"
+               + ',' + KEY_EID_LIBRARY_THING + "=0"
+               + ',' + KEY_EID_OPEN_LIBRARY + "=0"
+               + ',' + KEY_EID_STRIP_INFO_BE + "=0"
 
-               + ',' + DOM_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
-               + /* */ " WHERE " + DOM_PK_ID + "=New." + DOM_PK_ID + ";\n"
+               + ',' + KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
+               + /* */ " WHERE " + KEY_PK_ID + "=New." + KEY_PK_ID + ";\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);

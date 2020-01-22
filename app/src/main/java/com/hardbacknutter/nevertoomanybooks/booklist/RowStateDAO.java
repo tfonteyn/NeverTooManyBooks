@@ -173,7 +173,7 @@ public class RowStateDAO {
         mSyncedDb.drop(mTable.getName());
 
         // Link with the list table using the actual row ID
-        // We use this for joins, but it's not enforced with constraints.
+        // We need this for joins, but it's not enforced with constraints.
         mTable.addReference(listTable, DBDefinitions.DOM_FK_BL_ROW_ID);
 
         // indices will be created after the table is populated.
@@ -664,7 +664,7 @@ public class RowStateDAO {
                 stmt = mStatementManager.add(
                         STMT_DEL_ALL_NODES,
                         // delete all rows for the current bookshelf/style
-                        "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE
+                        "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE.getName()
                         + " WHERE " + KEY_FK_BOOKSHELF + "=?"
                         + " AND " + KEY_FK_STYLE + "=?");
             }
@@ -732,8 +732,8 @@ public class RowStateDAO {
 
         // Get the current state of the node for the given row id.
         String sql = "SELECT " + KEY_BL_NODE_LEVEL + ',' + KEY_BL_NODE_EXPANDED
-                     + " FROM " + mTable.ref()
-                     + " WHERE " + mTable.dot(KEY_PK_ID) + "=?";
+                     + " FROM " + mTable.getName()
+                     + " WHERE " + KEY_PK_ID + "=?";
 
         int leafLevel;
         boolean leafIsExpanded;
@@ -981,7 +981,7 @@ public class RowStateDAO {
             if (stmt == null) {
                 stmt = mStatementManager.add(
                         STMT_DEL_NODES_BETWEEN,
-                        "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE
+                        "DELETE FROM " + TBL_BOOK_LIST_NODE_STATE.getName()
                         + " WHERE " + KEY_FK_BOOKSHELF + "=?"
                         + " AND " + KEY_FK_STYLE + "=?"
 

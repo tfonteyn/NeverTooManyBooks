@@ -106,6 +106,7 @@ public class CameraHelper {
     /**
      * Start the camera to get an image.
      *
+     * @param fragment    which will check camera permissions
      * @param requestCode set/returned with the activity result
      */
     public void startCamera(@NonNull final Fragment fragment,
@@ -147,8 +148,9 @@ public class CameraHelper {
     /**
      * Get the bitmap with optional rotation.
      *
-     * @param data intent to read from, or {@code null}
-     *             if you <strong>know there will be a full-sized file</strong>
+     * @param context Current context
+     * @param data    intent to read from, or {@code null}
+     *                if you <strong>know there will be a full-sized file</strong>
      *
      * @return bitmap or {@code null}
      */
@@ -174,8 +176,9 @@ public class CameraHelper {
     /**
      * Get the file with optional rotation.
      *
-     * @param data intent to read from, or {@code null}
-     *             if you <strong>know there will be a full-sized file</strong>
+     * @param context Current context
+     * @param data    intent to read from, or {@code null}
+     *                if you <strong>know there will be a full-sized file</strong>
      *
      * @return file or {@code null}
      */

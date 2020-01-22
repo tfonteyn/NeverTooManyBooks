@@ -93,24 +93,11 @@ public class BooksOnBookshelfModel
     private static final String PREF_BOB_TOP_ROW_ID = PREF_PREFIX + "top.rowId";
     /** Preference name - Saved position of last top row offset from view top. */
     private static final String PREF_BOB_TOP_VIEW_OFFSET = PREF_PREFIX + "top.offset";
-
-    /** The result of building the booklist. */
-    private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
-    /** Allows progress message from a task to update the user. */
-    private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
-    /** Inform user that Goodreads needs authentication/authorization. */
-    private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
-
-    /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
-    private final SearchCriteria mSearchCriteria = new SearchCriteria();
-    /** Cache for all bookshelf names / spinner list. */
-    private final List<String> mBookshelfNameList = new ArrayList<>();
-
     /**
      * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_CSV} when
      * NOT using a background task for the extras.
      */
-    private final String BOOKSHELVES_CSV_SOURCE_EXPRESSION =
+    private static final String BOOKSHELVES_CSV_SOURCE_EXPRESSION =
             "("
             + "SELECT GROUP_CONCAT("
             + DBDefinitions.TBL_BOOKSHELF.dot(DBDefinitions.KEY_BOOKSHELF) + ",', ')"
@@ -121,7 +108,16 @@ public class BooksOnBookshelfModel
             + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PK_ID) + "="
             + DBDefinitions.TBL_BOOK_BOOKSHELF.dot(DBDefinitions.KEY_FK_BOOK)
             + ")";
-
+    /** The result of building the booklist. */
+    private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
+    /** Allows progress message from a task to update the user. */
+    private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
+    /** Inform user that Goodreads needs authentication/authorization. */
+    private final MutableLiveData<Boolean> mNeedsGoodreads = new MutableLiveData<>();
+    /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
+    private final SearchCriteria mSearchCriteria = new SearchCriteria();
+    /** Cache for all bookshelf names / spinner list. */
+    private final List<String> mBookshelfNameList = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;
     /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
@@ -394,6 +390,11 @@ public class BooksOnBookshelfModel
     /**
      * Save current position information in the preferences.
      * We do this to preserve this data across application shutdown/startup.
+     *
+     * @param context       Current context
+     * @param position      adapter list position; i.e. first visible position in the list
+     * @param rowId         the row id for that position
+     * @param topViewOffset offset in pixels for the first visible position in the list
      */
     public void saveListPosition(@NonNull final Context context,
                                  final int position,

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,6 +47,6 @@ public interface Mapper {
      * @param context  Current context
      * @param bookData with {@link #getKey} entry to map
      */
-    void map(@NonNull final Context context,
-             @NonNull final Bundle bookData);
+    void map(@NonNull Context context,
+             @NonNull Bundle bookData);
 }

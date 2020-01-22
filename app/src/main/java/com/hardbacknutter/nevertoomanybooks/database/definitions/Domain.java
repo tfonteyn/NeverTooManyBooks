@@ -244,6 +244,8 @@ public class Domain
 
     public static class Builder {
 
+        /** Multi-use; space at the end. */
+        private static final String DEFAULT_ = "DEFAULT ";
         @NonNull
         private final String mName;
         @NonNull
@@ -266,7 +268,7 @@ public class Domain
          * Define the domain to be a primary key.
          * Automatically adds a constraint for NOT NULL.
          *
-         * @return this for chaining.
+         * @return Builder (for chaining)
          */
         @NonNull
         public Builder primaryKey() {
@@ -278,7 +280,7 @@ public class Domain
         /**
          * Add a constraint for NOT NULL.
          *
-         * @return this for chaining.
+         * @return Builder (for chaining)
          */
         @NonNull
         public Builder notNull() {
@@ -291,11 +293,11 @@ public class Domain
          *
          * @param value to use as default
          *
-         * @return this for chaining.
+         * @return Builder (for chaining)
          */
         @NonNull
         public Builder withDefault(final long value) {
-            mConstraints.add("DEFAULT " + value);
+            mConstraints.add(DEFAULT_ + value);
             return this;
         }
 
@@ -304,11 +306,11 @@ public class Domain
          *
          * @param value to use as default
          *
-         * @return this for chaining.
+         * @return Builder (for chaining)
          */
         @NonNull
         public Builder withDefault(final double value) {
-            mConstraints.add("DEFAULT " + value);
+            mConstraints.add(DEFAULT_ + value);
             return this;
         }
 
@@ -317,22 +319,22 @@ public class Domain
          *
          * @param value to add (a string default must include the quotes!)
          *
-         * @return this for chaining.
+         * @return Builder (for chaining)
          */
         @NonNull
         public Builder withDefault(@NonNull final String value) {
-            mConstraints.add("DEFAULT " + value);
+            mConstraints.add(DEFAULT_ + value);
             return this;
         }
 
         /**
          * Add a string default '' constraint.
          *
-         * @return this for chaining.
+         * @return Builder (for chaining)
          */
         @NonNull
         public Builder withDefaultEmptyString() {
-            mConstraints.add("DEFAULT ''");
+            mConstraints.add(DEFAULT_ + "''");
             return this;
         }
 
@@ -346,7 +348,7 @@ public class Domain
          * @param table   to reference
          * @param actions 'on delete...' etc...
          *
-         * @return this for chaining.
+         * @return Builder (for chaining)
          */
         @NonNull
         public Builder references(@NonNull final TableDefinition table,

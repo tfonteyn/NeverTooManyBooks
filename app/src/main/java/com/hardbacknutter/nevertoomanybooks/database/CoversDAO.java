@@ -143,12 +143,12 @@ public final class CoversDAO
 
     /** Get a cached image. */
     private static final String SQL_GET_IMAGE =
-            "SELECT " + CKEY_IMAGE + " FROM " + TBL_IMAGE
+            "SELECT " + CKEY_IMAGE + " FROM " + TBL_IMAGE.getName()
             + " WHERE " + CKEY_CACHE_ID + "=? AND " + CKEY_DATE + ">?";
 
     /** Run a count for the desired file. 1 == exists, 0 == not there. */
     private static final String SQL_COUNT_ID =
-            "SELECT COUNT(" + CKEY_PK_ID + ") FROM " + TBL_IMAGE
+            "SELECT COUNT(" + CKEY_PK_ID + ") FROM " + TBL_IMAGE.getName()
             + " WHERE " + CKEY_CACHE_ID + "=?";
 
     /**

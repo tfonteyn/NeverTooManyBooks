@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,8 +51,10 @@ public class MovableFloatingActionButton
      */
     private static final float CLICK_DRAG_TOLERANCE = 10;
 
-    private float downRawX, downRawY;
-    private float dX, dY;
+    private float downRawX;
+    private float downRawY;
+    private float dX;
+    private float dY;
 
     public MovableFloatingActionButton(@NonNull final Context context) {
         super(context);
@@ -67,7 +69,7 @@ public class MovableFloatingActionButton
 
     public MovableFloatingActionButton(@NonNull final Context context,
                                        @Nullable final AttributeSet attrs,
-                                       int defStyleAttr) {
+                                       final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }

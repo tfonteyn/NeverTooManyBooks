@@ -198,8 +198,8 @@ public class BitmaskPreference
 
                 if (preference.getEntries() == null || preference.getEntryValues() == null) {
                     throw new IllegalStateException(
-                            "MultiSelectListPreference requires an entries array and " +
-                            "an entryValues array.");
+                            "MultiSelectListPreference requires an entries array and "
+                            + "an entryValues array.");
                 }
 
                 mNewValues.clear();
@@ -218,7 +218,7 @@ public class BitmaskPreference
         }
 
         @Override
-        public void onSaveInstanceState(@NonNull Bundle outState) {
+        public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
             outState.putStringArrayList(SAVE_STATE_VALUES, new ArrayList<>(mNewValues));
             outState.putBoolean(SAVE_STATE_CHANGED, mPreferenceChanged);
@@ -254,7 +254,7 @@ public class BitmaskPreference
         }
 
         @Override
-        public void onDialogClosed(boolean positiveResult) {
+        public void onDialogClosed(final boolean positiveResult) {
             final BitmaskPreference preference = getListPreference();
 
             // a tat annoying... we only get whether the user clicked the BUTTON_POSITIVE

@@ -886,9 +886,11 @@ public class BooklistGroup
         }
 
         /**
+         * Get a cached instance of the given RowKind.
+         *
          * @param id to create
          *
-         * @return a cached instance of a RowKind
+         * @return RowKind
          */
         @NonNull
         public static RowKind get(@Id final int id) {
@@ -1024,6 +1026,8 @@ public class BooklistGroup
          * Key and formatted domain is the same when the domain is NOT a foreign key.
          *
          * @param domain to use
+         *
+         * @return RowKind (for chaining)
          */
         @NonNull
         RowKind setDomain(@NonNull final Domain domain,
@@ -1038,6 +1042,8 @@ public class BooklistGroup
          * Set the Key.
          *
          * @param domain to use
+         *
+         * @return RowKind (for chaining)
          */
         @NonNull
         RowKind setKey(@NonNull final Domain domain,
@@ -1050,6 +1056,8 @@ public class BooklistGroup
          * Set the FormattedDomain.
          *
          * @param domain to use
+         *
+         * @return RowKind (for chaining)
          */
         @NonNull
         RowKind setFormattedDomain(@NonNull final Domain domain,

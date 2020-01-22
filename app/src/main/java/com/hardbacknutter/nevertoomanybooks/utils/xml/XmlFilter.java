@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -224,7 +224,7 @@ public class XmlFilter {
      *
      * @param startAction XmlHandler to call
      *
-     * @return This XmlFilter, to allow chaining
+     * @return XmlFilter (for chaining)
      */
     @NonNull
     public XmlFilter setStartAction(@NonNull final XmlHandler startAction) {
@@ -248,7 +248,7 @@ public class XmlFilter {
      *
      * @param endAction XmlHandler to call
      *
-     * @return This XmlFilter, to allow chaining
+     * @return XmlFilter (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull

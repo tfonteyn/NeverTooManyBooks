@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public interface SearchEngine {
 
+    /** Log tag. */
     String TAG = "SearchEngine";
 
     /**
@@ -112,12 +113,12 @@ public interface SearchEngine {
      * It's not supposed to to check credentials.
      * <strong>Should not run network code.</strong>
      *
-     * @param appContext Application context
+     * @param context Current context
      *
      * @return {@code true} if we can consider this site for searching.
      */
     @AnyThread
-    default boolean isAvailable(@NonNull final Context appContext) {
+    default boolean isAvailable(@NonNull final Context context) {
         return true;
     }
 
@@ -199,9 +200,9 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByNativeId(@NonNull final Context localizedAppContext,
-                                @NonNull final String nativeId,
-                                @NonNull final boolean[] fetchThumbnail)
+        Bundle searchByNativeId(@NonNull Context localizedAppContext,
+                                @NonNull String nativeId,
+                                @NonNull boolean[] fetchThumbnail)
                 throws CredentialsException, IOException;
     }
 
@@ -224,9 +225,9 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByIsbn(@NonNull final Context localizedAppContext,
-                            @NonNull final String isbn,
-                            @NonNull final boolean[] fetchThumbnail)
+        Bundle searchByIsbn(@NonNull Context localizedAppContext,
+                            @NonNull String isbn,
+                            @NonNull boolean[] fetchThumbnail)
                 throws CredentialsException, IOException;
     }
 
@@ -255,9 +256,9 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        default Bundle searchByBarcode(@NonNull final Context localizedAppContext,
-                                       @NonNull final String barcode,
-                                       @NonNull final boolean[] fetchThumbnail)
+        default Bundle searchByBarcode(@NonNull Context localizedAppContext,
+                                       @NonNull String barcode,
+                                       @NonNull boolean[] fetchThumbnail)
                 throws CredentialsException, IOException {
             return searchByIsbn(localizedAppContext, barcode, fetchThumbnail);
         }
@@ -328,10 +329,10 @@ public interface SearchEngine {
          */
         @Nullable
         @WorkerThread
-        default String getCoverImage(@NonNull Context appContext,
-                                     @NonNull String isbn,
+        default String getCoverImage(@NonNull final Context appContext,
+                                     @NonNull final String isbn,
                                      final int cIdx,
-                                     @Nullable ImageSize size) {
+                                     @Nullable final ImageSize size) {
             return getCoverImageFallback(appContext, isbn, cIdx);
         }
 
@@ -343,6 +344,7 @@ public interface SearchEngine {
          *
          * @param appContext Application context
          * @param isbn       to search for, <strong>must</strong> be valid.
+         * @param cIdx       0..n image index
          * @param bookData   Bundle to populate
          */
         @WorkerThread

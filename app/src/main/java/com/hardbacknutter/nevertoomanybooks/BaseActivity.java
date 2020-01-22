@@ -244,6 +244,7 @@ public abstract class BaseActivity
 
         return false;
     }
+
     /**
      * Manually load a fragment into the given container using add.
      * <p>
@@ -387,8 +388,8 @@ public abstract class BaseActivity
                 return true;
             }
             case R.id.nav_settings: {
-                startActivityForResult(new Intent(this, SettingsActivity.class),
-                                       UniqueId.REQ_NAV_PANEL_SETTINGS);
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
                 return true;
             }
             case R.id.nav_about: {

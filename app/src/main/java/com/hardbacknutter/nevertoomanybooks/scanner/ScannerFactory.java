@@ -48,9 +48,11 @@ public interface ScannerFactory {
     boolean isAvailable(@NonNull Context context);
 
     /**
+     * Get a new scanner of the related type.
+     *
      * @param context Current context
      *
-     * @return a new scanner of the related type.
+     * @return scanner
      */
     @NonNull
     Scanner getScanner(@NonNull Context context);

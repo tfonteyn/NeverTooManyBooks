@@ -181,7 +181,7 @@ public class TableDefinition
      * @param db              Database in which to create table
      * @param withConstraints Indicates if fields should have constraints applied
      *
-     * @return this for chaining
+     * @return TableDefinition (for chaining)
      */
     @NonNull
     public TableDefinition create(@NonNull final SynchronizedDb db,
@@ -217,7 +217,7 @@ public class TableDefinition
      * @param db              Database in which to drop/create table
      * @param withConstraints Indicates if fields should have constraints applied
      *
-     * @return this for chaining
+     * @return TableDefinition (for chaining)
      */
     @NonNull
     public TableDefinition recreate(@NonNull final SynchronizedDb db,

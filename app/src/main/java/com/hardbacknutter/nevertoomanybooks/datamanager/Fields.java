@@ -1664,7 +1664,7 @@ public class Fields {
         /**
          * @param formatter to use
          *
-         * @return field (for chaining)
+         * @return Field (for chaining)
          */
         @NonNull
         public Field<T> setFormatter(@NonNull final FieldFormatter formatter) {
@@ -1675,7 +1675,7 @@ public class Fields {
         /**
          * Enable HTML (only applicable to TextView based fields).
          *
-         * @return field (for chaining)
+         * @return Field (for chaining)
          */
         @SuppressWarnings("UnusedReturnValue")
         @NonNull
@@ -1691,7 +1691,7 @@ public class Fields {
         /**
          * Enable decimal editing restriction(only applicable to EditText based fields).
          *
-         * @return field (for chaining)
+         * @return Field (for chaining)
          */
         @SuppressWarnings("UnusedReturnValue")
         @NonNull
@@ -1707,7 +1707,7 @@ public class Fields {
         /**
          * @param doNoFetch {@code true} to stop the field being fetched from the database
          *
-         * @return field (for chaining)
+         * @return Field (for chaining)
          */
         @NonNull
         public Field<T> setDoNotFetch(final boolean doNoFetch) {

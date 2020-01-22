@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,7 +60,7 @@ public class Joiner {
      *
      * @param to New table to add
      *
-     * @return Join object (for chaining)
+     * @return Joiner (for chaining)
      */
     @NonNull
     public Joiner join(@NonNull final TableDefinition to) {
@@ -76,7 +76,7 @@ public class Joiner {
      * @param from Parent table in join
      * @param to   New table to join
      *
-     * @return Join object (for chaining)
+     * @return Joiner (for chaining)
      */
     @NonNull
     public Joiner join(@NonNull final TableDefinition from,
@@ -92,7 +92,7 @@ public class Joiner {
      *
      * @param to New table to add.
      *
-     * @return Join object (for chaining)
+     * @return Joiner (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
@@ -107,7 +107,7 @@ public class Joiner {
      * @param from Parent table in join
      * @param to   New table to join
      *
-     * @return Join object (for chaining)
+     * @return Joiner (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
@@ -123,7 +123,7 @@ public class Joiner {
      *
      * @param sql Extra SQL to append
      *
-     * @return Join object (for chaining)
+     * @return Joiner (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
     @NonNull

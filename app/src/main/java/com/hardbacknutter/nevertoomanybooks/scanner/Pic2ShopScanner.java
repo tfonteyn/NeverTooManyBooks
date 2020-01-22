@@ -65,15 +65,6 @@ public class Pic2ShopScanner
      */
     private static final String BARCODE = "BARCODE";
 
-    /**
-     * Check if we have a valid intent available.
-     *
-     * @return {@code true} if present
-     */
-    private static boolean isIntentAvailable(@NonNull final Context context) {
-        return isIntentAvailable(context, Free.ACTION) || isIntentAvailable(context, Pro.ACTION);
-    }
-
     private static boolean isIntentAvailable(@NonNull final Context context,
                                              @NonNull final String action) {
         Intent test = new Intent(action);
@@ -163,7 +154,8 @@ public class Pic2ShopScanner
 
         @Override
         public boolean isAvailable(@NonNull final Context context) {
-            return Pic2ShopScanner.isIntentAvailable(context);
+            return isIntentAvailable(context, Free.ACTION)
+                   || isIntentAvailable(context, Pro.ACTION);
         }
     }
 }

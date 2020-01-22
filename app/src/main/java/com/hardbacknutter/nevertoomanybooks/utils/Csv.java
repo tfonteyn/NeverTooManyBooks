@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,6 +54,7 @@ public final class Csv {
      *
      * @param delimiter  e.g. "," or ", " etc...
      * @param collection collection
+     * @param <E>        type of elements
      *
      * @return csv string, can be empty, but never {@code null}.
      *
@@ -118,7 +119,11 @@ public final class Csv {
         for (E element : collection) {
             String value;
             if (formatter == null) {
-                value = element != null ? String.valueOf(element).trim() : "";
+                if (element != null) {
+                    value = String.valueOf(element).trim();
+                } else {
+                    value = "";
+                }
             } else {
                 value = formatter.format(element);
             }

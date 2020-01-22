@@ -132,7 +132,6 @@ public class BooklistAdapter
         mStyle = style;
         mDb = db;
         mCursor = cursor;
-//        mCursor.moveToFirst();
         mCursorRow = new CursorRow(mCursor);
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
 

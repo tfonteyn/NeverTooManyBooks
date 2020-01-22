@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,10 +63,12 @@ public interface Scanner {
     }
 
     /**
+     * Get the barcode from the resulting intent of a scan action.
+     *
      * @param context Current context
      * @param data    the intent as coming from {@link  Fragment#onActivityResult}
      *
-     * @return the barcode from the resulting intent of a scan action; or {@code null}
+     * @return barcode or {@code null}
      */
     @Nullable
     String getBarcode(@NonNull Context context,

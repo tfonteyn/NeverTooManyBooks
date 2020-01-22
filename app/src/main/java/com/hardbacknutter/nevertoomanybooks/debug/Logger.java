@@ -91,6 +91,10 @@ public final class Logger {
 
     /**
      * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
+     *
+     * @param tag    log tag
+     * @param e      cause
+     * @param params to concat
      */
     public static void error(@NonNull final String tag,
                              @NonNull final Throwable e,
@@ -100,6 +104,11 @@ public final class Logger {
 
     /**
      * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
+     *
+     * @param context Current context
+     * @param tag     log tag
+     * @param e       cause
+     * @param params  to concat
      */
     public static void error(@NonNull final Context context,
                              @NonNull final String tag,
@@ -124,6 +133,9 @@ public final class Logger {
      * Use sparingly, writing to the log is expensive.
      * <p>
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
+     *
+     * @param tag    log tag
+     * @param params to concat
      */
     public static void warnWithStackTrace(@NonNull final String tag,
                                           @NonNull final Object... params) {
@@ -137,6 +149,10 @@ public final class Logger {
      * Use sparingly, writing to the log is expensive.
      * <p>
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
+     *
+     * @param context Current context
+     * @param tag     log tag
+     * @param params  to concat
      */
     public static void warnWithStackTrace(@NonNull final Context context,
                                           @NonNull final String tag,
@@ -156,6 +172,10 @@ public final class Logger {
      * <p>
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      * No stacktrace!
+     *
+     * @param tag        log tag
+     * @param methodName the method name from where this method is called
+     * @param params     to concat
      */
     public static void warn(@NonNull final String tag,
                             @NonNull final String methodName,
@@ -170,6 +190,11 @@ public final class Logger {
      * <p>
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      * No stacktrace!
+     *
+     * @param context    Current context
+     * @param tag        log tag
+     * @param methodName the method name from where this method is called
+     * @param params     to concat
      */
     public static void warn(@NonNull final Context context,
                             @NonNull final String tag,
@@ -241,7 +266,7 @@ public final class Logger {
         try (FileWriter fw = new FileWriter(logFile, true);
              BufferedWriter out = new BufferedWriter(fw)) {
             out.write(fullMessage);
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignored) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignored) {
             // do nothing - we can't log an error in the logger (and we don't want to CF the app).
         }
     }
@@ -336,6 +361,8 @@ public final class Logger {
 
     /**
      * Log storage location.
+     *
+     * @param context Current context
      *
      * @return the Shared Storage <strong>log</strong> Directory object
      *

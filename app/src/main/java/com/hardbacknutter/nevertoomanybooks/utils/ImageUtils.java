@@ -512,7 +512,7 @@ public final class ImageUtils {
                 }
                 try {
                     Thread.sleep(RETRY_AFTER_MS);
-                } catch (InterruptedException ignore) {
+                } catch (@NonNull final InterruptedException ignore) {
                 }
             }
         }
@@ -557,7 +557,7 @@ public final class ImageUtils {
                 }
                 try {
                     Thread.sleep(RETRY_AFTER_MS);
-                } catch (InterruptedException ignore) {
+                } catch (@NonNull final InterruptedException ignore) {
                 }
             }
         }
@@ -733,6 +733,8 @@ public final class ImageUtils {
         private final boolean mAllowUpscaling;
 
         /**
+         * Constructor.
+         *
          * @param imageView      to populate
          * @param file           to load, must be valid
          * @param maxWidth       Maximum desired width of the image

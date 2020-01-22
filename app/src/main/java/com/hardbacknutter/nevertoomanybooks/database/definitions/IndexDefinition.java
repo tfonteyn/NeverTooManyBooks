@@ -75,6 +75,8 @@ public class IndexDefinition {
     }
 
     /**
+     * Check if this index is unique.
+     *
      * @return UNIQUE flag.
      */
     boolean getUnique() {
