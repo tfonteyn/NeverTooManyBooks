@@ -452,9 +452,12 @@ public class Fields {
          * e.g. a text based widget should return "" even if the value was never set.
          *
          * @return the value
+         *
+         * @throws NoViewException if the associated View is not available
          */
         @NonNull
-        T getValue();
+        T getValue()
+                throws NoViewException;
 
         /**
          * Use the passed value to set the Field.
@@ -694,12 +697,17 @@ public class Fields {
         @NonNull
         final Field<T> mField;
         @Nullable
-        WeakReference<View> mView;
+        private WeakReference<View> mView;
         @Nullable
         private FieldFormatter<T> mFormatter;
 
         BaseDataAccessor(@NonNull final Field<T> field) {
             mField = field;
+        }
+
+        @Nullable
+        public View getView() {
+            return mView != null ? mView.get() : null;
         }
 
         @Override
@@ -849,14 +857,14 @@ public class Fields {
 
         @Override
         public boolean isEmpty() {
-            String value = getValue().toString();
-            return value.isEmpty()
+            String strValue = getValue().toString();
+            return strValue.isEmpty()
                    // Integer/Long
-                   || "0".equals(value)
+                   || "0".equals(strValue)
                    // Float/Double
-                   || "0.0".equals(value)
+                   || "0.0".equals(strValue)
                    // Boolean (theoretically this should not happen... but paranoia... ).
-                   || "false".equals(value);
+                   || "false".equals(strValue);
         }
 
         @Override
@@ -919,8 +927,7 @@ public class Fields {
 
         @Override
         public void setValue(@Nullable final T value) {
-            //noinspection ConstantConditions
-            TextView view = (TextView) mView.get();
+            TextView view = (TextView) getView();
             if (view != null) {
                 mRawValue = value;
                 if (mFormatHtml) {
@@ -976,14 +983,16 @@ public class Fields {
         @NonNull
         @Override
         public T getValue() {
-            //noinspection ConstantConditions
-            return extract(((EditText) mView.get()).getText().toString().trim());
+            EditText view = (EditText) getView();
+            if (view != null) {
+                return extract(view.getText().toString().trim());
+            }
+            throw new NoViewException();
         }
 
         @Override
         public void setValue(@Nullable final T value) {
-            //noinspection ConstantConditions
-            EditText view = (EditText) mView.get();
+            EditText view = (EditText) getView();
             if (view != null) {
                 // 2018-12-11: There was recursion due to the setText call.
                 // So now disabling the TextWatcher while doing the latter.
@@ -1056,20 +1065,21 @@ public class Fields {
         @Override
         @NonNull
         public String getValue() {
-            //noinspection ConstantConditions
-            Spinner spinner = (Spinner) mView.get();
-            Object selItem = spinner.getSelectedItem();
-            if (selItem != null) {
-                return extract(selItem.toString().trim());
-            } else {
-                return "";
+            Spinner spinner = (Spinner) getView();
+            if (spinner != null) {
+                Object selItem = spinner.getSelectedItem();
+                if (selItem != null) {
+                    return extract(selItem.toString().trim());
+                } else {
+                    return "";
+                }
             }
+            throw new NoViewException();
         }
 
         @Override
         public void setValue(@Nullable final String value) {
-            //noinspection ConstantConditions
-            Spinner spinner = (Spinner) mView.get();
+            Spinner spinner = (Spinner) getView();
             if (spinner != null) {
                 String formatted = format(value);
                 for (int i = 0; i < spinner.getCount(); i++) {
@@ -1090,6 +1100,12 @@ public class Fields {
         public void setValue(@NonNull final DataManager source) {
             setValue(source.getString(mField.getKey()));
         }
+    }
+
+    private static class NoViewException
+            extends RuntimeException {
+
+        private static final long serialVersionUID = -7501110352359786502L;
     }
 
     /**
@@ -1131,15 +1147,16 @@ public class Fields {
         @NonNull
         @Override
         public Boolean getValue() {
-            //noinspection ConstantConditions
-            Checkable cb = (Checkable) mView.get();
-            return cb.isChecked();
+            Checkable cb = (Checkable) getView();
+            if (cb != null) {
+                return cb.isChecked();
+            }
+            throw new NoViewException();
         }
 
         @Override
         public void setValue(@Nullable final Boolean value) {
-            //noinspection ConstantConditions
-            Checkable cb = (Checkable) mView.get();
+            Checkable cb = (Checkable) getView();
             if (cb != null) {
                 if (value != null) {
                     ((View) cb).setVisibility(value ? View.VISIBLE : View.GONE);
@@ -1192,15 +1209,16 @@ public class Fields {
         @NonNull
         @Override
         public Float getValue() {
-            //noinspection ConstantConditions
-            RatingBar bar = (RatingBar) mView.get();
-            return bar.getRating();
+            RatingBar bar = (RatingBar) getView();
+            if (bar != null) {
+                return bar.getRating();
+            }
+            throw new NoViewException();
         }
 
         @Override
         public void setValue(@Nullable final Float value) {
-            //noinspection ConstantConditions
-            RatingBar bar = (RatingBar) mView.get();
+            RatingBar bar = (RatingBar) getView();
             if (bar != null) {
                 if (value != null) {
                     bar.setRating(value);
