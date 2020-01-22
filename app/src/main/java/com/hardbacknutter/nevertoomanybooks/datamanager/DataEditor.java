@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,8 @@ public interface DataEditor<T extends DataManager> {
      * Save the contents of all Fields to the {@link DataManager}.
      *
      * @param dataManager to save the data to
+     *
+     * @return {@code true} if all data was saved.
      */
-    void onSaveFields(@NonNull T dataManager);
+    boolean onSaveFields(@NonNull T dataManager);
 }

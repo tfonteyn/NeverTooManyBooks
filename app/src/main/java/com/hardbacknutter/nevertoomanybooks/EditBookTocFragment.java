@@ -354,8 +354,8 @@ public class EditBookTocFragment
     }
 
     @Override
-    public void onSaveFields(@NonNull final Book book) {
-        super.onSaveFields(book);
+    public boolean onSaveFields(@NonNull final Book book) {
+        boolean success = super.onSaveFields(book);
 
         book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS,
                     mIsAnthologyCbx.isChecked());
@@ -364,6 +364,8 @@ public class EditBookTocFragment
 
         // The toc list is not a 'real' field. Hence the need to store it manually here.
         book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+
+        return success;
     }
 
     @Override

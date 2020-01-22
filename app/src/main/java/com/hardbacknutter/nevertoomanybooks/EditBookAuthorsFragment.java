@@ -162,11 +162,13 @@ public class EditBookAuthorsFragment
     }
 
     @Override
-    public void onSaveFields(@NonNull final Book book) {
-        super.onSaveFields(book);
+    public boolean onSaveFields(@NonNull final Book book) {
+        boolean success = super.onSaveFields(book);
 
         // The list is not a 'real' field. Hence the need to store it manually here.
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mList);
+
+        return success && mAuthorNameView.getText().toString().isEmpty();
     }
 
     private void onAdd() {

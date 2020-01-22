@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
@@ -54,21 +55,29 @@ public final class StandardDialogs {
     /**
      * Show a dialog asking if unsaved edits should be ignored.
      *
+     * To show the Save and/or Exit button, you must provide a Runnable, even an empty one.
+     *
      * @param context Current context
-     * @param onExit  Runnable to execute if the user clicks the Exit button.
+     * @param onSave  (optional) Runnable to execute if the user clicks the Save button.
+     * @param onExit  (optional) Runnable to execute if the user clicks the Exit button.
      */
     public static void unsavedEditsDialog(@NonNull final Context context,
-//                                          @NonNull final Runnable onSave,
-                                          @NonNull final Runnable onExit) {
-        new AlertDialog.Builder(context)
+                                          @Nullable final Runnable onSave,
+                                          @Nullable final Runnable onExit) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_details_have_changed)
                 .setMessage(R.string.warning_unsaved_edits)
-                .setNeutralButton(R.string.btn_continue_edit, (dialog, which) -> dialog.dismiss())
-                .setNegativeButton(R.string.btn_confirm_exit, (dialog, which) -> onExit.run())
-//                .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> onSave.run())
-                .create()
-                .show();
+                .setNeutralButton(R.string.btn_continue_edit, (dialog, which) -> dialog.dismiss());
+
+        if (onExit != null) {
+            builder.setNegativeButton(R.string.btn_confirm_exit, (dialog, which) -> onExit.run());
+        }
+        if (onSave != null) {
+            builder.setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> onSave.run());
+        }
+
+        builder.show();
     }
 
     /**

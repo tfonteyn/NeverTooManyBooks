@@ -182,11 +182,13 @@ public abstract class EditBookBaseFragment
      * Default implementation of code to save existing data to the Book object.
      * We simply copy all {@link Field} into the given {@link DataManager} e.g. the {@link Book}
      * <p>
+     * Called from {@link #onPause()}.
      * Override as needed.
      */
     @CallSuper
-    public void onSaveFields(@NonNull final Book book) {
+    public boolean onSaveFields(@NonNull final Book book) {
         getFields().putAllInto(book);
+        return true;
     }
 
     /**

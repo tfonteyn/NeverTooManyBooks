@@ -107,7 +107,7 @@ public class EditBookActivity
         // check if we're clean to leave.
         if (backStackEntryCount == 0 && model.isDirty()) {
             // If the user clicks 'exit', we finish()
-            StandardDialogs.unsavedEditsDialog(this, () -> {
+            StandardDialogs.unsavedEditsDialog(this, null, () -> {
                 // STILL send an OK and result data!
                 // The result data will contain the re-position book id.
                 setResult(Activity.RESULT_OK, model.getResultData());
