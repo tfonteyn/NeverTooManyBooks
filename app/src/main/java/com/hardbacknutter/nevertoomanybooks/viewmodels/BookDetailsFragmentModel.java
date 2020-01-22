@@ -49,20 +49,19 @@ public class BookDetailsFragmentModel
     private static final String TAG = "BookDetailsFragModel";
 
     /** Table name of the {@link FlattenedBooklist}. */
-    public static final String BKEY_FLAT_BOOKLIST_TABLE = TAG + ":FBL_Table";
-    @Nullable
-    private FlattenedBooklist mFlattenedBooklist;
-
+    public static final String BKEY_NAV_TABLE = TAG + ":FBLTable";
+    public static final String BKEY_NAV_ROW_ID = TAG + ":FBLRow";
     /** The fields collection. */
     @NonNull
     private final Fields mFields = new Fields();
+    @Nullable
+    private FlattenedBooklist mFlattenedBooklist;
 
     /**
      * Pseudo constructor.
      *
-     * @param db     Database Access
-     * @param args   {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-     * @param bookId The book this model will represent.
+     * @param db   Database Access
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final DAO db,
                      @Nullable final Bundle args,
@@ -73,17 +72,23 @@ public class BookDetailsFragmentModel
             if (args == null) {
                 return;
             }
-            // no list ?
-            String navTableName = args.getString(BKEY_FLAT_BOOKLIST_TABLE);
-            if (navTableName == null || navTableName.isEmpty()) {
-                return;
-            }
 
-            mFlattenedBooklist = new FlattenedBooklist(db, navTableName);
-            if (!mFlattenedBooklist.moveTo(bookId)) {
-                // book not found ? eh? Destroy the table!
-                mFlattenedBooklist.close(true);
-                mFlattenedBooklist = null;
+            // got list ?
+            String navTableName = args.getString(BKEY_NAV_TABLE);
+            if (navTableName != null && !navTableName.isEmpty()) {
+                // ok, we have a list, get the rowId we need to be on.
+                final long rowId = args.getLong(BKEY_NAV_ROW_ID, 0);
+                if (rowId > 0) {
+                    mFlattenedBooklist = new FlattenedBooklist(db, navTableName);
+                    // move to book.
+                    if (!mFlattenedBooklist.moveTo(rowId)
+                        // Paranoia: is it the book we wanted ?
+                        || mFlattenedBooklist.getBookId() != bookId) {
+                        // Should never happen... flw
+                        mFlattenedBooklist.close(true);
+                        mFlattenedBooklist = null;
+                    }
+                }
             }
         }
     }

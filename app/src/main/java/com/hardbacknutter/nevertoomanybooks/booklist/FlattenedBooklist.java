@@ -36,15 +36,12 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR;
 
 /**
  * Class to provide a simple interface into a temporary table containing a list of book ID's in
@@ -53,7 +50,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TB
  * Construction is done in two steps:
  * <ol>
  * <li>Create the table, fill it with data<br>
- * {@link #createTable(SynchronizedDb, int, TableDefinition)}</li>
+ * {@link #createTable}</li>
  * <li>Use the normal constructor with the table name from step 1 to start using the table</li>
  * </ol>
  * Reminder: moveNext/Prev SQL concatenates/splits two columns.
@@ -95,16 +92,16 @@ public class FlattenedBooklist {
     /**
      * Constructor.
      *
-     * @param db        Database Access
-     * @param tableName Name of underlying and <strong>existing</strong> table
+     * @param db           Database Access
+     * @param navTableName Name of underlying and <strong>existing</strong> table
      */
     public FlattenedBooklist(@NonNull final DAO db,
-                             @NonNull final String tableName) {
+                             @NonNull final String navTableName) {
         mSyncedDb = db.getUnderlyingDatabase();
-        mTable = new TableDefinition(TMP_TBL_BOOK_LIST_NAVIGATOR);
-        mTable.setName(tableName);
+        mTable = new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR);
+        mTable.setName(navTableName);
 
-        mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + tableName);
+        mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + navTableName);
     }
 
     /**
@@ -119,23 +116,27 @@ public class FlattenedBooklist {
     @NonNull
     static String createTable(@NonNull final SynchronizedDb syncedDb,
                               final int instanceId,
+                              @NonNull final RowStateDAO rowStateDAO,
                               @NonNull final TableDefinition listTable) {
 
-        TableDefinition navTable = new TableDefinition(TMP_TBL_BOOK_LIST_NAVIGATOR);
+        TableDefinition navTable = new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR);
         navTable.setName(navTable.getName() + instanceId);
 
         //IMPORTANT: withConstraints MUST BE false
         navTable.recreate(syncedDb, false);
 
-        final long t00 = System.nanoTime();
+        final long t0 = System.nanoTime();
 
+        TableDefinition rowStateTable = rowStateDAO.getTable();
         String sql = "INSERT INTO " + navTable.getName()
-                     + " (" + KEY_PK_ID + ',' + KEY_FK_BOOK + ")"
-                     + " SELECT " + KEY_PK_ID + ',' + KEY_FK_BOOK
-                     + " FROM " + listTable.getName()
+                     + " (" + DBDefinitions.KEY_PK_ID + ',' + DBDefinitions.KEY_FK_BOOK + ")"
+
+                     + " SELECT " + rowStateTable.dot(DBDefinitions.KEY_PK_ID)
+                     + ',' + listTable.dot(DBDefinitions.KEY_FK_BOOK)
+                     + " FROM " + listTable.ref() + listTable.join(rowStateTable)
                      // all rows which are NOT a book will contain null
-                     + " WHERE " + KEY_FK_BOOK + " NOT NULL"
-                     + " ORDER BY " + KEY_PK_ID;
+                     + " WHERE " + listTable.dot(DBDefinitions.KEY_FK_BOOK) + " NOT NULL"
+                     + " ORDER BY " + rowStateTable.dot(DBDefinitions.KEY_PK_ID);
 
         syncedDb.execSQL(sql);
 
@@ -143,7 +144,7 @@ public class FlattenedBooklist {
             Log.d(TAG, "createTable"
                        + "|" + navTable.getName()
                        + "|completed in "
-                       + (System.nanoTime() - t00) / NANO_TO_MILLIS + " ms");
+                       + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
         }
 
         return navTable.getName();
@@ -159,22 +160,25 @@ public class FlattenedBooklist {
     }
 
     /**
-     * Move to the specified book row, based on the row ID, not the book id or row number.
-     * The row id should be the row number in the table, including header-related rows.
+     * Move to the specified book row, based on the row ID in the <strong>list table</strong>.
+     * <p>
+     * We can't use the book id, as a book can occur multiple times
+     * in the list (depending on style settings)
      *
-     * @param bookId to move to
+     * @param rowId to move to
      *
      * @return {@code true} on success
      */
-    public boolean moveTo(final long bookId) {
+    public boolean moveTo(final long rowId) {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_MOVE);
         if (stmt == null) {
-            String sql = "SELECT " + KEY_PK_ID + " || '/' || " + KEY_FK_BOOK
-                         + " FROM " + mTable
-                         + " WHERE " + KEY_FK_BOOK + "=?";
+            String sql = "SELECT "
+                         + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
+                         + " FROM " + mTable.getName()
+                         + " WHERE " + DBDefinitions.KEY_PK_ID + "=?";
             stmt = mSqlStatementManager.add(STMT_MOVE, sql);
         }
-        stmt.bindLong(1, bookId);
+        stmt.bindLong(1, rowId);
         return execAndParse(stmt);
     }
 
@@ -201,13 +205,20 @@ public class FlattenedBooklist {
     private boolean moveNext() {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_NEXT);
         if (stmt == null) {
-            String sql = "SELECT " + KEY_PK_ID + " || '/' || " + KEY_FK_BOOK
-                         + " FROM " + mTable
-                         + " WHERE " + KEY_PK_ID + ">?"
-                         + " ORDER BY " + KEY_PK_ID + " ASC LIMIT 1";
+            String sql = "SELECT "
+                         + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
+                         + " FROM " + mTable.getName()
+                         + " WHERE " + DBDefinitions.KEY_PK_ID + ">?"
+                         + " AND " + DBDefinitions.KEY_FK_BOOK + "<>COALESCE(?,-1)"
+                         + " ORDER BY " + DBDefinitions.KEY_PK_ID + " ASC LIMIT 1";
             stmt = mSqlStatementManager.add(STMT_NEXT, sql);
         }
         stmt.bindLong(1, mRowId);
+        if (mBookId > 0) {
+            stmt.bindLong(2, mBookId);
+        } else {
+            stmt.bindNull(2);
+        }
         return execAndParse(stmt);
     }
 
@@ -219,13 +230,20 @@ public class FlattenedBooklist {
     private boolean movePrev() {
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_PREV);
         if (stmt == null) {
-            String sql = "SELECT " + KEY_PK_ID + " || '/' || " + KEY_FK_BOOK
-                         + " FROM " + mTable
-                         + " WHERE " + KEY_PK_ID + "<?"
-                         + " ORDER BY " + KEY_PK_ID + " DESC LIMIT 1";
+            String sql = "SELECT "
+                         + DBDefinitions.KEY_PK_ID + "||'/'||" + DBDefinitions.KEY_FK_BOOK
+                         + " FROM " + mTable.getName()
+                         + " WHERE " + DBDefinitions.KEY_PK_ID + "<?"
+                         + " AND " + DBDefinitions.KEY_FK_BOOK + "<>COALESCE(?,-1)"
+                         + " ORDER BY " + DBDefinitions.KEY_PK_ID + " DESC LIMIT 1";
             stmt = mSqlStatementManager.add(STMT_PREV, sql);
         }
         stmt.bindLong(1, mRowId);
+        if (mBookId > 0) {
+            stmt.bindLong(2, mBookId);
+        } else {
+            stmt.bindNull(2);
+        }
         return execAndParse(stmt);
     }
 
@@ -237,6 +255,7 @@ public class FlattenedBooklist {
     @SuppressWarnings("unused")
     public boolean moveFirst() {
         mRowId = -1;
+        mBookId = 0;
         return moveNext();
     }
 
@@ -248,6 +267,7 @@ public class FlattenedBooklist {
     @SuppressWarnings("unused")
     public boolean moveLast() {
         mRowId = Long.MAX_VALUE;
+        mBookId = 0;
         return movePrev();
     }
 

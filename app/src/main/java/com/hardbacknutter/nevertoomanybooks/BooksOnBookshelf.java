@@ -257,11 +257,16 @@ public class BooksOnBookshelf
 
             // If it's a book, open the details screen.
             if (cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND) == BooklistGroup.RowKind.BOOK) {
+                long rowId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
                 long bookId = cursorRow.getLong(DBDefinitions.KEY_FK_BOOK);
+                // Note we (re)create the flat table *every time* the user click a book.
+                // This guarantees an exact match in rowId'
+                // (which turns out tricky if we cache the table - ENHANCE: re-implement caching)
                 String navTableName = mModel.createFlattenedBooklist();
                 Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                        .putExtra(BookDetailsFragmentModel.BKEY_FLAT_BOOKLIST_TABLE, navTableName);
+                        .putExtra(BookDetailsFragmentModel.BKEY_NAV_TABLE, navTableName)
+                        .putExtra(BookDetailsFragmentModel.BKEY_NAV_ROW_ID, rowId);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
             } else {
@@ -582,7 +587,7 @@ public class BooksOnBookshelf
     @CallSuper
     public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
 
-        boolean showECPreferred = (mModel.getCurrentStyle(this).getTopLevel() > 1);
+        boolean showECPreferred = mModel.getCurrentStyle(this).getTopLevel() > 1;
         menu.findItem(R.id.MENU_LEVEL_PREFERRED_COLLAPSE).setVisible(showECPreferred);
 
         menu.findItem(R.id.MENU_CLEAR_FILTERS).setEnabled(!mModel.getSearchCriteria().isEmpty());

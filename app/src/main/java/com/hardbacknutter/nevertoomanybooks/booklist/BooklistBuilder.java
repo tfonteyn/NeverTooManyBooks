@@ -274,7 +274,7 @@ public class BooklistBuilder
     @NonNull
     public String createFlattenedBooklist() {
         // reminder: do not drop this table. It needs to survive beyond the booklist screen.
-        return FlattenedBooklist.createTable(mSyncedDb, mInstanceId, mListTable);
+        return FlattenedBooklist.createTable(mSyncedDb, mInstanceId, mRowStateDAO, mListTable);
     }
 
     /**
@@ -284,7 +284,7 @@ public class BooklistBuilder
      * @param sourceExpression Expression to use in deriving domain value
      * @param isSorted         Indicates if it should be added to the sort key
      *
-     * @return this for chaining
+     * @return BooklistBuilder (for chaining)
      */
     @NonNull
     @SuppressWarnings("UnusedReturnValue")
