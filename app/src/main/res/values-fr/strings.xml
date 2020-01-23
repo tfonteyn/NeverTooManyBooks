@@ -272,7 +272,7 @@
     <string name="lbl_field_usage_copy_if_blank">Copier si vide</string>
     <string name="lbl_field_usage_overwrite">Remplacer les données existantes</string>
     <string name="lbl_field_usage_skip">Omettre</string>
-    <string name="lbl_first_publication">Primera publicación</string>
+    <string name="lbl_first_publication">Première publication</string>
     <string name="lbl_first_pub_month">Premier mois de publication</string>
     <string name="lbl_first_pub_year">Première année de publication</string>
     <string name="lbl_format">Format</string>
