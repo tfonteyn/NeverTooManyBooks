@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -36,12 +36,20 @@
     android:layout_margin="@dimen/border1"
     >
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/indent_fields"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/fieldIndent3"
+        />
+
     <CheckBox
         android:id="@+id/cbx_is_anthology"
-        style="@style/CheckboxEntry"
+        style="@style/CheckboxEntry.Small"
+        android:layout_marginTop="@dimen/border2"
         android:text="@string/lbl_toc_anthology"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        app:layout_constraintEnd_toStartOf="@id/btn_add"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
@@ -49,34 +57,65 @@
 
     <CheckBox
         android:id="@+id/cbx_multiple_authors"
-        style="@style/CheckboxEntry"
+        style="@style/CheckboxEntry.Small"
         android:text="@string/lbl_toc_multiple_authors"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        app:layout_constraintEnd_toStartOf="@id/btn_add"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_is_anthology"
         tools:checked="true"
+        />
+
+    <AutoCompleteTextView
+        android:id="@+id/author"
+        style="@style/personalNameTextEntry"
+        android:hint="@string/lbl_author"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
+        app:layout_constraintTop_toBottomOf="@id/cbx_multiple_authors"
+        tools:ignore="Autofill,SelectableText"
+        />
+
+    <EditText
+        android:id="@+id/title"
+        style="@style/titleTextEntry"
+        android:hint="@string/lbl_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
+        app:layout_constraintTop_toBottomOf="@id/author"
+        tools:ignore="Autofill,SelectableText"
+        />
+
+    <EditText
+        android:id="@+id/first_publication"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/lbl_year"
+        android:inputType="number"
+        android:maxLength="4"
+        app:layout_constraintStart_toEndOf="@id/indent_fields"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        tools:ignore="Autofill"
         />
 
     <Button
         android:id="@+id/btn_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btn_confirm_new"
-        app:layout_constraintBottom_toBottomOf="@id/cbx_multiple_authors"
+        android:text="@string/btn_confirm_add"
+        app:layout_constraintBaseline_toBaselineOf="@id/first_publication"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tocList"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/border2"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_multiple_authors"
+        app:layout_constraintTop_toBottomOf="@id/first_publication"
         tools:listitem="@layout/row_edit_toc_entry"
         />
 

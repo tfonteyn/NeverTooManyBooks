@@ -40,7 +40,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -84,6 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.TaskModel;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -104,7 +107,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  */
 public class EditBookTocFragment
         extends EditBookBaseFragment {
-
 
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
@@ -132,7 +134,13 @@ public class EditBookTocFragment
     private CompoundButton mIsAnthologyCbx;
     /** checkbox to hide/show the author edit field. */
     private CompoundButton mMultiAuthorsView;
-    private TaskModel mIsfdbTaskModel;
+    /** User input for a new entry. */
+    private AutoCompleteTextView mAuthorTextView;
+    /** User input for a new entry. */
+    private EditText mTitleTextView;
+    /** User input for a new entry. */
+    private EditText mPubDateTextView;
+
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
@@ -181,24 +189,31 @@ public class EditBookTocFragment
                                     .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
         }
     };
+    private TaskModel mIsfdbTaskModel;
     /**
      * we got one or more editions from ISFDB.
      * Stores the url's locally as the user might want to try the next in line
      */
     private final TaskListener<ArrayList<Edition>> mIsfdbEditionResultsListener =
             new TaskListener<ArrayList<Edition>>() {
+                @Override
                 public void onFinished(@NonNull final FinishMessage<ArrayList<Edition>> message) {
                     mIsfdbEditions = message.result != null ? message.result : new ArrayList<>();
                     searchIsfdb();
                 }
             };
 
+    /** Hold the item position in the ist while we're editing an item. */
+    @Nullable
+    private Integer mEditPosition;
+    private DiacriticArrayAdapter<String> mAuthorAdapter;
+
     private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
             new ConfirmTocDialogFragment.ConfirmTocResults() {
                 /**
                  * The user approved, so add the TOC to the list and refresh the screen
-                 * (still not saved to database).
                  */
+                @Override
                 public void commitIsfdbData(@Book.TocBits final long tocBitMask,
                                             @NonNull final List<TocEntry> tocEntries) {
                     if (tocBitMask != 0) {
@@ -216,21 +231,23 @@ public class EditBookTocFragment
                 /**
                  * Start a task to get the next edition of this book (that we know of).
                  */
+                @Override
                 public void getNextEdition() {
                     // remove the top one, and try again
                     mIsfdbEditions.remove(0);
                     searchIsfdb();
                 }
             };
-    /** Hold the item position in the ist while we're editing an item. */
-    @Nullable
-    private Integer mEditPosition;
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
             new EditTocEntryDialogFragment.EditTocEntryResults() {
                 /**
                  * Add the author/title from the edit fields as a new row in the TOC list.
                  */
-                public void addOrUpdateEntry(@NonNull final TocEntry tocEntry) {
+                @Override
+                public void addOrUpdateEntry(@NonNull final TocEntry tocEntry,
+                                             final boolean hasMultipleAuthors) {
+
+                    updateMultiAuthor(hasMultipleAuthors);
 
                     if (mEditPosition == null) {
                         // add the new entry
@@ -276,6 +293,9 @@ public class EditBookTocFragment
         mListView = view.findViewById(R.id.tocList);
         mIsAnthologyCbx = view.findViewById(R.id.cbx_is_anthology);
         mMultiAuthorsView = view.findViewById(R.id.cbx_multiple_authors);
+        mAuthorTextView = view.findViewById(R.id.author);
+        mTitleTextView = view.findViewById(R.id.title);
+        mPubDateTextView = view.findViewById(R.id.first_publication);
         return view;
     }
 
@@ -302,6 +322,8 @@ public class EditBookTocFragment
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
         mListView.setHasFixedSize(true);
 
+        mMultiAuthorsView.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> updateMultiAuthor(isChecked));
         // adding a new entry
         //noinspection ConstantConditions
         getView().findViewById(R.id.btn_add).setOnClickListener(v -> onAdd());
@@ -354,8 +376,8 @@ public class EditBookTocFragment
     }
 
     @Override
-    public boolean onSaveFields(@NonNull final Book book) {
-        boolean success = super.onSaveFields(book);
+    public void onSaveFields(@NonNull final Book book) {
+        super.onSaveFields(book);
 
         book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS,
                     mIsAnthologyCbx.isChecked());
@@ -364,8 +386,12 @@ public class EditBookTocFragment
 
         // The toc list is not a 'real' field. Hence the need to store it manually here.
         book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+    }
 
-        return success;
+    @Override
+    public boolean hasUnfinishedEdits() {
+        // We only check the title field; disregarding the author and first-publication fields.
+        return !mTitleTextView.getText().toString().isEmpty();
     }
 
     @Override
@@ -474,15 +500,52 @@ public class EditBookTocFragment
     private void populateTocBits(@NonNull final Book book) {
         mIsAnthologyCbx.setChecked(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
                                                  Book.TOC_MULTIPLE_WORKS));
-        mMultiAuthorsView.setChecked(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
-                                                   Book.TOC_MULTIPLE_AUTHORS));
+        updateMultiAuthor(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
+                                        Book.TOC_MULTIPLE_AUTHORS));
+    }
+
+    private void updateMultiAuthor(final boolean isChecked) {
+        mMultiAuthorsView.setChecked(isChecked);
+        if (isChecked) {
+            if (mAuthorAdapter == null) {
+                //noinspection ConstantConditions
+                mAuthorAdapter = new DiacriticArrayAdapter<>(
+                        getContext(), android.R.layout.simple_dropdown_item_1line,
+                        mBookModel.getDb().getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                mAuthorTextView.setAdapter(mAuthorAdapter);
+            }
+
+            //noinspection ConstantConditions
+            mAuthorTextView.setText(mBookAuthor.getLabel(getContext()));
+            mAuthorTextView.selectAll();
+            mAuthorTextView.setVisibility(View.VISIBLE);
+        } else {
+            mAuthorTextView.setVisibility(View.GONE);
+        }
     }
 
     /**
      * Create a new entry.
      */
     private void onAdd() {
-        editEntry(new TocEntry(mBookAuthor, "", ""), null);
+        Author author;
+        if (mMultiAuthorsView.isChecked()) {
+            author = Author.fromString(mAuthorTextView.getText().toString().trim());
+        } else {
+            author = mBookAuthor;
+        }
+        TocEntry tocEntry = new TocEntry(author,
+                                         mTitleTextView.getText().toString().trim(),
+                                         mPubDateTextView.getText().toString().trim());
+        mList.add(tocEntry);
+
+        if (mMultiAuthorsView.isChecked()) {
+            //noinspection ConstantConditions
+            mAuthorTextView.setText(mBookAuthor.getLabel(getContext()));
+            mAuthorTextView.selectAll();
+        }
+        mTitleTextView.setText("");
+        mPubDateTextView.setText("");
     }
 
     /**

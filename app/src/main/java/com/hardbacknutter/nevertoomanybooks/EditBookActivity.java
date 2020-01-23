@@ -31,11 +31,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -99,30 +104,51 @@ public class EditBookActivity
 
     @Override
     public void onBackPressed() {
+
         BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
 
-        int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+        FragmentManager fm = getSupportFragmentManager();
+        int backStackEntryCount = fm.getBackStackEntryCount();
 
-        // When the user clicks 'back/up', and we're not at some sub fragment,
-        // check if we're clean to leave.
+        // 1. Check for the current (i.e. in resumed state) fragment having unfinished edits
+        if (backStackEntryCount > 0) {
+            String tag = fm.getBackStackEntryAt(backStackEntryCount - 1).getName();
+            Fragment frag = fm.findFragmentByTag(tag);
+            if (frag instanceof DataEditor && frag.isResumed()) {
+                //noinspection unchecked
+                DataEditor<Book> dataEditor = ((DataEditor<Book>) frag);
+                if (dataEditor.hasUnfinishedEdits()) {
+                    StandardDialogs.unsavedEditsDialog(this, null,
+                                                       super::onBackPressed);
+                    return;
+                }
+            }
+        }
+
+        // 2. If we're at the top level, check if the book was changed.
         if (backStackEntryCount == 0 && model.isDirty()) {
-            // If the user clicks 'exit', we finish()
-            StandardDialogs.unsavedEditsDialog(this, null, () -> {
-                // STILL send an OK and result data!
-                // The result data will contain the re-position book id.
-                setResult(Activity.RESULT_OK, model.getResultData());
-                // we're really leaving, clean up
-                CoverHandler.deleteOrphanedCoverFiles(this);
-                finish();
-            });
+            StandardDialogs.unsavedEditsDialog(this, null,
+                                               () -> cleanupAndSetResults(model, true));
             return;
         }
 
-        setResult(Activity.RESULT_OK, model.getResultData());
+        // Once here, we have no unfinished edits; and if we're on the top level,
+        // the book data was saved (or never changed)
         if (backStackEntryCount == 0) {
-            // we're really leaving, clean up
-            CoverHandler.deleteOrphanedCoverFiles(this);
+            cleanupAndSetResults(model, false);
         }
+
         super.onBackPressed();
+    }
+
+    void cleanupAndSetResults(@NonNull final BookBaseFragmentModel model,
+                              final boolean doFinish) {
+        // we're really leaving, clean up
+        CoverHandler.deleteOrphanedCoverFiles(this);
+        // The result data will contain the re-position book id.
+        setResult(Activity.RESULT_OK, model.getResultData());
+        if (doFinish) {
+            finish();
+        }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -75,11 +76,16 @@ public class EditTocEntryDialogFragment
     /** Database Access. */
     private DAO mDb;
 
+    /** checkbox to hide/show the author edit field. */
+    private CompoundButton mMultiAuthorsView;
+
     private AutoCompleteTextView mAuthorTextView;
     private EditText mTitleTextView;
     private EditText mPubDateTextView;
 
     private boolean mHasMultipleAuthors;
+
+    private DiacriticArrayAdapter<String> mAuthorAdapter;
 
     /** The TocEntry we're editing. */
     private TocEntry mTocEntry;
@@ -136,20 +142,11 @@ public class EditTocEntryDialogFragment
         mAuthorTextView = root.findViewById(R.id.author);
         mTitleTextView = root.findViewById(R.id.title);
         mPubDateTextView = root.findViewById(R.id.first_publication);
+        mMultiAuthorsView = root.findViewById(R.id.cbx_multiple_authors);
 
-        if (mHasMultipleAuthors) {
-            @SuppressWarnings("ConstantConditions")
-            DiacriticArrayAdapter<String> authorAdapter = new DiacriticArrayAdapter<>(
-                    getContext(), android.R.layout.simple_dropdown_item_1line,
-                    mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
-            mAuthorTextView.setAdapter(authorAdapter);
-
-            mAuthorTextView.setText(mTocEntry.getAuthor().getLabel(getContext()));
-            mAuthorTextView.selectAll();
-            mAuthorTextView.setVisibility(View.VISIBLE);
-        } else {
-            mAuthorTextView.setVisibility(View.GONE);
-        }
+        updateMultiAuthor(mHasMultipleAuthors);
+        mMultiAuthorsView.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> updateMultiAuthor(isChecked));
 
         mTitleTextView.setText(mTocEntry.getTitle());
         mPubDateTextView.setText(mTocEntry.getFirstPublication());
@@ -161,6 +158,27 @@ public class EditTocEntryDialogFragment
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, this::onConfirm)
                 .create();
+    }
+
+    private void updateMultiAuthor(final boolean isChecked) {
+        mHasMultipleAuthors = isChecked;
+        mMultiAuthorsView.setChecked(mHasMultipleAuthors);
+        if (mHasMultipleAuthors) {
+            if (mAuthorAdapter == null) {
+                //noinspection ConstantConditions
+                mAuthorAdapter = new DiacriticArrayAdapter<>(
+                        getContext(), android.R.layout.simple_dropdown_item_1line,
+                        mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                mAuthorTextView.setAdapter(mAuthorAdapter);
+            }
+
+            //noinspection ConstantConditions
+            mAuthorTextView.setText(mTocEntry.getAuthor().getLabel(getContext()));
+            mAuthorTextView.selectAll();
+            mAuthorTextView.setVisibility(View.VISIBLE);
+        } else {
+            mAuthorTextView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -196,7 +214,7 @@ public class EditTocEntryDialogFragment
                            @SuppressWarnings("unused") final int which) {
         getFields();
         if (mListener.get() != null) {
-            mListener.get().addOrUpdateEntry(mTocEntry);
+            mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
                 Log.d(TAG, "onConfirm|" + Logger.WEAK_REFERENCE_DEAD);
@@ -206,6 +224,7 @@ public class EditTocEntryDialogFragment
 
     public interface EditTocEntryResults {
 
-        void addOrUpdateEntry(@NonNull TocEntry tocEntry);
+        void addOrUpdateEntry(@NonNull TocEntry tocEntry,
+                              boolean hasMultipleAuthors);
     }
 }

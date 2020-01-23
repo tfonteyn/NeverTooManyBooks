@@ -38,8 +38,18 @@ public interface DataEditor<T extends DataManager> {
      * Save the contents of all Fields to the {@link DataManager}.
      *
      * @param dataManager to save the data to
-     *
-     * @return {@code true} if all data was saved.
      */
-    boolean onSaveFields(@NonNull T dataManager);
+    void onSaveFields(@NonNull T dataManager);
+
+    /**
+     * Check for unfinished user edits.
+     * <p>
+     * Independent of the data stored in {@link #onSaveFields(DataManager)}, an editor
+     * can have fields with data in it which are not directly linked with a {@link DataManager}.
+     *
+     * @return {@code true} if there are
+     */
+    default boolean hasUnfinishedEdits() {
+        return false;
+    }
 }

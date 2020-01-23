@@ -42,7 +42,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -115,10 +113,7 @@ public class EditBookSeriesFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        boolean showAuthSeriesOnTabs = PreferenceManager
-                .getDefaultSharedPreferences(getContext())
-                .getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
-        if (!showAuthSeriesOnTabs) {
+        if (!EditBookFragment.showAuthSeriesOnTabs(getContext())) {
             //noinspection ConstantConditions
             getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
         }
@@ -157,13 +152,17 @@ public class EditBookSeriesFragment
     }
 
     @Override
-    public boolean onSaveFields(@NonNull final Book book) {
-        boolean success = super.onSaveFields(book);
+    public void onSaveFields(@NonNull final Book book) {
+        super.onSaveFields(book);
 
         // The list is not a 'real' field. Hence the need to store it manually here.
         book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mList);
+    }
 
-        return success && mSeriesNameView.getText().toString().isEmpty();
+    @Override
+    public boolean hasUnfinishedEdits() {
+        // We only check the title field; disregarding the series number field.
+        return !mSeriesNameView.getText().toString().isEmpty();
     }
 
     private void onAdd() {

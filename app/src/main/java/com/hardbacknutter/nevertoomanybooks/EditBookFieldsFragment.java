@@ -48,7 +48,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -64,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -219,9 +217,7 @@ public class EditBookFieldsFragment
         }
 
         //noinspection ConstantConditions
-        boolean showAuthSeriesOnTabs = PreferenceManager
-                .getDefaultSharedPreferences(getContext())
-                .getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
+        boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
 
         if (!showAuthSeriesOnTabs) {
             populateAuthorListField(book);

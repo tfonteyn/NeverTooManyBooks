@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TrackedCursor;
@@ -64,12 +63,8 @@ public final class DEBUG_SWITCHES {
     public static final boolean BOOK_LIST_USES_STANDARD_TABLES = false;
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
-
-    /** Log the full flow of {@link Activity#recreate()}. */
-    public static final boolean RECREATE_ACTIVITY = false;
     /** track the flow & values on startActivityForResult & onActivityResult. */
     public static final boolean ON_ACTIVITY_RESULT = false;
-
     /** reading/writing a backup file. */
     public static final boolean BACKUP = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel}. */
@@ -78,8 +73,6 @@ public final class DEBUG_SWITCHES {
     public static final boolean TRACE_WEAK_REFERENCES = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
     public static final boolean BOB_THE_BUILDER = false;
-    /** {@link BooksOnBookshelfModel#initBookList}. */
-    static final boolean BOB_INIT_BOOK_LIST = false;
     /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
     public static final boolean BOOK_LIST_NODE_STATE = false;
     /** {@link BooklistCursor}. */
@@ -88,7 +81,6 @@ public final class DEBUG_SWITCHES {
     public static final boolean COVER_BROWSER = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.utils.ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;
-
     /** all things Dates/Timezone related. */
     public static final boolean DATETIME = false;
     /** all things XML related. */
@@ -97,7 +89,6 @@ public final class DEBUG_SWITCHES {
     public static final boolean NETWORK = false;
     /** all things ISBN related. */
     public static final boolean ISBN = false;
-
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.JsoupBase}. */
     public static final boolean JSOUP = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator}. */
@@ -110,16 +101,11 @@ public final class DEBUG_SWITCHES {
     public static final boolean ISFDB = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
     public static final boolean OPEN_LIBRARY = false;
-
-    /** {@link DAO}. Global replace Author/Series/... */
-    public static final boolean DAO_GLOBAL_REPLACE = false;
-
     /** {@link TrackedCursor}. */
     public static final boolean TRACKED_CURSOR = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.database.dbsync}. */
     public static final boolean DB_SYNC = false;
     public static final boolean DB_SYNC_LOCKING = false;
-
     /** Dump SQL for {@link SynchronizedDb#execSQL(String)}. */
     public static final boolean DB_SYNC_EXEC_SQL = false;
     /**
@@ -136,22 +122,25 @@ public final class DEBUG_SWITCHES {
     public static final boolean DB_SYNC_EXECUTE_INSERT = false;
     /** Dump SQL and rowsAffected for {@link SynchronizedStatement#executeUpdateDelete()} */
     public static final boolean DB_SYNC_EXECUTE_UPDATE_DELETE = false;
-
     /** dump savedInstanceState/outState/extras/arguments. */
     public static final boolean DUMP_INSTANCE_STATE = false;
     /** dump the style each time it is accessed. Medium length in the log. */
     public static final boolean DUMP_STYLE = false;
-
     public static final boolean PRUNE_LIST = false;
     public static final boolean FIELD_TEXT_WATCHER = false;
     public static final boolean BOOK_LOCALE = false;
 
-    static final boolean TRACK = false;
+    /** Log the full flow of {@link Activity#recreate()}. */
+    static final boolean RECREATE_ACTIVITY = false;
+    /** {@link BooksOnBookshelfModel#initBookList}. */
+    static final boolean BOB_INIT_BOOK_LIST = false;
+
     /** Enable strict mode reporting on network,disc,... usage. */
     static final boolean STRICT_MODE = false;
     /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
     static final boolean BOB_FIX_POSITION = false;
     static final boolean THEME = false;
+    static final boolean TRACK = false;
 
     private DEBUG_SWITCHES() {
     }

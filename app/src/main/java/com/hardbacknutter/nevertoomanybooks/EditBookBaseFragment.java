@@ -37,8 +37,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
@@ -146,6 +150,14 @@ public abstract class EditBookBaseFragment
     @CallSuper
     public void onPause() {
         onSaveFields(mBookModel.getBook());
+        //noinspection ConstantConditions
+        UnfinishedEdits model = new ViewModelProvider(getActivity()).get(UnfinishedEdits.class);
+        if (hasUnfinishedEdits()) {
+            // Flag up this fragment as having unfinished edits.
+            model.fragments.add(getTag());
+        } else {
+            model.fragments.remove(getTag());
+        }
         super.onPause();
     }
 
@@ -186,9 +198,8 @@ public abstract class EditBookBaseFragment
      * Override as needed.
      */
     @CallSuper
-    public boolean onSaveFields(@NonNull final Book book) {
+    public void onSaveFields(@NonNull final Book book) {
         getFields().putAllInto(book);
-        return true;
     }
 
     /**
@@ -278,5 +289,16 @@ public abstract class EditBookBaseFragment
                     .newInstance(fieldView.getId(), dialogTitleId, listGetter.getList())
                     .show(getChildFragmentManager(), CheckListDialogFragment.TAG));
         }
+    }
+
+    /**
+     * ViewModels must be public.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static class UnfinishedEdits
+            extends ViewModel {
+
+        /** key: fragmentTag. */
+        Set<String> fragments = new HashSet<>();
     }
 }

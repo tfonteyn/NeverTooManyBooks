@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -52,7 +51,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -100,7 +98,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -482,9 +479,7 @@ public class BooksOnBookshelf
         mFabMenuItems[3] = findViewById(R.id.fab3);
         mFabMenuItems[3].setOnClickListener(v -> startAddManually());
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean showTabNativeId = prefs.getBoolean(Prefs.pk_edit_book_tabs_native_id, false);
-        if (showTabNativeId) {
+        if (EditBookFragment.showTabNativeId(this)) {
             mFabMenuItems[4] = findViewById(R.id.fab4);
             mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
         }
@@ -1550,7 +1545,7 @@ public class BooksOnBookshelf
      * Handle the standard search intent / suggestions click.
      *
      * <a href="https://developer.android.com/guide/topics/search/search-dialog#ReceivingTheQuery">
-     *     ReceivingTheQuery</a>
+     * ReceivingTheQuery</a>
      */
     private void handleStandardSearchIntent() {
         String keywords = "";
