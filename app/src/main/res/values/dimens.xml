@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -68,6 +68,11 @@
     <dimen name="indent1">4dp</dimen>
     <dimen name="indent2">8dp</dimen>
     <dimen name="indent3">16dp</dimen>
+
+
+    <dimen name="fieldIndent1">4dp</dimen>
+    <dimen name="fieldIndent3">16dp</dimen>
+
 
     <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
     <dimen name="cover_base_size">30dp</dimen>

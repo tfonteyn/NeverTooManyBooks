@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@
     <EditText
         android:id="@+id/series_num"
         style="@style/EditText.SeriesNumber"
-        android:layout_width="80sp"
+        android:layout_width="80dp"
         app:layout_constraintBaseline_toBaselineOf="@id/series"
         app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toEndOf="@id/series"
@@ -72,6 +72,7 @@
         android:id="@android:id/list"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/border2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
