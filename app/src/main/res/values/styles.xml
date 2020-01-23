@@ -233,6 +233,12 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
+    <style name="CheckboxEntry.Small" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
     <!-- Button with 'data' displayed on it; a click leads to a screen/dialog to edit that data -->
     <style name="DataEntryButton" parent="Widget.MaterialComponents.Button">
         <item name="android:layout_width">0dp</item>
