@@ -539,12 +539,6 @@ public abstract class BaseActivity
                     Prefs.dumpPreferences(BaseActivity.this, null);
                     return true;
 
-                case R.id.MENU_DEBUG_UNMANGLE:
-                    try (DAO db = new DAO(TAG)) {
-                        db.tempUnMangle(BaseActivity.this);
-                    }
-                    return true;
-
                 case R.id.MENU_DEBUG_DUMP_TEMP_TABLES:
                     try (DAO db = new DAO(TAG)) {
                         DBHelper.dumpTempTableNames(db.getUnderlyingDatabase());
