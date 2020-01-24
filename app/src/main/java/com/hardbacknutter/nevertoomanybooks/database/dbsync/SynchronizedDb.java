@@ -267,7 +267,7 @@ public class SynchronizedDb {
     /**
      * Locking-aware wrapper for underlying database method.
      *
-     * @return the row id of the newly inserted row, or -1 if an error occurred
+     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long insert(@NonNull final String table,
                        @SuppressWarnings("SameParameterValue")

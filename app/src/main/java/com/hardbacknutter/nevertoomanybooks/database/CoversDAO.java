@@ -389,6 +389,7 @@ public final class CoversDAO
      * Compresses to {@link #IMAGE_QUALITY_PERCENTAGE} first.
      * <p>
      * This will either insert or update a row in the database.
+     * Failures are ignored; this is just a cache.
      *
      * @param uuid      UUID of the book
      * @param cIdx      0..n image index

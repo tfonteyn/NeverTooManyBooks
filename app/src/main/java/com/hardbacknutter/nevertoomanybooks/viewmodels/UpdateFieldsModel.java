@@ -542,6 +542,7 @@ public class UpdateFieldsModel
                     }
                 }
 
+                // failures to update are ignored.
                 mDb.updateBook(context, mCurrentBookId, new Book(bookData), 0);
             }
         }

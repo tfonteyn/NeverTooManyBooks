@@ -345,8 +345,11 @@ public class EditBookFragment
 
     /**
      * Save the collected book details.
+     *
+     * <strong>WARNING:</strong> a failed insert/update is ignored (but logged).
      */
     private void saveBook() {
+        // failures are ignored
         //noinspection ConstantConditions
         mBookModel.saveBook(getContext());
 

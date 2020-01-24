@@ -614,7 +614,7 @@ class LibraryThingHandler
                 case OriginalLanguage:
                 case OriginalTitle:
                 case AltTitle:
-                    //ENHANCE
+                    //ENHANCE OriginalLanguage, OriginalTitle, AltTitle
                     break;
 
                 case Other:

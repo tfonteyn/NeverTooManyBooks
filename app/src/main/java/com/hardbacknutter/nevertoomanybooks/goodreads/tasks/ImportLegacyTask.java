@@ -400,6 +400,8 @@ class ImportLegacyTask
     /**
      * Update the book using the Goodreads data.
      *
+     * <strong>WARNING:</strong> a failed update is ignored (but logged).
+     *
      * @param context Current context
      * @param db      Database Access
      */
@@ -427,11 +429,14 @@ class ImportLegacyTask
         // data for the given book (taken from the cursor), not just replace it.
         long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
         Book book = new Book(buildBundle(context, db, bookId, review));
+        // failures to update are ignored.
         db.updateBook(context, bookId, book, DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
     }
 
     /**
      * Create a new book.
+     *
+     * <strong>WARNING:</strong> a failed insert is ignored (but logged).
      *
      * @param context Current context
      * @param db      Database Access
@@ -456,8 +461,10 @@ class ImportLegacyTask
                     }
                 }
             }
-
         }
+        //else {
+        // ignore the insert failure
+        //}
     }
 
     /**

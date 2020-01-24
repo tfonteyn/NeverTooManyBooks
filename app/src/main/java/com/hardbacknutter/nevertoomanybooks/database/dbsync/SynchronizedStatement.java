@@ -384,7 +384,7 @@ public class SynchronizedStatement
      * Execute this SQL statement and return the id of the row inserted due to this call.
      * The SQL statement should be an INSERT for this to be a useful call.
      *
-     * @return the row id of the last row inserted, if this insert is successful. -1 otherwise.
+     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long executeInsert() {
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();

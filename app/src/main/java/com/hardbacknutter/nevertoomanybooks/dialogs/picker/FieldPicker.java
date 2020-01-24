@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,7 +121,7 @@ public class FieldPicker<T>
         }
 
         /**
-         * @return the position of the original value, or -1 if none.
+         * @return the position of the original value, or {@code -1} if none.
          */
         int getPreSelectedPosition() {
             return mPreSelectedPosition;

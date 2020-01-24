@@ -343,7 +343,7 @@ public class App
      * @param attr    attribute id to resolve
      *                Must be a type that has a {@code android.R.attr.textSize} value.
      *
-     * @return size in integer pixels, or -1 if not defined.
+     * @return size in integer pixels, or {@code -1} if not defined.
      */
     @SuppressWarnings("unused")
     public static int getTextSize(@NonNull final Context context,

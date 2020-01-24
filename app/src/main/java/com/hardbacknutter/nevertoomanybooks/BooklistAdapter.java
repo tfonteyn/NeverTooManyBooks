@@ -426,21 +426,6 @@ public class BooklistAdapter
     String getLevelText(@NonNull final Context context,
                         @IntRange(from = 1) final int level) {
 
-
-        //FIXME: from BoB, click book. Move sideways book to book
-        // (up to BooklistCursor#CURSOR_SIZE times) then go Back to BoB
-        // Not fixing for now, as BooklistCursor should get replaced with
-        // https://developer.android.com/topic/libraries/architecture/paging.html
-
-        // the bug:
-        // ==> https://github.com/eleybourn/Book-Catalogue/issues/504
-        // android.database.CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
-        // at android.database.AbstractCursor.checkPosition(AbstractCursor.java:460)
-        // at android.database.AbstractWindowedCursor.checkPosition(AbstractWindowedCursor.java:136)
-        // at android.database.AbstractWindowedCursor.getString(AbstractWindowedCursor.java:50)
-        // .getLevelText(BooklistMappedCursorRow.java:170)
-
-
         // sanity check.
         if (BuildConfig.DEBUG /* always */) {
             if (level > (mStyle.groupCount() + 1)) {
@@ -464,6 +449,7 @@ public class BooklistAdapter
                 return RowKind.format(context, kind, text);
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
+            // Seen a number of times. No longer reproducible, but paranoia...
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "|level=" + level, e);
             }
