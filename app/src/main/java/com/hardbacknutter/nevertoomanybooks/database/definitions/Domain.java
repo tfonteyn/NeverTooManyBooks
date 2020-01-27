@@ -33,10 +33,6 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 
 /**
@@ -46,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
  * TODO: currently we only take reference copies of {@link Domain}.
  * Similarly, lists of domains are (sometimes) reference copies as well.
  * This is ok for now as we can't modify a Domain after initial creation.
- * So we <strong>SHOULD</strong> do a proper/full copy of the domain objects.
+ * But we <strong>SHOULD</strong> do a proper/full copy of the domain objects.
  * This will need some time/work to hunt down all the places in the code though.
  * <p>
  * Parcelable: needed by {@link BooklistGroup}
@@ -69,26 +65,28 @@ public class Domain
                 }
             };
 
-    /** Constraint string. */
-    private static final String NOT_NULL = "NOT NULL";
     @NonNull
     private final String mName;
+    /** This domain represents a primary key. */
+    private final boolean mIsPrimaryKey;
     @NonNull
     private final String mType;
-    @NonNull
-    private final List<String> mConstraints = new ArrayList<>();
+    /** {@code null} values not allowed. */
+    private final boolean mIsNotNull;
 
+    /** Holds a 'DEFAULT' clause (if any). */
+    @Nullable
+    private final String mDefaultClause;
     /** Holds a 'REFERENCES' clause (if any). */
     @Nullable
     private final String mReferences;
 
-    /** This domain represents a primary key. */
-    private final boolean mIsPrimaryKey;
     /**
      * This domain is pre-prepared for sorting;
      * i.e. the values are stripped of spaces etc.. before being stored.
      */
     private final boolean mIsPrePreparedOrderBy;
+    private final boolean mIsNotBlank;
 
     /**
      * Full, private constructor.
@@ -96,7 +94,8 @@ public class Domain
      * @param name               column name
      * @param isPrimaryKey       Flag
      * @param type               column type (text, int, float, ...)
-     * @param constraints        {@code true} if this column should never be {@code null}
+     * @param isNotNull          {@code true} if this column should never be {@code null}
+     * @param defaultClause      (optional) a DEFAULT clause
      * @param references         (optional) a table and action reference (ON UPDATE... etc...)
      * @param prePreparedOrderBy {@code true} if this domain is in fact pre-prepared for sorting.
      *                           i.e. the values are stripped of spaces etc.. before being stored.
@@ -104,15 +103,19 @@ public class Domain
     private Domain(@NonNull final String name,
                    final boolean isPrimaryKey,
                    @NonNull final String type,
-                   @NonNull final Collection<String> constraints,
+                   final boolean isNotNull,
+                   @Nullable final String defaultClause,
                    @Nullable final String references,
                    final boolean prePreparedOrderBy) {
         mName = name;
-        mType = type;
         mIsPrimaryKey = isPrimaryKey;
-        mIsPrePreparedOrderBy = prePreparedOrderBy;
-        mConstraints.addAll(constraints);
+        mType = type;
+        mIsNotNull = isNotNull;
+        mDefaultClause = defaultClause;
         mReferences = references;
+        mIsPrePreparedOrderBy = prePreparedOrderBy;
+
+        mIsNotBlank = mDefaultClause != null && !"''".equals(mDefaultClause);
     }
 
     /**
@@ -122,11 +125,14 @@ public class Domain
      */
     public Domain(@NonNull final Domain from) {
         mName = from.mName;
-        mType = from.mType;
         mIsPrimaryKey = from.mIsPrimaryKey;
-        mIsPrePreparedOrderBy = from.mIsPrePreparedOrderBy;
-        mConstraints.addAll(from.mConstraints);
+        mType = from.mType;
+        mIsNotNull = from.mIsNotNull;
+        mDefaultClause = from.mDefaultClause;
         mReferences = from.mReferences;
+        mIsPrePreparedOrderBy = from.mIsPrePreparedOrderBy;
+
+        mIsNotBlank = from.mIsNotBlank;
     }
 
     /**
@@ -137,12 +143,27 @@ public class Domain
     private Domain(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mName = in.readString();
+        mIsPrimaryKey = in.readInt() == 1;
         //noinspection ConstantConditions
         mType = in.readString();
-        in.readList(mConstraints, getClass().getClassLoader());
+        mIsNotNull = in.readInt() == 1;
+        mDefaultClause = in.readString();
         mReferences = in.readString();
-        mIsPrimaryKey = in.readInt() == 1;
         mIsPrePreparedOrderBy = in.readInt() == 1;
+
+        mIsNotBlank = mDefaultClause != null && !"''".equals(mDefaultClause);
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeString(mName);
+        dest.writeInt(mIsPrimaryKey ? 1 : 0);
+        dest.writeString(mType);
+        dest.writeInt(mIsNotNull ? 1 : 0);
+        dest.writeString(mDefaultClause);
+        dest.writeString(mReferences);
+        dest.writeInt(mIsPrePreparedOrderBy ? 1 : 0);
     }
 
     /**
@@ -170,9 +191,26 @@ public class Domain
     }
 
     /**
-     * Convenience method to check if this domain is TEXT based.
+     * {@code null} values are not allowed.
+     */
+    public boolean isNotNull() {
+        return mIsNotNull;
+    }
+
+    /**
+     * Blank values are not allowed.
      *
-     * @return {@code true} if this domain is a 'text' type.
+     * This is basically domains which have a DEFAULT clause which is not the empty string.
+     */
+    public boolean isNotBlank() {
+        return mIsNotBlank;
+    }
+
+    /**
+     * Convenience method to check the type of this domain.
+     * Can be used to check if collation clauses and/or lower/upper should be used.
+     *
+     * @return {@code true} if this domain is a TYPE_TEXT.
      */
     public boolean isText() {
         return ColumnInfo.TYPE_TEXT.equalsIgnoreCase(mType);
@@ -191,17 +229,6 @@ public class Domain
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(mName);
-        dest.writeString(mType);
-        dest.writeList(mConstraints);
-        dest.writeString(mReferences);
-        dest.writeInt(mIsPrimaryKey ? 1 : 0);
-        dest.writeInt(mIsPrePreparedOrderBy ? 1 : 0);
     }
 
     /**
@@ -232,8 +259,11 @@ public class Domain
         }
 
         if (withConstraints) {
-            for (String cs : mConstraints) {
-                sql.append(' ').append(cs);
+            if (mIsNotNull) {
+                sql.append(" NOT NULL");
+            }
+            if (mDefaultClause != null) {
+                sql.append(" DEFAULT ").append(mDefaultClause);
             }
             if (mReferences != null) {
                 sql.append(" REFERENCES ").append(mReferences);
@@ -242,21 +272,23 @@ public class Domain
         return sql.toString();
     }
 
+    public boolean hasDefault() {
+        return mDefaultClause != null;
+    }
+
     public static class Builder {
 
-        /** Multi-use; space at the end. */
-        private static final String DEFAULT_ = "DEFAULT ";
         @NonNull
         private final String mName;
         @NonNull
         private final String mType;
-        private final List<String> mConstraints = new ArrayList<>();
-
         private boolean mIsPrimaryKey;
-        private boolean mIsPrePreparedOrderBy;
-
+        private boolean mIsNotNull;
+        @Nullable
+        private String mDefaultClause;
         @Nullable
         private String mReferences;
+        private boolean mIsPrePreparedOrderBy;
 
         public Builder(@NonNull final String name,
                        @NonNull final String type) {
@@ -273,7 +305,7 @@ public class Domain
         @NonNull
         public Builder primaryKey() {
             mIsPrimaryKey = true;
-            mConstraints.add(NOT_NULL);
+            mIsNotNull = true;
             return this;
         }
 
@@ -284,7 +316,7 @@ public class Domain
          */
         @NonNull
         public Builder notNull() {
-            mConstraints.add(NOT_NULL);
+            mIsNotNull = true;
             return this;
         }
 
@@ -297,7 +329,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefault(final long value) {
-            mConstraints.add(DEFAULT_ + value);
+            mDefaultClause = String.valueOf(value);
             return this;
         }
 
@@ -310,7 +342,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefault(final double value) {
-            mConstraints.add(DEFAULT_ + value);
+            mDefaultClause = String.valueOf(value);
             return this;
         }
 
@@ -323,7 +355,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefault(@NonNull final String value) {
-            mConstraints.add(DEFAULT_ + value);
+            mDefaultClause = value;
             return this;
         }
 
@@ -334,7 +366,7 @@ public class Domain
          */
         @NonNull
         public Builder withDefaultEmptyString() {
-            mConstraints.add(DEFAULT_ + "''");
+            mDefaultClause = "''";
             return this;
         }
 
@@ -369,7 +401,8 @@ public class Domain
          */
         @NonNull
         public Domain build() {
-            return new Domain(mName, mIsPrimaryKey, mType, mConstraints, mReferences,
+            return new Domain(mName, mIsPrimaryKey, mType,
+                              mIsNotNull, mDefaultClause, mReferences,
                               mIsPrePreparedOrderBy);
         }
     }
