@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,17 +27,20 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperViewHolder;
 
@@ -93,8 +96,26 @@ public class RecyclerViewViewHolderBase
         mCheckableButton = itemView.findViewById(R.id.ROW_CHECKABLE_BTN);
         mDragHandleView = itemView.findViewById(R.id.ROW_GRABBER_ICON);
 
-        mItemDraggedBackgroundColor = App.getColorInt(itemView.getContext(),
-                                                      android.R.attr.colorPrimary);
+        mItemDraggedBackgroundColor = getColorInt(itemView.getContext(),
+                                                  android.R.attr.colorPrimary);
+    }
+
+    /**
+     * Get a color int value for the given attribute.
+     *
+     * @param context Current context
+     * @param attr    attribute id to resolve
+     *
+     * @return A single color value in the form 0xAARRGGBB.
+     */
+    @ColorInt
+    private static int getColorInt(@NonNull final Context context,
+                                   @SuppressWarnings("SameParameterValue") @AttrRes
+                                   final int attr) {
+        Resources.Theme theme = context.getTheme();
+        TypedValue tv = new TypedValue();
+        theme.resolveAttribute(attr, tv, true);
+        return context.getResources().getColor(tv.resourceId, theme);
     }
 
     @Override

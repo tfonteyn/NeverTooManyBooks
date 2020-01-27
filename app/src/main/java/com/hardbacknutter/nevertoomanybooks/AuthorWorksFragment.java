@@ -65,8 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
-import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
+import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
  * Display all TocEntry's for an Author.
@@ -126,10 +125,7 @@ public class AuthorWorksFragment
         listView.addItemDecoration(
                 new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
 
-        if (!(listView instanceof CFSRecyclerView)) {
-            listView.addItemDecoration(
-                    new FastScrollerOverlay(context, R.drawable.fast_scroll_overlay));
-        }
+        FastScroller.init(listView);
 
         mAdapter = new TocAdapter(context, mModel.getDb());
         listView.setAdapter(mAdapter);
@@ -318,7 +314,7 @@ public class AuthorWorksFragment
 
     public class TocAdapter
             extends RecyclerView.Adapter<Holder>
-            implements FastScrollerOverlay.SectionIndexerV2 {
+            implements FastScroller.PopupTextProvider {
 
         /** Caching the inflater. */
         private final LayoutInflater mInflater;
@@ -332,6 +328,7 @@ public class AuthorWorksFragment
          */
         TocAdapter(@NonNull final Context context,
                    @NonNull final DAO db) {
+            super();
             mInflater = LayoutInflater.from(context);
             mDb = db;
         }
@@ -416,16 +413,17 @@ public class AuthorWorksFragment
             return mModel.getTocEntries().size();
         }
 
-        @Nullable
+        @NonNull
         @Override
-        public String[] getSectionText(@NonNull final Context context,
-                                       final int position) {
+        public String[] getPopupText(@NonNull final Context context,
+                                     final int position) {
             // make sure it's still in range.
-            int index = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
-            return new String[]{mModel.getTocEntries().get(index)
-                                      .getTitle()
-                                      .substring(0, 1)
-                                        .toUpperCase(Locale.getDefault())};
+            int clampedPosition = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
+
+            String title = mModel.getTocEntries().get(clampedPosition)
+                                 .getTitle();
+//                         .substring(0, 1).toUpperCase(Locale.getDefault());
+            return new String[]{title};
         }
     }
 }

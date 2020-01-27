@@ -102,8 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActiv
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
-import com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView;
+import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
@@ -434,11 +433,7 @@ public class BooksOnBookshelf
         mListView.addItemDecoration(
                 new DividerItemDecoration(this, mLayoutManager.getOrientation()));
 
-        // see class docs for FastScrollerOverlay
-        if (!(mListView instanceof CFSRecyclerView)) {
-            mListView.addItemDecoration(
-                    new FastScrollerOverlay(this, R.drawable.fast_scroll_overlay));
-        }
+        FastScroller.init(mListView);
     }
 
     /**

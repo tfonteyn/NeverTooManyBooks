@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -75,17 +75,10 @@
 
             <include layout="@layout/booksonbookshelf_inc_header" />
 
-            <!-- Using the standard RecyclerView with reflection. -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@android:id/list"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-
-                app:fastScrollEnabled="true"
-                app:fastScrollHorizontalThumbDrawable="@drawable/fast_scroll_thumb"
-                app:fastScrollHorizontalTrackDrawable="@drawable/fast_scroll_track"
-                app:fastScrollVerticalThumbDrawable="@drawable/fast_scroll_thumb"
-                app:fastScrollVerticalTrackDrawable="@drawable/fast_scroll_track"
 
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -95,29 +88,6 @@
 
                 tools:listitem="@layout/booksonbookshelf_row_book"
                 />
-
-            <!-- Using the custom CFSRecyclerView -->
-            <!--    <com.hardbacknutter.nevertoomanybooks.widgets.cfs.CFSRecyclerView-->
-            <!--        android:id="@android:id/list"-->
-            <!--        android:layout_width="0dp"-->
-            <!--        android:layout_height="0dp"-->
-
-            <!--        app:cfsEnabled="true"-->
-            <!--        app:cfsHorizontalThumbDrawable="@drawable/fast_scroll_thumb"-->
-            <!--        app:cfsHorizontalTrackDrawable="@drawable/fast_scroll_track"-->
-            <!--        app:cfsVerticalThumbDrawable="@drawable/fast_scroll_thumb"-->
-            <!--        app:cfsVerticalTrackDrawable="@drawable/fast_scroll_track"-->
-            <!--        app:cfsOverlayDrawable="@drawable/fast_scroll_overlay"-->
-
-            <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--        app:layout_constraintEnd_toEndOf="parent"-->
-            <!--        app:layout_constraintStart_toStartOf="parent"-->
-            <!--        app:layout_constraintTop_toBottomOf="@id/list_header"-->
-            <!--        app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-
-            <!--        tools:listitem="@layout/booksonbookshelf_row_book"-->
-            <!--        />-->
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

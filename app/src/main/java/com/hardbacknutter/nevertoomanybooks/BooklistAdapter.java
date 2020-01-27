@@ -50,6 +50,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -75,7 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
-import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
+import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
  * Handles all views in a multi-type list showing Book, Author, Series etc.
@@ -93,7 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.FastScrollerOverlay;
  */
 public class BooklistAdapter
         extends RecyclerView.Adapter<BooklistAdapter.RowViewHolder>
-        implements FastScrollerOverlay.SectionIndexerV2 {
+        implements FastScroller.PopupTextProvider {
 
     /** Log tag. */
     private static final String TAG = "BooklistAdapter";
@@ -380,21 +381,19 @@ public class BooklistAdapter
      * <p>
      * <br>{@inheritDoc}
      */
-    @Nullable
+    @NonNull
     @Override
-    public String[] getSectionText(@NonNull final Context context,
-                                   final int position) {
-        // sanity check.
-        if (position < 0 || position >= getItemCount()) {
-            return null;
-        }
+    public String[] getPopupText(@NonNull final Context context,
+                                 final int position) {
+        // make sure it's still in range.
+        int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
 
         String[] section;
 
         // temporary move the cursor to the requested position, restore after we got the text.
         synchronized (this) {
             final int savedPos = mCursor.getPosition();
-            mCursor.moveToPosition(position);
+            mCursor.moveToPosition(clampedPosition);
             section = getLevelText(context);
             mCursor.moveToPosition(savedPos);
         }

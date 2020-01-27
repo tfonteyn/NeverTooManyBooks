@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,16 +26,11 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:drawable="@drawable/fastscroll_track_line"
+        android:state_pressed="true" />
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?android:attr/colorBackground" />
-    <stroke
-        android:width="@dimen/border1"
-        android:color="?attr/colorSecondary" />
-    <corners android:radius="@dimen/border2" />
-    <padding
-        android:bottom="@dimen/border0"
-        android:left="@dimen/border0"
-        android:right="@dimen/border0"
-        android:top="@dimen/border0" />
-</shape>
+    <item
+        android:drawable="@drawable/fastscroll_track_line" />
+</selector>
