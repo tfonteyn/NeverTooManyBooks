@@ -430,6 +430,11 @@ class GoogleBooksEntryHandler
                 if (index > -1) {
                     mBookData.putString(DBDefinitions.KEY_PAGES,
                                         tmpFormat.substring(0, index).trim());
+                } else {
+                    index = tmpFormat.indexOf("Dimensions");
+                    if (index > -1) {
+                        mBookData.putString(DBDefinitions.KEY_FORMAT, tmpFormat.trim());
+                    }
                 }
                 break;
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,6 +62,9 @@ public final class FormatMapper
         MAPPER.put("mass market paperback", R.string.book_format_paperback);
         MAPPER.put("paperback", R.string.book_format_paperback);
         MAPPER.put("hardcover", R.string.book_format_hardcover);
+
+        // GoogleBooks, not already listed above.
+        MAPPER.put("dimensions", R.string.book_format_dimensions);
 
         // KBNL, not already listed above.
         MAPPER.put("geb.", R.string.book_format_hardcover);

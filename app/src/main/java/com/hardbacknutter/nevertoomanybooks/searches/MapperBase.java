@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,9 +48,21 @@ public abstract class MapperBase
 
         String value = bookData.getString(getKey());
         if (value != null && !value.isEmpty()) {
+            Integer resId = null;
+            String lcValue = value.toLowerCase(Locale.getDefault());
+            int len = 0;
+//            resId = MAPPER.get(lcValue);
+            for (final Map.Entry<String, Integer> entry : MAPPER.entrySet()) {
+                if (lcValue.startsWith(entry.getKey())) {
+                    resId = entry.getValue();
+                    len = entry.getKey().length();
+                    break;
+                }
+            }
 
-            Integer resId = MAPPER.get(value.toLowerCase(Locale.getDefault()));
-            value = resId != null ? context.getString(resId) : value;
+            if (resId != null) {
+                value = (context.getString(resId) + ' ' + value.substring(len).trim()).trim();
+            }
 
             bookData.putString(getKey(), value);
         }
