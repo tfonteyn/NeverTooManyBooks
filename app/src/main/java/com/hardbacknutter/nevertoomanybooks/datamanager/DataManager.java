@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -95,7 +96,16 @@ public class DataManager {
     private final Collection<ValidatorException> mValidationExceptions = new ArrayList<>();
 
     /** Raw data storage. */
-    private final Bundle mRawData = new Bundle();
+    private final Bundle mRawData;
+
+    public DataManager() {
+        mRawData = new Bundle();
+    }
+
+    @VisibleForTesting
+    public DataManager(@NonNull final Bundle rawData) {
+        mRawData = rawData;
+    }
 
     /**
      * Erase everything in this instance.
@@ -115,7 +125,7 @@ public class DataManager {
      *
      * @throws UnexpectedValueException if the type of the Object is not supported.
      */
-    protected void putAll(@NonNull final Bundle src)
+    public void putAll(@NonNull final Bundle src)
             throws UnexpectedValueException {
         for (String key : src.keySet()) {
             put(key, src.get(key));
@@ -207,8 +217,7 @@ public class DataManager {
             Logger.warn(TAG, "put",
                         "key=`" + key + '`',
                         "value=<NULL>");
-            // Stored as a String.
-            putNull(key);
+            remove(key);
 
         } else {
             Logger.warnWithStackTrace(TAG, "put",
@@ -223,7 +232,7 @@ public class DataManager {
      *
      * @param key Key of data object
      *
-     * @return Data object, or {@code null} when not present, o present with value {@code null}
+     * @return Data object, or {@code null} when not present or the value is {@code null}
      */
     @Nullable
     public Object get(@NonNull final String key) {
@@ -323,7 +332,7 @@ public class DataManager {
      *
      * @param key Key of data object
      *
-     * @return a long value.
+     * @return a long value; {@code null} or empty becomes 0
      */
     public long getLong(@NonNull final String key) {
         return ParseUtils.toLong(mRawData.get(key));
@@ -366,15 +375,6 @@ public class DataManager {
     public void putString(@NonNull final String key,
                           @NonNull final String value) {
         mRawData.putString(key, value);
-    }
-
-    /**
-     * Store an explicit {@code null} value.
-     *
-     * @param key Key of data object
-     */
-    public void putNull(@NonNull final String key) {
-        mRawData.putString(key, null);
     }
 
     /**

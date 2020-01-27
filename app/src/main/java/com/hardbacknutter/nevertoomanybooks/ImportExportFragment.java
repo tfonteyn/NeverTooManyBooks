@@ -34,7 +34,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.system.ErrnoException;
 import android.system.OsConstants;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +45,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.util.Pair;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -55,6 +55,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.BackupManager;
@@ -75,6 +76,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
@@ -509,15 +511,20 @@ public class ImportExportFragment
 
         int failed = results.failedCsvLines.size();
         if (failed > 0) {
-            msg.append("\n\n• ");
+            int fs;
+            List<Pair<Integer, String>> list;
+            // keep it sensible, list maximum 10 lines.
             if (failed > 10) {
-                // keep it sensible, list only 10 line numbers.
-                msg.append(getString(R.string.warning_import_csv_failed_lines_lots,
-                                     TextUtils.join(", ", results.failedCsvLines.subList(0, 9))));
+                fs = R.string.warning_import_csv_failed_lines_lots;
+                list = results.failedCsvLines.subList(0, 9);
             } else {
-                msg.append(getString(R.string.warning_import_csv_failed_lines_some,
-                                     TextUtils.join(", ", results.failedCsvLines)));
+                fs = R.string.warning_import_csv_failed_lines_some;
+                list = results.failedCsvLines;
             }
+            msg.append("\n").append(
+                    getString(fs, Csv.join("\n", list, true, "• ", element ->
+                            getString(R.string.a_bracket_b_bracket,
+                                      String.valueOf(element.first), element.second))));
         }
 
         //noinspection ConstantConditions
@@ -537,7 +544,7 @@ public class ImportExportFragment
     }
 
     private void onImportFailed(@Nullable final Exception e) {
-        String msg;
+        String msg = null;
 
         if (e instanceof InvalidArchiveException) {
             msg = getString(R.string.error_import_invalid_archive);
@@ -552,8 +559,10 @@ public class ImportExportFragment
         } else if (e instanceof FormattedMessageException) {
             //noinspection ConstantConditions
             msg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
+        }
 
-        } else {
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
             msg = getString(R.string.error_unexpected_error);
         }
 

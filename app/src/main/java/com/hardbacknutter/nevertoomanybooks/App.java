@@ -257,17 +257,6 @@ public class App
     }
 
     /**
-     * Convenience method.
-     *
-     * @param title   the title to display
-     * @param message the message to display
-     */
-    public static void showNotification(@NonNull final CharSequence title,
-                                        @NonNull final CharSequence message) {
-        showNotification(sInstance.getApplicationContext(), title, message);
-    }
-
-    /**
      * Show a notification while this app is running.
      *
      * @param context Current context
@@ -326,6 +315,7 @@ public class App
      *
      * @return A single color value in the form 0xAARRGGBB.
      */
+    @SuppressWarnings("unused")
     @ColorInt
     public static int getColorInt(@NonNull final Context context,
                                   @AttrRes final int attr) {
@@ -609,20 +599,6 @@ public class App
     }
 
     /**
-     * DEBUG only.
-     *
-     * @return {@code true} if the current run is a JUnit test.
-     */
-    public static boolean isJUnitTest() {
-        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
-            if (element.getClassName().startsWith("org.junit.")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Initialize ACRA for a given Application.
      * <p>
      * <br>{@inheritDoc}
@@ -672,7 +648,7 @@ public class App
 
     @IntDef({THEME_INVALID, THEME_DAY_NIGHT, THEME_DARK, THEME_LIGHT})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ThemeId {
+    @interface ThemeId {
 
     }
 }

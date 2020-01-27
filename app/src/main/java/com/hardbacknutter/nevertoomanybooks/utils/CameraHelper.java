@@ -211,7 +211,7 @@ public class CameraHelper {
                     return file;
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
-                    Logger.error(TAG, e);
+                    Logger.error(context, TAG, e);
                 }
             }
         }

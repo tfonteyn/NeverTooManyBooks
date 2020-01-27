@@ -85,9 +85,8 @@ public final class GoogleBooksManager
                                @NonNull final String isbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
-        // %3C  <
-        // %3E  >
-        String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3C" + isbn + "%3E";
+        // %3A  :
+        String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3A" + isbn;
         return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
     }
 

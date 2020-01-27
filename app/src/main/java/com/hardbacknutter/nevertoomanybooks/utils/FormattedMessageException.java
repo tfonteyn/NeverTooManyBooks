@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,6 @@ public abstract class FormattedMessageException
     @Nullable
     private final Object[] mArgs;
 
-    @SuppressWarnings("WeakerAccess")
     public FormattedMessageException(@StringRes final int stringId) {
         mStringId = stringId;
         mArgs = null;

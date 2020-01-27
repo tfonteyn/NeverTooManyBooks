@@ -129,7 +129,8 @@ public class BookBaseFragmentModel
                 Bundle bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
                 if (bookData != null) {
                     // if we have a populated bundle, e.g. after an internet search, use that.
-                    mBook = new Book(bookData);
+                    mBook = new Book();
+                    mBook.putAll(bookData);
                     // a new book is always dirty
                     mIsDirty = true;
 
@@ -242,8 +243,10 @@ public class BookBaseFragmentModel
      * Insert/update the book into the database, store cover files, and prepare activity results.
      *
      * @param context Current context
+     *
+     * @return {@code true} on success
      */
-    public void saveBook(@NonNull final Context context) {
+    public boolean saveBook(@NonNull final Context context) {
         if (mBook.isNew()) {
             long id = mDb.insertBook(context, mBook);
             if (id > 0) {
@@ -260,13 +263,20 @@ public class BookBaseFragmentModel
                         }
                     }
                 }
+            } else {
+                // insert failed
+                return false;
             }
         } else {
-            mDb.updateBook(context, mBook.getId(), mBook, 0);
+            if (!mDb.updateBook(context, mBook.getId(), mBook, 0)) {
+                // update failed
+                return false;
+            }
         }
 
         putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
         putResultData(UniqueId.BKEY_BOOK_MODIFIED, true);
+        return true;
     }
 
     /**

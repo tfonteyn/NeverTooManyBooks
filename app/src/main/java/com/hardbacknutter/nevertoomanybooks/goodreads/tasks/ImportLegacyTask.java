@@ -428,7 +428,8 @@ class ImportLegacyTask
         // We build a new book bundle each time since it will build on the existing
         // data for the given book (taken from the cursor), not just replace it.
         long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
-        Book book = new Book(buildBundle(context, db, bookId, review));
+        Book book = new Book();
+        book.putAll(buildBundle(context, db, bookId, review));
         // failures to update are ignored.
         db.updateBook(context, bookId, book, DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
     }
@@ -445,7 +446,8 @@ class ImportLegacyTask
                             @NonNull final DAO db,
                             @NonNull final Bundle review) {
 
-        Book book = new Book(buildBundle(context, db, 0, review));
+        Book book = new Book();
+        book.putAll(buildBundle(context, db, 0, review));
         long id = db.insertBook(context, book);
 
         if (id > 0) {

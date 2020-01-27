@@ -31,6 +31,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -100,7 +101,7 @@ public interface Importer
         /** #styles we imported. */
         public int styles;
 
-        public final List<Integer> failedCsvLines = new ArrayList<>();
+        public final List<Pair<Integer, String>> failedCsvLines = new ArrayList<>();
 
         @Override
         @NonNull

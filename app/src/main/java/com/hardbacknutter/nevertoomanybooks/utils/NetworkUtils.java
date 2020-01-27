@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,9 +43,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public final class NetworkUtils {
@@ -70,8 +70,10 @@ public final class NetworkUtils {
     @AnyThread
     public static boolean isNetworkAvailable(@NonNull final Context context) {
 
-        if (BuildConfig.DEBUG && App.isJUnitTest()) {
-            return true;
+        if (BuildConfig.DEBUG /* always */) {
+            if (Logger.isJUnitTest()) {
+                return true;
+            }
         }
 
         ConnectivityManager connMgr =

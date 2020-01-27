@@ -1147,10 +1147,10 @@ public class SearchCoordinator
                         eMsg = ((FormattedMessageException) message.exception)
                                 .getLocalizedMessage(context);
                     } else if (BuildConfig.DEBUG /* always */) {
-                        // but a raw exception should not
+                        // but a raw exception should only be shown in debug mode
                         eMsg = message.exception.getLocalizedMessage();
                     } else {
-                        // instead ask for feedback
+                        // when not in debug, instead ask for feedback
                         eMsg = context.getString(R.string.error_if_the_problem_persists);
                     }
 

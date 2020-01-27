@@ -45,6 +45,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -63,6 +65,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * * }
  * <p>
  * The second check on DEBUG build in this class is only to catch the lack-of in other places.
+ * <p>
+ * <ul>{@link #error}, {@link #warn} and {@link #warnWithStackTrace} will write to
+ * <li>the log file when NOT in debug/junit mode</li>
+ * <li>redirect to the below {@link #e} and {@link #w} methods otherwise</li>
+ * </ul>
+ * <p>
+ * <ul>{@link #e}, {@link #w} and {@link #d} will write to
+ * <li>the console when in debug mode</li>
+ * <li>System.out when running in JUnit</li>
+ * </ul>
  */
 public final class Logger {
 
@@ -121,8 +133,9 @@ public final class Logger {
             msg = "";
         }
         writeToLog(context, tag, ERROR, msg, e);
+
         if (BuildConfig.DEBUG /* always */) {
-            Log.e(tag, msg, e);
+            e(tag, msg, e);
         }
     }
 
@@ -160,8 +173,9 @@ public final class Logger {
         Throwable e = new Throwable();
         String msg = concat(params);
         writeToLog(context, tag, WARN, msg, e);
+
         if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag, msg, e);
+            w(tag, msg, e);
         }
     }
 
@@ -202,8 +216,9 @@ public final class Logger {
                             @NonNull final Object... params) {
         String msg = methodName + '|' + concat(params);
         writeToLog(context, tag, WARN, msg, null);
+
         if (BuildConfig.DEBUG /* always */) {
-            Log.w(tag, msg);
+            w(tag, msg);
         }
     }
 
@@ -227,7 +242,7 @@ public final class Logger {
         }
         message.append('.');
         if (e != null) {
-            message.append('\n').append(Log.getStackTraceString(e));
+            message.append('\n').append(getStackTraceString(e));
         }
         return message.toString();
     }
@@ -246,20 +261,20 @@ public final class Logger {
                                    @NonNull final String type,
                                    @NonNull final String message,
                                    @Nullable final Throwable e) {
+        // do not write to the file if we're running in a JUnit test.
+        if (isJUnitTest()) {
+            return;
+        }
+
         String exMsg;
         if (e != null) {
-            exMsg = '|' + e.getLocalizedMessage() + '\n' + Log.getStackTraceString(e);
+            exMsg = '|' + e.getLocalizedMessage() + '\n' + getStackTraceString(e);
         } else {
             exMsg = "";
         }
         String fullMessage = DATE_FORMAT.format(new Date())
                              + '|' + tag + '|' + type + '|' + message + exMsg;
 
-        // do not write to the log if we're running a JUnit test.
-        if (BuildConfig.DEBUG && App.isJUnitTest()) {
-            Log.d("isJUnitTest", fullMessage);
-            return;
-        }
 
         File logFile = new File(getLogDir(context), ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
@@ -267,8 +282,27 @@ public final class Logger {
              BufferedWriter out = new BufferedWriter(fw)) {
             out.write(fullMessage);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignored) {
-            // do nothing - we can't log an error in the logger (and we don't want to CF the app).
+            // do nothing - we can't log an error in the logger
         }
+    }
+
+    /**
+     * Use instead of {@link Log#getStackTraceString(Throwable)} so we can use it in unit tests.
+     * <p>
+     * Handy function to get a loggable stack trace from a Throwable
+     *
+     * @param e An exception to log
+     */
+    private static String getStackTraceString(@Nullable final Throwable e) {
+        if (e == null) {
+            return "";
+        }
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        pw.flush();
+        return sw.toString();
     }
 
     /**
@@ -288,9 +322,9 @@ public final class Logger {
                 buf.write((byte) result);
                 result = bis.read();
             }
-            Log.d(tag, buf.toString("UTF-8"));
+            d(tag, buf.toString("UTF-8"));
         } catch (@NonNull final IOException e) {
-            Log.d(tag, "dumping failed: ", e);
+            d(tag, "dumping failed: ", e);
         }
     }
 
@@ -304,17 +338,17 @@ public final class Logger {
         if (fragmentOrActivity instanceof Activity) {
             Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
             if (extras != null) {
-                Log.d(tag, methodName + "|extras=" + extras);
+                d(tag, methodName + "|extras=" + extras);
                 if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    Log.d(tag, methodName + "|extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
+                    d(tag, methodName + "|extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
                 }
             }
         } else if (fragmentOrActivity instanceof Fragment) {
             Bundle args = ((Fragment) fragmentOrActivity).getArguments();
             if (args != null) {
-                Log.d(tag, methodName + "|args=" + args);
+                d(tag, methodName + "|args=" + args);
                 if (args.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    Log.d(tag, methodName + "|args=" + args.getBundle(UniqueId.BKEY_BOOK_DATA));
+                    d(tag, methodName + "|args=" + args.getBundle(UniqueId.BKEY_BOOK_DATA));
                 }
             }
         }
@@ -384,9 +418,8 @@ public final class Logger {
                                      @NonNull final Object fragmentOrActivity,
                                      @Nullable final Bundle savedInstanceState) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
-            Log.d(tag, "ENTER|onCreate|savedInstanceState=" + savedInstanceState);
+            d(tag, "ENTER|onCreate|savedInstanceState=" + savedInstanceState);
             debugArguments(tag, fragmentOrActivity, "onCreate");
-
         }
     }
 
@@ -398,10 +431,73 @@ public final class Logger {
                                              final int resultCode,
                                              @Nullable final Intent data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Log.d(tag, "ENTER|onActivityResult"
-                       + "|requestCode=" + requestCode
-                       + "|resultCode=" + resultCode
-                       + "|data=" + data);
+            d(tag, "ENTER|onActivityResult"
+                   + "|requestCode=" + requestCode
+                   + "|resultCode=" + resultCode
+                   + "|data=" + data);
         }
+    }
+
+    public static void d(@NonNull final String tag,
+                         @NonNull final String msg) {
+        d(tag, msg, null);
+    }
+
+    public static void d(@NonNull final String tag,
+                         @NonNull final String msg,
+                         @Nullable final Throwable e) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest()) {
+                System.out.println("isJUnitTest|ERROR|" + tag + "|" + msg
+                                   + "\n" + getStackTraceString(e));
+            } else {
+                Log.d(tag, msg, e);
+            }
+        }
+    }
+
+    public static void e(@NonNull final String tag,
+                         @NonNull final String msg,
+                         @Nullable final Throwable e) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest()) {
+                System.out.println("isJUnitTest|ERROR|" + tag + "|" + msg
+                                   + "\n" + getStackTraceString(e));
+            } else {
+                Log.e(tag, msg, e);
+            }
+        }
+    }
+
+    public static void w(@NonNull final String tag,
+                         @NonNull final String msg) {
+        w(tag, msg, null);
+    }
+
+    public static void w(@NonNull final String tag,
+                         @NonNull final String msg,
+                         @Nullable final Throwable e) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest()) {
+                System.out.println("isJUnitTest|WARN|" + tag + "|" + msg
+                                   + "\n" + getStackTraceString(e));
+            } else {
+                Log.w(tag, msg, e);
+            }
+        }
+    }
+
+    /**
+     * DEBUG only.
+     *
+     * @return {@code true} if the current run is a JUnit test.
+     */
+    public static boolean isJUnitTest() {
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if (element.getClassName().startsWith("org.junit.")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

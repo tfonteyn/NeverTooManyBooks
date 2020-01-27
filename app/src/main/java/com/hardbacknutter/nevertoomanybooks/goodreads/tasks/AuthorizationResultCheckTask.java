@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import java.io.IOException;
 
@@ -74,28 +75,31 @@ public class AuthorizationResultCheckTask
 
     @Override
     protected void onPostExecute(@NonNull final Boolean result) {
-        Context localContext = App.getLocalizedAppContext();
+        Context context = App.getLocalizedAppContext();
+
+        @StringRes
+        int title;
+        String msg;
 
         if (result) {
-            App.showNotification(localContext.getString(R.string.info_authorized),
-                                 localContext.getString(R.string.gr_auth_successful));
+            title = R.string.info_authorized;
+            msg = context.getString(R.string.gr_auth_successful);
 
         } else {
-            String msg;
+            title = R.string.info_not_authorized;
             if (mException instanceof FormattedMessageException) {
-                msg = ((FormattedMessageException) mException)
-                        .getLocalizedMessage(localContext);
+                msg = ((FormattedMessageException) mException).getLocalizedMessage(context);
 
             } else if (mException != null) {
-                msg = localContext.getString(R.string.gr_auth_error) + ' '
-                      + localContext.getString(R.string.error_if_the_problem_persists,
-                                               localContext
-                                                       .getString(R.string.lbl_send_debug_info));
+                msg = context.getString(R.string.gr_auth_error) + ' '
+                      + context.getString(R.string.error_if_the_problem_persists,
+                                          context.getString(R.string.lbl_send_debug_info));
             } else {
-                msg = localContext.getString(R.string.error_site_authentication_failed,
-                                             localContext.getString(R.string.site_goodreads));
+                msg = context.getString(R.string.error_site_authentication_failed,
+                                        context.getString(R.string.site_goodreads));
             }
-            App.showNotification(localContext.getString(R.string.info_not_authorized), msg);
         }
+
+        App.showNotification(context, context.getString(title), msg);
     }
 }

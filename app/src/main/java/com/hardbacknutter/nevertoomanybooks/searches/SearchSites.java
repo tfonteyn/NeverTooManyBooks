@@ -291,8 +291,7 @@ public final class SearchSites {
      */
     @Id
     public static int getSiteIdFromResId(@IdRes final int resId) {
-        //NEWTHINGS: add new site specific ID:
-        // not all sites actually have/need a resource/menu id.
+        //NEWTHINGS: add new site specific ID: not all sites have/need a resource/menu id.
         switch (resId) {
             case R.id.site_amazon:
                 return AMAZON;

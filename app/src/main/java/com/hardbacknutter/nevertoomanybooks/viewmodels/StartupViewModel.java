@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerFactory;
@@ -245,8 +244,9 @@ public class StartupViewModel
         try {
             mDb = new DAO(TAG);
 
-        } catch (@NonNull final DBHelper.UpgradeException e) {
-            Logger.error(TAG, e, "startTasks");
+        } catch (@NonNull final Exception e) {
+            Logger.error(context, TAG, e, "startTasks");
+            // report back via the observable.
             mTaskException.setValue(e);
             return;
         }

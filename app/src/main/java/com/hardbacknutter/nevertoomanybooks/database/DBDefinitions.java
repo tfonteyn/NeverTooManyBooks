@@ -788,7 +788,7 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_EID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER).build();
         DOM_BOOK_GOODREADS_LAST_SYNC_DATE =
                 new Domain.Builder(KEY_BOOK_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATE)
-                        .withDefault("'0000-00-00'").build();
+                        .notNull().withDefault("'0000-00-00'").build();
 
         DOM_EID_ISFDB =
                 new Domain.Builder(KEY_EID_ISFDB, ColumnInfo.TYPE_INTEGER).build();

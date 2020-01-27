@@ -256,9 +256,7 @@ public class EditBookSeriesFragment
                     // copy all new data
                     series.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
-                    int rowsAffected = mBookModel.getDb().updateSeries(getContext(),
-                                                                       series, bookLocale);
-                    if (rowsAffected == 1) {
+                    if (mBookModel.getDb().updateSeries(getContext(), series, bookLocale)) {
                         Series.pruneList(mList, getContext(), mBookModel.getDb(),
                                          bookLocale, false);
                         mBookModel.getBook().refreshSeriesList(getContext(), mBookModel.getDb());

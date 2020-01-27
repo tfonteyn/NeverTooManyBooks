@@ -542,8 +542,10 @@ public class UpdateFieldsModel
                     }
                 }
 
+                Book book = new Book();
+                book.putAll(bookData);
                 // failures to update are ignored.
-                mDb.updateBook(context, mCurrentBookId, new Book(bookData), 0);
+                mDb.updateBook(context, mCurrentBookId, book, 0);
             }
         }
 

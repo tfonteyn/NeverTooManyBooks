@@ -55,6 +55,10 @@ android {
     //  7.1     25      46.5
     //  7       24      57.9
     //  6       23      74.8‬
+    //
+    // Java 8 streams needs API 24
+    // https://developer.android.com/studio/write/java8-support
+    //
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
         minSdkVersion 23
@@ -87,9 +91,14 @@ android {
         targetCompatibility = '1.8'
     }
 
+    // Studio 3.6:
+//    viewBinding {
+//        enabled = true
+//    }
     testOptions {
         unitTests.includeAndroidResources = true
-        unitTests.returnDefaultValues = true
+        // Can be enabled to make Log.x work. OR, use Logger.x
+        unitTests.returnDefaultValues = false
         unitTests.all {
             reports {
                 junitXml.enabled = true
@@ -155,7 +164,7 @@ dependencies {
     //implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
 
     testImplementation 'org.mockito:mockito-core:3.2.4'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testImplementation  "org.json:json:20190722"
 }
 

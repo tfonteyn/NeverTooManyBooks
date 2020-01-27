@@ -36,13 +36,13 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import androidx.core.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -69,6 +69,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FORMATTED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
 
 /**
  * Implementation of {@link Importer} that reads a CSV file.
@@ -190,13 +194,7 @@ public class CsvImporter
 
         final Book book = new Book();
         // first line in import must be the column names
-        final String[] csvColumnNames;
-        try {
-            csvColumnNames = parseRow(importedList.get(0), true);
-        } catch (@NonNull final ParseException e) {
-            // if we cannot even parse the column header, give up.
-            throw new ImportException(R.string.error_import_failed);
-        }
+        final String[] csvColumnNames = parseRow(importedList.get(0), true);
 
         // Store the names so we can check what is present
         for (int i = 0; i < csvColumnNames.length; i++) {
@@ -205,16 +203,9 @@ public class CsvImporter
             book.putString(csvColumnNames[i], "");
         }
 
-        // See if we can deduce the kind of escaping to use based on column names.
-        // Version 1->3.3 export with family_name and author_id.
-        // Version 3.4+ do not; latest versions make an attempt at escaping
-        // characters etc to preserve formatting.
-        boolean fullEscaping = !book.containsKey(DBDefinitions.KEY_FK_AUTHOR)
-                               || !book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
-
         // Make sure required fields in Book bundle are present.
         // ENHANCE: Rationalize import to allow updates using 1 or 2 columns.
-        // - For now we require some id column + author/title
+        // - For now we require some id column + a title
         // - Do a search if mandatory columns missing (e.g. allow 'import' of ISBNs).
         // - Only make some columns mandatory if the id is not in import, or not in DB
         // (i.e. if not an update)
@@ -228,29 +219,23 @@ public class CsvImporter
                              // but an id is also ok.
                              DBDefinitions.KEY_PK_ID);
 
-        // need some type of author name.
-        requireColumnOrThrow(book,
-                             // aka author_details: preferred one as used in latest versions
-                             CsvExporter.CSV_COLUMN_AUTHORS,
-                             // alternative column names we handle.
-                             DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
-                             DBDefinitions.KEY_AUTHOR_FORMATTED,
-                             OLD_STYLE_AUTHOR_NAME
-                            );
-
         // need a title.
         requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
 
         final boolean updateOnlyIfNewer;
         if ((mSettings.options & ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
-            if (!book.containsKey(DBDefinitions.KEY_DATE_LAST_UPDATED)) {
-                throw new ImportException(R.string.error_import_csv_file_must_contain_columns_x,
-                                          DBDefinitions.KEY_DATE_LAST_UPDATED);
-            }
+            requireColumnOrThrow(book, DBDefinitions.KEY_DATE_LAST_UPDATED);
             updateOnlyIfNewer = true;
         } else {
             updateOnlyIfNewer = false;
         }
+
+        // See if we can deduce the kind of escaping to use based on column names.
+        // BC Version 1->3.3 export with family_name and author_id.
+        // BC Version 3.4+ do not; latest versions make an attempt at escaping
+        // characters etc to preserve formatting.
+        boolean fullEscaping = !book.containsKey(DBDefinitions.KEY_FK_AUTHOR)
+                               || !book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
 
         // Start after headings.
         int row = 1;
@@ -291,21 +276,13 @@ public class CsvImporter
                     // Validate ID's
                     BookIds bids = new BookIds(book);
 
-                    // check title
+                    // check we have a title
                     requireNonBlankOrThrow(book, row, DBDefinitions.KEY_TITLE);
 
-                    // check any of the Author variations columns.
                     handleAuthors(context, mDb, book);
-                    // check the dedicated Series column,
-                    // or if the book title contains a series part.
                     handleSeries(context, mDb, book);
-                    // check any of the Bookshelf variations columns.
                     handleBookshelves(context, mDb, book);
-
-                    // optional
-                    if (book.containsKey(CsvExporter.CSV_COLUMN_TOC)) {
-                        handleAnthology(context, mDb, book);
-                    }
+                    handleAnthology(context, mDb, book);
 
                     // The data is ready to be send to the database
 
@@ -315,19 +292,21 @@ public class CsvImporter
                     bids.bookId = importBook(context, book, bids, updateOnlyIfNewer);
 
                     // When importing a file that has an id or UUID, try to import a cover.
-                    if (coverFinder != null) {
-                        if (!bids.uuid.isEmpty()) {
-                            coverFinder.copyOrRenameCoverFile(bids.uuid);
-                        } else {
-                            String uuid = mDb.getBookUuid(bids.bookId);
-                            if (uuid != null) {
-                                coverFinder.copyOrRenameCoverFile(bookIdFromFile, uuid);
+                    if (bids.bookId > 0) {
+                        if (coverFinder != null) {
+                            if (!bids.uuid.isEmpty()) {
+                                coverFinder.copyOrRenameCoverFile(bids.uuid);
+                            } else {
+                                String uuid = mDb.getBookUuid(bids.bookId);
+                                if (uuid != null) {
+                                    coverFinder.copyOrRenameCoverFile(bookIdFromFile, uuid);
+                                }
                             }
                         }
                     }
-                } catch (@NonNull final SQLiteDoneException
-                        | ParseException | IndexOutOfBoundsException e) {
-                    mResults.failedCsvLines.add(row);
+                } catch (@NonNull final ImportException
+                        | SQLiteDoneException | IndexOutOfBoundsException e) {
+                    mResults.failedCsvLines.add(new Pair<>(row, e.getLocalizedMessage()));
                     Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
@@ -354,7 +333,7 @@ public class CsvImporter
             }
         }
 
-        // minus 1 for the headers.
+        // minus 1 for the column header line
         mResults.booksProcessed = row - 1;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
@@ -377,7 +356,7 @@ public class CsvImporter
      * @param bids              the holder with all information about the book id/uuid
      * @param updateOnlyIfNewer flag
      *
-     * @return the imported book ID
+     * @return the imported book ID, or {@code -1} if an error occurred
      */
     private long importBook(@NonNull final Context context,
                             @NonNull final Book book,
@@ -389,12 +368,16 @@ public class CsvImporter
         // Always import empty ID's...even if they are duplicates.
         // Would be nice to import a cover, but without ID/UUID that is not possible
         if (!hasUuid && !bids.hasNumericId) {
-            return mDb.insertBook(context, book);
+            bids.bookId = mDb.insertBook(context, book);
+            if (bids.bookId > 0) {
+                mResults.booksCreated++;
+            }
+            // inserted id, or -1
+            return bids.bookId;
         }
 
         // we have a UUID or ID. We'll check if we already have the book.
         boolean exists = false;
-
         // Let the UUID trump the ID; we may be importing someone else's list with bogus ID's
         if (hasUuid) {
             long bookId = mDb.getBookIdFromUuid(bids.uuid);
@@ -413,22 +396,30 @@ public class CsvImporter
             exists = mDb.bookExists(bids.bookId);
         }
 
-        if (exists) {
-            if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
-                int rowsAffected = mDb.updateBook(context, bids.bookId, book,
-                                                  DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                if (rowsAffected == 1) {
-                    mResults.booksUpdated++;
-                }
-            }
-        } else {
+        if (!exists) {
             bids.bookId = mDb.insertBook(context, bids.bookId, book);
-            if (bids.bookId != -1) {
+            if (bids.bookId > 0) {
                 mResults.booksCreated++;
             }
-        }
+            // inserted id, or -1
+            return bids.bookId;
 
-        return bids.bookId;
+        } else {
+            if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
+                if (mDb.updateBook(context, bids.bookId, book,
+                                   DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT)) {
+                    mResults.booksUpdated++;
+                    // (updated) id
+                    return bids.bookId;
+                } else {
+                    // convert a rowsAffected==0 into the error code for this method.
+                    return -1L;
+                }
+            } else {
+                // no update needed, just return the existing id
+                return bids.bookId;
+            }
+        }
     }
 
     /**
@@ -455,6 +446,10 @@ public class CsvImporter
     private void handleBookshelves(@NonNull final Context context,
                                    @NonNull final DAO db,
                                    @NonNull final Book book) {
+
+        // Current version uses/prefers KEY_BOOKSHELF,
+        // but old files might contain LEGACY_BOOKSHELF_TEXT_COLUMN (and LEGACY_BOOKSHELF_ID)
+        // Both are CSV formatted
         String encodedList = null;
         if (book.containsKey(DBDefinitions.KEY_BOOKSHELF)) {
             encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
@@ -463,13 +458,14 @@ public class CsvImporter
             encodedList = book.getString(LEGACY_BOOKSHELF_TEXT_COLUMN);
         }
 
-        ArrayList<Bookshelf> list = CsvCoder.getBookshelfCoder().decodeList(encodedList);
-        if (!list.isEmpty()) {
-            // fix the ID's
-            ItemWithFixableId.pruneList(list, context, db, Locale.getDefault(), false);
-            book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+        if (encodedList != null && !encodedList.isEmpty()) {
+            ArrayList<Bookshelf> bookshelves = CsvCoder.getBookshelfCoder().decodeList(encodedList);
+            if (!bookshelves.isEmpty()) {
+                // Do not run in batch
+                ItemWithFixableId.pruneList(bookshelves, context, db, Locale.getDefault(), false);
+                book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bookshelves);
+            }
         }
-
         book.remove(DBDefinitions.KEY_BOOKSHELF);
         book.remove(LEGACY_BOOKSHELF_TEXT_COLUMN);
         book.remove(LEGACY_BOOKSHELF_ID);
@@ -479,6 +475,7 @@ public class CsvImporter
      * Database access is strictly limited to fetching ID's.
      * <p>
      * Get the list of authors from whatever source is available.
+     * If none found, we add an 'Unknown' author.
      *
      * @param context Current context
      * @param db      Database Access
@@ -487,42 +484,51 @@ public class CsvImporter
     private void handleAuthors(@NonNull final Context context,
                                @NonNull final DAO db,
                                @NonNull final Book book) {
-        // preferred & used in latest versions
+        ArrayList<Author> authors;
+
+        // preferred format is a single CSV field
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
-        if (encodedList.isEmpty()) {
-            // Need to build it from other/older fields.
+        book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
 
-            if (book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
-                // Build from family/given
-                encodedList = book.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
-                String given = "";
-                if (book.containsKey(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)) {
-                    given = book.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-                }
-                if (!given.isEmpty()) {
-                    encodedList += ", " + given;
-                }
+        if (!encodedList.isEmpty()) {
+            authors = CsvCoder.getAuthorCoder().decodeList(encodedList);
+            // run in batch mode, i.e. force using the user Locale;
+            ItemWithFixableId.pruneList(authors, context, db, Locale.getDefault(), true);
 
-            } else if (book.containsKey(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-                encodedList = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+        } else {
+            authors = new ArrayList<>();
+
+            if (book.containsKey(KEY_AUTHOR_FORMATTED)) {
+                String a = book.getString(KEY_AUTHOR_FORMATTED);
+                if (!a.isEmpty()) {
+                    authors.add(Author.fromString(a));
+                }
+                book.remove(KEY_AUTHOR_FORMATTED);
+
+            } else if (book.containsKey(KEY_AUTHOR_FAMILY_NAME)) {
+                String family = book.getString(KEY_AUTHOR_FAMILY_NAME);
+                if (!family.isEmpty()) {
+                    // given will be "" if it's not present
+                    String given = book.getString(KEY_AUTHOR_GIVEN_NAMES);
+                    authors.add(new Author(family, given));
+                }
+                book.remove(KEY_AUTHOR_FAMILY_NAME);
+                book.remove(KEY_AUTHOR_GIVEN_NAMES);
 
             } else if (book.containsKey(OLD_STYLE_AUTHOR_NAME)) {
-                encodedList = book.getString(OLD_STYLE_AUTHOR_NAME);
+                String a = book.getString(OLD_STYLE_AUTHOR_NAME);
+                if (!a.isEmpty()) {
+                    authors.add(Author.fromString(a));
+                }
+                book.remove(OLD_STYLE_AUTHOR_NAME);
             }
         }
 
-        // Now build the array for authors
-        ArrayList<Author> list;
-        if (encodedList.isEmpty()) {
-            list = new ArrayList<>();
-            list.add(Author.createUnknownAuthor(context));
-        } else {
-            list = CsvCoder.getAuthorCoder().decodeList(encodedList);
-            ItemWithFixableId.pruneList(list, context, db, Locale.getDefault(), false);
+        // we MUST have an author.
+        if (authors.isEmpty()) {
+            authors.add(Author.createUnknownAuthor(context));
         }
-
-        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-        book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
+        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, authors);
     }
 
     /**
@@ -538,30 +544,38 @@ public class CsvImporter
                               @NonNull final DAO db,
                               @NonNull final Book book) {
 
+        ArrayList<Series> series;
+
+        // preferred format is a single CSV field
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
-        if (encodedList.isEmpty()) {
-            // Try to build from SERIES_NAME and SERIES_NUM. It may all be blank
+        book.remove(CsvExporter.CSV_COLUMN_SERIES);
+
+        if (!encodedList.isEmpty()) {
+            Locale bookLocale = book.getLocale(context);
+            series = CsvCoder.getSeriesCoder().decodeList(encodedList);
+            // run in batch mode, i.e. force using the Book Locale;
+            // otherwise the import is far to slow and of little benefit.
+            Series.pruneList(series, context, db, bookLocale, true);
+
+        } else {
+            series = new ArrayList<>();
+
             if (book.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
-                encodedList = book.getString(DBDefinitions.KEY_SERIES_TITLE);
-                if (!encodedList.isEmpty()) {
-                    String seriesNum = book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
-                    encodedList += '(' + seriesNum + ')';
-                } else {
-                    encodedList = null;
+                String title = book.getString(DBDefinitions.KEY_SERIES_TITLE);
+                if (!title.isEmpty()) {
+                    Series s = new Series(title);
+                    // number will be "" if it's not present
+                    s.setNumber(book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES));
+                    series.add(s);
                 }
+                book.remove(DBDefinitions.KEY_SERIES_TITLE);
+                book.remove(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
         }
 
-        // Handle the series
-        Locale bookLocale = book.getLocale(context);
-        ArrayList<Series> list = CsvCoder.getSeriesCoder().decodeList(encodedList);
-
-        // run in batch mode, i.e. force using the bookLocale;
-        // otherwise the import is far to slow and of little benefit.
-        Series.pruneList(list, context, db, bookLocale, true);
-
-        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-        book.remove(CsvExporter.CSV_COLUMN_SERIES);
+        if (!series.isEmpty()) {
+            book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, series);
+        }
     }
 
     /**
@@ -579,17 +593,16 @@ public class CsvImporter
                                  @NonNull final Book book) {
 
         String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
+        book.remove(CsvExporter.CSV_COLUMN_TOC);
+
         if (!encodedList.isEmpty()) {
-            ArrayList<TocEntry> list = CsvCoder.getTocCoder().decodeList(encodedList);
-            if (!list.isEmpty()) {
-                // fix the ID's
-                ItemWithFixableId.pruneList(list, context, db, book.getLocale(context), false);
-                book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, list);
+            ArrayList<TocEntry> toc = CsvCoder.getTocCoder().decodeList(encodedList);
+            if (!toc.isEmpty()) {
+                // Do not run in batch
+                ItemWithFixableId.pruneList(toc, context, db, book.getLocale(context), false);
+                book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
             }
         }
-
-        // remove the unneeded string encoded set
-        book.remove(CsvExporter.CSV_COLUMN_TOC);
     }
 
     /**
@@ -602,12 +615,12 @@ public class CsvImporter
      *
      * @return an array representing the row
      *
-     * @throws ParseException on failure
+     * @throws ImportException on failure
      */
     @NonNull
     private String[] parseRow(@NonNull final String row,
                               final boolean fullEscaping)
-            throws ParseException {
+            throws ImportException {
         // Fields found in row
         final Collection<String> fields = new ArrayList<>();
         // Temporary storage for current field
@@ -699,7 +712,8 @@ public class CsvImporter
                         case '"':
                             if (sb.length() > 0) {
                                 // Fields with inner quotes MUST be escaped
-                                throw new ParseException("unescaped quote", pos);
+                                throw new ImportException(R.string.warning_import_unescaped_quote,
+                                                          row, pos);
                             } else {
                                 inQuotes = true;
                             }
@@ -742,9 +756,9 @@ public class CsvImporter
      * Require a column to be present. First one found; remainders are not needed.
      *
      * @param book  to check
-     * @param names columns which are required
+     * @param names columns which should be checked for, in order of preference
      *
-     * @throws ImportException if the required column is missing
+     * @throws ImportException iif no suitable column is present
      */
     private void requireColumnOrThrow(@NonNull final Book book,
                                       @NonNull final String... names)
@@ -760,6 +774,8 @@ public class CsvImporter
     }
 
     /**
+     * Require a column to be present and non-blank.
+     *
      * @param book to check
      * @param name column which is required
      *
@@ -777,19 +793,20 @@ public class CsvImporter
     }
 
     /***
+     * Require a column to be present and non-blank.
      *
      * @param book  to check
-     * @param names columns which are required
+     * @param names columns which should be checked for, in order of preference
      *
      * @throws ImportException if no suitable column is present
      */
     @SuppressWarnings("unused")
-    private void requireAnyNonBlankOrThrow(@NonNull final Book book,
-                                           final int row,
-                                           @NonNull final String... names)
+    private void requireNonBlankOrThrow(@NonNull final Book book,
+                                        final int row,
+                                        @NonNull final String... names)
             throws ImportException {
         for (String name : names) {
-            if (book.containsKey(name) && !book.getString(name).isEmpty()) {
+            if (!book.getString(name).isEmpty()) {
                 return;
             }
         }

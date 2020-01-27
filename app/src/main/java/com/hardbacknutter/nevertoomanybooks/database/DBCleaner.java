@@ -137,6 +137,10 @@ public class DBCleaner {
     /**
      * Do a mass update of any languages not yet converted to ISO codes.
      *
+     * URGENT: non existing languages...
+     * D/DBCleaner: updateLanguages|Global language update|from=nederlands (limburgs dialect)|to=nederlands (limburgs dialect)
+     * D/DBCleaner: updateLanguages|Global language update|from=nederlands + frans|to=nederlands + frans
+     *
      * @param context Current context
      */
     public void updateLanguages(@NonNull final Context context) {
@@ -144,9 +148,11 @@ public class DBCleaner {
         for (String name : names) {
             if (name != null && name.length() > 3) {
                 String iso = LanguageUtils.getISO3FromDisplayName(context, name);
-                Log.d(TAG, "updateLanguages|Global language update"
-                           + "|from=" + name
-                           + "|to=" + iso);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "updateLanguages|Global language update"
+                               + "|from=" + name
+                               + "|to=" + iso);
+                }
                 if (!iso.equals(name)) {
                     mDb.updateLanguage(name, iso);
                 }
@@ -219,7 +225,10 @@ public class DBCleaner {
 
         ArrayList<Long> bookIds = mDb.getIdList(sql);
         if (!bookIds.isEmpty()) {
-            Log.w(TAG, "bookSeries|" + TBL_BOOK_AUTHOR.getName() + ", rows=" + bookIds.size());
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "bookSeries|" + TBL_BOOK_AUTHOR.getName()
+                           + ", rows=" + bookIds.size());
+            }
             Synchronizer.SyncLock txLock = null;
             if (!mSyncedDb.inTransaction()) {
                 txLock = mSyncedDb.beginTransaction(true);
@@ -233,12 +242,14 @@ public class DBCleaner {
                     mSyncedDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(TAG, e);
+                Logger.error(context, TAG, e);
             } finally {
                 if (txLock != null) {
                     mSyncedDb.endTransaction(txLock);
                 }
-                Log.w(TAG, "bookSeries|done");
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "bookSeries|done");
+                }
             }
         }
     }
@@ -259,7 +270,10 @@ public class DBCleaner {
 
         ArrayList<Long> bookIds = mDb.getIdList(sql);
         if (!bookIds.isEmpty()) {
-            Log.w(TAG, "bookSeries|" + TBL_BOOK_SERIES.getName() + ", rows=" + bookIds.size());
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "bookSeries|" + TBL_BOOK_SERIES.getName()
+                           + ", rows=" + bookIds.size());
+            }
             // ENHANCE: we really should fetch each book individually
             Locale bookLocale = Locale.getDefault();
 
@@ -276,12 +290,14 @@ public class DBCleaner {
                     mSyncedDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException e) {
-                Logger.error(TAG, e);
+                Logger.error(context, TAG, e);
             } finally {
                 if (txLock != null) {
                     mSyncedDb.endTransaction(txLock);
                 }
-                Log.w(TAG, "bookSeries|done");
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "bookSeries|done");
+                }
             }
         }
     }

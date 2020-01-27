@@ -653,13 +653,4 @@ public final class DBHelper
             }
         }
     }
-
-    public static class UpgradeException
-            extends RuntimeException {
-
-        private static final long serialVersionUID = -6910121313418068318L;
-
-        UpgradeException() {
-        }
-    }
 }

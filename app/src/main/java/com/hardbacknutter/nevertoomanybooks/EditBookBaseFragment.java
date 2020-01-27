@@ -299,6 +299,6 @@ public abstract class EditBookBaseFragment
             extends ViewModel {
 
         /** key: fragmentTag. */
-        Set<String> fragments = new HashSet<>();
+        final Set<String> fragments = new HashSet<>();
     }
 }

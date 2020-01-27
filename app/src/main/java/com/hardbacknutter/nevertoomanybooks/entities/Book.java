@@ -39,6 +39,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -55,15 +56,28 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_GOODREADS_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_ISFDB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_LIBRARY_THING;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_OPEN_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_STRIP_INFO_BE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * Represents the underlying data for a book.
@@ -105,6 +119,7 @@ public class Book
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
     /** first edition ever of this work/content/story. */
     public static final int EDITION_FIRST = 1;
+
     /*
      * {@link DBDefinitions#KEY_EDITION_BITMASK}.
      * <p>
@@ -166,6 +181,12 @@ public class Book
         addValidators();
     }
 
+    @VisibleForTesting
+    public Book(@NonNull final Bundle rawData) {
+        super(rawData);
+        addValidators();
+    }
+
     /**
      * Constructor.
      * <p>
@@ -181,19 +202,6 @@ public class Book
         if (bookId > 0) {
             reload(db, bookId);
         }
-    }
-
-    /**
-     * Constructor.
-     * <p>
-     * Populate a book object with the fields from the bundle.
-     * Can contain an id, but does not have.
-     *
-     * @param bookData Bundle with book data to load
-     */
-    public Book(@NonNull final Bundle bookData) {
-        addValidators();
-        putAll(bookData);
     }
 
     @NonNull
@@ -626,15 +634,6 @@ public class Book
     }
 
     /**
-     * Validate the Locale (based on the Book's language) and reset the language if needed.
-     *
-     * @param context Current context
-     */
-    public void updateLocale(@NonNull final Context context) {
-        getLocale(context, Locale.getDefault(), true);
-    }
-
-    /**
      * Convenience method.
      * <p>
      * Get the Book's Locale (based on its language).
@@ -645,7 +644,7 @@ public class Book
      */
     @NonNull
     public Locale getLocale(@NonNull final Context context) {
-        return getLocale(context, Locale.getDefault(), false);
+        return getAndUpdateLocale(context, Locale.getDefault(), false);
     }
 
     /**
@@ -659,9 +658,9 @@ public class Book
      * @return the Locale.
      */
     @NonNull
-    private Locale getLocale(@NonNull final Context context,
-                             @NonNull final Locale fallbackLocale,
-                             final boolean updateLanguage) {
+    private Locale getAndUpdateLocale(@NonNull final Context context,
+                                      @NonNull final Locale fallbackLocale,
+                                      final boolean updateLanguage) {
         Locale bookLocale = null;
         if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String lang = getString(DBDefinitions.KEY_LANGUAGE);
@@ -681,7 +680,7 @@ public class Book
             // this is not an issue as such, but helps during debug when the book *should*
             // have a language and did not.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LOCALE) {
-                Log.d(TAG, "getLocale|no language set"
+                Log.d(TAG, "getAndUpdateLocale|no language set"
                            + "|id=" + getId()
                            + "|title=" + getString(DBDefinitions.KEY_TITLE),
                       new Throwable());
@@ -756,6 +755,158 @@ public class Book
         } else {
             // if not, take the long road.
             return db.getLoaneeByBookId(getId());
+        }
+    }
+
+    /**
+     * Examine the values and make any changes necessary before writing the data.
+     * Called during {@link DAO#insertBook} and {@link DAO#updateBook}.
+     *
+     * @param context Current context
+     */
+    public void preprocessForStoring(@NonNull final Context context) {
+
+        // Handle Language field FIRST, we need it for _OB fields.
+        Locale bookLocale = getAndUpdateLocale(context, Locale.getDefault(), true);
+
+
+        // Handle TITLE
+        if (containsKey(KEY_TITLE)) {
+            String obTitle = reorderTitleForSorting(context, bookLocale);
+            putString(KEY_TITLE_OB, DAO.encodeOrderByColumn(obTitle, bookLocale));
+        }
+
+        // Handle TOC_BITMASK only, no handling of actual titles here,
+        // but making sure TOC_MULTIPLE_AUTHORS is correct.
+        ArrayList<TocEntry> tocEntries = getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        if (!tocEntries.isEmpty()) {
+            @Book.TocBits
+            long type = getLong(DBDefinitions.KEY_TOC_BITMASK);
+            if (TocEntry.hasMultipleAuthors(tocEntries)) {
+                type |= Book.TOC_MULTIPLE_AUTHORS;
+            }
+            putLong(DBDefinitions.KEY_TOC_BITMASK, type);
+        }
+
+        // cleanup/build all price related fields
+        Bundle bundleHelper = new Bundle();
+        preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_LISTED,
+                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY, bundleHelper);
+        preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_PAID,
+                        DBDefinitions.KEY_PRICE_PAID_CURRENCY, bundleHelper);
+
+        // make sure there are only valid external id's present
+        preprocessExternalIds(context);
+
+        // lastly, cleanup null and blank fields as needed.
+        preprocessNullsAndBlanks();
+    }
+
+    /**
+     * Helper for {@link #preprocessForStoring(Context)}.
+     * <p>
+     *
+     * @param bookLocale   the book Locale
+     * @param bundleHelper a Bundle, passed in to allow mocking.
+     */
+    @VisibleForTesting
+    void preprocessPrice(@NonNull final Locale bookLocale,
+                         @NonNull final String valueKey,
+                         @NonNull final String currencyKey,
+                         @NonNull final Bundle bundleHelper) {
+        // handle a price without a currency.
+        if (containsKey(valueKey) && !containsKey(currencyKey)) {
+            // we presume the user bought the book in their own currency.
+            bundleHelper.clear();
+            CurrencyUtils.splitPrice(bookLocale, getString(valueKey),
+                                     valueKey, currencyKey, bundleHelper);
+
+            if (bundleHelper.containsKey(valueKey)) {
+                double price = bundleHelper.getDouble(valueKey);
+                remove(valueKey);
+                putDouble(valueKey, price);
+                String currency = bundleHelper.getString(currencyKey);
+                putString(currencyKey, currency != null ? currency : "");
+            }
+        }
+        // Make sure currencies are uppercase
+        if (containsKey(currencyKey)) {
+            putString(currencyKey, getString(currencyKey).toUpperCase(bookLocale));
+        }
+    }
+
+    /**
+     * Helper for {@link #preprocessForStoring(Context)}.
+     * <p>
+     * <ul>Remove external id fields which are:
+     * <li>blank: "" or 0</li>
+     * <li>strings when a long is expected.</li>
+     * </ul>
+     *
+     * @param context Current context
+     */
+    @VisibleForTesting
+    void preprocessExternalIds(@NonNull final Context context) {
+        for (Domain domain : new Domain[]{
+                //NEWTHINGS: add new site specific ID: add column
+                DOM_EID_ISFDB,
+                DOM_EID_OPEN_LIBRARY,
+                DOM_EID_LIBRARY_THING,
+                DOM_EID_STRIP_INFO_BE,
+                DOM_EID_GOODREADS_BOOK,
+                }) {
+            String name = domain.getName();
+            if (containsKey(name)) {
+                try {
+                    switch (domain.getType()) {
+                        case ColumnInfo.TYPE_INTEGER:
+                            long v = getLong(name);
+                            if (v < 1) {
+                                remove(name);
+                            }
+                            break;
+
+                        case ColumnInfo.TYPE_TEXT:
+                            Object o = get(name);
+                            if (o != null && o.toString().isEmpty()) {
+                                remove(name);
+                            }
+                            break;
+
+                        default:
+                            Logger.warnWithStackTrace(context, TAG, "type=" + domain.getType());
+                            break;
+                    }
+                } catch (@NonNull final NumberFormatException e) {
+                    // remove and log.
+                    remove(name);
+                    Logger.warn(context, TAG, "preprocessExternalIds"
+                                              + "|name=" + name);
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper for {@link #preprocessForStoring(Context)}.
+     *
+     * <ul>Remove fields in this Book, which have a default in the database and
+     * <li>which are not allowed to be blank but are</li>
+     * <li>which are not allowed to be null but are</li>
+     * </ul>
+     */
+    @VisibleForTesting
+    void preprocessNullsAndBlanks() {
+        for (Domain domain : TBL_BOOKS.getDomains()) {
+            String name = domain.getName();
+            if (containsKey(name) && domain.hasDefault()) {
+                Object value = get(name);
+                if ((domain.isNotBlank() && value != null && value.toString().isEmpty())
+                    ||
+                    ((domain.isNotNull() && value == null))) {
+                    remove(name);
+                }
+            }
         }
     }
 

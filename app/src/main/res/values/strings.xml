@@ -169,6 +169,9 @@
         CSV parsing failed for lines %1$s.
     </string>
 
+    <!-- Importing a CSV book list; individual lines can fail. Report the exact position. -->
+    <string name="warning_import_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
+
     <string name="warning_book_not_found">Unable to find the specified book.</string>
 
     <string name="warning_no_search_data_for_active_sites">
@@ -1609,5 +1612,7 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
+    <string name="book_format_dimensions">Dimensions</string>
+
 
 </resources>

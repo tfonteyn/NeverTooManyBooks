@@ -258,8 +258,7 @@ public class EditBookAuthorsFragment
                     // copy all new data
                     author.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
-                    int rowsAffected = mBookModel.getDb().updateAuthor(getContext(), author);
-                    if (rowsAffected == 1) {
+                    if (mBookModel.getDb().updateAuthor(getContext(), author)) {
                         ItemWithFixableId.pruneList(mList, getContext(), mBookModel.getDb(),
                                                     Locale.getDefault(), false);
                         mBookModel.getBook().refreshAuthorList(getContext(), mBookModel.getDb());

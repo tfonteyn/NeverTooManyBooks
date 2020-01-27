@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -407,7 +407,7 @@ public class CoverBrowserFragment
                         if (BuildConfig.DEBUG /* always */) {
                             Log.d(TAG, "onBindViewHolder"
                                        + "|isbn=" + isbn
-                                       + "Exception msg=" + e.getLocalizedMessage());
+                                       + "Exception msg=" + e.getMessage());
                         }
                     }
                 }

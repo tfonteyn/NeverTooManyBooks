@@ -268,7 +268,7 @@ public final class CoversDAO
                 }
             }
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e);
+            Logger.error(context, TAG, e);
         }
         return null;
     }
@@ -296,7 +296,7 @@ public final class CoversDAO
                              // starts with the uuid, remove all sizes and indexes
                              CKEY_CACHE_ID + " LIKE ?", new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
-            Logger.error(TAG, e);
+            Logger.error(context, TAG, e);
         }
     }
 
@@ -313,7 +313,7 @@ public final class CoversDAO
             }
             sSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE.getName());
         } catch (@NonNull final SQLiteException e) {
-            Logger.error(TAG, e);
+            Logger.error(context, TAG, e);
         }
     }
 
@@ -330,7 +330,7 @@ public final class CoversDAO
             }
             sSyncedDb.analyze();
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e);
+            Logger.error(context, TAG, e);
         }
     }
 
