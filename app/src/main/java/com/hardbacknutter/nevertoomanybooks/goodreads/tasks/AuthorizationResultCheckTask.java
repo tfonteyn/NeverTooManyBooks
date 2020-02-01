@@ -38,9 +38,9 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorizationException;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 /**
  * Simple class to run in background and verify Goodreads credentials then
@@ -60,17 +60,14 @@ public class AuthorizationResultCheckTask
     protected Boolean doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.AuthorizationResultCheckTask");
         Context context = App.getAppContext();
-
-        GoodreadsManager grManager = new GoodreadsManager();
+        GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
         try {
-            grManager.handleAuthenticationAfterAuthorization(context);
-            if (grManager.hasValidCredentials()) {
-                return true;
-            }
-        } catch (@NonNull final AuthorizationException | IOException e) {
+            return grAuth.handleAuthenticationAfterAuthorization(context);
+
+        } catch (@NonNull final GoodreadsAuth.AuthorizationException | IOException e) {
             mException = e;
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -82,16 +79,18 @@ public class AuthorizationResultCheckTask
         String msg;
 
         if (result) {
-            title = R.string.info_authorized;
-            msg = context.getString(R.string.gr_auth_successful);
+            title = R.string.title_authorized;
+            msg = context.getString(R.string.info_authorization_successful,
+                                    context.getString(R.string.site_goodreads));
 
         } else {
-            title = R.string.info_not_authorized;
+            title = R.string.title_not_authorized;
             if (mException instanceof FormattedMessageException) {
                 msg = ((FormattedMessageException) mException).getLocalizedMessage(context);
 
             } else if (mException != null) {
-                msg = context.getString(R.string.gr_auth_error) + ' '
+                msg = context.getString(R.string.error_site_authorization_failed,
+                                        context.getString(R.string.site_goodreads)) + ' '
                       + context.getString(R.string.error_if_the_problem_persists,
                                           context.getString(R.string.lbl_send_debug_info));
             } else {

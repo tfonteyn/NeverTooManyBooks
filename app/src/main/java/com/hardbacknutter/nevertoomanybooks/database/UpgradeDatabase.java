@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public final class UpgradeDatabase {
 
@@ -149,7 +151,8 @@ public final class UpgradeDatabase {
      * The overhead here would be huge.
      * If the user has any specific book issue, a simple update of the book will fix it.
      */
-    private static void addOrderByColumn(@NonNull final SQLiteDatabase db,
+    private static void addOrderByColumn(@NonNull final Context context,
+                                         @NonNull final SQLiteDatabase db,
                                          @NonNull final TableDefinition table,
                                          @NonNull final Domain source,
                                          @NonNull final Domain destination) {
@@ -164,10 +167,12 @@ public final class UpgradeDatabase {
              Cursor cursor = db.rawQuery("SELECT " + DBDefinitions.KEY_PK_ID
                                          + ',' + source.getName() + " FROM " + table.getName(),
                                          null)) {
+
+            Locale locale = LocaleUtils.getUserLocale(context);
             while (cursor.moveToNext()) {
                 final long id = cursor.getLong(0);
                 final String in = cursor.getString(1);
-                update.bindString(1, DAO.encodeOrderByColumn(in, Locale.getDefault()));
+                update.bindString(1, DAO.encodeOrderByColumn(in, locale));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

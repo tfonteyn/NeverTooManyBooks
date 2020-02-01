@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,11 +101,20 @@ public class Synchronizer {
     @NonNull
     SyncLock getSharedLock() {
         final Thread thread = Thread.currentThread();
-//        Logger.debug(this, "getSharedLock",
-//                     thread.getName() + " requesting SHARED lock");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+            Log.d(TAG, "getSharedLock"
+                       + "|" + thread.getName()
+                       + "|requesting SHARED lock");
+        }
+
         mLock.lock();
-//        Logger.debug(this, "getSharedLock",
-//                     thread.getName() + " locked lock held by " + mLock.getHoldCount());
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+            Log.d(TAG, "getSharedLock.lock"
+                       + "|" + thread.getName()
+                       + "|lock held by " + mLock.getHoldCount());
+        }
+
         purgeOldLocks();
         try {
             Integer count = mSharedOwners.get(thread);
@@ -115,13 +124,19 @@ public class Synchronizer {
                 count = 1;
             }
             mSharedOwners.put(thread, count);
-//            Logger.debug(this, "getSharedLock",
-//                         thread.getName() + " " + count + " SHARED threads");
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+                Log.d(TAG, "getSharedLock"
+                           + "|" + thread.getName()
+                           + "|SHARED threads=" + count);
+            }
             return mSharedLock;
         } finally {
             mLock.unlock();
-//            Logger.debug(this, "getSharedLock",
-//                         thread.getName() + " unlocked lock held by " + mLock.getHoldCount());
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+                Log.d(TAG, "getSharedLock.unlock"
+                           + "|" + thread.getName()
+                           + "|lock held by " + mLock.getHoldCount());
+            }
         }
     }
 
@@ -130,14 +145,27 @@ public class Synchronizer {
      */
     private void releaseSharedLock() {
         final Thread thread = Thread.currentThread();
-        //Logger.debug(t.getName() + " releasing SHARED lock");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+            Log.d(TAG, "releaseSharedLock"
+                       + "|" + thread.getName()
+                       + "|releasing SHARED lock");
+        }
         mLock.lock();
-        //Logger.info(t.getName() + " locked lock held by " + mLock.getHoldCount());
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+            Log.d(TAG, "releaseSharedLock.lock"
+                       + "|" + thread.getName()
+                       + "|lock held by " + mLock.getHoldCount());
+        }
         try {
             Integer count = mSharedOwners.get(thread);
             if (count != null) {
                 count--;
-                //Logger.info(t.getName() + " now has " + count + " SHARED locks");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+                    Log.d(TAG, "releaseSharedLock"
+                               + "|" + thread.getName()
+                               + "|now has " + count + " SHARED locks");
+                }
                 if (count < 0) {
                     throw new LockException("Release a lock count already zero");
                 }
@@ -152,7 +180,11 @@ public class Synchronizer {
             }
         } finally {
             mLock.unlock();
-            //Logger.info(t.getName() + " unlocked lock held by " + mLock.getHoldCount());
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+                Log.d(TAG, "releaseSharedLock.unlock"
+                           + "|" + thread.getName()
+                           + "|lock held by " + mLock.getHoldCount());
+            }
         }
     }
 
@@ -232,13 +264,23 @@ public class Synchronizer {
      * Release the lock previously taken.
      */
     private void releaseExclusiveLock() {
-        //Logger.info(Thread.currentThread().getName() + " releasing EXCLUSIVE lock");
+        final Thread thread = Thread.currentThread();
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+            Log.d(TAG, "releaseExclusiveLock"
+                       + "|" + thread.getName()
+                       + "|releasing EXCLUSIVE lock");
+        }
+
         if (!mLock.isHeldByCurrentThread()) {
             throw new LockException("Exclusive Lock is not held by this thread");
         }
         mLock.unlock();
-        //Logger.info("Release lock held by " + mLock.getHoldCount());
-        //Logger.info(t.getName() + " released EXCLUSIVE lock");
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
+            Log.d(TAG, "releaseExclusiveLock.unlock"
+                       + "|" + thread.getName()
+                       + "|lock held by " + mLock.getHoldCount());
+        }
     }
 
     /** Enum of lock types supported. */

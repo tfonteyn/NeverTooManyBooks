@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataCrossValidator;
@@ -56,8 +57,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Class to manage a version of a set of related data.
@@ -214,15 +215,12 @@ public class DataManager {
             putSerializable(key, (Serializable) value);
 
         } else if (value == null) {
-            Logger.warn(TAG, "put",
-                        "key=`" + key + '`',
-                        "value=<NULL>");
+            Logger.warn(App.getAppContext(), TAG, "put|key=`" + key + "`|value=<NULL>");
             remove(key);
 
         } else {
-            Logger.warnWithStackTrace(TAG, "put",
-                                      "key=`" + key + '`',
-                                      "value=" + value);
+            Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                                      "put|key=`" + key + "`|value=" + value);
             throw new UnexpectedValueException(value.getClass().getName());
         }
     }

@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -512,6 +512,8 @@ public class BooklistAdapter
         @BooklistStyle.ExtraOption
         private final int mExtraFields;
 
+        private final Locale mLocale;
+
         /** Resulting data. */
         private final Bundle mResults = new Bundle();
 
@@ -519,6 +521,7 @@ public class BooklistAdapter
          * Constructor.
          *
          * @param context      Current context
+         * @param locale       to use
          * @param db           Database Access
          * @param bookId       Book to fetch
          * @param taskListener View holder for the book, used as callback for task results.
@@ -526,10 +529,13 @@ public class BooklistAdapter
          */
         @UiThread
         GetBookExtrasTask(@NonNull final Context context,
+                          @NonNull final Locale locale,
                           @NonNull final DAO db,
                           final long bookId,
                           @NonNull final TaskFinishedListener taskListener,
                           @BooklistStyle.ExtraOption final int extraFields) {
+
+            mLocale = locale;
 
             mDb = db;
             mBookId = bookId;
@@ -595,7 +601,7 @@ public class BooklistAdapter
                     }
                 }
 
-                tmp = getPublisherAndPubDateText(cursorRow);
+                tmp = getPublisherAndPubDateText(mLocale, cursorRow);
                 if (tmp != null && !tmp.isEmpty()) {
                     mResults.putString(DBDefinitions.KEY_PUBLISHER, tmp);
                 }
@@ -608,7 +614,8 @@ public class BooklistAdapter
         }
 
         @Nullable
-        String getPublisherAndPubDateText(@NonNull final CursorRow cursorRow) {
+        String getPublisherAndPubDateText(@NonNull final Locale locale,
+                                          @NonNull final CursorRow cursorRow) {
             String tmp = null;
             if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
                 tmp = cursorRow.getString(DBDefinitions.KEY_PUBLISHER);
@@ -625,14 +632,14 @@ public class BooklistAdapter
                 } else if (tmpPubDate.length() > 4) {
                     // parse/format the date
                     tmp = String.format(mX_bracket_Y_bracket, tmp,
-                                        DateUtils.toPrettyDate(tmpPubDate));
+                                        DateUtils.toPrettyDate(locale, tmpPubDate));
                 }
             } else if (tmpPubDate != null) {
                 // there was no publisher, just use the date
                 if (tmpPubDate.length() == 4) {
                     tmp = tmpPubDate;
                 } else if (tmpPubDate.length() > 4) {
-                    tmp = DateUtils.toPrettyDate(tmpPubDate);
+                    tmp = DateUtils.toPrettyDate(locale, tmpPubDate);
                 }
             }
 
@@ -691,6 +698,16 @@ public class BooklistAdapter
             if (onClickTargetView == null) {
                 onClickTargetView = itemView;
             }
+        }
+
+        @NonNull
+        Context getContext() {
+            return itemView.getContext();
+        }
+
+        @NonNull
+        Locale getLocale() {
+            return LocaleUtils.getUserLocale(itemView.getContext());
         }
 
         /**
@@ -838,7 +855,7 @@ public class BooklistAdapter
             super(itemView);
             mDb = db;
 
-            Context context = itemView.getContext();
+            Context context = getContext();
             // fetch once and re-use later.
             mName_colon_value = context.getString(R.string.name_colon_value);
             mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
@@ -949,14 +966,14 @@ public class BooklistAdapter
             if (mCoverIsUsed && cursorRow.contains(DBDefinitions.KEY_BOOK_UUID)) {
                 String uuid = cursorRow.getString(DBDefinitions.KEY_BOOK_UUID);
                 // store the uuid for use in the OnClickListener
-                mCoverView.setTag(R.id.TAG_UUID, uuid);
+                mCoverView.setTag(R.id.TAG_ITEM, uuid);
                 boolean isSet = ImageUtils.setImageView(mCoverView, uuid, 0,
                                                         mMaxCoverSize, mMaxCoverSize);
                 if (isSet) {
                     //Allow zooming by clicking on the image
                     mCoverView.setOnClickListener(v -> {
                         FragmentActivity activity = (FragmentActivity) v.getContext();
-                        String currentUuid = (String) v.getTag(R.id.TAG_UUID);
+                        String currentUuid = (String) v.getTag(R.id.TAG_ITEM);
                         File file = StorageUtils.getCoverFileForUuid(activity, currentUuid, 0);
                         if (file.exists()) {
                             ZoomedImageDialogFragment.show(activity.getSupportFragmentManager(),
@@ -1009,7 +1026,8 @@ public class BooklistAdapter
                 if ((mPublisherIsUsed && cursorRow.contains(DBDefinitions.KEY_PUBLISHER))
                     || (mPubDateIsUsed && cursorRow.contains(DBDefinitions.KEY_DATE_PUBLISHED))) {
                     showOrHide(mPublisherView,
-                               getPublisherAndPubDateText(cursorRow,
+                               getPublisherAndPubDateText(getLocale(),
+                                                          cursorRow,
                                                           mPublisherIsUsed,
                                                           mPubDateIsUsed));
                 }
@@ -1026,7 +1044,7 @@ public class BooklistAdapter
                     mPublisherView.setText("");
 
                     // Queue the task.
-                    new GetBookExtrasTask(itemView.getContext(), mDb,
+                    new GetBookExtrasTask(getContext(), getLocale(), mDb,
                                           cursorRow.getLong(DBDefinitions.KEY_FK_BOOK),
                                           mBookExtrasTaskFinishedListener, mExtraFieldsUsed)
                             .execute();
@@ -1039,7 +1057,8 @@ public class BooklistAdapter
          * {@link GetBookExtrasTask#getPublisherAndPubDateText}
          */
         @Nullable
-        String getPublisherAndPubDateText(@NonNull final CursorRow cursorRow,
+        String getPublisherAndPubDateText(@NonNull final Locale locale,
+                                          @NonNull final CursorRow cursorRow,
                                           final boolean publisherIsUsed,
                                           final boolean pubDateIsUsed) {
             String tmp = null;
@@ -1058,14 +1077,14 @@ public class BooklistAdapter
                 } else if (tmpPubDate.length() > 4) {
                     // parse/format the date
                     tmp = String.format(mX_bracket_Y_bracket, tmp,
-                                        DateUtils.toPrettyDate(tmpPubDate));
+                                        DateUtils.toPrettyDate(locale, tmpPubDate));
                 }
             } else if (tmpPubDate != null) {
                 // there was no publisher, just use the date
                 if (tmpPubDate.length() == 4) {
                     tmp = tmpPubDate;
                 } else if (tmpPubDate.length() > 4) {
-                    tmp = DateUtils.toPrettyDate(tmpPubDate);
+                    tmp = DateUtils.toPrettyDate(locale, tmpPubDate);
                 }
             }
 
@@ -1203,7 +1222,8 @@ public class BooklistAdapter
                     // If valid, format the description
                     if (i >= 0 && i <= Book.RATING_STARS) {
                         super.setText(
-                                itemView.getResources().getQuantityString(R.plurals.n_stars, i, i),
+                                getContext().getResources()
+                                            .getQuantityString(R.plurals.n_stars, i, i),
                                 level);
                         return;
                     }
@@ -1238,7 +1258,7 @@ public class BooklistAdapter
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()) {
-                super.setText(LanguageUtils.getDisplayName(itemView.getContext(), text), level);
+                super.setText(LanguageUtils.getDisplayName(getContext(), text), level);
             } else {
                 super.setText(text, level);
             }
@@ -1299,7 +1319,7 @@ public class BooklistAdapter
                     int i = Integer.parseInt(text);
                     // If valid, get the short name
                     if (i > 0 && i <= 12) {
-                        super.setText(DateUtils.getMonthName(i, false), level);
+                        super.setText(DateUtils.getMonthName(getLocale(), i, false), level);
                         return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
@@ -1330,7 +1350,7 @@ public class BooklistAdapter
             super(itemView, columnIndex, R.string.hint_empty_series,
                   DBDefinitions.KEY_SERIES_IS_COMPLETE);
 
-            mReorderTitle = Prefs.reorderTitleForDisplaying(itemView.getContext());
+            mReorderTitle = Prefs.reorderTitleForDisplaying(getContext());
         }
 
         @Override
@@ -1340,8 +1360,7 @@ public class BooklistAdapter
                 // URGENT: translated series are not reordered unless the app runs in that language
                 // solution/problem: we would need the Series id (and not just the titel)
                 // to call {@link DAO#getSeriesLanguage(long)}
-                super.setText(LocaleUtils.reorderTitle(itemView.getContext(), text,
-                                                       Locale.getDefault()), level);
+                super.setText(LocaleUtils.reorderTitle(getContext(), text, getLocale()), level);
             } else {
                 super.setText(text, level);
             }

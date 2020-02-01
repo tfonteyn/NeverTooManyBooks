@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
 import android.content.Context;
 
@@ -44,11 +44,12 @@ public abstract class FormattedMessageException
 
     private static final long serialVersionUID = -3293646971416799528L;
     @StringRes
-    final int mStringId;
+    private final int mStringId;
     /** Args to pass to format function. */
     @Nullable
     private final Object[] mArgs;
 
+    @SuppressWarnings("unused")
     public FormattedMessageException(@StringRes final int stringId) {
         mStringId = stringId;
         mArgs = null;

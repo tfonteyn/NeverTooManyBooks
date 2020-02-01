@@ -35,8 +35,12 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -49,58 +53,66 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the real work.
  */
 public class ImportTask
-        extends TaskBase<Void, Integer> {
+        extends TaskBase<Void, GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "ImportTask";
-
-    @NonNull
-    private final String mTaskDescription;
 
     private final boolean mIsSync;
 
     /**
      * Constructor.
      *
-     * @param context      Current context
      * @param isSync       Flag to indicate sync data or import all.
      * @param taskListener for sending progress and finish messages to.
      */
-    public ImportTask(@NonNull final Context context,
-                      final boolean isSync,
-                      @NonNull final TaskListener<Integer> taskListener) {
+    public ImportTask(final boolean isSync,
+                      @NonNull final TaskListener<GrStatus> taskListener) {
         super(R.id.TASK_ID_GR_IMPORT, taskListener);
         mIsSync = isSync;
-        mTaskDescription = context.getString(R.string.gr_title_sync_with_goodreads);
     }
 
     @Override
     @NonNull
     @WorkerThread
-    protected Integer doInBackground(final Void... params) {
+    protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.ImportTask");
         Context context = App.getAppContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
-                return R.string.error_network_no_connection;
+                return GrStatus.NoInternet;
             }
-            int msg = ImportLegacyTask.checkWeCanImport();
-            if (msg == GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED) {
-                if (isCancelled()) {
-                    return R.string.progress_end_cancelled;
-                }
 
-                QueueManager.getQueueManager().enqueueTask(
-                        new ImportLegacyTask(context, mTaskDescription, mIsSync),
-                        QueueManager.Q_MAIN);
-                return R.string.gr_tq_task_has_been_queued;
+            // Check that no other sync-related jobs are queued
+            if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_IMPORT_ALL)) {
+                return GrStatus.ImportTaskAlreadyQueued;
             }
-            return msg;
+            if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_EXPORT_ALL)) {
+                return GrStatus.ExportTaskAlreadyQueued;
+            }
+
+            // Make sure Goodreads is authorized for this app
+            GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+            if (!grAuth.hasValidCredentials(context)) {
+                return GrStatus.CredentialsMissing;
+            }
+
+            if (isCancelled()) {
+                return GrStatus.Cancelled;
+            }
+
+            QueueManager.getQueueManager().enqueueTask(
+                    new ImportLegacyTask(context,
+                                         context.getString(R.string.gr_title_sync_with_goodreads),
+                                         mIsSync),
+                    QueueManager.Q_MAIN);
+            return GrStatus.TaskQueuedWithSuccess;
+
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
-            return R.string.error_unexpected_error;
+            return GrStatus.UnexpectedError;
         }
     }
 }

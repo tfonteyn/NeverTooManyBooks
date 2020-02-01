@@ -39,6 +39,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -136,7 +137,7 @@ public class SynchronizedDb {
      * <p>
      * About the SQLite version:
      * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
-     *     package-summary</a>
+     * package-summary</a>
      * API 28   3.22.0
      * API 27   3.19.4
      * API 26   3.18.2
@@ -287,9 +288,10 @@ public class SynchronizedDb {
         try {
             long id = mSqlDb.insert(table, nullColumnHack, cv);
             if (id == -1) {
-                Logger.warnWithStackTrace(TAG, "Insert failed",
-                                          "table=" + table,
-                                          "cv=" + cv);
+                Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                                          "Insert failed"
+                                          + "|table=" + table
+                                          + "|cv=" + cv);
             }
             return id;
         } catch (@NonNull final SQLException e) {
@@ -563,18 +565,15 @@ public class SynchronizedDb {
             // Note: because we get a lock, two 'isUpdate' transactions will
             // block, this is only likely to happen with two TXs on the current thread
             // or two non-update TXs on different thread.
-            // ENHANCE: Consider allowing nested TXs
-            // ENHANCE: Consider returning NULL if TX active and handle null locks...
             if (mTxLock == null) {
                 mSqlDb.beginTransaction();
             } else {
-                Logger.warnWithStackTrace(TAG,
-                                          "Starting a transaction when one is already started");
+                throw new TransactionException("Already in a transaction");
             }
         } catch (@NonNull final RuntimeException e) {
             txLock.unlock();
-            throw new TransactionException(
-                    "Unable to start database transaction: " + e.getLocalizedMessage(), e);
+            throw new TransactionException("beginTransaction failed: "
+                                           + e.getLocalizedMessage(), e);
         }
         mTxLock = txLock;
         return txLock;

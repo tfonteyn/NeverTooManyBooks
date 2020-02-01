@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -38,11 +39,11 @@ import java.util.Map;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -52,9 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * <a href="https://www.goodreads.com/api/index#shelves.list">shelves.list</a>
  */
 public class ShelvesListApiHandler
-        extends ApiHandler {
+        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
 
-    private static final String URL = GoodreadsManager.BASE_URL + "/shelf/list.xml?"
+    private static final String URL = GoodreadsHandler.BASE_URL + "/shelf/list.xml?"
                                       + "key=%1$s&page=%2$s&user_id=%3$s";
 
     private SimpleXmlFilter mFilters;
@@ -62,22 +63,22 @@ public class ShelvesListApiHandler
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param context          Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ShelvesListApiHandler(@NonNull final GoodreadsManager grManager)
+    public ShelvesListApiHandler(@NonNull final Context context,
+                                 @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grManager);
-        if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.site_goodreads);
-        }
+        super(grAuth);
+        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
 
         buildFilters();
     }
 
     public Map<String, GoodreadsShelf> getAll()
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         Map<String, GoodreadsShelf> map = new HashMap<>();
         int page = 1;
@@ -109,15 +110,16 @@ public class ShelvesListApiHandler
      *
      * @return the shelves listed on this page.
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     @NonNull
     private Bundle get(final int page)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
-        String url = String.format(URL, mManager.getDevKey(), page, mManager.getUserId());
+        String url = String.format(URL, mGoodreadsAuth.getDevKey(), page,
+                                   mGoodreadsAuth.getUserId());
 
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
         executeGet(url, null, true, handler);
@@ -175,7 +177,7 @@ public class ShelvesListApiHandler
      * </pre>
      */
     private void buildFilters() {
-        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsManager.SITE_LOCALE);
+        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsHandler.SITE_LOCALE);
 
         mFilters
                 //<GoodreadsResponse>

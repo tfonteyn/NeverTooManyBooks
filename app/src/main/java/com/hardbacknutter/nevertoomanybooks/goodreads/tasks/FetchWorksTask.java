@@ -27,21 +27,25 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBooksApiHandler;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 public class FetchWorksTask
         extends TaskBase<Void, List<GoodreadsWork>> {
@@ -66,15 +70,18 @@ public class FetchWorksTask
     @Nullable
     protected List<GoodreadsWork> doInBackground(final Void... voids) {
         Thread.currentThread().setName("GR.FetchWorksTask");
-
-        GoodreadsManager grManager = new GoodreadsManager();
+        Context context = App.getAppContext();
+        GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
         try {
-            SearchBooksApiHandler searcher = new SearchBooksApiHandler(grManager);
+            SearchBooksApiHandler searcher = new SearchBooksApiHandler(context, grAuth);
             return searcher.search(mSearchText);
 
-        } catch (@NonNull final CredentialsException | BookNotFoundException | IOException
-                                        | RuntimeException e) {
-            Logger.error(TAG, e);
+        } catch (@NonNull final NotFoundException e) {
+            Logger.error(context, TAG, e, e.getUrl());
+            mException = e;
+        } catch (@NonNull final CredentialsException | IOException
+                | RuntimeException e) {
+            Logger.error(context, TAG, e);
             mException = e;
         }
         return null;

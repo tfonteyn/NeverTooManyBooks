@@ -41,6 +41,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -90,16 +91,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  * then all 'img'
  * and use the href.
  */
-public class LibraryThingManager
+public class LibraryThingSearchEngine
         implements SearchEngine,
                    SearchEngine.ByIsbn,
                    SearchEngine.ByNativeId,
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
+    public static final Locale SITE_LOCALE = Locale.US;
+    private static final String TAG = "LibraryThingSE";
+
     /** base urls. */
     public static final String BASE_URL = "https://www.librarything.com";
-    private static final String TAG = "LibraryThingManager";
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "librarything.";
     /** Preference that contains the dev key for the user. Type: {@code String}. */
@@ -141,6 +144,21 @@ public class LibraryThingManager
     }
 
     /**
+     * external users (to this class) should call this before doing any searches.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if there is a developer key configured.
+     */
+    public static boolean hasKey(@NonNull final Context context) {
+        boolean hasKey = !getDevKey(context).isEmpty();
+        if (BuildConfig.DEBUG && !hasKey) {
+            Log.d(TAG, "hasKey|key not available");
+        }
+        return hasKey;
+    }
+
+    /**
      * Alert the user if not shown before that we require or would benefit from LibraryThing access.
      *
      * @param context    Current context
@@ -173,19 +191,10 @@ public class LibraryThingManager
         return showAlert;
     }
 
-    /**
-     * external users (to this class) should call this before doing any searches.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if there is a developer key configured.
-     */
-    public static boolean hasKey(@NonNull final Context context) {
-        boolean hasKey = !getDevKey(context).isEmpty();
-        if (BuildConfig.DEBUG && !hasKey) {
-            Log.d(TAG, "hasKey|LibraryThing key not available");
-        }
-        return hasKey;
+    @NonNull
+    @Override
+    public Locale getLocale(@NonNull final Context context) {
+        return SITE_LOCALE;
     }
 
     /**
@@ -262,16 +271,16 @@ public class LibraryThingManager
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
-                               @NonNull final String isbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "isbn", isbn);
-        Bundle bookData = fetchBook(localizedAppContext, url, new Bundle());
+        String url = String.format(BOOK_URL, getDevKey(context), "isbn", validIsbn);
+        Bundle bookData = fetchBook(context, url, new Bundle());
 
         if (fetchThumbnail[0]) {
-            getCoverImage(localizedAppContext, isbn, 0, bookData);
+            getCoverImage(context, validIsbn, 0, bookData);
         }
 
         return bookData;
@@ -284,19 +293,19 @@ public class LibraryThingManager
      */
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
+    public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = String.format(BOOK_URL, getDevKey(localizedAppContext), "id", nativeId);
+        String url = String.format(BOOK_URL, getDevKey(context), "id", nativeId);
 
-        Bundle bookData = fetchBook(localizedAppContext, url, new Bundle());
+        Bundle bookData = fetchBook(context, url, new Bundle());
 
         if (fetchThumbnail[0]) {
             String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
             if (isbn != null && !isbn.isEmpty()) {
-                getCoverImage(localizedAppContext, isbn, 0, bookData);
+                getCoverImage(context, isbn, 0, bookData);
             }
         }
 
@@ -335,7 +344,7 @@ public class LibraryThingManager
     @Nullable
     @WorkerThread
     @Override
-    public String getCoverImage(@NonNull final Context appContext,
+    public String getCoverImage(@NonNull final Context context,
                                 @NonNull final String isbn,
                                 final int cIdx,
                                 @Nullable final ImageSize size) {
@@ -360,8 +369,9 @@ public class LibraryThingManager
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();
         // ignore cIdx, site has only one image.
-        String url = String.format(COVER_BY_ISBN_URL, getDevKey(appContext), sizeParam, isbn);
-        return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeParam);
+        String url = String.format(COVER_BY_ISBN_URL, getDevKey(context), sizeParam, isbn);
+        String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
+        return ImageUtils.saveImage(context, url, name);
     }
 
     @Override

@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -34,11 +36,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * TODO: OwnedBookCreateApiHandler WORK IN PROGRESS.
@@ -49,23 +51,22 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  */
 @SuppressWarnings("unused")
 public class OwnedBookCreateApiHandler
-        extends ApiHandler {
+        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
 
-    private static final String URL = GoodreadsManager.BASE_URL + "/owned_books.xml";
+    private static final String URL = GoodreadsHandler.BASE_URL + "/owned_books.xml";
 
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public OwnedBookCreateApiHandler(@NonNull final GoodreadsManager grManager)
+    public OwnedBookCreateApiHandler(@NonNull final Context context,
+                                     @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grManager);
-        if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.site_goodreads);
-        }
+        super(grAuth);
+        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
 
         // buildFilters();
     }
@@ -77,15 +78,16 @@ public class OwnedBookCreateApiHandler
      *
      * @return the Goodreads book ID
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
-    public long create(@NonNull final ISBN isbn,
+    public long create(@NonNull final Context context,
+                       @NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
-        IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mManager);
+        IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(context, mGoodreadsAuth);
         long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
         create(grBookId, dateAcquired);
         return grBookId;
@@ -107,13 +109,13 @@ public class OwnedBookCreateApiHandler
      * @param grBookId     Goodreads book id
      * @param dateAcquired (optional)
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     public void create(final long grBookId,
                        @Nullable final String dateAcquired)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("owned_book[book_id]", String.valueOf(grBookId));

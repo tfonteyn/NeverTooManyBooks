@@ -49,6 +49,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -67,8 +68,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.AlternativeExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class CoverBrowserViewModel
         extends ViewModel {
@@ -133,7 +135,8 @@ public class CoverBrowserViewModel
             // optional
             SiteList siteList = args.getParcelable(SiteList.Type.Covers.getBundleKey());
             if (siteList == null) {
-                siteList = SiteList.getList(context, SiteList.Type.Covers);
+                Locale locale = LocaleUtils.getUserLocale(context);
+                siteList = SiteList.getList(context, locale, SiteList.Type.Covers);
             }
             mFileManager = new FileManager(siteList);
         }
@@ -421,7 +424,7 @@ public class CoverBrowserViewModel
                 for (Site site : mSiteList.getSites(true)) {
                     // Should we search this site ?
                     if ((currentSearchSites & site.id) != 0) {
-                        SearchEngine engine = site.getSearchEngine();
+                        SearchEngine engine = site.getSearchEngine(context);
 
                         boolean isAvailable = engine instanceof SearchEngine.CoverByIsbn
                                               && engine.isAvailable(context);
@@ -455,7 +458,7 @@ public class CoverBrowserViewModel
         /**
          * Try to get an image from the specified engine.
          *
-         * @param appContext   Application context
+         * @param context      Application context
          * @param searchEngine to use
          * @param isbn         to search for, <strong>must</strong> be valid.
          * @param cIdx         0..n image index
@@ -464,13 +467,13 @@ public class CoverBrowserViewModel
          * @return a FileInfo object with a valid fileSpec, or {@code null} if not found.
          */
         @Nullable
-        private FileInfo download(@NonNull final Context appContext,
+        private FileInfo download(@NonNull final Context context,
                                   @NonNull final SearchEngine.CoverByIsbn searchEngine,
                                   @NonNull final String isbn,
                                   final int cIdx,
                                   @NonNull final SearchEngine.CoverByIsbn.ImageSize size) {
             @Nullable
-            String fileSpec = searchEngine.getCoverImage(appContext, isbn, cIdx, size);
+            String fileSpec = searchEngine.getCoverImage(context, isbn, cIdx, size);
             if (isGood(fileSpec)) {
                 String key = isbn + '_' + size;
                 FileInfo fileInfo = new FileInfo(isbn, size, fileSpec);
@@ -484,7 +487,7 @@ public class CoverBrowserViewModel
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                     Log.d(TAG, "download|MISSING"
-                               + "|engine=" + appContext.getString(searchEngine.getNameResId())
+                               + "|engine=" + searchEngine.getName(context)
                                + "|isbn=" + isbn
                                + "|size=" + size);
                 }

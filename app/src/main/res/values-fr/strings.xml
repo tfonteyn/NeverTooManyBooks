@@ -127,6 +127,7 @@
     <string name="debug_subject">Collecte des informations de débogage en cours</string>
     <string name="done">Terminé</string>
     <string name="edit">Modifier</string>
+    <string name="error_authorization_failed">L\'autorisation à échouée</string>
     <string name="error_authentication_failed">Authentification échouée</string>
     <string name="error_auto_toc_population_failed">La recherche automatique des titres a échoué.</string>
     <string name="error_backup_failed">Sauvegarde échouée</string>
@@ -157,9 +158,9 @@
     <string name="export_option_books_since_last_full_backup">Tous les livres ajoutés ou mis à jour depuis la dernière sauvegarde complète</string>
     <string name="export_option_info_books_since_date">Definissez la date à prendre en compte pour l\'archivage des livres (optionnel):</string>
     <string name="export_options_dialog_title">Selection de ce qui doit être enregistré dans la sauvegarde.</string>
-    <string name="gr_access_error">Problème réseau lors de l\'accès à Goodreads : vérifiez que le site Goodreads est disponible et si le problème persiste, prenez contact avec le support.</string>
-    <string name="gr_action_cannot_be_completed">Cette action ne peut être menée tant que cette application n\'est pas autorisée par Goodreads. Merci de ré-essayer après autorisation.\n\nVoulez-vous l\'autoriser maintenent ?</string>
-    <string name="gr_auth_access_already_granted">Il semble que vous avez déjà autorisé cette application. Toutes les fonctionnalités Goodreads devraient être déjà disponibles.</string>
+    <string name="error_site_access_failed">Un problème de réseau s\'est produit lors de l\'accès à %1$s. Veuillez vérifier si le site Web fonctionne et si le problème persiste, veuillez contacter le support.</string>
+    <string name="gr_authorization_needed">Cette action ne peut être menée tant que cette application n\'est pas autorisée par Goodreads. Merci de ré-essayer après autorisation.\n\nVoulez-vous l\'autoriser maintenent ?</string>
+    <string name="gr_authorization_already_granted">Il semble que vous avez déjà autorisé cette application. Toutes les fonctionnalités Goodreads devraient être déjà disponibles.</string>
     <string name="gr_auth_blurb_part1">Goodreads est un site qui s\'est donné pour mission «d\'aider les gens à trouver et à partager les livres qu\'ils aiment». Ils disposent d\'une large base de données de livres et de critiques, et si vous êtes un utilisateur enregistré sur Goodreads, &APP_NAME;
         peut y exporter ou en importer vos livres, vos bibliothèques et critiques. &APP_NAME; est une application indépendante et ne nécessite pas Goodreads, mais si vous êtes interessé vous pouvez vous enregistrer ici :</string>
     <string name="gr_auth_blurb_part2">Une fois enregistré ou si vous êtes déjà utilisateur de Goodreads, vous pouvez autoriser &APP_NAME;
@@ -168,8 +169,8 @@
         fonctionne très bien sans ça !</string>
     <string name="gr_auth_blurb_part4">Cette application est déjà autorisée auprès de Goodreads. Si vous souhaitez effacer vos données de connexion, vos pouvez cliquer sur le bouton ci-dessous. Mais, il est aussi important  d\'enlever cette autoristation sur le site de Goodreads également.</string>
     <string name="X_gr_auth_check">Autorisation Goodreads en cours</string>
-    <string name="gr_auth_error">Autorisation Goodreads en erreur.</string>
-    <string name="gr_auth_successful">Autorisation Goodreads accordée</string>
+    <string name="error_site_authorization_failed">Autorisation %1$s en erreur.</string>
+    <string name="info_authorization_successful">Autorisation %1$s accordée</string>
     <string name="gr_menu_send_all">Tout envoyer</string>
     <string name="gr_menu_send_updated">Envoi mis à jour</string>
     <string name="gr_info_no_isbn">Les livres sélectionnés n\'ont pas d\'ISBN ; il est impossible de les synchroniser avec Goodreads. La solution la plus simple est de:\n\n(1) supprimer le livre de &APP_NAME;\n\n(2) ajouter manuellement le livre à Goodreads par leur interface web\n\n(3) Synchroniser avec Goodreads\n\nLe livre sera re-créé dans &APP_NAME;
@@ -181,7 +182,7 @@
     <string name="gr_info_send_all_books_results">%1$d livres traités : %2$d envoyés avec succès, %3$d sans ISBN et %4$d avec ISBN mais non trouvés sur Goodreads</string>
     <string name="gr_send_book_to_goodreads">Envoyer le livre %1$d à Goodreads</string>
     <string name="gr_title_sync_with_goodreads">Synchroniser avec Goodreads</string>
-    <string name="gr_title_auth_access">Autoriser l\'accès</string>
+    <string name="title_authorized_needed">Autoriser l\'accès</string>
     <string name="gr_title_send_book">Envoyer les livres à Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Nettoyer les anciens événements</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Nettoyer les anciennes tâches</string>
@@ -217,12 +218,12 @@
     <string name="import_option_new_and_changed_books">Nouveaux livres et livres mis à jour</string>
     <string name="import_options_dialog_title">Sélectionnez ce qui sera importé.</string>
     <string name="import_warning_old_archive">Cette option n\'est pas supportée par les anciennes sauvegardes.</string>
-    <string name="info_authorized">Autorisé</string>
+    <string name="title_authorized">Autorisé</string>
     <string name="info_cleanup_files_text">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d\'autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l\'application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l\'expérience de plantages ou d\'autres erreurs, envisagez d\'abord d\'utiliser le bouton «%2$s»</string>
     <string name="info_displaying_n_books_in_m_entries">Affichage de %1$d livres, parmi %2$d entrées</string>
     <string name="X_info_install_scanner">Pour scanner des codes à barres ISBN, veuillez cliquer ci-dessous pour installer l\'une de ces applications de numérisation de codes à barres.</string>
     <string name="info_manage_fields">Les champs sélectionnés sont visibles dans les écrans d\'ajout et d\'édition des livres. Les champs non sélectionnés sont cachés.</string>
-    <string name="info_not_authorized">Non autorisé</string>
+    <string name="title_not_authorized">Non autorisé</string>
     <string name="info_registration_benefits">Cette fonctionnalité bénéficie d\'une inscription avec %1$s.\nSouhaitez-vous avoir plus d\'informations ou désactiver ce message?\nVous trouverez ces informations ultérieurement dans la section «%2$s» des paramètres.</string>
     <string name="info_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s.\n Souhaitez-vous avoir plus d\'informations?</string>
     <string name="info_select_fields_to_update">Les champs sélectionnés vont être mis à jour à partir d\'Internet. Les champs non sélectionnés ne seront pas modifiés.</string>

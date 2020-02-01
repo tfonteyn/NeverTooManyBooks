@@ -54,7 +54,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -63,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -181,7 +181,7 @@ public class EditBookAuthorsFragment
 
         // see if it already exists
         //noinspection ConstantConditions
-        newAuthor.fixId(getContext(), mBookModel.getDb(), Locale.getDefault());
+        newAuthor.fixId(getContext(), mBookModel.getDb(), LocaleUtils.getUserLocale(getContext()));
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
             Snackbar.make(mAuthorNameView, R.string.warning_author_already_in_list,
@@ -220,7 +220,8 @@ public class EditBookAuthorsFragment
                 author.setType(tmpData.getType());
                 //noinspection ConstantConditions
                 ItemWithFixableId.pruneList(mList, getContext(), mBookModel.getDb(),
-                                            Locale.getDefault(), false);
+                                            LocaleUtils.getUserLocale(getContext()),
+                                            false);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -236,7 +237,8 @@ public class EditBookAuthorsFragment
             author.copyFrom(tmpData, true);
             //noinspection ConstantConditions
             ItemWithFixableId.pruneList(mList, getContext(), mBookModel.getDb(),
-                                        Locale.getDefault(), false);
+                                        LocaleUtils.getUserLocale(getContext()),
+                                        false);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -260,7 +262,8 @@ public class EditBookAuthorsFragment
                     // This change is done in the database right NOW!
                     if (mBookModel.getDb().updateAuthor(getContext(), author)) {
                         ItemWithFixableId.pruneList(mList, getContext(), mBookModel.getDb(),
-                                                    Locale.getDefault(), false);
+                                                    LocaleUtils.getUserLocale(getContext()),
+                                                    false);
                         mBookModel.getBook().refreshAuthorList(getContext(), mBookModel.getDb());
                         mListAdapter.notifyDataSetChanged();
 
@@ -288,7 +291,8 @@ public class EditBookAuthorsFragment
                     mList.remove(author);
                     mList.add(tmpData);
                     ItemWithFixableId.pruneList(mList, getContext(), mBookModel.getDb(),
-                                                Locale.getDefault(), false);
+                                                LocaleUtils.getUserLocale(getContext()),
+                                                false);
 
                     //URGENT: updated author(s): Book gets them, but TocEntries remain using old set
                     //

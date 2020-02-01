@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches.goodreads;
+package com.hardbacknutter.nevertoomanybooks.goodreads;
 
 import android.content.Context;
 import android.content.Intent;
@@ -54,14 +54,15 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -111,7 +112,8 @@ public class GoodreadsSearchActivity
      */
     public static void open(@NonNull final Context context,
                             final long bookId) {
-        if (!GoodreadsManager.hasCredentials(context)) {
+        GoodreadsAuth auth = new GoodreadsAuth(new SettingsHelper(context));
+        if (!auth.hasCredentials(context)) {
             context.startActivity(new Intent(context, GoodreadsRegistrationActivity.class));
         }
 

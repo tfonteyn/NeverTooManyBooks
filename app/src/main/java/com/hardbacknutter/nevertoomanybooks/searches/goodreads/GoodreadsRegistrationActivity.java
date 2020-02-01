@@ -38,10 +38,13 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
@@ -53,16 +56,16 @@ public class GoodreadsRegistrationActivity
 
     private View mAuthButton;
 
-    private final TaskListener<Integer> mTaskListener = new TaskListener<Integer>() {
+    private final TaskListener<GrStatus> mTaskListener = new TaskListener<GrStatus>() {
         @Override
-        public void onFinished(@NonNull final FinishMessage<Integer> message) {
-            String msg = GoodreadsTasks.handleResult(GoodreadsRegistrationActivity.this,
-                                                     message);
+        public void onFinished(@NonNull final FinishMessage<GrStatus> message) {
+
+            String msg = GoodreadsHandler.handleResult(GoodreadsRegistrationActivity.this,
+                                                       message);
             if (msg != null) {
                 Snackbar.make(mAuthButton, msg, Snackbar.LENGTH_LONG).show();
             } else {
-                RequestAuthTask.needsRegistration(GoodreadsRegistrationActivity.this,
-                                                  mTaskListener);
+                RequestAuthTask.prompt(GoodreadsRegistrationActivity.this, mTaskListener);
             }
         }
 
@@ -87,9 +90,9 @@ public class GoodreadsRegistrationActivity
 
         // Goodreads Reg Link
         TextView register = findViewById(R.id.goodreads_url);
-        register.setText(GoodreadsManager.WEBSITE);
+        register.setText(GoodreadsHandler.BASE_URL);
         register.setOnClickListener(v -> startActivity(
-                new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsManager.WEBSITE))));
+                new Intent(Intent.ACTION_VIEW, Uri.parse(GoodreadsHandler.BASE_URL))));
 
         // Auth button
         mAuthButton = findViewById(R.id.authorize);
@@ -102,10 +105,11 @@ public class GoodreadsRegistrationActivity
         // Forget credentials
         View blurb = findViewById(R.id.forget_blurb);
         View removeButton = findViewById(R.id.btn_delete_credentials);
-        if (GoodreadsManager.hasCredentials(this)) {
+        GoodreadsAuth auth = new GoodreadsAuth(new SettingsHelper(this));
+        if (auth.hasCredentials(this)) {
             blurb.setVisibility(View.VISIBLE);
             removeButton.setVisibility(View.VISIBLE);
-            removeButton.setOnClickListener(v -> GoodreadsManager.resetCredentials(this));
+            removeButton.setOnClickListener(v -> GoodreadsAuth.clearAll(this));
         } else {
             blurb.setVisibility(View.GONE);
             removeButton.setVisibility(View.GONE);

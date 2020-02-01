@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 
 /**
  * Layered, to be able to easily swap the native parent with an Apache based parent.
@@ -40,9 +40,9 @@ abstract class ApiHandler
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param grAuth  Authentication handler
      */
-    ApiHandler(@NonNull final GoodreadsManager grManager) {
-        super(grManager);
+    ApiHandler(@NonNull final GoodreadsAuth grAuth) {
+        super(grAuth);
     }
 }

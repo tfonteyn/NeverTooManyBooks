@@ -34,8 +34,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 /**
  * {@link #parseFloat} / {@link #parseDouble}.
  * <p>
@@ -360,7 +358,7 @@ public final class ParseUtils {
 
         // we check in order - first match returns.
         // US is used for '.' as decimal; ',' as thousands separator.
-        Locale[] locales = {sourceLocale, App.getSystemLocale(), Locale.US};
+        Locale[] locales = {sourceLocale, LocaleUtils.getSystemLocale(), Locale.US};
 
         for (Locale locale : locales) {
             try {
@@ -445,7 +443,7 @@ public final class ParseUtils {
 
         // we check in order - first match returns.
         // Locale.US is used for '.' as decimal and ',' as thousands separator.
-        Locale[] locales = {sourceLocale, App.getSystemLocale(), Locale.US};
+        Locale[] locales = {sourceLocale, LocaleUtils.getSystemLocale(), Locale.US};
 
         for (Locale locale : locales) {
             try {

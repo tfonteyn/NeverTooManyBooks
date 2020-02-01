@@ -159,7 +159,9 @@ public class SqlStatementManager
     protected void finalize()
             throws Throwable {
         if (!mStatements.isEmpty()) {
-            Logger.warn(TAG, "finalize|calling close() on " + mInstanceName);
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.w(TAG, "finalize|" + mInstanceName);
+            }
             close();
         }
         super.finalize();

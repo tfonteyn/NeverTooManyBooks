@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,10 +52,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 
 /**
@@ -79,7 +79,7 @@ abstract class ApiHandlerNative {
             "Unexpected status code from API: ";
 
     @NonNull
-    final GoodreadsManager mManager;
+    protected final GoodreadsAuth mGoodreadsAuth;
 
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
@@ -88,10 +88,10 @@ abstract class ApiHandlerNative {
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param grAuth  Authentication handler
      */
-    ApiHandlerNative(@NonNull final GoodreadsManager grManager) {
-        mManager = grManager;
+    ApiHandlerNative(@NonNull final GoodreadsAuth grAuth) {
+        mGoodreadsAuth = grAuth;
     }
 
     /**
@@ -102,16 +102,16 @@ abstract class ApiHandlerNative {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the URL was not found
+     * @throws IOException          on other failures
      */
     void executeGet(@NonNull final String url,
                     @SuppressWarnings({"SameParameterValue", "unused"})
                     @Nullable final Map<String, String> parameterMap,
                     @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                     @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeGet|url=\"" + url + '\"');
@@ -133,7 +133,7 @@ abstract class ApiHandlerNative {
         HttpURLConnection request = (HttpURLConnection) new URL(fullUrl).openConnection();
 
         if (requiresSignature) {
-            mManager.signGetRequest(request);
+            mGoodreadsAuth.signGetRequest(request);
         }
 
         execute(request, requestHandler);
@@ -147,15 +147,15 @@ abstract class ApiHandlerNative {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the URL was not found
+     * @throws IOException          on other failures
      */
     void executePost(@NonNull final String url,
                      @Nullable final Map<String, String> parameterMap,
                      @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                      @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executePost|url=\"" + url + '\"');
@@ -166,7 +166,7 @@ abstract class ApiHandlerNative {
         request.setDoOutput(true);
 
         if (requiresSignature) {
-            mManager.signPostRequest(request, parameterMap);
+            mGoodreadsAuth.signPostRequest(request, parameterMap);
         }
 
         // Now the actual POST payload
@@ -217,16 +217,16 @@ abstract class ApiHandlerNative {
      * @param request        to execute
      * @param requestHandler (optional) handler for the parser
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the URL was not found
+     * @throws IOException          on other failures
      */
     private void execute(@NonNull final HttpURLConnection request,
                          @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        GoodreadsManager.THROTTLER.waitUntilRequestAllowed();
+        GoodreadsAuth.THROTTLER.waitUntilRequestAllowed();
 
         request.setConnectTimeout(CONNECT_TIMEOUT);
         request.setReadTimeout(READ_TIMEOUT);
@@ -248,12 +248,12 @@ abstract class ApiHandlerNative {
 
             case HttpURLConnection.HTTP_UNAUTHORIZED:
                 request.disconnect();
-                GoodreadsManager.sHasValidCredentials = false;
-                throw new CredentialsException(R.string.site_goodreads);
+                GoodreadsAuth.invalidateCredentials();
+                throw new CredentialsException(SearchSites.GOODREADS);
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 request.disconnect();
-                throw new BookNotFoundException();
+                throw new NotFoundException(request.getURL());
 
             default:
                 request.disconnect();
@@ -296,14 +296,14 @@ abstract class ApiHandlerNative {
      *
      * @return the raw text output.
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the URL was not found
+     * @throws IOException          on other failures
      */
     @NonNull
     String executeRawGet(@NonNull final String url,
                          @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeRawGet|url=\"" + url + '\"');
@@ -312,11 +312,11 @@ abstract class ApiHandlerNative {
         HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
 
         if (requiresSignature) {
-            mManager.signGetRequest(request);
+            mGoodreadsAuth.signGetRequest(request);
         }
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        GoodreadsManager.THROTTLER.waitUntilRequestAllowed();
+        GoodreadsAuth.THROTTLER.waitUntilRequestAllowed();
 
         request.setConnectTimeout(CONNECT_TIMEOUT);
         request.setReadTimeout(READ_TIMEOUT);
@@ -337,12 +337,12 @@ abstract class ApiHandlerNative {
 
             case HttpURLConnection.HTTP_UNAUTHORIZED:
                 request.disconnect();
-                GoodreadsManager.sHasValidCredentials = false;
-                throw new CredentialsException(R.string.site_goodreads);
+                GoodreadsAuth.invalidateCredentials();
+                throw new CredentialsException(SearchSites.GOODREADS);
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 request.disconnect();
-                throw new BookNotFoundException();
+                throw new NotFoundException(request.getURL());
 
             default:
                 request.disconnect();

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 public class BookSearchByTextFragment
@@ -168,17 +169,20 @@ public class BookSearchByTextFragment
     @NonNull
     private ArrayList<String> getAuthorNames(@NonNull final Iterable<String> authorNames) {
 
+        //noinspection ConstantConditions
+        Locale locale = LocaleUtils.getUserLocale(getContext());
+
         final ArrayList<String> authors =
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (String s : authors) {
-            uniqueNames.add(s.toLowerCase(Locale.getDefault()));
+            uniqueNames.add(s.toLowerCase(locale));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
         for (String s : authorNames) {
-            if (!uniqueNames.contains(s.toLowerCase(Locale.getDefault()))) {
+            if (!uniqueNames.contains(s.toLowerCase(locale))) {
                 authors.add(s);
             }
         }

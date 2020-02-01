@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Notification;
@@ -35,14 +34,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -198,8 +195,6 @@ public class App
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
     @ThemeId
     private static int sCurrentThemeId = THEME_INVALID;
-    /** The Locale used at startup; so that we can revert to system Locale if we want to. */
-    private static Locale sSystemInitialLocale;
 
     /** Singleton. */
     @SuppressWarnings("unused")
@@ -376,31 +371,6 @@ public class App
     }
 
     /**
-     * Read a string from the META tags in the Manifest.
-     *
-     * @param key The name of the meta data string to retrieve.
-     *
-     * @return the key, or the empty string if no key found.
-     */
-    @NonNull
-    public static String getManifestString(@Nullable final String key) {
-        ApplicationInfo ai;
-        try {
-            ai = sInstance.getApplicationContext().getPackageManager()
-                          .getApplicationInfo(sInstance.getPackageName(),
-                                              PackageManager.GET_META_DATA);
-        } catch (@NonNull final PackageManager.NameNotFoundException e) {
-            throw new IllegalStateException(e);
-        }
-
-        String result = ai.metaData.getString(key);
-        if (result == null) {
-            return "";
-        }
-        return result.trim();
-    }
-
-    /**
      * Test if the Theme has changed.
      *
      * @param themeId to check
@@ -451,106 +421,7 @@ public class App
         // Reminder: ***ALWAYS*** set the theme.
         activity.setTheme(APP_THEMES[sCurrentThemeId]);
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.THEME) {
-            dumpDayNightMode(sCurrentThemeId);
-        }
-
         return sCurrentThemeId;
-    }
-
-    /**
-     * DEBUG only.
-     */
-    @SuppressLint("LogConditional")
-    private static void dumpDayNightMode(@ThemeId final int themeId) {
-        StringBuilder sb = new StringBuilder();
-
-        String varName = "sCurrentThemeId";
-        switch (themeId) {
-            case THEME_DAY_NIGHT:
-                sb.append(varName).append("=THEME_DAY_NIGHT");
-                break;
-            case THEME_DARK:
-                sb.append(varName).append("=THEME_DARK");
-                break;
-            case THEME_LIGHT:
-                sb.append(varName).append("=THEME_LIGHT");
-                break;
-            case THEME_INVALID:
-                sb.append(varName).append("=THEME_INVALID");
-                break;
-
-            default:
-                sb.append(varName).append("=eh? ").append(themeId);
-                break;
-
-        }
-
-        varName = "getDefaultNightMode";
-        switch (AppCompatDelegate.getDefaultNightMode()) {
-            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
-                sb.append("|").append(varName).append("=MODE_NIGHT_FOLLOW_SYSTEM");
-                break;
-            //noinspection deprecation
-            case AppCompatDelegate.MODE_NIGHT_AUTO_TIME:
-                sb.append("|").append(varName).append("=MODE_NIGHT_AUTO_TIME");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_NO:
-                sb.append("|").append(varName).append("=MODE_NIGHT_NO");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_YES:
-                sb.append("|").append(varName).append("=MODE_NIGHT_YES");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY:
-                sb.append("|").append(varName).append("=MODE_NIGHT_AUTO_BATTERY");
-                break;
-            case AppCompatDelegate.MODE_NIGHT_UNSPECIFIED:
-                sb.append("|").append(varName).append("=MODE_NIGHT_UNSPECIFIED");
-                break;
-            default:
-                sb.append("|").append(varName).append("=Twilight Zone");
-                break;
-        }
-
-        int currentNightMode =
-                sInstance.getApplicationContext().getResources()
-                         .getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        varName = "currentNightMode";
-        switch (currentNightMode) {
-            case Configuration.UI_MODE_NIGHT_NO:
-                sb.append("|").append(varName).append("=UI_MODE_NIGHT_NO");
-                break;
-            case Configuration.UI_MODE_NIGHT_YES:
-                sb.append("|").append(varName).append("=UI_MODE_NIGHT_YES");
-                break;
-            case Configuration.UI_MODE_NIGHT_UNDEFINED:
-                sb.append("|").append(varName).append("=UI_MODE_NIGHT_UNDEFINED");
-                break;
-            default:
-                sb.append("|").append(varName).append("=Twilight Zone");
-                break;
-        }
-
-        Log.d(TAG, "dumpDayNightMode|" + sb);
-    }
-
-    @SuppressWarnings("unused")
-    public static boolean isRtl() {
-        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault())
-               == View.LAYOUT_DIRECTION_RTL;
-    }
-
-    /**
-     * Return the device Locale.
-     *
-     * @return the actual System Locale.
-     */
-    @NonNull
-    public static Locale getSystemLocale() {
-        if (sSystemInitialLocale == null) {
-            sSystemInitialLocale = Locale.getDefault();
-        }
-        return sSystemInitialLocale;
     }
 
     /**
@@ -573,7 +444,7 @@ public class App
             configuration.setLocale(desiredLocale);
         } else {
             // any 3-char code might need to be converted to 2-char be able to find the resource.
-            configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromIso3(lang)));
+            configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromIso3(context, lang)));
         }
 
         Context localizedContext = context.createConfigurationContext(configuration);
@@ -613,13 +484,6 @@ public class App
     }
 
     /* ########################################################################################## */
-
-    @Override
-    public void onCreate() {
-        // preserve startup==system Locale
-        sSystemInitialLocale = Locale.getDefault();
-        super.onCreate();
-    }
 
     /**
      * Ensure to re-apply the user-preferred Locale to the Application (this) object.

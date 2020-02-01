@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * This is the class that manages data and views for an Activity/Fragment; access to the data that
@@ -412,7 +413,7 @@ public class Fields {
 
         /**
          * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
-         * <strong>Implementation note</strong>: we don't provide a getView() method on purpose.
+         * <strong>Implementation note</strong>: we don't provide a onCreateViewHolder() method on purpose.
          * Using that would need to deal with {@code null} values.
          */
         void setView(@NonNull View view);
@@ -427,12 +428,14 @@ public class Fields {
         /**
          * Call the wrapped formatter. See {@link FieldFormatter}.
          *
-         * @param source Input value
+         * @param context Current context
+         * @param source  Input value
          *
          * @return The formatted value.
          */
         @NonNull
-        String format(@Nullable T source);
+        String format(@NonNull final Context context,
+                      @Nullable T source);
 
         /**
          * Call the wrapped formatter. See {@link FieldFormatter}.
@@ -534,12 +537,14 @@ public class Fields {
          * Format a string for applying to a View.
          * If the source is {@code null}, implementations should return "" (and log an error)
          *
-         * @param source Input value
+         * @param context Current context
+         * @param source  Input value
          *
          * @return The formatted value.
          */
         @NonNull
-        String format(@Nullable T source);
+        String format(@NonNull final Context context,
+                      @Nullable T source);
 
         /**
          * This method is intended to be called from a {@link FieldDataAccessor}.
@@ -559,38 +564,8 @@ public class Fields {
      */
     private static class DecimalTextWatcher
             implements TextWatcher {
-        //    public static class DecimalDigitsInputFilter implements InputFilter {
-//
-//        Pattern mPattern;
-//
-//        public DecimalDigitsInputFilter(int digitsBeforeZero,
-//                                        int digitsAfterZero) {
-//            DecimalFormatSymbols d = new DecimalFormatSymbols(Locale.getDefault());
-//            String s = "\\" + d.getDecimalSeparator();
-//            mPattern = Pattern.compile(
-//                    "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
-//                    + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
-//                    + ""
-//                    + "|(" + s + ")?");
-//        }
-//
-//        @Override
-//        public CharSequence filter(CharSequence source,
-//                                   int start,
-//                                   int end,
-//                                   Spanned dest,
-//                                   int start,
-//                                   int end) {
-//
-//            Matcher matcher = mPattern.matcher(dest);
-//            if (!matcher.matches())
-//                return "";
-//            return null;
-//        }
-//    }
 
         private static final String DIGITS = "0123456789";
-
         private final String mDecimalSeparator;
         /**
          * Strong reference to View is fine.
@@ -599,10 +574,10 @@ public class Fields {
          */
         @NonNull
         private final EditText mView;
-
         DecimalTextWatcher(@NonNull final EditText view) {
             mView = view;
-            DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(Locale.getDefault());
+            Locale locale = LocaleUtils.getUserLocale(mView.getContext());
+            DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
             DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
             mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());
         }
@@ -633,6 +608,40 @@ public class Fields {
             }
 
         }
+
+//        public static class DecimalDigitsInputFilter
+//                implements InputFilter {
+//
+//            Pattern mPattern;
+//
+//            public DecimalDigitsInputFilter(@NonNull final Context context,
+//                                            final int digitsBeforeZero,
+//                                            final int digitsAfterZero) {
+//                DecimalFormatSymbols d =
+//                        new DecimalFormatSymbols(LocaleUtils.getUserLocale(context));
+//                String s = "\\\\" + d.getDecimalSeparator();
+//                mPattern = Pattern.compile(
+//                        "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
+//                        + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
+//                        + ""
+//                        + "|(" + s + ")?");
+//            }
+//
+//            @Override
+//            public CharSequence filter(CharSequence source,
+//                                       int start,
+//                                       int end,
+//                                       Spanned dest,
+//                                       int dstart,
+//                                       int dend) {
+//
+//                Matcher matcher = mPattern.matcher(dest);
+//                if (!matcher.matches()) {
+//                    return "";
+//                }
+//                return null;
+//            }
+//        }
     }
 
     /**
@@ -745,21 +754,23 @@ public class Fields {
         /**
          * Wrapper around {@link FieldFormatter#format}.
          *
-         * @param value to format
+         * @param context Current context
+         * @param value   to format
          *
          * @return The formatted value
          */
         @NonNull
-        public String format(@Nullable final T value) {
+        public String format(@NonNull final Context context,
+                             @Nullable final T value) {
             if (mFormatter != null) {
                 try {
-                    return mFormatter.format(value);
+                    return mFormatter.format(context, value);
 
                 } catch (@NonNull final ClassCastException e) {
                     // Due to the way a Book loads data from the database,
                     // it's possible that it gets the column type wrong.
                     // See {@link BookCursor} class docs.
-                    Logger.error(TAG, e, value);
+                    Logger.error(context, TAG, e, value);
                 }
             }
 
@@ -931,7 +942,7 @@ public class Fields {
             if (view != null) {
                 mRawValue = value;
                 if (mFormatHtml) {
-                    String body = format(mRawValue);
+                    String body = format(view.getContext(), mRawValue);
 
                     view.setText(LinkifyUtils.fromHtml(body));
                     view.setMovementMethod(LinkMovementMethod.getInstance());
@@ -940,7 +951,7 @@ public class Fields {
                     view.setTextIsSelectable(true);
 
                 } else {
-                    view.setText(format(mRawValue));
+                    view.setText(format(view.getContext(), mRawValue));
                 }
             }
         }
@@ -1000,7 +1011,7 @@ public class Fields {
                 synchronized (mReformatTextWatcher) {
                     view.removeTextChangedListener(mReformatTextWatcher);
 
-                    String newVal = format(value);
+                    String newVal = format(view.getContext(), value);
                     // do not use extract, we compare formatted/formatted value
                     String oldVal = view.getText().toString().trim();
                     if (!newVal.equals(oldVal)) {
@@ -1081,7 +1092,7 @@ public class Fields {
         public void setValue(@Nullable final String value) {
             Spinner spinner = (Spinner) getView();
             if (spinner != null) {
-                String formatted = format(value);
+                String formatted = format(spinner.getContext(), value);
                 for (int i = 0; i < spinner.getCount(); i++) {
                     if (spinner.getItemAtPosition(i).equals(formatted)) {
                         spinner.setSelection(i);
@@ -1254,12 +1265,14 @@ public class Fields {
          */
         @Override
         @NonNull
-        public String format(@Nullable final String source) {
+        public String format(@NonNull final Context context,
+                             @Nullable final String source) {
             if (source == null || source.isEmpty()) {
                 return "";
             }
 
-            return DateUtils.toPrettyDate(source);
+            Locale locale = LocaleUtils.getUserLocale(context);
+            return DateUtils.toPrettyDate(locale, source);
         }
 
         /**
@@ -1289,7 +1302,7 @@ public class Fields {
         /** Log tag. */
         private static final String TAG = "MonetaryFormatter";
 
-        /** Optional; if null we use the default Locale. */
+        /** Optional; if null we use the user Locale. */
         @Nullable
         private Locale mLocale;
 
@@ -1301,10 +1314,11 @@ public class Fields {
         private Double mRawValue = 0.0D;
 
         /**
-         * Set the Locale for the formatter/parser.
+         * Set the Locale for the formatter/parser; used for testing.
          *
          * @param locale to use (if any)
          */
+        @VisibleForTesting
         public MonetaryFormatter setLocale(@Nullable final Locale locale) {
             mLocale = locale;
             return this;
@@ -1322,7 +1336,8 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@Nullable final Double source) {
+        public String format(@NonNull final Context context,
+                             @Nullable final Double source) {
             if (source == null || source.equals(0.0d)) {
                 mRawValue = 0.0d;
                 return "";
@@ -1334,7 +1349,7 @@ public class Fields {
             }
 
             if (mLocale == null) {
-                mLocale = Locale.getDefault();
+                mLocale = LocaleUtils.getUserLocale(context);
             }
 
             try {
@@ -1398,7 +1413,8 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@Nullable final String source) {
+        public String format(@NonNull final Context context,
+                             @Nullable final String source) {
 
             if (source != null && !source.isEmpty() && !"0".equals(source)) {
                 mRawValue = source;
@@ -1436,12 +1452,13 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@Nullable final String source) {
+        public String format(@NonNull final Context context,
+                             @Nullable final String source) {
             if (source == null || source.isEmpty()) {
                 return "";
             }
 
-            return LanguageUtils.getDisplayName(App.getAppContext(), source);
+            return LanguageUtils.getDisplayName(context, source);
         }
 
         /**
@@ -1489,7 +1506,8 @@ public class Fields {
 
         @NonNull
         @Override
-        public String format(@Nullable final Long source) {
+        public String format(@NonNull final Context context,
+                             @Nullable final Long source) {
             if (source == null || source == 0) {
                 mRawValue = 0L;
                 return "";
@@ -1902,16 +1920,18 @@ public class Fields {
         /**
          * Wrapper to {@link FieldDataAccessor#format}.
          *
-         * @param source String to format
+         * @param context Current context
+         * @param source  String to format
          *
          * @return The formatted value. Or "" if the source is {@code null}.
          */
         @NonNull
-        public String format(@Nullable final T source) {
+        public String format(@NonNull final Context context,
+                             @Nullable final T source) {
             if (source == null) {
                 return "";
             }
-            return mFieldDataAccessor.format(source);
+            return mFieldDataAccessor.format(context, source);
         }
 
         /**

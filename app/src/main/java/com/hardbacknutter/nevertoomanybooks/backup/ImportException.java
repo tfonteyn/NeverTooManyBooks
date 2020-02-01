@@ -30,7 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 /**
  * Importing data can give a more detailed reason of failure.
@@ -39,10 +39,6 @@ public class ImportException
         extends FormattedMessageException {
 
     private static final long serialVersionUID = -1890286839718300179L;
-
-    public ImportException(@StringRes final int stringId) {
-        super(stringId);
-    }
 
     public ImportException(@StringRes final int stringId,
                            @NonNull final Object... args) {

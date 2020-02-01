@@ -45,11 +45,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -367,7 +367,8 @@ public class TableDefinition
             return false;
         }
         // Make sure one with the same name is not already in table, can't ignore that, go crash.
-        if (mDomainNameCheck.contains(domain.getName().toLowerCase(App.getSystemLocale()))) {
+        if (mDomainNameCheck
+                .contains(domain.getName().toLowerCase(LocaleUtils.getSystemLocale()))) {
             throw new IllegalArgumentException("A domain '" + domain + "' has already been added");
         }
         // Add it

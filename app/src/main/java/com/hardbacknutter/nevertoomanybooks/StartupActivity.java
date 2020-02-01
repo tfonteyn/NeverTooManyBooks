@@ -53,8 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -94,6 +94,7 @@ public class StartupActivity
      * apply the user-preferred Locale before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
+
         super.attachBaseContext(LocaleUtils.applyLocale(base));
 
         // create the singleton QueueManager

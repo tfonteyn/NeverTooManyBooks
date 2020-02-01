@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  */
 class PopupStyles {
 
-    static Consumer<TextView> DEFAULT = popupView -> {
+    static final Consumer<TextView> DEFAULT = popupView -> {
         Resources resources = popupView.getResources();
         int minimumSize = resources.getDimensionPixelSize(R.dimen.afs_popup_min_size);
         popupView.setMinimumWidth(minimumSize);
@@ -88,7 +88,7 @@ class PopupStyles {
                 R.dimen.afs_popup_text_size));
     };
 
-    static Consumer<TextView> MD2 = popupView -> {
+    static final Consumer<TextView> MD2 = popupView -> {
         Resources resources = popupView.getResources();
         popupView.setMinimumWidth(resources.getDimensionPixelSize(
                 R.dimen.afs_md2_popup_min_width));
@@ -115,7 +115,7 @@ class PopupStyles {
                 R.dimen.afs_md2_popup_text_size));
     };
 
-    static Consumer<TextView> CLASSIC = popupView -> {
+    static final Consumer<TextView> CLASSIC = popupView -> {
         Resources resources = popupView.getResources();
         int minimumSize = resources.getDimensionPixelSize(R.dimen.afs_popup_min_size);
         popupView.setMinimumWidth(minimumSize);

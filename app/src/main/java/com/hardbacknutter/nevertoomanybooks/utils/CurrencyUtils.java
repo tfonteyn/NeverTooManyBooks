@@ -38,8 +38,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 public final class CurrencyUtils {
 
     /**
@@ -119,7 +117,7 @@ public final class CurrencyUtils {
         if (CURRENCY_MAP.isEmpty()) {
             createCurrencyMap();
         }
-        String key = currency.trim().toLowerCase(App.getSystemLocale());
+        String key = currency.trim().toLowerCase(LocaleUtils.getSystemLocale());
         return CURRENCY_MAP.get(key);
     }
 

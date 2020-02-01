@@ -193,8 +193,7 @@ public abstract class TaskBase<Params, Result>
     @UiThread
     protected void onPostExecute(@NonNull final Result result) {
         if (mTaskListener.get() != null) {
-            TaskStatus status = mException == null ? TaskStatus.Success
-                                                   : TaskStatus.Failed;
+            TaskStatus status = mException == null ? TaskStatus.Success : TaskStatus.Failed;
             mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
                     mTaskId, status, result, mException));
         } else {

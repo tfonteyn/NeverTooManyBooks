@@ -70,10 +70,10 @@
         <!-- Application developer keys - stripped out in a git pre-commit script. -->
         <meta-data
             android:name="goodreads.dev_key"
-            android:value="" />
+            android:value="ZWx0GvfCNvQxqPmbBdsNQ" />
         <meta-data
             android:name="goodreads.dev_secret"
-            android:value="" />
+            android:value="A6gLqqm5Jxf6TKTvcBMjkXnq3k31jNzYmthfRWUA" />
 
         <!--
             The authorities value must match:
@@ -181,10 +181,10 @@
         <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity" />
 
         <!-- Goodreads background tasks & events -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity" />
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventQueueListActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TasksAdminActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventsAdminActivity" />
         <!-- This Goodreads activity is commented out (waiting on access) -->
-        <activity android:name="com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchActivity" />
+        <activity android:name="com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsSearchActivity" />
 
         <!--
              The callback-activity after we requested authorizing this application

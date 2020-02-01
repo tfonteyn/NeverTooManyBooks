@@ -78,7 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.Edition;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -566,7 +566,7 @@ public class EditBookTocFragment
     private boolean isAddSeriesFromToc() {
         //noinspection ConstantConditions
         return PreferenceManager.getDefaultSharedPreferences(getContext())
-                                .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
+                                .getBoolean(IsfdbSearchEngine.PREFS_SERIES_FROM_TOC, false);
     }
 
     /**

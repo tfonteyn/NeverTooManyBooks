@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
@@ -363,7 +363,8 @@ public class AuthorWorksFragment
             String title = tocEntry.getTitle();
             //noinspection ConstantConditions
             if (Prefs.reorderTitleForDisplaying(context)) {
-                Locale locale = tocEntry.getLocale(context, mDb, Locale.getDefault());
+                Locale locale = tocEntry.getLocale(context, mDb,
+                                                   LocaleUtils.getUserLocale(context));
                 title = LocaleUtils.reorderTitle(context, title, locale);
             }
             holder.titleView.setText(title);
@@ -422,7 +423,7 @@ public class AuthorWorksFragment
 
             String title = mModel.getTocEntries().get(clampedPosition)
                                  .getTitle();
-//                         .substring(0, 1).toUpperCase(Locale.getDefault());
+//                         .substring(0, 1).toUpperCase(LocaleUtils.getUserLocale(context));
             return new String[]{title};
         }
     }

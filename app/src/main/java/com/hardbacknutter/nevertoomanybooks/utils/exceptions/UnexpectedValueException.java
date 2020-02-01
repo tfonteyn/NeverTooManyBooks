@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,17 +25,19 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
+
+import androidx.annotation.Nullable;
 
 /**
- * Thrown when external storage media is not available.
+ * Usually used in switch() default: sections.
  */
-public class ExternalStorageException
-        extends RuntimeException {
+public class UnexpectedValueException
+        extends IllegalStateException {
 
-    private static final long serialVersionUID = -8444141375654155396L;
+    private static final long serialVersionUID = -3264236171012098029L;
 
-    ExternalStorageException() {
-        super("no external media");
+    public UnexpectedValueException(@Nullable final Object value) {
+        super("Unexpected value: " + value);
     }
 }

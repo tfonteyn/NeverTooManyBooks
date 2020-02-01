@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -38,13 +39,13 @@ import java.util.Date;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter.XmlListener;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -58,11 +59,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * So we cannot import them here.
  */
 public class ReviewsListApiHandler
-        extends ApiHandler {
+        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
 
     /** Date format used for parsing 'last_update_date'. */
     private static final SimpleDateFormat UPDATE_DATE_FMT
-            = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", App.getSystemLocale());
+            = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", LocaleUtils.getSystemLocale());
 
     /**
      * Parameters.
@@ -73,7 +74,7 @@ public class ReviewsListApiHandler
      * 4: user id
      */
     private static final String URL =
-            GoodreadsManager.BASE_URL + "/review/list/%4$s.xml?"
+            GoodreadsHandler.BASE_URL + "/review/list/%4$s.xml?"
             + "key=%1$s"
             + "&v=2"
             + "&page=%2$s"
@@ -104,16 +105,16 @@ public class ReviewsListApiHandler
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ReviewsListApiHandler(@NonNull final GoodreadsManager grManager)
+    public ReviewsListApiHandler(@NonNull final Context context,
+                                 @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grManager);
-        if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.site_goodreads);
-        }
+        super(grAuth);
+        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
 
         buildFilters();
     }
@@ -131,17 +132,17 @@ public class ReviewsListApiHandler
      *
      * @return A bundle containing an ArrayList of Bundles, one for each review.
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     @NonNull
     public Bundle get(final int page,
                       final int perPage)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
-        final String url = String.format(URL, mManager.getDevKey(), page, perPage,
-                                         mManager.getUserId());
+        final String url = String.format(URL, mGoodreadsAuth.getDevKey(), page, perPage,
+                                         mGoodreadsAuth.getUserId());
         DefaultHandler handler = new XmlResponseParser(mRootFilter);
 //        DefaultHandler handler = new XmlDumpParser();
         executeGet(url, null, true, handler);
@@ -339,7 +340,7 @@ public class ReviewsListApiHandler
      */
     private void buildFilters() {
 
-        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsManager.SITE_LOCALE);
+        mFilters = new SimpleXmlFilter(mRootFilter, GoodreadsHandler.SITE_LOCALE);
         mFilters
                 //<GoodreadsResponse>
                 .s(XmlTags.XML_GOODREADS_RESPONSE)

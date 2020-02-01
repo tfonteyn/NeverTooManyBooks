@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,19 +25,17 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
-import androidx.annotation.Nullable;
+/**
+ * Thrown when external storage media is not available.
+ */
+public class ExternalStorageException
+        extends RuntimeException {
 
-public class BookNotFoundException
-        extends Exception {
+    private static final long serialVersionUID = -8444141375654155396L;
 
-    private static final long serialVersionUID = 6484473434121836371L;
-
-    public BookNotFoundException() {
-    }
-
-    public BookNotFoundException(@Nullable final String isbn) {
-        super(isbn);
+    public ExternalStorageException() {
+        super("no external media");
     }
 }

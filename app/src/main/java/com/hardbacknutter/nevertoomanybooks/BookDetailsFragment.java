@@ -79,8 +79,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
@@ -628,7 +628,7 @@ public class BookDetailsFragment
 
         //noinspection ConstantConditions
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-            .setVisible(GoodreadsManager.isShowSyncMenus(getContext()));
+            .setVisible(GoodreadsHandler.isShowSyncMenus(getContext()));
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
         boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
@@ -706,7 +706,8 @@ public class BookDetailsFragment
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG)
                         .show();
-                new SendOneBookTask(book.getId(), mBookModel.getGoodreadsTaskListener())
+                //noinspection ConstantConditions
+                new SendOneBookTask(book.getId(), mBookModel.getGoodreadsTaskListener(getContext()))
                         .execute();
                 return true;
             }

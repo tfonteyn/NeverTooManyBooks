@@ -34,6 +34,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +57,7 @@ import org.jsoup.select.Elements;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -187,6 +189,7 @@ public class StripInfoBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
+    @WorkerThread
     public Bundle fetch(@NonNull final String isbn,
                         @NonNull final boolean[] fetchThumbnail,
                         @NonNull final Bundle bookData)
@@ -194,7 +197,7 @@ public class StripInfoBookHandler
         // keep for reference
         mIsbn = isbn;
 
-        String path = StripInfoManager.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
+        String path = StripInfoSearchEngine.BASE_URL + String.format(BOOK_SEARCH_URL, isbn);
         if (loadPage(mLocalizedContext, path) == null) {
             return bookData;
         }
@@ -219,12 +222,13 @@ public class StripInfoBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
+    @WorkerThread
     Bundle fetchByNativeId(@NonNull final String nativeId,
                            @NonNull final boolean[] fetchThumbnail,
                            @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        String path = StripInfoManager.BASE_URL + String.format(BOOK_BY_NATIVE_ID, nativeId);
+        String path = StripInfoSearchEngine.BASE_URL + String.format(BOOK_BY_NATIVE_ID, nativeId);
         if (loadPage(mLocalizedContext, path) == null) {
             return bookData;
         }
@@ -245,6 +249,7 @@ public class StripInfoBookHandler
      */
     @SuppressWarnings("WeakerAccess")
     @NonNull
+    @WorkerThread
     Bundle fetchByPath(@NonNull final String path,
                        @NonNull final Bundle bookData,
                        @NonNull final boolean[] fetchThumbnail)
@@ -402,7 +407,7 @@ public class StripInfoBookHandler
 
             } catch (@NonNull final Exception e) {
                 if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "mIsbn=" + mIsbn, e);
+                    Logger.d(TAG, "mIsbn=" + mIsbn, e);
                 }
             }
         }
@@ -538,10 +543,10 @@ public class StripInfoBookHandler
                             final int cIdx) {
 
         // do not use the isbn we searched for, use the one we found even if empty!
-        String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
+        String name = bookData.getString(DBDefinitions.KEY_ISBN, "")
+                      + FILENAME_SUFFIX + cIdx;
         // download
-        String fileSpec = ImageUtils.saveImage(mLocalizedContext, url,
-                                               isbn, FILENAME_SUFFIX + cIdx, null);
+        String fileSpec = ImageUtils.saveImage(mLocalizedContext, url, name);
 
         if (fileSpec != null) {
             // Some back covers will return the "no cover available" image regardless.

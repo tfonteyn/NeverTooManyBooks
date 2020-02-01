@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,7 +76,7 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoManager();
+        SearchEngine searchEngine = new StripInfoSearchEngine();
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
@@ -146,7 +146,7 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoManager();
+        SearchEngine searchEngine = new StripInfoSearchEngine();
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
@@ -215,7 +215,7 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoManager();
+        SearchEngine searchEngine = new StripInfoSearchEngine();
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
@@ -291,7 +291,7 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoManager();
+        SearchEngine searchEngine = new StripInfoSearchEngine();
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
@@ -364,7 +364,7 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoManager();
+        SearchEngine searchEngine = new StripInfoSearchEngine();
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
@@ -432,7 +432,7 @@ class StripInfoTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        SearchEngine searchEngine = new StripInfoManager();
+        SearchEngine searchEngine = new StripInfoSearchEngine();
         StripInfoBookHandler stripInfoBookHandler =
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, but will redirect.. so an internet download WILL be done.

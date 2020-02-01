@@ -34,10 +34,10 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * book.show_by_isbn   —   Get the reviews for a book given an ISBN.
@@ -48,43 +48,45 @@ public class ShowBookByIsbnApiHandler
         extends ShowBookApiHandler {
 
     /** Page url. */
-    private static final String URL = GoodreadsManager.BASE_URL + "/book/isbn?"
+    private static final String URL = GoodreadsHandler.BASE_URL + "/book/isbn?"
                                       + "format=xml&isbn=%1$s&key=%2$s";
 
     /**
      * Constructor.
      *
-     * @param context   Current context
-     * @param grManager the Goodreads Manager
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
     public ShowBookByIsbnApiHandler(@NonNull final Context context,
-                                    @NonNull final GoodreadsManager grManager)
+                                    @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(context, grManager);
+        super(context, grAuth);
     }
 
     /**
      * Perform a search and handle the results.
      *
-     * @param isbn           ISBN to use, must be valid
+     * @param context        Current context
+     * @param validIsbn      ISBN to use, must be valid
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to save results in (passed in to allow mocking)
      *
      * @return the Bundle of book data.
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     @NonNull
-    public Bundle get(@NonNull final ISBN isbn,
+    public Bundle get(@NonNull final Context context,
+                      @NonNull final String validIsbn,
                       @NonNull final boolean[] fetchThumbnail,
                       @NonNull final Bundle bookData)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
-        String url = String.format(URL, isbn.asText(), mManager.getDevKey());
-        return getBookData(url, fetchThumbnail, bookData);
+        String url = String.format(URL, validIsbn, mGoodreadsAuth.getDevKey());
+        return getBookData(context, url, fetchThumbnail, bookData);
     }
 }

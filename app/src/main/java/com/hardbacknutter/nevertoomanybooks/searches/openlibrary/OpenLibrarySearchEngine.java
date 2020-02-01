@@ -47,6 +47,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -88,24 +89,25 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * <ul>Problems:
  * <li>"data" does not contain all information that the site has.</li>
  * <li>"details" seems, by their own admission, not to be stable yet.</li>
- * <li>both: dates are not structured, but {@link DateUtils#parseDate(String)}
- * can work around that.</li>
+ * <li>both: dates are not structured, but {@link DateUtils} can work around that.</li>
  * <li>last update dates on the website & api docs are sometimes from years ago.
  * Is this still developed ?</li>
  * </ul>
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
-public class OpenLibraryManager
+public class OpenLibrarySearchEngine
         implements SearchEngine,
                    SearchEngine.ByIsbn,
                    SearchEngine.ByNativeId,
                    SearchEngine.CoverByIsbn {
 
+    public static final Locale SITE_LOCALE = Locale.US;
+
     /** base urls. */
     public static final String BASE_URL = "https://openlibrary.org";
 
     /** Log tag. */
-    private static final String TAG = "OpenLibraryManager";
+    private static final String TAG = "OpenLibrarySearchEngine";
 
     /**
      * bibkeys
@@ -172,13 +174,19 @@ public class OpenLibraryManager
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
+    public Locale getLocale(@NonNull final Context context) {
+        return SITE_LOCALE;
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
         String url = String.format(BASE_BOOK_URL, "OLID", nativeId);
-        return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
+        return fetchBook(context, url, fetchThumbnail, new Bundle());
     }
 
     /**
@@ -188,23 +196,23 @@ public class OpenLibraryManager
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
-                               @NonNull final String isbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = String.format(BASE_BOOK_URL, "ISBN", isbn);
-        return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
+        String url = String.format(BASE_BOOK_URL, "ISBN", validIsbn);
+        return fetchBook(context, url, fetchThumbnail, new Bundle());
     }
 
-    private Bundle fetchBook(@NonNull final Context appContext,
+    private Bundle fetchBook(@NonNull final Context context,
                              @NonNull final String url,
                              @NonNull final boolean[] fetchThumbnail,
                              @NonNull final Bundle bookData)
             throws IOException {
         // get and store the result into a string.
         String response;
-        try (TerminatorConnection con = TerminatorConnection.open(appContext, url)) {
+        try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
             //noinspection ConstantConditions
             response = readResponseStream(con.getInputStream());
         }
@@ -247,7 +255,7 @@ public class OpenLibraryManager
     @Nullable
     @Override
     @WorkerThread
-    public String getCoverImage(@NonNull final Context appContext,
+    public String getCoverImage(@NonNull final Context context,
                                 @NonNull final String isbn,
                                 final int cIdx,
                                 @Nullable final ImageSize size) {
@@ -270,7 +278,8 @@ public class OpenLibraryManager
         }
         // ignore cIdx, site has only one image.
         String url = String.format(BASE_COVER_URL, "isbn", isbn, sizeParam);
-        return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeParam);
+        String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
+        return ImageUtils.saveImage(context, url, name);
     }
 
     @NonNull
@@ -410,6 +419,7 @@ public class OpenLibraryManager
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
+     *
      * @param jsonObject     the complete book record.
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to populate
@@ -433,7 +443,8 @@ public class OpenLibraryManager
             String topLevelKey = it.next();
             String[] data = topLevelKey.split(":");
             if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
-                return handleBook(data[1], jsonObject.getJSONObject(topLevelKey), fetchThumbnail,
+                return handleBook(data[1], jsonObject.getJSONObject(topLevelKey),
+                                  fetchThumbnail,
                                   bookData);
             }
         }
@@ -443,6 +454,7 @@ public class OpenLibraryManager
 
     /**
      * Parse the results, and build the bookData bundle.
+     *
      *
      * @param isbn           of the book
      * @param result         JSON result data
@@ -569,8 +581,8 @@ public class OpenLibraryManager
                 }
                 // we assume that the download will work if there is a url.
                 if (!coverUrl.isEmpty()) {
-                    String fileSpec = ImageUtils.saveImage(App.getAppContext(), coverUrl,
-                                                           isbn, FILENAME_SUFFIX, sizeParam);
+                    String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
+                    String fileSpec = ImageUtils.saveImage(App.getAppContext(), coverUrl, name);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
                                 bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

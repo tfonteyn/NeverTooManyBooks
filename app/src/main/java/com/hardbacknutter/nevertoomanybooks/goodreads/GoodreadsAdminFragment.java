@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.goodreads;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,10 +41,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueListActivity;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TasksAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
@@ -89,30 +86,14 @@ public class GoodreadsAdminFragment
             if (mProgressDialog != null) {
                 mProgressDialog.dismiss();
             }
-            //noinspection ConstantConditions
-            @NonNull
-            View view = getView();
 
-            switch (message.taskId) {
-                case R.id.TASK_ID_GR_IMPORT:
-                case R.id.TASK_ID_GR_SEND_BOOKS:
-                case R.id.TASK_ID_GR_REQUEST_AUTH: {
-                    //noinspection ConstantConditions
-                    String msg = GoodreadsTasks.handleResult(getContext(), message);
-                    if (msg != null) {
-                        Snackbar.make(view, msg, Snackbar.LENGTH_LONG).show();
-                    } else {
-                        RequestAuthTask.needsRegistration(getContext(),
-                                                          mGoodreadsTaskModel.getTaskListener());
-                    }
-                    break;
-                }
-                default: {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "taskId=" + message.taskId, new Throwable());
-                    }
-                    break;
-                }
+            //noinspection ConstantConditions
+            String msg = GoodreadsHandler.handleResult(getContext(), message);
+            if (msg != null) {
+                //noinspection ConstantConditions
+                Snackbar.make(getView(), msg, Snackbar.LENGTH_LONG).show();
+            } else {
+                RequestAuthTask.prompt(getContext(), mGoodreadsTaskModel.getTaskListener());
             }
         });
 
@@ -141,7 +122,7 @@ public class GoodreadsAdminFragment
         // Start the activity that shows the active GoodReads tasks
         root.findViewById(R.id.lbl_background_tasks)
             .setOnClickListener(v -> {
-                Intent intent = new Intent(getContext(), TaskQueueListActivity.class);
+                Intent intent = new Intent(getContext(), TasksAdminActivity.class);
                 startActivity(intent);
             });
     }
@@ -150,9 +131,8 @@ public class GoodreadsAdminFragment
         //noinspection ConstantConditions
         Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
-        //noinspection ConstantConditions
-        TaskBase<Void, Integer> task = new ImportTask(getContext(), isSync,
-                                                      mGoodreadsTaskModel.getTaskListener());
+        TaskBase<Void, GrStatus> task =
+                new ImportTask(isSync, mGoodreadsTaskModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.gr_title_sync_with_goodreads, false, false, 0);
@@ -167,9 +147,8 @@ public class GoodreadsAdminFragment
         //noinspection ConstantConditions
         Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
 
-        //noinspection ConstantConditions
-        TaskBase<Void, Integer> task = new SendBooksTask(getContext(), updatesOnly,
-                                                         mGoodreadsTaskModel.getTaskListener());
+        TaskBase<Void, GrStatus> task =
+                new SendBooksTask(updatesOnly, mGoodreadsTaskModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.gr_title_send_book, false, false, 0);

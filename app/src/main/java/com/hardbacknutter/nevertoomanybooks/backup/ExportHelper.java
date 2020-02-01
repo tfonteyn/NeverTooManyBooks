@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,6 @@ import java.io.File;
 import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -185,6 +184,8 @@ public class ExportHelper
     public void validate() {
         super.validate();
 
+        Context context = App.getAppContext();
+
         if ((options & MASK) == 0) {
             throw new IllegalStateException("options not set");
         }
@@ -193,10 +194,8 @@ public class ExportHelper
         if ((options & EXPORT_SINCE) != 0) {
             // no date set, use "since last backup."
             if (mDateFrom == null) {
-                String lastBackup = BackupManager.getLastFullBackupDate(App.getAppContext());
-                if (lastBackup != null && !lastBackup.isEmpty()) {
-                    mDateFrom = DateUtils.parseDate(lastBackup);
-                }
+                mDateFrom = BackupManager.getLastFullBackupDate(context);
+
             }
         } else {
             // cannot have a mDateFrom when not asking for a time limited export

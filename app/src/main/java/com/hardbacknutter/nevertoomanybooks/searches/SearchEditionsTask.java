@@ -35,6 +35,7 @@ import androidx.annotation.WorkerThread;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -42,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Fetch alternative edition isbn's.
@@ -79,14 +81,15 @@ public class SearchEditionsTask
     protected ArrayList<String> doInBackground(final Void... params) {
         Thread.currentThread().setName("SearchEditionsTask " + mIsbn);
         Context context = App.getAppContext();
+        Locale locale = LocaleUtils.getUserLocale(context);
 
         ArrayList<String> editions = new ArrayList<>();
 
-        List<Site> sites = SiteList.getList(context, SiteList.Type.AltEditions)
+        List<Site> sites = SiteList.getList(context, locale, SiteList.Type.AltEditions)
                                    .getSites(true);
         for (Site site : sites) {
             try {
-                SearchEngine searchEngine = site.getSearchEngine();
+                SearchEngine searchEngine = site.getSearchEngine(context);
                 if (searchEngine instanceof SearchEngine.AlternativeEditions) {
                     editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                             .getAlternativeEditions(context, mIsbn));

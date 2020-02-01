@@ -33,8 +33,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
+
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public abstract class MapperBase
         implements Mapper {
@@ -49,7 +50,7 @@ public abstract class MapperBase
         String value = bookData.getString(getKey());
         if (value != null && !value.isEmpty()) {
             Integer resId = null;
-            String lcValue = value.toLowerCase(Locale.getDefault());
+            String lcValue = value.toLowerCase(LocaleUtils.getUserLocale(context));
             int len = 0;
 //            resId = MAPPER.get(lcValue);
             for (final Map.Entry<String, Integer> entry : MAPPER.entrySet()) {

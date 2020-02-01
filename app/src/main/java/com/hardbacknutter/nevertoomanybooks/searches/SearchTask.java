@@ -41,8 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -100,7 +100,7 @@ public class SearchTask
         super(taskId, taskListener);
         mSearchEngine = searchEngine;
 
-        String name = context.getString(mSearchEngine.getNameResId());
+        String name = mSearchEngine.getName(context);
         mProgressTitle = context.getString(R.string.progress_msg_searching_site, name);
     }
 
@@ -165,16 +165,15 @@ public class SearchTask
     @Override
     @Nullable
     protected Bundle doInBackground(@NonNull final SearchTask.By... by) {
-        Context localizedAppContext = App.getLocalizedAppContext();
-        Thread.currentThread()
-              .setName(TAG + ' ' + localizedAppContext.getString(mSearchEngine.getNameResId()));
+        Context context = App.getLocalizedAppContext();
+        Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
 
         publishProgress(new TaskListener.ProgressMessage(getTaskId(), mProgressTitle));
 
         try {
             // can we reach the site ?
-            NetworkUtils.poke(localizedAppContext,
-                              mSearchEngine.getUrl(localizedAppContext),
+            NetworkUtils.poke(context,
+                              mSearchEngine.getUrl(context),
                               mSearchEngine.getConnectTimeoutMs());
 
             // sanity check, see #setFetchThumbnail
@@ -188,30 +187,30 @@ public class SearchTask
                 case NativeId:
                     Objects.requireNonNull(mNativeId);
                     bookData = ((SearchEngine.ByNativeId) mSearchEngine)
-                            .searchByNativeId(localizedAppContext, mNativeId, mFetchThumbnail);
+                            .searchByNativeId(context, mNativeId, mFetchThumbnail);
                     break;
 
                 case ISBN:
                     Objects.requireNonNull(mIsbnStr);
                     bookData = ((SearchEngine.ByIsbn) mSearchEngine)
-                            .searchByIsbn(localizedAppContext, mIsbnStr, mFetchThumbnail);
+                            .searchByIsbn(context, mIsbnStr, mFetchThumbnail);
                     break;
 
                 case Barcode:
                     Objects.requireNonNull(mIsbnStr);
                     bookData = ((SearchEngine.ByBarcode) mSearchEngine)
-                            .searchByBarcode(localizedAppContext, mIsbnStr, mFetchThumbnail);
+                            .searchByBarcode(context, mIsbnStr, mFetchThumbnail);
                     break;
 
                 case Text:
                     bookData = ((SearchEngine.ByText) mSearchEngine)
-                            .search(localizedAppContext, mIsbnStr, mAuthor, mTitle, mPublisher,
+                            .search(context, mIsbnStr, mAuthor, mTitle, mPublisher,
                                     mFetchThumbnail);
                     break;
 
                 default:
                     // we should never get here...
-                    String name = localizedAppContext.getString(mSearchEngine.getNameResId());
+                    String name = mSearchEngine.getName(context);
                     throw new IllegalStateException("SearchEngine " + name
                                                     + " does not implement By=" + by[0]);
             }
@@ -223,7 +222,7 @@ public class SearchTask
             return bookData;
 
         } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
-            Logger.error(localizedAppContext, TAG, e);
+            Logger.error(context, TAG, e);
             mException = e;
             return null;
         }

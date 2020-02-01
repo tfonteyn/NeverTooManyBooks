@@ -39,12 +39,12 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
-import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
+import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 
 final class MenuHandler {
 
@@ -129,44 +129,44 @@ final class MenuHandler {
                                             @NonNull final Book book) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
-                GoodreadsManager
-                        .openWebsite(context, book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                GoodreadsSearchEngine.openWebsite(
+                        context, book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                IsfdbManager
-                        .openWebsite(context, book.getLong(DBDefinitions.KEY_EID_ISFDB));
+                IsfdbSearchEngine.openWebsite(
+                        context, book.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
-                LibraryThingManager
-                        .openWebsite(context, book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
+                LibraryThingSearchEngine.openWebsite(
+                        context, book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
-                OpenLibraryManager
-                        .openWebsite(context, book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
+                OpenLibrarySearchEngine.openWebsite(
+                        context, book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
-                StripInfoManager
-                        .openWebsite(context, book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
+                StripInfoSearchEngine.openWebsite(
+                        context, book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
                 return true;
 
             //NEWTHINGS: add new site specific ID: add case
 
             /* ********************************************************************************** */
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonManager.openWebsite(context, book.getPrimaryAuthor(context), null);
+                AmazonSearchEngine.openWebsite(context, book.getPrimaryAuthor(context), null);
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonManager.openWebsite(context, null, book.getPrimarySeries());
+                AmazonSearchEngine.openWebsite(context, null, book.getPrimarySeries());
                 return true;
 
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonManager.openWebsite(context,
-                                          book.getPrimaryAuthor(context), book.getPrimarySeries());
+                AmazonSearchEngine.openWebsite(
+                        context, book.getPrimaryAuthor(context), book.getPrimarySeries());
                 return true;
 
             default:
@@ -179,32 +179,28 @@ final class MenuHandler {
                                             @NonNull final CursorRow cursorRow) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
-                GoodreadsManager
-                        .openWebsite(context,
-                                     cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                GoodreadsSearchEngine.openWebsite(
+                        context, cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                IsfdbManager
-                        .openWebsite(context, cursorRow.getLong(DBDefinitions.KEY_EID_ISFDB));
+                IsfdbSearchEngine.openWebsite(
+                        context, cursorRow.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
-                LibraryThingManager
-                        .openWebsite(context,
-                                     cursorRow.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
+                LibraryThingSearchEngine.openWebsite(
+                        context, cursorRow.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
-                OpenLibraryManager
-                        .openWebsite(context,
-                                     cursorRow.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
+                OpenLibrarySearchEngine.openWebsite(
+                        context, cursorRow.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
-                StripInfoManager
-                        .openWebsite(context,
-                                     cursorRow.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
+                StripInfoSearchEngine.openWebsite(
+                        context, cursorRow.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
                 return true;
 
             //NEWTHINGS: add new site specific ID: add case

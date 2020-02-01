@@ -34,9 +34,9 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 
 /**
  * Task to send a single books details to Goodreads.
@@ -72,19 +72,19 @@ class SendOneBookLegacyTask
      *
      * @param queueManager QueueManager
      * @param context      Current context
-     * @param grManager    the Goodreads Manager
+     * @param apiHandler   the Goodreads Manager
      *
      * @return {@code true} for success
      */
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final Context context,
-                           @NonNull final GoodreadsManager grManager) {
+                           @NonNull final GoodreadsHandler apiHandler) {
 
         try (DAO db = new DAO(TAG);
              Cursor cursor = db.fetchBookForExportToGoodreads(mBookId)) {
             final CursorRow cursorRow = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, grManager, db, cursorRow)) {
+                if (!sendOneBook(queueManager, context, apiHandler, db, cursorRow)) {
                     // quit on error
                     return false;
                 }

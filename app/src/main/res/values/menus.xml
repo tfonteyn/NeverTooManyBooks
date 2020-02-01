@@ -149,6 +149,8 @@
 
     <item name="MENU_PURGE_BLNS" type="id" />
 
+    <item name="MENU_SHOW_GR_EVENTS" type="id" />
+
     <!-- options menu -->
     <item name="MENU_RESET" type="id" />
 

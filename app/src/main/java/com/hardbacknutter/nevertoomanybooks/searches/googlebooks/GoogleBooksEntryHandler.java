@@ -50,9 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * 2019-11: this needs scrapping. See {@link GoogleBooksManager} class doc.
+ * 2019-11: this needs scrapping. See {@link GoogleBooksSearchEngine} class doc.
  * <p>
  * THIS CLASS IS OBSOLETE (but still in use and working fine).
  * <p>
@@ -257,7 +258,7 @@ class GoogleBooksEntryHandler
                             @NonNull final Bundle bookData) {
         mBookData = bookData;
         mFetchThumbnail = fetchThumbnail;
-        mLocale = App.getSystemLocale();
+        mLocale = LocaleUtils.getSystemLocale();
     }
 
     /**
@@ -323,8 +324,8 @@ class GoogleBooksEntryHandler
                     // just use something...
                     name = String.valueOf(System.currentTimeMillis());
                 }
-                String fileSpec = ImageUtils.saveImage(App.getAppContext(),
-                                                       coverUrl, name, FILENAME_SUFFIX, null);
+                name += FILENAME_SUFFIX;
+                String fileSpec = ImageUtils.saveImage(App.getAppContext(), coverUrl, name);
                 if (fileSpec != null) {
                     ArrayList<String> imageList =
                             mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

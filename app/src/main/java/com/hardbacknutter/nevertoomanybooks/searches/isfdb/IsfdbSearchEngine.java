@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
  * 2020-01-04: "http://www.isfdb.org" is not available on https.
  * see "res/xml/network_security_config.xml"
  */
-public class IsfdbManager
+public class IsfdbSearchEngine
         implements SearchEngine,
                    SearchEngine.ByText,
                    SearchEngine.ByIsbn,
@@ -124,29 +124,35 @@ public class IsfdbManager
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
+    public Locale getLocale(@NonNull final Context context) {
+        return SITE_LOCALE;
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        return new IsfdbBookHandler(localizedAppContext)
-                .fetchByNativeId(nativeId, isAddSeriesFromToc(localizedAppContext),
+        return new IsfdbBookHandler()
+                .fetchByNativeId(context, nativeId, isAddSeriesFromToc(context),
                                  fetchThumbnail, new Bundle());
     }
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
-                               @NonNull final String isbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        List<Edition> editions = new IsfdbEditionsHandler(localizedAppContext).fetch(isbn);
+        List<Edition> editions = new IsfdbEditionsHandler().fetch(context, validIsbn);
         if (editions.isEmpty()) {
             return new Bundle();
         } else {
-            return new IsfdbBookHandler(localizedAppContext)
-                    .fetch(editions, isAddSeriesFromToc(localizedAppContext),
+            return new IsfdbBookHandler()
+                    .fetch(context, editions, isAddSeriesFromToc(context),
                            fetchThumbnail, new Bundle());
         }
     }
@@ -154,7 +160,7 @@ public class IsfdbManager
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context localizedAppContext,
+    public Bundle search(@NonNull final Context context,
                          @Nullable final String code,
                          @Nullable final String author,
                          @Nullable final String title,
@@ -162,7 +168,7 @@ public class IsfdbManager
                          @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = getBaseURL(localizedAppContext) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
+        String url = getBaseURL(context) + CGI_BIN + URL_ADV_SEARCH_RESULTS_CGI + "?"
                      + "ORDERBY=pub_title"
                      + "&ACTION=query"
                      + "&START=0"
@@ -187,7 +193,7 @@ public class IsfdbManager
         }
 
         // as per user settings.
-        if (PreferenceManager.getDefaultSharedPreferences(localizedAppContext)
+        if (PreferenceManager.getDefaultSharedPreferences(context)
                              .getBoolean(PREFS_USE_PUBLISHER, false)) {
             if (publisher != null && !publisher.isEmpty()) {
                 index++;
@@ -206,22 +212,21 @@ public class IsfdbManager
         if (args.isEmpty()) {
             return new Bundle();
         }
-        List<Edition> editions = new IsfdbEditionsHandler(localizedAppContext)
-                .fetchPath(url + args);
+        List<Edition> editions = new IsfdbEditionsHandler()
+                .fetchPath(context, url + args);
         if (editions.isEmpty()) {
             return new Bundle();
         } else {
-            return new IsfdbBookHandler(localizedAppContext)
-                    .fetch(editions, isAddSeriesFromToc(localizedAppContext),
+            return new IsfdbBookHandler()
+                    .fetch(context, editions, isAddSeriesFromToc(context),
                            fetchThumbnail, new Bundle());
         }
     }
 
     private boolean isAddSeriesFromToc(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(IsfdbManager.PREFS_SERIES_FROM_TOC, false);
+                                .getBoolean(IsfdbSearchEngine.PREFS_SERIES_FROM_TOC, false);
     }
-
 
     @NonNull
     @Override
@@ -237,7 +242,7 @@ public class IsfdbManager
 
     @NonNull
     @Override
-    public List<String> getAlternativeEditions(@NonNull final Context appContext,
+    public List<String> getAlternativeEditions(@NonNull final Context context,
                                                @NonNull final String isbn) {
 
         // the resulting data we'll return
@@ -246,7 +251,7 @@ public class IsfdbManager
         isbnList.add(isbn);
 
         try {
-            List<Edition> editions = new IsfdbEditionsHandler(appContext).fetch(isbn);
+            List<Edition> editions = new IsfdbEditionsHandler().fetch(context, isbn);
             for (Edition edition : editions) {
                 if (edition.isbn != null) {
                     isbnList.add(edition.isbn);

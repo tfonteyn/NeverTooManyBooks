@@ -36,7 +36,7 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDAO.ScheduledTask;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDAO.ScheduledTask;
 
 /**
  * Represents a thread that runs tasks from a related named queue.
@@ -99,21 +99,21 @@ class Queue
      */
     public void run() {
         Context context = App.getAppContext();
-        try (TaskQueueDAO taskQueueDAO = new TaskQueueDAO(context)) {
+        try (QueueDAO queueDAO = new QueueDAO(context)) {
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
                 Task task;
                 // All queue manipulation needs to be synchronized on the manager, as does
                 // assignments of 'active' tasks in queues.
                 synchronized (mManager) {
-                    scheduledTask = taskQueueDAO.getNextTask(mName);
+                    scheduledTask = queueDAO.getNextTask(mName);
                     if (scheduledTask == null) {
                         // No more tasks. Remove from manager and terminate.
                         mTerminate = true;
                         mManager.onQueueTerminating(this);
                         return;
                     }
-                    if (scheduledTask.timeUntilRunnable == 0) {
+                    if (scheduledTask.getTimeUntilRunnable() == 0) {
                         // Ready to run now.
                         task = scheduledTask.getTask();
                         mTask = new WeakReference<>(task);
@@ -126,12 +126,12 @@ class Queue
                 // If we get here, we have a task, or know that there is one waiting to run.
                 // Just wait for any wait that is longer than a minute.
                 if (task != null) {
-                    runTask(taskQueueDAO, task);
+                    runTask(queueDAO, task);
                 } else {
                     // Not ready, just wait. Allow for possible wake-up calls if something
                     // else gets queued.
                     synchronized (this) {
-                        wait(scheduledTask.timeUntilRunnable);
+                        wait(scheduledTask.getTimeUntilRunnable());
                     }
                 }
             }
@@ -151,7 +151,7 @@ class Queue
     /**
      * Run the task then save the results.
      */
-    private void runTask(@NonNull final TaskQueueDAO taskQueueDAO,
+    private void runTask(@NonNull final QueueDAO queueDAO,
                          @NonNull final Task task) {
         boolean result = false;
         boolean requeue = false;
@@ -172,18 +172,18 @@ class Queue
         // Update the related database record to process the task correctly.
         synchronized (mManager) {
             if (task.isAborting()) {
-                taskQueueDAO.deleteTask(task.getId());
+                queueDAO.deleteTask(task.getId());
             } else if (result) {
-                taskQueueDAO.setTaskOk(task);
+                queueDAO.setTaskCompleted(task.getId());
             } else if (requeue) {
-                taskQueueDAO.setTaskRequeue(task);
+                queueDAO.requeueTask(task);
             } else {
                 Exception e = task.getException();
                 String msg = null;
                 if (e != null) {
                     msg = e.getLocalizedMessage();
                 }
-                taskQueueDAO.setTaskFail(task, "Unhandled exception while running task: " + msg);
+                queueDAO.setTaskFailed(task, "Unhandled exception while running task: " + msg);
             }
             mTask.clear();
             mTask = null;

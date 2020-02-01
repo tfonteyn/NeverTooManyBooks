@@ -73,7 +73,7 @@ public final class QueueManager {
 
     /** Database access layer. */
     @NonNull
-    private final TaskQueueDAO mTaskQueueDAO;
+    private final QueueDAO mQueueDAO;
     /** Collection of currently active queues. */
     private final Map<String, Queue> mActiveQueues = new HashMap<>();
     /** The UI thread. */
@@ -107,19 +107,16 @@ public final class QueueManager {
         // setup the handler with access to ourselves
         mMessageHandler = new MessageHandler(new WeakReference<>(this));
 
-        mTaskQueueDAO = new TaskQueueDAO(context);
-
-        // Get active queues.
-        synchronized (this) {
-            mTaskQueueDAO.getAllQueues(this);
-        }
         mTaskChangeListeners = new ArrayList<>();
 
-        /*
-         * Create the queues we need, if they do not already exist.
-         */
-        initializeQueue(Q_MAIN);
-        initializeQueue(Q_SMALL_JOBS);
+        mQueueDAO = new QueueDAO(context);
+        // Revive active queues.
+        synchronized (this) {
+            mQueueDAO.initAllQueues(this);
+        }
+        // Create the queues we need, if they do not already exist.
+        mQueueDAO.createQueue(Q_MAIN);
+        mQueueDAO.createQueue(Q_SMALL_JOBS);
     }
 
     /**
@@ -140,36 +137,6 @@ public final class QueueManager {
             throw new IllegalStateException("init was not called?");
         }
         return sInstance;
-    }
-
-    void registerEventListener(@NonNull final ChangeListener listener) {
-        synchronized (mEventChangeListeners) {
-            for (WeakReference<ChangeListener> lr : mEventChangeListeners) {
-                ChangeListener l = lr.get();
-                if (listener.equals(l)) {
-                    return;
-                }
-            }
-            mEventChangeListeners.add(new WeakReference<>(listener));
-        }
-    }
-
-    /** ignores any failures. */
-    void unregisterEventListener(@NonNull final ChangeListener listener) {
-        try {
-            synchronized (mEventChangeListeners) {
-                Collection<WeakReference<ChangeListener>> ll = new ArrayList<>();
-                for (WeakReference<ChangeListener> l : mEventChangeListeners) {
-                    if (l.get().equals(listener)) {
-                        ll.add(l);
-                    }
-                }
-                for (WeakReference<ChangeListener> l : ll) {
-                    mEventChangeListeners.remove(l);
-                }
-            }
-        } catch (@NonNull final RuntimeException ignore) {
-        }
     }
 
     void registerTaskListener(@NonNull final ChangeListener listener) {
@@ -196,6 +163,36 @@ public final class QueueManager {
                 }
                 for (WeakReference<ChangeListener> l : ll) {
                     mTaskChangeListeners.remove(l);
+                }
+            }
+        } catch (@NonNull final RuntimeException ignore) {
+        }
+    }
+
+    void registerEventListener(@NonNull final ChangeListener listener) {
+        synchronized (mEventChangeListeners) {
+            for (WeakReference<ChangeListener> lr : mEventChangeListeners) {
+                ChangeListener l = lr.get();
+                if (listener.equals(l)) {
+                    return;
+                }
+            }
+            mEventChangeListeners.add(new WeakReference<>(listener));
+        }
+    }
+
+    /** ignores any failures. */
+    void unregisterEventListener(@NonNull final ChangeListener listener) {
+        try {
+            synchronized (mEventChangeListeners) {
+                Collection<WeakReference<ChangeListener>> ll = new ArrayList<>();
+                for (WeakReference<ChangeListener> l : mEventChangeListeners) {
+                    if (l.get().equals(listener)) {
+                        ll.add(l);
+                    }
+                }
+                for (WeakReference<ChangeListener> l : ll) {
+                    mEventChangeListeners.remove(l);
                 }
             }
         } catch (@NonNull final RuntimeException ignore) {
@@ -256,7 +253,7 @@ public final class QueueManager {
                             @NonNull final String queueName) {
         synchronized (this) {
             // Save it
-            mTaskQueueDAO.enqueueTask(task, queueName);
+            mQueueDAO.enqueueTask(task, queueName);
 
             if (mActiveQueues.containsKey(queueName)) {
                 // notify the queue there is work to do
@@ -270,15 +267,6 @@ public final class QueueManager {
             }
         }
         notifyTaskChange();
-    }
-
-    /**
-     * Create the specified queue if it does not exist.
-     *
-     * @param name Name of the queue
-     */
-    private void initializeQueue(@NonNull final String name) {
-        mTaskQueueDAO.createQueue(name);
     }
 
     /**
@@ -334,7 +322,7 @@ public final class QueueManager {
      * @param task The task to be updated. Must exist in database.
      */
     public void updateTask(@NonNull final Task task) {
-        mTaskQueueDAO.updateTask(task);
+        mQueueDAO.updateTask(task);
         notifyTaskChange();
     }
 
@@ -364,23 +352,23 @@ public final class QueueManager {
      * Store an Event object for later retrieval after task has completed. This is
      * analogous to writing a line to the 'log file' for the task.
      *
-     * @param task  Related task
-     * @param event Exception (usually subclassed)
+     * @param taskId Related task
+     * @param event  Event
      */
-    void storeTaskEvent(@NonNull final Task task,
+    void storeTaskEvent(final long taskId,
                         @NonNull final Event event) {
-        mTaskQueueDAO.storeTaskEvent(task, event);
+        mQueueDAO.storeTaskEvent(taskId, event);
         notifyEventChange();
     }
 
     /**
      * Return an EventsCursor for all events.
      *
-     * @return Cursor of exceptions
+     * @return EventsCursor
      */
     @NonNull
-    EventsCursor getAllEvents() {
-        return mTaskQueueDAO.getAllEvents();
+    EventsCursor getEvents() {
+        return mQueueDAO.getEvents();
     }
 
     /**
@@ -388,40 +376,38 @@ public final class QueueManager {
      *
      * @param taskId id of the task
      *
-     * @return Cursor of exceptions
+     * @return EventsCursor
      */
     @NonNull
-    EventsCursor getTaskEvents(final long taskId) {
-        return mTaskQueueDAO.getTaskEvents(taskId);
+    EventsCursor getEvents(final long taskId) {
+        return mQueueDAO.getEvents(taskId);
     }
 
     /**
-     * Return as TasksCursor for the specified type.
+     * Return a TasksCursor for all tasks.
      *
-     * @return Cursor of exceptions
+     * @return TasksCursor
      */
     @NonNull
     TasksCursor getTasks() {
-        return mTaskQueueDAO.getTasks();
+        return mQueueDAO.getTasks();
     }
 
     /**
-     * Return as TasksCursor for the specified category.
+     * Check if there are active tasks of the specified category.
      *
-     * @param category Subtype of cursor to retrieve
+     * @param category Category to get
      *
-     * @return Cursor of exceptions
+     * @return {@code true} if there are active tasks
      */
     public boolean hasActiveTasks(final long category) {
-        try (TasksCursor c = mTaskQueueDAO.getTasks(category)) {
-            return c.moveToFirst();
-        }
+        return mQueueDAO.hasActiveTasks(category);
     }
 
     /**
      * Delete the specified Task object and related Event objects.
      *
-     * @param id of TaskException to delete.
+     * @param id of Task to delete.
      */
     void deleteTask(final long id) {
         boolean isActive = false;
@@ -437,29 +423,10 @@ public final class QueueManager {
                 }
             }
             if (!isActive) {
-                mTaskQueueDAO.deleteTask(id);
+                mQueueDAO.deleteTask(id);
             }
         }
-        if (isActive) {
-            notifyEventChange();
-            // This is non-optimal, but ... it's easy and clear.
-            // Deleting an event MAY result in an orphan task being deleted.
-            notifyTaskChange();
-        } else {
-            notifyEventChange();
-            // This is non-optimal, but ... it's easy and clear.
-            // Deleting an event MAY result in an orphan task being deleted.
-            notifyTaskChange();
-        }
-    }
 
-    /**
-     * Delete the specified Event object.
-     *
-     * @param eventId id of TaskException to delete.
-     */
-    public void deleteEvent(final long eventId) {
-        mTaskQueueDAO.deleteEvent(eventId);
         notifyEventChange();
         // This is non-optimal, but ... it's easy and clear.
         // Deleting an event MAY result in an orphan task being deleted.
@@ -467,22 +434,33 @@ public final class QueueManager {
     }
 
     /**
-     * Delete Event records more than 7 days old.
+     * Delete the specified Event object.
+     *
+     * @param id of Event to delete.
      */
-    void cleanupOldEvents() {
-        mTaskQueueDAO.cleanupOldEvents();
-        mTaskQueueDAO.cleanupOrphans();
+    public void deleteEvent(final long id) {
+        mQueueDAO.deleteEvent(id);
+        notifyEventChange();
+        // This is non-optimal, but ... it's easy and clear.
+        // Deleting an event MAY result in an orphan task being deleted.
+        notifyTaskChange();
+    }
+
+    /**
+     * Delete Tasks (and its Events) more than 7 days old.
+     */
+    void cleanupOldTasks() {
+        mQueueDAO.cleanupOldTasks(7);
         // This is non-optimal, but ... it's easy and clear.
         notifyEventChange();
         notifyTaskChange();
     }
 
     /**
-     * Delete Task records more than 7 days old.
+     * Delete Events more than 7 days old.
      */
-    void cleanupOldTasks() {
-        mTaskQueueDAO.cleanupOldTasks();
-        mTaskQueueDAO.cleanupOrphans();
+    void cleanupOldEvents() {
+        mQueueDAO.cleanupOldEvents(7);
         // This is non-optimal, but ... it's easy and clear.
         notifyEventChange();
         notifyTaskChange();

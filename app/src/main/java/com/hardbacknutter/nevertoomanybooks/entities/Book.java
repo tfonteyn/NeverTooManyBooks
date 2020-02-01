@@ -644,7 +644,7 @@ public class Book
      */
     @NonNull
     public Locale getLocale(@NonNull final Context context) {
-        return getAndUpdateLocale(context, Locale.getDefault(), false);
+        return getAndUpdateLocale(context, LocaleUtils.getUserLocale(context), false);
     }
 
     /**
@@ -767,7 +767,7 @@ public class Book
     public void preprocessForStoring(@NonNull final Context context) {
 
         // Handle Language field FIRST, we need it for _OB fields.
-        Locale bookLocale = getAndUpdateLocale(context, Locale.getDefault(), true);
+        Locale bookLocale = getAndUpdateLocale(context, LocaleUtils.getUserLocale(context), true);
 
 
         // Handle TITLE
@@ -880,8 +880,7 @@ public class Book
                 } catch (@NonNull final NumberFormatException e) {
                     // remove and log.
                     remove(name);
-                    Logger.warn(context, TAG, "preprocessExternalIds"
-                                              + "|name=" + name);
+                    Logger.warn(context, TAG, "preprocessExternalIds|name=" + name);
                 }
             }
         }

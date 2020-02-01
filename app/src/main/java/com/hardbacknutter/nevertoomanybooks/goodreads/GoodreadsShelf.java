@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,6 +44,9 @@ public class GoodreadsShelf {
     /** Virtual Goodreads shelf name. */
     public static final String VIRTUAL_TO_READ = "to-read";
 
+    /** The default shelf at Goodreads. */
+    static final String DEFAULT_SHELF = "Default";
+
     /** Bundle with shelf related entries. */
     @NonNull
     private final Bundle mBundle;
@@ -55,13 +58,15 @@ public class GoodreadsShelf {
     /**
      * Create canonical representation based on the best guess as to the Goodreads rules.
      *
-     * @param name to bless
+     * @param locale to use
+     * @param name   to bless
      *
      * @return blessed name
      */
-    public static String canonicalizeName(@NonNull final String name) {
+    public static String canonicalizeName(@NonNull final Locale locale,
+                                          @NonNull final String name) {
         StringBuilder canonical = new StringBuilder();
-        String lcName = name.toLowerCase(Locale.getDefault());
+        String lcName = name.toLowerCase(locale);
         for (int i = 0; i < lcName.length(); i++) {
             char c = lcName.charAt(i);
             if (Character.isLetterOrDigit(c)) {

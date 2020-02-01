@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
  * <p>
  * Dutch language (and to an extend French and a minimal amount of other languages) comics website.
  */
-public class StripInfoManager
+public class StripInfoSearchEngine
         implements SearchEngine,
                    SearchEngine.ByNativeId,
                    SearchEngine.ByIsbn,
@@ -84,6 +84,12 @@ public class StripInfoManager
         return BASE_URL;
     }
 
+    @NonNull
+    @Override
+    public Locale getLocale(@NonNull final Context context) {
+        return SITE_LOCALE;
+    }
+
     /**
      * Also handles {@link SearchEngine.ByBarcode}.
      * <p>
@@ -91,21 +97,21 @@ public class StripInfoManager
      */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
-                               @NonNull final String isbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
-        return new StripInfoBookHandler(localizedAppContext, this)
-                .fetch(isbn, fetchThumbnail, new Bundle());
+        return new StripInfoBookHandler(context, this)
+                .fetch(validIsbn, fetchThumbnail, new Bundle());
     }
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
+    public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
-        return new StripInfoBookHandler(localizedAppContext, this)
+        return new StripInfoBookHandler(context, this)
                 .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());
     }
 

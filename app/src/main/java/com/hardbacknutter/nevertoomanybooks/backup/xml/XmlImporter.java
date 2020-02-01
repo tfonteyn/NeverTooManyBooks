@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,6 +63,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
@@ -79,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -332,7 +333,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warn(TAG, "mTag.type=" + mTag.type);
+                        Logger.warn(App.getAppContext(), TAG, "mTag.type=" + mTag.type);
                         break;
                 }
                 mTag = mTagStack.pop();
@@ -371,7 +372,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warn(TAG, "mTag.type=" + mTag.type);
+                        Logger.warn(App.getAppContext(), TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -437,7 +438,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warn(TAG, "mTag.type=" + mTag.type);
+                        Logger.warn(App.getAppContext(), TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -467,7 +468,7 @@ public class XmlImporter
                         break;
 
                     default:
-                        Logger.warn(TAG, "mTag.type=" + mTag.type);
+                        Logger.warn(App.getAppContext(), TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 

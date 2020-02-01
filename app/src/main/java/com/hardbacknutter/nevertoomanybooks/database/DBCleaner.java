@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
@@ -275,7 +276,7 @@ public class DBCleaner {
                            + ", rows=" + bookIds.size());
             }
             // ENHANCE: we really should fetch each book individually
-            Locale bookLocale = Locale.getDefault();
+            Locale bookLocale = LocaleUtils.getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
             if (!mSyncedDb.inTransaction()) {

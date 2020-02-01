@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches.openlibrary;
 
-import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
@@ -37,34 +35,22 @@ import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-class OpenLibraryManagerTest {
-
-    @Mock
-    protected Bundle mBookData;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mBookData = BundleMock.mock();
-    }
+class OpenLibrarySearchEngineTest
+        extends CommonSetup {
 
     @Test
     void parse() {
@@ -73,7 +59,7 @@ class OpenLibraryManagerTest {
 
         String filename = "/openlibrary/9780980200447.json";
 
-        OpenLibraryManager m = new OpenLibraryManager();
+        OpenLibrarySearchEngine m = new OpenLibrarySearchEngine();
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             String response = m.readResponseStream(is);

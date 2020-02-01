@@ -35,25 +35,27 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTasks;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -113,7 +115,7 @@ public abstract class ShowBookApiHandler
         final String name = (String) elementContext.getUserArg();
         try {
             double d = ParseUtils.parseDouble(elementContext.getBody(),
-                                              GoodreadsManager.SITE_LOCALE);
+                                              GoodreadsHandler.SITE_LOCALE);
             mBookData.putDouble(name, d);
         } catch (@NonNull final NumberFormatException ignore) {
             // Ignore but don't add
@@ -196,20 +198,7 @@ public abstract class ShowBookApiHandler
             mCurrAuthorName = elementContext.getBody();
     @Nullable
     private String mCurrAuthorRole;
-    private final XmlHandler mHandleAuthorEnd = elementContext -> {
-        if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
-            if (mAuthors == null) {
-                mAuthors = new ArrayList<>();
-            }
-            Author author = Author.fromString(mCurrAuthorName);
-            if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
-                author.setType(AuthorTypeMapper.map(mCurrAuthorRole));
-            }
-            mAuthors.add(author);
-            mCurrAuthorName = null;
-            mCurrAuthorRole = null;
-        }
-    };
+    private final Locale mLocale;
     private final XmlHandler mHandleAuthorRole = elementContext ->
             mCurrAuthorRole = elementContext.getBody();
     /** Current Series being processed. */
@@ -241,46 +230,68 @@ public abstract class ShowBookApiHandler
         } catch (@NonNull final NumberFormatException ignore) {
         }
     };
+    private final XmlHandler mHandleAuthorEnd = elementContext -> {
+        if (mCurrAuthorName != null && !mCurrAuthorName.isEmpty()) {
+            if (mAuthors == null) {
+                mAuthors = new ArrayList<>();
+            }
+            Author author = Author.fromString(mCurrAuthorName);
+            if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
+                author.setType(AuthorTypeMapper.map(getLocale(), mCurrAuthorRole));
+            }
+            mAuthors.add(author);
+            mCurrAuthorName = null;
+            mCurrAuthorRole = null;
+        }
+    };
 
     /**
      * Constructor.
      *
-     * @param localizedAppContext Localised application context
-     * @param grManager           the Goodreads Manager
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    ShowBookApiHandler(@NonNull final Context localizedAppContext,
-                       @NonNull final GoodreadsManager grManager)
+    ShowBookApiHandler(@NonNull final Context context,
+                       @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grManager);
-        if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.site_goodreads);
-        }
+        super(grAuth);
+        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
 
-        mEBookString = localizedAppContext.getString(R.string.book_format_ebook);
+        mEBookString = context.getString(R.string.book_format_ebook);
+
+        // Ideally we should use the Book locale
+        mLocale = LocaleUtils.getUserLocale(context);
 
         buildFilters();
+    }
+
+    private Locale getLocale() {
+        // Ideally we should use the Book locale
+        return mLocale;
     }
 
     /**
      * Perform a search and handle the results.
      *
+     * @param context        Current context
      * @param url            url to get
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to save results in (passed in to allow mocking)
      *
      * @return the Bundle of book data.
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     @NonNull
-    Bundle getBookData(@NonNull final String url,
+    Bundle getBookData(@NonNull final Context context,
+                       @NonNull final String url,
                        @NonNull final boolean[] fetchThumbnail,
                        @NonNull final Bundle bookData)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         mBookData = bookData;
         mShelves = null;
@@ -313,14 +324,14 @@ public abstract class ShowBookApiHandler
 //        }
 
         // Build the FIRST publication date based on the components
-        GoodreadsManager.buildDate(mBookData,
+        GoodreadsHandler.buildDate(mBookData,
                                    ShowBookFieldName.ORIG_PUBLICATION_YEAR,
                                    ShowBookFieldName.ORIG_PUBLICATION_MONTH,
                                    ShowBookFieldName.ORIG_PUBLICATION_DAY,
                                    DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
 
         // Build the publication date based on the components
-        GoodreadsManager.buildDate(mBookData,
+        GoodreadsHandler.buildDate(mBookData,
                                    ShowBookFieldName.PUBLICATION_YEAR,
                                    ShowBookFieldName.PUBLICATION_MONTH,
                                    ShowBookFieldName.PUBLICATION_DAY,
@@ -335,10 +346,11 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
             String source = mBookData.getString(DBDefinitions.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
+                Locale locale = LocaleUtils.getUserLocale(context);
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
                 source = LanguageUtils.getISO3Language(source);
                 // and sometimes the alternative 3-char code for specific languages.
-                source = LanguageUtils.toBibliographic(source);
+                source = LanguageUtils.toBibliographic(locale, source);
                 // store the iso3
                 mBookData.putString(DBDefinitions.KEY_LANGUAGE, source);
             }
@@ -396,7 +408,7 @@ public abstract class ShowBookApiHandler
         }
 
         if (fetchThumbnail[0]) {
-            handleThumbnail(App.getAppContext());
+            handleThumbnail(context);
         }
 
         return mBookData;
@@ -408,10 +420,10 @@ public abstract class ShowBookApiHandler
         String coverUrl = null;
         if (mBookData.containsKey(ShowBookFieldName.IMAGE_URL)) {
             coverUrl = mBookData.getString(ShowBookFieldName.IMAGE_URL);
-            if (!GoodreadsTasks.hasCover(coverUrl)
+            if (!GoodreadsHandler.hasCover(coverUrl)
                 && mBookData.containsKey(ShowBookFieldName.SMALL_IMAGE_URL)) {
                 coverUrl = mBookData.getString(ShowBookFieldName.SMALL_IMAGE_URL);
-                if (!GoodreadsTasks.hasCover(coverUrl)) {
+                if (!GoodreadsHandler.hasCover(coverUrl)) {
                     coverUrl = null;
                 }
             }
@@ -419,9 +431,9 @@ public abstract class ShowBookApiHandler
 
         // and if we do have an image, save it using the Goodreads book id as base name.
         if (coverUrl != null) {
-            long grBookId = mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-            String fileSpec = ImageUtils.saveImage(appContext, coverUrl, String.valueOf(grBookId),
-                                                   GoodreadsManager.FILENAME_SUFFIX, null);
+            String name = mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
+                          + GoodreadsSearchEngine.FILENAME_SUFFIX;
+            String fileSpec = ImageUtils.saveImage(appContext, coverUrl, name);
             if (fileSpec != null) {
                 ArrayList<String> list =
                         mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

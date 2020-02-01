@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,37 +41,31 @@ import java.io.Serializable;
  * <p>
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
- * <p>
- * When run, it will have access to the Application context, and can use that to interact
- * with the UI.
- * <p>
- * It it important to note that the run(...) method is NOT called in the main thread.
- * Access to the main thread is provided by ...
  */
 public abstract class Task
-        implements BindableItemCursorAdapter.BindableItem, Serializable {
+        implements BindableItemCursorAdapter.BindableItem,
+                   Serializable {
 
     public static final int CAT_GOODREADS_IMPORT_ALL = 3;
     public static final int CAT_GOODREADS_EXPORT_ALL = 4;
     public static final int CAT_GOODREADS_EXPORT_ONE = 5;
     static final int CAT_LEGACY = 0;
-    static final String STATUS_COMPLETE = "S";
-    static final String STATUS_FAILED = "F";
-    static final String STATUS_QUEUED = "Q";
 
-    private static final long serialVersionUID = -7661826273502736496L;
+    static final String COMPLETED = "S";
+    static final String FAILED = "F";
+    static final String QUEUED = "Q";
 
     private static final int RETRY_LIMIT = 15;
-
+    private static final long serialVersionUID = -5370989347500969258L;
     @NonNull
     private final String mDescription;
     private long mId;
-    private int mRetries;
-
     @Nullable
     private Exception mException;
+
+    private int mRetries;
     private int mRetryDelay;
-    private boolean mAbortTask;
+    private boolean mIsAborting;
 
     /**
      * Constructor.
@@ -80,6 +74,20 @@ public abstract class Task
      */
     Task(@NonNull final String description) {
         mDescription = description;
+    }
+
+    @Override
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
+    }
+
+    @NonNull
+    public String getDescription(@NonNull final Context context) {
+        return mDescription;
     }
 
     /**
@@ -91,10 +99,13 @@ public abstract class Task
      */
     public abstract int getCategory();
 
-    @NonNull
-    public String getDescription(@NonNull final Context context) {
-        // context is not used here, but it is used in child classes.
-        return mDescription;
+    @Nullable
+    public Exception getException() {
+        return mException;
+    }
+
+    public void setException(@Nullable final Exception e) {
+        mException = e;
     }
 
     /**
@@ -102,19 +113,11 @@ public abstract class Task
      * check this flag periodically on long tasks.
      */
     protected boolean isAborting() {
-        return mAbortTask;
+        return mIsAborting;
     }
 
     void abortTask() {
-        mAbortTask = true;
-    }
-
-    public long getId() {
-        return mId;
-    }
-
-    public void setId(final long id) {
-        mId = id;
+        mIsAborting = true;
     }
 
     int getRetryLimit() {
@@ -145,17 +148,8 @@ public abstract class Task
         return mRetries < RETRY_LIMIT;
     }
 
-    @Nullable
-    public Exception getException() {
-        return mException;
-    }
-
-    public void setException(@Nullable final Exception e) {
-        mException = e;
-    }
-
     protected void storeEvent(@NonNull final Event e) {
-        QueueManager.getQueueManager().storeTaskEvent(this, e);
+        QueueManager.getQueueManager().storeTaskEvent(mId, e);
     }
 
     protected void resetRetryCounter() {

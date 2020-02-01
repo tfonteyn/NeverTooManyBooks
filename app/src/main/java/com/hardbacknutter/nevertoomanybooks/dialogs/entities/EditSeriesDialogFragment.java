@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,6 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
-import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
@@ -55,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
@@ -163,7 +163,7 @@ public class EditSeriesDialogFragment
                     mSeries.setComplete(mIsComplete);
                     // There is no book involved here, so use the users Locale instead
                     // and store the changes
-                    mDb.updateOrInsertSeries(context, Locale.getDefault(), mSeries);
+                    mDb.updateOrInsertSeries(context, LocaleUtils.getUserLocale(context), mSeries);
 
                     // and spread the news of the changes.
 //                    Bundle data = new Bundle();

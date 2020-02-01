@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
@@ -143,7 +144,8 @@ public class CsvExporter
      */
     public CsvExporter(@NonNull final Context context,
                        @NonNull final ExportHelper exportHelper) {
-        mUnknownString = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
+        Locale locale = LocaleUtils.getUserLocale(context);
+        mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
         mExportHelper = exportHelper;
         mExportHelper.validate();
     }

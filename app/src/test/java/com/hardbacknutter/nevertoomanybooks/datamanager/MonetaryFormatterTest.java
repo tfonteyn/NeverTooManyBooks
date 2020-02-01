@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ class MonetaryFormatterTest {
         Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("USD")
                 .setLocale(Locale.US);
-        assertEquals("$10.50", f.format(10.50d));
+        assertEquals("$10.50", f.format(mContext, 10.50d));
     }
 
     @Test
@@ -66,7 +66,7 @@ class MonetaryFormatterTest {
         Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("USD")
                 .setLocale(Locale.UK);
-        assertEquals("USD10.50", f.format(10.50d));
+        assertEquals("USD10.50", f.format(mContext, 10.50d));
     }
 
     @Test
@@ -74,7 +74,7 @@ class MonetaryFormatterTest {
         Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("USD")
                 .setLocale(Locale.GERMANY);
-        assertEquals("10,50 USD", f.format(10.50d));
+        assertEquals("10,50 USD", f.format(mContext, 10.50d));
     }
 
 
@@ -86,7 +86,7 @@ class MonetaryFormatterTest {
         Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("EUR")
                 .setLocale(Locale.GERMANY);
-        assertEquals("10,50 €", f.format(10.50d));
+        assertEquals("10,50 €", f.format(mContext, 10.50d));
     }
 
     /**
@@ -97,6 +97,6 @@ class MonetaryFormatterTest {
         Fields.MonetaryFormatter f = new Fields.MonetaryFormatter()
                 .setCurrencyCode("EUR")
                 .setLocale(Locale.UK);
-        assertEquals("€10.50", f.format(10.50d));
+        assertEquals("€10.50", f.format(mContext, 10.50d));
     }
 }

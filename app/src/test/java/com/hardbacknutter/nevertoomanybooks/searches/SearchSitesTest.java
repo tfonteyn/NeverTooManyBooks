@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,45 +28,98 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SearchSitesTest
         extends CommonSetup {
+
+    @Mock
+    SettingsHelper mSettingsHelper;
 
     @BeforeEach
     @Override
     public void setUp() {
         super.setUp();
 
+        mSettingsHelper = mock(SettingsHelper.class);
+
+        when(mSettingsHelper.getContext()).thenReturn(mContext);
+
+        when(mSettingsHelper.getManifestString(eq(GoodreadsAuth.GOODREADS_DEV_KEY)))
+                .thenReturn("GOODREADS_DEV_KEY");
+
+        when(mSettingsHelper.getManifestString(eq(GoodreadsAuth.GOODREADS_DEV_SECRET)))
+                .thenReturn("GOODREADS_DEV_SECRET");
+
         when(mSharedPreferences.getBoolean(eq("search.site.goodreads.enabled"),
                                            anyBoolean())).thenReturn(true);
+        when(mSharedPreferences.getString(eq("goodreads.host.url"),
+                                          anyString())).thenReturn("https://www.goodreads.com");
+
         when(mSharedPreferences.getBoolean(eq("search.site.googlebooks.enabled"),
                                            anyBoolean())).thenReturn(true);
+        when(mSharedPreferences.getString(eq("googlebooks.host.url"),
+                                          anyString())).thenReturn("https://books.google.com");
+
         when(mSharedPreferences.getBoolean(eq("search.site.librarything.enabled"),
                                            anyBoolean())).thenReturn(true);
+        when(mSharedPreferences.getString(eq("librarything.host.url"),
+                                          anyString())).thenReturn("https://www.librarything.com");
+
         when(mSharedPreferences.getBoolean(eq("search.site.isfdb.enabled"),
                                            anyBoolean())).thenReturn(true);
+        when(mSharedPreferences.getString(eq("isfdb.host.url"),
+                                          anyString())).thenReturn("https://www.isfdb.com");
+
         when(mSharedPreferences.getBoolean(eq("search.site.stripinfo.enabled"),
                                            anyBoolean())).thenReturn(true);
+        when(mSharedPreferences.getString(eq("stripinfo.host.url"),
+                                          anyString())).thenReturn("https://www.stripinfo.be");
+
         when(mSharedPreferences.getBoolean(eq("search.site.kbnl.enabled"),
                                            anyBoolean())).thenReturn(true);
+        when(mSharedPreferences.getString(eq("kbnl.host.url"),
+                                          anyString())).thenReturn("https://www.kb.nl");
+
         when(mSharedPreferences.getBoolean(eq("search.site.openlibrary.enabled"),
                                            anyBoolean())).thenReturn(true);
+        when(mSharedPreferences.getString(eq("openlibrary.host.url"),
+                                          anyString())).thenReturn("https://www.openlibrary.com");
 
+        when(mSharedPreferences.getBoolean(eq("search.site.amazon.enabled"),
+                                           anyBoolean())).thenReturn(true);
+        when(mSharedPreferences.getString(eq("amazon.host.url"),
+                                          anyString())).thenReturn("https://www.amazon.co.uk");
     }
 
     @Test
     void site() {
+        Locale systemLocale = Locale.US;
+        Locale userLocale = Locale.UK;
+
         for (SiteList.Type type : SiteList.Type.values()) {
 
-            List<Site> sites = SiteList.getList(mContext, type).getSites(false);
-            System.out.println(sites);
+            List<Site> sites = SiteList.getList(mContext, systemLocale, userLocale, type)
+                                       .getSites(false);
+            System.out.println("type=" + type);
+
+            for (Site site : sites) {
+                SearchEngine searchEngine = site.getSearchEngine(mSettingsHelper);
+                System.out.println(site + ", locale=" + searchEngine.getLocale(mContext));
+            }
         }
     }
 }

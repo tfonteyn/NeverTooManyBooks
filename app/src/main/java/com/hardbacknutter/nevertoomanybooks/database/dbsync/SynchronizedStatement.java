@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -209,11 +210,10 @@ public class SynchronizedStatement
      * <p>
      * Execute a statement that returns a 1 by 1 table with a numeric value.
      *
-     * @see #simpleQueryForLongOrZero()
-     *
      * @return The result of the query.
      *
      * @throws SQLiteDoneException if the query returns zero rows
+     * @see #simpleQueryForLongOrZero()
      */
     public long simpleQueryForLong()
             throws SQLiteDoneException {
@@ -277,11 +277,10 @@ public class SynchronizedStatement
      * <p>
      * Execute a statement that returns a 1 by 1 table with a text value.
      *
-     * @see #simpleQueryForStringOrNull()
-     *
      * @return The result of the query.
      *
      * @throws SQLiteDoneException if the query returns zero rows
+     * @see #simpleQueryForStringOrNull()
      */
     @NonNull
     public String simpleQueryForString()
@@ -395,8 +394,8 @@ public class SynchronizedStatement
                 Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {
-                    Logger.warnWithStackTrace(TAG, "Insert failed",
-                                              "mStatement=" + mStatement);
+                    Logger.warnWithStackTrace(App.getAppContext(), TAG,
+                                              "Insert failed|mStatement=" + mStatement);
                 }
             }
             return id;
@@ -428,11 +427,11 @@ public class SynchronizedStatement
     @CallSuper
     protected void finalize()
             throws Throwable {
-        if (!mCloseWasCalled) {
-            Logger.warn(TAG, "finalize|Closing unclosed statement:\n" + mStatement);
-            if (mStatement != null) {
-                mStatement.close();
+        if (!mCloseWasCalled && mStatement != null) {
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.w(TAG, "finalize|" + mStatement.toString());
             }
+            mStatement.close();
         }
         super.finalize();
     }

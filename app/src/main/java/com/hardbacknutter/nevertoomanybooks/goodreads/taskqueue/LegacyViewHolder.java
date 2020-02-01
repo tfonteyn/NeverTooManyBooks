@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,42 +25,35 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+class LegacyViewHolder
+        extends BindableItemViewHolder {
 
-/**
- * Thrown when for some reason a website rejects our requests.
- * This could be due to Authentication and/or Authorization (Goodreads OAuth).
- * Maybe this should be split in two classes.
- * <p>
- * Note that the exception message can/will be shown to the end-user.
- */
-public class CredentialsException
-        extends FormattedMessageException {
+    final TextView tv1;
+    final TextView tv2;
 
-    private static final long serialVersionUID = 7568007755552123171L;
-    /** Args to pass to format function. */
-    @StringRes
-    private final int mSite;
+    LegacyViewHolder(@NonNull final Context context) {
+        super(new LinearLayout(context));
+        LinearLayout view = (LinearLayout) itemView;
 
-    /**
-     * Constructor.
-     *
-     * @param site String resource id with the name of the site.
-     */
-    public CredentialsException(@StringRes final int site) {
-        super(R.string.error_site_authentication_failed);
-        mSite = site;
-    }
+        view.setOrientation(LinearLayout.VERTICAL);
 
-    @NonNull
-    public String getLocalizedMessage(@NonNull final Context context) {
-        return context.getString(mStringId, context.getString(mSite));
+        ViewGroup.LayoutParams margins = new LinearLayout.LayoutParams(
+                ViewGroup.MarginLayoutParams.MATCH_PARENT,
+                ViewGroup.MarginLayoutParams.WRAP_CONTENT);
+
+        tv1 = new TextView(context);
+        view.addView(tv1, margins);
+
+        tv2 = new TextView(context);
+        view.addView(tv2, margins);
     }
 }

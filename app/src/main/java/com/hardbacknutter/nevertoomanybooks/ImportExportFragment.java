@@ -77,8 +77,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportHelperModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportHelperModel;
@@ -439,7 +439,7 @@ public class ImportExportFragment
     /**
      * Step 4 in the Archive/CSV import procedure.
      *
-     * @param message with results from the import task
+     * @param message to process
      */
     private void onImportFinished(@NonNull final TaskListener.FinishMessage<ImportHelper> message) {
         if (mProgressDialog != null) {
@@ -671,7 +671,7 @@ public class ImportExportFragment
     /**
      * Step 4 in the Archive/CSV export procedure.
      *
-     * @param message with results from the export task
+     * @param message to process
      */
     private void onExportFinished(@NonNull final TaskListener.FinishMessage<ExportHelper> message) {
         if (mProgressDialog != null) {
@@ -799,8 +799,7 @@ public class ImportExportFragment
                 } else {
                     // write to logfile for future reporting enhancements.
                     //noinspection ConstantConditions
-                    Logger.warn(getContext(), TAG, "onExportFailed",
-                                "errno=" + errno);
+                    Logger.warn(getContext(), TAG, "onExportFailed|errno=" + errno);
                 }
             }
 

@@ -49,7 +49,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -69,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FORMATTED;
@@ -138,6 +138,8 @@ public class CsvImporter
     @NonNull
     private final DAO mDb;
 
+    private final Locale mUserLocale;
+
     @NonNull
     private final ImportHelper mSettings;
 
@@ -164,6 +166,8 @@ public class CsvImporter
 
         mDb = new DAO(TAG);
         mSettings = settings;
+
+        mUserLocale = LocaleUtils.getUserLocale(context);
     }
 
     @Override
@@ -198,7 +202,7 @@ public class CsvImporter
 
         // Store the names so we can check what is present
         for (int i = 0; i < csvColumnNames.length; i++) {
-            csvColumnNames[i] = csvColumnNames[i].toLowerCase(App.getSystemLocale());
+            csvColumnNames[i] = csvColumnNames[i].toLowerCase(mUserLocale);
             // add a place holder to the book.
             book.putString(csvColumnNames[i], "");
         }
@@ -423,14 +427,19 @@ public class CsvImporter
     }
 
     /**
-     * @param db Database Access
+     * Check if the incoming book is newer then the stored book data.
+     *
+     * @param db     Database Access
+     * @param book   the book we're updating
+     * @param bookId the book id to lookup in our database
      */
     private boolean updateOnlyIfNewer(@NonNull final DAO db,
                                       @NonNull final Book book,
                                       final long bookId) {
 
-        Date bookDate = DateUtils.parseDate(db.getBookLastUpdateDate(bookId));
-        Date importDate = DateUtils.parseDate(book.getString(DBDefinitions.KEY_DATE_LAST_UPDATED));
+        Date bookDate = DateUtils.parseSqlDateTime(db.getBookLastUpdateDate(bookId));
+        Date importDate = DateUtils.parseSqlDateTime(
+                book.getString(DBDefinitions.KEY_DATE_LAST_UPDATED));
 
         return importDate != null && (bookDate == null || importDate.compareTo(bookDate) > 0);
     }
@@ -462,7 +471,7 @@ public class CsvImporter
             ArrayList<Bookshelf> bookshelves = CsvCoder.getBookshelfCoder().decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
                 // Do not run in batch
-                ItemWithFixableId.pruneList(bookshelves, context, db, Locale.getDefault(), false);
+                ItemWithFixableId.pruneList(bookshelves, context, db, mUserLocale, false);
                 book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bookshelves);
             }
         }
@@ -493,7 +502,7 @@ public class CsvImporter
         if (!encodedList.isEmpty()) {
             authors = CsvCoder.getAuthorCoder().decodeList(encodedList);
             // run in batch mode, i.e. force using the user Locale;
-            ItemWithFixableId.pruneList(authors, context, db, Locale.getDefault(), true);
+            ItemWithFixableId.pruneList(authors, context, db, mUserLocale, true);
 
         } else {
             authors = new ArrayList<>();

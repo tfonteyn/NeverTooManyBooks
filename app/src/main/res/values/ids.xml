@@ -43,34 +43,18 @@
     <item name="ROW_GRABBER_ICON" type="id" />
     <!-- BEGIN used for rows in a {@link RecyclerView} -->
 
-    <!-- BEGIN predefined View tags -->
-    <!-- Goodreads. -->
-    <item name="TAG_GR_EVENT" type="id" />
-    <!-- Goodreads. -->
-    <item name="TAG_GR_TASK" type="id" />
-    <!-- Goodreads. -->
-    <item name="TAG_GR_TASK_HOLDER" type="id" />
-    <!-- Goodreads. -->
-    <item name="TAG_GR_BOOK_EVENT_HOLDER" type="id" />
-    <!-- Goodreads - {@link GoodreadsWork} -->
-    <item name="TAG_GR_WORK" type="id" />
-
+    <!-- BEGIN View tags -->
     <!-- tags a Cover Image View with the task responsible to fetch the image -->
     <item name="TAG_THUMBNAIL_TASK" type="id" />
-
-    <!-- used for tagging a View with the 'item' it represents, in a list shown in a selection. -->
+    <!-- Tagging a (sub) View in a list with the 'item' it represents. -->
     <item name="TAG_ITEM" type="id" />
-
-    <!-- store the uuid of a cover into a tag on the view. -->
-    <item name="TAG_UUID" type="id" />
-
+    <!-- Tagging a View in a list with the ViewHolder it represents. -->
+    <item name="TAG_VIEW_HOLDER" type="id" />
     <!-- Passing a position on from the BooklistAdapter to the click-listeners. -->
     <item name="TAG_BL_POSITION" type="id" />
-
     <!-- Updating fields from the internet.  -->
     <item name="TAG_FIELD_USAGE" type="id" />
-
-    <!-- END predefined View tags -->
+    <!-- END View tags -->
 
     <!-- BEGIN predefined View ids. -->
     <item name="PICKER_DAY" type="id" />
@@ -81,11 +65,21 @@
     <!-- BEGIN predefined AsyncTask IDs needed for TaskBase child classes. -->
     <item name="TASK_ID_GET_BOOKLIST" type="id" />
 
-    <item name="TASK_ID_FILE_LISTER" type="id" />
     <item name="TASK_ID_READ_FROM_ARCHIVE" type="id" />
     <item name="TASK_ID_WRITE_TO_ARCHIVE" type="id" />
     <item name="TASK_ID_CSV_IMPORT" type="id" />
     <item name="TASK_ID_CSV_EXPORT" type="id" />
+
+    <item name="TASK_ID_UPDATE_FIELDS" type="id" />
+
+    <item name="TASK_ID_GALLERY_IMAGE" type="id" />
+    <item name="TASK_ID_SWITCHER_IMAGE" type="id" />
+
+    <item name="TASK_ID_ISFDB_GET_BOOK" type="id" />
+    <item name="TASK_ID_SEARCH_EDITIONS" type="id" />
+
+    <!-- not an actual task, but this serves to identify messages from the SearchCoordinator -->
+    <item name="TASK_ID_SEARCH_COORDINATOR" type="id" />
 
     <item name="TASK_ID_LT_VALIDATE_KEY" type="id" />
 
@@ -94,18 +88,6 @@
     <item name="TASK_ID_GR_SEND_BOOKS" type="id" />
     <item name="TASK_ID_GR_IMPORT" type="id" />
     <item name="TASK_ID_GR_GET_WORKS" type="id" />
-
-    <!-- not an actual task, but this serves to identify messages from the SearchCoordinator -->
-    <item name="TASK_ID_SEARCH_COORDINATOR" type="id" />
-
-    <item name="TASK_ID_UPDATE_FIELDS" type="id" />
-
-    <item name="TASK_ID_ISFDB_GET_BOOK" type="id" />
-
-    <item name="TASK_ID_SEARCH_EDITIONS" type="id" />
-
-    <item name="TASK_ID_GALLERY_IMAGE" type="id" />
-    <item name="TASK_ID_SWITCHER_IMAGE" type="id" />
 
     <!-- END predefined AsyncTask IDs -->
 

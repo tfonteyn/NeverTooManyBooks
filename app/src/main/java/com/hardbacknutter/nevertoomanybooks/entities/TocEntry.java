@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Class to represent a single title within an TOC(Anthology).
@@ -269,7 +270,7 @@ public class TocEntry
                       @NonNull final DAO db,
                       @NonNull final Locale bookLocale) {
         // don't use the bookLocale for the Author; translated books would have the wrong Locale.
-        mAuthor.fixId(context, db, Locale.getDefault());
+        mAuthor.fixId(context, db, LocaleUtils.getUserLocale(context));
         mId = db.getTocEntryId(context, this, bookLocale);
         return mId;
     }

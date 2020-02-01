@@ -76,7 +76,7 @@ public class IsfdbGetEditionsTask
         Context context = App.getAppContext();
 
         try {
-            return new IsfdbEditionsHandler(context).fetch(mIsbn);
+            return new IsfdbEditionsHandler().fetch(context, mIsbn);
         } catch (@NonNull final SocketTimeoutException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "doInBackground", e);

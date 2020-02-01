@@ -33,6 +33,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.LocaleList;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -206,6 +207,8 @@ public final class LocaleUtils {
         if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
             sPreferredLocaleSpec = localeSpec;
             sPreferredLocale = createLocale(localeSpec);
+            // (re)create our parser format lists
+            DateUtils.create(sPreferredLocale, LocaleUtils.getSystemLocale());
         }
 
         // ALWAYS ALWAYS ALWAYS ALWAYS ALWAYS
@@ -254,8 +257,19 @@ public final class LocaleUtils {
         }
     }
 
+    /**
+     * Return the device Locale.
+     *
+     * @return Locale
+     */
     @NonNull
     public static Locale getSystemLocale() {
+        // While running JUnit tests we cannot get access or mock Resources.getSystem(),
+        // ... so we need to cheat.
+        if (BuildConfig.DEBUG && Logger.isJUnitTest()) {
+            return Locale.ENGLISH;
+        }
+
         if (Build.VERSION.SDK_INT >= 24) {
             return Resources.getSystem().getConfiguration().getLocales().get(0);
         } else {
@@ -264,13 +278,45 @@ public final class LocaleUtils {
         }
     }
 
+    /**
+     * Return the user preferred Locale.
+     *
+     * @return Locale
+     */
     @NonNull
-    private static Locale getConfiguredLocale(@NonNull final Context context) {
+    public static Locale getUserLocale(@NonNull final Context context) {
+        // While running JUnit tests we cannot get access to
+        // context.getResources().getConfiguration().locale
+        // ... so we need to cheat.
+        if (BuildConfig.DEBUG && Logger.isJUnitTest()) {
+            return Locale.ENGLISH;
+        }
+
+        Locale locale;
         if (Build.VERSION.SDK_INT >= 24) {
-            return context.getResources().getConfiguration().getLocales().get(0);
+            locale = context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            locale = context.getResources().getConfiguration().locale;
+        }
+
+        if (!locale.equals(Locale.getDefault())) {
+            throw new IllegalStateException("user locale != default");
+        }
+        return locale;
+    }
+
+    /**
+     * Return the user Locale list
+     *
+     * @return LocaleList
+     */
+    @NonNull
+    public static LocaleList getLocaleList(@NonNull final Context context) {
+        if (Build.VERSION.SDK_INT >= 24) {
+            return context.getResources().getConfiguration().getLocales();
         } else {
             //noinspection deprecation
-            return context.getResources().getConfiguration().locale;
+            return new LocaleList(context.getResources().getConfiguration().locale);
         }
     }
 
@@ -301,15 +347,15 @@ public final class LocaleUtils {
 
     private static void insanityCheck(@NonNull final Context context) {
         String persistedIso3 = createLocale(getPersistedLocaleSpec(context)).getISO3Language();
-        String conIso3 = getConfiguredLocale(context).getISO3Language();
+        String userIso3 = getUserLocale(context).getISO3Language();
         String defIso3 = Locale.getDefault().getISO3Language();
 
-        if (!defIso3.equals(conIso3)
+        if (!defIso3.equals(userIso3)
             || !defIso3.equals(persistedIso3)
         ) {
-            String error = "Locale.getDefault()=" + defIso3
-                           + ", getConfiguration().locale=" + conIso3
-                           + ", SharedPreferences=" + persistedIso3;
+            String error = "defIso3=" + defIso3
+                           + "|userIso3=" + userIso3
+                           + "|SharedPreferences=" + persistedIso3;
             Error e = new java.lang.VerifyError(error);
             Logger.error(context, TAG, e, error);
             throw e;
@@ -388,14 +434,14 @@ public final class LocaleUtils {
     public static Locale getLocale(@NonNull final Context context,
                                    @NonNull final String inputLang) {
 
-        String lang = inputLang.trim().toLowerCase(Locale.getDefault());
+        String lang = inputLang.trim().toLowerCase(LocaleUtils.getUserLocale(context));
         int len = lang.length();
         if (len > 3) {
             lang = LanguageUtils.getISO3FromDisplayName(context, lang);
         }
 
         // THIS IS A MUST
-        lang = LanguageUtils.getLocaleIsoFromIso3(lang);
+        lang = LanguageUtils.getLocaleIsoFromIso3(context, lang);
 
         // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
         Locale locale = LOCALE_MAP.get(lang);
@@ -424,15 +470,14 @@ public final class LocaleUtils {
      *
      * @param context     Current context
      * @param title       to reorder
-     * @param titleLocale (optional) Locale matching the title.
-     *                    When {@code null} Locale.getDefault() is used.
+     * @param titleLocale Locale for the title.
      *
      * @return reordered title, or the original if the pattern was not found
      */
     @NonNull
     public static String reorderTitle(@NonNull final Context context,
                                       @NonNull final String title,
-                                      @Nullable final Locale titleLocale) {
+                                      @NonNull final Locale titleLocale) {
 
         String[] titleWords = title.split(" ");
         // Single word titles (or empty titles).. just return.
@@ -442,11 +487,13 @@ public final class LocaleUtils {
 
         // we check in order - first match returns.
         // 1. the Locale passed in
-        // 2. the default Locale
+        // 2. the user preferred Locale
         // 3. the user device Locale
         // 4. ENGLISH.
-        Locale[] locales = {titleLocale, Locale.getDefault(),
-                            App.getSystemLocale(), Locale.ENGLISH};
+        Locale[] locales = {titleLocale,
+                            getUserLocale(context),
+                            getSystemLocale(),
+                            Locale.ENGLISH};
 
         for (Locale locale : locales) {
             if (locale == null) {
@@ -475,6 +522,7 @@ public final class LocaleUtils {
         }
         return title;
     }
+
 
     public interface OnLocaleChangedListener {
 

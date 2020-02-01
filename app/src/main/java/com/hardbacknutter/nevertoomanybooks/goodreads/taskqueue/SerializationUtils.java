@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.utils;
+package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,7 +41,7 @@ import java.io.Serializable;
 /**
  * Collection of methods to wrap common serialization routines.
  */
-public final class SerializationUtils {
+final class SerializationUtils {
 
     private SerializationUtils() {
     }
@@ -56,7 +56,7 @@ public final class SerializationUtils {
      * @throws IllegalStateException upon failure.
      */
     @NonNull
-    public static byte[] serializeObject(@NonNull final Serializable o)
+    static byte[] serializeObject(@NonNull final Serializable o)
             throws IllegalStateException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (ObjectOutput out = new ObjectOutputStream(bos)) {
@@ -78,7 +78,7 @@ public final class SerializationUtils {
      */
     @SuppressWarnings("unchecked")
     @NonNull
-    public static <T> T deserializeObject(@NonNull final byte[] obj)
+    static <T> T deserializeObject(@NonNull final byte[] obj)
             throws DeserializationException {
         try (ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(obj))) {
             return (T) is.readObject();
@@ -90,7 +90,7 @@ public final class SerializationUtils {
     /**
      * Catchall class for errors in serialization.
      */
-    public static class DeserializationException
+    static class DeserializationException
             extends Exception {
 
         private static final long serialVersionUID = -2040548134317746620L;

@@ -161,7 +161,7 @@ public class TrackedCursor
     protected void finalize() {
         if (!mCloseWasCalled) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACKED_CURSOR) {
-                Logger.warn(TAG, "finalize|calling close()");
+                Logger.w(TAG, "finalize|" + CURSORS.toString());
                 removeCursor();
             }
         }

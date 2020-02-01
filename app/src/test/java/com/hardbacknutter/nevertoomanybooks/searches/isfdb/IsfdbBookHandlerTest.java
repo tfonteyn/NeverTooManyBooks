@@ -68,18 +68,18 @@ class IsfdbBookHandlerTest
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            doc = Jsoup.parse(is, IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
+            doc = Jsoup.parse(is, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
         } catch (@NonNull final IOException e) {
             fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(mContext, doc);
+        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
         // we've set the doc, so no internet download will be done.
         try {
             boolean[] fetchThumbnail = {false, false};
-            mBookData = isfdbBookHandler.parseDoc(false, fetchThumbnail, mBookData);
+            mBookData = isfdbBookHandler.parseDoc(mContext, false, fetchThumbnail, mBookData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -155,18 +155,18 @@ class IsfdbBookHandlerTest
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            doc = Jsoup.parse(is, IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
+            doc = Jsoup.parse(is, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
         } catch (@NonNull final IOException e) {
             fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(mContext, doc);
+        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
         // we've set the doc, so no internet download will be done.
         try {
             boolean[] fetchThumbnail = {false, false};
-            mBookData = isfdbBookHandler.parseDoc(true, fetchThumbnail, mBookData);
+            mBookData = isfdbBookHandler.parseDoc(mContext, true, fetchThumbnail, mBookData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -228,18 +228,18 @@ class IsfdbBookHandlerTest
         Document doc = null;
         try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
-            doc = Jsoup.parse(is, IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
+            doc = Jsoup.parse(is, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
         } catch (@NonNull final IOException e) {
             fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(mContext, doc);
+        IsfdbBookHandler isfdbBookHandler = new IsfdbBookHandler(doc);
         // we've set the doc, so no internet download will be done.
         try {
             boolean[] fetchThumbnail = {false, false};
-            mBookData = isfdbBookHandler.parseDoc(true, fetchThumbnail, mBookData);
+            mBookData = isfdbBookHandler.parseDoc(mContext, true, fetchThumbnail, mBookData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }

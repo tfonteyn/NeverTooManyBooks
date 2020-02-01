@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
@@ -38,35 +40,39 @@ import java.io.Serializable;
  * in which 3 items fail, but 678 succeed -- in this case it is useful to export the successful
  * ones and report the failures later.
  * <p>
- * The Task object has a 'saveException()' method that stores the exception in the database
+ * The {@link Task#setException(Exception)} method stores the exception in the database
  * for later retrieval.
  * <p>
  * Client applications should consider subclassing this object.
  *
  * An Event *MUST* be serializable.
+ * This means that it can not contain any references to UI components or similar objects.
  */
 public abstract class Event
-        implements Serializable, BindableItemCursorAdapter.BindableItem {
+        implements BindableItemCursorAdapter.BindableItem,
+                   Serializable {
 
-    private static final long serialVersionUID = -7755715500141691679L;
+    private static final long serialVersionUID = 2160151040581590007L;
+    private long mId;
+
     @NonNull
     private final String mDescription;
-    private long mId;
 
     protected Event(@NonNull final String description) {
         mDescription = description;
     }
 
-    @NonNull
-    protected String getDescription() {
-        return mDescription;
-    }
-
-    protected long getId() {
+    @Override
+    public long getId() {
         return mId;
     }
 
     public void setId(final long id) {
         mId = id;
+    }
+
+    @NonNull
+    protected String getDescription(@NonNull final Context context) {
+        return mDescription;
     }
 }

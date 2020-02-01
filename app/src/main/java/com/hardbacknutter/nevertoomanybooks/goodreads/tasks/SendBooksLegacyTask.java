@@ -32,17 +32,15 @@ import android.database.Cursor;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
-import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
 
 /**
  * Background task class to send all books in the database to Goodreads.
@@ -80,50 +78,20 @@ class SendBooksLegacyTask
     }
 
     /**
-     * Check that no other sync-related jobs are queued, and that Goodreads is
-     * authorized for this app.
-     * <p>
-     * This does network access and should not be called in the UI thread.
-     *
-     * @param grManager the Goodreads Manager
-     *
-     * @return StringRes id of message for user,
-     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZED}
-     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
-     */
-    @WorkerThread
-    @StringRes
-    static int checkWeCanExport(@NonNull final GoodreadsManager grManager) {
-        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_EXPORT_ALL)) {
-            return R.string.gr_tq_requested_task_is_already_queued;
-        }
-        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_IMPORT_ALL)) {
-            return R.string.gr_tq_import_task_is_already_queued;
-        }
-
-        // Make sure Goodreads is authorized for this app
-        if (grManager.hasValidCredentials()) {
-            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED;
-        } else {
-            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_NEEDED;
-        }
-    }
-
-    /**
      * Perform the main task. Called from within {@link #run}
      * <p>
      * Deal with restarts by using mLastId as starting point.
      * (Remember: the task gets serialized to the taskqueue database.)
      *
-     * @param context   Current context
-     * @param grManager the Goodreads Manager
+     * @param context    Current context
+     * @param apiHandler the Goodreads Manager
      *
      * @return {@code true} on success.
      */
     @Override
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final Context context,
-                           @NonNull final GoodreadsManager grManager) {
+                           @NonNull final GoodreadsHandler apiHandler) {
 
         try (DAO db = new DAO(TAG);
              Cursor cursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
@@ -131,7 +99,7 @@ class SendBooksLegacyTask
             mTotalBooks = cursor.getCount() + mCount;
             boolean needsRetryReset = true;
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, grManager, db, cursorRow)) {
+                if (!sendOneBook(queueManager, context, apiHandler, db, cursorRow)) {
                     // quit on error
                     return false;
                 }

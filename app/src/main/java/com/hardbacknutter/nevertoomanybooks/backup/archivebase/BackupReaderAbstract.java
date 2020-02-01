@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -260,7 +260,7 @@ public abstract class BackupReaderAbstract
                         break;
 
                     case Unknown:
-                        Logger.warn(context, TAG, "restore", "type=" + entity.getType());
+                        Logger.warn(context, TAG, "restore|type=" + entity.getType());
                         break;
                 }
                 entity = nextEntity();

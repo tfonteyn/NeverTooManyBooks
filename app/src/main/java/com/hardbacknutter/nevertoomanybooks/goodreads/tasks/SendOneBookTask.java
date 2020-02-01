@@ -40,12 +40,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Start a background task that exports a single books to Goodreads.
@@ -55,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * {@link SendBooksLegacyTask}. The core of the task is (should be) identical.
  */
 public class SendOneBookTask
-        extends TaskBase<Void, Integer> {
+        extends TaskBase<Void, GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "SendOneBookTask";
@@ -70,7 +73,7 @@ public class SendOneBookTask
      * @param taskListener for sending progress and finish messages to.
      */
     public SendOneBookTask(final long bookId,
-                           @NonNull final TaskListener<Integer> taskListener) {
+                           @NonNull final TaskListener<GrStatus> taskListener) {
         super(R.id.TASK_ID_GR_SEND_ONE_BOOK, taskListener);
         mBookId = bookId;
     }
@@ -78,59 +81,57 @@ public class SendOneBookTask
     @Override
     @NonNull
     @WorkerThread
-    protected Integer doInBackground(final Void... params) {
+    protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendOneBookTask " + mBookId);
-        Context localContext = App.getLocalizedAppContext();
+        Context context = App.getLocalizedAppContext();
 
-        GoodreadsManager.ExportResult result = null;
+        GrStatus result;
         try {
-            if (!NetworkUtils.isNetworkAvailable(localContext)) {
-                return R.string.error_network_no_connection;
+            if (!NetworkUtils.isNetworkAvailable(context)) {
+                return GrStatus.NoInternet;
             }
-
-            GoodreadsManager grManager = new GoodreadsManager();
-            if (!grManager.hasValidCredentials()) {
-                return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_NEEDED;
+            GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+            GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
+            if (!grAuth.hasValidCredentials(context)) {
+                return GrStatus.CredentialsMissing;
             }
 
             try (DAO db = new DAO(TAG);
                  Cursor cursor = db.fetchBookForExportToGoodreads(mBookId)) {
                 if (cursor.moveToFirst()) {
                     if (isCancelled()) {
-                        return R.string.progress_end_cancelled;
+                        return GrStatus.Cancelled;
                     }
                     publishProgress(new TaskListener.ProgressMessage(
-                            getTaskId(), localContext.getString(R.string.progress_msg_sending)));
+                            getTaskId(), context.getString(R.string.progress_msg_sending)));
 
                     final CursorRow cursorRow = new CursorRow(cursor);
-                    result = grManager.sendOneBook(localContext, db, cursorRow);
-                    if (result == GoodreadsManager.ExportResult.sent) {
+                    result = apiHandler.sendOneBook(context, db, cursorRow);
+                    if (result == GrStatus.BookSent) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);
                     }
+                    return result;
                 }
             }
         } catch (@NonNull final CredentialsException e) {
-            Logger.error(localContext, TAG, e);
-            result = GoodreadsManager.ExportResult.credentialsError;
             mException = e;
-        } catch (@NonNull final BookNotFoundException e) {
-            Logger.error(localContext, TAG, e);
-            result = GoodreadsManager.ExportResult.notFound;
+            Logger.error(context, TAG, e);
+            return GrStatus.CredentialsError;
+        } catch (@NonNull final NotFoundException e) {
             mException = e;
+            Logger.error(context, TAG, e, e.getUrl());
+            return GrStatus.NotFound;
         } catch (@NonNull final IOException e) {
-            Logger.error(localContext, TAG, e);
-            result = GoodreadsManager.ExportResult.ioError;
             mException = e;
+            Logger.error(context, TAG, e);
+            return GrStatus.IOError;
         } catch (@NonNull final RuntimeException e) {
-            Logger.error(localContext, TAG, e);
-            result = GoodreadsManager.ExportResult.error;
             mException = e;
+            Logger.error(context, TAG, e);
+            return GrStatus.UnexpectedError;
         }
 
-        if (result != null) {
-            return result.getReasonStringId();
-        }
-        return R.string.error_unexpected_error;
+        return GrStatus.UnexpectedError;
     }
 }

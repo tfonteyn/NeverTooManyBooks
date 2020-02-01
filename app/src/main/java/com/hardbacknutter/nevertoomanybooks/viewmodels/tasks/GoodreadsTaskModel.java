@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,13 +29,14 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 
 /**
  * See parent class doc.
  */
 public class GoodreadsTaskModel
-        extends TaskListenerModel<Integer> {
+        extends TaskListenerModel<GrStatus> {
 
     @Nullable
     private TaskBase mTask;

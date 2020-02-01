@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
@@ -957,7 +957,9 @@ public class BooklistBuilder
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(TAG, "finalize|calling close() on " + mInstanceId);
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.w(TAG, "finalize|" + mInstanceId);
+            }
             close();
         }
         super.finalize();

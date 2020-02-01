@@ -35,52 +35,38 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Locale;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * FIXME: Amazon is now disabled/hidden as it can't work without the proxy from BookCatalogue.
- * Either implement the Amazon API, or migrate to using html parser.
+ * Should really implement the Amazon API.
  * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
- *
- * The {@link #openWebsite(Context, String, String)} is in use obviously.
  */
-public final class AmazonManager
+public final class AmazonSearchEngine
         implements SearchEngine,
-                   SearchEngine.ByText,
                    SearchEngine.ByNativeId,
-                   SearchEngine.ByIsbn,
-                   SearchEngine.ByBarcode {
+                   SearchEngine.ByIsbn {
 
-    private static final String TAG = "AmazonManager";
+    private static final String TAG = "AmazonSearchEngine";
 
     private static final String UTF_8 = "UTF-8";
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "amazon.";
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
-    /** Can only send requests at a throttled speed. */
-    @NonNull
-    private static final Throttler THROTTLER = new Throttler();
     private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
-    private static final String PROXY_URL = "https://bc.theagiledirector.com/getRest_v3.php?";
 
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
@@ -91,11 +77,11 @@ public final class AmazonManager
     /**
      * Start an intent to open the Amazon website.
      *
-     * @param appContext Application context
-     * @param author  to search for
-     * @param series  to search for
+     * @param context Application context
+     * @param author     to search for
+     * @param series     to search for
      */
-    public static void openWebsite(@NonNull final Context appContext,
+    public static void openWebsite(@NonNull final Context context,
                                    @Nullable final String author,
                                    @Nullable final String series) {
 
@@ -107,7 +93,7 @@ public final class AmazonManager
             try {
                 extra += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(appContext, TAG, e, "Unable to add author to URL");
+                Logger.error(context, TAG, e, "Unable to add author to URL");
             }
         }
 
@@ -115,12 +101,12 @@ public final class AmazonManager
             try {
                 extra += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(appContext, TAG, e, "Unable to add series to URL");
+                Logger.error(context, TAG, e, "Unable to add series to URL");
             }
         }
 
-        String url = getBaseURL(appContext) + SUFFIX_BASE_URL + extra.trim();
-        appContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        String url = getBaseURL(context) + SUFFIX_BASE_URL + extra.trim();
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
@@ -147,7 +133,29 @@ public final class AmazonManager
 
     @NonNull
     @Override
-    public Bundle searchByNativeId(@NonNull final Context localizedAppContext,
+    public Locale getLocale(@NonNull final Context context) {
+        String baseUrl = getBaseURL(context);
+        String root = baseUrl.substring(baseUrl.lastIndexOf('.') + 1);
+        switch (root) {
+            case "com":
+                return Locale.US;
+
+            case "uk":
+                return Locale.UK;
+
+            default:
+                Locale locale = LocaleUtils.getLocale(context, root);
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.d(TAG, "getLocale=" + locale);
+                }
+                return locale != null ? locale : Locale.US;
+
+        }
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
@@ -156,80 +164,23 @@ public final class AmazonManager
             return new Bundle();
         }
 
-        return fetchBook(localizedAppContext, "isbn=" + nativeId, fetchThumbnail, new Bundle());
+        return new AmazonHtmlHandler()
+                .fetchByNativeId(context, nativeId, fetchThumbnail, new Bundle());
     }
 
-    /**
-     * Also handles {@link SearchEngine.ByBarcode}.
-     * <p>
-     * {@inheritDoc}
-     */
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
-                               @NonNull final String isbn,
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        if (!SearchSites.ENABLE_AMAZON_AWS) {
-            return new Bundle();
-        }
-
-        return fetchBook(localizedAppContext, "isbn=" + isbn, fetchThumbnail, new Bundle());
-    }
-
-    @Override
-    @NonNull
-    @WorkerThread
-    public Bundle search(@NonNull final Context localizedAppContext,
-                         @Nullable final String code,
-                         @Nullable final String author,
-                         @Nullable final String title,
-                         @Nullable final /* not supported */ String publisher,
-                         @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
-
-        if (!SearchSites.ENABLE_AMAZON_AWS) {
-            return new Bundle();
-        }
-
-        if (author != null && !author.isEmpty() && title != null && !title.isEmpty()) {
-            String query = "author=" + URLEncoder.encode(author, UTF_8)
-                           + "&title=" + URLEncoder.encode(title, UTF_8);
-            return fetchBook(localizedAppContext, query, fetchThumbnail, new Bundle());
-
+        ISBN tmp = new ISBN(validIsbn);
+        if (tmp.isIsbn10Compat()) {
+            return searchByNativeId(context, tmp.asText(ISBN.Type.ISBN10), fetchThumbnail);
         } else {
-            return new Bundle();
+            return searchByNativeId(context, validIsbn, fetchThumbnail);
         }
-
-    }
-
-    private Bundle fetchBook(@NonNull final Context localizedAppContext,
-                             @NonNull final String query,
-                             @NonNull final boolean[] fetchThumbnail,
-                             @NonNull final Bundle bookData)
-            throws IOException {
-        SAXParserFactory factory = SAXParserFactory.newInstance();
-        AmazonHandler handler = new AmazonHandler(localizedAppContext, fetchThumbnail, bookData);
-
-        // See class docs: adding throttling
-        THROTTLER.waitUntilRequestAllowed();
-
-        String url = PROXY_URL + query;
-        // Get it
-        try (TerminatorConnection con = TerminatorConnection.open(localizedAppContext, url)) {
-            SAXParser parser = factory.newSAXParser();
-            parser.parse(con.getInputStream(), handler);
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            // wrap parser exceptions in an IOException
-            throw new IOException(e);
-        }
-
-        String error = handler.getError();
-        if (error != null) {
-            throw new IOException(error);
-        }
-        return handler.getResult();
     }
 
     @NonNull

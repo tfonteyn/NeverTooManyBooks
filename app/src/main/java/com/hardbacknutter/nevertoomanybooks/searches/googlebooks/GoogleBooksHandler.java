@@ -39,7 +39,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * 2019-11: this needs scrapping. See {@link GoogleBooksManager} class doc.
+ * 2019-11: this needs scrapping. See {@link GoogleBooksSearchEngine} class doc.
  *
  * THIS CLASS IS OBSOLETE (but still in use and working fine).
  *

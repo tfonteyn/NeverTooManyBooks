@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,17 +42,16 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.TimeZone;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 
 /**
- * ENHANCE: Migrate to java.time.* ... which required Android 8.0 (API 26)
+ * ENHANCE: Migrate to java.time.* ... which requires Android 8.0 (API 26)
  * or use this backport: https://github.com/JakeWharton/ThreeTenABP
  */
 public final class DateUtils {
@@ -64,135 +63,185 @@ public final class DateUtils {
     private static final Map<String, String[]> MONTH_LONG_NAMES = new HashMap<>();
     /** Month abbreviated names cache for each Locale. */
     private static final Map<String, String[]> MONTH_SHORT_NAMES = new HashMap<>();
+    /** List of formats we'll use to parse dates. */
+    private static final Collection<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>();
+    /** List of formats we'll use to parse SQL dates. */
+    private static final Collection<SimpleDateFormat> PARSE_SQL_DATE_FORMATS = new ArrayList<>();
+    /** These come first. */
+    private static final String[] PARSE_FORMAT_NUMERICAL = {
+            "MM-dd-yyyy HH:mm:ss",
+            "MM-dd-yyyy HH:mm",
+            "MM-dd-yyyy",
+            "dd-MM-yyyy HH:mm:ss",
+            "dd-MM-yyyy HH:mm",
+            "dd-MM-yyyy",
+            };
 
-    /**
-     * SQL Date formatter, System Locale.
-     * Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat LOCAL_SQL_DATE;
+    /** These come in the middle, the SQL/UTC specific ones. */
+    private static final String[] PARSE_FORMAT_SQL = {
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd",
+            "yyyy-MM",
+            };
 
-    /**
-     * SQL Datetime formatter, UTC.
-     * Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat UTC_SQL_DATE_TIME_HH_MM_SS;
-    /**
-     * SQL Datetime formatter, UTC.
-     * Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat UTC_SQL_DATE_TIME_HH_MM;
-    /**
-     * SQL Date formatter, UTC.
-     * Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat UTC_SQL_DATE_YYYY_MM_DD;
-    /**
-     * SQL Date formatter, UTC.
-     * Used for *non-user* dates (date published etc).
-     */
-    private static final SimpleDateFormat UTC_SQL_DATE_YYYY_MM;
+    /** These come after we add the UTC_SQL_* formats. */
+    private static final String[] PARSE_FORMAT_TEXT = {
+            "dd-MMM-yyyy HH:mm:ss",
+            "dd-MMM-yyyy HH:mm",
+            "dd-MMM-yyyy",
+
+            "dd-MMM-yy HH:mm:ss",
+            "dd-MMM-yy HH:mm",
+            "dd-MMM-yy",
+
+            // Amazon: 12 jan. 2017
+            "dd MMM. yyyy",
+
+            // OpenLibrary
+            "dd MMM yyyy",
+            // OpenLibrary
+            "MMM d, yyyy",
+            // OpenLibrary
+            "MMM yyyy",
+
+            // Not sure these are really needed.
+            // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
+            "EEE MMM dd HH:mm:ss ZZZZ yyyy",
+            "EEE MMM dd HH:mm ZZZZ yyyy",
+            "EEE MMM dd ZZZZ yyyy",
+            };
+
+    /** SQL Date formatter, System Locale, local time. */
+    private static final SimpleDateFormat LOCAL_SQL_DATE =
+            new SimpleDateFormat("yyyy-MM-dd", LocaleUtils.getSystemLocale());
+    /** SQL Datetime formatter, UTC. */
+    private static final SimpleDateFormat UTC_SQL_DATE_TIME_HH_MM_SS =
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+    /** SQL Date formatter, UTC. */
+    private static final SimpleDateFormat UTC_SQL_DATE_YYYY_MM_DD =
+            new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
     /** Simple match for a 4 digit year. */
-    private static final SimpleDateFormat YEAR =
-            new SimpleDateFormat("yyyy", App.getSystemLocale());
-
-    /**
-     * List of formats we'll use to parse dates.
-     * 2019-08-03: there are 22 formats, setting capacity to 25.
-     */
-    private static final Collection<SimpleDateFormat> PARSE_DATE_FORMATS = new ArrayList<>(25);
+    private static final SimpleDateFormat YEAR = new SimpleDateFormat("yyyy", Locale.ENGLISH);
 
     static {
-        // This set of formats are Locale agnostic;
-        // but we must make sure these use the real system Locale.
-        Locale systemLocale = App.getSystemLocale();
-
-        // Used for formatting *user* dates, in the Locale timezone, for SQL. e.g. date read...
-        LOCAL_SQL_DATE = new SimpleDateFormat("yyyy-MM-dd", systemLocale);
-
-        // Used for formatting *non-user* dates for SQL. e.g. publication dates...
         TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
-        UTC_SQL_DATE_TIME_HH_MM_SS = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", systemLocale);
         UTC_SQL_DATE_TIME_HH_MM_SS.setTimeZone(TZ_UTC);
-
-        UTC_SQL_DATE_TIME_HH_MM = new SimpleDateFormat("yyyy-MM-dd HH:mm", systemLocale);
-        UTC_SQL_DATE_TIME_HH_MM.setTimeZone(TZ_UTC);
-
-        UTC_SQL_DATE_YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd", systemLocale);
         UTC_SQL_DATE_YYYY_MM_DD.setTimeZone(TZ_UTC);
-
-        UTC_SQL_DATE_YYYY_MM = new SimpleDateFormat("yyyy-MM", systemLocale);
-        UTC_SQL_DATE_YYYY_MM.setTimeZone(TZ_UTC);
     }
 
     private DateUtils() {
     }
 
     /**
-     * create the parser list. These will be tried IN THE ORDER DEFINED HERE.
+     * Create the parser list. These will be tried IN THE ORDER DEFINED HERE.
      *
-     * @param alsoAddEnglish Flag. (We use a parameter to allow testing)
+     * @param locales the locales to use
      */
     @VisibleForTesting
-    static void createParseDateFormats(@NonNull final Locale locale,
-                                       final boolean alsoAddEnglish) {
-        // allow re-creating.
-        PARSE_DATE_FORMATS.clear();
+    public static void create(@NonNull final Locale... locales) {
+        // The numerical formats are top of the list.
+        // SQL based formats
+        // Text based formats
+        String[][] allFormats = {PARSE_FORMAT_NUMERICAL, PARSE_FORMAT_SQL, PARSE_FORMAT_TEXT};
+        create(PARSE_DATE_FORMATS, allFormats, locales);
 
-        // numerical formats
-        addParseDateFormat("MM-dd-yyyy HH:mm:ss", locale, false);
-        addParseDateFormat("MM-dd-yyyy HH:mm", locale, false);
-        addParseDateFormat("MM-dd-yyyy", locale, false);
-
-        addParseDateFormat("dd-MM-yyyy HH:mm:ss", locale, false);
-        addParseDateFormat("dd-MM-yyyy HH:mm", locale, false);
-        addParseDateFormat("dd-MM-yyyy", locale, false);
-
-        // SQL date formats, Locale agnostic.
-        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM_SS);
-        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_TIME_HH_MM);
-        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_YYYY_MM_DD);
-        PARSE_DATE_FORMATS.add(UTC_SQL_DATE_YYYY_MM);
-
-        // add english if the user's System Locale is not English.
-        // This is done because most (all?) internet sites we search are english.
-        addParseDateFormat("dd-MMM-yyyy HH:mm:ss", locale, !alsoAddEnglish);
-        addParseDateFormat("dd-MMM-yyyy HH:mm", locale, !alsoAddEnglish);
-        addParseDateFormat("dd-MMM-yyyy", locale, !alsoAddEnglish);
-
-        addParseDateFormat("dd-MMM-yy HH:mm:ss", locale, !alsoAddEnglish);
-        addParseDateFormat("dd-MMM-yy HH:mm", locale, !alsoAddEnglish);
-        addParseDateFormat("dd-MMM-yy", locale, !alsoAddEnglish);
-
-        // added due to OpenLibrary
-        addParseDateFormat("dd MMM yyyy", locale, !alsoAddEnglish);
-        // added due to OpenLibrary
-        addParseDateFormat("MMM d, yyyy", locale, !alsoAddEnglish);
-        // added due to OpenLibrary
-        addParseDateFormat("MMM yyyy", locale, !alsoAddEnglish);
-
-        // Not sure these are really needed.
-        // Dates of the form: 'Fri May 5 17:23:11 -0800 2012'
-        addParseDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", locale, !alsoAddEnglish);
-        addParseDateFormat("EEE MMM dd HH:mm ZZZZ yyyy", locale, !alsoAddEnglish);
-        addParseDateFormat("EEE MMM dd ZZZZ yyyy", locale, !alsoAddEnglish);
+        // SQL based formats
+        String[][] sqlFormats = {PARSE_FORMAT_SQL};
+        create(PARSE_SQL_DATE_FORMATS, sqlFormats, Locale.ENGLISH);
+        TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
+        for (SimpleDateFormat sdf : PARSE_SQL_DATE_FORMATS) {
+            sdf.setTimeZone(TZ_UTC);
+        }
     }
 
     /**
-     * Add a format to the parser list using the passed Locale.
-     * Optionally add English Locale as well.
+     * <strong>Create</strong> the parser list.
+     * <p>
+     * If English is not part of the passed list of Locales, it is automatically added.
      *
-     * @param format     date format to add
-     * @param locale     Locale to use
-     * @param addEnglish if set, also add Locale.ENGLISH
+     * @param group   collection to add to
+     * @param formats list of formats to add
+     * @param locales to use
      */
-    private static void addParseDateFormat(@NonNull final String format,
-                                           @NonNull final Locale locale,
-                                           final boolean addEnglish) {
-        PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, locale));
-        if (addEnglish && !Locale.ENGLISH.equals(locale)) {
-            PARSE_DATE_FORMATS.add(new SimpleDateFormat(format, Locale.ENGLISH));
+    private static void create(Collection<SimpleDateFormat> group,
+                               @NonNull final String[][] formats,
+                               @NonNull final Locale... locales) {
+        // allow re-creating.
+        group.clear();
+        addParseDateFormats(group, formats, locales);
+
+        // add english if the user's Locale is not English.
+        boolean hasEnglish = false;
+        for (Locale locale : locales) {
+            if (Locale.ENGLISH.equals(locale)) {
+                hasEnglish = true;
+                break;
+            }
         }
+
+        if (!hasEnglish) {
+            addParseDateFormats(group, formats, Locale.ENGLISH);
+        }
+    }
+
+    /**
+     * <strong>Add</strong> to the parser list.
+     *
+     * @param group   collection to add to
+     * @param formats list of formats to add
+     * @param locales to use
+     */
+    private static void addParseDateFormats(@NonNull final Collection<SimpleDateFormat> group,
+                                            @NonNull final String[][] formats,
+                                            @NonNull final Locale... locales) {
+        // track duplicates for each group separably
+        Collection<Locale> added = new HashSet<>();
+        for (String[] groupFormats : formats) {
+            added.clear();
+            for (Locale locale : locales) {
+                if (!added.contains(locale)) {
+                    added.add(locale);
+                    for (String format : groupFormats) {
+                        group.add(new SimpleDateFormat(format, locale));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Attempt to parse a date string based on a range of possible formats.
+     *
+     * @param dateString String to parse
+     *
+     * @return Resulting date (with time==12:00:00) if parsed, otherwise {@code null}
+     */
+    @Nullable
+    public static Date parseDate(@Nullable final String dateString) {
+        Date date = parseDate(PARSE_DATE_FORMATS, dateString);
+        // set time to noon, to avoid any overflow due to timezone or DST.
+        if (date != null) {
+            date.setHours(12);
+            date.setMinutes(0);
+            date.setSeconds(0);
+        }
+        return date;
+    }
+
+    /**
+     * Attempt to parse a date string based on a range of possible formats using the passed locale.
+     *
+     * @param locale     to use
+     * @param dateString String to parse
+     *
+     * @return Resulting date if successfully parsed, otherwise {@code null}
+     */
+    public static Date parseDate(@NonNull final Locale locale,
+                                 @NonNull final String dateString) {
+        // URGENT: parseDate use passed locale FIRST
+        return parseDate(dateString);
     }
 
     /**
@@ -203,7 +252,32 @@ public final class DateUtils {
      * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
-    public static Date parseDate(@Nullable final String dateString) {
+    public static Date parseDateTime(@Nullable final String dateString) {
+        return parseDate(PARSE_DATE_FORMATS, dateString);
+    }
+
+    /**
+     * Attempt to parse a datetime string based on the SQL formats.
+     *
+     * @param dateString String to parse
+     *
+     * @return Resulting date if parsed, otherwise {@code null}
+     */
+    @Nullable
+    public static Date parseSqlDateTime(@Nullable final String dateString) {
+        return parseDate(PARSE_SQL_DATE_FORMATS, dateString);
+    }
+
+    /**
+     * Attempt to parse a date string based on a range of possible formats.
+     *
+     * @param dateString String to parse
+     *
+     * @return Resulting date if parsed, otherwise {@code null}
+     */
+    @Nullable
+    private static Date parseDate(@NonNull Iterable<SimpleDateFormat> formats,
+                                  @Nullable final String dateString) {
         if (dateString == null || dateString.isEmpty()) {
             return null;
         }
@@ -216,12 +290,12 @@ public final class DateUtils {
         }
 
         // First try to parse using strict rules
-        Date d = parseDate(dateString, false);
+        Date d = parseDate(formats, dateString, false);
         if (d != null) {
             return d;
         }
-        // OK, be lenient
-        return parseDate(dateString, true);
+        // try again being lenient
+        return parseDate(formats, dateString, true);
     }
 
     /**
@@ -236,111 +310,71 @@ public final class DateUtils {
      * @return Resulting date if successfully parsed, otherwise {@code null}
      */
     @Nullable
-    private static Date parseDate(@NonNull final String dateString,
+    private static Date parseDate(@NonNull Iterable<SimpleDateFormat> formats,
+                                  @NonNull final String dateString,
                                   final boolean lenient) {
-        // create on first use.
-        if (PARSE_DATE_FORMATS.isEmpty()) {
-            // check the device language
-            boolean userIsEnglishSpeaking =
-                    Objects.equals("eng", App.getSystemLocale().getISO3Language());
-
-            createParseDateFormats(App.getSystemLocale(), userIsEnglishSpeaking);
-        }
-
-        // try all formats until one fits.
-        for (DateFormat df : PARSE_DATE_FORMATS) {
+        for (DateFormat df : formats) {
             try {
-                return parseDate(df, dateString, lenient);
+                df.setLenient(lenient);
+                return df.parse(dateString);
             } catch (@NonNull final ParseException ignore) {
             }
         }
-
-        // try Default Locale.
-        try {
-            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
-            return parseDate(df, dateString, lenient);
-        } catch (@NonNull final ParseException ignore) {
-        }
-
-        // try System Locale.
-        try {
-            DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, App.getSystemLocale());
-            return parseDate(df, dateString, lenient);
-        } catch (@NonNull final ParseException ignore) {
-        }
-
-        // give up.
         return null;
     }
 
-    @Nullable
-    private static Date parseDate(@NonNull final DateFormat df,
-                                  @NonNull final String dateString,
-                                  final boolean lenient)
-            throws ParseException {
-        df.setLenient(lenient);
-        Date date = df.parse(dateString);
-        // set time to noon, to avoid any overflow due to timezone or DST.
-        if (date != null) {
-            date.setHours(12);
-            date.setMinutes(0);
-            date.setSeconds(0);
-        }
-        return date;
-    }
+
 
     /**
      * Pretty format a (potentially partial) SQL date;  Locale based.
      *
+     * @param locale     to use
      * @param dateString SQL formatted date.
      *
      * @return human readable date string
      *
      * @throws NumberFormatException on failure to parse
      */
-    public static String toPrettyDate(@NonNull final String dateString)
+    public static String toPrettyDate(@NonNull final Locale locale,
+                                      @NonNull final String dateString)
             throws NumberFormatException {
 
         switch (dateString.length()) {
-            case 10:
-                // YYYY-MM-DD
-                Date date = parseDate(dateString);
-                if (date != null) {
-                    return DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
-                }
-                // failed to parse
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-                    Log.d(TAG, "toPrettyDate=" + dateString, new Throwable());
-                }
+            case 4: {
+                // shortcut for input: YYYY
                 return dateString;
-
-            case 7:
-                // input: YYYY-MM
+            }
+            case 7: {
+                // shortcut for input: YYYY-MM
                 int month = Integer.parseInt(dateString.substring(5));
                 // just swap: MMM YYYY
-                return getMonthName(month, true) + ' ' + dateString.substring(0, 4);
-
-            case 4:
-                // input: YYYY
-                return dateString;
-
-            default:
+                return getMonthName(locale, month, true) + ' ' + dateString.substring(0, 4);
+            }
+            default: {
+                // Full date or datetime formats
+                Date date = parseDate(dateString);
+                if (date != null) {
+                    return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
+                }
                 // failed to parse
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
                     Log.d(TAG, "toPrettyDate=" + dateString, new Throwable());
                 }
                 return dateString;
+            }
         }
     }
 
     /**
      * Pretty format a datetime.
      *
-     * @param date to format
+     * @param date   to format
+     * @param locale to use
      */
     @NonNull
-    public static String toPrettyDateTime(@NonNull final Date date) {
-        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM)
+    public static String toPrettyDateTime(@NonNull final Date date,
+                                          @NonNull final Locale locale) {
+        return DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale)
                          .format(date);
     }
 
@@ -352,7 +386,7 @@ public final class DateUtils {
      */
     @NonNull
     public static String localSqlDateForToday() {
-        Calendar calendar = Calendar.getInstance(App.getSystemLocale());
+        Calendar calendar = Calendar.getInstance(LocaleUtils.getSystemLocale());
         return LOCAL_SQL_DATE.format(calendar.getTime());
     }
 
@@ -371,7 +405,7 @@ public final class DateUtils {
      */
     @NonNull
     public static String utcSqlDateTimeForToday() {
-        Calendar calendar = Calendar.getInstance(App.getSystemLocale());
+        Calendar calendar = Calendar.getInstance(LocaleUtils.getSystemLocale());
         return UTC_SQL_DATE_TIME_HH_MM_SS.format(calendar.getTime());
     }
 
@@ -390,24 +424,26 @@ public final class DateUtils {
     }
 
     /**
+     * @param locale    to use
      * @param month     1-12 based month number
      * @param shortName {@code true} to get the abbreviated name instead of the full name.
      *
      * @return localised name of Month
      */
     @NonNull
-    public static String getMonthName(@IntRange(from = 1, to = 12) final int month,
+    public static String getMonthName(@NonNull final Locale locale,
+                                      @IntRange(from = 1, to = 12) final int month,
                                       final boolean shortName) {
 
-        String iso = Locale.getDefault().getISO3Language();
+        String iso = locale.getISO3Language();
         String[] longNames = MONTH_LONG_NAMES.get(iso);
         String[] shortNames = MONTH_SHORT_NAMES.get(iso);
 
         if (longNames == null) {
             // Build the cache for this Locale.
-            Calendar calendar = Calendar.getInstance(Locale.getDefault());
-            SimpleDateFormat longNameFormatter = new SimpleDateFormat("MMMM", Locale.getDefault());
-            SimpleDateFormat shortNameFormatter = new SimpleDateFormat("MMM", Locale.getDefault());
+            Calendar calendar = Calendar.getInstance(locale);
+            SimpleDateFormat longNameFormatter = new SimpleDateFormat("MMMM", locale);
+            SimpleDateFormat shortNameFormatter = new SimpleDateFormat("MMM", locale);
 
             longNames = new String[12];
             shortNames = new String[12];

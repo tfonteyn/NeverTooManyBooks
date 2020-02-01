@@ -33,6 +33,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TrackedCursor;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
@@ -95,11 +97,11 @@ public final class DEBUG_SWITCHES {
     public static final boolean SEARCH_COORDINATOR = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.goodreads}. */
     public static final boolean GOODREADS = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager}. */
+    /** {@link LibraryThingSearchEngine}. */
     public static final boolean LIBRARY_THING = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbBookHandler}. */
     public static final boolean ISFDB = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager}. */
+    /** {@link OpenLibrarySearchEngine}. */
     public static final boolean OPEN_LIBRARY = false;
     /** {@link TrackedCursor}. */
     public static final boolean TRACKED_CURSOR = false;

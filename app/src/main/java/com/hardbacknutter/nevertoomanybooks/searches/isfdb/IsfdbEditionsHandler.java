@@ -28,10 +28,10 @@
 package com.hardbacknutter.nevertoomanybooks.searches.isfdb;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -58,59 +58,56 @@ public class IsfdbEditionsHandler
     private static final String TAG = "IsfdbEditionsHandler";
 
     /** Search URL template. */
-    private static final String EDITIONS_URL = IsfdbManager.CGI_BIN
-                                               + IsfdbManager.URL_SE_CGI + "?arg=%s&type=ISBN";
+    private static final String EDITIONS_URL = IsfdbSearchEngine.CGI_BIN
+                                               + IsfdbSearchEngine.URL_SE_CGI + "?arg=%s&type=ISBN";
 
     /** List of ISFDB native book id for all found editions. */
     private final ArrayList<Edition> mEditions = new ArrayList<>();
-    @NonNull
-    private final Context mAppContext;
+
     /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
     private String mIsbn;
 
     /**
      * Constructor.
-     *
-     * @param appContext Application context
      */
-    IsfdbEditionsHandler(@NonNull final Context appContext) {
-        mAppContext = appContext;
+    IsfdbEditionsHandler() {
     }
 
     /**
      * Constructor used for testing.
      *
-     * @param appContext Application context
-     * @param doc        the JSoup Document.
+     * @param doc the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbEditionsHandler(@NonNull final Context appContext,
-                         @NonNull final Document doc) {
+    IsfdbEditionsHandler(@NonNull final Document doc) {
         super(doc);
-        mAppContext = appContext;
     }
 
     /**
      * Fails silently, returning an empty list.
      *
-     * @param isbn to get editions for. MUST be valid.
+     * @param context Current context
+     * @param isbn    to get editions for. MUST be valid.
      *
      * @return a list with native ISFDB book ID's pointing to individual editions
      *
      * @throws SocketTimeoutException if the connection times out
      */
-    public ArrayList<Edition> fetch(@NonNull final String isbn)
+    @WorkerThread
+    @NonNull
+    public ArrayList<Edition> fetch(@NonNull final Context context,
+                                    @NonNull final String isbn)
             throws SocketTimeoutException {
         mIsbn = isbn;
 
-        String url = IsfdbManager.getBaseURL(mAppContext) + String.format(EDITIONS_URL, isbn);
+        String url = IsfdbSearchEngine.getBaseURL(context) + String.format(EDITIONS_URL, isbn);
 
-        if (loadPage(mAppContext, url) == null) {
+        if (loadPage(context, url) == null) {
             // failed to load, return an empty list.
             return mEditions;
         }
 
-        return parseDoc();
+        return parseDoc(context);
     }
 
     /**
@@ -123,34 +120,39 @@ public class IsfdbEditionsHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @SuppressWarnings("WeakerAccess")
-    public ArrayList<Edition> fetchPath(@NonNull final String url)
+    @WorkerThread
+    @NonNull
+    public ArrayList<Edition> fetchPath(@NonNull final Context context,
+                                        @NonNull final String url)
             throws SocketTimeoutException {
 
-        if (loadPage(mAppContext, url) == null) {
+        if (loadPage(context, url) == null) {
             // failed to load, return an empty list.
             return mEditions;
         }
 
-        return parseDoc();
+        return parseDoc(context);
     }
 
     /**
      * Do the parsing of the Document.
      *
+     * @param context Current context
+     *
      * @return list of editions found, can be empty, but never {@code null}
      */
     @NonNull
     @VisibleForTesting
-    ArrayList<Edition> parseDoc() {
+    ArrayList<Edition> parseDoc(@NonNull final Context context) {
         String pageUrl = mDoc.location();
 
-        if (pageUrl.contains(IsfdbManager.URL_PL_CGI)) {
+        if (pageUrl.contains(IsfdbSearchEngine.URL_PL_CGI)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
             mEditions.add(new Edition(stripNumber(pageUrl, '?'), mIsbn, mDoc));
 
-        } else if (pageUrl.contains(IsfdbManager.URL_TITLE_CGI)
-                   || pageUrl.contains(IsfdbManager.URL_SE_CGI)
-                   || pageUrl.contains(IsfdbManager.URL_ADV_SEARCH_RESULTS_CGI)) {
+        } else if (pageUrl.contains(IsfdbSearchEngine.URL_TITLE_CGI)
+                   || pageUrl.contains(IsfdbSearchEngine.URL_SE_CGI)
+                   || pageUrl.contains(IsfdbSearchEngine.URL_ADV_SEARCH_RESULTS_CGI)) {
             // example: http://www.isfdb.org/cgi-bin/title.cgi?11169
             // we have multiple editions. We get here from one of:
             // - direct link to the "title" of the publication; i.e. 'show the editions'
@@ -159,11 +161,11 @@ public class IsfdbEditionsHandler
             findEntries(mDoc);
         } else {
             // dunno, let's log it
-            Logger.warn(TAG, "parseDoc|pageUrl=" + pageUrl);
+            Logger.warn(context, TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-            Log.d(TAG, "EXIT|fetch|" + mEditions);
+            Logger.d(TAG, "EXIT|fetch|" + mEditions);
         }
         return mEditions;
     }

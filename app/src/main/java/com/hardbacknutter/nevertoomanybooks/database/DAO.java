@@ -81,13 +81,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME_OB;
@@ -613,7 +613,9 @@ public class DAO
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(TAG, "finalize|calling close() on " + mInstanceName);
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.w(TAG, "finalize|" + mInstanceName);
+            }
             close();
         }
         super.finalize();
@@ -793,10 +795,11 @@ public class DAO
      * @return the row id of the newly inserted Author, or {@code -1} if an error occurred
      */
     @SuppressWarnings("UnusedReturnValue")
-    public long insertAuthor(@NonNull final Context context,
-                             @NonNull final Author /* in/out */ author) {
+    private long insertAuthor(@NonNull final Context context,
+                              @NonNull final Author /* in/out */ author) {
 
-        Locale authorLocale = author.getLocale(context, this, Locale.getDefault());
+        Locale authorLocale = author.getLocale(context, this,
+                                               LocaleUtils.getUserLocale(context));
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
@@ -828,7 +831,7 @@ public class DAO
     public boolean updateAuthor(@NonNull final Context context,
                                 @NonNull final Author author) {
 
-        Locale authorLocale = author.getLocale(context, this, Locale.getDefault());
+        Locale authorLocale = author.getLocale(context, this, LocaleUtils.getUserLocale(context));
 
         ContentValues cv = new ContentValues();
         cv.put(KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
@@ -840,7 +843,7 @@ public class DAO
         cv.put(KEY_AUTHOR_IS_COMPLETE, author.isComplete());
 
         return 0 < sSyncedDb.update(TBL_AUTHORS.getName(), cv,
-                                KEY_PK_ID + "=?",
+                                    KEY_PK_ID + "=?",
                                     new String[]{String.valueOf(author.getId())});
     }
 
@@ -860,7 +863,7 @@ public class DAO
             return updateAuthor(context, author);
         } else {
             // try to find first.
-            if (author.fixId(context, this, Locale.getDefault()) == 0) {
+            if (author.fixId(context, this, LocaleUtils.getUserLocale(context)) == 0) {
                 return insertAuthor(context, author) > 0;
             }
         }
@@ -941,7 +944,7 @@ public class DAO
 
         if (author.getId() == 0) {
             // It wasn't saved before; see if it is now. If so, update ID.
-            author.fixId(context, this, Locale.getDefault());
+            author.fixId(context, this, LocaleUtils.getUserLocale(context));
 
         } else {
             // It was saved, see if it still is and fetch possibly updated fields.
@@ -1068,7 +1071,8 @@ public class DAO
      */
     public long countBooksByAuthor(@NonNull final Context context,
                                    @NonNull final Author author) {
-        if (author.getId() == 0 && author.fixId(context, this, Locale.getDefault()) == 0) {
+        if (author.getId() == 0 && author.fixId(context, this,
+                                                LocaleUtils.getUserLocale(context)) == 0) {
             return 0;
         }
 
@@ -1089,7 +1093,8 @@ public class DAO
      */
     public long countTocEntryByAuthor(@NonNull final Context context,
                                       @NonNull final Author author) {
-        if (author.getId() == 0 && author.fixId(context, this, Locale.getDefault()) == 0) {
+        if (author.getId() == 0 && author.fixId(context, this,
+                                                LocaleUtils.getUserLocale(context)) == 0) {
             return 0;
         }
 
@@ -1717,10 +1722,11 @@ public class DAO
             stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_TOC_ENTRY, SqlInsert.BOOK_TOC_ENTRY);
         }
 
+        Locale userLocale = LocaleUtils.getUserLocale(context);
         for (TocEntry tocEntry : list) {
             // handle the author.
             Author author = tocEntry.getAuthor();
-            if (author.fixId(context, this, Locale.getDefault()) == 0) {
+            if (author.fixId(context, this, userLocale) == 0) {
                 insertAuthor(context, author);
             }
 
@@ -1849,12 +1855,13 @@ public class DAO
             stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_AUTHORS, SqlInsert.BOOK_AUTHOR);
         }
 
+        Locale userLocale = LocaleUtils.getUserLocale(context);
         // The list MAY contain duplicates, so we track them in a hash table
         final Map<String, Boolean> idHash = new HashMap<>();
         int position = 0;
         for (Author author : authorList) {
             // find/insert the author
-            if (author.fixId(context, this, Locale.getDefault()) == 0) {
+            if (author.fixId(context, this, userLocale) == 0) {
                 insertAuthor(context, author);
             }
 
@@ -1938,6 +1945,7 @@ public class DAO
             stmt = mSqlStatementManager.add(STMT_INSERT_BOOK_BOOKSHELF, SqlInsert.BOOK_BOOKSHELF);
         }
 
+        Locale userLocale = LocaleUtils.getUserLocale(context);
         for (Bookshelf bookshelf : bookshelves) {
             if (bookshelf.getName().isEmpty()) {
                 continue;
@@ -1946,7 +1954,7 @@ public class DAO
             // validate the style first
             long styleId = bookshelf.getStyle(context, this).getId();
 
-            if (bookshelf.fixId(context, this, Locale.getDefault()) == 0) {
+            if (bookshelf.fixId(context, this, userLocale) == 0) {
                 insertBookshelf(bookshelf, styleId);
             }
 
@@ -2433,7 +2441,7 @@ public class DAO
             return updateBookshelf(bookshelf, styleId);
         } else {
             // try to find first.
-            if (bookshelf.fixId(context, this, Locale.getDefault()) == 0) {
+            if (bookshelf.fixId(context, this, LocaleUtils.getUserLocale(context)) == 0) {
                 return insertBookshelf(bookshelf, styleId) > 0;
             }
         }
@@ -3621,10 +3629,10 @@ public class DAO
      * <p>
      * Transaction: required
      *
-     * @param appContext Application context
+     * @param context Application context
      * @param bookId     the book id
      */
-    private void updateFts(@NonNull final Context appContext,
+    private void updateFts(@NonNull final Context context,
                            final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
@@ -3642,7 +3650,7 @@ public class DAO
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(appContext, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
@@ -3743,39 +3751,37 @@ public class DAO
     public void rebuildOrderByTitleColumns(@NonNull final Context context,
                                            final boolean reorder) {
 
-        String language;
-        Locale locale;
-
         // Books
+        String language;
+        Locale bookLocale;
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.BOOK_TITLES, null)) {
             int langIdx = cursor.getColumnIndex(KEY_LANGUAGE);
             while (cursor.moveToNext()) {
                 language = cursor.getString(langIdx);
-                locale = LocaleUtils.getLocale(context, language);
-                if (locale == null) {
-                    locale = Locale.getDefault();
+                bookLocale = LocaleUtils.getLocale(context, language);
+                if (bookLocale == null) {
+                    bookLocale = LocaleUtils.getUserLocale(context);
                 }
-                rebuildOrderByTitleColumns(context, locale, reorder, cursor,
+                rebuildOrderByTitleColumns(context, bookLocale, reorder, cursor,
                                            TBL_BOOKS, KEY_TITLE_OB);
             }
         }
 
-        locale = Locale.getDefault();
+        // Series and TOC Entries use the user Locale.
+        Locale userLocale = LocaleUtils.getUserLocale(context);
 
-        // Series - using the user Locale.
         // We should use the locale from the 1st book in the series... but that is a huge overhead.
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.SERIES_TITLES, null)) {
             while (cursor.moveToNext()) {
-                rebuildOrderByTitleColumns(context, locale, reorder, cursor,
+                rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
                                            TBL_SERIES, KEY_SERIES_TITLE_OB);
             }
         }
 
-        // TOC Entries - using the user Locale.
         // We should use primary book or Author Locale... but that is a huge overhead.
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectFullTable.TOC_ENTRY_TITLES, null)) {
             while (cursor.moveToNext()) {
-                rebuildOrderByTitleColumns(context, locale, reorder, cursor,
+                rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
                                            TBL_TOC_ENTRIES, KEY_TITLE_OB);
             }
         }
@@ -4249,7 +4255,7 @@ public class DAO
         /**
          * Columns from {@link DBDefinitions#TBL_BOOKS} we need to send a Book to Goodreads.
          * <p>
-         * See {@link GoodreadsManager#sendOneBook}
+         * See {@link GoodreadsHandler#sendOneBook}
          * -> notes column disabled for now.
          */
         static final String GOODREADS_BOOK_DATA_TO_SEND =

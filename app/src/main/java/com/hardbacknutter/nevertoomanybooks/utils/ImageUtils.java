@@ -32,6 +32,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -53,6 +54,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -130,6 +132,7 @@ public final class ImageUtils {
     private static final int NR_OF_TRIES = 2;
     /** network: milliseconds to wait between retries. */
     private static final int RETRY_AFTER_MS = 500;
+    private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
 
     private ImageUtils() {
     }
@@ -474,8 +477,6 @@ public final class ImageUtils {
      * @param context Application context
      * @param url     Image file URL
      * @param name    for the file.
-     * @param suffix  suffix denoting the origin of the url
-     * @param size    (optional) extra suffix denoting the size of the image.
      *
      * @return Downloaded fileSpec, or {@code null} on failure
      */
@@ -483,36 +484,45 @@ public final class ImageUtils {
     @WorkerThread
     public static String saveImage(@NonNull final Context context,
                                    @NonNull final String url,
-                                   @NonNull final String name,
-                                   @NonNull final String suffix,
-                                   @Nullable final String size) {
+                                   @NonNull final String name) {
 
-        // If the site drops connection, we retry once.
-        int retry = NR_OF_TRIES;
+        File file = StorageUtils.getTempCoverFile(context, name);
 
-        String fullName = name + suffix;
-        if (size != null) {
-            fullName += "_s" + size;
-        }
-        File file = StorageUtils.getTempCoverFile(context, fullName);
-
-        while (retry > 0) {
-            try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
-                file = StorageUtils.saveInputStreamToFile(context, con.getInputStream(), file);
-                return file != null ? file.getAbsolutePath() : null;
+        if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
+            byte[] image = Base64.decode(url.substring(DATA_IMAGE_JPEG_BASE_64.length())
+                                            .getBytes(StandardCharsets.UTF_8), 0);
+            try (OutputStream os = new FileOutputStream(file)) {
+                os.write(image);
+                return file.getAbsolutePath();
 
             } catch (@NonNull final IOException e) {
-                retry--;
-
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "saveImage"
-                               + "|e=" + e.getLocalizedMessage()
-                               + "|will retry=" + (retry > 0)
-                               + "|url=\"" + url + '\"');
+                               + "|base64"
+                               + "|e=" + e.getLocalizedMessage());
                 }
-                try {
-                    Thread.sleep(RETRY_AFTER_MS);
-                } catch (@NonNull final InterruptedException ignore) {
+            }
+        } else {
+            // If the site drops connection, we retry once.
+            int retry = NR_OF_TRIES;
+            while (retry > 0) {
+                try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
+                    file = StorageUtils.saveInputStreamToFile(context, con.getInputStream(), file);
+                    return file != null ? file.getAbsolutePath() : null;
+
+                } catch (@NonNull final IOException e) {
+                    retry--;
+
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.d(TAG, "saveImage"
+                                   + "|url=\"" + url + '\"'
+                                   + "|will retry=" + (retry > 0)
+                                   + "|e=" + e.getLocalizedMessage());
+                    }
+                    try {
+                        Thread.sleep(RETRY_AFTER_MS);
+                    } catch (@NonNull final InterruptedException ignore) {
+                    }
                 }
             }
         }

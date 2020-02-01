@@ -1,15 +1,16 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,8 +36,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Details of a database table.
@@ -81,7 +82,7 @@ public class TableInfo {
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
-        String lcName = name.toLowerCase(App.getSystemLocale());
+        String lcName = name.toLowerCase(LocaleUtils.getSystemLocale());
         if (!mColumns.containsKey(lcName)) {
             return null;
         }
@@ -104,7 +105,7 @@ public class TableInfo {
         try (Cursor colCsr = db.rawQuery(ColumnInfo.getSql(tableName), null)) {
             while (colCsr.moveToNext()) {
                 ColumnInfo col = new ColumnInfo(colCsr);
-                allColumns.put(col.name.toLowerCase(App.getSystemLocale()), col);
+                allColumns.put(col.name.toLowerCase(LocaleUtils.getSystemLocale()), col);
             }
         }
         if (allColumns.isEmpty()) {

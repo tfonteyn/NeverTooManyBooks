@@ -46,6 +46,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -345,17 +346,18 @@ public class EditBookFragment
 
     /**
      * Save the collected book details.
-     *
-     * <strong>WARNING:</strong> a failed insert/update is ignored (but logged).
      */
     private void saveBook() {
-        // failures are ignored
         //noinspection ConstantConditions
-        mBookModel.saveBook(getContext());
-
-        //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, mBookModel.getResultData());
-        getActivity().finish();
+        if (mBookModel.saveBook(getContext())) {
+            //noinspection ConstantConditions
+            getActivity().setResult(Activity.RESULT_OK, mBookModel.getResultData());
+            getActivity().finish();
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.error_unexpected_error, Snackbar.LENGTH_LONG)
+                    .show();
+        }
     }
 
     private static class TabAdapter

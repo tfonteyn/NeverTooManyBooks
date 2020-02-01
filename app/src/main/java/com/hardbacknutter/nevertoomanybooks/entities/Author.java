@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -96,9 +97,12 @@ public class Author
 
     /** primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
-//    public static final int TYPE_ = 1 << 1;
-//    public static final int TYPE_ = 1 << 2;
-//    public static final int TYPE_ = 1 << 3;
+    // not distinguished for now
+    public static final int TYPE_ORIGINAL_SCRIPT_WRITER = TYPE_WRITER;
+
+    //    public static final int TYPE_ = 1 << 1;
+    public static final int TYPE_FOREWORD = 1 << 2;
+    public static final int TYPE_AFTERWORD = 1 << 3;
 
     /** translator. */
     public static final int TYPE_TRANSLATOR = 1 << 4;
@@ -130,7 +134,8 @@ public class Author
     /** internal colorist. */
     public static final int TYPE_COLORIST = 1 << 15;
 
-    //    15 more bits available in the higher word (minus the sign-bit)
+    public static final int TYPE_PSEUDONYM = 1 << 16;
+    //    14 more bits available in the higher word (minus the sign-bit)
 
 
     /** String encoding use: separator between family name and given-names. */
@@ -278,7 +283,8 @@ public class Author
 
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {
-        String unknown = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
+        String unknown = context.getString(R.string.unknown)
+                                .toUpperCase(LocaleUtils.getUserLocale(context));
         return new Author(unknown, "");
     }
 

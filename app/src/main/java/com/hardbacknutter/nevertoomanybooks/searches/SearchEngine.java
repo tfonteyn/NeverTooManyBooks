@@ -42,6 +42,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -49,9 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.CoverBrowserFragment;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * The interface a search engine for a {@link Site} needs to implement.
@@ -83,11 +84,25 @@ public interface SearchEngine {
      * Get the resource id for the human-readable name of the site.
      * Only to be used for displaying!
      *
-     * @return the resource id
+     * @return the resource id of the name
      */
     @AnyThread
     @StringRes
     int getNameResId();
+
+    /**
+     * Get the human-readable name of the site.
+     * Only used for displaying to the user.
+     *
+     * @param context Current context
+     *
+     * @return name of this engine
+     */
+    @AnyThread
+    @NonNull
+    default String getName(@NonNull final Context context) {
+        return context.getString(getNameResId());
+    }
 
     /**
      * Get the root/website url.
@@ -100,6 +115,16 @@ public interface SearchEngine {
     @NonNull
     String getUrl(@NonNull Context context);
 
+
+    /**
+     * Get the current/standard Locale for this engine.
+     *
+     * @param context Current context
+     *
+     * @return site locale
+     */
+    @NonNull
+    Locale getLocale(@NonNull final Context context);
 
     default int getConnectTimeoutMs() {
         return SOCKET_TIMEOUT_MS;
@@ -188,10 +213,10 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param localizedAppContext Localised application context
-         * @param nativeId            the native id (as a String) for this particular search site.
-         * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
-         *                            The array is guaranteed to have at least one element.
+         * @param context        Localised application context
+         * @param nativeId       the native id (as a String) for this particular search site.
+         * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+         *                       The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -200,7 +225,7 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByNativeId(@NonNull Context localizedAppContext,
+        Bundle searchByNativeId(@NonNull Context context,
                                 @NonNull String nativeId,
                                 @NonNull boolean[] fetchThumbnail)
                 throws CredentialsException, IOException;
@@ -213,10 +238,10 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param localizedAppContext Localised application context
-         * @param isbn                to search for, <strong>will</strong> be valid.
-         * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
-         *                            The array is guaranteed to have at least one element.
+         * @param context        Localised application context
+         * @param validIsbn      to search for, <strong>will</strong> be valid.
+         * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+         *                       The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -225,8 +250,8 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle searchByIsbn(@NonNull Context localizedAppContext,
-                            @NonNull String isbn,
+        Bundle searchByIsbn(@NonNull Context context,
+                            @NonNull String validIsbn,
                             @NonNull boolean[] fetchThumbnail)
                 throws CredentialsException, IOException;
     }
@@ -244,10 +269,10 @@ public interface SearchEngine {
         /**
          * Called by the {@link SearchCoordinator#search}.
          *
-         * @param localizedAppContext Localised application context
-         * @param barcode             to search for, <strong>will</strong> be valid.
-         * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
-         *                            The array is guaranteed to have at least one element.
+         * @param context        Localised application context
+         * @param barcode        to search for, <strong>will</strong> be valid.
+         * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+         *                       The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -256,11 +281,11 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        default Bundle searchByBarcode(@NonNull Context localizedAppContext,
+        default Bundle searchByBarcode(@NonNull Context context,
                                        @NonNull String barcode,
                                        @NonNull boolean[] fetchThumbnail)
                 throws CredentialsException, IOException {
-            return searchByIsbn(localizedAppContext, barcode, fetchThumbnail);
+            return searchByIsbn(context, barcode, fetchThumbnail);
         }
     }
 
@@ -275,15 +300,15 @@ public interface SearchEngine {
          * Checking the arguments <strong>MUST</strong> be done inside the implementation,
          * as they generally will depend on what the engine can do with them.
          *
-         * @param localizedAppContext Localised application context
-         * @param code                isbn, barcode or generic code to search for
-         * @param author              to search for
-         * @param title               to search for
-         * @param publisher           optional and in addition to author/title.
-         *                            i.e. author and/or title must be valid;
-         *                            only then the publisher is taken into account.
-         * @param fetchThumbnail      Set to {@code true} if we want to get thumbnails
-         *                            The array is guaranteed to have at least one element.
+         * @param context        Localised application context
+         * @param code           isbn, barcode or generic code to search for
+         * @param author         to search for
+         * @param title          to search for
+         * @param publisher      optional and in addition to author/title.
+         *                       i.e. author and/or title must be valid;
+         *                       only then the publisher is taken into account.
+         * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
+         *                       The array is guaranteed to have at least one element.
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
@@ -292,7 +317,7 @@ public interface SearchEngine {
          */
         @WorkerThread
         @NonNull
-        Bundle search(@NonNull Context localizedAppContext,
+        Bundle search(@NonNull Context context,
                       @Nullable String code,
                       @Nullable String author,
                       @Nullable String title,
@@ -320,20 +345,20 @@ public interface SearchEngine {
          * <br><br>
          * <strong>Override</strong> this method if the site support a specific/faster api.
          *
-         * @param appContext Application context
-         * @param isbn       to search for, <strong>must</strong> be valid.
-         * @param cIdx       0..n image index
-         * @param size       of image to get.
+         * @param context Application context
+         * @param isbn    to search for, <strong>must</strong> be valid.
+         * @param cIdx    0..n image index
+         * @param size    of image to get.
          *
          * @return fileSpec, or {@code null} when none found (or any other failure)
          */
         @Nullable
         @WorkerThread
-        default String getCoverImage(@NonNull final Context appContext,
+        default String getCoverImage(@NonNull final Context context,
                                      @NonNull final String isbn,
                                      final int cIdx,
                                      @Nullable final ImageSize size) {
-            return getCoverImageFallback(appContext, isbn, cIdx);
+            return getCoverImageFallback(context, isbn, cIdx);
         }
 
         /**

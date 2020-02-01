@@ -50,13 +50,14 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.utils.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * ALWAYS call methods like this:
@@ -95,7 +96,7 @@ public final class Logger {
     private static final String ERROR = "ERROR";
     private static final String WARN = "WARN";
     private static final DateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", App.getSystemLocale());
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
 
     private Logger() {
@@ -147,22 +148,6 @@ public final class Logger {
      * <p>
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      *
-     * @param tag    log tag
-     * @param params to concat
-     */
-    public static void warnWithStackTrace(@NonNull final String tag,
-                                          @NonNull final Object... params) {
-        warnWithStackTrace(App.getAppContext(), tag, params);
-    }
-
-    /**
-     * WARN message with a generated StackTrace.
-     * Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     * <p>
-     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
-     *
      * @param context Current context
      * @param tag     log tag
      * @param params  to concat
@@ -187,34 +172,14 @@ public final class Logger {
      * Use when an error or unusual result should be noted, but will not affect the flow of the app.
      * No stacktrace!
      *
-     * @param tag        log tag
-     * @param methodName the method name from where this method is called
-     * @param params     to concat
-     */
-    public static void warn(@NonNull final String tag,
-                            @NonNull final String methodName,
-                            @NonNull final Object... params) {
-        warn(App.getAppContext(), tag, methodName, params);
-    }
-
-    /**
-     * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     * <p>
-     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
-     * No stacktrace!
-     *
      * @param context    Current context
      * @param tag        log tag
-     * @param methodName the method name from where this method is called
      * @param params     to concat
      */
     public static void warn(@NonNull final Context context,
                             @NonNull final String tag,
-                            @NonNull final String methodName,
                             @NonNull final Object... params) {
-        String msg = methodName + '|' + concat(params);
+        String msg = concat(params);
         writeToLog(context, tag, WARN, msg, null);
 
         if (BuildConfig.DEBUG /* always */) {
@@ -440,7 +405,13 @@ public final class Logger {
 
     public static void d(@NonNull final String tag,
                          @NonNull final String msg) {
-        d(tag, msg, null);
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest()) {
+                System.out.println("isJUnitTest|DEBUG|" + tag + "|" + msg);
+            } else {
+                Log.d(tag, msg);
+            }
+        }
     }
 
     public static void d(@NonNull final String tag,
@@ -448,7 +419,7 @@ public final class Logger {
                          @Nullable final Throwable e) {
         if (BuildConfig.DEBUG /* always */) {
             if (isJUnitTest()) {
-                System.out.println("isJUnitTest|ERROR|" + tag + "|" + msg
+                System.out.println("isJUnitTest|DEBUG|" + tag + "|" + msg
                                    + "\n" + getStackTraceString(e));
             } else {
                 Log.d(tag, msg, e);
@@ -471,7 +442,13 @@ public final class Logger {
 
     public static void w(@NonNull final String tag,
                          @NonNull final String msg) {
-        w(tag, msg, null);
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest()) {
+                System.out.println("isJUnitTest|WARN|" + tag + "|" + msg);
+            } else {
+                Log.w(tag, msg);
+            }
+        }
     }
 
     public static void w(@NonNull final String tag,

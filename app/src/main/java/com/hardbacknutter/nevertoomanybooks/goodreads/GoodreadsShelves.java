@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,7 +32,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Map;
 
-public class GoodreadsShelves {
+class GoodreadsShelves {
 
     /** All shelves. */
     @NonNull
@@ -43,11 +43,11 @@ public class GoodreadsShelves {
      *
      * @param map of shelves
      */
-    public GoodreadsShelves(@NonNull final Map<String, GoodreadsShelf> map) {
+    GoodreadsShelves(@NonNull final Map<String, GoodreadsShelf> map) {
         mMap = map;
     }
 
-    public boolean isExclusive(@Nullable final String name) {
+    boolean isExclusive(@Nullable final String name) {
         GoodreadsShelf shelf = mMap.get(name);
         return shelf != null && shelf.isExclusive();
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,11 +40,14 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 public class EditBookNativeIdFragment
@@ -148,7 +151,8 @@ public class EditBookNativeIdFragment
             sites = SearchSites.SEARCH_FLAG_MASK;
         } else {
             //noinspection ConstantConditions
-            sites = SiteList.getList(getContext(), SiteList.Type.Data).getEnabledSites();
+            Locale locale = LocaleUtils.getUserLocale(getContext());
+            sites = SiteList.getList(getContext(), locale, SiteList.Type.Data).getEnabledSites();
         }
 
         Fields fields = getFields();

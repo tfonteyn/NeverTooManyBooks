@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -37,10 +38,10 @@ import java.util.Map;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -53,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * shelves.add_books_to_shelves   —   Add books to many shelves.
  *
  * <a href="https://www.goodreads.com/api/index#shelves.add_books_to_shelves">
- *     shelves.add_books_to_shelves</a>
+ * shelves.add_books_to_shelves</a>
  * <p>
  * ENHANCE: Parse the result and store it against the bookshelf in the database.
  * Currently, this is not a simple thing to do because bookshelf naming rules in
@@ -64,15 +65,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * - (perhaps) gr_bookshelf_name
  */
 public class AddBookToShelfApiHandler
-        extends ApiHandler {
+        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
 
     /** Add one book to one shelf (or remove it). */
     private static final String URL_1_1 =
-            GoodreadsManager.BASE_URL + "/shelf/add_to_shelf.xml";
+            GoodreadsHandler.BASE_URL + "/shelf/add_to_shelf.xml";
 
     /** Add multiple books to multiple shelves. */
     private static final String URL_X_X =
-            GoodreadsManager.BASE_URL + "/shelf/add_books_to_shelves.xml";
+            GoodreadsHandler.BASE_URL + "/shelf/add_books_to_shelves.xml";
 
     /** Resulting review-id after the request. */
     private long mReviewId;
@@ -88,16 +89,16 @@ public class AddBookToShelfApiHandler
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public AddBookToShelfApiHandler(@NonNull final GoodreadsManager grManager)
+    public AddBookToShelfApiHandler(@NonNull final Context context,
+                                    @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grManager);
-        if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.site_goodreads);
-        }
+        super(grAuth);
+        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
 
         buildFilters();
     }
@@ -112,13 +113,13 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     public long add(final long grBookId,
                     @NonNull final Iterable<String> shelfNames)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         String shelves = TextUtils.join(",", shelfNames);
 
@@ -141,13 +142,13 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     public long add(final long grBookId,
                     @NonNull final String shelfName)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         return send(grBookId, shelfName, false);
     }
@@ -165,13 +166,13 @@ public class AddBookToShelfApiHandler
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     public void remove(final long grBookId,
                        @NonNull final String shelfName)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         send(grBookId, shelfName, true);
     }
@@ -185,14 +186,14 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     private long send(final long grBookId,
                       @NonNull final String shelfName,
                       final boolean isRemove)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         mReviewId = 0;
         Map<String, String> parameters = new HashMap<>();

@@ -73,9 +73,10 @@ public class IsfdbGetBookTask
                             final boolean addSeriesFromToc,
                             @NonNull final TaskListener<Bundle> taskListener) {
         super(R.id.TASK_ID_ISFDB_GET_BOOK, taskListener);
+        mAddSeriesFromToc = addSeriesFromToc;
+
         mIsfdbId = 0;
         mEditions = editions;
-        mAddSeriesFromToc = addSeriesFromToc;
     }
 
     /**
@@ -90,8 +91,9 @@ public class IsfdbGetBookTask
                             final boolean addSeriesFromToc,
                             @NonNull final TaskListener<Bundle> taskListener) {
         super(R.id.TASK_ID_ISFDB_GET_BOOK, taskListener);
-        mIsfdbId = isfdbId;
         mAddSeriesFromToc = addSeriesFromToc;
+
+        mIsfdbId = isfdbId;
         mEditions = null;
     }
 
@@ -100,17 +102,17 @@ public class IsfdbGetBookTask
     @WorkerThread
     protected Bundle doInBackground(final Void... params) {
         Thread.currentThread().setName(TAG);
-        Context localContext = App.getLocalizedAppContext();
+        Context context = App.getLocalizedAppContext();
 
         try {
             boolean[] thumbs = {false, false};
             if (mEditions != null) {
-                return new IsfdbBookHandler(localContext)
-                        .fetch(mEditions, mAddSeriesFromToc, thumbs, new Bundle());
+                return new IsfdbBookHandler()
+                        .fetch(context, mEditions, mAddSeriesFromToc, thumbs, new Bundle());
 
             } else if (mIsfdbId != 0) {
-                return new IsfdbBookHandler(localContext)
-                        .fetchByNativeId(String.valueOf(mIsfdbId),
+                return new IsfdbBookHandler()
+                        .fetchByNativeId(context, String.valueOf(mIsfdbId),
                                          mAddSeriesFromToc, thumbs, new Bundle());
 
             } else {
@@ -120,7 +122,7 @@ public class IsfdbGetBookTask
             }
 
         } catch (@NonNull final SocketTimeoutException e) {
-            Logger.warn(localContext, TAG, "doInBackground", e.getLocalizedMessage());
+            Logger.warn(context, TAG, "doInBackground|" + e.getLocalizedMessage());
         }
 
         return null;

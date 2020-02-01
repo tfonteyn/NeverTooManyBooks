@@ -52,17 +52,23 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItemCursor;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItemViewHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.ContextDialogItem;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Event;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventsCursor;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * A Task *MUST* be serializable.
@@ -98,15 +104,16 @@ abstract class SendBooksLegacyTaskBase
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager) {
-        Context localContext = App.getLocalizedAppContext();
+        Context context = App.getLocalizedAppContext();
         try {
-            NetworkUtils.poke(localContext,
-                              GoodreadsManager.BASE_URL,
-                              GoodreadsManager.SOCKET_TIMEOUT_MS);
+            NetworkUtils.poke(context,
+                              GoodreadsHandler.BASE_URL,
+                              GoodreadsSearchEngine.SOCKET_TIMEOUT_MS);
 
-            GoodreadsManager grManager = new GoodreadsManager();
-            if (grManager.hasValidCredentials()) {
-                return send(queueManager, localContext, grManager);
+            GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+            GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
+            if (grAuth.hasValidCredentials(context)) {
+                return send(queueManager, context, apiHandler);
             }
         } catch (@NonNull final IOException ignore) {
             // Only wait 5 minutes max on network errors.
@@ -119,85 +126,94 @@ abstract class SendBooksLegacyTaskBase
     }
 
     /**
-     * @param context   Current context
-     * @param grManager the Goodreads Manager
+     * @param context    Current context
+     * @param apiHandler the Goodreads Manager
      *
      * @return {@code false} to requeue, {@code true} for success
      */
     protected abstract boolean send(@NonNull QueueManager queueManager,
                                     @NonNull Context context,
-                                    @NonNull GoodreadsManager grManager);
+                                    @NonNull GoodreadsHandler apiHandler);
 
     /**
      * Try to export one book.
      *
-     * @param context   Current context
-     * @param grManager the Goodreads Manager
-     * @param db        Database Access
+     * @param context    Current context
+     * @param apiHandler the Goodreads Manager
+     * @param db         Database Access
      *
      * @return {@code false} on failure, {@code true} on success
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean sendOneBook(@NonNull final QueueManager queueManager,
                         @NonNull final Context context,
-                        @NonNull final GoodreadsManager grManager,
+                        @NonNull final GoodreadsHandler apiHandler,
                         @NonNull final DAO db,
                         @NonNull final CursorRow cursorRow) {
 
-        GoodreadsManager.ExportResult result;
-        Exception exportException = null;
+        GrStatus result;
         try {
-            result = grManager.sendOneBook(context, db, cursorRow);
+            result = apiHandler.sendOneBook(context, db, cursorRow);
 
         } catch (@NonNull final CredentialsException e) {
-            result = GoodreadsManager.ExportResult.credentialsError;
-            exportException = e;
-        } catch (@NonNull final BookNotFoundException e) {
-            result = GoodreadsManager.ExportResult.notFound;
-            exportException = e;
+            setException(e);
+            result = GrStatus.CredentialsError;
+        } catch (@NonNull final NotFoundException e) {
+            setException(e);
+            result = GrStatus.NotFound;
         } catch (@NonNull final IOException e) {
-            result = GoodreadsManager.ExportResult.ioError;
-            exportException = e;
+            setException(e);
+            result = GrStatus.IOError;
         } catch (@NonNull final RuntimeException e) {
-            result = GoodreadsManager.ExportResult.error;
-            exportException = e;
+            setException(e);
+            result = GrStatus.UnexpectedError;
         }
 
         long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
 
         switch (result) {
-            case sent:
+            case BookSent:
                 // Record the change
                 db.setGoodreadsSyncDate(bookId);
                 mSent++;
-                break;
+                return true;
 
-            case noIsbn:
+            case NoIsbn:
                 storeEvent(new GrNoIsbnEvent(context, bookId));
                 mNoIsbn++;
-                break;
+                // not a success, but don't try again until the user acts on the stored event
+                return true;
 
-            case notFound:
+            case NotFound:
                 storeEvent(new GrNoMatchEvent(context, bookId));
                 mNotFound++;
-                break;
+                // not a success, but don't try again until the user acts on the stored event
+                return true;
 
-            case ioError:
-                // Only wait 5 minutes on network errors.
+            case IOError:
+                // wait 5 minutes on network errors.
                 if (getRetryDelay() > FIVE_MINUTES) {
                     setRetryDelay(FIVE_MINUTES);
                 }
                 queueManager.updateTask(this);
                 return false;
 
-            case credentialsError:
-            case error:
-                setException(exportException);
+            case AuthorizationAlreadyGranted:
+            case AuthorizationSuccessful:
+            case AuthorizationFailed:
+            case AuthorizationNeeded:
+            case CredentialsMissing:
+            case CredentialsError:
+            case TaskQueuedWithSuccess:
+            case ImportTaskAlreadyQueued:
+            case ExportTaskAlreadyQueued:
+            case Cancelled:
+            case NoInternet:
+            case UnexpectedError:
+            default:
                 queueManager.updateTask(this);
                 return false;
         }
-
-        return true;
     }
 
     /**
@@ -206,7 +222,7 @@ abstract class SendBooksLegacyTaskBase
     private static class GrSendBookEvent
             extends Event {
 
-        private static final long serialVersionUID = 8056090158313083738L;
+        private static final long serialVersionUID = 6243512830928679140L;
         private final long mBookId;
 
         /**
@@ -244,44 +260,25 @@ abstract class SendBooksLegacyTaskBase
             qm.deleteEvent(getId());
         }
 
-        /**
-         * Return a view capable of displaying basic book event details,
-         * ideally usable by all BookEvent subclasses.
-         * This method also prepares the BookEventHolder object for the View.
-         * <p>
-         * <p>
-         * {@inheritDoc}
-         */
         @Override
         @NonNull
-        public View getView(@NonNull final Context context,
-                            @NonNull final BindableItemCursor cursor,
-                            @NonNull final ViewGroup parent) {
-            View view = LayoutInflater.from(context)
-                                      .inflate(R.layout.row_event_info, parent, false);
-            view.setTag(R.id.TAG_GR_EVENT, this);
-            BookEventHolder holder = new BookEventHolder(view);
-            holder.event = this;
-            holder.rowId = cursor.getId();
-
-            holder.buttonView.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, holder);
-            holder.retryView.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, holder);
-
-            return view;
+        public BindableItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
+            View itemView = LayoutInflater
+                    .from(parent.getContext())
+                    .inflate(R.layout.row_event_info, parent, false);
+            return new BookEventViewHolder(itemView);
         }
 
         @Override
-        public void bindView(@NonNull final View view,
-                             @NonNull final Context context,
-                             @NonNull final BindableItemCursor cursor,
-                             @NonNull final DAO db) {
-            final EventsCursor eventsCursor = (EventsCursor) cursor;
+        public void onBindViewHolder(@NonNull final BindableItemViewHolder bindableItemViewHolder,
+                                     @NonNull final BindableItemCursor cursor,
+                                     @NonNull final DAO db) {
 
-            // Update event info binding; the Views in the holder are unchanged,
-            // but when it is reused the Event and id will change.
-            BookEventHolder holder = (BookEventHolder) view.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
-            holder.event = this;
-            holder.rowId = eventsCursor.getId();
+            BookEventViewHolder holder = (BookEventViewHolder) bindableItemViewHolder;
+            EventsCursor eventsCursor = (EventsCursor) cursor;
+
+            Context context = holder.itemView.getContext();
+            Locale userLocale = LocaleUtils.getUserLocale(context);
 
             ArrayList<Author> authors = db.getAuthorsByBookId(mBookId);
             String authorName;
@@ -291,7 +288,7 @@ abstract class SendBooksLegacyTaskBase
                     authorName = authorName + ' ' + context.getString(R.string.and_others);
                 }
             } else {
-                authorName = context.getString(R.string.unknown).toUpperCase(Locale.getDefault());
+                authorName = context.getString(R.string.unknown).toUpperCase(userLocale);
             }
 
             String title = db.getBookTitle(mBookId);
@@ -301,120 +298,97 @@ abstract class SendBooksLegacyTaskBase
 
             holder.titleView.setText(title);
             holder.authorView.setText(context.getString(R.string.lbl_by_author_s, authorName));
-            holder.errorView.setText(getDescription());
+            holder.errorView.setText(getDescription(context));
 
-            String date = DateUtils.toPrettyDateTime(eventsCursor.getEventDate());
+            String date = DateUtils.toPrettyDateTime(eventsCursor.getEventDate(), userLocale);
             holder.dateView.setText(context.getString(R.string.gr_tq_occurred_at, date));
 
-            holder.retryView.setVisibility(View.GONE);
+            holder.checkedButton.setChecked(eventsCursor.isSelected());
+            holder.checkedButton.setTag(R.id.TAG_ITEM, this);
+            holder.checkedButton.setOnCheckedChangeListener((v, isChecked) -> {
+                //noinspection TypeMayBeWeakened
+                GrSendBookEvent event = (GrSendBookEvent) v.getTag(R.id.TAG_ITEM);
+                eventsCursor.setSelected(event.getId(), isChecked);
+            });
 
-            holder.buttonView.setChecked(eventsCursor.isSelected());
-            holder.buttonView.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> {
-                        BookEventHolder bookEventHolder =
-                                (BookEventHolder) buttonView.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
-                        eventsCursor.setSelected(bookEventHolder.rowId, isChecked);
-                    });
-
-            // get book details
             String isbn = db.getBookIsbn(mBookId);
-            // Hide parts of view based on current book having an isbn or not..
             if (isbn != null && !isbn.isEmpty()) {
-                holder.retryView.setVisibility(View.VISIBLE);
-                holder.retryView.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, this);
-                holder.retryView.setOnClickListener(v -> {
-                    BookEventHolder h = (BookEventHolder) v.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
-                    h.event.retry(v.getContext());
+                holder.retryButton.setVisibility(View.VISIBLE);
+                holder.retryButton.setTag(R.id.TAG_ITEM, this);
+                holder.retryButton.setOnClickListener(v -> {
+                    GrSendBookEvent event = (GrSendBookEvent) v.getTag(R.id.TAG_ITEM);
+                    event.retry(v.getContext());
                 });
-                return;
+            } else {
+                holder.retryButton.setVisibility(View.GONE);
             }
-            holder.retryView.setVisibility(View.GONE);
         }
 
         @Override
         public void addContextMenuItems(@NonNull final Context context,
-                                        @NonNull final View view,
-                                        final long id,
-                                        @NonNull final List<ContextDialogItem> items,
+                                        @NonNull final List<ContextDialogItem> menuItems,
                                         @NonNull final DAO db) {
 
             // EDIT BOOK
-            items.add(new ContextDialogItem(
-                    context.getString(R.string.menu_edit),
-                    () -> {
-                        try {
-                            GrSendBookEvent event =
-                                    (GrSendBookEvent) view.getTag(R.id.TAG_GR_EVENT);
-                            Intent intent = new Intent(context, EditBookActivity.class)
-                                    .putExtra(DBDefinitions.KEY_PK_ID,
-                                              event.getBookId());
-                            context.startActivity(intent);
-                        } catch (@NonNull final RuntimeException ignore) {
-                            // not a book event?
-                        }
-                    }));
+            menuItems.add(new ContextDialogItem(context.getString(R.string.menu_edit), () -> {
+                Intent intent = new Intent(context, EditBookActivity.class)
+                        .putExtra(DBDefinitions.KEY_PK_ID, mBookId);
+                context.startActivity(intent);
+            }));
 
             // ENHANCE: Reinstate Goodreads search when Goodreads work.editions is available
 //            // SEARCH GOODREADS
-//            items.add(new ContextDialogItem(
+//            menuItems.add(new ContextDialogItem(
 //                    context.getString(R.string.progress_msg_searching_site,
-//                                      context.getString(R.string.goodreads)), () -> {
-//                BookEventHolder holder = (BookEventHolder)
-//                        view.getTag(R.id.TAG_GR_BOOK_EVENT_HOLDER);
+//                                      context.getString(R.string.site_goodreads)), () -> {
 //                Intent intent = new Intent(context, GoodreadsSearchActivity.class)
-//                        .putExtra(DBDefinitions.KEY_PK_ID, holder.event.getId());
+//                        .putExtra(DBDefinitions.KEY_PK_ID, getId());
 //                context.startActivity(intent);
 //            }));
 
             // DELETE EVENT
-            items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
-                                            () -> QueueManager.getQueueManager().deleteEvent(id)));
+            menuItems.add(new ContextDialogItem(
+                    context.getString(R.string.gr_tq_menu_delete_event), () ->
+                    QueueManager.getQueueManager().deleteEvent(getId())));
 
             // RETRY EVENT
             String isbn = db.getBookIsbn(mBookId);
             if (isbn != null && !isbn.isEmpty()) {
-                items.add(new ContextDialogItem(
-                        context.getString(R.string.retry),
-                        () -> {
-                            try {
-                                GrSendBookEvent event = (GrSendBookEvent)
-                                        view.getTag(R.id.TAG_GR_EVENT);
-                                event.retry(context);
-                                QueueManager.getQueueManager().deleteEvent(id);
-                            } catch (@NonNull final RuntimeException ignore) {
-                                // not a book event?
-                            }
-                        }));
+                menuItems.add(new ContextDialogItem(context.getString(R.string.retry), () -> {
+                    retry(context);
+                    QueueManager.getQueueManager().deleteEvent(getId());
+                }));
             }
         }
 
         /**
          * Class to implement the holder model for view we create.
          */
-        static class BookEventHolder {
+        static class BookEventViewHolder
+                extends BindableItemViewHolder {
 
             final TextView titleView;
             final TextView authorView;
-            final CompoundButton buttonView;
             final TextView errorView;
             final TextView dateView;
-            final Button retryView;
 
-            long rowId;
-            GrSendBookEvent event;
+            final CompoundButton checkedButton;
+            final Button retryButton;
 
-            BookEventHolder(@NonNull final View view) {
-                titleView = view.findViewById(R.id.title);
-                authorView = view.findViewById(R.id.author);
-                buttonView = view.findViewById(R.id.cbx_checked);
-                dateView = view.findViewById(R.id.date);
-                errorView = view.findViewById(R.id.error);
-                retryView = view.findViewById(R.id.retry);
+            BookEventViewHolder(@NonNull final View itemView) {
+                super(itemView);
 
-                view.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, this);
+                titleView = itemView.findViewById(R.id.title);
+                authorView = itemView.findViewById(R.id.author);
+                checkedButton = itemView.findViewById(R.id.cbx_selected);
+                dateView = itemView.findViewById(R.id.date);
+                errorView = itemView.findViewById(R.id.error);
+                retryButton = itemView.findViewById(R.id.btn_retry);
+
+                // not used for now
+                checkedButton.setVisibility(View.GONE);
             }
         }
-
     }
 
     /**
@@ -424,8 +398,7 @@ abstract class SendBooksLegacyTaskBase
             extends GrSendBookEvent
             implements TipManager.TipOwner {
 
-
-        private static final long serialVersionUID = 8764019100842546976L;
+        private static final long serialVersionUID = 7618084144814445823L;
 
         GrNoMatchEvent(@NonNull final Context context,
                        final long bookId) {
@@ -437,7 +410,6 @@ abstract class SendBooksLegacyTaskBase
         public int getTip() {
             return R.string.gr_info_no_match;
         }
-
     }
 
     /**
@@ -447,8 +419,7 @@ abstract class SendBooksLegacyTaskBase
             extends GrSendBookEvent
             implements TipManager.TipOwner {
 
-
-        private static final long serialVersionUID = -8208929167310932723L;
+        private static final long serialVersionUID = -8615058337902218680L;
 
         GrNoIsbnEvent(@NonNull final Context context,
                       final long bookId) {
@@ -460,6 +431,5 @@ abstract class SendBooksLegacyTaskBase
         public int getTip() {
             return R.string.gr_info_no_isbn;
         }
-
     }
 }

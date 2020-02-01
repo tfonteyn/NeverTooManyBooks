@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,9 +31,11 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
@@ -160,10 +162,17 @@ public final class BackupManager {
      *
      * @param context Current context
      *
-     * @return SQL datetime-string, for the UTC timezone.
+     * @return Date in the UTC timezone.
      */
-    static String getLastFullBackupDate(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+    @Nullable
+    static Date getLastFullBackupDate(@NonNull final Context context) {
+        String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
                                 .getString(PREF_LAST_FULL_BACKUP_DATE, null);
+
+        if (lastBackup != null && !lastBackup.isEmpty()) {
+            return DateUtils.parseSqlDateTime(lastBackup);
+        }
+
+        return null;
     }
 }

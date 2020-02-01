@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,12 +33,15 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 
+import java.util.Locale;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.hardbacknutter.nevertoomanybooks.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -64,6 +67,8 @@ public class CommonSetup {
     @BeforeEach
     protected void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        DateUtils.create(Locale.UK);
 
         mBookData = BundleMock.mock();
 

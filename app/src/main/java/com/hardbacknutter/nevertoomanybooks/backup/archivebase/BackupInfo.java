@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -146,7 +146,7 @@ public class BackupInfo {
 
     @Nullable
     public Date getCreationDate() {
-        return DateUtils.parseDate(mBundle.getString(INFO_CREATION_DATE));
+        return DateUtils.parseSqlDateTime(mBundle.getString(INFO_CREATION_DATE));
     }
 
     public int getArchVersion() {

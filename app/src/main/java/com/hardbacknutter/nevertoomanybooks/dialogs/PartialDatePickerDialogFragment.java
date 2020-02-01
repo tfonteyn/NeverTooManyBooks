@@ -52,7 +52,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -60,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
@@ -143,12 +143,13 @@ public class PartialDatePickerDialogFragment
         return frag;
     }
 
+    @NonNull
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
         // Get a calendar for Locale related info (defaults to current date)
-        mCalendarForCalculations = Calendar.getInstance(Locale.getDefault());
+        //noinspection ConstantConditions
+        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
 
         mCurrentYear = mCalendarForCalculations.get(Calendar.YEAR);
 
@@ -180,14 +181,9 @@ public class PartialDatePickerDialogFragment
         if (mYear == null) {
             mYear = mCurrentYear;
         }
-    }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        //noinspection ConstantConditions
         AlertDialog dialog = new PartialDatePickerDialog(getContext());
-        Bundle args = getArguments();
+        args = getArguments();
         if (args != null) {
             @StringRes
             int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);

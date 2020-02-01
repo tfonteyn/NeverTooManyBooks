@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.ListRebuildMode;
 import static com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.PREF_REBUILD_ALWAYS_COLLAPSED;
@@ -1109,7 +1109,9 @@ public class RowStateDAO {
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(TAG, "finalize|calling close() on " + mTable.getName());
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.w(TAG, "finalize|" + mTable.getName());
+            }
             close();
         }
         super.finalize();

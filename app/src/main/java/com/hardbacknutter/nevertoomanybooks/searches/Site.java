@@ -33,11 +33,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Represents a site we will search.
@@ -187,22 +188,45 @@ public final class Site
      *
      * @return (cached) instance
      */
-    public SearchEngine getSearchEngine() {
+    public SearchEngine getSearchEngine(@NonNull final Context context) {
         if (mSearchEngine == null) {
-            mSearchEngine = SearchSites.getSearchEngine(id);
+            SettingsHelper settingsHelper = new SettingsHelper(context);
+            mSearchEngine = SearchSites.getSearchEngine(settingsHelper, id);
         }
 
         return mSearchEngine;
     }
 
-    void loadFromPrefs(@NonNull final Context context) {
-        String lcName = PREF_PREFIX + mPreferenceKey.toLowerCase(Locale.getDefault()) + '.';
-        mEnabled = PreferenceManager.getDefaultSharedPreferences(context)
-                                    .getBoolean(lcName + ENABLED, mEnabled);
+    @VisibleForTesting
+    public SearchEngine getSearchEngine(@NonNull final SettingsHelper settingsHelper) {
+        if (mSearchEngine == null) {
+            mSearchEngine = SearchSites.getSearchEngine(settingsHelper, id);
+        }
+
+        return mSearchEngine;
     }
 
-    void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
-        String lcName = PREF_PREFIX + mPreferenceKey.toLowerCase(Locale.getDefault()) + '.';
+    /**
+     * Get the current/standard Locale for this Site.
+     *
+     * @param context Current context
+     *
+     * @return site locale
+     */
+    @NonNull
+    public Locale getLocale(@NonNull final Context context) {
+        return getSearchEngine(context).getLocale(context);
+    }
+
+    void loadFromPrefs(@NonNull final SharedPreferences preferences,
+                       @NonNull final Locale systemLocale) {
+        String lcName = PREF_PREFIX + mPreferenceKey.toLowerCase(systemLocale) + '.';
+        mEnabled = preferences.getBoolean(lcName + ENABLED, mEnabled);
+    }
+
+    void saveToPrefs(@NonNull final SharedPreferences.Editor editor,
+                     @NonNull final Locale systemLocale) {
+        String lcName = PREF_PREFIX + mPreferenceKey.toLowerCase(systemLocale) + '.';
         editor.putBoolean(lcName + ENABLED, mEnabled);
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,25 +41,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 public class BindableItemCursorAdapter
         extends CursorAdapter {
 
     @NonNull
-    private final Context mContext;
-
-    @NonNull
-    private final BindableItemBinder mBinder;
+    private final DAO mDb;
 
     /** hash of class names and values used to dynamically allocate layout numbers. */
     private final Map<String, Integer> mItemTypeLookups = new HashMap<>();
     /** The position passed to the last call of {@link #getItemViewType}. */
-    private int mLastItemViewTypePos = -1;
+    private int mLastItemViewTypePosition = -1;
     /** The item type returned by the last call of {@link #getItemViewType}. */
-    private int mLastItemViewType = -1;
+    private int mLastItemViewTypeType = -1;
     /** The Event used in the last call of {@link #getItemViewType}. */
-    private BindableItem mLastItemViewTypeEvent;
+    private BindableItem mLastItemViewTypeItem;
     private int mItemTypeCount;
 
     /**
@@ -68,12 +66,11 @@ public class BindableItemCursorAdapter
      * @param context Current context
      * @param cursor  Cursor to use as source
      */
-    BindableItemCursorAdapter(@NonNull final BindableItemBinder binder,
-                              @NonNull final Context context,
-                              @NonNull final Cursor cursor) {
+    BindableItemCursorAdapter(@NonNull final Context context,
+                              @NonNull final Cursor cursor,
+                              @NonNull final DAO db) {
         super(context, cursor);
-        mContext = context;
-        mBinder = binder;
+        mDb = db;
     }
 
     @NonNull
@@ -86,20 +83,23 @@ public class BindableItemCursorAdapter
 
         BindableItem item;
         // Optimization to avoid unnecessary de-serializations.
-        if (mLastItemViewTypePos == position) {
-            item = mLastItemViewTypeEvent;
+        if (mLastItemViewTypePosition == position) {
+            item = mLastItemViewTypeItem;
         } else {
             item = cursor.getBindableItem();
         }
 
+        BindableItemViewHolder holder;
         if (convertView == null) {
-            convertView = item.getView(mContext, cursor, parent);
+            holder = item.onCreateViewHolder(parent);
+        } else {
+            holder = (BindableItemViewHolder) convertView.getTag(R.id.TAG_VIEW_HOLDER);
         }
 
         // Bind it, and we are done!
-        mBinder.bindView(mContext, cursor, convertView, item);
+        item.onBindViewHolder(holder, cursor, mDb);
 
-        return convertView;
+        return holder.itemView;
     }
 
     /**
@@ -128,9 +128,9 @@ public class BindableItemCursorAdapter
     public void notifyDataSetChanged() {
         super.notifyDataSetChanged();
         // Clear cached stuff
-        mLastItemViewTypePos = -1;
-        mLastItemViewType = -1;
-        mLastItemViewTypeEvent = null;
+        mLastItemViewTypePosition = -1;
+        mLastItemViewTypeType = -1;
+        mLastItemViewTypeItem = null;
     }
 
     /**
@@ -138,15 +138,15 @@ public class BindableItemCursorAdapter
      * and returns the layout number corresponding to the Event at the specified position.
      * <p>
      * The values are cached in member variables because the usual process is to call
-     * getView() almost directly after calling getItemViewType().
+     * onCreateViewHolder() almost directly after calling getItemViewType().
      *
      * @param position Cursor position to check.
      */
     @Override
     public int getItemViewType(final int position) {
         // If it's the same as the last call, just return.
-        if (position == mLastItemViewTypePos) {
-            return mLastItemViewType;
+        if (position == mLastItemViewTypePosition) {
+            return mLastItemViewTypeType;
         }
 
         BindableItemCursor cursor = (BindableItemCursor) getCursor();
@@ -155,116 +155,85 @@ public class BindableItemCursorAdapter
 
         // Use the class name to generate a layout number
         String s = item.getClass().toString();
-        int resType;
+        int type;
         if (mItemTypeLookups.containsKey(s)) {
             //noinspection ConstantConditions
-            resType = mItemTypeLookups.get(s);
+            type = mItemTypeLookups.get(s);
         } else {
             mItemTypeCount++;
             mItemTypeLookups.put(s, mItemTypeCount);
-            resType = mItemTypeCount;
+            type = mItemTypeCount;
         }
 
         //
         // Cache the recent results; this is a optimization kludge based on the fact
-        // that current code always call this method before getView(...)
+        // that current code always call this method before onCreateViewHolder(...)
         // so we can avoid one deserialization by caching here.
         // If this assumption fails, the code still works. It just runs slower.
-        mLastItemViewTypePos = position;
-        mLastItemViewType = resType;
-        mLastItemViewTypeEvent = item;
+        mLastItemViewTypePosition = position;
+        mLastItemViewTypeType = type;
+        mLastItemViewTypeItem = item;
 
         // And return
-        return resType;
+        return type;
     }
 
     /**
-     * Get the (approximate, overestimate) of the number of Event subclasses
-     * in use in this list.
+     * Return the number of different item types that the list will display.
+     * An approximation is fine, but overestimating will be more efficient than underestimating.
+     * This is analogous to the CursorAdapter.getViewTypeCount() method but needs to be set
+     * to the minimum of the total number of item subclasses that may be returned.
+     * <p>
+     * The default return a paranoid overestimate of the number of types we use.
+     *
+     * @return number of view types that items will use.
      */
     @Override
     public int getViewTypeCount() {
-        // Add 1 to allow for the Legacy object.
-        return mBinder.getBindableItemTypeCount() + 1;
-    }
-
-    public interface BindableItemBinder {
-
-        /**
-         * Return the number of different Event types and event that the list will display.
-         * An approximation is fine, but overestimating will be more efficient than underestimating.
-         * This is analogous to the CursorAdapter.getViewTypeCount() method but needs to be set
-         * to the minimum of the total number of Event subclasses that may be returned.
-         *
-         * @return number of view types that events will return.
-         */
-        @SuppressWarnings("SameReturnValue")
-        int getBindableItemTypeCount();
-
-        /**
-         * Called to bind a specific event to a View in the list. It is passed to the subclass
-         * so that any application-specific context can be added, or it can just be passed off
-         * to the Event object itself.
-         *
-         * @param context     Current context
-         * @param cursor      Cursor, positions at the relevant row
-         * @param convertView View to populate
-         * @param item        item to bin
-         */
-        void bindView(@NonNull Context context,
-                      @NonNull BindableItemCursor cursor,
-                      @NonNull View convertView,
-                      @NonNull BindableItem item);
+        return 50;
     }
 
     public interface BindableItem {
 
         /**
-         * Get a new View object suitable for displaying this type of event.
-         * <p>
-         * <strong>Note:</strong> A single event subclass should RETURN ONLY ONE TYPE OF VIEW.
-         * If it needs to do this, create a new Event subclass or use a more complex view.
+         * Get the row id for this item.
          *
-         * @param context Current context
-         * @param cursor  EventsCursor for this event, positioned at its row.
-         * @param parent  ViewGroup that will contain the new View.
-         *
-         * @return a new view
+         * @return the row id
          */
-        @NonNull
-        View getView(@NonNull Context context,
-                     @NonNull BindableItemCursor cursor,
-                     @NonNull ViewGroup parent);
+        long getId();
 
         /**
-         * Bind this Event to the passed view. The view will be one created by a call
-         * to getView(...).
+         * Get a new BindableItemViewHolder object suitable for displaying this type of object.
          *
-         * @param view    View to populate
-         * @param context Context using view
-         * @param cursor  EventsCursor for this event, positioned at its row.
-         * @param db      Database Access
+         * @param parent ViewGroup that will contain the new View.
+         *
+         * @return a new BindableItemViewHolder
          */
-        void bindView(@NonNull View view,
-                      @NonNull Context context,
-                      @NonNull BindableItemCursor cursor,
-                      @NonNull DAO db);
+        @NonNull
+        BindableItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent);
+
+        /**
+         * Bind this object to the passed holder.
+         *
+         * @param bindableItemViewHolder to bind
+         * @param cursor                 cursor for this item, positioned at its row.
+         * @param db                     Database Access
+         */
+        void onBindViewHolder(@NonNull BindableItemViewHolder bindableItemViewHolder,
+                              @NonNull BindableItemCursor cursor,
+                              @NonNull DAO db);
 
         /**
          * Called when an item in a list has been clicked, this method should populate the passed
          * 'items' parameter with one {@link ContextDialogItem} per operation that can be
          * performed on this object.
          *
-         * @param context Context resulting in Click() event
-         * @param view    View that was clicked
-         * @param id      row id of item
-         * @param items   items collection to fill
-         * @param db      Database Access
+         * @param context   that can be used to get String resources for the menus
+         * @param menuItems menu collection to fill
+         * @param db        Database Access
          */
         void addContextMenuItems(@NonNull Context context,
-                                 @NonNull View view,
-                                 long id,
-                                 @NonNull List<ContextDialogItem> items,
+                                 @NonNull List<ContextDialogItem> menuItems,
                                  @NonNull DAO db);
     }
 }

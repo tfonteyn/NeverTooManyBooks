@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,11 +61,6 @@ public abstract class JsoupBase {
     /** Log tag. */
     private static final String TAG = "JsoupBase";
 
-//    /** Not needed for now, but handy for testing. */
-//    protected static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-//                                             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-//                                             + " Chrome/76.0.3809.100 Safari/537.36";
-
     /** The parsed downloaded web page. */
     protected Document mDoc;
 
@@ -75,6 +69,8 @@ public abstract class JsoupBase {
 
     private int mConnectTimeout;
     private int mReadTimeout;
+    private String mUserAgent;
+
     /** {@code null} by default: for Jsoup to figure it out. */
     private String mCharSetName;
 
@@ -114,6 +110,10 @@ public abstract class JsoupBase {
         mReadTimeout = readTimeout;
     }
 
+    public void setUserAgent(@Nullable final String userAgent) {
+        mUserAgent = userAgent;
+    }
+
     /**
      * Optionally override the website character set.
      * Used when the html page contains an incorrect header charset.
@@ -133,8 +133,8 @@ public abstract class JsoupBase {
      * <p>
      * The content encoding by default is: "Accept-Encoding", "gzip"
      *
-     * @param appContext Application context
-     * @param url        to fetch
+     * @param context Application context
+     * @param url     to fetch
      *
      * @return the actual URL for the page we got (after redirects etc), or {@code null}
      * on failure to load.
@@ -144,16 +144,16 @@ public abstract class JsoupBase {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @WorkerThread
     @Nullable
-    public String loadPage(@NonNull final Context appContext,
+    public String loadPage(@NonNull final Context context,
                            @NonNull final String url)
             throws SocketTimeoutException {
 
         if (mDoc == null) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                Log.d(TAG, "loadPage|REQUESTED|url=\"" + url + '\"');
+                Logger.d(TAG, "loadPage|REQUESTED|url=\"" + url + '\"');
             }
 
-            try (TerminatorConnection tCon = new TerminatorConnection(appContext, url)) {
+            try (TerminatorConnection tCon = new TerminatorConnection(context, url)) {
                 HttpURLConnection con = tCon.getHttpURLConnection();
 
                 // added due to https://github.com/square/okhttp/issues/1517
@@ -163,26 +163,29 @@ public abstract class JsoupBase {
                 if (mConnectTimeout > 0) {
                     con.setConnectTimeout(mConnectTimeout);
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "loadPage|mConnectTimeout=" + mConnectTimeout);
+                        Logger.d(TAG, "loadPage|mConnectTimeout=" + mConnectTimeout);
                     }
                 }
                 if (mReadTimeout > 0) {
                     con.setReadTimeout(mReadTimeout);
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "loadPage|mReadTimeout=" + mReadTimeout);
+                        Logger.d(TAG, "loadPage|mReadTimeout=" + mReadTimeout);
                     }
                 }
 
+                if (mUserAgent != null) {
+                    con.setRequestProperty("User-Agent", mUserAgent);
+                }
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Log.d(TAG, "loadPage|BEFORE open|con.getURL()=" + con.getURL().toString());
+                    Logger.d(TAG, "loadPage|BEFORE open|con.getURL()=" + con.getURL().toString());
                 }
                 // GO!
                 tCon.open();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Log.d(TAG, "loadPage|AFTER open|con.getURL()=" + con.getURL());
-                    Log.d(TAG, "loadPage|AFTER open|con.getHeaderField(\"location\")="
-                               + con.getHeaderField("location"));
+                    Logger.d(TAG, "loadPage|AFTER open|con.getURL()=" + con.getURL());
+                    Logger.d(TAG, "loadPage|AFTER open|con.getHeaderField(\"location\")="
+                                  + con.getHeaderField("location"));
                 }
 
                 // the original url will change after a redirect.
@@ -192,7 +195,7 @@ public abstract class JsoupBase {
                     locationHeader = con.getURL().toString();
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                        Log.d(TAG, "loadPage|location header not set, using url");
+                        Logger.d(TAG, "loadPage|location header not set, using url");
                     }
                 }
 
@@ -215,12 +218,12 @@ public abstract class JsoupBase {
                 mDoc = Jsoup.parse(tCon.getInputStream(), mCharSetName, locationHeader);
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.JSOUP) {
-                    Log.d(TAG, "loadPage|AFTER parsing|mDoc.location()=" + mDoc.location());
+                    Logger.d(TAG, "loadPage|AFTER parsing|mDoc.location()=" + mDoc.location());
                 }
 
             } catch (@NonNull final HttpStatusException e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.error(appContext, TAG, e, "url=" + url);
+                    Logger.error(context, TAG, e, "url=" + url);
                 }
                 return null;
 
@@ -243,14 +246,14 @@ public abstract class JsoupBase {
                 // at com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection.open
                 // at com.hardbacknutter.nevertoomanybooks.searches.JsoupBase.loadPage
 
-                Logger.warn(appContext, TAG, "loadPage"
-                                             + "|e=" + e.getLocalizedMessage()
-                                             + "|url=\"" + url + '\"');
+                Logger.warn(context, TAG, "loadPage"
+                                          + "|e=" + e.getLocalizedMessage()
+                                          + "|url=\"" + url + '\"');
                 // retry once.
                 if (mRetry) {
                     mRetry = false;
                     mDoc = null;
-                    return loadPage(appContext, url);
+                    return loadPage(context, url);
                 } else {
                     return null;
                 }
@@ -259,10 +262,10 @@ public abstract class JsoupBase {
                 throw e;
 
             } catch (@NonNull final FileNotFoundException e) {
-                Logger.warn(appContext, TAG, "loadPage", url);
+                Logger.warn(context, TAG, "loadPage|" + url);
 
             } catch (@NonNull final IOException e) {
-                Logger.error(appContext, TAG, e, url);
+                Logger.error(context, TAG, e, url);
                 return null;
             }
             // reset the flag.

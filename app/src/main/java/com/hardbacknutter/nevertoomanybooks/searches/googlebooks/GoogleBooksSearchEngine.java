@@ -37,6 +37,7 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  * example:
  * https://stackoverflow.com/questions/7908954/google-books-api-searching-by-isbn
  */
-public final class GoogleBooksManager
+public final class GoogleBooksSearchEngine
         implements SearchEngine,
                    SearchEngine.ByIsbn,
                    SearchEngine.ByText {
@@ -81,19 +82,25 @@ public final class GoogleBooksManager
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
-                               @NonNull final String isbn,
+    public Locale getLocale(@NonNull final Context context) {
+        return Locale.US;
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
         // %3A  :
-        String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3A" + isbn;
-        return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
+        String url = BASE_URL + "/books/feeds/volumes?q=ISBN%3A" + validIsbn;
+        return fetchBook(context, url, fetchThumbnail, new Bundle());
     }
 
     @NonNull
     @Override
     @WorkerThread
-    public Bundle search(@NonNull final Context localizedAppContext,
+    public Bundle search(@NonNull final Context context,
                          @Nullable final String code,
                          @Nullable final String author,
                          @Nullable final String title,
@@ -109,7 +116,7 @@ public final class GoogleBooksManager
                          + "intitle%3A" + encodeSpaces(title)
                          + "%2B"
                          + "inauthor%3A" + encodeSpaces(author);
-            return fetchBook(localizedAppContext, url, fetchThumbnail, new Bundle());
+            return fetchBook(context, url, fetchThumbnail, new Bundle());
 
         } else {
             return new Bundle();

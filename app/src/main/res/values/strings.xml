@@ -85,7 +85,6 @@
     <!-- ========== General error messages ========== -->
     <!-- ####################################################################################### -->
 
-
     <string name="error_unexpected_error">
         An unexpected error has occurred, please send the details to support via the “Admin”
         page from the main menu.
@@ -98,6 +97,13 @@
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_network_no_connection">Internet connection is not available.</string>
     <string name="error_network_timeout">No response, please try again.</string>
+
+    <string name="error_site_access_failed">
+        There was a network problem while accessing %1$s. Please check if the website is up,
+        and if the problem persists please contact support.
+    </string>
+
+
     <string name="error_email_failed">Failed to send the email.</string>
     <string name="error_google_play_store_missing">Google Play Store is not installed.</string>
 
@@ -130,7 +136,6 @@
         File must contain a column with one of the following names: %1$s
     </string>
 
-
     <!-- Displayed when any read operation from Shared Storage fails -->
     <string name="error_storage_not_readable">Please check that storage is accessible.</string>
     <!-- Displayed when any write operation to Shared Storage fails -->
@@ -141,12 +146,6 @@
     <string name="error_storage_not_accessible">Storage not accessible.</string>
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->
     <string name="error_storage_no_space_left">Insufficient storage available.</string>
-
-
-    <!-- Generic authentication failed -->
-    <string name="error_authentication_failed">Authentication failed</string>
-    <!-- 'Site' authentication failed -->
-    <string name="error_site_authentication_failed">%1$s authentication failed</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
@@ -290,9 +289,6 @@
         Selected fields are visible in the add/edit book screens. Unselected fields are hidden.
     </string>
 
-    <string name="info_authorized">Authorized</string>
-    <string name="info_not_authorized">Not Authorized</string>
-
     <string name="info_registration_required">
         This feature requires registration with %1$s.\n
         Would you like to see more information?
@@ -302,6 +298,23 @@
         Would you like to see more information, or disable this message?\n
         You can find this information at a later date under the “%2$s” section in the settings.
     </string>
+
+    <!-- ####################################################################################### -->
+    <!-- ========== authorization/authentication messages ========== -->
+    <!-- ####################################################################################### -->
+
+    <string name="title_authorized">Authorized</string>
+    <string name="title_not_authorized">Not Authorized</string>
+    <string name="title_authorized_needed">Authorize Access</string>
+
+    <string name="info_authorization_successful">%1$s authorization successful</string>
+
+    <!-- Generic failed -->
+    <string name="error_authorization_failed">Authorization failed</string>
+    <string name="error_authentication_failed">Authentication failed</string>
+    <!-- 'Site'  failed -->
+    <string name="error_site_authorization_failed">%1$s authorization resulted in an error.</string>
+    <string name="error_site_authentication_failed">%1$s authentication failed</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Messages for actions that need confirming first. ========== -->
@@ -578,9 +591,7 @@
     <!-- book and book list menu options -->
     <string name="gr_menu_send_to_goodreads">Send to Goodreads</string>
 
-
     <!-- Dialog title and (big) button -->
-    <string name="gr_title_auth_access">Authorize Access</string>
     <string name="gr_auth_blurb_part1">
         Goodreads is a web site whose stated mission is “to help people find and share books they
         love”. They have an extensive database of books and reviews, and if you are a registered
@@ -606,21 +617,15 @@
         also important to delete the application\'s registration on the Goodreads website as well.
     </string>
 
-    <string name="gr_auth_successful">Goodreads authorization successful</string>
-    <string name="gr_auth_error">Goodreads authorization resulted in an error.</string>
-    <string name="gr_auth_access_already_granted">
-        It looks like you have already authorized this application.
-        All Goodreads functions should already be available.
-    </string>
 
-    <string name="gr_access_error">
-        There was a network problem while accessing Goodreads. Please check if the Goodreads
-        website it up, and if the problem persists please contact support.
-    </string>
-    <string name="gr_action_cannot_be_completed">
+    <string name="gr_authorization_needed">
         This action can not be completed until this application is authorized on the Goodreads
         website. Once you have authorized this application, please retry.\n
         \nDo you want to authorize it now?
+    </string>
+    <string name="gr_authorization_already_granted">
+        It looks like you have already authorized this application.
+        All Goodreads functions should already be available.
     </string>
 
     <string name="gr_send_book_to_goodreads">Send book %1$d to Goodreads</string>

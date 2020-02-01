@@ -27,14 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * book.isbn_to_id   —   Get Goodreads book IDs given ISBNs.
@@ -44,41 +46,41 @@ import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
  * <strong>Note:</strong> THIS DOES NOT RETURN XML. The text output is the ID.
  */
 public class IsbnToIdApiHandler
-        extends ApiHandler {
+        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
 
     /** Param 1: isbn; param 2: dev key. */
-    private static final String URL = GoodreadsManager.BASE_URL + "/book/isbn_to_id/%1$s?key=%2$s";
+    private static final String URL = GoodreadsHandler.BASE_URL + "/book/isbn_to_id/%1$s?key=%2$s";
 
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public IsbnToIdApiHandler(@NonNull final GoodreadsManager grManager)
+    public IsbnToIdApiHandler(@NonNull final Context context,
+                              @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grManager);
-        if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.site_goodreads);
-        }
+        super(grAuth);
+        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
     }
 
     /**
      * Get the Goodreads book id given an ISBN.
      *
-     * @param isbn with some luck, the ISBN for the requested book
+     * @param isbn to search for
      *
      * @return Goodreads book ID
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     public long isbnToId(@NonNull final String isbn)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
-        String url = String.format(URL, isbn, mManager.getDevKey());
+        String url = String.format(URL, isbn, mGoodreadsAuth.getDevKey());
         String id = executeRawGet(url, true);
         return Long.parseLong(id);
     }

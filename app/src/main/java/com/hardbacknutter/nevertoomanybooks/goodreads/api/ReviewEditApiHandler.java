@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
+import android.content.Context;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,43 +41,42 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlDumpParser;
 
 /**
  * review.edit   —   Edit a review.
  *
  * <a href="https://www.goodreads.com/api/index#review.edit">review.edit</a>
- *
+ * <p>
  * The response actually contains the private notes; but there seems to be no way to *send* them.
  */
 public class ReviewEditApiHandler
-        extends ApiHandler {
+        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
 
     /**
      * Parameters.
      * <p>
      * 1: review id
      */
-    private static final String URL = GoodreadsManager.BASE_URL + "/review/%1$s.xml";
+    private static final String URL = GoodreadsHandler.BASE_URL + "/review/%1$s.xml";
 
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
-    public ReviewEditApiHandler(@NonNull final GoodreadsManager grManager)
+    public ReviewEditApiHandler(@NonNull final Context context,
+                                @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grManager);
-        if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.site_goodreads);
-        }
+        super(grAuth);
+        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
 
         // buildFilters();
     }
@@ -93,9 +94,9 @@ public class ReviewEditApiHandler
      * @param privateNotes    (optional) Text for the Goodreads PRIVATE notes
      * @param review          (optional) Text for the review, PUBLIC
      *
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException GoodReads does not have the book or the ISBN was invalid.
-     * @throws IOException           on other failures
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
+     * @throws IOException          on other failures
      */
     public void update(final long reviewId,
                        final boolean finishedReading,
@@ -104,7 +105,7 @@ public class ReviewEditApiHandler
                        @IntRange(from = 0, to = 5) final int rating,
                        @Nullable final String privateNotes,
                        @Nullable final String review)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         String url = String.format(URL, reviewId);
         Map<String, String> parameters = new HashMap<>();

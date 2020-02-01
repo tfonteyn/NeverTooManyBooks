@@ -42,8 +42,8 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
@@ -210,7 +210,7 @@ public final class LegacyPreferences {
                     case "lt_devkey":
                         String tmpDevKey = (String) oldValue;
                         if (!tmpDevKey.isEmpty()) {
-                            ed.putString(LibraryThingManager.PREFS_DEV_KEY, tmpDevKey);
+                            ed.putString(LibraryThingSearchEngine.PREFS_DEV_KEY, tmpDevKey);
                         }
                         break;
 
@@ -248,7 +248,7 @@ public final class LegacyPreferences {
                             String tmp1 = (String) oldValue;
                             if (!tmp1.isEmpty()) {
                                 String key = entry.getKey().replace("GoodReads.",
-                                                                    GoodreadsManager.PREF_PREFIX);
+                                                                    GoodreadsHandler.PREF_PREFIX);
                                 ed.putString(key, tmp1);
                             }
                         }

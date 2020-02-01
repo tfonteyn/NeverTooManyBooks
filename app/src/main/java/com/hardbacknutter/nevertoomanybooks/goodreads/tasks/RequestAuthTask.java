@@ -40,9 +40,10 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorizationException;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -51,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * Before we can access Goodreads, we must authorize our application to do so.
  */
 public class RequestAuthTask
-        extends TaskBase<Void, Integer> {
+        extends TaskBase<Void, GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "RequestAuthTask";
@@ -62,27 +63,22 @@ public class RequestAuthTask
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RequestAuthTask(@NonNull final TaskListener<Integer> taskListener) {
+    public RequestAuthTask(@NonNull final TaskListener<GrStatus> taskListener) {
         super(R.id.TASK_ID_GR_REQUEST_AUTH, taskListener);
-
-        // should only happen if the developer forgot to add the Goodreads keys.... (me)
-        if (!GoodreadsManager.hasKey()) {
-            throw new IllegalStateException("Developer forgot to add the dev key");
-        }
     }
 
     /**
      * Prompt the user to register.
      *
      * @param context      Current context
-     * @param taskListener for sending progress and finish messages to.
+     * @param taskListener for RequestAuthTask to send progress and finish messages to.
      */
-    public static void needsRegistration(@NonNull final Context context,
-                                         @NonNull final TaskListener<Integer> taskListener) {
+    public static void prompt(@NonNull final Context context,
+                              @NonNull final TaskListener<GrStatus> taskListener) {
         new AlertDialog.Builder(context)
                 .setIcon(R.drawable.ic_security)
-                .setTitle(R.string.gr_title_auth_access)
-                .setMessage(R.string.gr_action_cannot_be_completed)
+                .setTitle(R.string.title_authorized_needed)
+                .setMessage(R.string.gr_authorization_needed)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setNeutralButton(R.string.btn_tell_me_more, (dialog, which) -> {
                     Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
@@ -97,33 +93,36 @@ public class RequestAuthTask
     @Override
     @NonNull
     @WorkerThread
-    protected Integer doInBackground(final Void... params) {
+    protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.RequestAuthTask");
         Context context = App.getAppContext();
 
         if (!NetworkUtils.isNetworkAvailable(context)) {
-            return R.string.error_network_no_connection;
+            return GrStatus.NoInternet;
         }
-        GoodreadsManager grManager = new GoodreadsManager();
 
-        // This next step can take several seconds....
-        if (!grManager.hasValidCredentials()) {
-            try {
-                grManager.requestAuthorization(context);
-            } catch (@NonNull final IOException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return R.string.gr_access_error;
-            } catch (@NonNull final AuthorizationException e) {
-                mException = e;
-                return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_FAILED;
-            }
-        } else {
-            return R.string.gr_auth_access_already_granted;
+        GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+        if (grAuth.hasValidCredentials(context)) {
+            return GrStatus.AuthorizationAlreadyGranted;
         }
+
+        try {
+            // This step can take several seconds....
+            grAuth.requestAuthorization(context);
+
+        } catch (@NonNull final IOException e) {
+            mException = e;
+            Logger.error(context, TAG, e);
+            return GrStatus.IOError;
+
+        } catch (@NonNull final GoodreadsAuth.AuthorizationException e) {
+            mException = e;
+            return GrStatus.AuthorizationFailed;
+        }
+
         if (isCancelled()) {
-            return R.string.progress_end_cancelled;
+            return GrStatus.Cancelled;
         }
-        return R.string.info_authorized;
+        return GrStatus.AuthorizationSuccessful;
     }
 }

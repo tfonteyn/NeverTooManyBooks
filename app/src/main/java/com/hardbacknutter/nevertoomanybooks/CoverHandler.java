@@ -70,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
@@ -435,8 +435,8 @@ public class CoverHandler {
         // getting alternative editions is limited to LibraryThing and ISFDB for now.
         // ISFDB is obviously limited to their specific genre,
         // so remind the user that LT is rather essential.
-        if (!LibraryThingManager.hasKey(mContext)) {
-            LibraryThingManager.alertRegistrationNeeded(mContext, false, "cover_browser");
+        if (!LibraryThingSearchEngine.hasKey(mContext)) {
+            LibraryThingSearchEngine.alertRegistrationNeeded(mContext, false, "cover_browser");
             return;
         }
 

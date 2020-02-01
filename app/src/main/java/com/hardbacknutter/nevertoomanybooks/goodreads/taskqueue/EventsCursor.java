@@ -37,10 +37,9 @@ import androidx.collection.LongSparseArray;
 import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
 
 /**
- * Cursor subclass used to make accessing TaskExceptions a little easier.
+ * Cursor subclass used to make accessing Events a little easier.
  */
 public class EventsCursor
         extends SQLiteCursor
@@ -65,16 +64,16 @@ public class EventsCursor
     }
 
     /**
-     * Accessor for Exception date field.
+     * Accessor for Event date field.
      *
      * @return Exception date
      */
     @NonNull
     public Date getEventDate() {
         if (sDateCol < 0) {
-            sDateCol = getColumnIndex(TaskQueueDBHelper.CKEY_EVENT_DATE);
+            sDateCol = getColumnIndex(QueueDBHelper.KEY_EVENT_DATE);
         }
-        Date date = DateUtils.parseDate(getString(sDateCol));
+        Date date = DateUtils.parseSqlDateTime(getString(sDateCol));
         if (date == null) {
             date = new Date();
         }
@@ -108,7 +107,7 @@ public class EventsCursor
     @NonNull
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
         if (sEventCol < 0) {
-            sEventCol = getColumnIndex(TaskQueueDBHelper.CKEY_EVENT);
+            sEventCol = getColumnIndex(QueueDBHelper.KEY_EVENT);
         }
         byte[] blob = getBlob(sEventCol);
         Event event;
@@ -121,14 +120,10 @@ public class EventsCursor
         return event;
     }
 
-    /**
-     * Accessor for id field.
-     *
-     * @return row id
-     */
+    @Override
     public long getId() {
         if (sIdCol < 0) {
-            sIdCol = getColumnIndex(TaskQueueDBHelper.CKEY_PK_ID);
+            sIdCol = getColumnIndex(QueueDBHelper.KEY_PK_ID);
         }
         return getLong(sIdCol);
     }

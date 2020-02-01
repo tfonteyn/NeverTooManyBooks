@@ -46,8 +46,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
@@ -87,17 +87,17 @@ public class LibraryThingRegistrationActivity
         // LT Registration Link.
         findViewById(R.id.register_url).setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingManager.BASE_URL + '/'))));
+                                              Uri.parse(LibraryThingSearchEngine.BASE_URL + '/'))));
 
         // DevKey Link.
         findViewById(R.id.dev_key_url).setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
-                                              Uri.parse(LibraryThingManager.BASE_URL
+                                              Uri.parse(LibraryThingSearchEngine.BASE_URL
                                                         + "/services/keys.php"))));
 
         mDevKeyView = findViewById(R.id.dev_key);
         String key = PreferenceManager.getDefaultSharedPreferences(this)
-                                      .getString(LibraryThingManager.PREFS_DEV_KEY, "");
+                                      .getString(LibraryThingSearchEngine.PREFS_DEV_KEY, "");
         mDevKeyView.setText(key);
 
         FloatingActionButton fabButton = findViewById(R.id.fab);
@@ -107,7 +107,7 @@ public class LibraryThingRegistrationActivity
             String devKey = mDevKeyView.getText().toString().trim();
             PreferenceManager.getDefaultSharedPreferences(this)
                              .edit()
-                             .putString(LibraryThingManager.PREFS_DEV_KEY, devKey)
+                             .putString(LibraryThingSearchEngine.PREFS_DEV_KEY, devKey)
                              .apply();
 
             if (!devKey.isEmpty()) {
@@ -141,7 +141,7 @@ public class LibraryThingRegistrationActivity
             Thread.currentThread().setName("LT.ValidateKey");
             Context context = App.getAppContext();
             try {
-                SearchEngine.CoverByIsbn ltm = new LibraryThingManager();
+                SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine();
                 String fileSpec = ltm.getCoverImage(context, "0451451783",
                                                     0, SearchEngine.CoverByIsbn.ImageSize.Small);
                 if (fileSpec != null) {

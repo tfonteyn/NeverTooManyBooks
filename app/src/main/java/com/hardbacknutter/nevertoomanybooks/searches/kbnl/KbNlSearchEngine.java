@@ -37,6 +37,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Locale;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -45,6 +46,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -56,25 +58,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * 2020-01-04: "http://opc4.kb.nl" is not available on https.
  * see "res/xml/network_security_config.xml"
  */
-public class KbNlManager
+public class KbNlSearchEngine
         implements SearchEngine,
                    SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
-    //public static final Locale SITE_LOCALE = new Locale("nl", "NL");
+    public static final Locale SITE_LOCALE = new Locale("nl", "NL");
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "kbnl.";
     /** Type: {@code String}. */
     private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
-    /**
-     * RELEASE: Chrome 2020-01-17. Continuously update to latest version.
-     * This site does not return full data unless the user agent header is set to a valid browser.
-     */
-    private static final String USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-            + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/79.0.3945.117 Safari/537.36";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -112,24 +106,30 @@ public class KbNlManager
 
     @NonNull
     @Override
-    public Bundle searchByIsbn(@NonNull final Context localizedAppContext,
-                               @NonNull final String isbn,
+    public Locale getLocale(@NonNull final Context context) {
+        return SITE_LOCALE;
+    }
+
+    @NonNull
+    @Override
+    public Bundle searchByIsbn(@NonNull final Context context,
+                               @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
             throws IOException {
 
-        String url = getBaseURL(localizedAppContext) + String.format(BOOK_URL, isbn);
+        String url = getBaseURL(context) + String.format(BOOK_URL, validIsbn);
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
         KbNlBookHandler handler = new KbNlBookHandler(new Bundle());
 
         try (TerminatorConnection terminatorConnection =
-                     new TerminatorConnection(localizedAppContext, url)) {
+                     new TerminatorConnection(context, url)) {
             HttpURLConnection con = terminatorConnection.getHttpURLConnection();
 
             // needed so we get the XML instead of the rendered page
             con.setInstanceFollowRedirects(false);
             // the site does not return full data unless this is set to a valid browser.
-            con.setRequestProperty("User-Agent", USER_AGENT);
+            con.setRequestProperty("User-Agent", SearchCoordinator.USER_AGENT);
             terminatorConnection.open();
 
             SAXParser parser = factory.newSAXParser();
@@ -142,7 +142,7 @@ public class KbNlManager
 
         Bundle bookData = handler.getResult();
         if (fetchThumbnail[0]) {
-            getCoverImage(localizedAppContext, isbn, 0, bookData);
+            getCoverImage(context, validIsbn, 0, bookData);
         }
         return bookData;
     }
@@ -156,7 +156,7 @@ public class KbNlManager
      */
     @Nullable
     @Override
-    public String getCoverImage(@NonNull final Context appContext,
+    public String getCoverImage(@NonNull final Context context,
                                 @NonNull final String isbn,
                                 final int cIdx,
                                 @Nullable final ImageSize size) {
@@ -180,7 +180,8 @@ public class KbNlManager
 
         // ignore cIdx, site has only one image.
         String url = String.format(BASE_URL_COVERS, isbn, sizeSuffix);
-        return ImageUtils.saveImage(appContext, url, isbn, FILENAME_SUFFIX, sizeSuffix);
+        String name = isbn + FILENAME_SUFFIX + "_" + sizeSuffix;
+        return ImageUtils.saveImage(context, url, name);
     }
 
     @Override

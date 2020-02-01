@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,9 +31,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -43,11 +40,12 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Base class for tasks. This builds and populates simple View objects to display the task.
  * <p>
- * A Task *MUST* be serializable.
+ * A Task *MUST* be serializable.z\
  * This means that it can not contain any references to UI components or similar objects.
  */
 public abstract class TQTask
@@ -72,111 +70,86 @@ public abstract class TQTask
 
     @Override
     @NonNull
-    public View getView(@NonNull final Context context,
-                        @NonNull final BindableItemCursor cursor,
-                        @NonNull final ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.row_task_info, parent, false);
-        view.setTag(R.id.TAG_GR_TASK, this);
-
-        TaskHolder holder = new TaskHolder(view);
-        holder.checkButton.setTag(R.id.TAG_GR_BOOK_EVENT_HOLDER, holder);
-
-        return view;
+    public BindableItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
+        View itemView = LayoutInflater
+                .from(parent.getContext())
+                .inflate(R.layout.row_task_info, parent, false);
+        return new TaskViewHolder(itemView);
     }
 
     @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final BindableItemCursor cursor,
-                         @NonNull final DAO db) {
-        TaskHolder holder = (TaskHolder) view.getTag(R.id.TAG_GR_TASK_HOLDER);
-        TasksCursor tasksCursor = (TasksCursor) cursor;
+    public void onBindViewHolder(@NonNull final BindableItemViewHolder bindableItemViewHolder,
+                                 @NonNull final BindableItemCursor cursor,
+                                 @NonNull final DAO db) {
 
-        // Update task info binding
-        holder.description.setText(getDescription(context));
+        TaskViewHolder holder = (TaskViewHolder) bindableItemViewHolder;
+        TasksCursor tasksCursor = (TasksCursor) cursor;
+        Context context = holder.itemView.getContext();
+        Locale userLocale = LocaleUtils.getUserLocale(context);
+
+        holder.descriptionView.setText(getDescription(context));
         String statusCode = tasksCursor.getStatusCode().toUpperCase(Locale.ENGLISH);
         String statusText;
         switch (statusCode) {
-            case STATUS_COMPLETE:
+            case COMPLETED:
                 statusText = context.getString(R.string.gr_tq_completed);
-                holder.retry_info.setVisibility(View.GONE);
+                holder.retryInfoView.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
 
-            case STATUS_FAILED:
+            case FAILED:
                 statusText = context.getString(R.string.gr_tq_failed);
-                holder.retry_info.setVisibility(View.GONE);
+                holder.retryInfoView.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.VISIBLE);
                 break;
 
-            case STATUS_QUEUED:
+            case QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                String date = DateUtils.toPrettyDateTime(tasksCursor.getRetryDate());
-                holder.retry_info.setText(context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
-                                                            getRetries(), getRetryLimit(), date));
-                holder.retry_info.setVisibility(View.VISIBLE);
+                String date = DateUtils.toPrettyDateTime(tasksCursor.getRetryDate(), userLocale);
+                String info = context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
+                                                getRetries(), getRetryLimit(), date);
+                holder.retryInfoView.setText(info);
+                holder.retryInfoView.setVisibility(View.VISIBLE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
 
             default:
                 statusText = context.getString(R.string.unknown);
-                holder.retry_info.setVisibility(View.GONE);
+                holder.retryInfoView.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.GONE);
                 break;
         }
 
         statusText += context.getString(R.string.gr_tq_events_recorded, tasksCursor.getNoteCount());
-        holder.state.setText(statusText);
+        holder.stateView.setText(statusText);
 
         Exception e = getException();
         if (e != null) {
-            holder.error.setVisibility(View.VISIBLE);
-            holder.error.setText(context.getString(R.string.gr_tq_last_error_e,
-                                                   e.getLocalizedMessage()));
+            holder.errorView.setVisibility(View.VISIBLE);
+            String msg = e.getLocalizedMessage();
+            if (msg == null) {
+                msg = e.getClass().getSimpleName();
+            }
+            String err = context.getString(R.string.gr_tq_last_error_e, msg);
+            holder.errorView.setText(err);
+
         } else {
-            holder.error.setVisibility(View.GONE);
+            holder.errorView.setVisibility(View.GONE);
         }
+
         //"Job id 123, Queued at 20 Jul 2012 17:50:23 GMT"
-        String date = DateUtils.toPrettyDateTime(tasksCursor.getQueuedDate());
-        holder.job_info.setText(context.getString(R.string.gr_tq_generic_task_info, getId(), date));
+        String date = DateUtils.toPrettyDateTime(tasksCursor.getQueuedDate(), userLocale);
+        String info = context.getString(R.string.gr_tq_generic_task_info, getId(), date);
+        holder.jobInfoView.setText(info);
     }
 
     @Override
     public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull final View view,
-                                    final long id,
-                                    @NonNull final List<ContextDialogItem> items,
+                                    @NonNull final List<ContextDialogItem> menuItems,
                                     @NonNull final DAO db) {
 
-        ContextDialogItem item =
-                new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
-                                      () -> QueueManager.getQueueManager().deleteTask(id));
-        items.add(item);
-    }
-
-    /**
-     * Holder to maintain task views.
-     */
-    static class TaskHolder {
-
-        final TextView description;
-        final TextView state;
-        final TextView retry_info;
-        final TextView error;
-        final TextView job_info;
-        final CompoundButton checkButton;
-        final Button retryButton;
-
-        TaskHolder(@NonNull final View view) {
-            description = view.findViewById(R.id.description);
-            state = view.findViewById(R.id.state);
-            retry_info = view.findViewById(R.id.retry_info);
-            error = view.findViewById(R.id.error);
-            job_info = view.findViewById(R.id.job_info);
-            checkButton = view.findViewById(R.id.cbx_checked);
-            retryButton = view.findViewById(R.id.retry);
-
-            view.setTag(R.id.TAG_GR_TASK_HOLDER, this);
-        }
+        menuItems.add(new ContextDialogItem(
+                context.getString(R.string.gr_tq_menu_delete_task),
+                () -> QueueManager.getQueueManager().deleteTask(getId())));
     }
 }

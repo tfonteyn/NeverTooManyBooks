@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 
@@ -162,7 +162,7 @@ public class SimpleXmlFilter {
             return false;
         }
 
-        switch (s.trim().toLowerCase(App.getSystemLocale())) {
+        switch (s.trim().toLowerCase(LocaleUtils.getSystemLocale())) {
             case "true":
             case "t":
                 return true;

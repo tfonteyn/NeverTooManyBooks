@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,9 +40,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
@@ -116,13 +118,15 @@ public class FilePicker
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
+            Context context = holder.itemView.getContext();
+            Locale userLocale = LocaleUtils.getUserLocale(context);
 
             File item = mList.get(position);
             holder.nameView.setText(item.getName());
             holder.pathView.setText(item.getParent());
             holder.sizeView.setText(StorageUtils.formatFileSize(mContext, item.length()));
             holder.lastModDateView
-                    .setText(DateUtils.toPrettyDateTime(new Date(item.lastModified())));
+                    .setText(DateUtils.toPrettyDateTime(new Date(item.lastModified()), userLocale));
 
             // onClick on the whole view.
             holder.itemView.setOnClickListener(v -> mListener.onPicked(item));

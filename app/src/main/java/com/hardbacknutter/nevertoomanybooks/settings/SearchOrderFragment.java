@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,12 +51,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHelperCallback;
@@ -144,7 +146,9 @@ public class SearchOrderFragment
         switch (item.getItemId()) {
             case R.id.MENU_RESET:
                 //noinspection ConstantConditions
-                mModel.resetList(getContext(), mOurType);
+                Locale locale = LocaleUtils.getUserLocale(getContext());
+                //noinspection ConstantConditions
+                mModel.resetList(getContext(), locale, mOurType);
                 mListAdapter.notifyDataSetChanged();
                 return true;
 
@@ -193,7 +197,7 @@ public class SearchOrderFragment
             holder.nameView.setText(site.getName());
 
             if (mShowInfo) {
-                SearchEngine searchEngine = site.getSearchEngine();
+                SearchEngine searchEngine = site.getSearchEngine(context);
                 // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
                 Collection<String> info = new ArrayList<>();
                 if (searchEngine instanceof SearchEngine.ByIsbn) {

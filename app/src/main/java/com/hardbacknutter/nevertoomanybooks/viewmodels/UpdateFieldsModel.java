@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -60,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
@@ -149,7 +151,8 @@ public class UpdateFieldsModel
 
             mDb = new DAO(TAG);
             // use global preference.
-            setSiteList(SiteList.getList(context, SiteList.Type.Data));
+            Locale locale = LocaleUtils.getUserLocale(context);
+            setSiteList(SiteList.getList(context, locale, SiteList.Type.Data));
 
             if (args != null) {
                 //noinspection unchecked

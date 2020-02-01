@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,7 +91,7 @@ abstract class AbstractBase
     private void initSite() {
         setConnectTimeout(CONNECT_TIMEOUT);
         setReadTimeout(READ_TIMEOUT);
-        setCharSetName(IsfdbManager.CHARSET_DECODE_PAGE);
+        setCharSetName(IsfdbSearchEngine.CHARSET_DECODE_PAGE);
     }
 
     @NonNull

@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,8 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 
 /**
  * Languages.
@@ -80,7 +78,7 @@ public final class LanguageUtils {
         if (langLocale == null) {
             return iso;
         }
-        return langLocale.getDisplayLanguage(Locale.getDefault());
+        return langLocale.getDisplayLanguage(LocaleUtils.getUserLocale(context));
     }
 
     /**
@@ -98,20 +96,19 @@ public final class LanguageUtils {
     public static String getISO3FromDisplayName(@NonNull final Context context,
                                                 @NonNull final String displayName) {
 
-        String source = displayName.trim().toLowerCase(Locale.getDefault());
+        String source = displayName.trim().toLowerCase(LocaleUtils.getUserLocale(context));
         return getLanguageCache(context).getString(source, source);
     }
 
     /**
      * Try to convert a "language-country" code to an ISO3 code.
      *
-     * @param iso2 a standard ISO string like "en" or "en-GB" or "en-GB*"
+     * @param source a standard ISO string like "en" or "en-GB" or "en-GB*"
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getISO3Language(@NonNull final String iso2) {
-        String source = iso2.trim().toLowerCase(Locale.getDefault());
+    public static String getISO3Language(@NonNull final String source) {
         // shortcut for English "en", "en-GB", etc
         if ("en".equals(source) || source.startsWith("en_") || source.startsWith("en-")) {
             return "eng";
@@ -141,16 +138,18 @@ public final class LanguageUtils {
      * new Locale("fra") ==>  valid French Locale
      * </pre>
      * A possible explanation is that Android use ICU classes internally.<br>
-     * Also see {@link #toBibliographic(String)} and {@link #toTerminology(String)}.
+     * Also see {@link #toBibliographic} and {@link #toTerminology}.
      * <br><br>
      * <strong>Note:</strong> check the javadoc on {@link Locale#getISOLanguages()} for caveats.
      *
-     * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
+     * @param context Current context
+     * @param iso3    ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      *
      * @return a language code that can be used with {@code new Locale(x)},
      * or the incoming string if conversion failed.
      */
-    public static String getLocaleIsoFromIso3(@NonNull final String iso3) {
+    public static String getLocaleIsoFromIso3(@NonNull final Context context,
+                                              @NonNull final String iso3) {
         // create the map on first usage
         if (LANG3_TO_LANG2_MAP == null) {
             String[] languages = Locale.getISOLanguages();
@@ -166,15 +165,17 @@ public final class LanguageUtils {
             return iso2;
         }
 
+        Locale locale = LocaleUtils.getUserLocale(context);
+
         // try again ('terminology' seems to be preferred/standard on Android (ICU?)
-        String lang = LanguageUtils.toTerminology(iso3);
+        String lang = LanguageUtils.toTerminology(locale, iso3);
         iso2 = LANG3_TO_LANG2_MAP.get(lang);
         if (iso2 != null) {
             return iso2;
         }
 
         // desperate and last attempt using 'bibliographic'.
-        lang = LanguageUtils.toBibliographic(iso3);
+        lang = LanguageUtils.toBibliographic(locale, iso3);
         iso2 = LANG3_TO_LANG2_MAP.get(lang);
         if (iso2 != null) {
             return iso2;
@@ -194,8 +195,9 @@ public final class LanguageUtils {
      * @param iso3 ISO 639-2 (3-char) language code (either bibliographic or terminology coded)
      */
     @NonNull
-    public static String toBibliographic(@NonNull final String iso3) {
-        String source = iso3.trim().toLowerCase(Locale.getDefault());
+    public static String toBibliographic(@NonNull final Locale locale,
+                                         @NonNull final String iso3) {
+        String source = iso3.trim().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
         }
@@ -278,8 +280,9 @@ public final class LanguageUtils {
      */
     @SuppressWarnings({"unused", "WeakerAccess"})
     @NonNull
-    public static String toTerminology(@NonNull final String iso3) {
-        String source = iso3.trim().toLowerCase(Locale.getDefault());
+    public static String toTerminology(@NonNull final Locale locale,
+                                       @NonNull final String iso3) {
+        String source = iso3.trim().toLowerCase(locale);
         if (source.length() != 3) {
             return source;
         }
@@ -360,17 +363,17 @@ public final class LanguageUtils {
         SharedPreferences prefs = getLanguageCache(context);
 
         // the one the user is using our app in (can be different from the system one)
-        createLanguageMappingCache(prefs, Locale.getDefault());
+        createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));
 
         // the system default
-        createLanguageMappingCache(prefs, App.getSystemLocale());
+        createLanguageMappingCache(prefs, LocaleUtils.getSystemLocale());
 
         //NEWTHINGS: add new site specific ID: if a site uses a specific language, add it here
 
         // Dutch
-        createLanguageMappingCache(prefs, StripInfoManager.SITE_LOCALE);
+        createLanguageMappingCache(prefs, StripInfoSearchEngine.SITE_LOCALE);
         // Dutch
-        //createLanguageMappingCache(prefs, KbNlManager.SITE_LOCALE);
+        //createLanguageMappingCache(prefs, KbNlSearchEngine.SITE_LOCALE);
 
         // and English for compatibility with lots of websites.
         createLanguageMappingCache(prefs, Locale.ENGLISH);
@@ -406,24 +409,19 @@ public final class LanguageUtils {
     }
 
     public static String toDebugString(@NonNull final Context context) {
-        Locale configLocale;
-        if (Build.VERSION.SDK_INT >= 24) {
-            configLocale = context.getResources().getConfiguration().getLocales().get(0);
-        } else {
-            configLocale = context.getResources().getConfiguration().locale;
-        }
-
-        Locale systemLocale = App.getSystemLocale();
-        Locale prefLocale = Locale.getDefault();
+        Locale userLocale = LocaleUtils.getUserLocale(context);
+        Locale systemLocale = LocaleUtils.getSystemLocale();
+        Locale defLocale = Locale.getDefault();
 
         return ""
-               + "\nsSystemInitialLocale     : " + systemLocale.getDisplayName()
-               + "\nsSystemInitialLocale(cur): " + systemLocale.getDisplayName(configLocale)
-               + "\nLocale.getDefault()      : " + Locale.getDefault().getDisplayName()
-               + "\nLocale.getDefault(cur)   : " + Locale.getDefault().getDisplayName(configLocale)
-               + "\nconfiguration.locale     : " + configLocale.getDisplayName()
-               + "\nconfiguration.locale(cur): " + configLocale.getDisplayName(configLocale)
-               + "\ngetPreferredLocale()     : " + prefLocale.getDisplayName()
-               + "\ngetPreferredLocale(cur)  : " + prefLocale.getDisplayName(configLocale);
+               + "\nsystemLocale       : " + systemLocale.getDisplayName()
+               + "\nsystemLocale(user) : " + systemLocale.getDisplayName(userLocale)
+
+               + "\ndefLocale          : " + defLocale.getDisplayName()
+               + "\ndefLocale(user)    : " + defLocale.getDisplayName(userLocale)
+
+               + "\nuserLocale         : " + userLocale.getDisplayName()
+               + "\nuserLocale(user)   : " + userLocale.getDisplayName(userLocale)
+                ;
     }
 }

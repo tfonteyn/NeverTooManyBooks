@@ -49,7 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTaskListener;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -102,8 +103,8 @@ public class BookBaseFragmentModel
     /** Field drop down list. */
     private List<String> mListPriceCurrencies;
 
-    /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
-    private TaskListener<Integer> mGoodreadsTaskListener;
+    /** Lazy init, always use {@link #getGoodreadsTaskListener(Context)}. */
+    private TaskListener<GrStatus> mGoodreadsTaskListener;
 
     @Override
     protected void onCleared() {
@@ -455,9 +456,29 @@ public class BookBaseFragmentModel
     }
 
     @NonNull
-    public TaskListener<Integer> getGoodreadsTaskListener() {
+    public TaskListener<GrStatus> getGoodreadsTaskListener(@NonNull final Context context) {
         if (mGoodreadsTaskListener == null) {
-            mGoodreadsTaskListener = new GoodreadsTaskListener(mUserMessage, mNeedsGoodreads);
+            mGoodreadsTaskListener = new TaskListener<GrStatus>() {
+
+                @Override
+                public void onFinished(@NonNull final FinishMessage<GrStatus> message) {
+                    String msg = GoodreadsHandler.handleResult(context, message);
+                    if (msg != null) {
+                        // success, failure, cancelled
+                        mUserMessage.setValue(msg);
+                    } else {
+                        // needs Registration
+                        mNeedsGoodreads.setValue(true);
+                    }
+                }
+
+                @Override
+                public void onProgress(@NonNull final ProgressMessage message) {
+                    if (message.text != null) {
+                        mUserMessage.setValue(message.text);
+                    }
+                }
+            };
         }
         return mGoodreadsTaskListener;
     }

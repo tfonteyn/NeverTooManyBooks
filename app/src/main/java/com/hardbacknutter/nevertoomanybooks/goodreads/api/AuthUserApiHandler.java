@@ -34,9 +34,10 @@ import java.io.IOException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -48,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 public class AuthUserApiHandler
         extends ApiHandler {
 
-    private static final String URL = GoodreadsManager.BASE_URL + "/api/auth_user";
+    private static final String URL = GoodreadsHandler.BASE_URL + "/api/auth_user";
 
     private static final String XML_USER = "user";
 
@@ -59,11 +60,11 @@ public class AuthUserApiHandler
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param grAuth Authentication handler
      */
-    public AuthUserApiHandler(@NonNull final GoodreadsManager grManager) {
-        super(grManager);
-        // don't ...if (!grManager.hasValidCredentials()) {
+    public AuthUserApiHandler(@NonNull final GoodreadsAuth grAuth) {
+        super(grAuth);
+        // don't ...if (!apiHandler.hasValidCredentials()) {
 
         buildFilters();
     }
@@ -81,7 +82,7 @@ public class AuthUserApiHandler
             // Return user found.
             return mUserId;
 
-        } catch (@NonNull final CredentialsException | BookNotFoundException | IOException
+        } catch (@NonNull final CredentialsException | NotFoundException | IOException
                 | RuntimeException e) {
             return 0;
         }

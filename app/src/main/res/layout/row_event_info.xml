@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -36,10 +36,10 @@
     >
 
     <CheckBox
-        android:id="@+id/cbx_checked"
+        android:id="@+id/cbx_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border2"
+        android:layout_marginTop="@dimen/border1"
         android:focusable="false"
         android:text=""
         app:layout_constraintStart_toStartOf="parent"
@@ -47,15 +47,14 @@
         />
 
     <Button
-        android:id="@+id/retry"
+        android:id="@+id/btn_retry"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border2"
         android:focusable="false"
         android:text="@string/retry"
+        app:layout_constraintBaseline_toBaselineOf="@id/cbx_selected"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         />
 
     <TextView
@@ -63,10 +62,11 @@
         style="@style/Text"
         android:layout_width="0dp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/retry"
-        app:layout_constraintStart_toEndOf="@id/cbx_checked"
+        android:focusable="false"
+        android:textIsSelectable="false"
+        app:layout_constraintEnd_toStartOf="@id/btn_retry"
+        app:layout_constraintStart_toEndOf="@id/cbx_selected"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="SelectableText"
         tools:text="I, Robot"
         />
 
@@ -74,10 +74,11 @@
         android:id="@+id/author"
         style="@style/Text"
         android:layout_width="0dp"
+        android:focusable="false"
+        android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
-        tools:ignore="SelectableText"
         tools:text="Asimov, Isaac"
         />
 
@@ -85,10 +86,11 @@
         android:id="@+id/error"
         style="@style/ErrorMessage"
         android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="@id/title"
+        android:focusable="false"
+        android:textIsSelectable="false"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/author"
-        tools:ignore="SelectableText"
         tools:text="Last error: foo bar, not sure what really happened"
         />
 
@@ -96,12 +98,12 @@
         android:id="@+id/date"
         style="@style/Text.Small"
         android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="@id/title"
+        android:focusable="false"
+        android:textIsSelectable="false"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/error"
-        tools:ignore="SelectableText"
         tools:text="July 20, 2012 17:45:32 GMT"
         />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

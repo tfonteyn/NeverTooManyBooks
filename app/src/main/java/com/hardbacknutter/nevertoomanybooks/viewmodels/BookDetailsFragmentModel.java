@@ -57,6 +57,13 @@ public class BookDetailsFragmentModel
     @Nullable
     private FlattenedBooklist mFlattenedBooklist;
 
+    @Override
+    protected void onCleared() {
+        if (mFlattenedBooklist != null) {
+            mFlattenedBooklist.close();
+        }
+    }
+
     /**
      * Pseudo constructor.
      *
@@ -85,7 +92,7 @@ public class BookDetailsFragmentModel
                         // Paranoia: is it the book we wanted ?
                         || mFlattenedBooklist.getBookId() != bookId) {
                         // Should never happen... flw
-                        mFlattenedBooklist.close(true);
+                        mFlattenedBooklist.closeAndDrop();
                         mFlattenedBooklist = null;
                     }
                 }

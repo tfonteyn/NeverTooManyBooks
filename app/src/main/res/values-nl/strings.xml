@@ -125,7 +125,8 @@
     <string name="debug_subject">Verzamelde foutopsporingsgegevens</string>
     <string name="done">Klaar</string>
     <string name="edit">Bewerken</string>
-    <string name="error_authentication_failed">Verificatie mislukt</string>
+    <string name="error_authorization_failed">Autorisatie mislukt</string>
+    <string name="error_authentication_failed">Authenticatie mislukt</string>
     <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt</string>
     <string name="error_backup_failed">Back-up mislukt</string>
     <string name="error_column_is_blank">Kolom %1$s is leeg op lijn %2$d</string>
@@ -155,9 +156,9 @@
     <string name="export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
     <string name="export_option_info_books_since_date">Specificeer desgewenst een datum voor de selectie van boeken en/of omslagen om te exporteren:</string>
     <string name="export_options_dialog_title">Selecteer wat geëxporteerd zal worden naar het archief.</string>
-    <string name="gr_access_error">Er was een netwerkprobleem terwijl je probeerde toegang te krijgen tot Goodreads. Controleer of de website van Goodreads in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning</string>
-    <string name="gr_action_cannot_be_completed">Deze actie kan niet worden voltooid voordat deze applicatie door Goodreads is geautoriseerd. Probeer het nog eens als de autorisatie is geslaagd.\n\nWil je de autorisatie nu doen?</string>
-    <string name="gr_auth_access_already_granted">Het lijkt erop dat je deze applicatie al toegang hebt verleend. Alle Goodreads functies moeten reeds beschikbaar zijn</string>
+    <string name="error_site_access_failed">Er was een netwerkprobleem terwijl je probeerde toegang te krijgen tot %1$s. Controleer of de website in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning.</string>
+    <string name="gr_authorization_needed">Deze actie kan niet worden voltooid voordat deze applicatie door Goodreads is geautoriseerd. Probeer het nog eens als de autorisatie is geslaagd.\n\nWil je de autorisatie nu doen?</string>
+    <string name="gr_authorization_already_granted">Het lijkt erop dat je deze applicatie al toegang hebt verleend. Alle Goodreads functies moeten reeds beschikbaar zijn</string>
     <string name="gr_auth_blurb_part1">Goodreads is een website met de missie: „mensen helpen boeken te vinden en te delen met anderen”. Ze hebben een uitgebreide database met boeken en boekbesprekingen. Als geregistreerde gebruiker kan &APP_NAME;
         uw boeken, boekenplanken en boekbesprekingen exporteren en importeren naar en van Goodreads. &APP_NAME;
         is een op zichzelf staande applicatie en heeft Goodreads niet nodig, maar als je toch geïnteresseerd bent kan je registreren op:</string>
@@ -167,8 +168,8 @@
         werkt prima zonder Goodreads!</string>
     <string name="gr_auth_blurb_part4">Het lijkt er op dat je deze app al hebt geautoriseerd. als je de inloggegevens op dit apparaat wil wissen kan je dat doen door op de knop hieronder te drukken. Maar het is ook belangrijk de autorisatie van de applicatie op de website van Goodreads te verwijderen.</string>
     <string name="X_gr_auth_check">Goodreads autorisatie controle</string>
-    <string name="gr_auth_error">Goodreads autorisatie leidde tot een fout.</string>
-    <string name="gr_auth_successful">Goodreads autorisatie gelukt</string>
+    <string name="error_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
+    <string name="info_authorization_successful">%1$s autorisatie gelukt</string>
     <string name="gr_menu_send_all">Zend alles</string>
     <string name="gr_menu_send_updated">Zend bijgewerkte</string>
     <string name="gr_info_no_isbn">Het geselecteerde boek heeft geen ISBN en kan niet automatisch worden gesynchroniseerd met Goodreads. De simpelste oplossing is om:\n\n(1) het boek te verwijderen uit &APP_NAME;\n\n(2) het boek handmatig toe te voegen aan Goodreads via hun website\n\n(3) synchroniseren met Goodreads\n\nDit zal als resultaat hebben dat het boek opnieuw wordt aangemaakt in &APP_NAME;
@@ -181,7 +182,7 @@
     <string name="gr_info_send_all_books_results">%1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN maar niet gevonden in Goodreads</string>
     <string name="gr_send_book_to_goodreads">Zend boek %1$d naar Goodreads</string>
     <string name="gr_title_sync_with_goodreads">Synchroniseer met Goodreads</string>
-    <string name="gr_title_auth_access">Toegang autoriseren</string>
+    <string name="title_authorized_needed">Toegang autoriseren</string>
     <string name="gr_title_send_book">Zend boeken naar Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Opschonen oude gebeurtenissen</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Opschonen oude taken</string>
@@ -217,12 +218,12 @@
     <string name="import_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
     <string name="import_options_dialog_title">Selecteer wat je wil importeren.</string>
     <string name="import_warning_old_archive">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
-    <string name="info_authorized">Geautoriseerd</string>
+    <string name="title_authorized">Geautoriseerd</string>
     <string name="info_cleanup_files_text">Permanent te verwijderen bestanden nemen %1$s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="X_info_install_scanner">Om barcodes te scannen, tik je hieronder om een van deze applicaties te installeren.</string>
     <string name="info_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
-    <string name="info_not_authorized">Niet geautoriseerd</string>
+    <string name="title_not_authorized">Niet geautoriseerd</string>
     <string name="info_registration_benefits">Deze functie profiteert van registratie bij %1$s.\nWil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
     <string name="info_registration_required">Deze functie vereist registratie bij %1$s.\n Wil je meer informatie zien?</string>
     <string name="info_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>

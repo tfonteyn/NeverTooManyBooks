@@ -53,6 +53,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * Class responsible to animate and provide a fast scroller.
  */
+@SuppressWarnings("ALL")
 public class FastScrollerImpl
         extends RecyclerView.ItemDecoration
         implements RecyclerView.OnItemTouchListener {
@@ -423,10 +424,8 @@ public class FastScrollerImpl
             } else {
                 handled = false;
             }
-        } else if (mState == STATE_DRAGGING) {
-            handled = true;
         } else {
-            handled = false;
+            handled = mState == STATE_DRAGGING;
         }
         return handled;
     }

@@ -34,8 +34,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,18 +64,22 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.ReviewField;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
  * Import all a users 'reviews' from Goodreads; a users 'reviews' consists of all the books that
@@ -99,6 +102,10 @@ class ImportLegacyTask
      * was chosen.
      */
     private static final int BOOKS_PER_PAGE = 50;
+
+    /** last time we synced with Goodreads. */
+    private static final String PREFS_LAST_SYNC_DATE =
+            GoodreadsHandler.PREF_PREFIX + "LastSyncDate";
     /**
      * Date before which updates are irrelevant.
      * Can be {@code null}, which implies all dates are included.
@@ -138,7 +145,7 @@ class ImportLegacyTask
         // If it's a sync job, then find date of last successful sync and only apply
         // records from after that date. If no other job, then get all.
         if (mIsSync) {
-            Date lastSync = GoodreadsManager.getLastSyncDate(context);
+            Date lastSync = getLastSyncDate(context);
             if (lastSync == null) {
                 mUpdatesAfter = null;
             } else {
@@ -150,32 +157,30 @@ class ImportLegacyTask
     }
 
     /**
-     * Check that no other sync-related jobs are queued, and that Goodreads is
-     * authorized for this app.
-     * <p>
-     * This does network access and should not be called in the UI thread.
+     * Get the date at which the last Goodreads synchronization was run.
      *
-     * @return StringRes id of message for user,
-     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZED}
-     * or {@link GoodreadsTasks#GR_RESULT_CODE_AUTHORIZATION_NEEDED}.
+     * @param context Current context
+     *
+     * @return Last date
      */
-    @WorkerThread
-    @StringRes
-    static int checkWeCanImport() {
-        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_IMPORT_ALL)) {
-            return R.string.gr_tq_requested_task_is_already_queued;
-        }
-        if (QueueManager.getQueueManager().hasActiveTasks(CAT_GOODREADS_EXPORT_ALL)) {
-            return R.string.gr_tq_export_task_is_already_queued;
-        }
+    @Nullable
+    private Date getLastSyncDate(@NonNull final Context context) {
+        String dateStr = PreferenceManager.getDefaultSharedPreferences(context)
+                                          .getString(PREFS_LAST_SYNC_DATE, null);
+        return DateUtils.parseDateTime(dateStr);
+    }
 
-        // Make sure Goodreads is authorized for this app
-        GoodreadsManager grManager = new GoodreadsManager();
-        if (grManager.hasValidCredentials()) {
-            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED;
-        } else {
-            return GoodreadsTasks.GR_RESULT_CODE_AUTHORIZATION_NEEDED;
-        }
+    /**
+     * Set the date at which the last Goodreads synchronization was run.
+     *
+     * @param context Current context
+     * @param date    Last date
+     */
+    private void setLastSyncDate(@NonNull final Context context,
+                                 @Nullable final Date date) {
+        String dateStr = date != null ? DateUtils.utcSqlDateTime(date) : null;
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+                         .putString(PREFS_LAST_SYNC_DATE, dateStr).apply();
     }
 
     /**
@@ -191,7 +196,7 @@ class ImportLegacyTask
             boolean ok = processReviews(localContext, db, queueManager);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
-                GoodreadsManager.setLastSyncDate(localContext, mStartDate);
+                setLastSyncDate(localContext, mStartDate);
                 QueueManager.getQueueManager().enqueueTask(
                         new SendBooksLegacyTask(localContext.getString(R.string.gr_title_send_book),
                                                 true),
@@ -199,7 +204,8 @@ class ImportLegacyTask
             }
             return ok;
         } catch (@NonNull final CredentialsException e) {
-            throw new RuntimeException(e.getLocalizedMessage(localContext));
+            setException(e);
+            return false;
         }
     }
 
@@ -218,8 +224,8 @@ class ImportLegacyTask
                                    @NonNull final QueueManager queueManager)
             throws CredentialsException {
 
-        GoodreadsManager gr = new GoodreadsManager();
-        ReviewsListApiHandler api = new ReviewsListApiHandler(gr);
+        GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+        ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
 
         int currPage = mPosition / BOOKS_PER_PAGE;
         while (true) {
@@ -243,7 +249,7 @@ class ImportLegacyTask
                 if (mStartDate == null) {
                     mStartDate = runDate;
                 }
-            } catch (@NonNull final CredentialsException | BookNotFoundException | IOException e) {
+            } catch (@NonNull final CredentialsException | NotFoundException | IOException e) {
                 setException(e);
                 return false;
             }
@@ -362,7 +368,8 @@ class ImportLegacyTask
      * @return Local name, or Goodreads name if no match
      */
     @Nullable
-    private String translateBookshelf(@NonNull final DAO db,
+    private String translateBookshelf(@NonNull final Locale locale,
+                                      @NonNull final DAO db,
                                       @Nullable final String grShelfName) {
 
         if (grShelfName == null) {
@@ -372,12 +379,12 @@ class ImportLegacyTask
             List<Bookshelf> bookshelves = db.getBookshelves();
             mBookshelfLookup = new HashMap<>(bookshelves.size());
             for (Bookshelf bookshelf : bookshelves) {
-                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(bookshelf.getName()),
+                mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(locale, bookshelf.getName()),
                                      bookshelf.getName());
             }
         }
 
-        String lcGrShelfName = grShelfName.toLowerCase(Locale.getDefault());
+        String lcGrShelfName = grShelfName.toLowerCase(locale);
         if (mBookshelfLookup.containsKey(lcGrShelfName)) {
             return mBookshelfLookup.get(lcGrShelfName);
         } else {
@@ -486,7 +493,7 @@ class ImportLegacyTask
 
         // The ListReviewsApi does not return the Book language. We explicitly name the Locale
         // here to make it clear this *should* be the books Locale.
-        Locale bookLocale = Locale.getDefault();
+        Locale bookLocale = LocaleUtils.getUserLocale(context);
 
         Bundle bookData = new Bundle();
 
@@ -551,7 +558,7 @@ class ImportLegacyTask
         /*
          * Build the publication date based on the components
          */
-        String pubDate = GoodreadsManager.buildDate(review,
+        String pubDate = GoodreadsHandler.buildDate(review,
                                                     ReviewField.PUBLICATION_YEAR,
                                                     ReviewField.PUBLICATION_MONTH,
                                                     ReviewField.PUBLICATION_DAY,
@@ -583,7 +590,7 @@ class ImportLegacyTask
                 Author author = Author.fromString(name);
                 String role = grAuthor.getString(ReviewField.AUTHOR_ROLE);
                 if (role != null && !role.trim().isEmpty()) {
-                    author.setType(AuthorTypeMapper.map(role));
+                    author.setType(AuthorTypeMapper.map(bookLocale, role));
                 }
                 authors.add(author);
 
@@ -645,9 +652,10 @@ class ImportLegacyTask
             }
             // --- end 2019-02-04 ---
 
+            Locale userLocale = LocaleUtils.getUserLocale(context);
             for (Bundle shelfBundle : grShelves) {
                 String bsName = shelfBundle.getString(ReviewsListApiHandler.ReviewField.SHELF);
-                bsName = translateBookshelf(db, bsName);
+                bsName = translateBookshelf(userLocale, db, bsName);
 
                 if (bsName != null && !bsName.isEmpty()) {
                     bsList.add(new Bookshelf(bsName, BooklistStyle.getDefaultStyle(context, db)));
@@ -655,7 +663,7 @@ class ImportLegacyTask
             }
             //TEST see above
             //--- begin 2019-02-04 ---
-            ItemWithFixableId.pruneList(bsList, context, db, Locale.getDefault(), false);
+            ItemWithFixableId.pruneList(bsList, context, db, userLocale, false);
             //--- end 2019-02-04 ---
 
             bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
@@ -674,10 +682,10 @@ class ImportLegacyTask
             String sizeSuffix = "";
             String largeImage = review.getString(ReviewField.LARGE_IMAGE);
             String smallImage = review.getString(ReviewField.SMALL_IMAGE);
-            if (GoodreadsTasks.hasCover(largeImage)) {
+            if (GoodreadsHandler.hasCover(largeImage)) {
                 sizeSuffix = ReviewField.LARGE_IMAGE;
                 coverUrl = largeImage;
-            } else if (GoodreadsTasks.hasCover(smallImage)) {
+            } else if (GoodreadsHandler.hasCover(smallImage)) {
                 sizeSuffix = ReviewField.SMALL_IMAGE;
                 coverUrl = smallImage;
             } else {
@@ -685,10 +693,9 @@ class ImportLegacyTask
             }
 
             if (coverUrl != null) {
-                long grBookId = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-                String fileSpec = ImageUtils.saveImage(context, coverUrl, String.valueOf(grBookId),
-                                                       GoodreadsManager.FILENAME_SUFFIX,
-                                                       sizeSuffix);
+                String name = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)
+                              + GoodreadsSearchEngine.FILENAME_SUFFIX + "_" + sizeSuffix;
+                String fileSpec = ImageUtils.saveImage(context, coverUrl, name);
                 if (fileSpec != null) {
                     bookData.putString(UniqueId.BKEY_FILE_SPEC[0], fileSpec);
                 }
@@ -721,19 +728,19 @@ class ImportLegacyTask
             return null;
         }
 
-        String val = source.getString(sourceKey);
-        if (val == null || val.isEmpty()) {
+        String value = source.getString(sourceKey);
+        if (value == null || value.isEmpty()) {
             return null;
         }
 
-        Date d = DateUtils.parseDate(val);
+        Date d = DateUtils.parseDate(value);
         if (d == null) {
             return null;
         }
 
-        val = DateUtils.utcSqlDateTime(d);
-        bookData.putString(destKey, val);
-        return val;
+        value = DateUtils.utcSqlDateTime(d);
+        bookData.putString(destKey, value);
+        return value;
     }
 
     /**

@@ -39,11 +39,13 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Combines a list of {@link Site} objects with the {@link Type}.
@@ -120,9 +122,18 @@ public class SiteList
      */
     @NonNull
     static List<Site> getDataSitesByReliability(@NonNull final Context context) {
-        return getList(context, Type.Data)
+        Locale locale = LocaleUtils.getUserLocale(context);
+        return getList(context, locale, Type.Data)
                 .reorder(SearchSites.DATA_RELIABILITY_ORDER)
                 .getSites(false);
+    }
+
+    @NonNull
+    public static SiteList getList(@NonNull final Context context,
+                                   @NonNull final Locale locale,
+                                   @NonNull final Type type) {
+        Locale systemLocale = LocaleUtils.getSystemLocale();
+        return getList(context, systemLocale, locale, type);
     }
 
     /**
@@ -136,6 +147,8 @@ public class SiteList
      */
     @NonNull
     public static SiteList getList(@NonNull final Context context,
+                                   @NonNull final Locale systemLocale,
+                                   @NonNull final Locale userLocale,
                                    @NonNull final Type type) {
         // already loaded ?
         SiteList list = sLists.get(type);
@@ -144,7 +157,8 @@ public class SiteList
         }
 
         // create the list according to user preferences.
-        SiteList newList = SearchSites.createSiteList(context, type, true);
+        SiteList newList = SearchSites.createSiteList(systemLocale, userLocale, type);
+        newList.loadPrefs(context, systemLocale);
 
         // cache the list for reuse
         sLists.put(type, newList);
@@ -155,18 +169,22 @@ public class SiteList
     /**
      * Reset a list back to the hardcoded defaults.
      *
-     * @param appContext Current context
+     * @param context    Current context
+     * @param userLocale user Locale
      * @param type       type
      *
      * @return the new list
      */
-    public static SiteList resetList(@NonNull final Context appContext,
+    public static SiteList resetList(@NonNull final Context context,
+                                     @NonNull final Locale userLocale,
                                      @NonNull final Type type) {
 
+        Locale systemLocale = LocaleUtils.getSystemLocale();
+
         // create the list with all defaults applied.
-        SiteList newList = SearchSites.createSiteList(appContext, type, false);
+        SiteList newList = SearchSites.createSiteList(systemLocale, userLocale, type);
         // overwrite stored user preferences
-        newList.update(appContext);
+        newList.update(context, systemLocale);
 
         // cache the list for reuse
         sLists.put(type, newList);
@@ -177,11 +195,13 @@ public class SiteList
     /**
      * Update the list.
      *
-     * @param appContext Current context
+     * @param context      Current context
+     * @param systemLocale device Locale
      */
-    public void update(@NonNull final Context appContext) {
+    public void update(@NonNull final Context context,
+                       @NonNull final Locale systemLocale) {
         sLists.put(mType, this);
-        savePrefs(appContext);
+        savePrefs(context, systemLocale);
     }
 
     @Override
@@ -214,7 +234,7 @@ public class SiteList
         boolean showingAlert = false;
         for (Site site : mList) {
             if (site.isEnabled()) {
-                showingAlert |= site.getSearchEngine()
+                showingAlert |= site.getSearchEngine(context)
                                     .promptToRegister(context, required, prefSuffix);
             }
         }
@@ -268,15 +288,16 @@ public class SiteList
     /**
      * Save the site settings and the order of the list.
      *
-     * @param appContext Current context
+     * @param context Current context
      */
-    private void savePrefs(@NonNull final Context appContext) {
+    private void savePrefs(@NonNull final Context context,
+                           @NonNull final Locale systemLocale) {
         // Save the order of the given list (ids) and the individual site settings to preferences.
-        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(appContext)
+        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
                                                        .edit();
         String order = Csv.join(SEP, mList, site -> {
             // store individual site settings
-            site.saveToPrefs(ed);
+            site.saveToPrefs(ed, systemLocale);
             // and collect the id for the order string
             return String.valueOf(site.id);
         });
@@ -284,12 +305,13 @@ public class SiteList
         ed.apply();
     }
 
-    void loadPrefs(@NonNull final Context appContext) {
+    private void loadPrefs(@NonNull final Context context,
+                           @NonNull final Locale systemLocale) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         for (Site site : mList) {
-            site.loadFromPrefs(appContext);
+            site.loadFromPrefs(prefs, systemLocale);
         }
-        String order = PreferenceManager.getDefaultSharedPreferences(appContext)
-                                        .getString(mType.getListOrderPreferenceKey(), null);
+        String order = prefs.getString(mType.getListOrderPreferenceKey(), null);
         if (order != null) {
             ArrayList<Site> oldList = mList;
             // replace with the new order.
@@ -303,7 +325,7 @@ public class SiteList
                         mList.add(site);
                     }
                 }
-                savePrefs(appContext);
+                savePrefs(context, systemLocale);
             }
         }
     }

@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -95,7 +96,13 @@ public abstract class BookBaseFragment
         mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
         mBookModel.init(getArguments());
         mBookModel.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
-        mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), this::showNeedsGoodreads);
+        mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
+            if (needs != null && needs) {
+                Context context = getContext();
+                //noinspection ConstantConditions
+                RequestAuthTask.prompt(context, mBookModel.getGoodreadsTaskListener(context));
+            }
+        });
 
         initFields();
     }
@@ -217,19 +224,6 @@ public abstract class BookBaseFragment
                 //noinspection ConstantConditions
                 actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
             }
-        }
-    }
-
-    /**
-     * Called if an interaction with Goodreads failed due to authorization issues.
-     * Prompts the user to register.
-     *
-     * @param needs {@code true} if registration is needed
-     */
-    private void showNeedsGoodreads(@Nullable final Boolean needs) {
-        if (needs != null && needs) {
-            //noinspection ConstantConditions
-            RequestAuthTask.needsRegistration(getContext(), mBookModel.getGoodreadsTaskListener());
         }
     }
 

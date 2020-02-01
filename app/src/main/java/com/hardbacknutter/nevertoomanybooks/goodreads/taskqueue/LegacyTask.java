@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,10 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -48,13 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
  * be seen by the user and destined to be removed altogether soon-ish.
  */
 public class LegacyTask
-        extends Task
-        implements BindableItemCursorAdapter.BindableItem {
+        extends Task {
 
-
-    private static final int TEXT_FIELD_1 = 1;
-    private static final int TEXT_FIELD_2 = 2;
-    private static final long serialVersionUID = 2383004279675307840L;
+    private static final long serialVersionUID = -2756919196578629133L;
 
     public LegacyTask() {
         super("Legacy Task");
@@ -67,47 +60,29 @@ public class LegacyTask
 
     @NonNull
     @Override
-    public View getView(@NonNull final Context context,
-                        @NonNull final BindableItemCursor cursor,
-                        @NonNull final ViewGroup parent) {
-        LinearLayout root = new LinearLayout(context);
-        root.setOrientation(LinearLayout.VERTICAL);
-        ViewGroup.MarginLayoutParams margins = new ViewGroup.MarginLayoutParams(
-                ViewGroup.MarginLayoutParams.MATCH_PARENT,
-                ViewGroup.MarginLayoutParams.WRAP_CONTENT);
-
-        TextView tv = new TextView(context);
-        tv.setId(TEXT_FIELD_1);
-        root.addView(tv, margins);
-
-        tv = new TextView(context);
-        tv.setId(TEXT_FIELD_2);
-        root.addView(tv, margins);
-
-        return root;
+    public BindableItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
+        return new LegacyViewHolder(parent.getContext());
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void bindView(@NonNull final View view,
-                         @NonNull final Context context,
-                         @NonNull final BindableItemCursor cursor,
-                         @NonNull final DAO db) {
-        ((TextView) view.findViewById(TEXT_FIELD_1))
-                .setText("Legacy Placeholder for Task #" + getId());
-        ((TextView) view.findViewById(TEXT_FIELD_2))
-                .setText("This task is obsolete and can not be recovered."
-                         + " It is probably advisable to delete it.");
+    public void onBindViewHolder(@NonNull final BindableItemViewHolder bindableItemViewHolder,
+                                 @NonNull final BindableItemCursor cursor,
+                                 @NonNull final DAO db) {
+
+        LegacyViewHolder holder = (LegacyViewHolder) bindableItemViewHolder;
+        holder.tv1.setText("Legacy Placeholder for Task #" + getId());
+        holder.tv2.setText("This task is obsolete and can not be recovered."
+                           + " It is advisable to delete it.");
     }
 
     @Override
     public void addContextMenuItems(@NonNull final Context context,
-                                    @NonNull final View view,
-                                    final long id,
-                                    @NonNull final List<ContextDialogItem> items,
+                                    @NonNull final List<ContextDialogItem> menuItems,
                                     @NonNull final DAO db) {
 
-        items.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_task),
-                                        () -> QueueManager.getQueueManager().deleteTask(getId())));
+        menuItems.add(new ContextDialogItem(
+                context.getString(R.string.gr_tq_menu_delete_task),
+                () -> QueueManager.getQueueManager().deleteTask(getId())));
     }
 }

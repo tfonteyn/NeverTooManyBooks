@@ -95,30 +95,30 @@ public final class TerminatorConnection
     /**
      * Constructor. Get an open TerminatorConnection from a URL.
      *
-     * @param appContext Application context
-     * @param urlStr     URL to retrieve
+     * @param context Application context
+     * @param urlStr  URL to retrieve
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    public TerminatorConnection(@NonNull final Context appContext,
+    public TerminatorConnection(@NonNull final Context context,
                                 @NonNull final String urlStr)
             throws IOException {
         // redirect MUST BE SET TO TRUE here.
-        this(appContext, urlStr, CONNECT_TIMEOUT_MS, READ_TIMEOUT_MS, true);
+        this(context, urlStr, CONNECT_TIMEOUT_MS, READ_TIMEOUT_MS, true);
     }
 
     /**
      * Constructor. Get an open TerminatorConnection from a URL.
      *
-     * @param appContext Application context
-     * @param urlStr     URL to retrieve
-     * @param redirect   whether redirects should be followed or not
+     * @param context  Application context
+     * @param urlStr   URL to retrieve
+     * @param redirect whether redirects should be followed or not
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    private TerminatorConnection(@NonNull final Context appContext,
+    private TerminatorConnection(@NonNull final Context context,
                                  @NonNull final String urlStr,
                                  final int connectTimeoutMs,
                                  final int readTimeoutMs,
@@ -128,7 +128,7 @@ public final class TerminatorConnection
         final URL url = new URL(urlStr);
 
         // lets make sure name resolution and basic site access works.
-        NetworkUtils.poke(appContext, urlStr, connectTimeoutMs);
+        NetworkUtils.poke(context, urlStr, connectTimeoutMs);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "Constructor|url=\"" + url + '\"');
@@ -140,7 +140,7 @@ public final class TerminatorConnection
             mCon = (HttpURLConnection) url.openConnection();
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.error(appContext, TAG, e, "url=" + urlStr);
+                Logger.error(context, TAG, e, "url=" + urlStr);
             }
             throw e;
         }
@@ -154,8 +154,8 @@ public final class TerminatorConnection
     /**
      * Convenience function. Get an open TerminatorConnection from a URL.
      *
-     * @param appContext Application context
-     * @param urlStr     URL to retrieve
+     * @param context Application context
+     * @param urlStr  URL to retrieve
      *
      * @return the open connection
      *
@@ -163,17 +163,17 @@ public final class TerminatorConnection
      */
     @WorkerThread
     @NonNull
-    public static TerminatorConnection open(@NonNull final Context appContext,
+    public static TerminatorConnection open(@NonNull final Context context,
                                             @NonNull final String urlStr)
             throws IOException {
         try {
-            TerminatorConnection tCon = new TerminatorConnection(appContext, urlStr);
+            TerminatorConnection tCon = new TerminatorConnection(context, urlStr);
             tCon.open();
             return tCon;
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.error(appContext, TAG, e, "url=" + urlStr);
+                Logger.error(context, TAG, e, "url=" + urlStr);
             }
             throw e;
         }
@@ -280,7 +280,9 @@ public final class TerminatorConnection
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(TAG, "finalize|calling close()");
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.w(TAG, "finalize|" + mCon.getURL().toString());
+            }
             close();
         }
         super.finalize();

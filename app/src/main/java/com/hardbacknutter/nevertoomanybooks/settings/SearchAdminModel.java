@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,9 +37,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
@@ -93,18 +95,19 @@ public class SearchAdminModel
     /**
      * Getter for single tab mode.
      *
-     * @param appContext Current context
-     * @param type   type of list
+     * @param context Current context
+     * @param type    type of list
      *
      * @return list matching the single tab.
      */
     @NonNull
-    SiteList getList(@NonNull final Context appContext,
+    SiteList getList(@NonNull final Context context,
                      @NonNull final SiteList.Type type) {
 
         SiteList list = mListMap.get(type);
         if (list == null) {
-            list = SiteList.getList(appContext, type);
+            Locale locale = LocaleUtils.getUserLocale(context);
+            list = SiteList.getList(context, locale, type);
             mListMap.put(type, list);
         }
         return list;
@@ -113,15 +116,16 @@ public class SearchAdminModel
     /**
      * Persist the lists.
      *
-     * @param appContext Current context
+     * @param context Current context
      *
      * @return {@code true} if each list handled has at least one site enabled.
      */
-    public boolean persist(@NonNull final Context appContext) {
+    public boolean persist(@NonNull final Context context) {
         int shouldHave = 0;
         int has = 0;
+        Locale systemLocale = LocaleUtils.getSystemLocale();
         for (SiteList list : mListMap.values()) {
-            list.update(appContext);
+            list.update(context, systemLocale);
             shouldHave++;
             has += list.getEnabledSites() > 0 ? 1 : 0;
         }
@@ -129,10 +133,11 @@ public class SearchAdminModel
         return (has > 0) && (shouldHave == has);
     }
 
-    void resetList(@NonNull final Context appContext,
+    void resetList(@NonNull final Context context,
+                   @NonNull final Locale locale,
                    @NonNull final SiteList.Type type) {
 
-        SiteList newList = SiteList.resetList(appContext, type);
+        SiteList newList = SiteList.resetList(context, locale, type);
 
         SiteList currentList = mListMap.get(type);
         if (currentList == null) {

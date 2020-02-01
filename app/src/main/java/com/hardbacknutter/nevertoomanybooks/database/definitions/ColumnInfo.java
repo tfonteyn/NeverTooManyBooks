@@ -32,8 +32,8 @@ import android.database.Cursor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Column info support. This is useful for auto-building queries from maps that have
@@ -182,7 +182,7 @@ public class ColumnInfo {
 
         static StorageClass newInstance(@NonNull final String columnType) {
             // hardcoded strings are for backwards compatibility
-            switch (columnType.toLowerCase(App.getSystemLocale())) {
+            switch (columnType.toLowerCase(LocaleUtils.getSystemLocale())) {
                 case TYPE_INTEGER:
                 case "int":
                 case TYPE_BOOLEAN:

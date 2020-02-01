@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,17 +30,23 @@ package com.hardbacknutter.nevertoomanybooks.goodreads;
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_AFTERWORD;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ARTIST;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COLORIST;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_CONTRIBUTOR;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COVER_ARTIST;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_COVER_INKING;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_EDITOR;
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_FOREWORD;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_INKING;
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_ORIGINAL_SCRIPT_WRITER;
+import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_PSEUDONYM;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_TRANSLATOR;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_UNKNOWN;
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_WRITER;
@@ -58,57 +64,80 @@ public class AuthorTypeMapper {
 
     private static final Map<String, Integer> MAPPER = new HashMap<>();
 
-    // use all lowercase keys!
+    // use all lowercase keys (unless they are diacritic)
     static {
         // English
-        MAPPER.put("Illustrator", TYPE_ARTIST);
-        MAPPER.put("Illustrations", TYPE_ARTIST);
-        MAPPER.put("Colorist", TYPE_COLORIST);
-        MAPPER.put("Editor", TYPE_EDITOR);
-        MAPPER.put("Contributor", TYPE_CONTRIBUTOR);
-        MAPPER.put("Translator", TYPE_TRANSLATOR);
-        MAPPER.put("Coverart", TYPE_COVER_ARTIST);
+        MAPPER.put("author", TYPE_WRITER);
+        MAPPER.put("original script writer", TYPE_ORIGINAL_SCRIPT_WRITER);
+        MAPPER.put("adapter", TYPE_WRITER);
+
+        MAPPER.put("illuminator", TYPE_ARTIST);
+        MAPPER.put("illustrator", TYPE_ARTIST);
+        MAPPER.put("illustrations", TYPE_ARTIST);
+        MAPPER.put("colorist", TYPE_COLORIST);
+        MAPPER.put("coverart", TYPE_COVER_ARTIST);
+        MAPPER.put("cover artist", TYPE_COVER_ARTIST);
+        MAPPER.put("cover illustrator", TYPE_COVER_ARTIST);
+
+        MAPPER.put("pseudonym", TYPE_PSEUDONYM);
+        MAPPER.put("editor", TYPE_EDITOR);
+
+        MAPPER.put("translator", TYPE_TRANSLATOR);
+        MAPPER.put("translator, annotations", TYPE_TRANSLATOR | TYPE_CONTRIBUTOR);
+
+        MAPPER.put("preface", TYPE_FOREWORD);
+        MAPPER.put("foreword", TYPE_FOREWORD);
+        MAPPER.put("foreword by", TYPE_FOREWORD);
+        MAPPER.put("afterword", TYPE_AFTERWORD);
+
+        MAPPER.put("contributor", TYPE_CONTRIBUTOR);
+        MAPPER.put("additional material", TYPE_CONTRIBUTOR);
 
         // French, unless listed above
-        MAPPER.put("Text", TYPE_WRITER);
-        MAPPER.put("Scénario", TYPE_WRITER);
-        MAPPER.put("Dessins", TYPE_ARTIST);
-        MAPPER.put("Dessin", TYPE_ARTIST);
-        MAPPER.put("Avec la contribution de", TYPE_CONTRIBUTOR);
-        MAPPER.put("Contribution", TYPE_CONTRIBUTOR);
-        MAPPER.put("Couleurs", TYPE_COLORIST);
+        MAPPER.put("text", TYPE_WRITER);
+        MAPPER.put("scénario", TYPE_WRITER);
+        MAPPER.put("dessins", TYPE_ARTIST);
+        MAPPER.put("dessin", TYPE_ARTIST);
+        MAPPER.put("avec la contribution de", TYPE_CONTRIBUTOR);
+        MAPPER.put("contribution", TYPE_CONTRIBUTOR);
+        MAPPER.put("couleurs", TYPE_COLORIST);
 
         // Dutch, unless listed above
-        MAPPER.put("Scenario", TYPE_WRITER);
-        MAPPER.put("Tekeningen", TYPE_ARTIST);
-        MAPPER.put("Inkting", TYPE_INKING);
-        MAPPER.put("Inkting cover", TYPE_COVER_INKING);
-        MAPPER.put("Inkleuring", TYPE_COLORIST);
+        MAPPER.put("scenario", TYPE_WRITER);
+        MAPPER.put("tekeningen", TYPE_ARTIST);
+        MAPPER.put("inkting", TYPE_INKING);
+        MAPPER.put("inkting cover", TYPE_COVER_INKING);
+        MAPPER.put("inkleuring", TYPE_COLORIST);
+        MAPPER.put("vertaler", TYPE_TRANSLATOR);
 
         // German, unless listed above
         MAPPER.put("Übersetzer", TYPE_TRANSLATOR);
 
         // Italian, unless listed above
-        MAPPER.put("Testi", TYPE_WRITER);
-        MAPPER.put("Disegni", TYPE_ARTIST);
+        MAPPER.put("testi", TYPE_WRITER);
+        MAPPER.put("disegni", TYPE_ARTIST);
 
-        // Current (2019-08-21) strings have been seen on Goodreads.
+        // Current (2020-01-30) strings have been seen on Goodreads.
         // There are obviously MANY missing.... both for the listed languages above and for
         // other languages not even considered here.
         // Will need to add them when/as they show up.
         // Maybe better if this is done in an external file on a per language basis ?
         // Maybe some day see if we can pull a full list from Goodreads?
 
+        // More Goodreads:
+        // Visual Art
+        // Design
     }
 
-    public static int map(@NonNull final String typeName) {
-        Integer mapped = MAPPER.get(typeName.trim());
+    public static int map(@NonNull final Locale locale,
+                          @NonNull final String typeName) {
+        Integer mapped = MAPPER.get(typeName.toLowerCase(locale).trim());
         if (mapped != null) {
             return mapped;
         }
 
         // unknown, log it for future enhancement.
-        Logger.warn(TAG, "map", "typeName=`" + typeName + "`");
+        Logger.warn(App.getAppContext(), TAG, "map|typeName=`" + typeName + "`");
         return TYPE_UNKNOWN;
     }
 

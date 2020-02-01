@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQuery;
 
 import androidx.annotation.NonNull;
@@ -38,20 +37,15 @@ import java.io.Closeable;
 import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.SerializationUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_CATEGORY;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_EVENT_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_EXCEPTION;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_FAILURE_REASON;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_QUEUED_DATE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_RETRY_DATE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_STATUS_CODE;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_TASK;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.CKEY_TASK_ID;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.TBL_EVENT;
-import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TaskQueueDBHelper.TBL_TASK;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EXCEPTION;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_FAILURE_REASON;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_QUEUED_DATE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_RETRY_DATE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_STATUS_CODE;
+import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_TASK;
 
 /**
  * Cursor subclass used to make accessing Tasks a little easier.
@@ -60,30 +54,8 @@ public final class TasksCursor
         extends SQLiteCursor
         implements BindableItemCursor, Closeable {
 
-    /** Static Factory object to create the custom cursor. */
-    private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
-            (db, masterQuery, editTable, query) -> new TasksCursor(masterQuery, editTable, query);
-
-    private static final String ALL_TASKS_QUERY =
-            "SELECT *, "
-            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"
-            + " WHERE e." + CKEY_TASK_ID + "=t." + CKEY_PK_ID
-            + ") AS " + CKEY_EVENT_COUNT
-            + " FROM " + TBL_TASK + " t WHERE 1=1 %1$s"
-            + " ORDER BY " + CKEY_PK_ID + " DESC";
-
-    private static final String ACTIVE_TASKS_QUERY =
-            "SELECT *, "
-            + " (SELECT COUNT(*) FROM " + TBL_EVENT + " e"
-            + " WHERE e." + CKEY_TASK_ID + "=t." + CKEY_PK_ID
-            + ") AS " + CKEY_EVENT_COUNT
-            + " FROM " + TBL_TASK + " t "
-            + " WHERE NOT " + CKEY_STATUS_CODE
-            + " IN ('S','F') %1$s"
-            + " ORDER BY " + CKEY_PK_ID + " DESC";
-
     /** Column number of id column. */
-    private static int sIdCol = -1;
+    private static int sIdCol = -2;
     /** Column number of date column. */
     private static int sQueuedDateCol = -2;
     /** Column number of retry date column. */
@@ -102,41 +74,19 @@ public final class TasksCursor
     /**
      * Constructor, based on SQLiteCursor constructor.
      */
-    private TasksCursor(@NonNull final SQLiteCursorDriver driver,
-                        @NonNull final String editTable,
-                        @NonNull final SQLiteQuery query) {
+    TasksCursor(@NonNull final SQLiteCursorDriver driver,
+                @NonNull final String editTable,
+                @NonNull final SQLiteQuery query) {
         super(driver, editTable, query);
-    }
-
-    /**
-     * Static method to get a TaskExceptions Cursor.
-     *
-     * @return A new TaskExceptionsCursor
-     */
-    @NonNull
-    static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db,
-                                  final long category) {
-        return (TasksCursor) db.rawQueryWithFactory(
-                CURSOR_FACTORY,
-                String.format(ACTIVE_TASKS_QUERY, " AND " + CKEY_CATEGORY + "=?"),
-                new String[]{String.valueOf(category)}, "");
-    }
-
-    @NonNull
-    static TasksCursor fetchTasks(@NonNull final SQLiteDatabase db) {
-
-        return (TasksCursor) db.rawQueryWithFactory(CURSOR_FACTORY,
-                                                    String.format(ALL_TASKS_QUERY, ""),
-                                                    null, "");
     }
 
     @NonNull
     Date getQueuedDate() {
         if (sQueuedDateCol < 0) {
-            sQueuedDateCol = getColumnIndex(CKEY_QUEUED_DATE);
+            sQueuedDateCol = getColumnIndex(KEY_QUEUED_DATE);
         }
 
-        Date date = DateUtils.parseDate(getString(sQueuedDateCol));
+        Date date = DateUtils.parseSqlDateTime(getString(sQueuedDateCol));
         if (date == null) {
             date = new Date();
         }
@@ -146,10 +96,10 @@ public final class TasksCursor
     @NonNull
     Date getRetryDate() {
         if (sRetryDateCol < 0) {
-            sRetryDateCol = getColumnIndex(CKEY_RETRY_DATE);
+            sRetryDateCol = getColumnIndex(KEY_RETRY_DATE);
         }
 
-        Date date = DateUtils.parseDate(getString(sRetryDateCol));
+        Date date = DateUtils.parseSqlDateTime(getString(sRetryDateCol));
         if (date == null) {
             date = new Date();
         }
@@ -158,7 +108,7 @@ public final class TasksCursor
 
     String getStatusCode() {
         if (sStatusCodeCol < 0) {
-            sStatusCodeCol = getColumnIndex(CKEY_STATUS_CODE);
+            sStatusCodeCol = getColumnIndex(KEY_STATUS_CODE);
         }
         return getString(sStatusCodeCol);
     }
@@ -169,8 +119,8 @@ public final class TasksCursor
      * @return reason
      */
     public String getReason() {
-        if (sReasonCol == -1) {
-            sReasonCol = getColumnIndex(CKEY_FAILURE_REASON);
+        if (sReasonCol < 0) {
+            sReasonCol = getColumnIndex(KEY_FAILURE_REASON);
         }
         return getString(sReasonCol);
     }
@@ -178,21 +128,24 @@ public final class TasksCursor
     /**
      * Accessor for Exception field.
      *
-     * @return TaskException object
-     *
-     * @throws SerializationUtils.DeserializationException f
+     * @return Exception object
      */
-    public Exception getException()
-            throws SerializationUtils.DeserializationException {
-        if (sExceptionCol == -1) {
-            sExceptionCol = getColumnIndex(CKEY_EXCEPTION);
+    @NonNull
+    public Exception getException() {
+        if (sExceptionCol < 0) {
+            sExceptionCol = getColumnIndex(KEY_EXCEPTION);
         }
-        return (Exception) SerializationUtils.deserializeObject(getBlob(sExceptionCol));
+        try {
+            return (Exception) SerializationUtils.deserializeObject(getBlob(sExceptionCol));
+        } catch (@NonNull final SerializationUtils.DeserializationException de) {
+            // Better then nothing
+            return de;
+        }
     }
 
     int getNoteCount() {
         if (sNoteCountCol < 0) {
-            sNoteCountCol = getColumnIndex(CKEY_EVENT_COUNT);
+            sNoteCountCol = getColumnIndex(KEY_EVENT_COUNT);
         }
         return getInt(sNoteCountCol);
     }
@@ -201,7 +154,7 @@ public final class TasksCursor
     @Override
     public BindableItemCursorAdapter.BindableItem getBindableItem() {
         if (sTaskCol < 0) {
-            sTaskCol = getColumnIndex(CKEY_TASK);
+            sTaskCol = getColumnIndex(KEY_TASK);
         }
         Task task;
         byte[] blob = getBlob(sTaskCol);
@@ -217,7 +170,7 @@ public final class TasksCursor
     @Override
     public long getId() {
         if (sIdCol < 0) {
-            sIdCol = getColumnIndex(CKEY_PK_ID);
+            sIdCol = getColumnIndex(KEY_PK_ID);
         }
         return getLong(sIdCol);
     }

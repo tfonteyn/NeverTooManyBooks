@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity.Type
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntityAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Implementation of TAR-specific reader functions.
@@ -176,7 +177,7 @@ public class TarBackupReader
      */
     @NonNull
     private Type getBackupEntityType(@NonNull final ArchiveEntry entry) {
-        String name = entry.getName().toLowerCase(App.getSystemLocale());
+        String name = entry.getName().toLowerCase(LocaleUtils.getSystemLocale());
 
         // check covers first, as we will have many
         if (name.endsWith(".jpg") || name.endsWith(".png")) {
@@ -212,8 +213,8 @@ public class TarBackupReader
             return Type.XML;
 
         } else {
-            Logger.warn(TAG, "getBackupEntityType",
-                        "Unknown file in archive: " + entry.getName());
+            Logger.warn(App.getAppContext(), TAG,
+                        "getBackupEntityType|Unknown file=" + entry.getName());
             return Type.Unknown;
         }
     }

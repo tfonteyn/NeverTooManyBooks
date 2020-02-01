@@ -124,6 +124,7 @@
     <string name="debug_subject">Собрана отладочная информация</string>
     <string name="done">сделанный</string>
     <string name="edit">Редактировать</string>
+    <string name="error_authorization_failed">Авторизация не удалась</string>
     <string name="error_authentication_failed">Ошибка аутентификации</string>
     <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось</string>
     <string name="error_backup_failed">Резервное копирование не удалось</string>
@@ -154,15 +155,16 @@
     <string name="export_option_books_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
     <string name="export_option_info_books_since_date">Опционально укажите дату при выборе книг и/или обложек для экспорта:</string>
     <string name="export_options_dialog_title">Выберите, что будет экспортировано в архив.</string>
-    <string name="gr_access_error">Возникли проблемы с соединением во время доступа к Goodreads. Пожалуйста, проверьте работает ли сайт Goodreads и если проблема останется сообщите в поддержку</string>
-    <string name="gr_action_cannot_be_completed">Данное действие не может быть завершено пока приложение не будет авторизовано через сайт Goodreads. Пожалуйста, попробуйте ещё раз, после авторизации приложения.\n\nХотите ли Вы авторизоваться сейчас?</string><string name="btn_tell_me_more">Расскажите мне ещё</string>
-    <string name="gr_auth_access_already_granted">Кажется, вы уже авторизованы. Все функции Goodreads уже должны быть доступны</string>
+    <string name="error_site_access_failed">При доступе к %1$s возникла проблема с сетью. Пожалуйста, проверьте, работает ли веб-сайт, и если проблема не устранена, обратитесь в службу поддержки.</string>
+    <string name="gr_authorization_needed">Данное действие не может быть завершено пока приложение не будет авторизовано через сайт Goodreads. Пожалуйста, попробуйте ещё раз, после авторизации приложения.\n\nХотите ли Вы авторизоваться сейчас?</string>
+    <string name="btn_tell_me_more">Расскажите мне ещё</string>
+    <string name="gr_authorization_already_granted">Кажется, вы уже авторизованы. Все функции Goodreads уже должны быть доступны</string>
     <string name="gr_auth_blurb_part1">Goodreads это сайт, чья основная миссия это «помогать людям находить и делиться книгами, которые они любят». У них есть обширная база данных с книгами и отзывами на них. И если Вы зарегистрированный пользователь Goodreads, наше приложение может экспортировать и импортировать ваши книги, полки и обзоры. Наше приложение полностью автономно и не требует Goodreads, но если Вам интересно, вы можете зарегистрироваться здесь:</string>
     <string name="gr_auth_blurb_part2">Как только Вы зарегистрируетесь или если уже зарегистрировались на Goodreads, Вы сможете авторизоваться через наше приложение для доступа к вашим данным на Goodreads. Для этого нажмите на кнопку Авторизация ниже. Вы перейдете на страницу, где сможете авторизоваться. Наше приложение не знает и не хранит Ваши пароли. Также Вы можете заблокировать доступ через сайт Goodreads. Из-за капризов интернет соединения Вы можете увидеть пустую страницу. В этом случае просто нажмите кнопку Назад, чтобы вернуться сюда!</string><string name="gr_auth_blurb_part3">Но помните…всё это делать не обязательно: наше приложение замечательно работает и без этого!</string>
     <string name="gr_auth_blurb_part4">Похоже, вы уже авторизовали это приложение. Если вы хотите удалить учетные данные с этого устройство, то вы можете сделать это, нажав кнопку ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.</string>
     <string name="X_gr_auth_check">Проверка авторизации Goodreads</string>
-    <string name="gr_auth_error">Авторизация Goodreads завершилась с ошибкой.</string>
-    <string name="gr_auth_successful">Авторизация Goodreads прошла успешно</string>
+    <string name="error_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
+    <string name="info_authorization_successful">Авторизация %1$s прошла успешно</string>
     <string name="gr_menu_send_all">Отправить все</string>
     <string name="gr_menu_send_updated">Отправить обновленные</string>
     <string name="gr_info_no_isbn">Выбранная книга не имеет ISBN; невозможно автоматически синхронизировать с Goodreads. Вот самое простое решение:\n\n(1) Удалить книгу в этом приложении\n\n(2) Добавить книгу в Goodreads вручную через веб интерфейс\n\n(3) Синхронизировать приложение с Goodreads\n\nВ результате, во-первых книга будет пересоздана в &APP_NAME;
@@ -174,7 +176,7 @@
     <string name="gr_info_send_all_books_results">%1$d книг обработано: %2$d отправлено успешно, %3$d без ISBN и %4$d с ISBN но не найдено в Goodreads</string>
     <string name="gr_send_book_to_goodreads">Отправить книгу %1$d на Goodreads</string>
     <string name="gr_title_sync_with_goodreads">Синхронизировать с Goodreads</string>
-    <string name="gr_title_auth_access">Авторизация</string>
+    <string name="title_authorized_needed">Авторизация</string>
     <string name="gr_title_send_book">Отправить книги на Goodreads</string>
     <string name="gr_tq_btn_cleanup_old_events">Очистить старые события</string>
     <string name="gr_tq_btn_cleanup_old_tasks">Очистить старые задачи</string>
@@ -210,12 +212,12 @@
     <string name="import_option_new_and_changed_books">Новые и обновленные книги</string>
     <string name="import_options_dialog_title">Выберите, что будет импортировано.</string>
     <string name="import_warning_old_archive">Эта опция не поддерживается для архивов более ранних версий.</string>
-    <string name="info_authorized">Авторизовано</string>
+    <string name="title_authorized">Авторизовано</string>
     <string name="info_cleanup_files_text">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой «%2$s».</string>
     <string name="info_displaying_n_books_in_m_entries">отображается %1$d книг, в %2$d элементах</string>
     <string name="X_info_install_scanner">Для сканирования штрих-кодов ISBN нажмите ниже, чтобы установить одно из этих приложений для сканирования штрих-кодов.</string>
     <string name="info_manage_fields">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
-    <string name="info_not_authorized">Не авторизовано</string>
+    <string name="title_not_authorized">Не авторизовано</string>
     <string name="info_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s.\n Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
     <string name="info_registration_required">Эта функция требует регистрации в %1$s.\n Хотите увидеть больше информации?</string>
     <string name="info_select_fields_to_update">Выбранные поля будут обновлены через интернет. Остальные останутся неизменными.</string>

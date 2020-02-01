@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -39,11 +41,11 @@ import java.util.Map;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.BookNotFoundException;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -54,9 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * <a href="https://www.goodreads.com/api/index#search.books">search.books</a>
  */
 public class SearchBooksApiHandler
-        extends ApiHandler {
+        extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
 
-    private static final String URL = GoodreadsManager.BASE_URL + "/search/index.xml";
+    private static final String URL = GoodreadsHandler.BASE_URL + "/search/index.xml";
 
     /** List of GoodreadsWork objects that result from a search. */
     @NonNull
@@ -99,7 +101,7 @@ public class SearchBooksApiHandler
     };
 
     private final XmlHandler mHandleBookId =
-            elementContext -> mCurrentWork.bookId = Long.parseLong(elementContext.getBody());
+            elementContext -> mCurrentWork.grBookId = Long.parseLong(elementContext.getBody());
     private final XmlHandler mHandleBookTitle =
             elementContext -> mCurrentWork.title = elementContext.getBody();
 
@@ -136,17 +138,17 @@ public class SearchBooksApiHandler
     /**
      * Constructor.
      *
-     * @param grManager the Goodreads Manager
+     * @param context Current context
+     * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
      */
     @WorkerThread
-    public SearchBooksApiHandler(@NonNull final GoodreadsManager grManager)
+    public SearchBooksApiHandler(@NonNull final Context context,
+                                 @NonNull final GoodreadsAuth grAuth)
             throws CredentialsException {
-        super(grManager);
-        if (!grManager.hasValidCredentials()) {
-            throw new CredentialsException(R.string.site_goodreads);
-        }
+        super(grAuth);
+        mGoodreadsAuth.hasValidCredentialsOrThrow(context);
 
         buildFilters();
     }
@@ -158,18 +160,18 @@ public class SearchBooksApiHandler
      *
      * @return the array of GoodreadsWork objects.
      *
-     * @throws IOException           on failure
-     * @throws CredentialsException  with GoodReads
-     * @throws BookNotFoundException at GoodReads
+     * @throws IOException          on failure
+     * @throws CredentialsException with GoodReads
+     * @throws NotFoundException    the requested item was not found
      */
     @NonNull
     @WorkerThread
     public List<GoodreadsWork> search(@NonNull final String query)
-            throws CredentialsException, BookNotFoundException, IOException {
+            throws CredentialsException, NotFoundException, IOException {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("q", query.trim());
-        parameters.put("key", mManager.getDevKey());
+        parameters.put("key", mGoodreadsAuth.getDevKey());
 
         // where the handlers will add data
         mWorks.clear();
@@ -342,8 +344,8 @@ public class SearchBooksApiHandler
      *  }
      *  </pre>
      *
-     *  <strong>Note:</strong> the response does not contain the language code
-     *  (checked with a french book).
+     * <strong>Note:</strong> the response does not contain the language code
+     * (checked with a french book).
      */
     private void buildFilters() {
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_SEARCH,

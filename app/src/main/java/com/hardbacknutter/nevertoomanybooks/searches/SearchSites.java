@@ -38,19 +38,19 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksManager;
-import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbManager;
-import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlManager;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingManager;
-import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibraryManager;
-import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoManager;
+import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Manages the setup of {@link SearchEngine} and {@link Site} instances.
@@ -81,14 +81,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
 public final class SearchSites {
 
     /**
-     * The Amazon handler uses the BookCatalogue proxy.
-     * DO NOT USE UNTIL WE REMOVE THAT DEPENDENCY.
+     * The Amazon handler.
      */
-    public static final boolean ENABLE_AMAZON_AWS = false;
-
-
-    static final String DATA_RELIABILITY_ORDER;
-
+    public static final boolean ENABLE_AMAZON_AWS = true;
     /** Site. */
     @SuppressWarnings("WeakerAccess")
     public static final int GOOGLE_BOOKS = 1;
@@ -108,26 +103,25 @@ public final class SearchSites {
     public static final int KB_NL = 1 << 6;
     /** Site: Dutch language (and to an extend French) comics. */
     public static final int STRIP_INFO_BE = 1 << 7;
-
-
     /** Mask including all search sources. */
     public static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON | LIBRARY_THING | GOODREADS
                                                | ISFDB | OPEN_LIBRARY
                                                | KB_NL | STRIP_INFO_BE;
+    static final String DATA_RELIABILITY_ORDER;
     /** Dutch language site. */
     private static final String NLD = "nld";
 
     static {
         // order is hardcoded based on experience.
         DATA_RELIABILITY_ORDER =
-                "" + ISFDB
-                + ',' + STRIP_INFO_BE
-                + ',' + GOODREADS
-                + (ENABLE_AMAZON_AWS ? ',' + AMAZON : "")
-                + ',' + GOOGLE_BOOKS
-                + ',' + LIBRARY_THING
-                + ',' + KB_NL
-                + ',' + OPEN_LIBRARY;
+                ISFDB
+                + "," + STRIP_INFO_BE
+                + "," + GOODREADS
+                + (ENABLE_AMAZON_AWS ? "," + AMAZON : "")
+                + "," + GOOGLE_BOOKS
+                + "," + LIBRARY_THING
+                + "," + KB_NL
+                + "," + OPEN_LIBRARY;
     }
 
     private SearchSites() {
@@ -180,24 +174,25 @@ public final class SearchSites {
      *
      * @return instance
      */
-    static SearchEngine getSearchEngine(@Id final int id) {
+    static SearchEngine getSearchEngine(@NonNull final SettingsHelper settingsHelper,
+                                        @Id final int id) {
         switch (id) {
             case GOOGLE_BOOKS:
-                return new GoogleBooksManager();
+                return new GoogleBooksSearchEngine();
             case AMAZON:
-                return new AmazonManager();
+                return new AmazonSearchEngine();
             case GOODREADS:
-                return new GoodreadsManager();
+                return new GoodreadsSearchEngine(settingsHelper);
             case ISFDB:
-                return new IsfdbManager();
+                return new IsfdbSearchEngine();
             case LIBRARY_THING:
-                return new LibraryThingManager();
+                return new LibraryThingSearchEngine();
             case OPEN_LIBRARY:
-                return new OpenLibraryManager();
+                return new OpenLibrarySearchEngine();
             case KB_NL:
-                return new KbNlManager();
+                return new KbNlSearchEngine();
             case STRIP_INFO_BE:
-                return new StripInfoManager();
+                return new StripInfoSearchEngine();
             default:
                 throw new UnexpectedValueException(id);
         }
@@ -210,21 +205,22 @@ public final class SearchSites {
      */
     public static boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(IsfdbManager.PREFS_USE_PUBLISHER, false);
+                                .getBoolean(IsfdbSearchEngine.PREFS_USE_PUBLISHER, false);
     }
 
     /**
      * Get the global search site list. Optionally initialise sites and order.
      *
-     * @param context   Current context
-     * @param type      list to get
-     * @param loadPrefs set to {@code true} to initialise individual sites and the order
+     * @param systemLocale device Locale
+     * @param userLocale   user locale
+     * @param type         list to get
      *
      * @return list
      */
-    static SiteList createSiteList(@NonNull final Context context,
-                                   @NonNull final SiteList.Type type,
-                                   final boolean loadPrefs) {
+    static SiteList createSiteList(@NonNull final Locale systemLocale,
+                                   @NonNull final Locale userLocale,
+                                   @NonNull final SiteList.Type type) {
+
         SiteList list = new SiteList(type);
 
         // yes, we could loop over the sites, and detect their interfaces.
@@ -239,9 +235,11 @@ public final class SearchSites {
                 list.add(Site.createSite(LIBRARY_THING, type, true));
                 list.add(Site.createSite(ISFDB, type, true));
                 // Dutch.
-                list.add(Site.createSite(STRIP_INFO_BE, type, isLang(NLD)));
+                list.add(Site.createSite(STRIP_INFO_BE, type,
+                                         isLang(systemLocale, userLocale, NLD)));
                 // Dutch.
-                list.add(Site.createSite(KB_NL, type, isLang(NLD)));
+                list.add(Site.createSite(KB_NL, type,
+                                         isLang(systemLocale, userLocale, NLD)));
                 // Disabled by default as data from this site is not very complete.
                 list.add(Site.createSite(OPEN_LIBRARY, type, false));
                 break;
@@ -252,13 +250,15 @@ public final class SearchSites {
                  * These are only used by the {@link CoverBrowserViewModel}.
                  */
                 list.add(Site.createSite(ISFDB, type, true));
-                list.add(Site.createSite(STRIP_INFO_BE, type, isLang(NLD)));
+                list.add(Site.createSite(STRIP_INFO_BE, type,
+                                         isLang(systemLocale, userLocale, NLD)));
                 list.add(Site.createSite(GOOGLE_BOOKS, type, true));
                 list.add(Site.createSite(GOODREADS, type, true));
                 if (ENABLE_AMAZON_AWS) {
                     list.add(Site.createSite(AMAZON, type, false));
                 }
-                list.add(Site.createSite(KB_NL, type, isLang(NLD)));
+                list.add(Site.createSite(KB_NL, type,
+                                         isLang(systemLocale, userLocale, NLD)));
                 list.add(Site.createSite(LIBRARY_THING, type, false));
                 list.add(Site.createSite(OPEN_LIBRARY, type, false));
                 break;
@@ -274,9 +274,6 @@ public final class SearchSites {
                 throw new IllegalStateException();
         }
 
-        if (loadPrefs) {
-            list.loadPrefs(context);
-        }
         return list;
     }
 
@@ -362,9 +359,9 @@ public final class SearchSites {
      * @return url list
      */
     public static String getSiteUrls(@NonNull final Context context) {
-        return AmazonManager.getBaseURL(context) + '\n'
-               + IsfdbManager.getBaseURL(context) + '\n'
-               + KbNlManager.getBaseURL(context) + '\n';
+        return AmazonSearchEngine.getBaseURL(context) + '\n'
+               + IsfdbSearchEngine.getBaseURL(context) + '\n'
+               + KbNlSearchEngine.getBaseURL(context) + '\n';
         //NEWTHINGS: add new search engine if it supports a user changeable url.
     }
 
@@ -375,14 +372,18 @@ public final class SearchSites {
      * this app is running in the specified language.
      * The user can still enable/disable them at will of course.
      *
-     * @param iso language code to check
+     * @param systemLocale device Locale
+     * @param userLocale   user Locale
+     * @param iso          language code to check
      *
      * @return {@code true} if sites should be enabled by default.
      */
-    private static boolean isLang(@SuppressWarnings("SameParameterValue")
+    private static boolean isLang(@NonNull final Locale systemLocale,
+                                  @NonNull final Locale userLocale,
+                                  @SuppressWarnings("SameParameterValue")
                                   @NonNull final String iso) {
-        return iso.equals(App.getSystemLocale().getISO3Language())
-               || iso.equals(Locale.getDefault().getISO3Language());
+        return iso.equals(systemLocale.getISO3Language())
+               || iso.equals(userLocale.getISO3Language());
     }
 
 

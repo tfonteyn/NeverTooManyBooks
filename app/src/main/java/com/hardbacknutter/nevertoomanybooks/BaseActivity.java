@@ -506,10 +506,11 @@ public abstract class BaseActivity
                     // codes for fragments have upper 16 bits in use, don't log those.
                     // the super call will redirect those.
                     if ((requestCode & 0xFF) != 0) {
-                        Logger.warn(this, TAG, "BaseActivity.onActivityResult",
-                                    "NOT HANDLED",
-                                    "requestCode=" + requestCode,
-                                    "resultCode=" + resultCode);
+                        Logger.warn(this, TAG,
+                                    "BaseActivity.onActivityResult"
+                                    + "|NOT HANDLED"
+                                    + "|requestCode=" + requestCode
+                                    + "|resultCode=" + resultCode);
                     }
                 }
                 super.onActivityResult(requestCode, resultCode, data);

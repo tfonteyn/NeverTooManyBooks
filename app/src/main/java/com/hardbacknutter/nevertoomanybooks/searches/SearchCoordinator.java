@@ -55,6 +55,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -68,13 +69,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent;
 
 /**
@@ -89,6 +91,15 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent;
 public class SearchCoordinator
         extends ViewModel
         implements ProgressDialogFragment.Cancellable {
+
+    /**
+     * RELEASE: Chrome 2020-01-17. Continuously update to latest version.
+     * KBNL site does not return full data unless the user agent header is set to a valid browser.
+     */
+    public static final String USER_AGENT =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            + " AppleWebKit/537.36 (KHTML, like Gecko)"
+            + " Chrome/79.0.3945.117 Safari/537.36";
 
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
@@ -321,7 +332,8 @@ public class SearchCoordinator
                 mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
 
                 // use global preference.
-                mSiteList = SiteList.getList(context, SiteList.Type.Data);
+                Locale locale = LocaleUtils.getUserLocale(context);
+                mSiteList = SiteList.getList(context, locale, SiteList.Type.Data);
             }
         }
     }
@@ -765,7 +777,7 @@ public class SearchCoordinator
             return false;
         }
 
-        SearchEngine searchEngine = site.getSearchEngine();
+        SearchEngine searchEngine = site.getSearchEngine(context);
         if (!searchEngine.isAvailable(context)) {
             return false;
         }
@@ -835,14 +847,15 @@ public class SearchCoordinator
     private void accumulateResults(@NonNull final Context context) {
         // This list will be the actual order of the result we apply, based on the
         // actual results and the default order.
-        final Collection<Integer> sites = new ArrayList<>();
+        final Collection<Site> sites = new ArrayList<>();
 
         // determine the order of the sites which should give us the most reliable data.
         if (mIsbn.isValid(true)) {
             // If an ISBN was passed, ignore entries with the wrong ISBN,
             // and put entries without ISBN at the end
-            final Collection<Integer> uncertain = new ArrayList<>();
-            for (Site site : SiteList.getDataSitesByReliability(context)) {
+            final Collection<Site> uncertain = new ArrayList<>();
+            List<Site> allSites = SiteList.getDataSitesByReliability(context);
+            for (Site site : allSites) {
                 if (mSearchResults.containsKey(site.id)) {
                     Bundle bookData = mSearchResults.get(site.id);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
@@ -850,7 +863,7 @@ public class SearchCoordinator
                         // do they match?
                         if (isbnFound != null && !isbnFound.isEmpty()
                             && mIsbn.equals(ISBN.createISBN(isbnFound))) {
-                            sites.add(site.id);
+                            sites.add(site);
                         }
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                             Log.d(TAG, "accumulateResults"
@@ -858,7 +871,7 @@ public class SearchCoordinator
                                        + "|isbnFound" + isbnFound);
                         }
                     } else {
-                        uncertain.add(site.id);
+                        uncertain.add(site);
                     }
                 }
             }
@@ -870,14 +883,12 @@ public class SearchCoordinator
 
         } else {
             // If an ISBN was not passed, then just use the default order
-            for (Site site : SiteList.getDataSitesByReliability(context)) {
-                sites.add(site.id);
-            }
+            sites.addAll(SiteList.getDataSitesByReliability(context));
         }
 
         // Merge the data we have in the order as decided upon above.
-        for (int siteId : sites) {
-            accumulateSiteData(siteId);
+        for (Site site : sites) {
+            accumulateSiteData(context, site);
         }
 
         //ENHANCE: for now, we need to compress the list of publishers into a single String.
@@ -941,21 +952,23 @@ public class SearchCoordinator
      * <p>
      * NEWTHINGS: if you add a new Search task that adds non-string based data, handle that here.
      *
-     * @param siteId site
+     * @param context Current context
+     * @param site    to read
      */
-    private void accumulateSiteData(@SearchSites.Id final int siteId) {
-        Bundle siteData = mSearchResults.get(siteId);
+    private void accumulateSiteData(final Context context,
+                                    @NonNull final Site site) {
+        Bundle siteData = mSearchResults.get(site.id);
         if (siteData == null || siteData.isEmpty()) {
             return;
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "accumulateSiteData|site=" + SearchSites.getName(siteId));
+            Log.d(TAG, "accumulateSiteData|site=" + site.getName());
         }
         for (String key : siteData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
                 || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
-                accumulateDates(key, siteData);
+                accumulateDates(site.getLocale(context), key, siteData);
 
             } else if (UniqueId.BKEY_AUTHOR_ARRAY.equals(key)
                        || UniqueId.BKEY_SERIES_ARRAY.equals(key)
@@ -1004,8 +1017,13 @@ public class SearchCoordinator
      * Grabs the 'new' date and checks if it's parsable.
      * If so, then check if the previous date was actually valid at all.
      * if not, use new date.
+     *
+     * @param siteLocale the specific Locale of the website
+     * @param key        for the date field
+     * @param siteData   to digest
      */
-    private void accumulateDates(@NonNull final String key,
+    private void accumulateDates(@NonNull final Locale siteLocale,
+                                 @NonNull final String key,
                                  @NonNull final Bundle siteData) {
         String currentDateHeld = mBookData.getString(key);
         String dataToAdd = siteData.getString(key);
@@ -1019,9 +1037,9 @@ public class SearchCoordinator
             // Overwrite with the new date if we can parse it and
             // if the current one was present but not valid.
             if (dataToAdd != null) {
-                Date newDate = DateUtils.parseDate(dataToAdd);
+                Date newDate = DateUtils.parseDate(siteLocale, dataToAdd);
                 if (newDate != null) {
-                    if (DateUtils.parseDate(currentDateHeld) == null) {
+                    if (DateUtils.parseDate(siteLocale, currentDateHeld) == null) {
                         String value = DateUtils.utcSqlDate(newDate);
                         // current date was invalid, use new one.
                         mBookData.putString(key, value);
@@ -1103,7 +1121,7 @@ public class SearchCoordinator
      *
      * @param context Localized context
      * @param siteId  the site id
-     * @param message to digest
+     * @param message to process
      *
      * @return user-friendly error message for the given site
      */
@@ -1120,25 +1138,21 @@ public class SearchCoordinator
                 break;
 
             case Failed: {
-                @StringRes
-                int messageId;
                 if (message.exception instanceof CredentialsException) {
-                    messageId = R.string.error_authentication_failed;
+                    text = context.getString(R.string.error_site_authentication_failed, siteName);
                 } else if (message.exception instanceof SocketTimeoutException) {
-                    messageId = R.string.error_network_timeout;
+                    text = context.getString(R.string.error_network_timeout);
                 } else if (message.exception instanceof MalformedURLException) {
-                    messageId = R.string.error_search_failed_network;
+                    text = context.getString(R.string.error_search_failed_network);
                 } else if (message.exception instanceof UnknownHostException) {
-                    messageId = R.string.error_search_failed_network;
+                    text = context.getString(R.string.error_search_failed_network);
                 } else if (message.exception instanceof IOException) {
                     //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
                     //           int errno = ((ErrnoException) message.exception.getCause()).errno;
-                    messageId = R.string.error_search_failed_network;
+                    text = context.getString(R.string.error_search_failed_network);
                 } else {
-                    messageId = R.string.error_unknown;
+                    text = context.getString(R.string.error_unknown);
                 }
-
-                text = context.getString(messageId);
 
                 if (message.exception != null) {
                     String eMsg;

@@ -58,7 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * only able to return a single column.
  * Alternative is to use a raw query, but those cannot be re-used (pre-compiled).
  */
-public class FlattenedBooklist {
+public class FlattenedBooklist
+        implements AutoCloseable {
 
     /** Log tag. */
     private static final String TAG = "FlattenedBooklist";
@@ -292,24 +293,22 @@ public class FlattenedBooklist {
         }
     }
 
-    /**
-     * Release resource-consuming stuff.
-     * Optionally drop the table.
-     *
-     * @param drop Flag
-     */
-    public void close(final boolean drop) {
+    public void closeAndDrop() {
         String tableName = mTable.getName();
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "closeAndDrop|table=" + tableName);
+        }
+
+        close();
+        mSyncedDb.drop(tableName);
+    }
+
+    @Override
+    public void close() {
         mCloseWasCalled = true;
         mSqlStatementManager.close();
         //noinspection ConstantConditions
         mTable = null;
-        if (drop) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "close|dropping table=" + tableName);
-            }
-            mSyncedDb.drop(tableName);
-        }
     }
 
     /**
@@ -321,9 +320,11 @@ public class FlattenedBooklist {
     protected void finalize()
             throws Throwable {
         if (!mCloseWasCalled) {
-            Logger.warn(TAG, "finalize|calling close() on " + mTable.getName());
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.w(TAG, "finalize|" + mTable.getName());
+            }
             // Warning: do NOT drop the table here. It needs to survive beyond this object.
-            close(false);
+            close();
         }
         super.finalize();
     }

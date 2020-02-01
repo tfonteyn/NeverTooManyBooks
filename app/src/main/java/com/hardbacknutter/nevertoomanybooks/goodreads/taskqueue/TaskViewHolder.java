@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,28 +25,40 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads;
+package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+
 /**
- * A wrapper around the OAuth exception so we can keep the use of the original limited.
+ * Holder to maintain task views.
  */
-public class AuthorizationException
-        extends Exception {
+class TaskViewHolder
+        extends BindableItemViewHolder {
 
-    private static final long serialVersionUID = -5032055311521900032L;
+    final TextView descriptionView;
+    final TextView stateView;
+    final TextView retryInfoView;
+    final TextView errorView;
+    final TextView jobInfoView;
+    final CompoundButton checkButton;
+    final Button retryButton;
 
-    public AuthorizationException(@NonNull final String message) {
-        super(message);
-    }
+    TaskViewHolder(@NonNull final View itemView) {
+        super(itemView);
 
-    public AuthorizationException(@NonNull final Throwable cause) {
-        super(cause);
-    }
-
-    public AuthorizationException(@NonNull final String message,
-                                  @NonNull final Throwable cause) {
-        super(message, cause);
+        descriptionView = itemView.findViewById(R.id.description);
+        stateView = itemView.findViewById(R.id.state);
+        retryInfoView = itemView.findViewById(R.id.retry_info);
+        errorView = itemView.findViewById(R.id.error);
+        jobInfoView = itemView.findViewById(R.id.job_info);
+        checkButton = itemView.findViewById(R.id.cbx_selected);
+        retryButton = itemView.findViewById(R.id.btn_retry);
     }
 }

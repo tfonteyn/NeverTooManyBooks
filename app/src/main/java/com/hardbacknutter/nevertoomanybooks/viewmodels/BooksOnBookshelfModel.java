@@ -70,7 +70,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GoodreadsTaskListener;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
@@ -120,8 +121,8 @@ public class BooksOnBookshelfModel
     private final List<String> mBookshelfNameList = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;
-    /** Lazy init, always use {@link #getGoodreadsTaskListener()}. */
-    private TaskListener<Integer> mGoodreadsTaskListener;
+    /** Lazy init, always use {@link #getGoodreadsTaskListener(Context)}. */
+    private TaskListener<GrStatus> mGoodreadsTaskListener;
     /**
      * Flag (potentially) set in {@link BooksOnBookshelf} #onActivityResult.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
@@ -734,9 +735,29 @@ public class BooksOnBookshelfModel
     }
 
     @NonNull
-    public TaskListener<Integer> getGoodreadsTaskListener() {
+    public TaskListener<GrStatus> getGoodreadsTaskListener(@NonNull final Context context) {
         if (mGoodreadsTaskListener == null) {
-            mGoodreadsTaskListener = new GoodreadsTaskListener(mUserMessage, mNeedsGoodreads);
+            mGoodreadsTaskListener = new TaskListener<GrStatus>() {
+
+                @Override
+                public void onFinished(@NonNull final FinishMessage<GrStatus> message) {
+                    String msg = GoodreadsHandler.handleResult(context, message);
+                    if (msg != null) {
+                        // success, failure, cancelled
+                        mUserMessage.setValue(msg);
+                    } else {
+                        // needs Registration
+                        mNeedsGoodreads.setValue(true);
+                    }
+                }
+
+                @Override
+                public void onProgress(@NonNull final ProgressMessage message) {
+                    if (message.text != null) {
+                        mUserMessage.setValue(message.text);
+                    }
+                }
+            };
         }
         return mGoodreadsTaskListener;
     }

@@ -36,32 +36,33 @@ import androidx.annotation.NonNull;
 /**
  * Standard Android class to handle database open/creation.upgrade.
  */
-class TaskQueueDBHelper
+class QueueDBHelper
         extends SQLiteOpenHelper {
 
-    static final String CKEY_PK_ID = "_id";
-    static final String CKEY_CATEGORY = "category";
-    static final String CKEY_EXCEPTION = "exception";
-    static final String CKEY_FAILURE_REASON = "failure_reason";
-    static final String CKEY_NAME = "name";
-    static final String CKEY_EVENT = "event";
-    static final String CKEY_EVENT_COUNT = "event_count";
-    static final String CKEY_EVENT_DATE = "event_date";
-    static final String CKEY_QUEUE_ID = "queue_id";
-    static final String CKEY_QUEUED_DATE = "queued_date";
-    static final String CKEY_PRIORITY = "priority";
-    static final String CKEY_RETRY_DATE = "retry_date";
-    static final String CKEY_RETRY_COUNT = "retry_count";
-    static final String CKEY_STATUS_CODE = "status_code";
-    static final String CKEY_TASK = "task";
-    static final String CKEY_TASK_ID = "task_id";
+    static final String KEY_PK_ID = "_id";
+    static final String KEY_CATEGORY = "category";
+    static final String KEY_EXCEPTION = "exception";
+    static final String KEY_FAILURE_REASON = "failure_reason";
+    static final String KEY_NAME = "name";
+    static final String KEY_EVENT = "event";
+    static final String KEY_EVENT_COUNT = "event_count";
+    static final String KEY_EVENT_DATE = "event_date";
+    static final String KEY_QUEUE_ID = "queue_id";
+    static final String KEY_QUEUED_DATE = "queued_date";
+    static final String KEY_PRIORITY = "priority";
+    static final String KEY_RETRY_DATE = "retry_date";
+    static final String KEY_RETRY_COUNT = "retry_count";
+    static final String KEY_STATUS_CODE = "status_code";
+    static final String KEY_TASK = "task";
+    static final String KEY_TASK_ID = "task_id";
 
-    /** Queue definition. */
+    /** Queue definitions. */
     static final String TBL_QUEUE = "queue";
-    /** Scheduled task definition. */
+    /** Scheduled task definitions. */
     static final String TBL_TASK = "task";
-    /** Event table definition. */
+    /** Event table definitions. */
     static final String TBL_EVENT = "event";
+
     /** File name for database. */
     private static final String DATABASE_NAME = "net.philipwarner.taskqueue.database.db";
     private static final int DATABASE_VERSION = 2;
@@ -69,51 +70,45 @@ class TaskQueueDBHelper
     /** Collection of all table definitions. */
     private static final String[] TABLES = new String[]{
             "CREATE TABLE " + TBL_QUEUE + " ("
-            + CKEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
-            + CKEY_NAME + " text)",
+            + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
+            + KEY_NAME + " text)",
 
             "CREATE TABLE " + TBL_TASK + " ("
-            + CKEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
-            + CKEY_QUEUE_ID + " integer NOT NULL REFERENCES " + TBL_QUEUE + ','
-            + CKEY_QUEUED_DATE + " datetime DEFAULT current_timestamp,"
-            + CKEY_PRIORITY + " integer DEFAULT 0,"
-            + CKEY_STATUS_CODE + " text DEFAULT '" + Task.STATUS_QUEUED + "',"
-            + CKEY_CATEGORY + " integer DEFAULT 0 NOT NULL,"
-            + CKEY_RETRY_DATE + " datetime DEFAULT current_timestamp,"
-            + CKEY_RETRY_COUNT + " integer DEFAULT 0,"
-            + CKEY_FAILURE_REASON + " text,"
-            + CKEY_EXCEPTION + " blob,"
-            + CKEY_TASK + " blob NOT NULL)",
+            + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,"
+            + KEY_QUEUE_ID + " integer NOT NULL REFERENCES " + TBL_QUEUE + ','
+            + KEY_QUEUED_DATE + " datetime DEFAULT current_timestamp,"
+            + KEY_PRIORITY + " integer DEFAULT 0,"
+            + KEY_STATUS_CODE + " text DEFAULT '" + Task.QUEUED + "',"
+            + KEY_CATEGORY + " integer DEFAULT 0 NOT NULL,"
+            + KEY_RETRY_DATE + " datetime DEFAULT current_timestamp,"
+            + KEY_RETRY_COUNT + " integer DEFAULT 0,"
+            + KEY_FAILURE_REASON + " text,"
+            + KEY_EXCEPTION + " blob,"
+            + KEY_TASK + " blob NOT NULL)",
 
             "CREATE TABLE " + TBL_EVENT + " ("
-            + CKEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,\n"
-            + CKEY_TASK_ID + " integer REFERENCES " + TBL_TASK + ','
-            + CKEY_EVENT + " blob NOT NULL,"
-            + CKEY_EVENT_DATE + " datetime DEFAULT current_timestamp)",
+            + KEY_PK_ID + " integer PRIMARY KEY AUTOINCREMENT,\n"
+            + KEY_TASK_ID + " integer REFERENCES " + TBL_TASK + ','
+            + KEY_EVENT + " blob NOT NULL,"
+            + KEY_EVENT_DATE + " datetime DEFAULT current_timestamp)",
             };
 
     private static final String[] INDEXES = new String[]{
-            "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX1 ON " + TBL_QUEUE + " (" + CKEY_PK_ID + ')',
-            "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX2 ON " + TBL_QUEUE + " (" + CKEY_NAME + ')',
+            "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX1 ON " + TBL_QUEUE + " (" + KEY_PK_ID + ')',
+            "CREATE UNIQUE INDEX " + TBL_QUEUE + "_IX2 ON " + TBL_QUEUE + " (" + KEY_NAME + ')',
 
-            "CREATE UNIQUE INDEX " + TBL_TASK + "_IX1 ON " + TBL_TASK + " (" + CKEY_PK_ID + ')',
-            "CREATE INDEX " + TBL_TASK + "_IX2 ON " + TBL_TASK + " ("
-            + CKEY_STATUS_CODE
-            + ',' + CKEY_QUEUE_ID
-            + ',' + CKEY_RETRY_DATE + ')',
-            "CREATE INDEX " + TBL_TASK + "_IX3 ON " + TBL_TASK + " ("
-            + CKEY_STATUS_CODE
-            + ',' + CKEY_QUEUE_ID
-            + ',' + CKEY_RETRY_DATE
-            + ',' + CKEY_PRIORITY + ')',
+            "CREATE UNIQUE INDEX " + TBL_TASK + "_IX1 ON " + TBL_TASK + " (" + KEY_PK_ID + ')',
+            "CREATE INDEX " + TBL_TASK + "_IX2 ON " + TBL_TASK
+            + " (" + KEY_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_RETRY_DATE + ')',
+            "CREATE INDEX " + TBL_TASK + "_IX3 ON " + TBL_TASK
+            + " (" + KEY_STATUS_CODE + ',' + KEY_QUEUE_ID + ',' + KEY_RETRY_DATE
+            + ',' + KEY_PRIORITY + ')',
 
-            "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX1 ON " + TBL_EVENT + " (" + CKEY_PK_ID + ')',
-            "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX2 ON " + TBL_EVENT + " ("
-            + CKEY_EVENT_DATE
-            + ',' + CKEY_PK_ID + ')',
-            "CREATE INDEX " + TBL_EVENT + "_IX3 ON " + TBL_EVENT + " ("
-            + CKEY_TASK_ID
-            + ',' + CKEY_PK_ID + ')',
+            "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX1 ON " + TBL_EVENT + " (" + KEY_PK_ID + ')',
+            "CREATE UNIQUE INDEX " + TBL_EVENT + "_IX2 ON " + TBL_EVENT
+            + " (" + KEY_EVENT_DATE + ',' + KEY_PK_ID + ')',
+            "CREATE INDEX " + TBL_EVENT + "_IX3 ON " + TBL_EVENT
+            + " (" + KEY_TASK_ID + ',' + KEY_PK_ID + ')',
             };
 
     /**
@@ -121,7 +116,7 @@ class TaskQueueDBHelper
      *
      * @param context Current context
      */
-    TaskQueueDBHelper(@NonNull final Context context) {
+    QueueDBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -151,7 +146,7 @@ class TaskQueueDBHelper
         if (currVersion == 1) {
             //noinspection UnusedAssignment
             currVersion++;
-            String sql = "ALTER TABLE " + TBL_TASK + " Add " + CKEY_CATEGORY + " integer default 0";
+            String sql = "ALTER TABLE " + TBL_TASK + " Add " + KEY_CATEGORY + " integer default 0";
             db.execSQL(sql);
         }
 

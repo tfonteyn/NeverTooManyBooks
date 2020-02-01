@@ -37,8 +37,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBooksApiHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * A class to help parsing Sax Xml output. For Goodreads XML output, 90% of the XML can be
@@ -274,7 +274,7 @@ public class XmlFilter {
      * @param filter filter to add
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        String lcPat = filter.getTagName().toLowerCase(App.getSystemLocale());
+        String lcPat = filter.getTagName().toLowerCase(LocaleUtils.getSystemLocale());
         if (mSubFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
         }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,16 +59,16 @@ class IsfdbEditionsHandlerTest
         Document doc = null;
         try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
-            doc = Jsoup.parse(in, IsfdbManager.CHARSET_DECODE_PAGE, locationHeader);
+            doc = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
         } catch (@NonNull final IOException e) {
             fail(e);
         }
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        IsfdbEditionsHandler isfdbEditionsHandler = new IsfdbEditionsHandler(mContext, doc);
+        IsfdbEditionsHandler isfdbEditionsHandler = new IsfdbEditionsHandler(doc);
         // we've set the doc, so no internet download will be done.
-        ArrayList<Edition> editions = isfdbEditionsHandler.parseDoc();
+        ArrayList<Edition> editions = isfdbEditionsHandler.parseDoc(mContext);
 
         assertEquals(24, editions.size());
 

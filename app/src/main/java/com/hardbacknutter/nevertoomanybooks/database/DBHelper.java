@@ -358,7 +358,6 @@ public final class DBHelper
         createTriggers(syncedDb);
     }
 
-
     /**
      * Create all database triggers.
      *

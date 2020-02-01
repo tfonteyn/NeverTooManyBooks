@@ -38,7 +38,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -46,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public final class StandardDialogs {
 
@@ -139,7 +139,8 @@ public final class StandardDialogs {
         StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
             authors.append('<')
-                   .append(context.getString(R.string.unknown).toUpperCase(Locale.getDefault()))
+                   .append(context.getString(R.string.unknown)
+                                  .toUpperCase(LocaleUtils.getUserLocale(context)))
                    .append('>');
         } else {
             // "a1, a2 and a3"

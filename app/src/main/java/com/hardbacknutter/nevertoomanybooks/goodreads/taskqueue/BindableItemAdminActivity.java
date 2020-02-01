@@ -27,36 +27,39 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+import android.database.Cursor;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItemCursorAdapter.BindableItemBinder;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
-abstract class BindableItemListActivity
-        extends BaseActivity
-        implements BindableItemBinder {
+abstract class BindableItemAdminActivity
+        extends BaseActivity {
 
+    /** Log tag. */
     private static final String TAG = "BindableItemListAct";
 
+    /** The View for the list. */
+    protected ListView mListView;
     /** Database Access. */
     DAO mDb;
-
     /** Cursor for list. */
-    private BindableItemCursor mBindableItems;
+    private Cursor mCursor;
+
     /** The adapter for the list. */
     private BindableItemCursorAdapter mListAdapter;
-    /**
-     * Listener to handle add/change/delete.
-     */
+
+    /** Listener to handle add/change/delete. */
     final QueueManager.ChangeListener mChangeListener = this::refreshData;
 
     /**
@@ -68,7 +71,6 @@ abstract class BindableItemListActivity
     @NonNull
     protected abstract BindableItemCursor getBindableItemCursor();
 
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_message_queue_list;
@@ -79,14 +81,16 @@ abstract class BindableItemListActivity
         mDb = new DAO(TAG);
         super.onCreate(savedInstanceState);
 
-        // The View for the list.
-        ListView listView = findViewById(android.R.id.list);
+        mListView = findViewById(android.R.id.list);
 
-        mBindableItems = getBindableItemCursor();
-        mListAdapter = new BindableItemCursorAdapter(this, this, mBindableItems);
-        listView.setAdapter(mListAdapter);
+        mCursor = getBindableItemCursor();
+        mListAdapter = new BindableItemCursorAdapter(this, mCursor, mDb);
 
-        listView.setOnItemClickListener(this::onListItemClick);
+        mListView.setAdapter(mListAdapter);
+        mListView.setOnItemClickListener((parent, v, position, id) -> {
+            BindableItemCursor adapterItem = (BindableItemCursor) mListAdapter.getItem(position);
+            onItemClick(adapterItem.getBindableItem());
+        });
     }
 
     /**
@@ -96,39 +100,54 @@ abstract class BindableItemListActivity
     @CallSuper
     protected void onResume() {
         super.onResume();
+
         refreshData();
     }
 
-    /**
-     * Paranoid overestimate of the number of types we use.
-     */
-    @Override
-    public int getBindableItemTypeCount() {
-        return 50;
+    protected void refreshData() {
+        if (mCursor.requery()) {
+            mListAdapter.notifyDataSetChanged();
+        }
     }
 
-    private void refreshData() {
-        if (mBindableItems != null) {
-            mBindableItems.close();
+    /**
+     * Build a context menu dialogue when an item is clicked.
+     *
+     * @param item which was clicked
+     */
+    public void onItemClick(@NonNull final BindableItemCursorAdapter.BindableItem item) {
+        // If it owns a hint, display it first
+        if (item instanceof TipManager.TipOwner) {
+            TipManager.display(this, ((TipManager.TipOwner) item).getTip(), () ->
+                    showContextDialog(item));
+        } else {
+            showContextDialog(item);
         }
-        mBindableItems = getBindableItemCursor();
-        mListAdapter.notifyDataSetChanged();
+    }
+
+    private void showContextDialog(@NonNull final BindableItemCursorAdapter.BindableItem item) {
+        List<ContextDialogItem> menuItems = new ArrayList<>();
+        // allow the parent Activity to add menu options
+        addContextMenuItems(menuItems, item);
+        // allow the selected item to add menu options
+        item.addContextMenuItems(this, menuItems, mDb);
+        ContextDialogItem.showContextDialog(this, menuItems);
+    }
+
+    protected void addContextMenuItems(@NonNull final List<ContextDialogItem> menuItems,
+                                       @NonNull final BindableItemCursorAdapter.BindableItem item) {
+        // do nothing by default
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
-        if (mBindableItems != null) {
-            mBindableItems.close();
+        if (mCursor != null) {
+            mCursor.close();
         }
         if (mDb != null) {
             mDb.close();
         }
         super.onDestroy();
     }
-
-    protected abstract void onListItemClick(@NonNull AdapterView<?> parent,
-                                            @NonNull View v,
-                                            int position,
-                                            long id);
 }

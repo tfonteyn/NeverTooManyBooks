@@ -74,7 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  */
 public class GoodreadsWork {
 
-    public Long bookId;
+    public Long grBookId;
     public Long workId;
 
     public String title;
@@ -107,9 +107,9 @@ public class GoodreadsWork {
      * @param maxHeight Maximum height of the image
      */
     @UiThread
-    public void fillImageView(@NonNull final ImageView imageView,
-                              final int maxWidth,
-                              final int maxHeight) {
+    void fillImageView(@NonNull final ImageView imageView,
+                       final int maxWidth,
+                       final int maxHeight) {
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
         synchronized (this) {
@@ -124,7 +124,7 @@ public class GoodreadsWork {
                 new GetImageTask(getBestUrl(), this)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 // Save the work in the View for verification
-                imageView.setTag(R.id.TAG_GR_WORK, this);
+                imageView.setTag(R.id.TAG_ITEM, this);
 
             } else {
                 // We already have an image (but it could be empty!), so just expand it.
@@ -140,7 +140,7 @@ public class GoodreadsWork {
                 }
 
                 // Clear the work in the View, in case some other job was running
-                imageView.setTag(R.id.TAG_GR_WORK, null);
+                imageView.setTag(R.id.TAG_ITEM, null);
             }
         }
     }
@@ -168,7 +168,7 @@ public class GoodreadsWork {
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (imageView) {
                 // Make sure our view is still associated with us
-                if (this.equals(imageView.getTag(R.id.TAG_GR_WORK))) {
+                if (this.equals(imageView.getTag(R.id.TAG_ITEM))) {
                     if (mImageBytes.length != 0) {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(mImageBytes, 0,
                                                                       mImageBytes.length,

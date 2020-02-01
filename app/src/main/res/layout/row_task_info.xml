@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -36,10 +36,10 @@
     >
 
     <CheckBox
-        android:id="@+id/cbx_checked"
+        android:id="@+id/cbx_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border2"
+        android:layout_marginTop="@dimen/border1"
         android:focusable="false"
         android:text=""
         android:visibility="gone"
@@ -49,26 +49,26 @@
         />
 
     <Button
-        android:id="@+id/retry"
+        android:id="@+id/btn_retry"
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border2"
         android:focusable="false"
         android:text="@string/retry"
+        app:layout_constraintBaseline_toBaselineOf="@id/cbx_selected"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         />
 
     <TextView
         android:id="@+id/description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:focusable="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textIsSelectable="true"
+        android:textIsSelectable="false"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/retry"
-        app:layout_constraintStart_toEndOf="@id/cbx_checked"
+        app:layout_constraintEnd_toStartOf="@id/btn_retry"
+        app:layout_constraintStart_toEndOf="@id/cbx_selected"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Export all books to Goodreads"
         />
@@ -77,8 +77,9 @@
         android:id="@+id/state"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:focusable="false"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textIsSelectable="true"
+        android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="@id/description"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/description"
@@ -89,10 +90,11 @@
         android:id="@+id/retry_info"
         style="@style/ErrorMessage"
         android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="@id/description"
+        android:focusable="false"
+        android:textIsSelectable="false"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/state"
-        tools:ignore="SelectableText"
         tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT"
         />
 
@@ -100,10 +102,11 @@
         android:id="@+id/error"
         style="@style/ErrorMessage"
         android:layout_width="0dp"
-        app:layout_constraintEnd_toEndOf="@id/description"
+        android:focusable="false"
+        android:textIsSelectable="false"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/retry_info"
-        tools:ignore="SelectableText"
         tools:text="Last error: foo bar, not sure what really happened"
         />
 
@@ -111,9 +114,10 @@
         android:id="@+id/job_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:focusable="false"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textIsSelectable="true"
-        app:layout_constraintEnd_toEndOf="@id/description"
+        android:textIsSelectable="false"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/error"
         tools:text="Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"

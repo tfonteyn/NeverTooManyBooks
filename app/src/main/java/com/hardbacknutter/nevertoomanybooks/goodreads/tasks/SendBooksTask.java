@@ -35,9 +35,12 @@ import androidx.annotation.WorkerThread;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -50,59 +53,65 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
  * If successful, an actual GoodReads task {@link TQTask} is kicked of to do the actual work.
  */
 public class SendBooksTask
-        extends TaskBase<Void, Integer> {
+        extends TaskBase<Void, GrStatus> {
 
     /** Log tag. */
     private static final String TAG = "SendBooksTask";
-
-    @NonNull
-    private final String mTaskDescription;
 
     private final boolean mUpdatesOnly;
 
     /**
      * Constructor.
      *
-     * @param context      Current context
      * @param updatesOnly  {@code true} for updated books only, or {@code false} all books.
      * @param taskListener for sending progress and finish messages to.
      */
-    public SendBooksTask(@NonNull final Context context,
-                         final boolean updatesOnly,
-                         @NonNull final TaskListener<Integer> taskListener) {
+    public SendBooksTask(final boolean updatesOnly,
+                         @NonNull final TaskListener<GrStatus> taskListener) {
         super(R.id.TASK_ID_GR_SEND_BOOKS, taskListener);
         mUpdatesOnly = updatesOnly;
-        mTaskDescription = context.getString(R.string.gr_title_send_book);
     }
 
     @Override
     @NonNull
     @WorkerThread
-    protected Integer doInBackground(final Void... params) {
+    protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendBooksTask");
         Context context = App.getAppContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
-                return R.string.error_network_no_connection;
+                return GrStatus.NoInternet;
             }
-            GoodreadsManager grManager = new GoodreadsManager();
-            int msg = SendBooksLegacyTask.checkWeCanExport(grManager);
-            if (msg == GoodreadsTasks.GR_RESULT_CODE_AUTHORIZED) {
-                if (isCancelled()) {
-                    return R.string.progress_end_cancelled;
-                }
 
-                QueueManager.getQueueManager().enqueueTask(
-                        new SendBooksLegacyTask(mTaskDescription, mUpdatesOnly),
-                        QueueManager.Q_MAIN);
-                return R.string.gr_tq_task_has_been_queued;
+            // Check that no other sync-related jobs are queued
+            GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+            if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_EXPORT_ALL)) {
+                return GrStatus.ExportTaskAlreadyQueued;
             }
-            return msg;
+            if (QueueManager.getQueueManager().hasActiveTasks(Task.CAT_GOODREADS_IMPORT_ALL)) {
+                return GrStatus.ImportTaskAlreadyQueued;
+            }
+
+            // Make sure Goodreads is authorized for this app
+            if (!grAuth.hasValidCredentials(context)) {
+                return GrStatus.CredentialsMissing;
+            }
+
+            if (isCancelled()) {
+                return GrStatus.Cancelled;
+            }
+
+            QueueManager.getQueueManager().enqueueTask(
+                    new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
+                                            mUpdatesOnly),
+                    QueueManager.Q_MAIN);
+            return GrStatus.TaskQueuedWithSuccess;
+
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
-            return R.string.error_unexpected_error;
+            return GrStatus.UnexpectedError;
         }
     }
 }

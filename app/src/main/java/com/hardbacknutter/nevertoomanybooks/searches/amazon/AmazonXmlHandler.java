@@ -216,11 +216,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  * https://docs.aws.amazon.com/AWSECommerceService/latest/DG/CHAP_response_elements.html
  */
 @SuppressWarnings("HtmlTagCanBeJavadocTag")
-class AmazonHandler
+class AmazonXmlHandler
         extends DefaultHandler {
 
     /** Log tag. */
-    private static final String TAG = "AmazonHandler";
+    private static final String TAG = "AmazonXmlHandler";
 
     /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_AM";
@@ -330,9 +330,9 @@ class AmazonHandler
      * @param fetchThumbnail      Set to {@code true} if we want to get a thumbnail
      * @param bookData            Bundle to save results in (passed in to allow mocking)
      */
-    AmazonHandler(@NonNull final Context localizedAppContext,
-                  @NonNull final boolean[] fetchThumbnail,
-                  @NonNull final Bundle bookData) {
+    AmazonXmlHandler(@NonNull final Context localizedAppContext,
+                     @NonNull final boolean[] fetchThumbnail,
+                     @NonNull final Bundle bookData) {
         mLocalizedAppContext = localizedAppContext;
         mFetchThumbnail = fetchThumbnail;
         mBookData = bookData;
@@ -404,8 +404,8 @@ class AmazonHandler
     public void endDocument() {
         if (mFetchThumbnail[0] && !mCoverUrl.isEmpty()) {
             String name = mBookData.getString(DBDefinitions.KEY_EID_ASIN, "");
-            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext,
-                                                   mCoverUrl, name, FILENAME_SUFFIX, null);
+            name += FILENAME_SUFFIX;
+            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, mCoverUrl, name);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
@@ -406,10 +407,11 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         @NonNull
         Context context = getContext();
+        Locale locale = LocaleUtils.getUserLocale(context);
 
         ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(),
-                                                           Locale.getDefault(), false)) {
+                                                           locale, false)) {
             mBookModel.setDirty(true);
             book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
         }

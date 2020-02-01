@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.utils.UnexpectedValueException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class BookSearchByNativeIdFragment
         extends BookSearchBaseFragment {
@@ -89,7 +89,7 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_native_id);
 
-//       View root = getView();
+//       View root = onCreateViewHolder();
 //
 //       int visibleSites = 0;
 //        RadioButton singleVisibleBtn = null;
@@ -190,8 +190,8 @@ public class BookSearchByNativeIdFragment
                               final int checkedId) {
 
         Site site = Site.createDataSite(SearchSites.getSiteIdFromResId(checkedId));
-        SearchEngine searchEngine = site.getSearchEngine();
         //noinspection ConstantConditions
+        SearchEngine searchEngine = site.getSearchEngine(getContext());
         if (!searchEngine.isAvailable(getContext())) {
             // If the selected site needs registration, prompt the user.
             searchEngine.promptToRegister(getContext(), true, "native_id");

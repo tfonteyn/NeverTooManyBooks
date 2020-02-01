@@ -33,8 +33,8 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.AuthorizationResultCheckTask;
 
 /**
@@ -58,10 +58,11 @@ public class GoodreadsAuthorizationActivity
             //String verifier = uri.getQueryParameter("oauth_verifier");
 
             // Handle the auth response by passing it off to a background task to check.
+            // The outcome is communicated to the user with a system Notification.
             new AuthorizationResultCheckTask().execute();
         }
 
-        // Bring the main app task back to the top
+        // Bring our app back to the top
         Intent intent = new Intent(this, StartupActivity.class)
                                 .setAction(Intent.ACTION_MAIN)
                                 .addCategory(Intent.CATEGORY_LAUNCHER);

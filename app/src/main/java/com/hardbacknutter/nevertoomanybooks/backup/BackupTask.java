@@ -90,32 +90,32 @@ public class BackupTask
     protected ExportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName(TAG);
 
-        Context localContext = App.getLocalizedAppContext();
-        Uri uri = Uri.fromFile(ExportHelper.getTempFile(localContext));
-        try (BackupWriter writer = BackupManager.getWriter(localContext, uri)) {
+        Context context = App.getLocalizedAppContext();
+        Uri uri = Uri.fromFile(ExportHelper.getTempFile(context));
+        try (BackupWriter writer = BackupManager.getWriter(context, uri)) {
 
-            writer.backup(localContext, mExportHelper, getProgressListener());
+            writer.backup(context, mExportHelper, getProgressListener());
             if (!isCancelled()) {
                 // the export was successful
                 //noinspection ConstantConditions
-                StorageUtils.exportFile(localContext,
-                                        ExportHelper.getTempFile(localContext),
+                StorageUtils.exportFile(context,
+                                        ExportHelper.getTempFile(context),
                                         mExportHelper.uri);
 
                 // if the backup was a full one (not a 'since') remember that.
                 if ((mExportHelper.options & ExportHelper.EXPORT_SINCE) == 0) {
-                    BackupManager.setLastFullBackupDate(localContext);
+                    BackupManager.setLastFullBackupDate(context);
                 }
 
             }
             return mExportHelper;
 
         } catch (@NonNull final IOException e) {
-            Logger.error(localContext, TAG, e);
+            Logger.error(context, TAG, e);
             mException = e;
             return mExportHelper;
         } finally {
-            cleanup(localContext);
+            cleanup(context);
         }
     }
 }

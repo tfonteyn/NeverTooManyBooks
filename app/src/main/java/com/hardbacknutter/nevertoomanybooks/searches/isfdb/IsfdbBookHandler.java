@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -64,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
+import static com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine.SITE_LOCALE;
+
 public class IsfdbBookHandler
         extends AbstractBase {
 
@@ -74,8 +77,8 @@ public class IsfdbBookHandler
     private static final String FILENAME_SUFFIX = "_ISFDB";
 
     /** Param 1: ISFDB native book ID. */
-    private static final String BOOK_URL = IsfdbManager.CGI_BIN
-                                           + IsfdbManager.URL_PL_CGI + "?%1$s";
+    private static final String BOOK_URL = IsfdbSearchEngine.CGI_BIN
+                                           + IsfdbSearchEngine.URL_PL_CGI + "?%1$s";
 
     private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
 
@@ -154,10 +157,6 @@ public class IsfdbBookHandler
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
-    @NonNull
-    private final Context mLocalizedContext;
-    @NonNull
-    private final String mBaseUrl;
     /** The fully qualified ISFDB search url. */
     private String mPath;
     /** List of all editions (ISFDB 'publicationRecord') of this book. */
@@ -171,29 +170,19 @@ public class IsfdbBookHandler
 
     /**
      * Constructor.
-     *
-     * @param localizedContext Localised application context
      */
-    IsfdbBookHandler(@NonNull final Context localizedContext) {
+    IsfdbBookHandler() {
         super();
-        mLocalizedContext = localizedContext;
-
-        mBaseUrl = IsfdbManager.getBaseURL(localizedContext);
     }
 
     /**
      * Constructor used for testing.
      *
-     * @param localizedContext Localised application context
-     * @param doc              the JSoup Document.
+     * @param doc the JSoup Document.
      */
     @VisibleForTesting
-    IsfdbBookHandler(@NonNull final Context localizedContext,
-                     @NonNull final Document doc) {
+    IsfdbBookHandler(@NonNull final Document doc) {
         super(doc);
-        mLocalizedContext = localizedContext;
-
-        mBaseUrl = IsfdbManager.getBaseURL(mLocalizedContext);
     }
 
     @Nullable
@@ -214,13 +203,15 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    Bundle fetchByNativeId(@NonNull final String isfdbId,
+    Bundle fetchByNativeId(@NonNull final Context context,
+                           @NonNull final String isfdbId,
                            final boolean addSeriesFromToc,
                            @NonNull final boolean[] fetchThumbnail,
                            @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        return fetch(mBaseUrl + String.format(BOOK_URL, isfdbId),
+        return fetch(context,
+                     IsfdbSearchEngine.getBaseURL(context) + String.format(BOOK_URL, isfdbId),
                      addSeriesFromToc, fetchThumbnail, bookData);
     }
 
@@ -237,7 +228,9 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    private Bundle fetch(@NonNull final String path,
+    @WorkerThread
+    private Bundle fetch(@NonNull final Context context,
+                         @NonNull final String path,
                          final boolean addSeriesFromToc,
                          @NonNull final boolean[] fetchThumbnail,
                          @NonNull final Bundle bookData)
@@ -245,11 +238,11 @@ public class IsfdbBookHandler
 
         mPath = path;
 
-        if (loadPage(mLocalizedContext, mPath) == null) {
+        if (loadPage(context, mPath) == null) {
             return bookData;
         }
 
-        return parseDoc(addSeriesFromToc, fetchThumbnail, bookData);
+        return parseDoc(context, addSeriesFromToc, fetchThumbnail, bookData);
     }
 
     /**
@@ -265,7 +258,9 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    public Bundle fetch(@Size(min = 1) @NonNull final List<Edition> editions,
+    @WorkerThread
+    public Bundle fetch(@NonNull final Context context,
+                        @Size(min = 1) @NonNull final List<Edition> editions,
                         final boolean addSeriesFromToc,
                         @NonNull final boolean[] fetchThumbnail,
                         @NonNull final Bundle bookData)
@@ -274,19 +269,19 @@ public class IsfdbBookHandler
         mEditions = editions;
 
         Edition edition = editions.get(0);
-        mPath = mBaseUrl + String.format(BOOK_URL, edition.isfdbId);
+        mPath = IsfdbSearchEngine.getBaseURL(context) + String.format(BOOK_URL, edition.isfdbId);
 
         // check if we already got the book
         if (edition.doc != null) {
             mDoc = edition.doc;
         } else {
             // nop, go get it.
-            if (loadPage(mLocalizedContext, mPath) == null) {
+            if (loadPage(context, mPath) == null) {
                 return bookData;
             }
         }
 
-        return parseDoc(addSeriesFromToc, fetchThumbnail, bookData);
+        return parseDoc(context, addSeriesFromToc, fetchThumbnail, bookData);
     }
 
     /**
@@ -454,11 +449,12 @@ public class IsfdbBookHandler
      *
      * @return Bundle with book data, can be empty, but never {@code null}
      *
-     * @throws SocketTimeoutException if the connection times out
+     * @throws SocketTimeoutException if the connection times out while fetching the TOC
      */
     @NonNull
     @VisibleForTesting
-    Bundle parseDoc(final boolean addSeriesFromToc,
+    Bundle parseDoc(@NonNull final Context context,
+                    final boolean addSeriesFromToc,
                     @NonNull final boolean[] fetchThumbnail,
                     @NonNull final Bundle bookData)
             throws SocketTimeoutException {
@@ -570,7 +566,7 @@ public class IsfdbBookHandler
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
-                    CurrencyUtils.splitPrice(IsfdbManager.SITE_LOCALE,
+                    CurrencyUtils.splitPrice(SITE_LOCALE,
                                              tmpString,
                                              DBDefinitions.KEY_PRICE_LISTED,
                                              DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
@@ -630,7 +626,7 @@ public class IsfdbBookHandler
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(mLocalizedContext, TAG, e,
+                Logger.error(context, TAG, e,
                              "path: " + mPath + "\n\nLI: " + li.toString());
             }
         }
@@ -668,7 +664,7 @@ public class IsfdbBookHandler
         bookData.putString(DBDefinitions.KEY_LANGUAGE, "eng");
 
         // the table of content
-        ArrayList<TocEntry> tocEntries = getTocList(bookData, addSeriesFromToc);
+        ArrayList<TocEntry> tocEntries = getTocList(context, bookData, addSeriesFromToc);
         if (!tocEntries.isEmpty()) {
             bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, tocEntries);
         }
@@ -728,7 +724,7 @@ public class IsfdbBookHandler
              */
             Element img = mDoc.selectFirst(CSS_Q_DIV_CONTENTBOX).selectFirst("img");
             if (img != null) {
-                fetchCover(mLocalizedContext, img.attr("src"), bookData);
+                fetchCover(context, img.attr("src"), bookData);
             }
         }
 
@@ -856,12 +852,12 @@ public class IsfdbBookHandler
     private void fetchCover(@NonNull final Context appContext,
                             @NonNull final String coverUrl,
                             @NonNull final Bundle /* in/out */ bookData) {
-        String isbn = bookData.getString(DBDefinitions.KEY_ISBN, "");
-        if (isbn.isEmpty()) {
-            isbn = bookData.getString(DBDefinitions.KEY_EID_ISFDB, "");
+        String name = bookData.getString(DBDefinitions.KEY_ISBN, "");
+        if (name.isEmpty()) {
+            name = bookData.getString(DBDefinitions.KEY_EID_ISFDB, "");
         }
-
-        String fileSpec = ImageUtils.saveImage(appContext, coverUrl, isbn, FILENAME_SUFFIX, null);
+        name += FILENAME_SUFFIX;
+        String fileSpec = ImageUtils.saveImage(appContext, coverUrl, name);
 
         if (fileSpec != null) {
             ArrayList<String> imageList =
@@ -905,13 +901,15 @@ public class IsfdbBookHandler
      * @throws SocketTimeoutException if the connection times out
      */
     @NonNull
-    private ArrayList<TocEntry> getTocList(@NonNull final Bundle bookData,
+    @WorkerThread
+    private ArrayList<TocEntry> getTocList(@NonNull final Context context,
+                                           @NonNull final Bundle bookData,
                                            final boolean addSeriesFromToc)
             throws SocketTimeoutException {
 
         final ArrayList<TocEntry> results = new ArrayList<>();
 
-        if (loadPage(mLocalizedContext, mPath) == null) {
+        if (loadPage(context, mPath) == null) {
             return results;
         }
 
@@ -1000,14 +998,14 @@ public class IsfdbBookHandler
             for (Element a : aas) {
                 String href = a.attr("href");
 
-                if (title == null && href.contains(IsfdbManager.URL_TITLE_CGI)) {
+                if (title == null && href.contains(IsfdbSearchEngine.URL_TITLE_CGI)) {
                     title = cleanUpName(a.text());
                     //ENHANCE: tackle 'variant' titles later
 
-                } else if (author == null && href.contains(IsfdbManager.URL_EA_CGI)) {
+                } else if (author == null && href.contains(IsfdbSearchEngine.URL_EA_CGI)) {
                     author = Author.fromString(cleanUpName(a.text()));
 
-                } else if (addSeriesFromToc && href.contains(IsfdbManager.URL_PE_CGI)) {
+                } else if (addSeriesFromToc && href.contains(IsfdbSearchEngine.URL_PE_CGI)) {
                     Series series = Series.fromString(a.text());
 
                     //  • 4] • (1987) • novel by
@@ -1032,14 +1030,14 @@ public class IsfdbBookHandler
             //      Appendixes (Dune)</a> • essay by uncredited
             // </li>
             if (author == null) {
-                author = Author.createUnknownAuthor(mLocalizedContext);
+                author = Author.createUnknownAuthor(context);
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.warn(mLocalizedContext, TAG, "getTocList",
-                            "ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN),
-                            "no title for li=" + li);
+                Logger.warn(context, TAG, "getTocList"
+                                          + "|ISBN=" + bookData.getString(DBDefinitions.KEY_ISBN)
+                                          + "|no title for li=" + li);
             }
 
             // scan for first occurrence of "• (1234)"

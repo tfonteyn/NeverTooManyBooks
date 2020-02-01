@@ -141,7 +141,7 @@ public class FieldPicker<T>
                                      final int position) {
 
             T item = mItems.get(position);
-            holder.textView.setText(mField.format(item));
+            holder.textView.setText(mField.format(holder.textView.getContext(), item));
 
             // onClick on the whole view.
             holder.itemView.setOnClickListener(v -> mListener.onPicked(item));

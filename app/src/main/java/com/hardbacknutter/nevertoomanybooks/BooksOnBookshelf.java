@@ -94,10 +94,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
-import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonManager;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsManager;
+import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -384,7 +384,7 @@ public class BooksOnBookshelf
         });
         mModel.getNeedsGoodreads().observe(this, needs -> {
             if (needs != null && needs) {
-                RequestAuthTask.needsRegistration(this, mModel.getGoodreadsTaskListener());
+                RequestAuthTask.prompt(this, mModel.getGoodreadsTaskListener(this));
             }
         });
         mModel.restoreCurrentBookshelf(this);
@@ -404,8 +404,7 @@ public class BooksOnBookshelf
         setNavigationItemVisibility(R.id.nav_manage_list_styles, true);
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
         setNavigationItemVisibility(R.id.nav_import_export, true);
-        setNavigationItemVisibility(R.id.nav_goodreads,
-                                    GoodreadsManager.isShowSyncMenus(this));
+        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsHandler.isShowSyncMenus(this));
         // Setup the list view.
         initListView();
 
@@ -1085,7 +1084,7 @@ public class BooksOnBookshelf
     private void initAdapter(@Nullable final Cursor cursor) {
         // sanity check
         if (cursor == null) {
-            Logger.warn(this, TAG, "initAdapter", "Cursor was NULL");
+            Logger.warn(this, TAG, "initAdapter|Cursor was NULL");
             return;
         }
         mAdapter = new BooklistAdapter(this, mModel.getCurrentStyle(this), mModel.getDb(), cursor);
@@ -1169,7 +1168,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(lendingIsUsed && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-                    .setVisible(GoodreadsManager.isShowSyncMenus(this));
+                    .setVisible(GoodreadsHandler.isShowSyncMenus(this));
 
                 MenuHandler.prepareOptionalMenus(menu, cursorRow);
                 break;
@@ -1338,12 +1337,13 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                Snackbar.make(mListView, R.string.progress_msg_connecting,
-                              Snackbar.LENGTH_LONG).show();
-                new SendOneBookTask(bookId, mModel.getGoodreadsTaskListener())
+                Snackbar.make(mListView, R.string.progress_msg_connecting, Snackbar.LENGTH_LONG)
+                        .show();
+                new SendOneBookTask(bookId, mModel.getGoodreadsTaskListener(this))
                         .execute();
                 return true;
             }
+
             /* ********************************************************************************** */
 
             case R.id.MENU_UPDATE_FROM_INTERNET: {
@@ -1496,17 +1496,21 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                AmazonManager.openWebsite(this, mModel.getAuthorFromRow(this, cursorRow), null);
+                AmazonSearchEngine.openWebsite(this,
+                                               mModel.getAuthorFromRow(this, cursorRow),
+                                               null);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                AmazonManager.openWebsite(this, null, mModel.getSeriesFromRow(cursorRow));
+                AmazonSearchEngine.openWebsite(this,
+                                               null,
+                                               mModel.getSeriesFromRow(cursorRow));
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                AmazonManager.openWebsite(this,
-                                          mModel.getAuthorFromRow(this, cursorRow),
-                                          mModel.getSeriesFromRow(cursorRow));
+                AmazonSearchEngine.openWebsite(this,
+                                               mModel.getAuthorFromRow(this, cursorRow),
+                                               mModel.getSeriesFromRow(cursorRow));
                 return true;
             }
 
