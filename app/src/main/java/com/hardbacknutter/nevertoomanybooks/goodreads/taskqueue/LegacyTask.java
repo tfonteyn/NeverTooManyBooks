@@ -45,9 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
  * be seen by the user and destined to be removed altogether soon-ish.
  */
 public class LegacyTask
-        extends Task {
+        extends Task<TasksCursor, LegacyViewHolder> {
 
-    private static final long serialVersionUID = -2756919196578629133L;
+    private static final long serialVersionUID = 3444019013329103879L;
 
     public LegacyTask() {
         super("Legacy Task");
@@ -60,17 +60,16 @@ public class LegacyTask
 
     @NonNull
     @Override
-    public BindableItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
+    public LegacyViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         return new LegacyViewHolder(parent.getContext());
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull final BindableItemViewHolder bindableItemViewHolder,
-                                 @NonNull final BindableItemCursor cursor,
+    public void onBindViewHolder(@NonNull final LegacyViewHolder holder,
+                                 @NonNull final TasksCursor invalid,
                                  @NonNull final DAO db) {
 
-        LegacyViewHolder holder = (LegacyViewHolder) bindableItemViewHolder;
         holder.tv1.setText("Legacy Placeholder for Task #" + getId());
         holder.tv2.setText("This task is obsolete and can not be recovered."
                            + " It is advisable to delete it.");

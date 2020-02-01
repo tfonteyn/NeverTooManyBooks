@@ -46,9 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
  * be seen by the user and destined to be removed altogether soon-ish.
  */
 public class LegacyEvent
-        extends Event {
+        extends Event<EventsCursor, LegacyViewHolder> {
 
-    private static final long serialVersionUID = 9203841534536853701L;
+    private static final long serialVersionUID = 585493755218719498L;
 
     LegacyEvent() {
         super("Legacy Event");
@@ -56,17 +56,16 @@ public class LegacyEvent
 
     @NonNull
     @Override
-    public BindableItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
+    public LegacyViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         return new LegacyViewHolder(parent.getContext());
     }
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull final BindableItemViewHolder bindableItemViewHolder,
-                                 @NonNull final BindableItemCursor cursor,
+    public void onBindViewHolder(@NonNull final LegacyViewHolder holder,
+                                 @NonNull final EventsCursor invalid,
                                  @NonNull final DAO db) {
 
-        LegacyViewHolder holder = (LegacyViewHolder) bindableItemViewHolder;
         holder.tv1.setText("Legacy Placeholder for Event #" + getId());
         holder.tv2.setText("This event is obsolete and can not be recovered."
                            + " It is advisable to delete it.");

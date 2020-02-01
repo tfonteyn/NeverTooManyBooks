@@ -27,15 +27,27 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-public interface BindableItemCursor<BI extends BindableItem>
-        extends Cursor {
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
-    long getId();
+public class TasksCursorAdapter
+        extends BindableItemCursorAdapter<Task, TasksCursor> {
 
-    @NonNull
-    BI getBindableItem();
+    /**
+     * Constructor; calls superclass and allocates an Inflater for later use.
+     *
+     * @param context Current context
+     * @param cursor  Cursor to use as source
+     * @param db
+     */
+    public TasksCursorAdapter(@NonNull final Context context,
+                              @NonNull final Cursor cursor,
+                              @NonNull final DAO db) {
+        super(context, cursor, db);
+    }
 }

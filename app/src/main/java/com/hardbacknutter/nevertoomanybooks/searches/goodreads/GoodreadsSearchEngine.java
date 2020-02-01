@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -124,7 +124,7 @@ public class GoodreadsSearchEngine
         try {
             return mApiHandler.getBookByIsbn(context, validIsbn, fetchThumbnail, new Bundle());
 
-        } catch (@NonNull final NotFoundException ignore) {
+        } catch (@NonNull final Http404Exception ignore) {
             // ignore
         }
         return new Bundle();
@@ -141,7 +141,7 @@ public class GoodreadsSearchEngine
             long grBookId = Long.parseLong(nativeId);
             return mApiHandler.getBookById(context, grBookId, fetchThumbnail, new Bundle());
 
-        } catch (@NonNull final NotFoundException | NumberFormatException e) {
+        } catch (@NonNull final Http404Exception | NumberFormatException e) {
             // ignore
         }
         return new Bundle();
@@ -174,7 +174,7 @@ public class GoodreadsSearchEngine
                     return mApiHandler.getBookById(context, works.get(0).grBookId,
                                                    fetchThumbnail, new Bundle());
                 }
-            } catch (@NonNull final NotFoundException ignore) {
+            } catch (@NonNull final Http404Exception ignore) {
                 // ignore
             }
         }

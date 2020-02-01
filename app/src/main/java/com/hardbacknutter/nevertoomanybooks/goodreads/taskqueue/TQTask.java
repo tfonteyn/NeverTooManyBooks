@@ -33,12 +33,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -49,10 +51,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * This means that it can not contain any references to UI components or similar objects.
  */
 public abstract class TQTask
-        extends Task
-        implements BindableItemCursorAdapter.BindableItem {
+        extends Task<TasksCursor, TaskViewHolder> {
 
     private static final long serialVersionUID = -937739402397246913L;
+    @Nullable
+    private GrStatus mLastExtStatus;
 
     /**
      * Constructor.
@@ -63,6 +66,10 @@ public abstract class TQTask
         super(description);
     }
 
+    protected void setLastExtStatus(@Nullable final GrStatus status) {
+        mLastExtStatus = status;
+    }
+
     /**
      * @return {@code false} to requeue, {@code true} for success
      */
@@ -70,7 +77,7 @@ public abstract class TQTask
 
     @Override
     @NonNull
-    public BindableItemViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
+    public TaskViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
         View itemView = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.row_task_info, parent, false);
@@ -78,17 +85,15 @@ public abstract class TQTask
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final BindableItemViewHolder bindableItemViewHolder,
-                                 @NonNull final BindableItemCursor cursor,
+    public void onBindViewHolder(@NonNull final TaskViewHolder holder,
+                                 @NonNull final TasksCursor row,
                                  @NonNull final DAO db) {
 
-        TaskViewHolder holder = (TaskViewHolder) bindableItemViewHolder;
-        TasksCursor tasksCursor = (TasksCursor) cursor;
         Context context = holder.itemView.getContext();
         Locale userLocale = LocaleUtils.getUserLocale(context);
 
         holder.descriptionView.setText(getDescription(context));
-        String statusCode = tasksCursor.getStatusCode().toUpperCase(Locale.ENGLISH);
+        String statusCode = row.getStatusCode().toUpperCase(Locale.ENGLISH);
         String statusText;
         switch (statusCode) {
             case COMPLETED:
@@ -105,7 +110,7 @@ public abstract class TQTask
 
             case QUEUED:
                 statusText = context.getString(R.string.gr_tq_queued);
-                String date = DateUtils.toPrettyDateTime(tasksCursor.getRetryDate(), userLocale);
+                String date = DateUtils.toPrettyDateTime(row.getRetryDate(), userLocale);
                 String info = context.getString(R.string.gr_tq_retry_x_of_y_next_at_z,
                                                 getRetries(), getRetryLimit(), date);
                 holder.retryInfoView.setText(info);
@@ -120,25 +125,35 @@ public abstract class TQTask
                 break;
         }
 
-        statusText += context.getString(R.string.gr_tq_events_recorded, tasksCursor.getNoteCount());
+        statusText += context.getString(R.string.gr_tq_events_recorded, row.getNoteCount());
         holder.stateView.setText(statusText);
 
-        Exception e = getException();
-        if (e != null) {
-            holder.errorView.setVisibility(View.VISIBLE);
-            String msg = e.getLocalizedMessage();
-            if (msg == null) {
-                msg = e.getClass().getSimpleName();
+        @Nullable
+        Exception e = getLastException();
+        // take a copy!
+        @Nullable
+        GrStatus extStatus = mLastExtStatus;
+
+        if (extStatus != null && extStatus != GrStatus.Completed) {
+            String msg;
+            if (extStatus == GrStatus.UnexpectedError && e != null) {
+                msg = e.getLocalizedMessage();
+                if (msg == null) {
+                    msg = e.getClass().getSimpleName();
+                }
+            } else {
+                msg = extStatus.getString(context);
             }
-            String err = context.getString(R.string.gr_tq_last_error_e, msg);
-            holder.errorView.setText(err);
+
+            msg = context.getString(R.string.gr_tq_last_error_e, msg);
+            holder.errorView.setText(msg);
+            holder.errorView.setVisibility(View.VISIBLE);
 
         } else {
             holder.errorView.setVisibility(View.GONE);
         }
 
-        //"Job id 123, Queued at 20 Jul 2012 17:50:23 GMT"
-        String date = DateUtils.toPrettyDateTime(tasksCursor.getQueuedDate(), userLocale);
+        String date = DateUtils.toPrettyDateTime(row.getQueuedDate(), userLocale);
         String info = context.getString(R.string.gr_tq_generic_task_info, getId(), date);
         holder.jobInfoView.setText(info);
     }

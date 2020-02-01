@@ -38,13 +38,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
-public class BindableItemCursorAdapter
+public class BindableItemCursorAdapter<
+        BI extends BindableItem,
+        BICursor extends BindableItemCursor<BI>>
         extends CursorAdapter {
 
     @NonNull
@@ -57,7 +58,7 @@ public class BindableItemCursorAdapter
     /** The item type returned by the last call of {@link #getItemViewType}. */
     private int mLastItemViewTypeType = -1;
     /** The Event used in the last call of {@link #getItemViewType}. */
-    private BindableItem mLastItemViewTypeItem;
+    private BI mLastItemViewTypeItem;
     private int mItemTypeCount;
 
     /**
@@ -78,10 +79,10 @@ public class BindableItemCursorAdapter
     public View getView(final int position,
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
-        BindableItemCursor cursor = (BindableItemCursor) getCursor();
-        cursor.moveToPosition(position);
 
-        BindableItem item;
+        BindableItemCursor<BI> cursor = (BindableItemCursor) getItem(position);
+
+        BI item;
         // Optimization to avoid unnecessary de-serializations.
         if (mLastItemViewTypePosition == position) {
             item = mLastItemViewTypeItem;
@@ -133,6 +134,11 @@ public class BindableItemCursorAdapter
         mLastItemViewTypeItem = null;
     }
 
+    @Override
+    public BICursor getItem(int position) {
+        return (BICursor) super.getItem(position);
+    }
+
     /**
      * Uses the actual class name of the Event object to dynamically allocate layout numbers,
      * and returns the layout number corresponding to the Event at the specified position.
@@ -149,9 +155,8 @@ public class BindableItemCursorAdapter
             return mLastItemViewTypeType;
         }
 
-        BindableItemCursor cursor = (BindableItemCursor) getCursor();
-        cursor.moveToPosition(position);
-        BindableItem item = cursor.getBindableItem();
+        BICursor cursor = getItem(position);
+        BI item = cursor.getBindableItem();
 
         // Use the class name to generate a layout number
         String s = item.getClass().toString();
@@ -193,47 +198,4 @@ public class BindableItemCursorAdapter
         return 50;
     }
 
-    public interface BindableItem {
-
-        /**
-         * Get the row id for this item.
-         *
-         * @return the row id
-         */
-        long getId();
-
-        /**
-         * Get a new BindableItemViewHolder object suitable for displaying this type of object.
-         *
-         * @param parent ViewGroup that will contain the new View.
-         *
-         * @return a new BindableItemViewHolder
-         */
-        @NonNull
-        BindableItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent);
-
-        /**
-         * Bind this object to the passed holder.
-         *
-         * @param bindableItemViewHolder to bind
-         * @param cursor                 cursor for this item, positioned at its row.
-         * @param db                     Database Access
-         */
-        void onBindViewHolder(@NonNull BindableItemViewHolder bindableItemViewHolder,
-                              @NonNull BindableItemCursor cursor,
-                              @NonNull DAO db);
-
-        /**
-         * Called when an item in a list has been clicked, this method should populate the passed
-         * 'items' parameter with one {@link ContextDialogItem} per operation that can be
-         * performed on this object.
-         *
-         * @param context   that can be used to get String resources for the menus
-         * @param menuItems menu collection to fill
-         * @param db        Database Access
-         */
-        void addContextMenuItems(@NonNull Context context,
-                                 @NonNull List<ContextDialogItem> menuItems,
-                                 @NonNull DAO db);
-    }
 }

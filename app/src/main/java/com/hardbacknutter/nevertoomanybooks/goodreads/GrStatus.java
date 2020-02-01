@@ -34,6 +34,9 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 public enum GrStatus {
+    /** The no-error code. */
+    Completed,
+
     AuthorizationNeeded,
     AuthorizationAlreadyGranted,
     AuthorizationSuccessful,
@@ -46,17 +49,27 @@ public enum GrStatus {
     ImportTaskAlreadyQueued,
     ExportTaskAlreadyQueued,
 
-    BookSent,
+    /** The book has no ISBN! We can only lookup books with an ISBN. */
     NoIsbn,
+    /** A specific action to get a book failed to find it. */
+    BookNotFound,
+
+    /** A generic action to find 'something' failed. */
     NotFound,
+
+
     Cancelled,
     NoInternet,
     IOError,
-    UnexpectedError;
+    UnexpectedError,
+    ;
 
     @NonNull
     public String getString(@NonNull final Context context) {
         switch (this) {
+            case Completed:
+                return context.getString(R.string.gr_tq_completed);
+
 
             case AuthorizationNeeded:
                 return context.getString(R.string.gr_authorization_needed);
@@ -86,11 +99,12 @@ public enum GrStatus {
             case ExportTaskAlreadyQueued:
                 return context.getString(R.string.gr_tq_export_task_is_already_queued);
 
-            case BookSent:
-                return context.getString(R.string.gr_tq_completed);
 
             case NoIsbn:
-                return context.getString(R.string.gr_info_no_isbn);
+                return context.getString(R.string.warning_no_isbn_stored_for_book);
+
+            case BookNotFound:
+                return context.getString(R.string.warning_no_matching_book_found);
 
             case Cancelled:
                 return context.getString(R.string.progress_end_cancelled);

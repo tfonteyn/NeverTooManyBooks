@@ -25,8 +25,9 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
+package com.hardbacknutter.nevertoomanybooks.goodreads;
 
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +38,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.BindableItemAdminActivity;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.EventsCursorAdapter;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 
 /**
  * Activity to display all Events in the QueueManager.
@@ -60,7 +65,7 @@ public class EventsAdminActivity
 
         setTitle(R.string.gr_tq_title_task_errors);
 
-        QueueManager.getQueueManager().registerEventListener(mChangeListener);
+        QueueManager.getQueueManager().registerEventListener(mOnChangeListener);
 
         if (savedInstanceState == null) {
             TipManager.display(this, R.string.tip_background_task_events, null);
@@ -98,25 +103,30 @@ public class EventsAdminActivity
     }
 
     /**
-     * Get a cursor returning the events we are interested in,
+     * Get a CursorAdapter returning the events we are interested in,
      * either specific to our task or all events.
      *
-     * @return Cursor to use
+     * @param db Database Access
+     *
+     * @return CursorAdapter to use
      */
     @NonNull
     @Override
-    protected BindableItemCursor getBindableItemCursor() {
+    protected EventsCursorAdapter getListAdapter(@NonNull final DAO db) {
+        Cursor cursor;
         if (mTaskId == 0) {
-            return QueueManager.getQueueManager().getEvents();
+            cursor = QueueManager.getQueueManager().getEvents();
         } else {
-            return QueueManager.getQueueManager().getEvents(mTaskId);
+            cursor = QueueManager.getQueueManager().getEvents(mTaskId);
         }
+
+        return new EventsCursorAdapter(this, cursor, db);
     }
 
     @Override
     @CallSuper
     protected void onDestroy() {
-        QueueManager.getQueueManager().unregisterEventListener(mChangeListener);
+        QueueManager.getQueueManager().unregisterEventListener(mOnChangeListener);
         super.onDestroy();
     }
 }

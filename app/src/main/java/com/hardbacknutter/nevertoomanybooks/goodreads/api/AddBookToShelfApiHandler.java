@@ -40,7 +40,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter.XmlHandler;
@@ -114,12 +113,12 @@ public class AddBookToShelfApiHandler
      * @return reviewId
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     public long add(final long grBookId,
                     @NonNull final Iterable<String> shelfNames)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         String shelves = TextUtils.join(",", shelfNames);
 
@@ -143,12 +142,12 @@ public class AddBookToShelfApiHandler
      * @return reviewId
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     public long add(final long grBookId,
                     @NonNull final String shelfName)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         return send(grBookId, shelfName, false);
     }
@@ -167,12 +166,12 @@ public class AddBookToShelfApiHandler
      * @param shelfName GoodReads shelf name
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     public void remove(final long grBookId,
                        @NonNull final String shelfName)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         send(grBookId, shelfName, true);
     }
@@ -187,13 +186,13 @@ public class AddBookToShelfApiHandler
      * @return reviewId
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     private long send(final long grBookId,
                       @NonNull final String shelfName,
                       final boolean isRemove)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         mReviewId = 0;
         Map<String, String> parameters = new HashMap<>();

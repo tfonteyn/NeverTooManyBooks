@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.ReviewField;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
@@ -204,7 +204,7 @@ class ImportLegacyTask
             }
             return ok;
         } catch (@NonNull final CredentialsException e) {
-            setException(e);
+            setLastException(e);
             return false;
         }
     }
@@ -249,8 +249,8 @@ class ImportLegacyTask
                 if (mStartDate == null) {
                     mStartDate = runDate;
                 }
-            } catch (@NonNull final CredentialsException | NotFoundException | IOException e) {
-                setException(e);
+            } catch (@NonNull final CredentialsException | Http404Exception | IOException e) {
+                setLastException(e);
                 return false;
             }
 

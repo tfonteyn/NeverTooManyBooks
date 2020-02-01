@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
-class SendOneBookLegacyTask
+public class SendOneBookLegacyTask
         extends SendBooksLegacyTaskBase {
 
     /** Log tag. */
@@ -61,8 +61,8 @@ class SendOneBookLegacyTask
      * @param description for the task
      * @param bookId      Book to send
      */
-    SendOneBookLegacyTask(@NonNull final String description,
-                          final long bookId) {
+    public SendOneBookLegacyTask(@NonNull final String description,
+                                 final long bookId) {
         super(description);
         mBookId = bookId;
     }

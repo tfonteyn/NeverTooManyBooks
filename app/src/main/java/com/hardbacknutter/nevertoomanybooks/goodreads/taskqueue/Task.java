@@ -42,8 +42,10 @@ import java.io.Serializable;
  * A Task *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
-public abstract class Task
-        implements BindableItemCursorAdapter.BindableItem,
+public abstract class Task<
+        BICursor extends BindableItemCursor,
+        BIViewHolder extends BindableItemViewHolder>
+        implements BindableItem<BICursor, BIViewHolder>,
                    Serializable {
 
     public static final int CAT_GOODREADS_IMPORT_ALL = 3;
@@ -57,11 +59,12 @@ public abstract class Task
 
     private static final int RETRY_LIMIT = 15;
     private static final long serialVersionUID = -5370989347500969258L;
+
     @NonNull
     private final String mDescription;
     private long mId;
     @Nullable
-    private Exception mException;
+    private Exception mLastException;
 
     private int mRetries;
     private int mRetryDelay;
@@ -100,12 +103,12 @@ public abstract class Task
     public abstract int getCategory();
 
     @Nullable
-    public Exception getException() {
-        return mException;
+    Exception getLastException() {
+        return mLastException;
     }
 
-    public void setException(@Nullable final Exception e) {
-        mException = e;
+    protected void setLastException(@Nullable final Exception e) {
+        mLastException = e;
     }
 
     /**

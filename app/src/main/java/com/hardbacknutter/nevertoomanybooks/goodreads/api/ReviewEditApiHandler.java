@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlDumpParser;
 
@@ -95,7 +94,7 @@ public class ReviewEditApiHandler
      * @param review          (optional) Text for the review, PUBLIC
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     public void update(final long reviewId,
@@ -105,7 +104,7 @@ public class ReviewEditApiHandler
                        @IntRange(from = 0, to = 5) final int rating,
                        @Nullable final String privateNotes,
                        @Nullable final String review)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         String url = String.format(URL, reviewId);
         Map<String, String> parameters = new HashMap<>();

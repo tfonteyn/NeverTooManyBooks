@@ -38,7 +38,6 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -79,13 +78,13 @@ public class OwnedBookCreateApiHandler
      * @return the Goodreads book ID
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     public long create(@NonNull final Context context,
                        @NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(context, mGoodreadsAuth);
         long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
@@ -110,12 +109,12 @@ public class OwnedBookCreateApiHandler
      * @param dateAcquired (optional)
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     public void create(final long grBookId,
                        @Nullable final String dateAcquired)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         Map<String, String> parameters = new HashMap<>();
         parameters.put("owned_book[book_id]", String.valueOf(grBookId));

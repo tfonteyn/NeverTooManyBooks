@@ -42,7 +42,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SimpleXmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -78,7 +77,7 @@ public class ShelvesListApiHandler
     }
 
     public Map<String, GoodreadsShelf> getAll()
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         Map<String, GoodreadsShelf> map = new HashMap<>();
         int page = 1;
@@ -111,12 +110,12 @@ public class ShelvesListApiHandler
      * @return the shelves listed on this page.
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
     private Bundle get(final int page)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         String url = String.format(URL, mGoodreadsAuth.getDevKey(), page,
                                    mGoodreadsAuth.getUserId());

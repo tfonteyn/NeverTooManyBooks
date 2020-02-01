@@ -25,17 +25,36 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
-
-import android.database.Cursor;
+package com.hardbacknutter.nevertoomanybooks.goodreads.api;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-public interface BindableItemCursor<BI extends BindableItem>
-        extends Cursor {
+import java.net.URL;
 
-    long getId();
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.R;
+
+public class Http404Exception
+        extends Exception {
+
+    private static final long serialVersionUID = -6134950763374301726L;
 
     @NonNull
-    BI getBindableItem();
+    private final URL mUrl;
+
+    public Http404Exception(@NonNull final URL url) {
+        mUrl = url;
+    }
+
+    @NonNull
+    public URL getUrl() {
+        return mUrl;
+    }
+
+    @Nullable
+    @Override
+    public String getLocalizedMessage() {
+        return App.getLocalizedAppContext().getString(R.string.error_site_access_failed);
+    }
 }

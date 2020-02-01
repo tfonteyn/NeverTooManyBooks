@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBooksApiHandler;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
@@ -76,7 +76,7 @@ public class FetchWorksTask
             SearchBooksApiHandler searcher = new SearchBooksApiHandler(context, grAuth);
             return searcher.search(mSearchText);
 
-        } catch (@NonNull final NotFoundException e) {
+        } catch (@NonNull final Http404Exception e) {
             Logger.error(context, TAG, e, e.getUrl());
             mException = e;
         } catch (@NonNull final CredentialsException | IOException

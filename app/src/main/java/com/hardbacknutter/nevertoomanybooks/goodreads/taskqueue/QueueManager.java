@@ -80,11 +80,11 @@ public final class QueueManager {
     @NonNull
     private final WeakReference<Thread> mUIThread;
     /** Objects listening for Event operations. */
-    private final List<WeakReference<ChangeListener>> mEventChangeListeners =
+    private final List<WeakReference<OnChangeListener>> mEventChangeListeners =
             new ArrayList<>();
     /** Objects listening for Task operations. */
     @NonNull
-    private final List<WeakReference<ChangeListener>> mTaskChangeListeners;
+    private final List<WeakReference<OnChangeListener>> mTaskChangeListeners;
 
     /** Handle inter-thread messages. */
     private final MessageHandler mMessageHandler;
@@ -139,10 +139,10 @@ public final class QueueManager {
         return sInstance;
     }
 
-    void registerTaskListener(@NonNull final ChangeListener listener) {
+    public void registerTaskListener(@NonNull final OnChangeListener listener) {
         synchronized (mTaskChangeListeners) {
-            for (WeakReference<ChangeListener> lr : mTaskChangeListeners) {
-                ChangeListener l = lr.get();
+            for (WeakReference<OnChangeListener> lr : mTaskChangeListeners) {
+                OnChangeListener l = lr.get();
                 if (listener.equals(l)) {
                     return;
                 }
@@ -152,16 +152,16 @@ public final class QueueManager {
     }
 
     /** ignores any failures. */
-    void unregisterTaskListener(@NonNull final ChangeListener listener) {
+    public void unregisterTaskListener(@NonNull final OnChangeListener listener) {
         try {
             synchronized (mTaskChangeListeners) {
-                Collection<WeakReference<ChangeListener>> ll = new ArrayList<>();
-                for (WeakReference<ChangeListener> l : mTaskChangeListeners) {
+                Collection<WeakReference<OnChangeListener>> ll = new ArrayList<>();
+                for (WeakReference<OnChangeListener> l : mTaskChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
                     }
                 }
-                for (WeakReference<ChangeListener> l : ll) {
+                for (WeakReference<OnChangeListener> l : ll) {
                     mTaskChangeListeners.remove(l);
                 }
             }
@@ -169,10 +169,10 @@ public final class QueueManager {
         }
     }
 
-    void registerEventListener(@NonNull final ChangeListener listener) {
+    public void registerEventListener(@NonNull final OnChangeListener listener) {
         synchronized (mEventChangeListeners) {
-            for (WeakReference<ChangeListener> lr : mEventChangeListeners) {
-                ChangeListener l = lr.get();
+            for (WeakReference<OnChangeListener> lr : mEventChangeListeners) {
+                OnChangeListener l = lr.get();
                 if (listener.equals(l)) {
                     return;
                 }
@@ -182,16 +182,16 @@ public final class QueueManager {
     }
 
     /** ignores any failures. */
-    void unregisterEventListener(@NonNull final ChangeListener listener) {
+    public void unregisterEventListener(@NonNull final OnChangeListener listener) {
         try {
             synchronized (mEventChangeListeners) {
-                Collection<WeakReference<ChangeListener>> ll = new ArrayList<>();
-                for (WeakReference<ChangeListener> l : mEventChangeListeners) {
+                Collection<WeakReference<OnChangeListener>> ll = new ArrayList<>();
+                for (WeakReference<OnChangeListener> l : mEventChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
                     }
                 }
-                for (WeakReference<ChangeListener> l : ll) {
+                for (WeakReference<OnChangeListener> l : ll) {
                     mEventChangeListeners.remove(l);
                 }
             }
@@ -201,13 +201,13 @@ public final class QueueManager {
 
     void notifyTaskChange() {
         // Make a copy of the list so we can cull dead elements from the original
-        List<WeakReference<ChangeListener>> list;
+        List<WeakReference<OnChangeListener>> list;
         synchronized (mTaskChangeListeners) {
             list = new ArrayList<>(mTaskChangeListeners);
         }
         // Loop through the list. If the ref is dead, delete from original, otherwise call it.
-        for (WeakReference<ChangeListener> wl : list) {
-            final ChangeListener listener = wl.get();
+        for (WeakReference<OnChangeListener> wl : list) {
+            final OnChangeListener listener = wl.get();
             if (listener == null) {
                 synchronized (mTaskChangeListeners) {
                     mTaskChangeListeners.remove(wl);
@@ -223,13 +223,13 @@ public final class QueueManager {
 
     private void notifyEventChange() {
         // Make a copy of the list so we can cull dead elements from the original
-        List<WeakReference<ChangeListener>> list;
+        List<WeakReference<OnChangeListener>> list;
         synchronized (mEventChangeListeners) {
             list = new ArrayList<>(mEventChangeListeners);
         }
         // Loop through the list. If the ref is dead, delete from original, otherwise call it.
-        for (WeakReference<ChangeListener> wl : list) {
-            final ChangeListener listener = wl.get();
+        for (WeakReference<OnChangeListener> wl : list) {
+            final OnChangeListener listener = wl.get();
             if (listener == null) {
                 synchronized (mEventChangeListeners) {
                     mEventChangeListeners.remove(wl);
@@ -252,15 +252,19 @@ public final class QueueManager {
     public void enqueueTask(@NonNull final Task task,
                             @NonNull final String queueName) {
         synchronized (this) {
-            // Save it
+            // Save it first
             mQueueDAO.enqueueTask(task, queueName);
 
             if (mActiveQueues.containsKey(queueName)) {
                 // notify the queue there is work to do
-                synchronized (mActiveQueues) {
-                    //noinspection ConstantConditions
-                    mActiveQueues.get(queueName).notify();
+                Queue queue = mActiveQueues.get(queueName);
+                //noinspection ConstantConditions,SynchronizationOnLocalVariableOrMethodParameter
+                synchronized (queue) {
+                    // Reminder: notify() **MUST** be called inside
+                    // a synchronized block on the object itself
+                    queue.notify();
                 }
+
             } else {
                 // Create the queue; it will start and add itself to the manager
                 new Queue(this, queueName);
@@ -310,8 +314,8 @@ public final class QueueManager {
         if (task instanceof TQTask) {
             return ((TQTask) task).run(this);
         } else {
-            // Either extend RunnableTask, or override QueueManager.runTask()
-            throw new IllegalStateException("Can not handle tasks that are not RunnableTasks");
+            // Either extend TQTask, or override QueueManager.runTask()
+            throw new IllegalStateException("Can not handle tasks that are not TQTask");
         }
     }
 
@@ -367,7 +371,7 @@ public final class QueueManager {
      * @return EventsCursor
      */
     @NonNull
-    EventsCursor getEvents() {
+    public EventsCursor getEvents() {
         return mQueueDAO.getEvents();
     }
 
@@ -379,7 +383,7 @@ public final class QueueManager {
      * @return EventsCursor
      */
     @NonNull
-    EventsCursor getEvents(final long taskId) {
+    public EventsCursor getEvents(final long taskId) {
         return mQueueDAO.getEvents(taskId);
     }
 
@@ -389,7 +393,7 @@ public final class QueueManager {
      * @return TasksCursor
      */
     @NonNull
-    TasksCursor getTasks() {
+    public TasksCursor getTasks() {
         return mQueueDAO.getTasks();
     }
 
@@ -427,8 +431,8 @@ public final class QueueManager {
             }
         }
 
-        notifyEventChange();
         // This is non-optimal, but ... it's easy and clear.
+        notifyEventChange();
         // Deleting an event MAY result in an orphan task being deleted.
         notifyTaskChange();
     }
@@ -441,17 +445,14 @@ public final class QueueManager {
     public void deleteEvent(final long id) {
         mQueueDAO.deleteEvent(id);
         notifyEventChange();
-        // This is non-optimal, but ... it's easy and clear.
-        // Deleting an event MAY result in an orphan task being deleted.
         notifyTaskChange();
     }
 
     /**
      * Delete Tasks (and its Events) more than 7 days old.
      */
-    void cleanupOldTasks() {
+    public void cleanupOldTasks() {
         mQueueDAO.cleanupOldTasks(7);
-        // This is non-optimal, but ... it's easy and clear.
         notifyEventChange();
         notifyTaskChange();
     }
@@ -459,15 +460,13 @@ public final class QueueManager {
     /**
      * Delete Events more than 7 days old.
      */
-    void cleanupOldEvents() {
+    public void cleanupOldEvents() {
         mQueueDAO.cleanupOldEvents(7);
-        // This is non-optimal, but ... it's easy and clear.
         notifyEventChange();
         notifyTaskChange();
     }
 
-    public interface ChangeListener {
-
+    public interface OnChangeListener {
         void onChange();
     }
 

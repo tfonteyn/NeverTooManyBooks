@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
+import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -107,7 +107,7 @@ public class SendOneBookTask
 
                     final CursorRow cursorRow = new CursorRow(cursor);
                     result = apiHandler.sendOneBook(context, db, cursorRow);
-                    if (result == GrStatus.BookSent) {
+                    if (result == GrStatus.Completed) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);
                     }
@@ -118,10 +118,10 @@ public class SendOneBookTask
             mException = e;
             Logger.error(context, TAG, e);
             return GrStatus.CredentialsError;
-        } catch (@NonNull final NotFoundException e) {
+        } catch (@NonNull final Http404Exception e) {
             mException = e;
             Logger.error(context, TAG, e, e.getUrl());
-            return GrStatus.NotFound;
+            return GrStatus.BookNotFound;
         } catch (@NonNull final IOException e) {
             mException = e;
             Logger.error(context, TAG, e);

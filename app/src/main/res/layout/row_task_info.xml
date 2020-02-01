@@ -39,24 +39,12 @@
         android:id="@+id/cbx_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border1"
         android:focusable="false"
         android:text=""
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible"
-        />
-
-    <Button
-        android:id="@+id/btn_retry"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:text="@string/retry"
-        app:layout_constraintBaseline_toBaselineOf="@id/cbx_selected"
-        app:layout_constraintEnd_toEndOf="parent"
         />
 
     <TextView
@@ -83,7 +71,25 @@
         app:layout_constraintEnd_toEndOf="@id/description"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/description"
-        tools:text="Running (17 events recorded)"
+        tools:text="Queued (17 events recorded)"
+        />
+
+    <Button
+        android:id="@+id/btn_retry"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:text="@string/retry"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="cbx_selected,state,btn_retry"
         />
 
     <TextView
@@ -94,7 +100,7 @@
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
-        app:layout_constraintTop_toBottomOf="@id/state"
+        app:layout_constraintTop_toBottomOf="@id/btn_retry"
         tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT"
         />
 
@@ -107,7 +113,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/retry_info"
-        tools:text="Last error: foo bar, not sure what really happened"
+        tools:text="Last error: book not found"
         />
 
     <TextView
@@ -120,7 +126,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/error"
-        tools:text="Job ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
+        tools:text="Task ID 123, Queued at 20 Jul 2012 17:50:23 GMT"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

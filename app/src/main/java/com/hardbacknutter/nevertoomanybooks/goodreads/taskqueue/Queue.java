@@ -156,15 +156,15 @@ class Queue
         boolean result = false;
         boolean requeue = false;
         try {
-            task.setException(null);
+            task.setLastException(null);
             // notify here, as we allow mManager.runTask to be overridden
             mManager.notifyTaskChange();
             result = mManager.runTask(task);
             requeue = !result;
         } catch (@NonNull final RuntimeException e) {
             // Don't overwrite exception set by handler
-            if (task.getException() == null) {
-                task.setException(e);
+            if (task.getLastException() == null) {
+                task.setLastException(e);
             }
             Logger.error(TAG, e, "Error running task " + task.getId());
         }
@@ -178,7 +178,7 @@ class Queue
             } else if (requeue) {
                 queueDAO.requeueTask(task);
             } else {
-                Exception e = task.getException();
+                Exception e = task.getLastException();
                 String msg = null;
                 if (e != null) {
                     msg = e.getLocalizedMessage();

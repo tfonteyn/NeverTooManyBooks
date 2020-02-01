@@ -39,31 +39,19 @@
         android:id="@+id/cbx_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/border1"
         android:focusable="false"
         android:text=""
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <Button
-        android:id="@+id/btn_retry"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:focusable="false"
-        android:text="@string/retry"
-        app:layout_constraintBaseline_toBaselineOf="@id/cbx_selected"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
-
     <TextView
         android:id="@+id/title"
         style="@style/Text"
         android:layout_width="0dp"
-        android:textStyle="bold"
         android:focusable="false"
         android:textIsSelectable="false"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/btn_retry"
         app:layout_constraintStart_toEndOf="@id/cbx_selected"
         app:layout_constraintTop_toTopOf="parent"
@@ -82,6 +70,24 @@
         tools:text="Asimov, Isaac"
         />
 
+    <Button
+        android:id="@+id/btn_retry"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="false"
+        android:text="@string/retry"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="cbx_selected,author,btn_retry"
+        />
+
     <TextView
         android:id="@+id/error"
         style="@style/ErrorMessage"
@@ -90,8 +96,8 @@
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/title"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        tools:text="Last error: foo bar, not sure what really happened"
+        app:layout_constraintTop_toBottomOf="@id/btn_retry"
+        tools:text="Last error: book not found"
         />
 
     <TextView
@@ -103,7 +109,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/error"
-        tools:text="July 20, 2012 17:45:32 GMT"
+        tools:text="(occurred at July 20, 2012 17:45:32 GMT)"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

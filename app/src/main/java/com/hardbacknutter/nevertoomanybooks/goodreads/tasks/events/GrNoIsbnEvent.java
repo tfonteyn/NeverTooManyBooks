@@ -25,26 +25,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads;
+package com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events;
+
+import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
-import java.net.URL;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
-public class NotFoundException
-        extends Exception {
+/**
+ * Event indicating the book's ISBN was blank.
+ */
+public class GrNoIsbnEvent
+        extends GrSendBookEvent
+        implements TipManager.TipOwner {
 
-    private static final long serialVersionUID = -6134950763374301726L;
+    private static final long serialVersionUID = -8615058337902218680L;
 
-    @NonNull
-    private final URL mUrl;
-
-    public NotFoundException(@NonNull final URL url) {
-        mUrl = url;
+    public GrNoIsbnEvent(@NonNull final Context context,
+                         final long bookId) {
+        super(context.getString(R.string.warning_no_isbn_stored_for_book), bookId);
     }
 
-    @NonNull
-    public URL getUrl() {
-        return mUrl;
+    @Override
+    @StringRes
+    public int getTip() {
+        return R.string.gr_info_no_isbn;
     }
 }

@@ -33,7 +33,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".goodreads.taskqueue.TasksAdminActivity"
+    tools:context=".goodreads.TasksAdminActivity"
     >
 
     <include layout="@layout/inc_appbar" />

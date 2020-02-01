@@ -53,7 +53,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
@@ -103,7 +102,7 @@ abstract class ApiHandlerNative {
      * @param requestHandler    (optional) handler for the parser
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the URL was not found
+     * @throws Http404Exception    the URL was not found
      * @throws IOException          on other failures
      */
     void executeGet(@NonNull final String url,
@@ -111,7 +110,7 @@ abstract class ApiHandlerNative {
                     @Nullable final Map<String, String> parameterMap,
                     @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                     @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeGet|url=\"" + url + '\"');
@@ -148,14 +147,14 @@ abstract class ApiHandlerNative {
      * @param requestHandler    (optional) handler for the parser
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the URL was not found
+     * @throws Http404Exception    the URL was not found
      * @throws IOException          on other failures
      */
     void executePost(@NonNull final String url,
                      @Nullable final Map<String, String> parameterMap,
                      @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                      @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executePost|url=\"" + url + '\"');
@@ -218,12 +217,12 @@ abstract class ApiHandlerNative {
      * @param requestHandler (optional) handler for the parser
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the URL was not found
+     * @throws Http404Exception    the URL was not found
      * @throws IOException          on other failures
      */
     private void execute(@NonNull final HttpURLConnection request,
                          @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         GoodreadsAuth.THROTTLER.waitUntilRequestAllowed();
@@ -253,7 +252,7 @@ abstract class ApiHandlerNative {
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 request.disconnect();
-                throw new NotFoundException(request.getURL());
+                throw new Http404Exception(request.getURL());
 
             default:
                 request.disconnect();
@@ -297,13 +296,13 @@ abstract class ApiHandlerNative {
      * @return the raw text output.
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the URL was not found
+     * @throws Http404Exception    the URL was not found
      * @throws IOException          on other failures
      */
     @NonNull
     String executeRawGet(@NonNull final String url,
                          @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeRawGet|url=\"" + url + '\"');
@@ -342,7 +341,7 @@ abstract class ApiHandlerNative {
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 request.disconnect();
-                throw new NotFoundException(request.getURL());
+                throw new Http404Exception(request.getURL());
 
             default:
                 request.disconnect();

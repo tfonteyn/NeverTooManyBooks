@@ -52,7 +52,7 @@ import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHe
  */
 public final class TasksCursor
         extends SQLiteCursor
-        implements BindableItemCursor, Closeable {
+        implements BindableItemCursor<Task>, Closeable {
 
     /** Column number of id column. */
     private static int sIdCol = -2;
@@ -152,7 +152,7 @@ public final class TasksCursor
 
     @NonNull
     @Override
-    public BindableItemCursorAdapter.BindableItem getBindableItem() {
+    public Task getBindableItem() {
         if (sTaskCol < 0) {
             sTaskCol = getColumnIndex(KEY_TASK);
         }

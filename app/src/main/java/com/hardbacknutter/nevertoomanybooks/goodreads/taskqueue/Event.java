@@ -40,7 +40,7 @@ import java.io.Serializable;
  * in which 3 items fail, but 678 succeed -- in this case it is useful to export the successful
  * ones and report the failures later.
  * <p>
- * The {@link Task#setException(Exception)} method stores the exception in the database
+ * The {@link Task#setLastException(Exception)} method stores the exception in the database
  * for later retrieval.
  * <p>
  * Client applications should consider subclassing this object.
@@ -48,11 +48,13 @@ import java.io.Serializable;
  * An Event *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
-public abstract class Event
-        implements BindableItemCursorAdapter.BindableItem,
+public abstract class Event<
+        BICursor extends BindableItemCursor,
+        BIViewHolder extends BindableItemViewHolder>
+        implements BindableItem<BICursor, BIViewHolder>,
                    Serializable {
 
-    private static final long serialVersionUID = 2160151040581590007L;
+    private static final long serialVersionUID = 6196815149284979372L;
     private long mId;
 
     @NonNull
@@ -74,5 +76,14 @@ public abstract class Event
     @NonNull
     protected String getDescription(@NonNull final Context context) {
         return mDescription;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "Event{" +
+               "mId=" + mId +
+               ", mDescription='" + mDescription + '\'' +
+               '}';
     }
 }

@@ -36,7 +36,6 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.NotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -76,7 +75,7 @@ public class ShowBookByIsbnApiHandler
      * @return the Bundle of book data.
      *
      * @throws CredentialsException with GoodReads
-     * @throws NotFoundException    the requested item was not found
+     * @throws Http404Exception    the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
@@ -84,7 +83,7 @@ public class ShowBookByIsbnApiHandler
                       @NonNull final String validIsbn,
                       @NonNull final boolean[] fetchThumbnail,
                       @NonNull final Bundle bookData)
-            throws CredentialsException, NotFoundException, IOException {
+            throws CredentialsException, Http404Exception, IOException {
 
         String url = String.format(URL, validIsbn, mGoodreadsAuth.getDevKey());
         return getBookData(context, url, fetchThumbnail, bookData);

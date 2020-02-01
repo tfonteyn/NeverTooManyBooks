@@ -70,6 +70,9 @@ class SendBooksLegacyTask
 
     /**
      * Constructor.
+     *
+     * @param description for the task
+     * @param updatesOnly {@code true} to send updated books only, {@code false} for all books.
      */
     SendBooksLegacyTask(@NonNull final String description,
                         final boolean updatesOnly) {

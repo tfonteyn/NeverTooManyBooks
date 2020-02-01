@@ -25,17 +25,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
+package com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events;
 
-import android.database.Cursor;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
-public interface BindableItemCursor<BI extends BindableItem>
-        extends Cursor {
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
-    long getId();
+/**
+ * Event indicating the book could not be found at Goodreads.
+ */
+public class GrNoMatchEvent
+        extends GrSendBookEvent
+        implements TipManager.TipOwner {
 
-    @NonNull
-    BI getBindableItem();
+    private static final long serialVersionUID = 7618084144814445823L;
+
+    public GrNoMatchEvent(@NonNull final Context context,
+                          final long bookId) {
+        super(context.getString(R.string.warning_no_matching_book_found), bookId);
+    }
+
+    @Override
+    @StringRes
+    public int getTip() {
+        return R.string.gr_info_no_match;
+    }
 }

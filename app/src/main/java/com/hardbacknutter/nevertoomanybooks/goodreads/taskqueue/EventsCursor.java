@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
  */
 public class EventsCursor
         extends SQLiteCursor
-        implements BindableItemCursor {
+        implements BindableItemCursor<Event> {
 
     /** Column number of id column. */
     private static int sIdCol = -2;
@@ -105,7 +105,7 @@ public class EventsCursor
 
     @Override
     @NonNull
-    public BindableItemCursorAdapter.BindableItem getBindableItem() {
+    public Event getBindableItem() {
         if (sEventCol < 0) {
             sEventCol = getColumnIndex(QueueDBHelper.KEY_EVENT);
         }
