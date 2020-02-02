@@ -861,6 +861,11 @@ public class BooklistBuilder
     }
 
     /** Wrapper for {@link RowStateDAO}. */
+    public void saveAllNodes() {
+        mRowStateDAO.saveAllNodes();
+    }
+
+    /** Wrapper for {@link RowStateDAO}. */
     public void expandAllNodes(final int topLevel,
                                final boolean expand) {
         mRowStateDAO.expandAllNodes(topLevel, expand);

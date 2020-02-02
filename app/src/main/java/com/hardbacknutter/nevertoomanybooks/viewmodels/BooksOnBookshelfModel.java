@@ -77,6 +77,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * First attempt to split of into a model for BoB.
+ *
+ * URGENT: ConstantConditions
  */
 public class BooksOnBookshelfModel
         extends ViewModel {
@@ -804,6 +806,11 @@ public class BooksOnBookshelfModel
                                final boolean expand) {
         //noinspection ConstantConditions
         mCursor.getBooklistBuilder().expandAllNodes(topLevel, expand);
+    }
+
+    public void saveAllNodes() {
+        //noinspection ConstantConditions
+        mCursor.getBooklistBuilder().saveAllNodes();
     }
 
     /**
