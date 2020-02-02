@@ -39,11 +39,11 @@ public class TasksCursorAdapter
         extends BindableItemCursorAdapter<Task, TasksCursor> {
 
     /**
-     * Constructor; calls superclass and allocates an Inflater for later use.
+     * Constructor.
      *
      * @param context Current context
      * @param cursor  Cursor to use as source
-     * @param db
+     * @param db      Database Access
      */
     public TasksCursorAdapter(@NonNull final Context context,
                               @NonNull final Cursor cursor,

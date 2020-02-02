@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -50,12 +51,14 @@ public interface BindableItem<
     /**
      * Get a new BindableItemViewHolder object suitable for displaying this type of object.
      *
-     * @param parent ViewGroup that will contain the new View.
+     * @param layoutInflater for creating views
+     * @param parent         ViewGroup that will contain the new View.
      *
      * @return a new BindableItemViewHolder
      */
     @NonNull
-    BIViewHolder onCreateViewHolder(@NonNull ViewGroup parent);
+    BIViewHolder onCreateViewHolder(@NonNull final LayoutInflater layoutInflater,
+                                    @NonNull ViewGroup parent);
 
     /**
      * Bind this object to the passed holder.

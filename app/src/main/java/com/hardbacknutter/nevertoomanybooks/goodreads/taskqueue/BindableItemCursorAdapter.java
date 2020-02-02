@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
@@ -61,17 +62,21 @@ public class BindableItemCursorAdapter<
     private BI mLastItemViewTypeItem;
     private int mItemTypeCount;
 
+    private final LayoutInflater mLayoutInflater;
+
     /**
      * Constructor; calls superclass and allocates an Inflater for later use.
      *
      * @param context Current context
      * @param cursor  Cursor to use as source
+     * @param db      Database Access
      */
     BindableItemCursorAdapter(@NonNull final Context context,
                               @NonNull final Cursor cursor,
                               @NonNull final DAO db) {
         super(context, cursor);
         mDb = db;
+        mLayoutInflater = LayoutInflater.from(context);
     }
 
     @NonNull
@@ -80,7 +85,7 @@ public class BindableItemCursorAdapter<
                         @Nullable View convertView,
                         @NonNull final ViewGroup parent) {
 
-        BindableItemCursor<BI> cursor = (BindableItemCursor) getItem(position);
+        BindableItemCursor<BI> cursor = getItem(position);
 
         BI item;
         // Optimization to avoid unnecessary de-serializations.
@@ -92,12 +97,13 @@ public class BindableItemCursorAdapter<
 
         BindableItemViewHolder holder;
         if (convertView == null) {
-            holder = item.onCreateViewHolder(parent);
+            holder = item.onCreateViewHolder(mLayoutInflater, parent);
         } else {
             holder = (BindableItemViewHolder) convertView.getTag(R.id.TAG_VIEW_HOLDER);
         }
 
         // Bind it, and we are done!
+        //noinspection unchecked
         item.onBindViewHolder(holder, cursor, mDb);
 
         return holder.itemView;
@@ -136,6 +142,7 @@ public class BindableItemCursorAdapter<
 
     @Override
     public BICursor getItem(int position) {
+        //noinspection unchecked
         return (BICursor) super.getItem(position);
     }
 

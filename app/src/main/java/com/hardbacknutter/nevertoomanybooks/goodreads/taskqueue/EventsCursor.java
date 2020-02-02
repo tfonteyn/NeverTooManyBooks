@@ -36,6 +36,7 @@ import androidx.collection.LongSparseArray;
 
 import java.util.Date;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
@@ -114,7 +115,7 @@ public class EventsCursor
         try {
             event = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
-            event = new LegacyEvent();
+            event = new LegacyEvent(App.getLocalizedAppContext());
         }
         event.setId(getId());
         return event;

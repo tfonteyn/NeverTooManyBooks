@@ -53,7 +53,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public abstract class TQTask
         extends Task<TasksCursor, TaskViewHolder> {
 
-    private static final long serialVersionUID = -937739402397246913L;
+    /** The import_one task is now implemented as a standard ASyncTask. */
+    public static final int CAT_IMPORT_ALL = 1;
+    public static final int CAT_EXPORT_ALL = 2;
+    public static final int CAT_EXPORT_ONE = 3;
+
+    private static final long serialVersionUID = 3129519336104843325L;
+
     @Nullable
     private GrStatus mLastExtStatus;
 
@@ -77,10 +83,9 @@ public abstract class TQTask
 
     @Override
     @NonNull
-    public TaskViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
-        View itemView = LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.row_task_info, parent, false);
+    public TaskViewHolder onCreateViewHolder(@NonNull final LayoutInflater layoutInflater,
+                                             @NonNull final ViewGroup parent) {
+        View itemView = layoutInflater.inflate(R.layout.row_task_info, parent, false);
         return new TaskViewHolder(itemView);
     }
 
@@ -137,11 +142,13 @@ public abstract class TQTask
         if (extStatus != null && extStatus != GrStatus.Completed) {
             String msg;
             if (extStatus == GrStatus.UnexpectedError && e != null) {
+                // UnexpectedError... display the exception
                 msg = e.getLocalizedMessage();
                 if (msg == null) {
                     msg = e.getClass().getSimpleName();
                 }
             } else {
+                // display a formatted clean status message
                 msg = extStatus.getString(context);
             }
 

@@ -48,9 +48,6 @@ public abstract class Task<
         implements BindableItem<BICursor, BIViewHolder>,
                    Serializable {
 
-    public static final int CAT_GOODREADS_IMPORT_ALL = 3;
-    public static final int CAT_GOODREADS_EXPORT_ALL = 4;
-    public static final int CAT_GOODREADS_EXPORT_ONE = 5;
     static final int CAT_LEGACY = 0;
 
     static final String COMPLETED = "S";
@@ -58,7 +55,7 @@ public abstract class Task<
     static final String QUEUED = "Q";
 
     private static final int RETRY_LIMIT = 15;
-    private static final long serialVersionUID = -5370989347500969258L;
+    private static final long serialVersionUID = 8778331354471500293L;
 
     @NonNull
     private final String mDescription;

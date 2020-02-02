@@ -42,7 +42,7 @@ public class GrNoIsbnEvent
         extends GrSendBookEvent
         implements TipManager.TipOwner {
 
-    private static final long serialVersionUID = -8615058337902218680L;
+    private static final long serialVersionUID = -5372916976117578861L;
 
     public GrNoIsbnEvent(@NonNull final Context context,
                          final long bookId) {

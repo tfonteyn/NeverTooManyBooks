@@ -42,8 +42,8 @@ class LegacyViewHolder
 
     LegacyViewHolder(@NonNull final Context context) {
         super(new LinearLayout(context));
-        LinearLayout view = (LinearLayout) itemView;
 
+        LinearLayout view = (LinearLayout) itemView;
         view.setOrientation(LinearLayout.VERTICAL);
 
         ViewGroup.LayoutParams margins = new LinearLayout.LayoutParams(

@@ -72,7 +72,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.ReviewField;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
@@ -94,8 +93,6 @@ class ImportLegacyTask
     /** Log tag. */
     private static final String TAG = "ImportLegacyTask";
 
-    private static final long serialVersionUID = 2944686967082059350L;
-
     /**
      * Number of books to retrieve in one batch; we are encouraged to make fewer calls, so
      * setting this number high is good. 50 seems to take several seconds to retrieve, so it
@@ -106,6 +103,8 @@ class ImportLegacyTask
     /** last time we synced with Goodreads. */
     private static final String PREFS_LAST_SYNC_DATE =
             GoodreadsHandler.PREF_PREFIX + "LastSyncDate";
+
+    private static final long serialVersionUID = -8038457629280667516L;
     /**
      * Date before which updates are irrelevant.
      * Can be {@code null}, which implies all dates are included.
@@ -843,8 +842,7 @@ class ImportLegacyTask
 
     @Override
     public int getCategory() {
-
-        return Task.CAT_GOODREADS_IMPORT_ALL;
+        return TQTask.CAT_IMPORT_ALL;
     }
 
     /**

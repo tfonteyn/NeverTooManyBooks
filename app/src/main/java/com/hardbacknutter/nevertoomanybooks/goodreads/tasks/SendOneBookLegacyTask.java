@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 
 /**
  * Task to send a single books details to Goodreads.
@@ -49,8 +49,7 @@ public class SendOneBookLegacyTask
 
     /** Log tag. */
     private static final String TAG = "SendOneBookLegacyTask";
-
-    private static final long serialVersionUID = 2715001057868693159L;
+    private static final long serialVersionUID = -7285893840841719107L;
 
     /** id of book to send. */
     private final long mBookId;
@@ -95,6 +94,6 @@ public class SendOneBookLegacyTask
 
     @Override
     public int getCategory() {
-        return Task.CAT_GOODREADS_EXPORT_ONE;
+        return TQTask.CAT_EXPORT_ONE;
     }
 }

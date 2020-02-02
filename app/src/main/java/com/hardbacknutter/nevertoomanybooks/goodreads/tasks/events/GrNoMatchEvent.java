@@ -42,7 +42,8 @@ public class GrNoMatchEvent
         extends GrSendBookEvent
         implements TipManager.TipOwner {
 
-    private static final long serialVersionUID = 7618084144814445823L;
+
+    private static final long serialVersionUID = -3990635074220791456L;
 
     public GrNoMatchEvent(@NonNull final Context context,
                           final long bookId) {

@@ -57,10 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 public abstract class SendBooksLegacyTaskBase
         extends TQTask {
 
-    private static final long serialVersionUID = 5950331916209877890L;
-
     /** wait time before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
+    private static final long serialVersionUID = -625429251891312453L;
     /** Number of books with no ISBN. */
     int mNoIsbn;
     /** Number of books that had ISBN but could not be found. */

@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import java.io.Closeable;
 import java.util.Date;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT_COUNT;
@@ -161,7 +162,7 @@ public final class TasksCursor
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
-            task = new LegacyTask();
+            task = new LegacyTask(App.getLocalizedAppContext());
         }
         task.setId(getId());
         return task;

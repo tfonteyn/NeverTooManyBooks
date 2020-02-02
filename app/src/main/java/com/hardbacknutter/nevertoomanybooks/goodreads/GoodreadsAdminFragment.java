@@ -45,12 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.GoodreadsTaskModel;
 
 /**
- * TEST: all functions here.
+ * Disabled the progress dialog as it's not actually needed for now.
+ * But leaving the code for future use.
  */
 public class GoodreadsAdminFragment
         extends Fragment {
@@ -58,7 +58,7 @@ public class GoodreadsAdminFragment
     /** Fragment manager tag. */
     public static final String TAG = "GoodreadsAdminFragment";
 
-    private ProgressDialogFragment mProgressDialog;
+//    private ProgressDialogFragment mProgressDialog;
 
     /** ViewModel for task control. */
     private GoodreadsTaskModel mGoodreadsTaskModel;
@@ -77,14 +77,14 @@ public class GoodreadsAdminFragment
 
         mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
         mGoodreadsTaskModel.getTaskProgressMessage().observe(getViewLifecycleOwner(), message -> {
-            if (mProgressDialog != null) {
-                mProgressDialog.onProgress(message);
-            }
+//            if (mProgressDialog != null) {
+//                mProgressDialog.onProgress(message);
+//            }
         });
         mGoodreadsTaskModel.getTaskFinishedMessage().observe(getViewLifecycleOwner(), message -> {
-            if (mProgressDialog != null) {
-                mProgressDialog.dismiss();
-            }
+//            if (mProgressDialog != null) {
+//                mProgressDialog.dismiss();
+//            }
 
             //noinspection ConstantConditions
             String msg = GoodreadsHandler.handleResult(getContext(), message);
@@ -97,11 +97,12 @@ public class GoodreadsAdminFragment
         });
 
         FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        if (mProgressDialog != null) {
-            // reconnect after a fragment restart
-            mProgressDialog.setCancellable(mGoodreadsTaskModel.getTask());
-        }
+//        mProgressDialog = (ProgressDialogFragment)
+//               fm.findFragmentByTag(ProgressDialogFragment.TAG);
+//        if (mProgressDialog != null) {
+//            // reconnect after a fragment restart
+//            mProgressDialog.setCancellable(mGoodreadsTaskModel.getTask());
+//        }
 
         View root = getView();
 
@@ -133,12 +134,12 @@ public class GoodreadsAdminFragment
         TaskBase<Void, GrStatus> task =
                 new ImportTask(isSync, mGoodreadsTaskModel.getTaskListener());
 
-        mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.gr_title_sync_with_goodreads, false, false, 0);
-        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
+//        mProgressDialog = ProgressDialogFragment
+//                .newInstance(R.string.gr_title_sync_with_goodreads, false, false, 0);
+//        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mGoodreadsTaskModel.setTask(task);
-        mProgressDialog.setCancellable(task);
+//        mProgressDialog.setCancellable(task);
         task.execute();
     }
 
@@ -149,12 +150,12 @@ public class GoodreadsAdminFragment
         TaskBase<Void, GrStatus> task =
                 new SendBooksTask(updatesOnly, mGoodreadsTaskModel.getTaskListener());
 
-        mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.gr_title_send_book, false, false, 0);
-        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
+//        mProgressDialog = ProgressDialogFragment
+//                .newInstance(R.string.gr_title_send_book, false, false, 0);
+//        mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
 
         mGoodreadsTaskModel.setTask(task);
-        mProgressDialog.setCancellable(task);
+//        mProgressDialog.setCancellable(task);
         task.execute();
     }
 }

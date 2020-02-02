@@ -27,8 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -39,36 +39,36 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 /**
- * Class to wrap events that can not be de-serialized so that the EventsCursor *always*
- * returns a valid Event.
- *
- * <strong>Note:</strong> texts are hardcoded here. They are unlikely to ever
- * be seen by the user and destined to be removed altogether soon-ish.
+ * Class to wrap events that can not be de-serialized so that a {@link EventsCursor} always
+ * returns a valid {@link Event}.
  */
 public class LegacyEvent
         extends Event<EventsCursor, LegacyViewHolder> {
 
+
     private static final long serialVersionUID = 585493755218719498L;
 
-    LegacyEvent() {
-        super("Legacy Event");
+    /**
+     * Constructor.
+     */
+    LegacyEvent(@NonNull final Context context) {
+        super(context.getString(R.string.legacy_record));
     }
 
     @NonNull
     @Override
-    public LegacyViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
+    public LegacyViewHolder onCreateViewHolder(@NonNull final LayoutInflater layoutInflater,
+                                               @NonNull final ViewGroup parent) {
         return new LegacyViewHolder(parent.getContext());
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull final LegacyViewHolder holder,
                                  @NonNull final EventsCursor invalid,
                                  @NonNull final DAO db) {
-
-        holder.tv1.setText("Legacy Placeholder for Event #" + getId());
-        holder.tv2.setText("This event is obsolete and can not be recovered."
-                           + " It is advisable to delete it.");
+        Context context = holder.itemView.getContext();
+        holder.tv1.setText(context.getString(R.string.legacy_record, getId()));
+        holder.tv2.setText(context.getString(R.string.legacy_description));
     }
 
     @Override

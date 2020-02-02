@@ -39,11 +39,11 @@ public class EventsCursorAdapter
         extends BindableItemCursorAdapter<Event, EventsCursor> {
 
     /**
-     * Constructor; calls superclass and allocates an Inflater for later use.
+     * Constructor.
      *
      * @param context Current context
      * @param cursor  Cursor to use as source
-     * @param db
+     * @param db      Database Access
      */
     public EventsCursorAdapter(@NonNull final Context context,
                                @NonNull final Cursor cursor,

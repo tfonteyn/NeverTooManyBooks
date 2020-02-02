@@ -113,31 +113,18 @@ class QueueDAO
     private static final String SQL_COUNT_EVENTS =
             "SELECT COUNT(*) FROM " + TBL_EVENT + " WHERE " + KEY_TASK_ID + "=?";
 
-    String baseSql = "SELECT j.* FROM " + TBL_QUEUE + " q"
-                     + " JOIN " + TBL_TASK + " j ON j." + KEY_QUEUE_ID + " = q." + KEY_PK_ID
-                     + " WHERE j." + KEY_STATUS_CODE + "= 'Q'  AND q." + KEY_NAME + "=?";
     private static final String SQL_NEXT_TASK_BASE =
             "SELECT t.* FROM " + TBL_QUEUE + " q"
             + " JOIN " + TBL_TASK + " t ON t." + KEY_QUEUE_ID + " = q." + KEY_PK_ID
             + " WHERE t." + KEY_STATUS_CODE + "= '" + Task.QUEUED + "'"
             + " AND q." + KEY_NAME + "=?";
 
-    String canRunSql = baseSql
-                       + " AND j." + KEY_RETRY_DATE + " <= ?"
-                       + " ORDER BY "
-                       + KEY_PRIORITY + " ASC," + KEY_RETRY_DATE + " ASC," + KEY_PK_ID + " ASC"
-                       + " LIMIT 1";
     /** Query to check for the highest priority task that can run now. */
     private static final String SQL_TASK_WHICH_CAN_RUN_NOW =
             SQL_NEXT_TASK_BASE + " AND t." + KEY_RETRY_DATE + "<=?"
             + " ORDER BY " + KEY_PRIORITY + ',' + KEY_RETRY_DATE + ',' + KEY_PK_ID
             + " LIMIT 1";
 
-    String canRunSqlwait = baseSql
-                           + "  AND j." + KEY_RETRY_DATE + " > ?"
-                           + "  ORDER BY "
-                           + KEY_RETRY_DATE + " ASC," + KEY_PRIORITY + " ASC," + KEY_PK_ID + " ASC"
-                           + " LIMIT 1";
     /** Query to check for the first task that is waiting to run. */
     private static final String SQL_TASK_WHICH_IS_WAITING =
             SQL_NEXT_TASK_BASE + " AND t." + KEY_RETRY_DATE + ">?"

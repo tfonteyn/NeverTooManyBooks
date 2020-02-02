@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class GrSendBookEvent
         extends Event<EventsCursor, GrSendBookEvent.BookEventViewHolder> {
 
-    private static final long serialVersionUID = 6243512830928679140L;
+    private static final long serialVersionUID = 6080239141221330342L;
     private final long mBookId;
 
     /**
@@ -102,10 +102,9 @@ public class GrSendBookEvent
 
     @Override
     @NonNull
-    public BookEventViewHolder onCreateViewHolder(@NonNull final ViewGroup parent) {
-        View itemView = LayoutInflater
-                .from(parent.getContext())
-                .inflate(R.layout.row_event_info, parent, false);
+    public BookEventViewHolder onCreateViewHolder(@NonNull final LayoutInflater layoutInflater,
+                                                  @NonNull final ViewGroup parent) {
+        View itemView = layoutInflater.inflate(R.layout.row_event_info, parent, false);
         return new BookEventViewHolder(itemView);
     }
 

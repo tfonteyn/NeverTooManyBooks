@@ -54,7 +54,7 @@ public abstract class Event<
         implements BindableItem<BICursor, BIViewHolder>,
                    Serializable {
 
-    private static final long serialVersionUID = 6196815149284979372L;
+    private static final long serialVersionUID = 7879945038246273501L;
     private long mId;
 
     @NonNull

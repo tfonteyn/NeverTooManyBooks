@@ -38,8 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class Http404Exception
         extends Exception {
 
-    private static final long serialVersionUID = -6134950763374301726L;
-
+    private static final long serialVersionUID = 2676079698072569074L;
     @NonNull
     private final URL mUrl;
 

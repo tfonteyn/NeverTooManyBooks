@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
+import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 
 /**
  * Background task class to send all books in the database to Goodreads.
@@ -51,14 +51,11 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.Task;
 class SendBooksLegacyTask
         extends SendBooksLegacyTaskBase {
 
-    private static final long serialVersionUID = -1933000305276643875L;
     /** Log tag. */
     private static final String TAG = "SendBooksLegacyTask";
+    private static final long serialVersionUID = -789131278094482961L;
 
-    /**
-     * Flag indicating if we should only send UPDATED books to Goodreads;
-     * {@code false} == all books.
-     */
+    /** Flag: send only the updated, or all books. */
     private final boolean mUpdatesOnly;
 
     /** Last book id processed. */
@@ -136,7 +133,7 @@ class SendBooksLegacyTask
 
     @Override
     public int getCategory() {
-        return Task.CAT_GOODREADS_EXPORT_ALL;
+        return TQTask.CAT_EXPORT_ALL;
     }
 
     /**

@@ -37,7 +37,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 public class CredentialsException
         extends Exception {
 
-    private static final long serialVersionUID = 4232206649906882515L;
     @SearchSites.Id
     private final int mSite;
 
