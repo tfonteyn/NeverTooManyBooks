@@ -933,8 +933,7 @@ public class BooklistAdapter
             if (mReorderTitle) {
                 Context context = mTitleView.getContext();
                 String language = cursorRow.getString(DBDefinitions.KEY_LANGUAGE);
-                title = LocaleUtils.reorderTitle(context, title,
-                                                 LocaleUtils.getLocale(context, language));
+                title = LocaleUtils.reorderTitle(context, title, language);
             }
             mTitleView.setText(title);
 

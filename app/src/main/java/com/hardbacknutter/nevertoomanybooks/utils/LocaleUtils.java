@@ -464,6 +464,18 @@ public final class LocaleUtils {
         return locale;
     }
 
+    @NonNull
+    public static String reorderTitle(@NonNull final Context context,
+                                      @NonNull final String title,
+                                      @NonNull final String language) {
+        Locale locale = LocaleUtils.getLocale(context, language);
+        if (locale != null) {
+            return reorderTitle(context, title, locale);
+        } else {
+            return title;
+        }
+    }
+
     /**
      * Move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
      * This method is case sensitive on purpose.

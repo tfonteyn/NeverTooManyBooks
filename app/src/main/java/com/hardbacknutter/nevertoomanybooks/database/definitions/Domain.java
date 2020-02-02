@@ -217,6 +217,15 @@ public class Domain
     }
 
     /**
+     * Convenience method to check the type of this domain.
+     *
+     * @return {@code true} if this domain is a TYPE_BOOLEAN.
+     */
+    public boolean isBoolean() {
+        return ColumnInfo.TYPE_BOOLEAN.equalsIgnoreCase(mType);
+    }
+
+    /**
      * Check if this domain is pre-prepared for sorting.
      *
      * @return {@code true} if this field should be used as-is for sorting.

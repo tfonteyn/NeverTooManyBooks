@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerFactory;
@@ -423,9 +424,16 @@ public class StartupViewModel
                 DBCleaner cleaner = new DBCleaner(mDb);
 
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
-                cleaner.updateLanguages(context);
+                cleaner.languages(context);
+
+                // validate booleans to have 0/1 content (could do just ALL_TABLES)
+                cleaner.booleanColumns(DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.TBL_AUTHORS,
+                                       DBDefinitions.TBL_SERIES);
+
                 // clean/correct style UUID's on Bookshelves for deleted styles.
                 cleaner.bookshelves(context);
+
                 // re-sort positional links
                 cleaner.bookAuthors(context);
                 cleaner.bookSeries(context);

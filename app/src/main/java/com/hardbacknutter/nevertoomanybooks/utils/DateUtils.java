@@ -32,7 +32,6 @@ import android.util.Log;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -139,7 +138,6 @@ public final class DateUtils {
      *
      * @param locales the locales to use
      */
-    @VisibleForTesting
     public static void create(@NonNull final Locale... locales) {
         // The numerical formats are top of the list.
         // SQL based formats

@@ -33,14 +33,16 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -52,65 +54,14 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SIGNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 
 /**
- * Intention is to create cleanup routines for some columns/tables
- * which can be run at upgrades, import, startup
+ * Cleanup routines for some columns/tables which can be run at upgrades, import, startup
  * <p>
  * Work in progress.
- * <p>
- * 5.2.2 BOOKS table:
- * <p>
- * CREATE TABLE books (
- * <p>
- * isbn text,
- * publisher text,
- * date_published date,
- * pages int,
- * notes text,
- * list_price text,
- * location text,
- * read_start date,
- * read_end date,
- * format text,
- * description text,
- * genre text,
- * goodreads_book_id int
- * <p>
- * title text not null,
- * language text default ''
- * <p>
- * rating float not null default 0,
- * anthology int not null default 0,
- * read boolean not null default 0,
- * signed boolean not null default 0,
- * <p>
- * date_added datetime default current_timestamp,
- * last_goodreads_sync_date date default '0000-00-00'
- * last_update_date date default current_timestamp not null)
- * <p>
- * book_uuid text default (lower(hex(randomblob(16)))) not null
- * <p>
- * - anthology, no '2' entries, so seems ok
- * <p>
- * - notes: null, ''
- * - location: null, ''
- * - read-start: null, ''
- * - read-end: null, ''
- * - Goodreads-book-id: null, 0
- * <p>
- * - Goodreads-last-sync: 0000-00-00, ''
- * <p>
- * - signed: 0,1,false,true
- * <p>
- * BOOK_BOOKSHELF
- * - book: null  with bookshelf != 0
  */
 public class DBCleaner {
 
@@ -137,32 +88,36 @@ public class DBCleaner {
 
     /**
      * Do a mass update of any languages not yet converted to ISO codes.
-     *
-     * URGENT: non existing languages...
-     * D/DBCleaner: updateLanguages|Global language update|from=nederlands (limburgs dialect)|to=nederlands (limburgs dialect)
-     * D/DBCleaner: updateLanguages|Global language update|from=nederlands + frans|to=nederlands + frans
+     * Special entries are left untouched; example "Dutch+French" a bilingual edition.
      *
      * @param context Current context
      */
-    public void updateLanguages(@NonNull final Context context) {
-        List<String> names = mDb.getLanguageCodes();
-        for (String name : names) {
-            if (name != null && name.length() > 3) {
-                String iso = LanguageUtils.getISO3FromDisplayName(context, name);
+    public void languages(@NonNull final Context context) {
+        for (String lang : mDb.getLanguageCodes()) {
+            if (lang != null && !lang.isEmpty()) {
+                String iso;
+                if (lang.length() > 3) {
+                    // It's likely a 'display' name of a language.
+                    iso = LanguageUtils.getISO3FromDisplayName(context, lang);
+                } else {
+                    // It's almost certainly a language code
+                    iso = LanguageUtils.getISO3Language(lang);
+                }
+
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "updateLanguages|Global language update"
-                               + "|from=" + name
+                    Log.d(TAG, "languages|Global language update"
+                               + "|from=" + lang
                                + "|to=" + iso);
                 }
-                if (!iso.equals(name)) {
-                    mDb.updateLanguage(name, iso);
+                if (!iso.equals(lang)) {
+                    mDb.updateLanguage(lang, iso);
                 }
             }
         }
     }
 
     /**
-     * Validates the style versus Bookshelf.
+     * Validates {@link Bookshelf} being set to a valid {@link BooklistStyle}.
      *
      * @param context Current context
      */
@@ -172,41 +127,60 @@ public class DBCleaner {
         }
     }
 
-    /* ****************************************************************************************** */
-
-
-    public void maybeUpdate(@NonNull final Context context,
-                            final boolean dryRun) {
-
-        // remove orphan rows
-        bookBookshelf(dryRun);
-
-
-        // make sure these are '0' or '1'
-        booleanCleanup(TBL_BOOKS.getName(), KEY_READ, dryRun);
-        booleanCleanup(TBL_BOOKS.getName(), KEY_SIGNED, dryRun);
-
-        //TODO: books table: search for invalid UUIDs, check if there is a file, rename/remove...
-        // in particular if the UUID is surrounded with '' or ""
+    /**
+     * Validates all boolean columns to contain '0' or '1'.
+     *
+     * @param tables list of tables
+     */
+    public void booleanColumns(@NonNull final TableDefinition... tables) {
+        for (TableDefinition table : tables) {
+            for (Domain domain : table.getDomains()) {
+                if (domain.isBoolean()) {
+                    booleanCleanup(table.getName(), domain.getName());
+                }
+            }
+        }
     }
 
     /**
-     * Remove rows where books are sitting on a {@code null} bookshelf.
+     * Set boolean columns to 0,1.
      *
-     * @param dryRun {@code true} to run the update.
+     * @param table  to check
+     * @param column to check
      */
-    private void bookBookshelf(final boolean dryRun) {
-        String select = "SELECT DISTINCT " + KEY_FK_BOOK
-                        + " FROM " + TBL_BOOK_BOOKSHELF
-                        + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
-        toLog("ENTER", select);
-        if (!dryRun) {
-            String sql = "DELETE " + TBL_BOOK_BOOKSHELF
-                         + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
+    private void booleanCleanup(@NonNull final String table,
+                                @NonNull final String column) {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "booleanCleanup|table=" + table + "|column=" + column);
+        }
+
+        String select = "SELECT DISTINCT " + column + " FROM " + table
+                        + " WHERE " + column + " NOT IN ('0','1')";
+        toLog("booleanCleanup", select);
+
+        String update = "UPDATE " + table + " SET " + column + "=?"
+                        + " WHERE lower(" + column + ") IN ";
+        String sql;
+        sql = update + "('true','t','yes')";
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+            stmt.bindLong(1, 1);
+            int count = stmt.executeUpdateDelete();
+            if (BuildConfig.DEBUG /* always */) {
+                if (count > 0) {
+                    Log.d(TAG, "booleanCleanup|true=" + count);
+                }
             }
-            toLog("EXIT", select);
+        }
+
+        sql = update + "('false','f','no')";
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+            stmt.bindLong(1, 0);
+            int count = stmt.executeUpdateDelete();
+            if (BuildConfig.DEBUG /* always */) {
+                if (count > 0) {
+                    Log.d(TAG, "booleanCleanup|false=" + count);
+                }
+            }
         }
     }
 
@@ -305,36 +279,36 @@ public class DBCleaner {
 
     /* ****************************************************************************************** */
 
-    /**
-     * Set boolean columns to 0,1.
-     *
-     * @param table  to check
-     * @param column to check
-     * @param dryRun {@code true} to run the update.
-     */
-    private void booleanCleanup(@NonNull final String table,
-                                @NonNull final String column,
-                                final boolean dryRun) {
+    public void maybeUpdate(@NonNull final Context context,
+                            final boolean dryRun) {
 
-        String select = "SELECT DISTINCT " + column + " FROM " + table
-                        + " WHERE " + column + " NOT IN ('0','1')";
+        // remove orphan rows
+        bookBookshelf(dryRun);
 
-        toLog("ENTER", select);
-        if (!dryRun) {
-            String sql = "UPDATE " + table + " SET " + column + "=1"
-                         + " WHERE lower(" + column + ") IN ('true','t')";
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            }
-            sql = "UPDATE " + table + " SET " + column + "=0"
-                  + " WHERE lower(" + column + ") IN ('false','f')";
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                stmt.executeUpdateDelete();
-            }
-            toLog("EXIT", select);
-        }
+
+        //TODO: books table: search for invalid UUIDs, check if there is a file, rename/remove...
+        // in particular if the UUID is surrounded with '' or ""
     }
 
+    /**
+     * Remove rows where books are sitting on a {@code null} bookshelf.
+     *
+     * @param dryRun {@code true} to run the update.
+     */
+    private void bookBookshelf(final boolean dryRun) {
+        String select = "SELECT DISTINCT " + KEY_FK_BOOK
+                        + " FROM " + TBL_BOOK_BOOKSHELF
+                        + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
+        toLog("bookBookshelf|ENTER", select);
+        if (!dryRun) {
+            String sql = "DELETE " + TBL_BOOK_BOOKSHELF
+                         + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+                stmt.executeUpdateDelete();
+            }
+            toLog("bookBookshelf|EXIT", select);
+        }
+    }
     /**
      * Convert any {@code null} values to an empty string.
      * <p>
@@ -349,14 +323,14 @@ public class DBCleaner {
                                  final boolean dryRun) {
         String select = "SELECT DISTINCT " + column + " FROM " + table
                         + " WHERE " + column + "=NULL";
-        toLog("ENTER", select);
+        toLog("nullString2empty|ENTER", select);
         if (!dryRun) {
             String sql = "UPDATE " + table + " SET " + column + "=''"
                          + " WHERE " + column + "=NULL";
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
-            toLog("EXIT", select);
+            toLog("nullString2empty|EXIT", select);
         }
     }
 
@@ -371,6 +345,7 @@ public class DBCleaner {
                        @NonNull final String query) {
         if (BuildConfig.DEBUG) {
             try (SynchronizedCursor cursor = mSyncedDb.rawQuery(query, null)) {
+                Log.d(TAG, state + "|row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
                     String field = cursor.getColumnName(0);
                     String value = cursor.getString(0);
