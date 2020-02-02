@@ -643,5 +643,8 @@
     <string name="pt_edit_book_authors_series">Επεξεργασία συγγραφέων και σειρών βιβλίων</string>
     <string name="pt_edit_book_authors_series_tabs">σε ξεχωριστές καρτέλες</string>
     <string name="pt_edit_book_authors_series_popup">σε αναδυόμενες οθόνες</string>
+    <string name="legacy_record">Ανεξέλεγκτη εγγραφή #%1$d</string>
+    <string name="legacy_description">Αυτό το αρχείο είναι ξεπερασμένο και δεν μπορεί να ανακτηθεί. Συνιστάται η διαγραφή του.</string>
+    <string name="book_format_dimensions">Διαστάσεις</string>
 
 </resources>

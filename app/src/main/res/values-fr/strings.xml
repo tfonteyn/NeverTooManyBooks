@@ -653,5 +653,8 @@
     <string name="pt_edit_book_authors_series">Modifier les auteurs et les séries de livres</string>
     <string name="pt_edit_book_authors_series_tabs">dans des onglets séparés</string>
     <string name="pt_edit_book_authors_series_popup">sur les écrans contextuels</string>
+    <string name="legacy_record">Dossier obsolète #%1$d</string>
+    <string name="legacy_description">Cet enregistrement est obsolète et ne peut pas être récupéré. Il est conseillé de le supprimer.</string>
+    <string name="book_format_dimensions">Dimensions</string>
 
 </resources>

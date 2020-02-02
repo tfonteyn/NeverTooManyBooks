@@ -654,5 +654,8 @@
     <string name="pt_edit_book_authors_series">Boekauteurs en -reeksen bewerken</string>
     <string name="pt_edit_book_authors_series_tabs">op afzonderlijke tabbladen</string>
     <string name="pt_edit_book_authors_series_popup">op pop-upschermen</string>
+    <string name="legacy_record">Verouderd record #%1$d</string>
+    <string name="legacy_description">Dit record is verouderd en kan niet worden hersteld. Het is raadzaam om het te verwijderen.</string>
+    <string name="book_format_dimensions">Afmetingen</string>
 
 </resources>

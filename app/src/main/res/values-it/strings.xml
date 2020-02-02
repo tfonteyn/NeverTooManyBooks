@@ -648,5 +648,8 @@
     <string name="pt_edit_book_authors_series">Modifica autori e serie di libri</string>
     <string name="pt_edit_book_authors_series_tabs">in schede separate</string>
     <string name="pt_edit_book_authors_series_popup">su schermi pop-up</string>
+    <string name="legacy_record">Record obsoleto #%1$d</string>
+    <string name="legacy_description">Questo record è obsoleto e non può essere recuperato. Si consiglia di eliminarlo.</string>
+    <string name="book_format_dimensions">Dimensioni</string>
 
 </resources>

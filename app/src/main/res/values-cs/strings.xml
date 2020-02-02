@@ -645,5 +645,8 @@
     <string name="pt_edit_book_authors_series">Upravit autory knih a série</string>
     <string name="pt_edit_book_authors_series_tabs">na samostatných kartách</string>
     <string name="pt_edit_book_authors_series_popup">na vyskakovacích obrazovkách</string>
+    <string name="legacy_record">Zastaralý záznam #%1$d</string>
+    <string name="legacy_description">Tento záznam je zastaralý a nelze jej obnovit. Je vhodné jej odstranit.</string>
+    <string name="book_format_dimensions">Rozměry</string>
 
 </resources>

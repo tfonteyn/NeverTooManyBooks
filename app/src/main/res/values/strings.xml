@@ -299,6 +299,9 @@
         You can find this information at a later date under the “%2$s” section in the settings.
     </string>
 
+    <string name="legacy_record">Obsolete record #%1$d</string>
+    <string name="legacy_description">This record is obsolete and can not be recovered. It is advisable to delete it.</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== authorization/authentication messages ========== -->
     <!-- ####################################################################################### -->
@@ -1246,6 +1249,8 @@
     <!-- book format used if a website indicates it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
 
+    <string name="book_format_dimensions">Dimensions</string>
+
     <!-- Colors; used by mainly for comics. -->
     <string name="book_color_full_color">Colored</string>
     <string name="book_color_uncolored">Black &amp; white</string>
@@ -1617,7 +1622,5 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
-    <string name="book_format_dimensions">Dimensions</string>
-
 
 </resources>

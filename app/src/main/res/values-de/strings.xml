@@ -652,4 +652,7 @@
     <string name="pt_edit_book_authors_series">Buchautoren und -serien bearbeiten</string>
     <string name="pt_edit_book_authors_series_tabs">in separaten Registerkarten</string>
     <string name="pt_edit_book_authors_series_popup">auf Popup-Fenster</string>
+    <string name="legacy_record">Veralteter Datensatz #%1$d</string>
+    <string name="legacy_description">Dieser Datensatz ist veraltet und kann nicht wiederhergestellt werden. Es ist ratsam, es zu löschen.</string>
+    <string name="book_format_dimensions">Abmessungen</string>
 </resources>

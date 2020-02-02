@@ -644,4 +644,7 @@
     <string name="pt_edit_book_authors_series">Edytuj autorów książek i seriale</string>
     <string name="pt_edit_book_authors_series_tabs">w osobnych zakładkach</string>
     <string name="pt_edit_book_authors_series_popup">na ekranach podręcznych</string>
+    <string name="legacy_record">Przestarzały zapis #%1$d</string>
+    <string name="legacy_description">Ten rekord jest przestarzały i nie można go odzyskać. Wskazane jest, aby go usunąć.</string>
+    <string name="book_format_dimensions">Wymiary</string>
 </resources>

@@ -644,5 +644,8 @@
     <string name="pt_edit_book_authors_series">Kitap Yazarlarını ve Serilerini Düzenle</string>
     <string name="pt_edit_book_authors_series_tabs">ayrı sekmelerde</string>
     <string name="pt_edit_book_authors_series_popup">açılır ekranlarda</string>
+    <string name="legacy_record">Eski kayıt #%1$d</string>
+    <string name="legacy_description">Bu kayıt kullanılmıyor ve kurtarılamıyor. Silmeniz önerilir.</string>
+    <string name="book_format_dimensions">Boyutlar</string>
 
 </resources>

@@ -649,5 +649,8 @@
     <string name="pt_edit_book_authors_series">Editar autores de libros y series</string>
     <string name="pt_edit_book_authors_series_tabs">en pestañas separadas</string>
     <string name="pt_edit_book_authors_series_popup">en pantallas emergentes</string>
+    <string name="legacy_record">Registro obsoleto #%1$d</string>
+    <string name="legacy_description">Este registro está obsoleto y no se puede recuperar. Es recomendable eliminarlo.</string>
+    <string name="book_format_dimensions">Dimensiones</string>
 
 </resources>

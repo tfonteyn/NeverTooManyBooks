@@ -644,5 +644,8 @@
     <string name="pt_edit_book_authors_series">Редактировать книгу авторов и серий</string>
     <string name="pt_edit_book_authors_series_tabs">в отдельных вкладках</string>
     <string name="pt_edit_book_authors_series_popup">на всплывающих экранах</string>
+    <string name="legacy_record">Устаревшая запись #%1$d</string>
+    <string name="legacy_description">Эта запись устарела и не может быть восстановлена. Желательно удалить его.</string>
+    <string name="book_format_dimensions">размеры</string>
 
 </resources>
