@@ -40,6 +40,7 @@ import java.util.HashMap;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
 
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyByte;
@@ -55,6 +56,9 @@ import static org.mockito.Mockito.when;
 
 /**
  * <a href="https://github.com/konmik/nucleus/blob/master/nucleus-test-kit/src/main/java/mocks/BundleMock.java">BundleMock</a>
+ *
+ *         // ADDED 2020-02-02: allow storing null values
+ *         doAnswer(put).when(bundle).putString(anyString(), isNull());
  */
 public final class BundleMock {
 
@@ -129,6 +133,8 @@ public final class BundleMock {
         when(bundle.getDouble(anyString())).thenAnswer(get);
         when(bundle.getDouble(anyString(), anyDouble())).thenAnswer(getOrDefault);
 
+        // ADDED 2020-02-02: allow storing null values
+        doAnswer(put).when(bundle).putString(anyString(), isNull());
         doAnswer(put).when(bundle).putString(anyString(), anyString());
         when(bundle.getString(anyString())).thenAnswer(get);
         when(bundle.getString(anyString(), anyString())).thenAnswer(getOrDefault);
