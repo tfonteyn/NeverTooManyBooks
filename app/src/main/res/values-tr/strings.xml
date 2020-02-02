@@ -598,6 +598,7 @@
     <string name="warning_rebuild_orderby_columns">Bu, uygulama yeniden başlatıldığında sıralama verilerini yeniden oluşturacaktır. Devam etmek istediğine emin misin ?</string>
     <string name="pt_bob_list_state_expansion_level">Varsayılan Kitap listesi genişletme</string>
     <string name="menu_level_preferred_collapse">Tercih edilen seviyeye daralt</string>
+    <string name="menu_level_reset">Tercih edilen seviye genişlemesi</string>
     <string name="hint_empty_rating">(Oylanmamış)</string>
     <string name="hint_empty_language">(Doldurulmuş dil yok)</string>
     <string name="hint_empty_series">(Seri yok)</string>

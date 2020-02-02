@@ -598,6 +598,7 @@
     <string name="warning_rebuild_orderby_columns">Это восстановит данные сортировки при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
     <string name="pt_bob_list_state_expansion_level">Расширение списка книг по умолчанию</string>
     <string name="menu_level_preferred_collapse">Свернуть до предпочтительного уровня</string>
+    <string name="menu_level_reset">Предпочтительный уровень расширения</string>
     <string name="hint_empty_rating">(без рейтинга)</string>
     <string name="hint_empty_language">(Язык не указан)</string>
     <string name="hint_empty_series">(Нет серии)</string>

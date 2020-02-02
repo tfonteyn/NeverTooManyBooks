@@ -599,6 +599,7 @@
     <string name="warning_rebuild_orderby_columns">Po restartování aplikace dojde k opětovnému vytvoření třídicích dat. Jste si jistý, že chcete pokračovat ?</string>
     <string name="pt_bob_list_state_expansion_level">Výchozí seznam rozšiřujících knih</string>
     <string name="menu_level_preferred_collapse">Sbalte se na preferovanou úroveň</string>
+    <string name="menu_level_reset">Upřednostňovaná úroveň expanze</string>
     <string name="hint_empty_rating">(Nehodnoceno)</string>
     <string name="hint_empty_language">(Není vyplněn žádný jazyk)</string>
     <string name="hint_empty_series">(Bez série)</string>

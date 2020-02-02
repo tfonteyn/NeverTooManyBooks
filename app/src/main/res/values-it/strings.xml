@@ -602,6 +602,7 @@
     <string name="warning_rebuild_orderby_columns">Ciò ricostruirà i dati di ordinamento al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
     <string name="pt_bob_list_state_expansion_level">Espansione elenco libri predefinito</string>
     <string name="menu_level_preferred_collapse">Comprimi al livello preferito</string>
+    <string name="menu_level_reset">Livello di espansione preferito</string>
     <string name="hint_empty_rating">(Non valutato)</string>
     <string name="hint_empty_language">(Nessuna lingua compilata)</string>
     <string name="hint_empty_series">(Nessuna serie)</string>

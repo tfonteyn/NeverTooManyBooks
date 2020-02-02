@@ -1058,6 +1058,8 @@
     <string name="menu_rebuild_fts">Rebuild FTS</string>
 
     <!-- menu option -->
+    <string name="menu_level_reset">Preferred level expansion</string>
+    <!-- menu option -->
     <string name="menu_level_preferred_expand">Expand to preferred level</string>
     <!-- menu option -->
     <string name="menu_level_preferred_collapse">Collapse to preferred level</string>
