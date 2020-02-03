@@ -67,14 +67,10 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_GOODREADS_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_ISFDB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_LIBRARY_THING;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_OPEN_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_EID_STRIP_INFO_BE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -92,7 +88,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  */
 public class Book
         extends DataManager
-        implements ItemWithTitle {
+        implements ItemWithTitle, NameValueHolder {
 
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
@@ -443,6 +439,11 @@ public class Book
                 nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
             }
         }
+        // explicitly add Amazon if we have a valid ISBN
+        ISBN isbn = ISBN.createISBN(getString(DBDefinitions.KEY_ISBN));
+        if (isbn.isValid(true)) {
+            nativeIds.put(SearchSites.AMAZON, isbn.asText());
+        }
         return nativeIds;
     }
 
@@ -633,6 +634,15 @@ public class Book
         return getString(DBDefinitions.KEY_TITLE);
     }
 
+    public ISBN getValidIsbnOrNull() {
+        ISBN isbn = ISBN.createISBN(getString(DBDefinitions.KEY_ISBN));
+        if (isbn.isValid(true)) {
+            return isbn;
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Convenience method.
      * <p>
@@ -763,12 +773,13 @@ public class Book
      * Called during {@link DAO#insertBook} and {@link DAO#updateBook}.
      *
      * @param context Current context
+     * @param isNew   {@code true} if the book is new
      */
-    public void preprocessForStoring(@NonNull final Context context) {
+    public void preprocessForStoring(@NonNull final Context context,
+                                     final boolean isNew) {
 
         // Handle Language field FIRST, we need it for _OB fields.
         Locale bookLocale = getAndUpdateLocale(context, LocaleUtils.getUserLocale(context), true);
-
 
         // Handle TITLE
         if (containsKey(KEY_TITLE)) {
@@ -796,14 +807,14 @@ public class Book
                         DBDefinitions.KEY_PRICE_PAID_CURRENCY, bundleHelper);
 
         // make sure there are only valid external id's present
-        preprocessExternalIds(context);
+        preprocessExternalIds(context, isNew);
 
         // lastly, cleanup null and blank fields as needed.
-        preprocessNullsAndBlanks();
+        preprocessNullsAndBlanks(isNew);
     }
 
     /**
-     * Helper for {@link #preprocessForStoring(Context)}.
+     * Helper for {@link #preprocessForStoring(Context, boolean)}.
      * <p>
      *
      * @param bookLocale   the book Locale
@@ -836,74 +847,103 @@ public class Book
     }
 
     /**
-     * Helper for {@link #preprocessForStoring(Context)}.
+     * Helper for {@link #preprocessForStoring(Context, boolean)}.
      * <p>
-     * <ul>Remove external id fields which are:
-     * <li>blank: "" or 0</li>
-     * <li>strings when a long is expected.</li>
-     * </ul>
+     * For new books, remove zero values, empty strings and null values
+     * Existing books, replace zero values and empty string with a {@code null}
+     * <p>
+     * Invalid values are always removed.
+     *
+     * Further processing should be done in {@link #preprocessNullsAndBlanks(boolean)}.
      *
      * @param context Current context
+     * @param isNew   {@code true} if the book is new
      */
     @VisibleForTesting
-    void preprocessExternalIds(@NonNull final Context context) {
-        for (Domain domain : new Domain[]{
-                //NEWTHINGS: add new site specific ID: add column
-                DOM_EID_ISFDB,
-                DOM_EID_OPEN_LIBRARY,
-                DOM_EID_LIBRARY_THING,
-                DOM_EID_STRIP_INFO_BE,
-                DOM_EID_GOODREADS_BOOK,
-                }) {
-            String name = domain.getName();
-            if (containsKey(name)) {
-                try {
-                    switch (domain.getType()) {
-                        case ColumnInfo.TYPE_INTEGER:
-                            long v = getLong(name);
-                            if (v < 1) {
-                                remove(name);
-                            }
-                            break;
+    void preprocessExternalIds(@NonNull final Context context,
+                               final boolean isNew) {
+        for (Domain domain : DBDefinitions.NATIVE_ID_DOMAINS) {
+            String key = domain.getName();
+            if (containsKey(key)) {
+                switch (domain.getType()) {
+                    case ColumnInfo.TYPE_INTEGER: {
+                        Object o = get(key);
+                        try {
+                            long v = getLong(key);
 
-                        case ColumnInfo.TYPE_TEXT:
-                            Object o = get(name);
-                            if (o != null && o.toString().isEmpty()) {
-                                remove(name);
-                            }
-                            break;
+                            if (isNew && (o == null || v < 1)) {
+                                // remove zero values, null and empty strings
+                                remove(key);
 
-                        default:
-                            Logger.warnWithStackTrace(context, TAG, "type=" + domain.getType());
-                            break;
+                            } else if (o != null && v < 1) {
+                                // replace zero values and empty string with a null
+                                putNull(key);
+                            }
+
+                        } catch (@NonNull final NumberFormatException e) {
+                            // always remove illegal input
+                            remove(key);
+                            Logger.warn(context, TAG, "preprocessExternalIds"
+                                                      + "|NumberFormatException"
+                                                      + "|name=" + key
+                                                      + "|value=" + o);
+                        }
+                        break;
                     }
-                } catch (@NonNull final NumberFormatException e) {
-                    // remove and log.
-                    remove(name);
-                    Logger.warn(context, TAG, "preprocessExternalIds|name=" + name);
+                    case ColumnInfo.TYPE_TEXT: {
+                        Object o = get(key);
+                        if (isNew && (o == null || o.toString().isEmpty())) {
+                            // remove null and empty strings
+                            remove(key);
+
+                        } else if (o != null && o.toString().isEmpty()) {
+                            // replace empty strings with a null
+                            putNull(key);
+                        }
+
+                        break;
+                    }
+                    default:
+                        Logger.warnWithStackTrace(context, TAG, "type=" + domain.getType());
+                        break;
                 }
             }
         }
     }
 
     /**
-     * Helper for {@link #preprocessForStoring(Context)}.
+     * Helper for {@link #preprocessForStoring(Context, boolean)}.
      *
-     * <ul>Remove fields in this Book, which have a default in the database and
+     * <ul>Fields in this Book, which have a default in the database and
      * <li>which are not allowed to be blank but are</li>
      * <li>which are not allowed to be null but are</li>
      * </ul>
+     *
+     * For new books, remove those keys.
+     * Existing books, replace those keys with the default value for the column.
+     *
+     * <p>
+     * if the book is new: remove those keys,
+     * otherwise make sure the values are reset to their defaults.
+     *
+     * @param isNew {@code true} if the book is new
      */
     @VisibleForTesting
-    void preprocessNullsAndBlanks() {
+    void preprocessNullsAndBlanks(final boolean isNew) {
         for (Domain domain : TBL_BOOKS.getDomains()) {
-            String name = domain.getName();
-            if (containsKey(name) && domain.hasDefault()) {
-                Object value = get(name);
+            String key = domain.getName();
+            if (containsKey(key) && domain.hasDefault()) {
+                Object value = get(key);
                 if ((domain.isNotBlank() && value != null && value.toString().isEmpty())
                     ||
                     ((domain.isNotNull() && value == null))) {
-                    remove(name);
+                    if (isNew) {
+                        remove(key);
+                    } else {
+                        // restore the column to its default value.
+                        //noinspection ConstantConditions
+                        putString(key, domain.getDefault());
+                    }
                 }
             }
         }

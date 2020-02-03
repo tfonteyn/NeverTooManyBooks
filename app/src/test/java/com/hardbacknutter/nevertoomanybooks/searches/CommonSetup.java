@@ -41,6 +41,9 @@ import org.mockito.MockitoAnnotations;
 
 import com.hardbacknutter.nevertoomanybooks.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -91,9 +94,18 @@ public class CommonSetup {
 
         when(mContext.getString(R.string.unknown)).thenReturn("Unknown");
 
-        when(mSharedPreferences.getString(eq("nederlands"), eq("Nederlands"))).thenReturn("nld");
-        when(mSharedPreferences.getString(eq("frans"), eq("Frans"))).thenReturn("fre");
-        when(mSharedPreferences.getString(eq("duits"), eq("Duits"))).thenReturn("ger");
-        when(mSharedPreferences.getString(eq("engels"), eq("Engels"))).thenReturn("eng");
+        when(mSharedPreferences.getString(eq("nederlands"), anyString())).thenReturn("nld");
+        when(mSharedPreferences.getString(eq("frans"), anyString())).thenReturn("fra");
+        when(mSharedPreferences.getString(eq("duits"), anyString())).thenReturn("ger");
+
+        when(mSharedPreferences.getString(eq("engels"), anyString())).thenReturn("eng");
+        when(mSharedPreferences.getString(eq("english"), anyString())).thenReturn("eng");
+
+        when(mSharedPreferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL), anyString()))
+                .thenReturn("https://www.amazon.co.uk");
+        when(mSharedPreferences.getString(eq(IsfdbSearchEngine.PREFS_HOST_URL), anyString()))
+                .thenReturn("http://www.isfdb.org");
+        when(mSharedPreferences.getString(eq(KbNlSearchEngine.PREFS_HOST_URL), anyString()))
+                .thenReturn("http://opc4.kb.nl");
     }
 }

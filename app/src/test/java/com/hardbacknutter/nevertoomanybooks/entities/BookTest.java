@@ -40,6 +40,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.hardbacknutter.nevertoomanybooks.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
@@ -50,6 +53,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PR
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_PAID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_PAID_CURRENCY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
@@ -71,14 +75,6 @@ class BookTest {
         mBundleHelper = BundleMock.mock();
 
         mContext = mock(Context.class);
-    }
-
-    @Test
-    void preprocessForStoring() {
-
-        Book book = new Book(mRawData);
-
-        book.preprocessForStoring(mContext);
     }
 
     @Test
@@ -155,39 +151,81 @@ class BookTest {
 
         assertEquals(45d, book.getDouble(KEY_PRICE_LISTED));
         assertEquals("EUR", book.get(KEY_PRICE_LISTED_CURRENCY));
-
     }
 
     @Test
-    void preprocessExternalIds() {
+    void preprocessExternalIdsForInsert() {
+
+        DBDefinitions.NATIVE_ID_DOMAINS.add(
+                new Domain.Builder("DUMMY", ColumnInfo.TYPE_TEXT).build());
 
         Book book = new Book(mRawData);
         // valid number
         book.put(KEY_EID_ISFDB, 2L);
         // valid string
         book.put(KEY_EID_OPEN_LIBRARY, "test");
-
-        // invalid string, should be long
+        // invalid string for a long field -> should be removed
         book.put(KEY_EID_GOODREADS_BOOK, "test");
 
-        // invalid string, should be long and certainly not blank
+
+        // blank string for a text field -> should be removed
+        book.put("DUMMY", "");
+        // blank string for a long field -> should be removed
         book.put(KEY_EID_LIBRARY_THING, "");
 
-        book.preprocessExternalIds(mContext);
-        // dump(book);
+        book.preprocessExternalIds(mContext, true);
+        dump(book);
 
         assertEquals(2, book.getLong(KEY_EID_ISFDB));
         assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));
+        assertFalse(book.containsKey(KEY_EID_GOODREADS_BOOK));
 
-        assertNull(book.get(KEY_EID_GOODREADS_BOOK));
+        assertFalse(book.containsKey("DUMMY"));
+        assertFalse(book.containsKey(KEY_EID_LIBRARY_THING));
+    }
+
+    @Test
+    void preprocessExternalIdsForUpdate() {
+
+        DBDefinitions.NATIVE_ID_DOMAINS.add(
+                new Domain.Builder("DUMMY", ColumnInfo.TYPE_TEXT).build());
+
+        Book book = new Book(mRawData);
+        // valid number
+        book.put(KEY_EID_ISFDB, 2L);
+        // valid string
+        book.put(KEY_EID_OPEN_LIBRARY, "test");
+        // invalid string for a long field -> should be removed
+        book.put(KEY_EID_GOODREADS_BOOK, "test");
+
+
+        // blank string for a text field -> replace with null
+        book.put("DUMMY", "");
+        // blank string for a long field -> replace with null
+        book.put(KEY_EID_LIBRARY_THING, "");
+
+        book.preprocessExternalIds(mContext, false);
+
+        assertEquals(2, book.getLong(KEY_EID_ISFDB));
+        assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));
+        assertFalse(book.containsKey(KEY_EID_GOODREADS_BOOK));
+
+        assertNull(book.get("DUMMY"));
         assertNull(book.get(KEY_EID_LIBRARY_THING));
     }
 
     @Test
-    void preprocessNullsAndBlanks() {
+    void preprocessNullsAndBlanksForInsert() {
         Book book = new Book(mRawData);
 
-        book.preprocessNullsAndBlanks();
+        book.preprocessNullsAndBlanks(true);
+    }
+
+    @Test
+    void preprocessNullsAndBlanksForUpdate() {
+        Book book = new Book(mRawData);
+
+        book.preprocessNullsAndBlanks(false);
     }
 
     private void dump(@NonNull final Book book) {
