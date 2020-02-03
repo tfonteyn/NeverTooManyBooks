@@ -62,13 +62,13 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TrackedCursor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
@@ -630,16 +630,16 @@ public class BooksOnBookshelfModel
     /**
      * Check if this book is lend out, or not.
      *
-     * @param cursorRow with data
+     * @param rowData with data
      *
      * @return {@code true} if this book is available for lending.
      */
-    public boolean isAvailable(@NonNull final CursorRow cursorRow) {
+    public boolean isAvailable(@NonNull final RowDataHolder rowData) {
         String loanee;
-        if (cursorRow.contains(DBDefinitions.KEY_LOANEE)) {
-            loanee = cursorRow.getString(DBDefinitions.KEY_LOANEE);
+        if (rowData.contains(DBDefinitions.KEY_LOANEE)) {
+            loanee = rowData.getString(DBDefinitions.KEY_LOANEE);
         } else {
-            loanee = mDb.getLoaneeByBookId(cursorRow.getLong(DBDefinitions.KEY_FK_BOOK));
+            loanee = mDb.getLoaneeByBookId(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
         }
         return (loanee == null) || loanee.isEmpty();
     }
@@ -647,25 +647,25 @@ public class BooksOnBookshelfModel
     /**
      * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
      *
-     * @param context   Current context
-     * @param cursorRow with data
+     * @param context Current context
+     * @param rowData with data
      *
      * @return formatted Author name
      */
     @Nullable
     public String getAuthorFromRow(@NonNull final Context context,
-                                   @NonNull final CursorRow cursorRow) {
-        if (cursorRow.contains(DBDefinitions.KEY_FK_AUTHOR)
-            && cursorRow.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0) {
-            Author author = mDb.getAuthor(cursorRow.getLong(DBDefinitions.KEY_FK_AUTHOR));
+                                   @NonNull final RowDataHolder rowData) {
+        if (rowData.contains(DBDefinitions.KEY_FK_AUTHOR)
+            && rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0) {
+            Author author = mDb.getAuthor(rowData.getLong(DBDefinitions.KEY_FK_AUTHOR));
             if (author != null) {
                 return author.getLabel(context);
             }
 
-        } else if (cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND)
+        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_KIND)
                    == BooklistGroup.RowKind.BOOK) {
             List<Author> authors = mDb.getAuthorsByBookId(
-                    cursorRow.getLong(DBDefinitions.KEY_FK_BOOK));
+                    rowData.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
                 return authors.get(0).getLabel(context);
             }
@@ -676,22 +676,22 @@ public class BooksOnBookshelfModel
     /**
      * Get the Series name.
      *
-     * @param cursorRow with book data
+     * @param rowData with book data
      *
      * @return the unformatted Series name (i.e. without the number)
      */
     @Nullable
-    public String getSeriesFromRow(@NonNull final CursorRow cursorRow) {
-        if (cursorRow.contains(DBDefinitions.KEY_FK_SERIES)
-            && cursorRow.getLong(DBDefinitions.KEY_FK_SERIES) > 0) {
-            Series series = mDb.getSeries(cursorRow.getLong(DBDefinitions.KEY_FK_SERIES));
+    public String getSeriesFromRow(@NonNull final RowDataHolder rowData) {
+        if (rowData.contains(DBDefinitions.KEY_FK_SERIES)
+            && rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0) {
+            Series series = mDb.getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
             if (series != null) {
                 return series.getTitle();
             }
-        } else if (cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND)
+        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_KIND)
                    == BooklistGroup.RowKind.BOOK) {
             ArrayList<Series> series =
-                    mDb.getSeriesByBookId(cursorRow.getLong(DBDefinitions.KEY_FK_BOOK));
+                    mDb.getSeriesByBookId(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0).getTitle();
             }

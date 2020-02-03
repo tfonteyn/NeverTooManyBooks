@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
@@ -273,11 +274,11 @@ public class GoodreadsSearchActivity
                 if (mBookId > 0) {
                     try (Cursor cursor = mDb.fetchBookById(mBookId)) {
                         if (cursor.moveToFirst()) {
-                            final CursorRow cursorRow = new CursorRow(cursor);
-                            mAuthorText = cursorRow.getString(
+                            final RowDataHolder rowData = new CursorRow(cursor);
+                            mAuthorText = rowData.getString(
                                     DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
-                            mTitleText = cursorRow.getString(DBDefinitions.KEY_TITLE);
-                            mIsbnText = cursorRow.getString(DBDefinitions.KEY_ISBN);
+                            mTitleText = rowData.getString(DBDefinitions.KEY_TITLE);
+                            mIsbnText = rowData.getString(DBDefinitions.KEY_ISBN);
                         } else {
                             mBookNoLongerExists.setValue(true);
                         }

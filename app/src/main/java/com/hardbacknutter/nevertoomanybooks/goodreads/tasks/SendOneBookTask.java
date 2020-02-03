@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
@@ -105,8 +106,8 @@ public class SendOneBookTask
                     publishProgress(new TaskListener.ProgressMessage(
                             getTaskId(), context.getString(R.string.progress_msg_sending)));
 
-                    final CursorRow cursorRow = new CursorRow(cursor);
-                    result = apiHandler.sendOneBook(context, db, cursorRow);
+                    final RowDataHolder rowData = new CursorRow(cursor);
+                    result = apiHandler.sendOneBook(context, db, rowData);
                     if (result == GrStatus.Completed) {
                         // Record the update
                         db.setGoodreadsSyncDate(mBookId);

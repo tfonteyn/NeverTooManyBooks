@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -338,13 +339,13 @@ class ImportLegacyTask
 
             if (found) {
                 // If found, update all related books
-                final CursorRow cursorRow = new CursorRow(cursor);
+                final RowDataHolder rowData = new CursorRow(cursor);
                 do {
                     // Check for abort
                     if (isAborting()) {
                         break;
                     }
-                    updateBook(context, db, cursorRow, review);
+                    updateBook(context, db, rowData, review);
                 } while (cursor.moveToNext());
             } else {
                 // Create the book
@@ -413,7 +414,7 @@ class ImportLegacyTask
      */
     private void updateBook(@NonNull final Context context,
                             @NonNull final DAO db,
-                            @NonNull final CursorRow cursorRow,
+                            @NonNull final RowDataHolder rowData,
                             @NonNull final Bundle review) {
 
 
@@ -424,7 +425,7 @@ class ImportLegacyTask
             // then don't bother updating book.
             // This typically happens if the last update in Goodreads was from us.
             // Get last date book was sent to Goodreads (may be null)
-            String lastGrSync = cursorRow.getString(
+            String lastGrSync = rowData.getString(
                     DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE);
             if (lastUpdate != null && lastUpdate.compareTo(lastGrSync) < 0) {
                 return;
@@ -433,7 +434,7 @@ class ImportLegacyTask
 
         // We build a new book bundle each time since it will build on the existing
         // data for the given book (taken from the cursor), not just replace it.
-        long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
+        long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
         Book book = new Book();
         book.putAll(buildBundle(context, db, bookId, review));
         // failures to update are ignored.

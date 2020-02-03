@@ -51,7 +51,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
@@ -253,16 +252,16 @@ public class Author
      * Full constructor.
      *
      * @param id        ID of the Author in the database.
-     * @param cursorRow with data
+     * @param rowData with data
      */
     public Author(final long id,
-                  @NonNull final CursorRow cursorRow) {
+                  @NonNull final RowDataHolder rowData) {
         mId = id;
-        mFamilyName = cursorRow.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
-        mGivenNames = cursorRow.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-        mIsComplete = cursorRow.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-        if (cursorRow.contains(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
-            mType = cursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
+        mFamilyName = rowData.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+        mGivenNames = rowData.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
+        mIsComplete = rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+        if (rowData.contains(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
+            mType = rowData.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
         }
     }
 

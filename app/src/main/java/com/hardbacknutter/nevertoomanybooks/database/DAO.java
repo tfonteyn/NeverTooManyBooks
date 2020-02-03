@@ -79,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
@@ -98,6 +99,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_CSV;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
@@ -773,15 +775,15 @@ public class DAO
 
         ArrayList<TocEntry> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(sql, params)) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 TocEntry tocEntry =
-                        new TocEntry(cursorRow.getLong(KEY_PK_ID),
+                        new TocEntry(rowData.getLong(KEY_PK_ID),
                                      author,
-                                     cursorRow.getString(KEY_TITLE),
-                                     cursorRow.getString(KEY_DATE_FIRST_PUBLICATION),
-                                     cursorRow.getString(KEY_TOC_TYPE).charAt(0),
-                                     cursorRow.getInt(KEY_BOOK_COUNT));
+                                     rowData.getString(KEY_TITLE),
+                                     rowData.getString(KEY_DATE_FIRST_PUBLICATION),
+                                     rowData.getString(KEY_TOC_TYPE).charAt(0),
+                                     rowData.getInt(KEY_BOOK_COUNT));
                 list.add(tocEntry);
             }
         }
@@ -1507,26 +1509,26 @@ public class DAO
                                       final long bookId,
                                       @NonNull final Book book) {
 
-        if (book.containsKey(UniqueId.BKEY_BOOKSHELF_ARRAY)) {
+        if (book.contains(UniqueId.BKEY_BOOKSHELF_ARRAY)) {
             insertBookBookshelf(context, bookId, book);
         }
 
-        if (book.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)) {
+        if (book.contains(UniqueId.BKEY_AUTHOR_ARRAY)) {
             insertBookAuthors(context, bookId,
                               book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
         }
 
-        if (book.containsKey(UniqueId.BKEY_SERIES_ARRAY)) {
+        if (book.contains(UniqueId.BKEY_SERIES_ARRAY)) {
             insertBookSeries(context, bookId, book.getLocale(context),
                              book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY));
         }
 
-        if (book.containsKey(UniqueId.BKEY_TOC_ENTRY_ARRAY)) {
+        if (book.contains(UniqueId.BKEY_TOC_ENTRY_ARRAY)) {
             // update: toc entries are two steps away; they can exist in other books
             updateOrInsertTOC(context, bookId, book);
         }
 
-        if (book.containsKey(KEY_LOANEE)
+        if (book.contains(KEY_LOANEE)
             && !book.getString(KEY_LOANEE).isEmpty()) {
             updateOrInsertLoan(bookId, book.getString(KEY_LOANEE));
         }
@@ -2003,14 +2005,14 @@ public class DAO
         ArrayList<TocEntry> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new TocEntry(cursorRow.getLong(KEY_PK_ID),
-                                      new Author(cursorRow.getLong(KEY_FK_AUTHOR), cursorRow),
-                                      cursorRow.getString(KEY_TITLE),
-                                      cursorRow.getString(KEY_DATE_FIRST_PUBLICATION),
+                list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
+                                      new Author(rowData.getLong(KEY_FK_AUTHOR), rowData),
+                                      rowData.getString(KEY_TITLE),
+                                      rowData.getString(KEY_DATE_FIRST_PUBLICATION),
                                       TocEntry.Type.TYPE_BOOK,
-                                      cursorRow.getInt(KEY_BOOK_COUNT)));
+                                      rowData.getInt(KEY_BOOK_COUNT)));
             }
         }
         return list;
@@ -2132,9 +2134,9 @@ public class DAO
         ArrayList<Author> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.AUTHORS_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Author(cursorRow.getLong(KEY_PK_ID), cursorRow));
+                list.add(new Author(rowData.getLong(KEY_PK_ID), rowData));
             }
         }
         return list;
@@ -2152,9 +2154,9 @@ public class DAO
         ArrayList<Series> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.SERIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Series(cursorRow.getLong(KEY_PK_ID), cursorRow));
+                list.add(new Series(rowData.getLong(KEY_PK_ID), rowData));
             }
         }
         return list;
@@ -2379,8 +2381,8 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.BOOKSHELF_BY_NAME,
                                                 new String[]{name})) {
             if (cursor.moveToFirst()) {
-                final CursorRow cursorRow = new CursorRow(cursor);
-                return new Bookshelf(cursorRow.getLong(KEY_PK_ID), cursorRow);
+                final RowDataHolder rowData = new CursorRow(cursor);
+                return new Bookshelf(rowData.getLong(KEY_PK_ID), rowData);
             } else {
                 return null;
             }
@@ -2466,9 +2468,9 @@ public class DAO
                      + " ORDER BY lower(" + KEY_BOOKSHELF + ')' + COLLATION;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Bookshelf(cursorRow.getLong(KEY_PK_ID), cursorRow));
+                list.add(new Bookshelf(rowData.getLong(KEY_PK_ID), rowData));
             }
         }
         return list;
@@ -2485,9 +2487,9 @@ public class DAO
         ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.BOOKSHELVES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                list.add(new Bookshelf(cursorRow.getLong(KEY_PK_ID), cursorRow));
+                list.add(new Bookshelf(rowData.getLong(KEY_PK_ID), rowData));
             }
             return list;
         }
@@ -2511,10 +2513,10 @@ public class DAO
                      + " ORDER BY " + KEY_PK_ID;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                long id = cursorRow.getLong(KEY_PK_ID);
-                String uuid = cursorRow.getString(KEY_UUID);
+                long id = rowData.getLong(KEY_PK_ID);
+                String uuid = rowData.getString(KEY_UUID);
                 list.put(uuid, new BooklistStyle(id, uuid));
             }
         }
@@ -3030,8 +3032,8 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(SqlSelect.SERIES_BY_ID,
                                                 new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
-                final CursorRow cursorRow = new CursorRow(cursor);
-                return new Series(id, cursorRow);
+                final RowDataHolder rowData = new CursorRow(cursor);
+                return new Series(id, rowData);
             } else {
                 return null;
             }
@@ -3482,7 +3484,7 @@ public class DAO
         int colTOCEntryAuthorInfo = -2;
         int colTOCEntryInfo = -2;
 
-        final CursorRow cursorRow = new CursorRow(cursor);
+        final RowDataHolder rowData = new CursorRow(cursor);
         // Process each book
         while (cursor.moveToNext()) {
             // Reset authors/series/title
@@ -3490,12 +3492,12 @@ public class DAO
             seriesText.setLength(0);
             titleText.setLength(0);
 
-            titleText.append(cursorRow.getString(KEY_TITLE)).append(";");
+            titleText.append(rowData.getString(KEY_TITLE)).append(";");
 
             // Get list of authors
             try (Cursor authors = sSyncedDb.rawQuery(
                     SqlFTS.GET_AUTHORS_BY_BOOK_ID,
-                    new String[]{String.valueOf(cursorRow.getLong(KEY_PK_ID))})) {
+                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndex(KEY_AUTHOR_GIVEN_NAMES);
@@ -3515,7 +3517,7 @@ public class DAO
             // Get list of series
             try (Cursor series = sSyncedDb.rawQuery(
                     SqlFTS.GET_SERIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(cursorRow.getLong(KEY_PK_ID))})) {
+                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
                 // Get column indexes, if not already got
                 if (colSeriesInfo < 0) {
                     colSeriesInfo = series.getColumnIndexOrThrow(SqlFTS.KEY_SERIES_INFO);
@@ -3530,7 +3532,7 @@ public class DAO
             // Get list of anthology data (author and title)
             try (Cursor tocEntries = sSyncedDb.rawQuery(
                     SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(cursorRow.getLong(KEY_PK_ID))})) {
+                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
                 // Get column indexes, if not already got
                 if (colTOCEntryAuthorInfo < 0) {
                     colTOCEntryAuthorInfo =
@@ -3553,14 +3555,14 @@ public class DAO
                 bindStringOrNull(stmt, 1, authorText.toString());
                 bindStringOrNull(stmt, 2, titleText.toString());
                 bindStringOrNull(stmt, 3, seriesText.toString());
-                bindStringOrNull(stmt, 4, cursorRow.getString(KEY_DESCRIPTION));
-                bindStringOrNull(stmt, 5, cursorRow.getString(KEY_PRIVATE_NOTES));
-                bindStringOrNull(stmt, 6, cursorRow.getString(KEY_PUBLISHER));
-                bindStringOrNull(stmt, 7, cursorRow.getString(KEY_GENRE));
-                bindStringOrNull(stmt, 8, cursorRow.getString(KEY_LOCATION));
-                bindStringOrNull(stmt, 9, cursorRow.getString(KEY_ISBN));
+                bindStringOrNull(stmt, 4, rowData.getString(KEY_DESCRIPTION));
+                bindStringOrNull(stmt, 5, rowData.getString(KEY_PRIVATE_NOTES));
+                bindStringOrNull(stmt, 6, rowData.getString(KEY_PUBLISHER));
+                bindStringOrNull(stmt, 7, rowData.getString(KEY_GENRE));
+                bindStringOrNull(stmt, 8, rowData.getString(KEY_LOCATION));
+                bindStringOrNull(stmt, 9, rowData.getString(KEY_ISBN));
                 // DOM_FTS_BOOKS_PK
-                stmt.bindLong(10, cursorRow.getLong(KEY_PK_ID));
+                stmt.bindLong(10, rowData.getLong(KEY_PK_ID));
 
                 stmt.execute();
             }
@@ -4724,7 +4726,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dot(KEY_DATE_PUBLISHED)
 
                 + ',' + "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')"
-                + " AS " + KEY_BOOKSHELF
+                + " AS " + KEY_BOOKSHELF_CSV
 
                 + " FROM " + TBL_BOOKS.ref()
                 + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)

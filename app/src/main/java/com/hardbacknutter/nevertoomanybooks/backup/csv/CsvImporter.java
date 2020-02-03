@@ -238,8 +238,8 @@ public class CsvImporter
         // BC Version 1->3.3 export with family_name and author_id.
         // BC Version 3.4+ do not; latest versions make an attempt at escaping
         // characters etc to preserve formatting.
-        boolean fullEscaping = !book.containsKey(DBDefinitions.KEY_FK_AUTHOR)
-                               || !book.containsKey(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+        boolean fullEscaping = !book.contains(DBDefinitions.KEY_FK_AUTHOR)
+                               || !book.contains(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
 
         // Start after headings.
         int row = 1;
@@ -458,10 +458,10 @@ public class CsvImporter
         // but old files might contain LEGACY_BOOKSHELF_TEXT_COLUMN (and LEGACY_BOOKSHELF_ID)
         // Both are CSV formatted
         String encodedList = null;
-        if (book.containsKey(DBDefinitions.KEY_BOOKSHELF)) {
+        if (book.contains(DBDefinitions.KEY_BOOKSHELF)) {
             encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
 
-        } else if (book.containsKey(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
+        } else if (book.contains(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
             encodedList = book.getString(LEGACY_BOOKSHELF_TEXT_COLUMN);
         }
 
@@ -505,14 +505,14 @@ public class CsvImporter
         } else {
             authors = new ArrayList<>();
 
-            if (book.containsKey(KEY_AUTHOR_FORMATTED)) {
+            if (book.contains(KEY_AUTHOR_FORMATTED)) {
                 String a = book.getString(KEY_AUTHOR_FORMATTED);
                 if (!a.isEmpty()) {
                     authors.add(Author.fromString(a));
                 }
                 book.remove(KEY_AUTHOR_FORMATTED);
 
-            } else if (book.containsKey(KEY_AUTHOR_FAMILY_NAME)) {
+            } else if (book.contains(KEY_AUTHOR_FAMILY_NAME)) {
                 String family = book.getString(KEY_AUTHOR_FAMILY_NAME);
                 if (!family.isEmpty()) {
                     // given will be "" if it's not present
@@ -522,7 +522,7 @@ public class CsvImporter
                 book.remove(KEY_AUTHOR_FAMILY_NAME);
                 book.remove(KEY_AUTHOR_GIVEN_NAMES);
 
-            } else if (book.containsKey(OLD_STYLE_AUTHOR_NAME)) {
+            } else if (book.contains(OLD_STYLE_AUTHOR_NAME)) {
                 String a = book.getString(OLD_STYLE_AUTHOR_NAME);
                 if (!a.isEmpty()) {
                     authors.add(Author.fromString(a));
@@ -567,7 +567,7 @@ public class CsvImporter
         } else {
             series = new ArrayList<>();
 
-            if (book.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
+            if (book.contains(DBDefinitions.KEY_SERIES_TITLE)) {
                 String title = book.getString(DBDefinitions.KEY_SERIES_TITLE);
                 if (!title.isEmpty()) {
                     Series s = new Series(title);
@@ -771,7 +771,7 @@ public class CsvImporter
                                       @NonNull final String... names)
             throws ImportException {
         for (String name : names) {
-            if (book.containsKey(name)) {
+            if (book.contains(name)) {
                 return;
             }
         }
@@ -858,13 +858,13 @@ public class CsvImporter
             }
 
             // Get the UUID, and remove from collection if null/blank
-            if (book.containsKey(DBDefinitions.KEY_BOOK_UUID)) {
+            if (book.contains(DBDefinitions.KEY_BOOK_UUID)) {
                 uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
                 if (uuid.isEmpty()) {
                     // Remove any blank KEY_BOOK_UUID column
                     book.remove(DBDefinitions.KEY_BOOK_UUID);
                 }
-            } else if (book.containsKey(DBDefinitions.KEY_UUID)) {
+            } else if (book.contains(DBDefinitions.KEY_UUID)) {
                 // read, remove and store (if not empty) as KEY_BOOK_UUID
                 uuid = book.getString(DBDefinitions.KEY_UUID);
                 book.remove(DBDefinitions.KEY_UUID);

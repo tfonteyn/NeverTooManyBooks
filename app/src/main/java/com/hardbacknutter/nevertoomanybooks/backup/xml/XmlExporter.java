@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
@@ -619,17 +620,17 @@ public class XmlExporter
               .append(">\n");
 
         try (Cursor cursor = mDb.fetchAuthors()) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 writer.append('<' + XmlTags.XML_AUTHOR)
-                      .append(id(cursorRow.getLong(DBDefinitions.KEY_PK_ID)))
+                      .append(id(rowData.getLong(DBDefinitions.KEY_PK_ID)))
 
                       .append(attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
-                                   cursorRow.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)))
+                                   rowData.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)))
                       .append(attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
-                                   cursorRow.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)))
+                                   rowData.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)))
                       .append(attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
-                                   cursorRow.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)))
+                                   rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)))
                       .append("/>\n");
                 count++;
             }
@@ -658,14 +659,14 @@ public class XmlExporter
               .append(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 writer.append('<' + XmlTags.XML_SERIES)
-                      .append(id(cursorRow.getLong(DBDefinitions.KEY_PK_ID)))
+                      .append(id(rowData.getLong(DBDefinitions.KEY_PK_ID)))
                       .append(attr(DBDefinitions.KEY_SERIES_TITLE,
-                                   cursorRow.getString(DBDefinitions.KEY_SERIES_TITLE)))
+                                   rowData.getString(DBDefinitions.KEY_SERIES_TITLE)))
                       .append(attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
-                                   cursorRow.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
+                                   rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE)))
                       .append("/>\n");
             }
         }
@@ -722,95 +723,95 @@ public class XmlExporter
               .append(">\n");
 
         try (Cursor cursor = mDb.fetchBooksForExport(mExportHelper.getDateFrom())) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 writer.append('<' + XmlTags.XML_BOOK)
-                      .append(id(cursorRow.getLong(DBDefinitions.KEY_PK_ID)))
+                      .append(id(rowData.getLong(DBDefinitions.KEY_PK_ID)))
                       .append(attr(DBDefinitions.KEY_TITLE,
-                                   cursorRow.getString(DBDefinitions.KEY_TITLE)))
+                                   rowData.getString(DBDefinitions.KEY_TITLE)))
                       .append(attr(DBDefinitions.KEY_ISBN,
-                                   cursorRow.getString(DBDefinitions.KEY_ISBN)))
+                                   rowData.getString(DBDefinitions.KEY_ISBN)))
                       .append(attr(DBDefinitions.KEY_BOOK_UUID,
-                                   cursorRow.getString(DBDefinitions.KEY_BOOK_UUID)))
+                                   rowData.getString(DBDefinitions.KEY_BOOK_UUID)))
                       .append(attr(DBDefinitions.KEY_DATE_ADDED,
-                                   cursorRow.getString(DBDefinitions.KEY_DATE_ADDED)))
+                                   rowData.getString(DBDefinitions.KEY_DATE_ADDED)))
                       .append(attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
-                                   cursorRow.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
+                                   rowData.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
                       .append(attr(DBDefinitions.KEY_READ,
-                                   cursorRow.getBoolean(DBDefinitions.KEY_READ)))
+                                   rowData.getBoolean(DBDefinitions.KEY_READ)))
                       .append(attr(DBDefinitions.KEY_READ_START,
-                                   cursorRow.getString(DBDefinitions.KEY_READ_START)))
+                                   rowData.getString(DBDefinitions.KEY_READ_START)))
                       .append(attr(DBDefinitions.KEY_READ_END,
-                                   cursorRow.getString(DBDefinitions.KEY_READ_END)))
+                                   rowData.getString(DBDefinitions.KEY_READ_END)))
 
                       .append(attr(DBDefinitions.KEY_PUBLISHER,
-                                   cursorRow.getString(DBDefinitions.KEY_PUBLISHER)))
+                                   rowData.getString(DBDefinitions.KEY_PUBLISHER)))
                       .append(attr(DBDefinitions.KEY_PRINT_RUN,
-                                   cursorRow.getString(DBDefinitions.KEY_PRINT_RUN)))
+                                   rowData.getString(DBDefinitions.KEY_PRINT_RUN)))
                       .append(attr(DBDefinitions.KEY_DATE_PUBLISHED,
-                                   cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
+                                   rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
                       .append(attr(DBDefinitions.KEY_PRICE_LISTED,
-                                   cursorRow.getDouble(DBDefinitions.KEY_PRICE_LISTED)))
+                                   rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)))
                       .append(attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                   cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
+                                   rowData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
                       .append(attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                                   cursorRow.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
+                                   rowData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
                       .append(attr(DBDefinitions.KEY_FORMAT,
-                                   cursorRow.getString(DBDefinitions.KEY_FORMAT)))
+                                   rowData.getString(DBDefinitions.KEY_FORMAT)))
                       .append(attr(DBDefinitions.KEY_COLOR,
-                                   cursorRow.getString(DBDefinitions.KEY_COLOR)))
+                                   rowData.getString(DBDefinitions.KEY_COLOR)))
                       .append(attr(DBDefinitions.KEY_PAGES,
-                                   cursorRow.getString(DBDefinitions.KEY_PAGES)))
+                                   rowData.getString(DBDefinitions.KEY_PAGES)))
                       .append(attr(DBDefinitions.KEY_GENRE,
-                                   cursorRow.getString(DBDefinitions.KEY_GENRE)))
+                                   rowData.getString(DBDefinitions.KEY_GENRE)))
                       .append(attr(DBDefinitions.KEY_LANGUAGE,
-                                   cursorRow.getString(DBDefinitions.KEY_LANGUAGE)))
+                                   rowData.getString(DBDefinitions.KEY_LANGUAGE)))
                       .append(attr(DBDefinitions.KEY_TOC_BITMASK,
-                                   cursorRow.getLong(DBDefinitions.KEY_TOC_BITMASK)))
+                                   rowData.getLong(DBDefinitions.KEY_TOC_BITMASK)))
 
                       .append(attr(DBDefinitions.KEY_PRICE_PAID,
-                                   cursorRow.getDouble(DBDefinitions.KEY_PRICE_PAID)))
+                                   rowData.getDouble(DBDefinitions.KEY_PRICE_PAID)))
                       .append(attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                                   cursorRow.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
+                                   rowData.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
                       .append(attr(DBDefinitions.KEY_DATE_ACQUIRED,
-                                   cursorRow.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
+                                   rowData.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
                       .append(attr(DBDefinitions.KEY_LOCATION,
-                                   cursorRow.getString(DBDefinitions.KEY_LOCATION)))
+                                   rowData.getString(DBDefinitions.KEY_LOCATION)))
                       .append(attr(DBDefinitions.KEY_RATING,
-                                   cursorRow.getDouble(DBDefinitions.KEY_RATING)))
+                                   rowData.getDouble(DBDefinitions.KEY_RATING)))
                       .append(attr(DBDefinitions.KEY_SIGNED,
-                                   cursorRow.getBoolean(DBDefinitions.KEY_SIGNED)))
+                                   rowData.getBoolean(DBDefinitions.KEY_SIGNED)))
                       .append(attr(DBDefinitions.KEY_EDITION_BITMASK,
-                                   cursorRow.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
+                                   rowData.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
 
                       // external ID's
                       //NEWTHINGS: add new site specific ID: add attribute
                       .append(attr(DBDefinitions.KEY_EID_LIBRARY_THING,
-                                   cursorRow.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)))
+                                   rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)))
                       .append(attr(DBDefinitions.KEY_EID_STRIP_INFO_BE,
-                                   cursorRow.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)))
+                                   rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)))
                       .append(attr(DBDefinitions.KEY_EID_OPEN_LIBRARY,
-                                   cursorRow.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)))
+                                   rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)))
                       .append(attr(DBDefinitions.KEY_EID_ISFDB,
-                                   cursorRow.getLong(DBDefinitions.KEY_EID_ISFDB)))
+                                   rowData.getLong(DBDefinitions.KEY_EID_ISFDB)))
                       .append(attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
-                                   cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
+                                   rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
                       .append(attr(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
-                                   cursorRow.getString(
+                                   rowData.getString(
                                            DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)))
 
                       // cross-linked with the loanee table
                       .append(attr(DBDefinitions.KEY_LOANEE,
-                                   cursorRow.getString(DBDefinitions.KEY_LOANEE)))
+                                   rowData.getString(DBDefinitions.KEY_LOANEE)))
 
                       // close the tag
                       .append(">\n")
 
                       // last are the text field tags
                       .append(tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
-                                           cursorRow.getString(DBDefinitions.KEY_DESCRIPTION)))
+                                           rowData.getString(DBDefinitions.KEY_DESCRIPTION)))
                       .append(tagWithCData(DBDefinitions.KEY_PRIVATE_NOTES, null,
-                                           cursorRow.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
+                                           rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
 
                       .append("</" + XmlTags.XML_BOOK + ">\n");
                 booksExported++;

@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValid
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
@@ -65,15 +66,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
  * Class to manage a version of a set of related data.
  * It's basically an extended Bundle.
  *
- * <strong>Note:</strong> there is no int support on purpose. Always use long values.
- * In contrast, float is supported solely due to RatingBar usage.
  * <ul>
  * <li>mRawData: stores the actual data</li>
  * <li>mValidatorsMap: validators applied at 'save' time</li>
  * <li>mCrossValidators: cross-validators applied at 'save' time</li>
  * </ul>
  */
-public class DataManager {
+public class DataManager
+        implements RowDataHolder {
 
     /** re-usable validator. */
     protected static final DataValidator LONG_VALIDATOR = new LongValidator();
@@ -239,6 +239,17 @@ public class DataManager {
     }
 
     /**
+     * Check if the underlying data contains the specified key.
+     *
+     * @param key Key of data object
+     *
+     * @return {@code true} if the underlying data contains the specified key.
+     */
+    public boolean contains(@NonNull final String key) {
+        return mRawData.containsKey(key);
+    }
+
+    /**
      * Get a boolean value.
      *
      * @param key Key of data object
@@ -327,12 +338,36 @@ public class DataManager {
     }
 
     /**
+     * Get an int value.
+     *
+     * @param key Key of data object
+     *
+     * @return an int value; {@code null} or empty becomes 0
+     */
+    @Override
+    public int getInt(@NonNull final String key) {
+        return (int) ParseUtils.toLong(mRawData.get(key));
+    }
+
+    /**
+     * Store a long value.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putInt(@NonNull final String key,
+                       final int value) {
+        mRawData.putInt(key, value);
+    }
+
+    /**
      * Get a long value.
      *
      * @param key Key of data object
      *
      * @return a long value; {@code null} or empty becomes 0
      */
+    @Override
     public long getLong(@NonNull final String key) {
         return ParseUtils.toLong(mRawData.get(key));
     }
@@ -356,6 +391,7 @@ public class DataManager {
      * @return Value of the data, can be empty, but never {@code null}
      */
     @NonNull
+    @Override
     public String getString(@NonNull final String key) {
         Object o = mRawData.get(key);
         if (o == null) {
@@ -445,16 +481,6 @@ public class DataManager {
         mRawData.putSerializable(key, value);
     }
 
-    /**
-     * Check if the underlying data contains the specified key.
-     *
-     * @param key Key of data object
-     *
-     * @return {@code true} if the underlying data contains the specified key.
-     */
-    public boolean containsKey(@NonNull final String key) {
-        return mRawData.containsKey(key);
-    }
 
     /**
      * Get all (real and virtual) keys for this data manager.

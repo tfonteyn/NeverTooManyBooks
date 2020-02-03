@@ -178,10 +178,10 @@ class BookTest {
 
         assertEquals(2, book.getLong(KEY_EID_ISFDB));
         assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));
-        assertFalse(book.containsKey(KEY_EID_GOODREADS_BOOK));
+        assertFalse(book.contains(KEY_EID_GOODREADS_BOOK));
 
-        assertFalse(book.containsKey("DUMMY"));
-        assertFalse(book.containsKey(KEY_EID_LIBRARY_THING));
+        assertFalse(book.contains("DUMMY"));
+        assertFalse(book.contains(KEY_EID_LIBRARY_THING));
     }
 
     @Test
@@ -208,7 +208,7 @@ class BookTest {
 
         assertEquals(2, book.getLong(KEY_EID_ISFDB));
         assertEquals("test", book.getString(KEY_EID_OPEN_LIBRARY));
-        assertFalse(book.containsKey(KEY_EID_GOODREADS_BOOK));
+        assertFalse(book.contains(KEY_EID_GOODREADS_BOOK));
 
         assertNull(book.get("DUMMY"));
         assertNull(book.get(KEY_EID_LIBRARY_THING));

@@ -43,10 +43,10 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AddBookToShelfApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.IsbnToIdApiHandler;
@@ -232,7 +232,7 @@ public class GoodreadsHandler {
      * @return the array of GoodreadsWork objects.
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
@@ -255,7 +255,7 @@ public class GoodreadsHandler {
      * @return Goodreads book ID
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @SuppressWarnings("unused")
@@ -278,7 +278,7 @@ public class GoodreadsHandler {
      * @return the Goodreads shelves
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
@@ -303,7 +303,7 @@ public class GoodreadsHandler {
      * @return reviewId
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     private long addBookToShelf(@NonNull final Context context,
@@ -328,7 +328,7 @@ public class GoodreadsHandler {
      * @return reviewId
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     private long addBookToShelf(@NonNull final Context context,
@@ -350,7 +350,7 @@ public class GoodreadsHandler {
      * @param shelfName GoodReads shelf name
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     private void removeBookFromShelf(@NonNull final Context context,
@@ -379,7 +379,7 @@ public class GoodreadsHandler {
      * @param review       (optional) Text for the review, PUBLIC
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     private void updateReview(@NonNull final Context context,
@@ -415,24 +415,24 @@ public class GoodreadsHandler {
      * <p>
      * See {@link DAO#fetchBookForExportToGoodreads}
      *
-     * @param context   Current context
-     * @param db        Database Access
-     * @param cursorRow with book data to send
+     * @param context Current context
+     * @param db      Database Access
+     * @param rowData with book data to send
      *
      * @return Disposition of book
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
     @WorkerThread
     public GrStatus sendOneBook(@NonNull final Context context,
                                 @NonNull final DAO db,
-                                @NonNull final CursorRow cursorRow)
+                                @NonNull final RowDataHolder rowData)
             throws CredentialsException, Http404Exception, IOException {
 
-        long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
+        long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
 
         // Get the list of shelves from Goodreads.
         // This is cached per instance of GoodreadsHandler.
@@ -443,7 +443,7 @@ public class GoodreadsHandler {
 
         // See if the book already has a Goodreads id and if it is valid.
         try {
-            grBookId = cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+            grBookId = rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
             if (grBookId != 0) {
                 // Get the book details to make sure we have a valid book ID
                 boolean[] thumbs = {false, false};
@@ -455,7 +455,7 @@ public class GoodreadsHandler {
 
         // wasn't there, see if we can find it using the ISBN instead.
         if (grBookId == 0) {
-            String isbnStr = cursorRow.getString(DBDefinitions.KEY_ISBN);
+            String isbnStr = rowData.getString(DBDefinitions.KEY_ISBN);
             if (isbnStr.isEmpty()) {
                 return GrStatus.NoIsbn;
             }
@@ -516,7 +516,7 @@ public class GoodreadsHandler {
             // because review.update does not seem to update them properly
             if (exclusiveCount == 0) {
                 String pseudoShelf;
-                if (cursorRow.getInt(DBDefinitions.KEY_READ) != 0) {
+                if (rowData.getInt(DBDefinitions.KEY_READ) != 0) {
                     pseudoShelf = "Read";
                 } else {
                     pseudoShelf = "To Read";
@@ -583,11 +583,11 @@ public class GoodreadsHandler {
             // Now update the remaining review details.
             updateReview(context,
                          reviewId,
-                         cursorRow.getBoolean(DBDefinitions.KEY_READ),
-                         cursorRow.getString(DBDefinitions.KEY_READ_START),
-                         cursorRow.getString(DBDefinitions.KEY_READ_END),
-                         (int) cursorRow.getDouble(DBDefinitions.KEY_RATING),
-                         cursorRow.getString(DBDefinitions.KEY_PRIVATE_NOTES),
+                         rowData.getBoolean(DBDefinitions.KEY_READ),
+                         rowData.getString(DBDefinitions.KEY_READ_START),
+                         rowData.getString(DBDefinitions.KEY_READ_END),
+                         (int) rowData.getDouble(DBDefinitions.KEY_RATING),
+                         rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES),
                          null);
 
             return GrStatus.Completed;
@@ -605,7 +605,7 @@ public class GoodreadsHandler {
      * @return Bundle of GoodreadsWork objects
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
@@ -634,7 +634,7 @@ public class GoodreadsHandler {
      * @return Bundle of GoodreadsWork objects
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull

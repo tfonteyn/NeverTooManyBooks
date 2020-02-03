@@ -35,10 +35,9 @@ import android.view.SubMenu;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.NameValueHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
@@ -46,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 final class MenuHandler {
 
@@ -58,30 +58,46 @@ final class MenuHandler {
         boolean hasAuthor = !book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
         boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
 
-        prepareOpenOnWebsiteMenu(menu, book.getNativeIds());
+        prepareOpenOnWebsiteMenu(menu, getNativeIds(book));
         prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
     }
 
     static void prepareOptionalMenus(@NonNull final Menu menu,
-                                     @NonNull final CursorRow cursorRow) {
+                                     @NonNull final RowDataHolder rowData) {
 
+        boolean hasAuthor = rowData.contains(DBDefinitions.KEY_FK_AUTHOR)
+                            && rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
+        boolean hasSeries = rowData.contains(DBDefinitions.KEY_FK_SERIES)
+                            && rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+
+        prepareOpenOnWebsiteMenu(menu, getNativeIds(rowData));
+        prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
+    }
+
+    /**
+     * Get a map with all valid native ids for the given item.
+     * All values will be cast to String.
+     *
+     * @param rowData a RowDataHolder compatible object with native id keys.
+     *
+     * @return map, can be empty.
+     */
+    @NonNull
+    private static SparseArray<String> getNativeIds(@NonNull final RowDataHolder rowData) {
         SparseArray<String> nativeIds = new SparseArray<>();
         for (String key : DBDefinitions.NATIVE_ID_KEYS) {
-            String value = cursorRow.getString(key);
+            String value = rowData.getString(key);
             if (!value.isEmpty() && !"0".equals(value)) {
                 nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
             }
         }
-
-        boolean hasAuthor = cursorRow.contains(DBDefinitions.KEY_FK_AUTHOR)
-                            && cursorRow.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
-        boolean hasSeries = cursorRow.contains(DBDefinitions.KEY_FK_SERIES)
-                            && cursorRow.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
-
-        prepareOpenOnWebsiteMenu(menu, nativeIds);
-        prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
+        // explicitly add Amazon if we have a valid ISBN
+        ISBN isbn = ISBN.createISBN(rowData.getString(DBDefinitions.KEY_ISBN));
+        if (isbn.isValid(true)) {
+            nativeIds.put(SearchSites.AMAZON, isbn.asText());
+        }
+        return nativeIds;
     }
-
 
     private static void prepareOpenOnWebsiteMenu(@NonNull final Menu menu,
                                                  @NonNull final SparseArray<String> nativeIds) {
@@ -106,36 +122,36 @@ final class MenuHandler {
 
     static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
                                             @NonNull final MenuItem menuItem,
-                                            @NonNull final NameValueHolder holder) {
+                                            @NonNull final RowDataHolder rowData) {
         switch (menuItem.getItemId()) {
             case R.id.MENU_VIEW_BOOK_AT_AMAZON:
                 AmazonSearchEngine.openWebsite(
-                        context, holder.getString(DBDefinitions.KEY_ISBN));
+                        context, rowData.getString(DBDefinitions.KEY_ISBN));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
                 GoodreadsSearchEngine.openWebsite(
-                        context, holder.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                        context, rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_ISFDB:
                 IsfdbSearchEngine.openWebsite(
-                        context, holder.getLong(DBDefinitions.KEY_EID_ISFDB));
+                        context, rowData.getLong(DBDefinitions.KEY_EID_ISFDB));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
                 LibraryThingSearchEngine.openWebsite(
-                        context, holder.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
+                        context, rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
                 OpenLibrarySearchEngine.openWebsite(
-                        context, holder.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
+                        context, rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
                 return true;
 
             case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
                 StripInfoSearchEngine.openWebsite(
-                        context, holder.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
+                        context, rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
                 return true;
 
             //NEWTHINGS: add new site specific ID: add case

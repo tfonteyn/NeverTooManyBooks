@@ -88,7 +88,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  */
 public class Book
         extends DataManager
-        implements ItemWithTitle, NameValueHolder {
+        implements ItemWithTitle {
 
     /**
      * Rating goes from 0 to 5 stars, in 0.5 increments.
@@ -426,7 +426,7 @@ public class Book
 
     /**
      * Get a map with all valid native ids for this book.
-     * All values will be casted to String.
+     * All values will be cast to String.
      *
      * @return map, can be empty.
      */
@@ -439,6 +439,7 @@ public class Book
                 nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
             }
         }
+
         // explicitly add Amazon if we have a valid ISBN
         ISBN isbn = ISBN.createISBN(getString(DBDefinitions.KEY_ISBN));
         if (isbn.isValid(true)) {
@@ -672,7 +673,7 @@ public class Book
                                       @NonNull final Locale fallbackLocale,
                                       final boolean updateLanguage) {
         Locale bookLocale = null;
-        if (containsKey(DBDefinitions.KEY_LANGUAGE)) {
+        if (contains(DBDefinitions.KEY_LANGUAGE)) {
             String lang = getString(DBDefinitions.KEY_LANGUAGE);
 
             bookLocale = LocaleUtils.getLocale(context, lang);
@@ -760,7 +761,7 @@ public class Book
     @Nullable
     public String getLoanee(@NonNull final DAO db) {
         // Hopefully we have it in the last cursor we fetched.
-        if (containsKey(DBDefinitions.KEY_LOANEE)) {
+        if (contains(DBDefinitions.KEY_LOANEE)) {
             return getString(DBDefinitions.KEY_LOANEE);
         } else {
             // if not, take the long road.
@@ -782,7 +783,7 @@ public class Book
         Locale bookLocale = getAndUpdateLocale(context, LocaleUtils.getUserLocale(context), true);
 
         // Handle TITLE
-        if (containsKey(KEY_TITLE)) {
+        if (contains(KEY_TITLE)) {
             String obTitle = reorderTitleForSorting(context, bookLocale);
             putString(KEY_TITLE_OB, DAO.encodeOrderByColumn(obTitle, bookLocale));
         }
@@ -826,7 +827,7 @@ public class Book
                          @NonNull final String currencyKey,
                          @NonNull final Bundle bundleHelper) {
         // handle a price without a currency.
-        if (containsKey(valueKey) && !containsKey(currencyKey)) {
+        if (contains(valueKey) && !contains(currencyKey)) {
             // we presume the user bought the book in their own currency.
             bundleHelper.clear();
             CurrencyUtils.splitPrice(bookLocale, getString(valueKey),
@@ -841,7 +842,7 @@ public class Book
             }
         }
         // Make sure currencies are uppercase
-        if (containsKey(currencyKey)) {
+        if (contains(currencyKey)) {
             putString(currencyKey, getString(currencyKey).toUpperCase(bookLocale));
         }
     }
@@ -853,7 +854,7 @@ public class Book
      * Existing books, replace zero values and empty string with a {@code null}
      * <p>
      * Invalid values are always removed.
-     *
+     * <p>
      * Further processing should be done in {@link #preprocessNullsAndBlanks(boolean)}.
      *
      * @param context Current context
@@ -864,7 +865,7 @@ public class Book
                                final boolean isNew) {
         for (Domain domain : DBDefinitions.NATIVE_ID_DOMAINS) {
             String key = domain.getName();
-            if (containsKey(key)) {
+            if (contains(key)) {
                 switch (domain.getType()) {
                     case ColumnInfo.TYPE_INTEGER: {
                         Object o = get(key);
@@ -918,7 +919,7 @@ public class Book
      * <li>which are not allowed to be blank but are</li>
      * <li>which are not allowed to be null but are</li>
      * </ul>
-     *
+     * <p>
      * For new books, remove those keys.
      * Existing books, replace those keys with the default value for the column.
      *
@@ -932,7 +933,7 @@ public class Book
     void preprocessNullsAndBlanks(final boolean isNew) {
         for (Domain domain : TBL_BOOKS.getDomains()) {
             String key = domain.getName();
-            if (containsKey(key) && domain.hasDefault()) {
+            if (contains(key) && domain.hasDefault()) {
                 Object value = get(key);
                 if ((domain.isNotBlank() && value != null && value.toString().isEmpty())
                     ||

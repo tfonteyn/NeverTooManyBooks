@@ -43,7 +43,6 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
@@ -139,13 +138,13 @@ public class Bookshelf
      * Full constructor.
      *
      * @param id        the Bookshelf id
-     * @param cursorRow with data
+     * @param rowData with data
      */
     public Bookshelf(final long id,
-                     @NonNull final CursorRow cursorRow) {
+                     @NonNull final RowDataHolder rowData) {
         mId = id;
-        mName = cursorRow.getString(DBDefinitions.KEY_BOOKSHELF);
-        mStyleUuid = cursorRow.getString(DBDefinitions.KEY_UUID);
+        mName = rowData.getString(DBDefinitions.KEY_BOOKSHELF);
+        mStyleUuid = rowData.getString(DBDefinitions.KEY_UUID);
     }
 
     /**

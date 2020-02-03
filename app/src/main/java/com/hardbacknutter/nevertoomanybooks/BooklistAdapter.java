@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -110,8 +111,9 @@ public class BooklistAdapter
     /** The cursor is the equivalent of the 'list of items'. */
     @NonNull
     private final Cursor mCursor;
+    /** provides read only access to the row data. */
     @NonNull
-    private final CursorRow mCursorRow;
+    private final RowDataHolder mRowData;
 
     @Nullable
     private OnRowClickedListener mOnRowClickedListener;
@@ -132,7 +134,7 @@ public class BooklistAdapter
         mStyle = style;
         mDb = db;
         mCursor = cursor;
-        mCursorRow = new CursorRow(mCursor);
+        mRowData = new CursorRow(mCursor);
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.booklist_level_indent);
 
         setHasStableIds(true);
@@ -155,19 +157,22 @@ public class BooklistAdapter
         }
 
         String columnName = RowKind.get(viewType).getFormattedDomain().getName();
-        int columnIndex = mCursor.getColumnIndex(columnName);
-        if (columnIndex < 0) {
-            throw new ColumnNotPresentException(columnName);
+
+        if (BuildConfig.DEBUG /* always */) {
+            // sanity check
+            if (mCursor.getColumnIndex(columnName) < 0) {
+                throw new ColumnNotPresentException(columnName);
+            }
         }
 
         switch (viewType) {
             // NEWTHINGS: ROW_KIND_x
 
             case RowKind.AUTHOR:
-                return new AuthorHolder(itemView, columnIndex);
+                return new AuthorHolder(itemView, columnName);
 
             case RowKind.SERIES:
-                return new SeriesHolder(itemView, columnIndex);
+                return new SeriesHolder(itemView, columnName);
 
             // Months are displayed by name
             case RowKind.DATE_PUBLISHED_MONTH:
@@ -176,15 +181,15 @@ public class BooklistAdapter
             case RowKind.DATE_ADDED_MONTH:
             case RowKind.DATE_READ_MONTH:
             case RowKind.DATE_LAST_UPDATE_MONTH:
-                return new MonthHolder(itemView, columnIndex);
+                return new MonthHolder(itemView, columnName);
 
             // some special formatting holders
             case RowKind.RATING:
-                return new RatingHolder(itemView, columnIndex);
+                return new RatingHolder(itemView, columnName);
             case RowKind.LANGUAGE:
-                return new LanguageHolder(itemView, columnIndex);
+                return new LanguageHolder(itemView, columnName);
             case RowKind.READ_STATUS:
-                return new ReadUnreadHolder(itemView, columnIndex);
+                return new ReadUnreadHolder(itemView, columnName);
 
             // plain old Strings
             case RowKind.BOOKSHELF:
@@ -207,7 +212,7 @@ public class BooklistAdapter
             case RowKind.TITLE_LETTER:
             case RowKind.SERIES_TITLE_LETTER:
             default:
-                return new GenericStringHolder(itemView, columnIndex,
+                return new GenericStringHolder(itemView, columnName,
                                                R.string.hint_empty_field);
         }
     }
@@ -215,7 +220,7 @@ public class BooklistAdapter
     private View createView(@NonNull final ViewGroup parent,
                             @RowKind.Id final int viewType) {
 
-        int level = mCursorRow.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+        int level = mRowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
         // Indent (0..) based on level (1..)
         int indent = level - 1;
 
@@ -305,14 +310,14 @@ public class BooklistAdapter
         });
 
         // further binding depends on the type of row (i.e. holder).
-        holder.onBindViewHolder(mCursorRow, mStyle);
+        holder.onBindViewHolder(mRowData, mStyle);
     }
 
     @Override
     @RowKind.Id
     public int getItemViewType(final int position) {
         if (mCursor.moveToPosition(position)) {
-            return mCursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND);
+            return mRowData.getInt(DBDefinitions.KEY_BL_NODE_KIND);
         } else {
             // bogus, should not happen
             return RowKind.BOOK;
@@ -327,7 +332,7 @@ public class BooklistAdapter
     @Override
     public long getItemId(final int position) {
         if (hasStableIds() && mCursor.moveToPosition(position)) {
-            return mCursorRow.getLong(DBDefinitions.KEY_PK_ID);
+            return mRowData.getLong(DBDefinitions.KEY_PK_ID);
         } else {
             return RecyclerView.NO_ID;
         }
@@ -434,7 +439,7 @@ public class BooklistAdapter
         try {
             if (level > (mStyle.groupCount())) {
                 // it's a book.
-                return mCursorRow.getString(DBDefinitions.KEY_TITLE);
+                return mRowData.getString(DBDefinitions.KEY_TITLE);
 
             } else {
                 // it's a group.
@@ -442,7 +447,7 @@ public class BooklistAdapter
                 int kind = mStyle.getGroupKindAt(index);
 
                 String columnName = mStyle.getGroupAt(index).getFormattedDomain().getName();
-                String text = mCursorRow.getString(columnName);
+                String text = mRowData.getString(columnName);
                 return RowKind.format(context, kind, text);
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
@@ -558,49 +563,49 @@ public class BooklistAdapter
                     return false;
                 }
 
-                final CursorRow cursorRow = new CursorRow(cursor);
+                final RowDataHolder rowData = new CursorRow(cursor);
 
                 String tmp;
                 if ((mExtraFields & BooklistStyle.EXTRAS_AUTHOR) != 0) {
-                    tmp = cursorRow.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                    tmp = rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
                     if (!tmp.isEmpty()) {
                         mResults.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, tmp);
                         // no author type for now.
 //                        mResults.putInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK,
-//                                        mCursorRow.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK));
+//                                        mRowData.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK));
                     }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_LOCATION) != 0) {
-                    tmp = cursorRow.getString(DBDefinitions.KEY_LOCATION);
+                    tmp = rowData.getString(DBDefinitions.KEY_LOCATION);
                     if (!tmp.isEmpty()) {
                         mResults.putString(DBDefinitions.KEY_LOCATION, tmp);
                     }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_FORMAT) != 0) {
-                    tmp = cursorRow.getString(DBDefinitions.KEY_FORMAT);
+                    tmp = rowData.getString(DBDefinitions.KEY_FORMAT);
                     if (!tmp.isEmpty()) {
                         mResults.putString(DBDefinitions.KEY_FORMAT, tmp);
                     }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_BOOKSHELVES) != 0) {
-                    tmp = cursorRow.getString(DBDefinitions.KEY_BOOKSHELF);
+                    // this is a csv list of bookshelves!
+                    tmp = rowData.getString(DBDefinitions.KEY_BOOKSHELF_CSV);
                     if (!tmp.isEmpty()) {
-                        // note the destination is KEY_BOOKSHELF_CSV
                         mResults.putString(DBDefinitions.KEY_BOOKSHELF_CSV, tmp);
                     }
                 }
 
                 if ((mExtraFields & BooklistStyle.EXTRAS_ISBN) != 0) {
-                    tmp = cursorRow.getString(DBDefinitions.KEY_ISBN);
+                    tmp = rowData.getString(DBDefinitions.KEY_ISBN);
                     if (!tmp.isEmpty()) {
                         mResults.putString(DBDefinitions.KEY_ISBN, tmp);
                     }
                 }
 
-                tmp = getPublisherAndPubDateText(mLocale, cursorRow);
+                tmp = getPublisherAndPubDateText(mLocale, rowData);
                 if (tmp != null && !tmp.isEmpty()) {
                     mResults.putString(DBDefinitions.KEY_PUBLISHER, tmp);
                 }
@@ -614,14 +619,14 @@ public class BooklistAdapter
 
         @Nullable
         String getPublisherAndPubDateText(@NonNull final Locale locale,
-                                          @NonNull final CursorRow cursorRow) {
+                                          @NonNull final RowDataHolder rowData) {
             String tmp = null;
             if ((mExtraFields & BooklistStyle.EXTRAS_PUBLISHER) != 0) {
-                tmp = cursorRow.getString(DBDefinitions.KEY_PUBLISHER);
+                tmp = rowData.getString(DBDefinitions.KEY_PUBLISHER);
             }
             String tmpPubDate = null;
             if ((mExtraFields & BooklistStyle.EXTRAS_PUB_DATE) != 0) {
-                tmpPubDate = cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED);
+                tmpPubDate = rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED);
             }
             // show combined Publisher and Pub. Date
             if ((tmp != null) && (tmpPubDate != null)) {
@@ -712,11 +717,11 @@ public class BooklistAdapter
         /**
          * Bind the data to the views in the holder.
          *
-         * @param cursorRow with data to bind
-         * @param style     to use
+         * @param rowData with data to bind
+         * @param style  to use
          */
         @CallSuper
-        void onBindViewHolder(@NonNull final CursorRow cursorRow,
+        void onBindViewHolder(@NonNull final RowDataHolder rowData,
                               @NonNull final BooklistStyle style) {
         }
     }
@@ -923,46 +928,46 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final CursorRow cursorRow,
+        public void onBindViewHolder(@NonNull final RowDataHolder rowData,
                                      @NonNull final BooklistStyle style) {
-            super.onBindViewHolder(cursorRow, style);
+            super.onBindViewHolder(rowData, style);
 
-            String title = cursorRow.getString(DBDefinitions.KEY_TITLE);
+            String title = rowData.getString(DBDefinitions.KEY_TITLE);
 
             if (mReorderTitle) {
                 Context context = mTitleView.getContext();
-                String language = cursorRow.getString(DBDefinitions.KEY_LANGUAGE);
+                String language = rowData.getString(DBDefinitions.KEY_LANGUAGE);
                 title = LocaleUtils.reorderTitle(context, title, language);
             }
             mTitleView.setText(title);
 
-            if (mReadIsUsed && cursorRow.contains(DBDefinitions.KEY_READ)) {
-                boolean isSet = cursorRow.getBoolean(DBDefinitions.KEY_READ);
+            if (mReadIsUsed && rowData.contains(DBDefinitions.KEY_READ)) {
+                boolean isSet = rowData.getBoolean(DBDefinitions.KEY_READ);
                 mReadView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mReadView.setChecked(isSet);
             }
 
-            if (mSignedIsUsed && cursorRow.contains(DBDefinitions.KEY_SIGNED)) {
-                boolean isSet = cursorRow.getBoolean(DBDefinitions.KEY_SIGNED);
+            if (mSignedIsUsed && rowData.contains(DBDefinitions.KEY_SIGNED)) {
+                boolean isSet = rowData.getBoolean(DBDefinitions.KEY_SIGNED);
                 mSignedView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mSignedView.setChecked(isSet);
             }
 
-            if (mEditionIsUsed && cursorRow.contains(DBDefinitions.KEY_EDITION_BITMASK)) {
-                boolean isSet = (cursorRow.getInt(DBDefinitions.KEY_EDITION_BITMASK)
+            if (mEditionIsUsed && rowData.contains(DBDefinitions.KEY_EDITION_BITMASK)) {
+                boolean isSet = (rowData.getInt(DBDefinitions.KEY_EDITION_BITMASK)
                                  & Book.EDITION_FIRST) != 0;
                 mEditionView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mEditionView.setChecked(isSet);
             }
 
-            if (mLendingIsUsed && cursorRow.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
-                boolean isSet = !cursorRow.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN);
+            if (mLendingIsUsed && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN)) {
+                boolean isSet = !rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN);
                 mOnLoanView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mOnLoanView.setChecked(isSet);
             }
 
-            if (mCoverIsUsed && cursorRow.contains(DBDefinitions.KEY_BOOK_UUID)) {
-                String uuid = cursorRow.getString(DBDefinitions.KEY_BOOK_UUID);
+            if (mCoverIsUsed && rowData.contains(DBDefinitions.KEY_BOOK_UUID)) {
+                String uuid = rowData.getString(DBDefinitions.KEY_BOOK_UUID);
                 // store the uuid for use in the OnClickListener
                 mCoverView.setTag(R.id.TAG_ITEM, uuid);
                 boolean isSet = ImageUtils.setImageView(mCoverView, uuid, 0,
@@ -981,8 +986,8 @@ public class BooklistAdapter
                 }
             }
 
-            if (mSeriesIsUsed && cursorRow.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
-                String number = cursorRow.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
+            if (mSeriesIsUsed && rowData.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
+                String number = rowData.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
                 if (!number.isEmpty()) {
                     // Display it in one of the views, based on the size of the text.
                     if (number.length() > 4) {
@@ -1001,31 +1006,31 @@ public class BooklistAdapter
             }
 
             if (!style.useTaskForExtras()) {
-                if (mBookshelfIsUsed && cursorRow.contains(DBDefinitions.KEY_BOOKSHELF_CSV)) {
+                if (mBookshelfIsUsed && rowData.contains(DBDefinitions.KEY_BOOKSHELF_CSV)) {
                     showOrHide(mBookshelvesView,
-                               cursorRow.getString(DBDefinitions.KEY_BOOKSHELF_CSV));
+                               rowData.getString(DBDefinitions.KEY_BOOKSHELF_CSV));
                 }
-                if (mAuthorIsUsed && cursorRow.contains(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+                if (mAuthorIsUsed && rowData.contains(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
                     showOrHide(mAuthorView,
-                               cursorRow.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                               rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 }
-                if (mIsbnIsUsed && cursorRow.contains(DBDefinitions.KEY_ISBN)) {
+                if (mIsbnIsUsed && rowData.contains(DBDefinitions.KEY_ISBN)) {
                     showOrHide(mIsbnView,
-                               cursorRow.getString(DBDefinitions.KEY_ISBN));
+                               rowData.getString(DBDefinitions.KEY_ISBN));
                 }
-                if (mFormatIsUsed && cursorRow.contains(DBDefinitions.KEY_FORMAT)) {
+                if (mFormatIsUsed && rowData.contains(DBDefinitions.KEY_FORMAT)) {
                     showOrHide(mFormatView,
-                               cursorRow.getString(DBDefinitions.KEY_FORMAT));
+                               rowData.getString(DBDefinitions.KEY_FORMAT));
                 }
-                if (mLocationIsUsed && cursorRow.contains(DBDefinitions.KEY_LOCATION)) {
+                if (mLocationIsUsed && rowData.contains(DBDefinitions.KEY_LOCATION)) {
                     showOrHide(mLocationView,
-                               cursorRow.getString(DBDefinitions.KEY_LOCATION));
+                               rowData.getString(DBDefinitions.KEY_LOCATION));
                 }
-                if ((mPublisherIsUsed && cursorRow.contains(DBDefinitions.KEY_PUBLISHER))
-                    || (mPubDateIsUsed && cursorRow.contains(DBDefinitions.KEY_DATE_PUBLISHED))) {
+                if ((mPublisherIsUsed && rowData.contains(DBDefinitions.KEY_PUBLISHER))
+                    || (mPubDateIsUsed && rowData.contains(DBDefinitions.KEY_DATE_PUBLISHED))) {
                     showOrHide(mPublisherView,
                                getPublisherAndPubDateText(getLocale(),
-                                                          cursorRow,
+                                                          rowData,
                                                           mPublisherIsUsed,
                                                           mPubDateIsUsed));
                 }
@@ -1043,7 +1048,7 @@ public class BooklistAdapter
 
                     // Queue the task.
                     new GetBookExtrasTask(getContext(), getLocale(), mDb,
-                                          cursorRow.getLong(DBDefinitions.KEY_FK_BOOK),
+                                          rowData.getLong(DBDefinitions.KEY_FK_BOOK),
                                           mBookExtrasTaskFinishedListener, mExtraFieldsUsed)
                             .execute();
                 }
@@ -1056,16 +1061,16 @@ public class BooklistAdapter
          */
         @Nullable
         String getPublisherAndPubDateText(@NonNull final Locale locale,
-                                          @NonNull final CursorRow cursorRow,
+                                          @NonNull final RowDataHolder rowData,
                                           final boolean publisherIsUsed,
                                           final boolean pubDateIsUsed) {
             String tmp = null;
             if (publisherIsUsed) {
-                tmp = cursorRow.getString(DBDefinitions.KEY_PUBLISHER);
+                tmp = rowData.getString(DBDefinitions.KEY_PUBLISHER);
             }
             String tmpPubDate = null;
             if (pubDateIsUsed) {
-                tmpPubDate = cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED);
+                tmpPubDate = rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED);
             }
             // show combined Publisher and Pub. Date
             if ((tmp != null) && (tmpPubDate != null)) {
@@ -1124,8 +1129,9 @@ public class BooklistAdapter
     public static class GenericStringHolder
             extends RowViewHolder {
 
-        /** Index of related data column. */
-        final int mSourceCol;
+        /** Key of the related data column. */
+        @NonNull
+        final String mKey;
         /** String id to use when data is blank. */
         @StringRes
         final int mNoDataId;
@@ -1138,27 +1144,27 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
-         * @param itemView    the view specific for this holder
-         * @param columnIndex index in SQL result set
-         * @param noDataId    String id to use when data is blank
+         * @param itemView the view specific for this holder
+         * @param key      key into the data set
+         * @param noDataId String id to use when data is blank
          */
         GenericStringHolder(@NonNull final View itemView,
-                            final int columnIndex,
+                            @NonNull final String key,
                             @StringRes final int noDataId) {
             super(itemView);
-            mSourceCol = columnIndex;
+            mKey = key;
             mNoDataId = noDataId;
 
             mTextView = itemView.findViewById(R.id.name);
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final CursorRow cursorRow,
+        public void onBindViewHolder(@NonNull final RowDataHolder rowData,
                                      @NonNull final BooklistStyle style) {
-            super.onBindViewHolder(cursorRow, style);
+            super.onBindViewHolder(rowData, style);
 
-            setText(cursorRow.getString(mSourceCol),
-                    cursorRow.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+            setText(rowData.getString(mKey),
+                    rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
 
         /**
@@ -1202,12 +1208,12 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
-         * @param itemView    the view specific for this holder
-         * @param columnIndex index in SQL result set
+         * @param itemView the view specific for this holder
+         * @param key      key into the data set
          */
         RatingHolder(@NonNull final View itemView,
-                     final int columnIndex) {
-            super(itemView, columnIndex, R.string.hint_empty_rating);
+                     @NonNull final String key) {
+            super(itemView, key, R.string.hint_empty_rating);
         }
 
         @Override
@@ -1243,13 +1249,13 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
-         * @param itemView    the view specific for this holder
-         * @param columnIndex index in SQL result set
+         * @param itemView the view specific for this holder
+         * @param key      key into the data set
          */
         @SuppressWarnings("SameParameterValue")
         LanguageHolder(@NonNull final View itemView,
-                       final int columnIndex) {
-            super(itemView, columnIndex, R.string.hint_empty_language);
+                       @NonNull final String key) {
+            super(itemView, key, R.string.hint_empty_language);
         }
 
         @Override
@@ -1272,12 +1278,12 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
-         * @param itemView    the view specific for this holder
-         * @param columnIndex index in SQL result set
+         * @param itemView the view specific for this holder
+         * @param key      key into the data set
          */
         ReadUnreadHolder(@NonNull final View itemView,
-                         final int columnIndex) {
-            super(itemView, columnIndex, R.string.hint_empty_read_status);
+                         @NonNull final String key) {
+            super(itemView, key, R.string.hint_empty_read_status);
         }
 
         @Override
@@ -1301,12 +1307,12 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
-         * @param itemView    the view specific for this holder
-         * @param columnIndex index in SQL result set
+         * @param itemView the view specific for this holder
+         * @param key      key into the data set
          */
         MonthHolder(@NonNull final View itemView,
-                    final int columnIndex) {
-            super(itemView, columnIndex, R.string.hint_empty_month);
+                    @NonNull final String key) {
+            super(itemView, key, R.string.hint_empty_month);
         }
 
         @Override
@@ -1340,12 +1346,12 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
-         * @param itemView    the view specific for this holder
-         * @param columnIndex index in SQL result set
+         * @param itemView the view specific for this holder
+         * @param key      key into the data set
          */
         SeriesHolder(@NonNull final View itemView,
-                     final int columnIndex) {
-            super(itemView, columnIndex, R.string.hint_empty_series,
+                     @NonNull final String key) {
+            super(itemView, key, R.string.hint_empty_series,
                   DBDefinitions.KEY_SERIES_IS_COMPLETE);
 
             mReorderTitle = Prefs.reorderTitleForDisplaying(getContext());
@@ -1374,12 +1380,12 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
-         * @param itemView    the view specific for this holder
-         * @param columnIndex index in SQL result set
+         * @param itemView the view specific for this holder
+         * @param key      key into the data set
          */
         AuthorHolder(@NonNull final View itemView,
-                     final int columnIndex) {
-            super(itemView, columnIndex, R.string.hint_empty_author,
+                     @NonNull final String key) {
+            super(itemView, key, R.string.hint_empty_author,
                   DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
         }
     }
@@ -1397,25 +1403,25 @@ public class BooklistAdapter
          * Constructor.
          *
          * @param itemView       the view specific for this holder
-         * @param columnIndex    index in SQL result set
+         * @param key            key into the data set
          * @param noDataId       String id to use when data is blank
          * @param isLockedSource Column name to use for the boolean 'lock' status
          */
         CheckableStringHolder(@NonNull final View itemView,
-                              final int columnIndex,
+                              @NonNull final String key,
                               @StringRes final int noDataId,
                               @NonNull final String isLockedSource) {
-            super(itemView, columnIndex, noDataId);
+            super(itemView, key, noDataId);
             mIsLockedSourceCol = isLockedSource;
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final CursorRow cursorRow,
+        public void onBindViewHolder(@NonNull final RowDataHolder rowData,
                                      @NonNull final BooklistStyle style) {
-            super.onBindViewHolder(cursorRow, style);
+            super.onBindViewHolder(rowData, style);
 
             Drawable lock = null;
-            if (cursorRow.getBoolean(mIsLockedSourceCol)) {
+            if (rowData.getBoolean(mIsLockedSourceCol)) {
                 lock = mTextView.getContext().getDrawable(R.drawable.ic_lock);
             }
 

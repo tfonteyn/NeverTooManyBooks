@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
@@ -95,18 +96,18 @@ class SendBooksLegacyTask
 
         try (DAO db = new DAO(TAG);
              Cursor cursor = db.fetchBooksForExportToGoodreads(mLastId, mUpdatesOnly)) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             mTotalBooks = cursor.getCount() + mCount;
             boolean needsRetryReset = true;
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, apiHandler, db, cursorRow)) {
+                if (!sendOneBook(queueManager, context, apiHandler, db, rowData)) {
                     // quit on error
                     return false;
                 }
 
                 // Update internal status
                 mCount++;
-                mLastId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
+                mLastId = rowData.getLong(DBDefinitions.KEY_PK_ID);
                 // If we have done one successfully, reset the counter so a
                 // subsequent network error does not result in a long delay
                 if (needsRetryReset) {

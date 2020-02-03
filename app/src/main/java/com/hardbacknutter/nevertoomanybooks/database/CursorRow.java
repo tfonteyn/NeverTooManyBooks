@@ -33,10 +33,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.entities.NameValueHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 
 /**
  * A handy wrapper allowing to fetch columns by name.
@@ -44,12 +43,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.NameValueHolder;
  * <strong>Note:</strong> converts {@code null} Strings to an empty String.
  * <p>
  * Tip: when using a CursorRow as a parameter to a constructor, e.g.
- * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, CursorRow)}
+ * {@link com.hardbacknutter.nevertoomanybooks.entities.Bookshelf#Bookshelf(long, RowDataHolder)}
  * always pass the id additionally/separately. This gives the calling code a change to use
  * for example the foreign key id.
  */
 public class CursorRow
-        implements NameValueHolder {
+        implements RowDataHolder {
 
     /** Log tag. */
     private static final String TAG = "CursorRow";
@@ -75,18 +74,6 @@ public class CursorRow
      */
     public boolean contains(@NonNull final String domainName) {
         return mCursor.getColumnIndex(domainName) > -1;
-    }
-
-    /**
-     * Direct access to the cursor.
-     *
-     * @param columnIndex to get
-     *
-     * @return a string from underlying cursor
-     */
-    @Nullable
-    public String getString(final int columnIndex) {
-        return mCursor.getString(columnIndex);
     }
 
     /**

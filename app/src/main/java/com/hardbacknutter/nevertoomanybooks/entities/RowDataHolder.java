@@ -29,10 +29,20 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import androidx.annotation.NonNull;
 
-public interface NameValueHolder {
+/**
+ * Read-only interface that fronts a Bundle or Cursor, or... compatible view.
+ */
+public interface RowDataHolder {
 
+    boolean contains(@NonNull String key);
+
+    @NonNull
     String getString(@NonNull String key);
 
+    boolean getBoolean(@NonNull String key);
+
+    int getInt(@NonNull String key);
     long getLong(@NonNull String key);
 
+    double getDouble(@NonNull String key);
 }

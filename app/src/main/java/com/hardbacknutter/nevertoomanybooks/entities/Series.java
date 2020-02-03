@@ -48,7 +48,6 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -219,17 +218,17 @@ public class Series
     /**
      * Full constructor with optional book number.
      *
-     * @param id        ID of the Series in the database.
-     * @param cursorRow with data
+     * @param id      ID of the Series in the database.
+     * @param rowData with data
      */
     public Series(final long id,
-                  @NonNull final CursorRow cursorRow) {
+                  @NonNull final RowDataHolder rowData) {
         mId = id;
-        mTitle = cursorRow.getString(DBDefinitions.KEY_SERIES_TITLE);
-        mIsComplete = cursorRow.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+        mTitle = rowData.getString(DBDefinitions.KEY_SERIES_TITLE);
+        mIsComplete = rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
         // optional domain, not always used.
-        if (cursorRow.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
-            mNumber = cursorRow.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
+        if (rowData.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
+            mNumber = rowData.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
         } else {
             mNumber = "";
         }

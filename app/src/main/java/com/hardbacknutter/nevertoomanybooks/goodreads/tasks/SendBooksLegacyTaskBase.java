@@ -34,9 +34,9 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
@@ -128,11 +128,11 @@ public abstract class SendBooksLegacyTaskBase
                         @NonNull final Context context,
                         @NonNull final GoodreadsHandler apiHandler,
                         @NonNull final DAO db,
-                        @NonNull final CursorRow cursorRow) {
+                        @NonNull final RowDataHolder rowData) {
 
         GrStatus result;
         try {
-            result = apiHandler.sendOneBook(context, db, cursorRow);
+            result = apiHandler.sendOneBook(context, db, rowData);
 
         } catch (@NonNull final CredentialsException e) {
             setLastException(e);
@@ -151,7 +151,7 @@ public abstract class SendBooksLegacyTaskBase
             result = GrStatus.UnexpectedError;
         }
 
-        long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
+        long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
 
         // update the current status, so it can be displayed to the user continuously.
         setLastExtStatus(result);

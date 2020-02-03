@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
@@ -81,9 +82,9 @@ public class SendOneBookLegacyTask
 
         try (DAO db = new DAO(TAG);
              Cursor cursor = db.fetchBookForExportToGoodreads(mBookId)) {
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, context, apiHandler, db, cursorRow)) {
+                if (!sendOneBook(queueManager, context, apiHandler, db, rowData)) {
                     // quit on error
                     return false;
                 }

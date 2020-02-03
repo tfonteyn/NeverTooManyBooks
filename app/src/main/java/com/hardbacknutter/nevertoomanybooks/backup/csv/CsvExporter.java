@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -184,7 +185,7 @@ public class CsvExporter
                 return results;
             }
 
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
 
             out.write(EXPORT_FIELD_HEADERS);
             while (cursor.moveToNext()) {
@@ -193,7 +194,7 @@ public class CsvExporter
                 }
 
                 results.booksExported++;
-                long bookId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
+                long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
 
                 String authors = CsvCoder.getAuthorCoder()
                                          .encodeList(db.getAuthorsByBookId(bookId));
@@ -202,7 +203,7 @@ public class CsvExporter
                     authors = mUnknownString;
                 }
 
-                String title = cursorRow.getString(DBDefinitions.KEY_TITLE);
+                String title = rowData.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
                     title = mUnknownString;
@@ -210,55 +211,55 @@ public class CsvExporter
 
                 sb.setLength(0);
                 sb.append(format(bookId))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_BOOK_UUID)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_BOOK_UUID)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
                   .append(format(authors))
                   .append(format(title))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_ISBN)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_PUBLISHER)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_PRINT_RUN)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
-                  .append(format(cursorRow.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_ISBN)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_PUBLISHER)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_PRINT_RUN)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
+                  .append(format(rowData.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
 
-                  .append(format(cursorRow.getDouble(DBDefinitions.KEY_RATING)))
+                  .append(format(rowData.getDouble(DBDefinitions.KEY_RATING)))
                   .append(format(CsvCoder.getBookshelfCoder()
                                           .encodeList(db.getBookshelvesByBookId(bookId))))
-                  .append(format(cursorRow.getInt(DBDefinitions.KEY_READ)))
+                  .append(format(rowData.getInt(DBDefinitions.KEY_READ)))
                   .append(format(CsvCoder.getSeriesCoder()
                                           .encodeList(db.getSeriesByBookId(bookId))))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_PAGES)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_PAGES)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
 
-                  .append(format(cursorRow.getDouble(DBDefinitions.KEY_PRICE_LISTED)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
-                  .append(format(cursorRow.getDouble(DBDefinitions.KEY_PRICE_PAID)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
+                  .append(format(rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
+                  .append(format(rowData.getDouble(DBDefinitions.KEY_PRICE_PAID)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
 
-                  .append(format(cursorRow.getLong(DBDefinitions.KEY_TOC_BITMASK)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_LOCATION)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_READ_START)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_READ_END)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_FORMAT)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_COLOR)))
-                  .append(format(cursorRow.getInt(DBDefinitions.KEY_SIGNED)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_LOANEE)))
+                  .append(format(rowData.getLong(DBDefinitions.KEY_TOC_BITMASK)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_LOCATION)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_READ_START)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_READ_END)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_FORMAT)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_COLOR)))
+                  .append(format(rowData.getInt(DBDefinitions.KEY_SIGNED)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_LOANEE)))
                   .append(format(CsvCoder.getTocCoder()
                                           .encodeList(db.getTocEntryByBook(bookId))))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_DESCRIPTION)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_GENRE)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_LANGUAGE)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_DATE_ADDED)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_DESCRIPTION)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_GENRE)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_LANGUAGE)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_ADDED)))
 
                   //NEWTHINGS: add new site specific ID: add column value
-                  .append(format(cursorRow.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)))
-                  .append(format(cursorRow.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)))
-                  .append(format(cursorRow.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)))
-                  .append(format(cursorRow.getLong(DBDefinitions.KEY_EID_ISFDB)))
-                  .append(format(cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
+                  .append(format(rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)))
+                  .append(format(rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)))
+                  .append(format(rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)))
+                  .append(format(rowData.getLong(DBDefinitions.KEY_EID_ISFDB)))
+                  .append(format(rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
                   .append(format(
-                          cursorRow.getString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
+                          rowData.getString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
 
                 // replace the comma at the end of the line with a '\n'
                 sb.replace(sb.length() - 1, sb.length(), "\n");

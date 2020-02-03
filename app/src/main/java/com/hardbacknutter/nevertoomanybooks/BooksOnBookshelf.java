@@ -93,6 +93,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
@@ -256,12 +257,12 @@ public class BooksOnBookshelf
                 return;
             }
 
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
 
             // If it's a book, open the details screen.
-            if (cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND) == BooklistGroup.RowKind.BOOK) {
-                long rowId = cursorRow.getLong(DBDefinitions.KEY_PK_ID);
-                long bookId = cursorRow.getLong(DBDefinitions.KEY_FK_BOOK);
+            if (rowData.getInt(DBDefinitions.KEY_BL_NODE_KIND) == BooklistGroup.RowKind.BOOK) {
+                long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+                long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 // Note we (re)create the flat table *every time* the user click a book.
                 // This guarantees an exact match in rowId'
                 // (which turns out tricky if we cache the table - ENHANCE: re-implement caching)
@@ -274,7 +275,7 @@ public class BooksOnBookshelf
 
             } else {
                 // it's a level, expand/collapse recursively.
-                long rowId = cursorRow.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
+                long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
                 boolean isExpanded = mModel.toggleNode(rowId);
 
                 // make sure the cursor has valid rows for the new position.
@@ -318,13 +319,13 @@ public class BooksOnBookshelf
                 return false;
             }
 
-            final CursorRow cursorRow = new CursorRow(cursor);
+            final RowDataHolder rowData = new CursorRow(cursor);
 
             final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
             // build/check the menu for this row
-            if (onCreateContextMenu(menu, cursorRow)) {
+            if (onCreateContextMenu(menu, rowData)) {
                 // we have a menu to show, set the title according to the level.
-                int level = cursorRow.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+                int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
                 String title = mAdapter.getLevelText(BooksOnBookshelf.this, level);
                 // bring up the context menu
                 new MenuPicker<>(BooksOnBookshelf.this, title, menu, position,
@@ -1172,69 +1173,69 @@ public class BooksOnBookshelf
      * Create a context menu based on row kind.
      *
      * @param menu      to populate
-     * @param cursorRow current cursorRow
+     * @param rowData current cursorRow
      *
      * @return {@code true} if there actually is a menu to show.
      * {@code false} if not OR if the only menus would be the 'search Amazon' set.
      */
     private boolean onCreateContextMenu(@NonNull final Menu menu,
-                                        @NonNull final CursorRow cursorRow) {
+                                        @NonNull final RowDataHolder rowData) {
         menu.clear();
 
-        final int rowKind = cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND);
+        final int rowKind = rowData.getInt(DBDefinitions.KEY_BL_NODE_KIND);
         switch (rowKind) {
             case BooklistGroup.RowKind.BOOK: {
                 getMenuInflater().inflate(R.menu.book, menu);
                 getMenuInflater().inflate(R.menu.sm_open_on_site, menu);
                 getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
-                boolean isRead = cursorRow.getBoolean(DBDefinitions.KEY_READ);
+                boolean isRead = rowData.getBoolean(DBDefinitions.KEY_READ);
                 menu.findItem(R.id.MENU_BOOK_READ).setVisible(!isRead);
                 menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
                 boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
-                boolean isAvailable = mModel.isAvailable(cursorRow);
+                boolean isAvailable = mModel.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(lendingIsUsed && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(lendingIsUsed && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
                     .setVisible(GoodreadsHandler.isShowSyncMenus(this));
 
-                MenuHandler.prepareOptionalMenus(menu, cursorRow);
+                MenuHandler.prepareOptionalMenus(menu, rowData);
                 break;
             }
             case BooklistGroup.RowKind.AUTHOR: {
                 getMenuInflater().inflate(R.menu.author, menu);
 
-                boolean complete = cursorRow.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                boolean complete = rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
-                MenuHandler.prepareOptionalMenus(menu, cursorRow);
+                MenuHandler.prepareOptionalMenus(menu, rowData);
                 break;
             }
             case BooklistGroup.RowKind.SERIES: {
-                if (cursorRow.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
+                if (rowData.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
                     getMenuInflater().inflate(R.menu.series, menu);
 
                     boolean complete =
-                            cursorRow.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                            rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
                     menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
-                    MenuHandler.prepareOptionalMenus(menu, cursorRow);
+                    MenuHandler.prepareOptionalMenus(menu, rowData);
                 }
                 break;
             }
             case BooklistGroup.RowKind.PUBLISHER: {
-                if (!cursorRow.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
+                if (!rowData.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
                     getMenuInflater().inflate(R.menu.publisher, menu);
                 }
                 break;
             }
             case BooklistGroup.RowKind.LANGUAGE: {
-                if (!cursorRow.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
+                if (!rowData.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1243,7 +1244,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.LOCATION: {
-                if (!cursorRow.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
+                if (!rowData.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1252,7 +1253,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.GENRE: {
-                if (!cursorRow.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
+                if (!rowData.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1261,7 +1262,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.FORMAT: {
-                if (!cursorRow.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
+                if (!rowData.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1270,7 +1271,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.COLOR: {
-                if (!cursorRow.getString(DBDefinitions.KEY_COLOR).isEmpty()) {
+                if (!rowData.getString(DBDefinitions.KEY_COLOR).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.menu_edit)
@@ -1299,7 +1300,7 @@ public class BooksOnBookshelf
     public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                          @NonNull final Integer position) {
 
-        final CursorRow cursorRow = new CursorRow(Objects.requireNonNull(mModel.getListCursor()));
+        RowDataHolder cursorRow = new CursorRow(Objects.requireNonNull(mModel.getListCursor()));
 
         FragmentManager fm = getSupportFragmentManager();
 
