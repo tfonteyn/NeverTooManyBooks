@@ -982,7 +982,7 @@ public class BooklistBuilder
     /**
      * A value class for domain + desc/asc sorting flag.
      */
-    public static class SortedDomains {
+    static class SortedDomains {
 
         @NonNull
         final Domain domain;

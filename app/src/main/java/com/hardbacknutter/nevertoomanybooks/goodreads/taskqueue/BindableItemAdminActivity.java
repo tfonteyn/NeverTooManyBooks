@@ -48,10 +48,8 @@ public abstract class BindableItemAdminActivity
     /** Log tag. */
     private static final String TAG = "BindableItemAdminAct";
 
-    /** The View for the list. */
-    protected ListView mListView;
     /** Database Access. */
-    DAO mDb;
+    private DAO mDb;
 
     /** The adapter for the list. */
     private BindableItemCursorAdapter mListAdapter;
@@ -72,14 +70,15 @@ public abstract class BindableItemAdminActivity
         mDb = new DAO(TAG);
         super.onCreate(savedInstanceState);
 
-        mListView = findViewById(android.R.id.list);
+        /** The View for the list. */
+        ListView listView = findViewById(android.R.id.list);
 
         mListAdapter = getListAdapter(mDb);
 
-        mListView.setAdapter(mListAdapter);
-        mListView.setOnItemClickListener((parent, v, position, id) -> {
-            onItemClick(mListAdapter.getItem(position).getBindableItem());
-        });
+        listView.setAdapter(mListAdapter);
+        listView.setOnItemClickListener(
+                (parent, v, position, id) -> onItemClick(mListAdapter.getItem(position)
+                                                                     .getBindableItem()));
     }
 
     /**
@@ -104,7 +103,7 @@ public abstract class BindableItemAdminActivity
      *
      * @param item which was clicked
      */
-    public void onItemClick(@NonNull final BindableItem item) {
+    private void onItemClick(@NonNull final BindableItem item) {
         // If it owns a hint, display it first
         if (item instanceof TipManager.TipOwner) {
             TipManager.display(this, ((TipManager.TipOwner) item).getTip(), () ->

@@ -91,7 +91,7 @@ class StripInfoTest
         assertEquals("2018", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("48", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("Nederlands", bookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
         ArrayList<Publisher> allPublishers = bookData
@@ -161,7 +161,7 @@ class StripInfoTest
         assertEquals("2000", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("64", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Softcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("Nederlands", bookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
         ArrayList<Publisher> allPublishers = bookData
@@ -230,7 +230,7 @@ class StripInfoTest
         assertEquals("2017", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("224", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("Nederlands", bookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
         ArrayList<Publisher> allPublishers = bookData
@@ -305,7 +305,7 @@ class StripInfoTest
         assertEquals("1972", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("48", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Softcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("Nederlands", bookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
         ArrayList<Publisher> allPublishers = bookData
@@ -377,7 +377,7 @@ class StripInfoTest
         assertEquals("Spoken in de grot", bookData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("1977", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("Softcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("Nederlands", bookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("nld", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
         ArrayList<Publisher> allPublishers = bookData
@@ -452,7 +452,7 @@ class StripInfoTest
         assertEquals("2009", bookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("172", bookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", bookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("Frans", bookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("fra", bookData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", bookData.getString(DBDefinitions.KEY_COLOR));
 
         ArrayList<Publisher> allPublishers = bookData

@@ -58,8 +58,20 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  */
 public abstract class JsoupBase {
 
+    /**
+     * RELEASE: Chrome 2020-01-17. Continuously update to latest version.
+     * - KBNL site does not return full data unless the user agent is set to a valid browser.
+     * <p>
+     * Set by default. Call {@link #setUserAgent(String)} to override.
+     */
+    private static final String USER_AGENT_VALUE =
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            + " AppleWebKit/537.36 (KHTML, like Gecko)"
+            + " Chrome/79.0.3945.117 Safari/537.36";
+
     /** Log tag. */
     private static final String TAG = "JsoupBase";
+
 
     /** The parsed downloaded web page. */
     protected Document mDoc;
@@ -69,7 +81,7 @@ public abstract class JsoupBase {
 
     private int mConnectTimeout;
     private int mReadTimeout;
-    private String mUserAgent;
+    private String mUserAgent = USER_AGENT_VALUE;
 
     /** {@code null} by default: for Jsoup to figure it out. */
     private String mCharSetName;
@@ -86,7 +98,7 @@ public abstract class JsoupBase {
      * @param doc the pre-loaded Jsoup document.
      */
     @VisibleForTesting
-    public JsoupBase(@NonNull final Document doc) {
+    protected JsoupBase(@NonNull final Document doc) {
         mDoc = doc;
     }
 
@@ -110,7 +122,12 @@ public abstract class JsoupBase {
         mReadTimeout = readTimeout;
     }
 
-    public void setUserAgent(@Nullable final String userAgent) {
+    /**
+     * Optionally override the user agent; can be set to {@code null} to revert to JSoup default.
+     *
+     * @param userAgent string to use
+     */
+    protected void setUserAgent(@Nullable final String userAgent) {
         mUserAgent = userAgent;
     }
 

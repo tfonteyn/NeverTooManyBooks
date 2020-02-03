@@ -126,7 +126,7 @@ public final class CoversDAO
 
     private static final Domain DOM_DATE =
             new Domain.Builder(CKEY_DATE, ColumnInfo.TYPE_DATETIME)
-                    .notNull().withDefault("current_timestamp").build();
+                    .notNull().withDefaultCurrentTimeStamp().build();
 
     /** The actual stored bitmap width. */
     private static final Domain DOM_WIDTH =

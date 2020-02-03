@@ -65,8 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
-import static com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine.SITE_LOCALE;
-
 public class IsfdbBookHandler
         extends AbstractBase {
 
@@ -566,7 +564,7 @@ public class IsfdbBookHandler
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
-                    CurrencyUtils.splitPrice(SITE_LOCALE,
+                    CurrencyUtils.splitPrice(IsfdbSearchEngine.SITE_LOCALE,
                                              tmpString,
                                              DBDefinitions.KEY_PRICE_LISTED,
                                              DBDefinitions.KEY_PRICE_LISTED_CURRENCY,

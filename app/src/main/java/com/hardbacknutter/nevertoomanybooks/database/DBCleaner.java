@@ -127,6 +127,22 @@ public class DBCleaner {
         }
     }
 
+//    public void nativeIds(@NonNull final Context context) {
+//        for (Domain domain : DBDefinitions.NATIVE_ID_DOMAINS) {
+//            switch (domain.getType()) {
+//                case ColumnInfo.TYPE_INTEGER:
+//                    break;
+//
+//                case ColumnInfo.TYPE_TEXT:
+//                    break;
+//
+//                default:
+//                    Logger.warnWithStackTrace(context, TAG, "type=" + domain.getType());
+//                    break;
+//            }
+//        }
+//    }
+
     /**
      * Validates all boolean columns to contain '0' or '1'.
      *
@@ -143,7 +159,7 @@ public class DBCleaner {
     }
 
     /**
-     * Set boolean columns to 0,1.
+     * Enforce boolean columns to 0,1.
      *
      * @param table  to check
      * @param column to check
@@ -188,7 +204,7 @@ public class DBCleaner {
      * Check for books which do not have an Author at position 1.
      * For those that don't, read their authors, and re-save them.
      * <p>
-     * Transaction: participate, or runs in new.
+     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
      */
@@ -218,6 +234,7 @@ public class DBCleaner {
                 }
             } catch (@NonNull final RuntimeException e) {
                 Logger.error(context, TAG, e);
+
             } finally {
                 if (txLock != null) {
                     mSyncedDb.endTransaction(txLock);
@@ -233,7 +250,7 @@ public class DBCleaner {
      * Check for books which do not have a Series at position 1.
      * For those that don't, read their series, and re-save them.
      * <p>
-     * Transaction: participate, or runs in new.
+     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
      */
@@ -309,6 +326,7 @@ public class DBCleaner {
             toLog("bookBookshelf|EXIT", select);
         }
     }
+
     /**
      * Convert any {@code null} values to an empty string.
      * <p>

@@ -243,12 +243,19 @@ public class BooksOnBookshelf
          */
         @Override
         public void onItemClick(final int position) {
-
-            // Move the cursor, so we can read the data for this row.
-            // No need to check the position first, i.e. if the user can click it, then it's there.
             final Cursor cursor = mModel.getListCursor();
-            //noinspection ConstantConditions
-            cursor.moveToPosition(position);
+            if (cursor == null) {
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalStateException("cursor was NULL");
+                }
+                return;
+            }
+            // Move the cursor, so we can read the data for this row.
+            // Paranoia: if the user can click it, then this move should be fine.
+            if (!cursor.moveToPosition(position)) {
+                return;
+            }
+
             final CursorRow cursorRow = new CursorRow(cursor);
 
             // If it's a book, open the details screen.
@@ -266,22 +273,26 @@ public class BooksOnBookshelf
                 startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
             } else {
-                // Else it's a level, expand/collapse recursively.
+                // it's a level, expand/collapse recursively.
                 long rowId = cursorRow.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
                 boolean isExpanded = mModel.toggleNode(rowId);
 
                 // make sure the cursor has valid rows for the new position.
-                //noinspection ConstantConditions
-                mModel.getListCursor().requery();
-                mAdapter.notifyDataSetChanged();
+                if (cursor.requery()) {
+                    mAdapter.notifyDataSetChanged();
 
-                if (isExpanded) {
-                    // if the user expanded the line at the bottom of the screen,
-                    int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                    if ((position + 1 == lastPos) || (position == lastPos)) {
-                        // then we move the list a minimum of 2 positions upwards
-                        // to make the expanded rows visible. Using 3 for comfort.
-                        mListView.scrollToPosition(position + 3);
+                    if (isExpanded) {
+                        // if the user expanded the line at the bottom of the screen,
+                        int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                        if ((position + 1 == lastPos) || (position == lastPos)) {
+                            // then we move the list a minimum of 2 positions upwards
+                            // to make the expanded rows visible. Using 3 for comfort.
+                            mListView.scrollToPosition(position + 3);
+                        }
+                    }
+                } else {
+                    if (BuildConfig.DEBUG /* always */) {
+                        throw new IllegalStateException("requery() failed");
                     }
                 }
             }
@@ -294,12 +305,19 @@ public class BooksOnBookshelf
          */
         @Override
         public boolean onItemLongClick(final int position) {
-
-            // Move the cursor, so we can read the data for this row.
-            // No need to check the position first, i.e. if the user can click it, then it's there.
             final Cursor cursor = mModel.getListCursor();
-            //noinspection ConstantConditions
-            cursor.moveToPosition(position);
+            if (cursor == null) {
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalStateException("cursor was NULL");
+                }
+                return false;
+            }
+            // Move the cursor, so we can read the data for this row.
+            // Paranoia: if the user can click it, then this move should be fine.
+            if (!cursor.moveToPosition(position)) {
+                return false;
+            }
+
             final CursorRow cursorRow = new CursorRow(cursor);
 
             final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
@@ -568,7 +586,7 @@ public class BooksOnBookshelf
     @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        getMenuInflater().inflate(R.menu.o_bob, menu);
+        getMenuInflater().inflate(R.menu.bob, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -1059,7 +1077,14 @@ public class BooksOnBookshelf
         // If a target position array is set, then queue a runnable to scroll to the target
         // best suited depending on what rows are (by then) currently visible
         if (targetRows != null) {
-            mListView.post(() -> scrollToTarget(targetRows));
+            mListView.post(() -> {
+                scrollToTarget(targetRows);
+                // not entirely sure this is needed
+                mModel.saveAllNodes();
+            });
+        } else {
+            // not entirely sure this is needed
+            mModel.saveAllNodes();
         }
 
         // Prepare the list header fields.
@@ -1104,6 +1129,10 @@ public class BooksOnBookshelf
     private void scrollToTarget(@NonNull final List<RowStateDAO.ListRowDetails> targetRows) {
         // Find the actual extend of the current view and get centre.
         final int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+        if (firstVisibleItemPosition == RecyclerView.NO_POSITION) {
+            return;
+        }
+
         final int lastVisibleItemPosition = mLayoutManager.findLastVisibleItemPosition();
         final int centre = (lastVisibleItemPosition + firstVisibleItemPosition) / 2;
 
@@ -1155,7 +1184,9 @@ public class BooksOnBookshelf
         final int rowKind = cursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND);
         switch (rowKind) {
             case BooklistGroup.RowKind.BOOK: {
-                getMenuInflater().inflate(R.menu.co_book, menu);
+                getMenuInflater().inflate(R.menu.book, menu);
+                getMenuInflater().inflate(R.menu.sm_open_on_site, menu);
+                getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
                 boolean isRead = cursorRow.getBoolean(DBDefinitions.KEY_READ);
                 menu.findItem(R.id.MENU_BOOK_READ).setVisible(!isRead);
@@ -1174,7 +1205,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.RowKind.AUTHOR: {
-                getMenuInflater().inflate(R.menu.c_author, menu);
+                getMenuInflater().inflate(R.menu.author, menu);
 
                 boolean complete = cursorRow.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
@@ -1185,7 +1216,7 @@ public class BooksOnBookshelf
             }
             case BooklistGroup.RowKind.SERIES: {
                 if (cursorRow.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
-                    getMenuInflater().inflate(R.menu.c_series, menu);
+                    getMenuInflater().inflate(R.menu.series, menu);
 
                     boolean complete =
                             cursorRow.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
@@ -1198,10 +1229,7 @@ public class BooksOnBookshelf
             }
             case BooklistGroup.RowKind.PUBLISHER: {
                 if (!cursorRow.getString(DBDefinitions.KEY_PUBLISHER).isEmpty()) {
-                    menu.add(Menu.NONE, R.id.MENU_PUBLISHER_EDIT,
-                             getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.menu_edit)
-                        .setIcon(R.drawable.ic_edit);
+                    getMenuInflater().inflate(R.menu.publisher, menu);
                 }
                 break;
             }
@@ -1271,8 +1299,7 @@ public class BooksOnBookshelf
     public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                          @NonNull final Integer position) {
 
-        //noinspection ConstantConditions
-        final CursorRow cursorRow = new CursorRow(mModel.getListCursor());
+        final CursorRow cursorRow = new CursorRow(Objects.requireNonNull(mModel.getListCursor()));
 
         FragmentManager fm = getSupportFragmentManager();
 
@@ -1402,9 +1429,11 @@ public class BooksOnBookshelf
 
             case R.id.MENU_SERIES_EDIT: {
                 long seriesId = cursorRow.getLong(DBDefinitions.KEY_FK_SERIES);
-                //noinspection ConstantConditions
-                EditSeriesDialogFragment.newInstance(mModel.getDb().getSeries(seriesId))
-                                        .show(fm, EditSeriesDialogFragment.TAG);
+                Series series = mModel.getDb().getSeries(seriesId);
+                if (series != null) {
+                    EditSeriesDialogFragment.newInstance(series)
+                                            .show(fm, EditSeriesDialogFragment.TAG);
+                }
                 return true;
             }
             case R.id.MENU_SERIES_SET_COMPLETE:
@@ -1440,10 +1469,11 @@ public class BooksOnBookshelf
 
             case R.id.MENU_AUTHOR_EDIT: {
                 long authorId = cursorRow.getLong(DBDefinitions.KEY_FK_AUTHOR);
-                //noinspection ConstantConditions
-                EditAuthorDialogFragment.newInstance(mModel.getDb().getAuthor(authorId))
-                                        .show(fm, EditAuthorDialogFragment.TAG);
-
+                Author author = mModel.getDb().getAuthor(authorId);
+                if (author != null) {
+                    EditAuthorDialogFragment.newInstance(author)
+                                            .show(fm, EditAuthorDialogFragment.TAG);
+                }
                 return true;
             }
             case R.id.MENU_AUTHOR_SET_COMPLETE:
@@ -1525,6 +1555,10 @@ public class BooksOnBookshelf
     private void saveListPosition() {
         if (!isDestroyed()) {
             int position = mLayoutManager.findFirstVisibleItemPosition();
+            if (position == RecyclerView.NO_POSITION) {
+                return;
+            }
+
             long rowId = mAdapter.getItemId(position);
 
             // This is just the number of pixels offset of the first visible row.
@@ -1672,18 +1706,18 @@ public class BooksOnBookshelf
      * Update the list header to match the current top item.
      */
     private void setHeaderLevelText() {
-        int adapterPosition = mLayoutManager.findFirstVisibleItemPosition();
-        if (adapterPosition != RecyclerView.NO_POSITION) {
-            mModel.setPreviousFirstVisibleItemPosition(adapterPosition);
+        int position = mLayoutManager.findFirstVisibleItemPosition();
+        if (position == RecyclerView.NO_POSITION) {
+            return;
         }
 
+        mModel.setPreviousFirstVisibleItemPosition(position);
         // use visibility which was set in {@link #initHeaders}
         if (mHeaderTextView[0].getVisibility() == View.VISIBLE
             || mHeaderTextView[1].getVisibility() == View.VISIBLE) {
 
             Cursor cursor = mModel.getListCursor();
-            //noinspection ConstantConditions
-            if (cursor.moveToPosition(adapterPosition)) {
+            if (cursor != null && cursor.moveToPosition(position)) {
                 String[] lines = mAdapter.getLevelText(this);
                 for (int i = 0; i < lines.length; i++) {
                     if (mHeaderTextView[i].getVisibility() == View.VISIBLE) {

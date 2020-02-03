@@ -85,7 +85,8 @@ class KbNlBookHandler
         if (!mPublishers.isEmpty()) {
             mBookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
-        // As kb.nl is dutch, we're going to assume that all books are in Dutch.
+        // As kb.nl is dutch, and there is no 'language' field,
+        // we're going to assume that all books are in Dutch.
         if (!mBookData.isEmpty() && !mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
             mBookData.putString(DBDefinitions.KEY_LANGUAGE, "nld");
         }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -91,6 +91,7 @@ class KbNlBookHandlerTest
         assertEquals("9789463731454", mBookData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("paperback", mBookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("48", mBookData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("nld", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
 
         ArrayList<Publisher> allPublishers = mBookData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
@@ -138,6 +139,7 @@ class KbNlBookHandlerTest
         assertEquals("9022953351", mBookData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("geb.", mBookData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("156", mBookData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("nld", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
 
         ArrayList<Publisher> allPublishers = mBookData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);

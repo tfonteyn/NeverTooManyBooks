@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
  * Defines a domain; name, type, ...
@@ -199,11 +200,28 @@ public class Domain
 
     /**
      * Blank values are not allowed.
-     *
+     * <p>
      * This is basically domains which have a DEFAULT clause which is not the empty string.
      */
     public boolean isNotBlank() {
         return mIsNotBlank;
+    }
+
+    public boolean hasDefault() {
+        return mDefaultClause != null;
+    }
+
+    @Nullable
+    public String getDefault() {
+        if (mDefaultClause == null) {
+            return null;
+        } else if ("current_timestamp".equals(mDefaultClause)) {
+            return DateUtils.utcSqlDateTimeForToday();
+        } else if (mDefaultClause.startsWith("'") && mDefaultClause.endsWith("'")) {
+            return mDefaultClause.substring(1, mDefaultClause.length() - 1);
+        }
+
+        return mDefaultClause;
     }
 
     /**
@@ -281,10 +299,6 @@ public class Domain
         return sql.toString();
     }
 
-    public boolean hasDefault() {
-        return mDefaultClause != null;
-    }
-
     public static class Builder {
 
         @NonNull
@@ -352,6 +366,17 @@ public class Domain
         @NonNull
         public Builder withDefault(final double value) {
             mDefaultClause = String.valueOf(value);
+            return this;
+        }
+
+        /**
+         * Add a current timestamp default constraint.
+         *
+         * @return Builder (for chaining)
+         */
+        @NonNull
+        public Builder withDefaultCurrentTimeStamp() {
+            mDefaultClause = "current_timestamp";
             return this;
         }
 

@@ -92,15 +92,6 @@ public class SearchCoordinator
         extends ViewModel
         implements ProgressDialogFragment.Cancellable {
 
-    /**
-     * RELEASE: Chrome 2020-01-17. Continuously update to latest version.
-     * KBNL site does not return full data unless the user agent header is set to a valid browser.
-     */
-    public static final String USER_AGENT =
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-            + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/79.0.3945.117 Safari/537.36";
-
     /** Log tag. */
     private static final String TAG = "SearchCoordinator";
 

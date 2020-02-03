@@ -35,6 +35,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
@@ -102,7 +103,8 @@ public class IsfdbSearchEngine
     /** Type: {@code boolean}. */
     public static final String PREFS_USE_PUBLISHER = PREF_PREFIX + "search.uses.publisher";
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
+    @VisibleForTesting
+    public static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {

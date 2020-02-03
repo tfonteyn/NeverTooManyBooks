@@ -33,6 +33,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -46,7 +47,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -68,7 +68,8 @@ public class KbNlSearchEngine
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "kbnl.";
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
+    @VisibleForTesting
+    public static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -128,8 +129,6 @@ public class KbNlSearchEngine
 
             // needed so we get the XML instead of the rendered page
             con.setInstanceFollowRedirects(false);
-            // the site does not return full data unless this is set to a valid browser.
-            con.setRequestProperty("User-Agent", SearchCoordinator.USER_AGENT);
             terminatorConnection.open();
 
             SAXParser parser = factory.newSAXParser();

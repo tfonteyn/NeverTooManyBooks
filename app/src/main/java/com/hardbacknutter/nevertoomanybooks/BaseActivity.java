@@ -78,7 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  *              super.onResume();
  *              if (getActivity() instanceof BaseActivity) {
  *                  BaseActivity activity = (BaseActivity) getActivity();
- *                  if (activity.isGoingToRecreate()) {
+ *                  if (activity.maybeRecreate()) {
  *                      return;
  *                  }
  *              }
@@ -208,7 +208,7 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
 
-        isGoingToRecreate();
+        maybeRecreate();
     }
 
     /**
@@ -217,7 +217,7 @@ public abstract class BaseActivity
      * @return {@code true} if a recreate was triggered.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean isGoingToRecreate() {
+    public boolean maybeRecreate() {
         boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
         if (localeChanged) {
             LocaleUtils.onLocaleChanged();
@@ -229,7 +229,7 @@ public abstract class BaseActivity
             recreate();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.isGoingToRecreate|Recreate!");
+                Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Recreate!");
             }
 
             return true;
@@ -238,7 +238,7 @@ public abstract class BaseActivity
             // this is the second time we got here, so we have been re-created.
             sActivityRecreateStatus = ActivityStatus.Running;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.isGoingToRecreate|Resuming");
+                Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Resuming");
             }
         }
 

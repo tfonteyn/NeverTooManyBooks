@@ -89,15 +89,15 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_native_id);
 
-//       View root = onCreateViewHolder();
+//       View root = getView();
 //
 //       int visibleSites = 0;
 //        RadioButton singleVisibleBtn = null;
-//        //noinspection ConstantConditions
-//        for (Site site : SiteList.getSites(getContext(), SiteList.Type.Data)) {
-//            int resId = SearchSites.getResIdFromSiteId(site.id);
+//        Locale locale = LocaleUtils.getUserLocale(getContext());
+//        SiteList siteList = SiteList.getList(getContext(), locale, SiteList.Type.Data);
+//        for (Site site : siteList.getSites(true)) {
+//            int resId = site.getResId();
 //            if (resId != View.NO_ID) {
-//                //noinspection ConstantConditions
 //                RadioButton btn = root.findViewById(resId);
 //                if (btn != null) {
 //                    btn.setVisibility(site.isEnabled() ? View.VISIBLE : View.GONE);

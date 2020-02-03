@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -255,6 +256,8 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOK_SERIES}. */
     public static final Domain DOM_BOOK_NUM_IN_SERIES;
 
+    /** All native id keys supported for lookups. Also see {@link #NATIVE_ID_KEYS}. */
+    public static final Collection<Domain> NATIVE_ID_DOMAINS = new ArrayList<>();
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
@@ -415,7 +418,8 @@ public final class DBDefinitions {
     public static final String KEY_EID_WORLDCAT = "worldcat_oclc_book_id";
     /** External id. - String. */
     public static final String KEY_EID_LCCN = "lccn_book_id";
-    /** All native id keys supported for lookups. */
+
+    /** All native id keys supported for lookups. Also see {@link #NATIVE_ID_DOMAINS}. */
     public static final String[] NATIVE_ID_KEYS = {
             DBDefinitions.KEY_EID_GOODREADS_BOOK,
             DBDefinitions.KEY_EID_ISFDB,
@@ -537,8 +541,6 @@ public final class DBDefinitions {
      */
     public static final String KEY_TOC_TYPE = "type";
 
-
-
     static {
         // Suffix added to a column name to create a specific 'order by' copy of that column.
         final String COLUMN_SUFFIX_ORDER_BY = "_ob";
@@ -628,7 +630,7 @@ public final class DBDefinitions {
 
         DOM_DATE_LAST_UPDATED =
                 new Domain.Builder(KEY_DATE_LAST_UPDATED, ColumnInfo.TYPE_DATETIME)
-                        .notNull().withDefault("current_timestamp").build();
+                        .notNull().withDefaultCurrentTimeStamp().build();
 
         /* ======================================================================================
          *  Bookshelf domains
@@ -756,7 +758,7 @@ public final class DBDefinitions {
 
         DOM_BOOK_DATE_ADDED =
                 new Domain.Builder(KEY_DATE_ADDED, ColumnInfo.TYPE_DATETIME)
-                        .notNull().withDefault("current_timestamp").build();
+                        .notNull().withDefaultCurrentTimeStamp().build();
 
         DOM_BOOK_LOCATION =
                 new Domain.Builder(KEY_LOCATION, ColumnInfo.TYPE_TEXT)
@@ -783,21 +785,30 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Book external website id domains
          * ====================================================================================== */
-        //NEWTHINGS: add new site specific ID: add a DOM
+        //NEWTHINGS: add new site specific ID: add a DOM and add it to NATIVE_ID_DOMAINS
         DOM_EID_GOODREADS_BOOK =
                 new Domain.Builder(KEY_EID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER).build();
+        NATIVE_ID_DOMAINS.add(DOM_EID_GOODREADS_BOOK);
+
         DOM_BOOK_GOODREADS_LAST_SYNC_DATE =
                 new Domain.Builder(KEY_BOOK_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATE)
                         .notNull().withDefault("'0000-00-00'").build();
 
         DOM_EID_ISFDB =
                 new Domain.Builder(KEY_EID_ISFDB, ColumnInfo.TYPE_INTEGER).build();
+        NATIVE_ID_DOMAINS.add(DOM_EID_ISFDB);
+
         DOM_EID_LIBRARY_THING =
                 new Domain.Builder(KEY_EID_LIBRARY_THING, ColumnInfo.TYPE_INTEGER).build();
+        NATIVE_ID_DOMAINS.add(DOM_EID_LIBRARY_THING);
+
         DOM_EID_OPEN_LIBRARY =
                 new Domain.Builder(KEY_EID_OPEN_LIBRARY, ColumnInfo.TYPE_TEXT).build();
+        NATIVE_ID_DOMAINS.add(DOM_EID_OPEN_LIBRARY);
+
         DOM_EID_STRIP_INFO_BE =
                 new Domain.Builder(KEY_EID_STRIP_INFO_BE, ColumnInfo.TYPE_INTEGER).build();
+        NATIVE_ID_DOMAINS.add(DOM_EID_STRIP_INFO_BE);
 
         /* ======================================================================================
          *  Loanee domains

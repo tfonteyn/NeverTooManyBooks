@@ -36,6 +36,7 @@ import android.util.TypedValue;
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -139,7 +140,16 @@ public class FastScroller {
      */
     public interface PopupTextProvider {
 
-        @NonNull
+        /**
+         * Get the popup text lines for the given position.
+         *
+         * @param context  Current context
+         * @param position to use
+         *
+         * @return an array with the lines. The length of the array is variable.
+         * <strong>CAN RETURN {@code null}</strong>
+         */
+        @Nullable
         String[] getPopupText(@NonNull Context context,
                               int position);
     }

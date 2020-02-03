@@ -4,7 +4,24 @@ https://www.oclc.org/developer/
 https://www.worldcat.org/affiliate/webservices/xisbn/app.jsp
 => format is the same as LibraryThing => SearchLibraryThingEditionHandler
 
+
+https://www.worldcat.org/affiliate/webservices/xisbn/app.jsp
 The xISBN Web service is free for non-commercial use when usage does not exceed 500 requests
-per day. More requests is a paying service.
+per day.
+
+https://www.worldcat.org/ldap/terms.jsp
+H. "Commercial Use" means: (i) sale or resale of Data, Widgets and/or Tools (including, without
+ limitation, sale or resale of rights therein under a licensing arrangement or otherwise);
+  (ii) use of Data, Widgets and/or Tools as part of or to facilitate a service for which you
+  or a user of your application receives a fee (including, without limitation, fees from
+  advertising placed on service interfaces); or (iii) sale or resale of an application which
+   makes use of Affiliate Services.
+
 
 No plans to implement for now.
+----------------------------------------------------------------------------------------------------
+
+WorldCat permits searching its catalog by ISSN, by entering "issn:"+ISSN code in the query field.
+One can also go directly to an ISSN's record by appending it to "https://www.worldcat.org/ISSN/",
+ e.g. https://www.worldcat.org/ISSN/1021-9749. This does not query the ISSN Register itself,
+  but rather shows whether any Worldcat library holds an item with the given ISSN.

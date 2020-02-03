@@ -27,6 +27,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 
 /**
@@ -37,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 public class CredentialsException
         extends Exception {
 
+    private static final long serialVersionUID = 4232206649906882515L;
     @SearchSites.Id
     private final int mSite;
 
@@ -48,6 +55,14 @@ public class CredentialsException
     public CredentialsException(@SearchSites.Id final int site) {
         super();
         mSite = site;
+    }
+
+    @Nullable
+    @Override
+    public String getLocalizedMessage() {
+        Context context = App.getLocalizedAppContext();
+        return context.getString(R.string.error_site_authentication_failed,
+                                 SearchSites.getName(mSite));
     }
 
     @SearchSites.Id

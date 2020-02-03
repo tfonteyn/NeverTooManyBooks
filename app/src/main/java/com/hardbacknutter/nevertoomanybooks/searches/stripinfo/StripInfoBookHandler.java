@@ -142,7 +142,7 @@ public class StripInfoBookHandler
      * Constructor.
      *
      * @param localizedAppContext Localised application context
-     * @param searchEngine        the SearchEngine (to get configuration params)
+     * @param searchEngine        the SearchEngine
      */
     StripInfoBookHandler(@NonNull final Context localizedAppContext,
                          @NonNull final SearchEngine searchEngine) {
@@ -155,7 +155,7 @@ public class StripInfoBookHandler
      * Constructor for mocking.
      *
      * @param localizedAppContext Localised application context
-     * @param searchEngine        the SearchEngine (to get configuration params)
+     * @param searchEngine        the SearchEngine
      * @param doc                 the pre-loaded Jsoup document.
      */
     @VisibleForTesting
@@ -365,7 +365,7 @@ public class StripInfoBookHandler
                                 break;
 
                             case "Collectie":
-                                i += processSeries(td);
+                                i += processCollectie(td);
                                 break;
 
                             case "Oplage":
@@ -831,7 +831,7 @@ public class StripInfoBookHandler
      *
      * @return 1 if we found a value td; 0 otherwise.
      */
-    private int processSeries(@NonNull final Element td) {
+    private int processCollectie(@NonNull final Element td) {
         Element dataElement = td.nextElementSibling();
         if (dataElement != null) {
             Elements as = dataElement.select("a");
