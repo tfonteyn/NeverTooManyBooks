@@ -62,7 +62,7 @@ import java.util.regex.Pattern;
  * Source code modification can be found by searching by "diacritics"; being part
  * of variable/method names.
  * <p>
- * (some other mods as done by the AndroidStudio formatter are irrelevant and only to please lint).
+ * Some modifications done, do not blindly overwrite from a newer version of the above.
  *
  * @param <T>
  */
@@ -516,9 +516,10 @@ public class DiacriticArrayAdapter<T>
         final T item = getItem(position);
         if (item instanceof CharSequence) {
             text.setText((CharSequence) item);
-        } else {
-            //noinspection ConstantConditions
+        } else if (item != null) {
             text.setText(item.toString());
+        } else {
+            text.setText("");
         }
 
         return view;

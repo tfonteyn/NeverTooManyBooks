@@ -75,7 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -187,12 +186,7 @@ public class BooklistAdapter
             case RowKind.READ_STATUS:
                 return new ReadUnreadHolder(itemView, columnIndex);
 
-            // Sanity check
-            //noinspection ConstantConditions
-            case RowKind.BOOK:
-                throw new UnexpectedValueException(viewType);
-
-                // plain old Strings
+            // plain old Strings
             case RowKind.BOOKSHELF:
             case RowKind.DATE_ACQUIRED_DAY:
             case RowKind.DATE_ACQUIRED_YEAR:
@@ -320,6 +314,7 @@ public class BooklistAdapter
         if (mCursor.moveToPosition(position)) {
             return mCursorRow.getInt(DBDefinitions.KEY_BL_NODE_KIND);
         } else {
+            // bogus, should not happen
             return RowKind.BOOK;
         }
     }
@@ -381,22 +376,25 @@ public class BooklistAdapter
      * <p>
      * <br>{@inheritDoc}
      */
-    @NonNull
+    @Nullable
     @Override
     public String[] getPopupText(@NonNull final Context context,
                                  final int position) {
         // make sure it's still in range.
         int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
 
-        String[] section;
+        String[] section = null;
 
         // temporary move the cursor to the requested position, restore after we got the text.
         synchronized (this) {
             final int savedPos = mCursor.getPosition();
-            mCursor.moveToPosition(clampedPosition);
-            section = getLevelText(context);
-            mCursor.moveToPosition(savedPos);
+            if (mCursor.moveToPosition(clampedPosition)) {
+                section = getLevelText(context);
+                // checking the move would be pointless
+                mCursor.moveToPosition(savedPos);
+            }
         }
+
         return section;
     }
 
@@ -492,6 +490,7 @@ public class BooklistAdapter
             extends AsyncTask<Void, Void, Boolean> {
 
         /** Log tag. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "GetBookExtrasTask";
 
         /** Format string. */

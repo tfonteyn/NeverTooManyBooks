@@ -106,6 +106,7 @@ public class BooklistCursor
     private final BooklistBuilder mBooklistBuilder;
     /** The Currently active cursor. */
     @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
     private Cursor mActiveCursor;
     /** Current MRU ring buffer position. */
     private int mMruListPos;
@@ -220,19 +221,16 @@ public class BooklistCursor
     /**
      * Implement re-query; this invalidate our existing cursors, update the position,
      * and call the superclass.
+     *
+     * @return {@code true} if the move and the requery was successful
      */
     @Override
     @CallSuper
     public boolean requery() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-            Log.d(TAG, "ENTER|requery|" + this);
-        }
-
         clearCursors();
         mPseudoCount = null;
-        onMove(getPosition(), getPosition());
 
-        return super.requery();
+        return onMove(getPosition(), getPosition()) && super.requery();
     }
 
     /**
@@ -247,6 +245,8 @@ public class BooklistCursor
 
     /**
      * Handle a position change. Manage cursor based on new position.
+     *
+     * @return {@code true} if the move was successful
      */
     @Override
     public boolean onMove(final int oldPosition,
@@ -348,11 +348,13 @@ public class BooklistCursor
 
             // Set as the active cursor
             mActiveCursor = mCursors.get(cursorId);
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_PSEUDO_CURSOR) {
-                Log.d(TAG, "EXIT|onMove"
-                           + "|cursorId=" + cursorId
-                           + "|mActiveCursor=" + mActiveCursor);
+            if (mActiveCursor == null) {
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalStateException("onMove"
+                                                    + "|cursorId=" + cursorId
+                                                    + "|mActiveCursor is NULL");
+                }
+                return false;
             }
 
             // and finally set its position correctly

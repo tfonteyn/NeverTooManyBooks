@@ -232,8 +232,7 @@ public class CoverBrowserFragment
             return;
         }
 
-        //noinspection ConstantConditions
-        mGalleryAdapter.notifyDataSetChanged();
+        Objects.requireNonNull(mGalleryAdapter).notifyDataSetChanged();
 
         // Show help message
         mStatusTextView.setText(R.string.info_tap_on_thumb);

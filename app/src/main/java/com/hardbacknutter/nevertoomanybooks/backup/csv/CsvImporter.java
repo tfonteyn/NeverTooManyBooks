@@ -256,7 +256,6 @@ public class CsvImporter
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
                     mDb.setTransactionSuccessful();
-                    //noinspection ConstantConditions
                     mDb.endTransaction(txLock);
                 }
                 if (!mDb.inTransaction()) {
@@ -332,7 +331,6 @@ public class CsvImporter
         } finally {
             if (mDb.inTransaction()) {
                 mDb.setTransactionSuccessful();
-                //noinspection ConstantConditions
                 mDb.endTransaction(txLock);
             }
         }

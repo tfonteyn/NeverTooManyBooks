@@ -170,7 +170,6 @@ public class BookSearchByIsbnFragment
         }
 
 //        if (savedInstanceState == null) {
-//            //noinspection ConstantConditions
 //            mSearchCoordinator.getSiteList().promptToRegister(getContext(), false, "search");
 //        }
 
@@ -198,8 +197,8 @@ public class BookSearchByIsbnFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_SCAN_BARCODE:
-                //noinspection ConstantConditions
-                mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                mScanMode = Objects.requireNonNull(mScannerModel)
+                                   .scan(this, UniqueId.REQ_SCAN_BARCODE);
                 return true;
 
             case R.id.MENU_STRICT_ISBN: {
@@ -233,8 +232,8 @@ public class BookSearchByIsbnFragment
         super.onSearchCancelled();
 
         if (mScanMode) {
-            //noinspection ConstantConditions
-            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+            mScanMode = Objects.requireNonNull(mScannerModel)
+                               .scan(this, UniqueId.REQ_SCAN_BARCODE);
         }
     }
 
@@ -253,14 +252,13 @@ public class BookSearchByIsbnFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 // go scan next book until the user cancels scanning.
                 if (mScanMode) {
-                    //noinspection ConstantConditions
-                    mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                    mScanMode = Objects.requireNonNull(mScannerModel)
+                                       .scan(this, UniqueId.REQ_SCAN_BARCODE);
                 }
                 break;
             }
             case UniqueId.REQ_SCAN_BARCODE: {
-                //noinspection ConstantConditions
-                mScannerModel.setScannerStarted(false);
+                Objects.requireNonNull(mScannerModel).setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
                     if (BuildConfig.DEBUG) {
                         //noinspection ConstantConditions
@@ -293,14 +291,13 @@ public class BookSearchByIsbnFragment
 
                     // init the scanner if it was changed.
                     if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
-                        //noinspection ConstantConditions
-                        mScannerModel.resetScanner();
+                        Objects.requireNonNull(mScannerModel).resetScanner();
                     }
                 }
 
                 if (mScanMode) {
-                    //noinspection ConstantConditions
-                    mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                    mScanMode = Objects.requireNonNull(mScannerModel)
+                                       .scan(this, UniqueId.REQ_SCAN_BARCODE);
                 }
                 break;
             }
@@ -308,8 +305,8 @@ public class BookSearchByIsbnFragment
                 if (mScanMode) {
                     if (resultCode == Activity.RESULT_OK) {
                         // go scan next book until the user cancels scanning.
-                        //noinspection ConstantConditions
-                        mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                        mScanMode = Objects.requireNonNull(mScannerModel)
+                                           .scan(this, UniqueId.REQ_SCAN_BARCODE);
                     } else {
                         mScanMode = false;
                     }
@@ -346,7 +343,7 @@ public class BookSearchByIsbnFragment
         if (!code.isValid(strictIsbn)) {
             if (mScanMode) {
                 //noinspection ConstantConditions
-                mScannerModel.onInvalidBeep(getContext());
+                Objects.requireNonNull(mScannerModel).onInvalidBeep(getContext());
             }
 
             //noinspection ConstantConditions
@@ -355,8 +352,8 @@ public class BookSearchByIsbnFragment
                           Snackbar.LENGTH_LONG).show();
 
             if (mScanMode) {
-                //noinspection ConstantConditions
-                mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                mScanMode = Objects.requireNonNull(mScannerModel)
+                                   .scan(this, UniqueId.REQ_SCAN_BARCODE);
             }
             return;
         }
@@ -366,7 +363,7 @@ public class BookSearchByIsbnFragment
 
         if (strictIsbn && mScanMode) {
             //noinspection ConstantConditions
-            mScannerModel.onValidBeep(getContext());
+            Objects.requireNonNull(mScannerModel).onValidBeep(getContext());
         }
 
         // See if ISBN already exists in our database, if not then start the search.
@@ -385,8 +382,8 @@ public class BookSearchByIsbnFragment
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                         clearPreviousSearchCriteria();
                         if (mScanMode) {
-                            //noinspection ConstantConditions
-                            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                            mScanMode = Objects.requireNonNull(mScannerModel)
+                                               .scan(this, UniqueId.REQ_SCAN_BARCODE);
                         }
                     })
                     // User wants to review the existing book

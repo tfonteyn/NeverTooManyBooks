@@ -167,10 +167,12 @@ public class BindableItemCursorAdapter<
 
         // Use the class name to generate a layout number
         String s = item.getClass().toString();
-        int type;
+        int type = 0;
         if (mItemTypeLookups.containsKey(s)) {
-            //noinspection ConstantConditions
-            type = mItemTypeLookups.get(s);
+            Integer tmp = mItemTypeLookups.get(s);
+            if (tmp != null) {
+                type = tmp;
+            }
         } else {
             mItemTypeCount++;
             mItemTypeLookups.put(s, mItemTypeCount);

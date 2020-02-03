@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -296,11 +295,13 @@ public final class StorageUtils {
      *
      * @return File written to (the one passed in), or {@code null} if writing failed.
      */
+    @Nullable
     public static File saveInputStreamToFile(@NonNull final Context context,
                                              @Nullable final InputStream is,
                                              @NonNull final File file) {
-        Objects.requireNonNull(is, "no InputStream");
-
+        if (is == null) {
+            return null;
+        }
         File tmpFile = getTempCoverFile(context, "is");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             if (copy(is, os) > 0) {

@@ -50,6 +50,7 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -200,9 +201,8 @@ public class BookSearchByTextFragment
                                mSearchCoordinator.getTitleSearchText());
         }
 
-        //noinspection ConstantConditions
-        if (!bookData.containsKey(UniqueId.BKEY_AUTHOR_ARRAY)
-            || bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty()) {
+        ArrayList<Author> authors = bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        if (authors == null || authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(UniqueId.BKEY_SEARCH_AUTHOR,
                                mSearchCoordinator.getAuthorSearchText());

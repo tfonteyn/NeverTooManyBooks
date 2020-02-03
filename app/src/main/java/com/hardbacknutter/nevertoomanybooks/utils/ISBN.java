@@ -381,10 +381,12 @@ public class ISBN {
     public String asText(@NonNull final Type type)
             throws NumberFormatException {
 
-        switch (type) {
-            case INVALID:
-                return mAsText;
+        if (type == Type.INVALID) {
+            return mAsText;
+        }
+        Objects.requireNonNull(mDigits);
 
+        switch (type) {
             case ISBN13: {
                 // already in ISBN-13 format?
                 if (mType == Type.ISBN13) {
@@ -401,7 +403,6 @@ public class ISBN {
 
                     // copy the first 9 digits
                     for (int i = 0; i < 9; i++) {
-                        //noinspection ConstantConditions
                         digits.add(mDigits.get(i));
                     }
                     // and add the new checksum
@@ -422,7 +423,6 @@ public class ISBN {
                     // drop the first 3 digits, and copy the next 9.
                     List<Integer> digits = new ArrayList<>();
                     for (int i = 3; i < 12; i++) {
-                        //noinspection ConstantConditions
                         digits.add(mDigits.get(i));
                     }
                     // and add the new checksum
@@ -733,9 +733,11 @@ public class ISBN {
         if (mType == Type.INVALID || cmp.isType(Type.INVALID)) {
             return false;
         }
+        if (mDigits == null || cmp.mDigits == null) {
+            return false;
+        }
 
         // same length ? they should match exactly
-        //noinspection ConstantConditions
         if (mDigits.size() == cmp.mDigits.size()) {
             return Objects.equals(mDigits, cmp.mDigits);
         }

@@ -189,9 +189,11 @@ public class StartupActivity
             // any error, notify user and die.
             mModel.getTaskException().observe(this, e -> {
                 if (e != null) {
-                    //noinspection ConstantConditions
-                    App.showNotification(this, getString(R.string.error_unknown),
-                                         e.getLocalizedMessage());
+                    String eMsg = e.getLocalizedMessage();
+                    if (eMsg == null) {
+                        eMsg = "";
+                    }
+                    App.showNotification(this, getString(R.string.error_unknown), eMsg);
                     finish();
                 }
             });

@@ -437,7 +437,7 @@ public final class DateUtils {
         String[] longNames = MONTH_LONG_NAMES.get(iso);
         String[] shortNames = MONTH_SHORT_NAMES.get(iso);
 
-        if (longNames == null) {
+        if (longNames == null || shortNames == null) {
             // Build the cache for this Locale.
             Calendar calendar = Calendar.getInstance(locale);
             SimpleDateFormat longNameFormatter = new SimpleDateFormat("MMMM", locale);
@@ -457,7 +457,6 @@ public final class DateUtils {
         }
 
         if (shortName) {
-            //noinspection ConstantConditions
             return shortNames[month - 1];
         } else {
             return longNames[month - 1];

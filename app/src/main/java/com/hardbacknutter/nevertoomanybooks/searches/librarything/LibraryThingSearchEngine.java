@@ -98,7 +98,6 @@ public class LibraryThingSearchEngine
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
-    public static final Locale SITE_LOCALE = Locale.US;
     private static final String TAG = "LibraryThingSE";
 
     /** base urls. */
@@ -194,7 +193,7 @@ public class LibraryThingSearchEngine
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
-        return SITE_LOCALE;
+        return Locale.US;
     }
 
     /**

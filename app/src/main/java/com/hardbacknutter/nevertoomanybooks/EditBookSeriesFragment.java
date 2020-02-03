@@ -320,6 +320,7 @@ public class EditBookSeriesFragment
             extends DialogFragment {
 
         /** Log tag. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "EditBookSeriesDialogFragment";
 
         private AutoCompleteTextView mTitleView;

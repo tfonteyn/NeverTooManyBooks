@@ -75,11 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
-/**
- * First attempt to split of into a model for BoB.
- *
- * URGENT: ConstantConditions
- */
 public class BooksOnBookshelfModel
         extends ViewModel {
 
@@ -770,46 +765,46 @@ public class BooksOnBookshelfModel
 
     @Nullable
     public ArrayList<RowStateDAO.ListRowDetails> getTargetRows() {
-        //noinspection ConstantConditions
+        Objects.requireNonNull(mCursor);
         return mCursor.getBooklistBuilder().getTargetRows(mDesiredCentralBookId);
     }
 
     public boolean toggleNode(final long rowId) {
-        //noinspection ConstantConditions
+        Objects.requireNonNull(mCursor);
         return mCursor.getBooklistBuilder().toggleNode(rowId);
     }
 
     @NonNull
     public BooklistCursor getNewListCursor() {
-        //noinspection ConstantConditions
+        Objects.requireNonNull(mCursor);
         return mCursor.getBooklistBuilder().getNewListCursor();
     }
 
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
-        //noinspection ConstantConditions
+        Objects.requireNonNull(mCursor);
         return mCursor.getBooklistBuilder().getCurrentBookIdList();
     }
 
     @NonNull
     public String createFlattenedBooklist() {
-        //noinspection ConstantConditions
+        Objects.requireNonNull(mCursor);
         return mCursor.getBooklistBuilder().createFlattenedBooklist();
     }
 
     public int getListPosition(final long rowId) {
-        //noinspection ConstantConditions
+        Objects.requireNonNull(mCursor);
         return mCursor.getBooklistBuilder().getListPosition(rowId);
     }
 
     public void expandAllNodes(final int topLevel,
                                final boolean expand) {
-        //noinspection ConstantConditions
+        Objects.requireNonNull(mCursor);
         mCursor.getBooklistBuilder().expandAllNodes(topLevel, expand);
     }
 
     public void saveAllNodes() {
-        //noinspection ConstantConditions
+        Objects.requireNonNull(mCursor);
         mCursor.getBooklistBuilder().saveAllNodes();
     }
 

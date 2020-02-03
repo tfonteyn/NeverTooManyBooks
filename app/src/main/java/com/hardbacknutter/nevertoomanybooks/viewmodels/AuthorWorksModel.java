@@ -54,7 +54,9 @@ public class AuthorWorksModel
     /** Database Access. */
     private DAO mDb;
 
-    @Nullable
+    /** Author is set in {@link #init}. */
+    @SuppressWarnings("NullableProblems")
+    @NonNull
     private Author mAuthor;
     @Nullable
     private ArrayList<TocEntry> mTocEntries;
@@ -104,7 +106,6 @@ public class AuthorWorksModel
                                final boolean withBooks) {
         mWithTocEntries = withTocEntries;
         mWithBooks = withBooks;
-        //noinspection ConstantConditions
         mTocEntries = mDb.getTocEntryByAuthor(mAuthor, mWithTocEntries, mWithBooks);
     }
 
@@ -142,7 +143,6 @@ public class AuthorWorksModel
     }
 
     public String getScreenTitle(@NonNull final Context context) {
-        //noinspection ConstantConditions
         return mAuthor.getLabel(context) + " #" + getTocEntries().size();
     }
 }

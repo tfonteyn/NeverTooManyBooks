@@ -81,7 +81,7 @@ public class FlattenedBooklist
     private final SqlStatementManager mSqlStatementManager;
     /** Underlying table definition. */
     @NonNull
-    private TableDefinition mTable;
+    private final TableDefinition mTable;
 
     /** Current position; used to navigate around with next/prev. */
     private long mRowId = -1;
@@ -307,8 +307,6 @@ public class FlattenedBooklist
     public void close() {
         mCloseWasCalled = true;
         mSqlStatementManager.close();
-        //noinspection ConstantConditions
-        mTable = null;
     }
 
     /**

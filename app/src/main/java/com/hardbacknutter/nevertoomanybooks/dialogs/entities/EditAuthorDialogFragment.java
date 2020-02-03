@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -136,7 +136,7 @@ public class EditAuthorDialogFragment
 
         Context context = getContext();
 
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
                 context, android.R.layout.simple_dropdown_item_1line,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));

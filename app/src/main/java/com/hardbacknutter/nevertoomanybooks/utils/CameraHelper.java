@@ -114,19 +114,21 @@ public class CameraHelper {
         mFragment = fragment;
         mRequestCode = requestCode;
 
+        @SuppressWarnings("ConstantConditions")
+        @NonNull
+        Context context = fragment.getContext();
+
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (mUseFullSize) {
-            //noinspection ConstantConditions
-            File file = StorageUtils.getTempCoverFile(fragment.getContext(), CAMERA_FILENAME);
+            File file = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
             // delete any orphaned file.
             StorageUtils.deleteFile(file);
 
-            Uri uri = GenericFileProvider.getUriForFile(fragment.getContext(), file);
+            Uri uri = GenericFileProvider.getUriForFile(context, file);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
 
-        //noinspection ConstantConditions
-        if (ContextCompat.checkSelfPermission(fragment.getContext(), Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
             // GO!
             fragment.startActivityForResult(intent, requestCode);

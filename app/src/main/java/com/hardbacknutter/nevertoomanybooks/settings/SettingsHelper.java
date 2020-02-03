@@ -33,7 +33,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 /**
@@ -41,9 +40,8 @@ import androidx.preference.PreferenceManager;
  */
 public class SettingsHelper {
 
-    @SuppressWarnings("NullableProblems")
     @NonNull
-    private Context mContext;
+    private final Context mContext;
 
     /**
      * Constructor.
@@ -54,15 +52,12 @@ public class SettingsHelper {
         mContext = context;
     }
 
-    @VisibleForTesting
-    public SettingsHelper() {
-    }
-
     @NonNull
     public Context getContext() {
         return mContext;
     }
 
+    @SuppressWarnings("unused")
     @NonNull
     public SharedPreferences getSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(mContext);

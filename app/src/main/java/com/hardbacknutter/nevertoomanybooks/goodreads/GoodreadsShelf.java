@@ -32,6 +32,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShelvesListApiHandler;
 
@@ -80,8 +81,7 @@ public class GoodreadsShelf {
 
     @NonNull
     public String getName() {
-        //noinspection ConstantConditions
-        return mBundle.getString(ShelvesListApiHandler.ShelvesField.NAME);
+        return Objects.requireNonNull(mBundle.getString(ShelvesListApiHandler.ShelvesField.NAME));
     }
 
     boolean isExclusive() {

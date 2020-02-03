@@ -144,7 +144,7 @@ public class ProgressDialogFragment
             mMessageView.setText(mMessage);
         }
 
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(root)
                 .create();

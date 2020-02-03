@@ -101,8 +101,6 @@ public class OpenLibrarySearchEngine
                    SearchEngine.ByNativeId,
                    SearchEngine.CoverByIsbn {
 
-    public static final Locale SITE_LOCALE = Locale.US;
-
     /** base urls. */
     public static final String BASE_URL = "https://openlibrary.org";
 
@@ -175,7 +173,7 @@ public class OpenLibrarySearchEngine
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context) {
-        return SITE_LOCALE;
+        return Locale.US;
     }
 
     @NonNull
@@ -213,8 +211,11 @@ public class OpenLibrarySearchEngine
         // get and store the result into a string.
         String response;
         try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
-            //noinspection ConstantConditions
-            response = readResponseStream(con.getInputStream());
+            InputStream is = con.getInputStream();
+            if (is == null) {
+                throw new IOException("no InputStream");
+            }
+            response = readResponseStream(is);
         }
 
         // json-ify and handle.

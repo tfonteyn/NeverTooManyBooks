@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
@@ -92,8 +93,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         if (!mIsPersistent) {
             // builtin ? write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
-            //noinspection ConstantConditions
-            dest.writeList(new ArrayList<>(mNonPersistedValue));
+            dest.writeList(new ArrayList<>(Objects.requireNonNull(mNonPersistedValue)));
         } else {
             // write the actual value, this could be the default if we have no value, but that
             // is ok anyhow.
@@ -119,8 +119,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
 
     public void clear() {
         if (!mIsPersistent) {
-            //noinspection ConstantConditions
-            mNonPersistedValue.clear();
+            Objects.requireNonNull(mNonPersistedValue).clear();
         } else {
             remove();
         }
@@ -133,8 +132,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     public void add(@NonNull final E element) {
         if (!mIsPersistent) {
-            //noinspection ConstantConditions
-            mNonPersistedValue.add(element);
+            Objects.requireNonNull(mNonPersistedValue).add(element);
         } else {
             SharedPreferences.Editor ed = getPrefs().edit();
             add(ed, getPrefs().getString(getKey(), null), element);
@@ -173,8 +171,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     public void remove(@NonNull final E element) {
         if (!mIsPersistent) {
-            //noinspection ConstantConditions
-            mNonPersistedValue.remove(element);
+            Objects.requireNonNull(mNonPersistedValue).remove(element);
         } else {
             String list = getPrefs().getString(getKey(), null);
             if (list != null && !list.isEmpty()) {

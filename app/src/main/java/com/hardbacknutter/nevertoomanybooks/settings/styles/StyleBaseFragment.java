@@ -114,7 +114,7 @@ public abstract class StyleBaseFragment
             mResultDataModel.putResultData(BKEY_TEMPLATE_ID, args.getLong(BKEY_TEMPLATE_ID));
         }
 
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             if (mStyle.getId() == 0) {

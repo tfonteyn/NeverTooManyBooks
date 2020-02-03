@@ -31,7 +31,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Base64;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,11 +52,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
@@ -1143,8 +1141,7 @@ public class XmlExporter
         @Override
         @NonNull
         public Object get(@NonNull final String key) {
-            //noinspection ConstantConditions
-            return mBundle.get(key);
+            return Objects.requireNonNull(mBundle.get(key));
         }
     }
 
@@ -1213,8 +1210,7 @@ public class XmlExporter
         @Override
         @NonNull
         public Object get(@NonNull final String key) {
-            //noinspection ConstantConditions
-            return mMap.get(key);
+            return Objects.requireNonNull(mMap.get(key));
         }
     }
 
@@ -1297,13 +1293,7 @@ public class XmlExporter
         @NonNull
         @Override
         public Object get(@NonNull final String key) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                Log.d(TAG, "get"
-                           + "|uuid=" + currentStyle.getUuid()
-                           + "|key=" + key);
-            }
-            //noinspection ConstantConditions
-            return currentStylePPrefs.get(key).get();
+            return Objects.requireNonNull(currentStylePPrefs.get(key)).get();
         }
     }
 }

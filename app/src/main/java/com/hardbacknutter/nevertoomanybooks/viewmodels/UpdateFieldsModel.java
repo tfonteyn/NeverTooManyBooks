@@ -49,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -431,7 +432,7 @@ public class UpdateFieldsModel
                     // Collect native ids we can use
                     SparseArray<String> nativeIds = new SparseArray<>();
                     for (String key : DBDefinitions.NATIVE_ID_KEYS) {
-                        // values can be Long and String.
+                        // values can be Long and String, and it's a Bundle, need to get as Object
                         Object o = mCurrentBookData.get(key);
                         if (o != null) {
                             String value = o.toString().trim();
@@ -494,9 +495,8 @@ public class UpdateFieldsModel
             // Filter the data to remove keys we don't care about
             Collection<String> toRemove = new ArrayList<>();
             for (String key : bookData.keySet()) {
-                //noinspection ConstantConditions
-                if (!mCurrentFieldsWanted.containsKey(key)
-                    || !mCurrentFieldsWanted.get(key).isWanted()) {
+                FieldUsage fieldUsage = mCurrentFieldsWanted.get(key);
+                if (fieldUsage == null || !fieldUsage.isWanted()) {
                     toRemove.add(key);
                 }
             }
@@ -566,10 +566,10 @@ public class UpdateFieldsModel
                                                 final FieldUsage usage,
                                                 final int cIdx) {
         String uuid = mCurrentBookData.getString(DBDefinitions.KEY_BOOK_UUID);
+        Objects.requireNonNull(uuid);
         boolean copyThumb = false;
         switch (usage.getUsage()) {
             case CopyIfBlank:
-                //noinspection ConstantConditions
                 File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
                 copyThumb = !file.exists() || file.length() == 0;
                 break;
@@ -587,7 +587,6 @@ public class UpdateFieldsModel
             String fileSpec = bookData.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
             if (fileSpec != null) {
                 File downloadedFile = new File(fileSpec);
-                //noinspection ConstantConditions
                 File destination = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
                 StorageUtils.renameFile(downloadedFile, destination);
             }
@@ -718,7 +717,7 @@ public class UpdateFieldsModel
                                   final int cIdx) {
         // - If it's a thumbnail, then see if it's missing or empty.
         String uuid = bookData.getString(DBDefinitions.KEY_BOOK_UUID);
-        //noinspection ConstantConditions
+        Objects.requireNonNull(uuid);
         File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
         if (!file.exists() || file.length() == 0) {
             fieldUsages.put(usage.fieldId, usage);

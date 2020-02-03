@@ -142,7 +142,7 @@ public class CheckListDialogFragment
             body.addView(buttonView);
         }
 
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
         AlertDialog dialog =
                 new AlertDialog.Builder(getContext())
                         .setView(root)

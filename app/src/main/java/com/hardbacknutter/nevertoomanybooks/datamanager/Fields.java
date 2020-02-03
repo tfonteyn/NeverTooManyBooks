@@ -516,9 +516,8 @@ public class Fields {
          *
          * @return {@code true} if empty.
          */
-        default boolean isEmpty(@Nullable final T value) {
-            return value == null
-                   || value instanceof Number && ((Number) value).doubleValue() == 0.0d
+        default boolean isEmpty(@NonNull final T value) {
+            return value instanceof Number && ((Number) value).doubleValue() == 0.0d
                    || value instanceof Boolean && !(Boolean) value
                    || value.toString().isEmpty();
         }
@@ -775,10 +774,9 @@ public class Fields {
             }
 
             // if we don't have a formatter, or if we had a ClassCastException
-            if (isEmpty(value)) {
+            if (value == null || isEmpty(value)) {
                 return "";
             }
-            //noinspection ConstantConditions
             return value.toString();
         }
 

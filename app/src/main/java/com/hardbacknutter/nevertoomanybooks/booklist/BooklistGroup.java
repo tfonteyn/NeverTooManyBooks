@@ -845,12 +845,12 @@ public class BooklistGroup
                 for (
                         @Id
                         int id = 0; id <= ROW_KIND_MAX; id++) {
-                    if (!ALL_KINDS.containsKey(id)) {
+                    rowKind = ALL_KINDS.get(id);
+                    if (rowKind == null) {
                         throw new IllegalStateException("Missing id: " + id);
                     }
 
-                    //noinspection ConstantConditions
-                    String prefix = ALL_KINDS.get(id).mKeyPrefix;
+                    String prefix = rowKind.mKeyPrefix;
                     if (!prefixes.add(prefix)) {
                         throw new IllegalStateException("Duplicate prefix: " + prefix);
                     }
@@ -896,8 +896,7 @@ public class BooklistGroup
          */
         @NonNull
         public static RowKind get(@Id final int id) {
-            //noinspection ConstantConditions
-            return ALL_KINDS.get(id);
+            return Objects.requireNonNull(ALL_KINDS.get(id));
         }
 
         /**

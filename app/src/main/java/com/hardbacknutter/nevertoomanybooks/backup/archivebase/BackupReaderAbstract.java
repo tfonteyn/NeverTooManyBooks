@@ -40,6 +40,7 @@ import androidx.preference.PreferenceManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -328,11 +329,10 @@ public abstract class BackupReaderAbstract
         //noinspection ResultOfMethodCallIgnored
         currentCover.setLastModified(coverDate.getTime());
 
+        Objects.requireNonNull(mResults);
         if (exists) {
-            //noinspection ConstantConditions
             mResults.coversUpdated++;
         } else {
-            //noinspection ConstantConditions
             mResults.coversCreated++;
         }
     }

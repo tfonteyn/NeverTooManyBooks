@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -124,11 +123,9 @@ public class EditSeriesDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_edit_series, null);
 
-        Context context = getContext();
-
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
-                context, android.R.layout.simple_dropdown_item_1line, mDb.getSeriesTitles());
+                getContext(), android.R.layout.simple_dropdown_item_1line, mDb.getSeriesTitles());
 
         // the dialog fields != screen fields.
         mNameView = root.findViewById(R.id.name);
@@ -138,7 +135,7 @@ public class EditSeriesDialogFragment
         mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
-        return new AlertDialog.Builder(context)
+        return new AlertDialog.Builder(getContext())
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.title_edit_series)
@@ -163,7 +160,8 @@ public class EditSeriesDialogFragment
                     mSeries.setComplete(mIsComplete);
                     // There is no book involved here, so use the users Locale instead
                     // and store the changes
-                    mDb.updateOrInsertSeries(context, LocaleUtils.getUserLocale(context), mSeries);
+                    mDb.updateOrInsertSeries(getContext(),
+                                             LocaleUtils.getUserLocale(getContext()), mSeries);
 
                     // and spread the news of the changes.
 //                    Bundle data = new Bundle();

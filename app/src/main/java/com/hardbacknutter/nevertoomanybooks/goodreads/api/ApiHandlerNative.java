@@ -87,7 +87,7 @@ abstract class ApiHandlerNative {
     /**
      * Constructor.
      *
-     * @param grAuth  Authentication handler
+     * @param grAuth Authentication handler
      */
     ApiHandlerNative(@NonNull final GoodreadsAuth grAuth) {
         mGoodreadsAuth = grAuth;
@@ -102,7 +102,7 @@ abstract class ApiHandlerNative {
      * @param requestHandler    (optional) handler for the parser
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the URL was not found
+     * @throws Http404Exception     the URL was not found
      * @throws IOException          on other failures
      */
     void executeGet(@NonNull final String url,
@@ -147,7 +147,7 @@ abstract class ApiHandlerNative {
      * @param requestHandler    (optional) handler for the parser
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the URL was not found
+     * @throws Http404Exception     the URL was not found
      * @throws IOException          on other failures
      */
     void executePost(@NonNull final String url,
@@ -198,12 +198,13 @@ abstract class ApiHandlerNative {
 //            Log.d(TAG,"SIGN|query_oath=" + oauth_query);
 //            Log.d(TAG,"SIGN|oauth_query.equals(native_query)= " + oauth_query.equals(query));
 
-            try (OutputStream os = request.getOutputStream();
-                 OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-                 BufferedWriter writer = new BufferedWriter(osw)) {
-                //noinspection ConstantConditions
-                writer.write(query);
-                writer.flush();
+            if (query != null) {
+                try (OutputStream os = request.getOutputStream();
+                     OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                     BufferedWriter writer = new BufferedWriter(osw)) {
+                    writer.write(query);
+                    writer.flush();
+                }
             }
         }
 
@@ -217,7 +218,7 @@ abstract class ApiHandlerNative {
      * @param requestHandler (optional) handler for the parser
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the URL was not found
+     * @throws Http404Exception     the URL was not found
      * @throws IOException          on other failures
      */
     private void execute(@NonNull final HttpURLConnection request,
@@ -296,7 +297,7 @@ abstract class ApiHandlerNative {
      * @return the raw text output.
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the URL was not found
+     * @throws Http404Exception     the URL was not found
      * @throws IOException          on other failures
      */
     @NonNull

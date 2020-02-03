@@ -638,7 +638,9 @@ public class DAO
      *
      * @param txLock Lock returned from BeginTransaction().
      */
-    public void endTransaction(@NonNull final SyncLock txLock) {
+    public void endTransaction(@Nullable final SyncLock txLock) {
+        // it's cleaner to have the null detection here
+        Objects.requireNonNull(txLock);
         sSyncedDb.endTransaction(txLock);
     }
 
@@ -1290,7 +1292,7 @@ public class DAO
     /**
      * Create a new book using the details provided.
      * <p>
-     * Transaction: participate, or runs in new.
+     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
      * @param bookId  of the book
@@ -1312,7 +1314,7 @@ public class DAO
         }
 
         try {
-            book.preprocessForStoring(context);
+            book.preprocessForStoring(context, true);
 
             // Make sure we have at least one author
             List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
@@ -1368,7 +1370,7 @@ public class DAO
     }
 
     /**
-     * Transaction: participate, or runs in new.
+     * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
      * @param bookId  of the book; takes precedence over the id of the book itself.
@@ -1388,7 +1390,7 @@ public class DAO
         }
 
         try {
-            book.preprocessForStoring(context);
+            book.preprocessForStoring(context, false);
 
             // correct field types if needed, and filter out fields we don't have in the db table.
             ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale(context));
@@ -3342,7 +3344,7 @@ public class DAO
                     if (columnInfo.isNullable()) {
                         cv.putNull(key);
                     } else {
-                        throw new IllegalStateException("NULL on a non-nullable column");
+                        throw new IllegalStateException("NULL on a non-nullable column key=" + key);
                     }
                 } else {
                     try {
@@ -3596,7 +3598,7 @@ public class DAO
     /**
      * Insert a book into the FTS. Assumes book does not already exist in FTS.
      * <p>
-     * Transaction: required
+     * <strong>Transaction:</strong> required
      *
      * @param context Current context
      * @param bookId  the book to add to FTS
@@ -3627,7 +3629,7 @@ public class DAO
     /**
      * Update an existing FTS record.
      * <p>
-     * Transaction: required
+     * <strong>Transaction:</strong> required
      *
      * @param context Application context
      * @param bookId     the book id

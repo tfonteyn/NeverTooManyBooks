@@ -246,13 +246,14 @@ final class CsvCoder {
 
                     Matcher matcher = DATE_PATTERN.matcher(title);
                     if (matcher.find()) {
-                        // strip out the found pattern (including the brackets)
-                        //noinspection ConstantConditions
-                        title = title.replace(matcher.group(0), "").trim();
-                        return new TocEntry(author, title, matcher.group(1));
-                    } else {
-                        return new TocEntry(author, title, "");
+                        String g1 = matcher.group(0);
+                        if (g1 != null) {
+                            // strip out the found pattern (including the brackets)
+                            title = title.replace(g1, "").trim();
+                            return new TocEntry(author, title, matcher.group(1));
+                        }
                     }
+                    return new TocEntry(author, title, "");
                 }
 
                 @NonNull

@@ -36,6 +36,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -97,10 +98,8 @@ public class BackupTask
             writer.backup(context, mExportHelper, getProgressListener());
             if (!isCancelled()) {
                 // the export was successful
-                //noinspection ConstantConditions
-                StorageUtils.exportFile(context,
-                                        ExportHelper.getTempFile(context),
-                                        mExportHelper.uri);
+                StorageUtils.exportFile(context, ExportHelper.getTempFile(context),
+                                        Objects.requireNonNull(mExportHelper.uri));
 
                 // if the backup was a full one (not a 'since') remember that.
                 if ((mExportHelper.options & ExportHelper.EXPORT_SINCE) == 0) {

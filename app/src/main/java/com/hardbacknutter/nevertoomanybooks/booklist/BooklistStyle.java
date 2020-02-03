@@ -82,17 +82,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * Individual {@link BooklistGroup} objects are added to a {@link BooklistStyle} in order
  * to describe the resulting list style.
  * <p>
- * 2019-08-19: legacy style related code removed.
- * <p>
- * 2019-08-04: due to the move to a new package/directory structure, it is no longer
- * possible to import legacy (binary) styles.
- * <p>
- * 2018-12-20: the implementation no longer stores serialized blobs, neither in the database nor
- * in backup archives (but can still read them from archives/database upgrades).<br>
+ * The implementation no longer stores serialized blobs, neither in the database nor
+ * in backup archives. Import legacy (binary) styles is not supported.<br>
  * The database table now consists of a PK ID, and a UUID column.<br>
  * The UUID serves as the name of the SharedPreference which describes the style.<br>
- * Builtin styles are not stored in the database and (internally) use negative ID's and
- * a hardcoded UUID.<br>
+ * Builtin styles use negative ID's and a hardcoded UUID.<br>
  * Every setting in a style is backed by a {@link PPref} which handles the storage
  * of that setting.<br>
  * *All* style settings are private to a style, there is no inheritance of global settings.<br>
@@ -524,23 +518,23 @@ public class BooklistStyle
 
         mIsPreferred = new PBoolean(Prefs.pk_bob_preferred_style, mUuid, isUserDefined());
 
-        mDefaultExpansionLevel = new PInteger(Prefs.pk_bob_levels_default, mUuid, isUserDefined(),
-                                              1);
+        mDefaultExpansionLevel = new PInteger(Prefs.pk_bob_levels_default, mUuid,
+                                              isUserDefined(), 1);
 
         mSortAuthorGivenNameFirst = new PBoolean(Prefs.pk_bob_sort_author_name, mUuid,
                                                  isUserDefined());
 
-        mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid, isUserDefined(),
-                                       SUMMARY_SHOW_ALL);
+        mShowHeaderInfo = new PBitmask(Prefs.pk_bob_header, mUuid,
+                                       isUserDefined(), SUMMARY_SHOW_ALL);
 
-        mFontScale = new PInteger(Prefs.pk_bob_font_scale, mUuid, isUserDefined(),
-                                  FONT_SCALE_MEDIUM);
+        mFontScale = new PInteger(Prefs.pk_bob_font_scale, mUuid,
+                                  isUserDefined(), FONT_SCALE_MEDIUM);
 
-        mThumbnailScale = new PInteger(Prefs.pk_bob_thumbnail_scale, mUuid, isUserDefined(),
-                                       ImageUtils.SCALE_MEDIUM);
+        mThumbnailScale = new PInteger(Prefs.pk_bob_thumbnail_scale, mUuid,
+                                       isUserDefined(), ImageUtils.SCALE_MEDIUM);
 
-        mFetchExtrasByTask = new PBoolean(Prefs.pk_bob_use_task_for_extras, mUuid, isUserDefined(),
-                                          true);
+        mFetchExtrasByTask = new PBoolean(Prefs.pk_bob_use_task_for_extras, mUuid,
+                                          isUserDefined(), true);
 
         // all extra details for book-rows.
         mAllExtras = new LinkedHashMap<>();
@@ -1349,8 +1343,9 @@ public class BooklistStyle
      */
     public boolean isExtraUsed(@NonNull final String key) {
         if (mAllExtras.containsKey(key)) {
-            //noinspection ConstantConditions
-            return App.isUsed(key) && mAllExtras.get(key).isTrue();
+            PBoolean value = mAllExtras.get(key);
+            return App.isUsed(key) && value != null && value.isTrue();
+
         }
         return false;
     }
@@ -1419,7 +1414,7 @@ public class BooklistStyle
                                   SUMMARY_SHOW_STYLE_NAME,
                                   SUMMARY_SHOW_FILTER})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ListHeaderOption {
+    @interface ListHeaderOption {
 
     }
 

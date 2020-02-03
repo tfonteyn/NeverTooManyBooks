@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,8 +42,7 @@ public interface DataValidator {
     /**
      * Validation method. Must throw a ValidatorException if validation fails.
      *
-     *
-     * @param context       Current context
+     * @param context      Current context
      * @param dataManager  The DataManager object
      * @param key          key for the data to validate
      * @param errorLabelId string resource id for a user visible message

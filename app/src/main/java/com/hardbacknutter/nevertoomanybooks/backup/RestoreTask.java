@@ -75,9 +75,7 @@ public class RestoreTask
 
         Context context = App.getLocalizedAppContext();
         //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.getReader(context,
-                                                           mImportHelper.uri)) {
-
+        try (BackupReader reader = BackupManager.getReader(context, mImportHelper.uri)) {
             reader.restore(context, mImportHelper, getProgressListener());
 
         } catch (@NonNull final IOException | ImportException | InvalidArchiveException e) {

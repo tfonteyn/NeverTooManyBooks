@@ -50,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -551,8 +552,11 @@ public final class ImageUtils {
                 // Save the output to a byte output stream
                 byte[] buffer = new byte[BUFFER_SIZE];
                 int len;
-                //noinspection ConstantConditions
-                while ((len = con.getInputStream().read(buffer)) >= 0) {
+                InputStream is = con.getInputStream();
+                if (is == null) {
+                    return null;
+                }
+                while ((len = is.read(buffer)) >= 0) {
                     out.write(buffer, 0, len);
                 }
                 return out.toByteArray();

@@ -262,8 +262,10 @@ public class Series
         // This makes the pattern easier to maintain.
         Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(text);
         if (matcher.find()) {
-            //noinspection ConstantConditions
-            return fromString(matcher.group(1), matcher.group(2));
+            String g1 = matcher.group(1);
+            if (g1 != null) {
+                return fromString(g1, matcher.group(2));
+            }
         }
 
         // HORRENDOUS, HORRIBLE HACK...
@@ -319,37 +321,37 @@ public class Series
             String middle = matcher.group(2);
             String suffix = matcher.group(3);
 
-            if (suffix != null && !suffix.isEmpty()) {
-                // the suffix group is the number.
-                //noinspection ConstantConditions
-                series = fromString(prefix, suffix);
+            if (prefix != null) {
+                if (suffix != null && !suffix.isEmpty()) {
+                    // the suffix group is the number.
+                    series = fromString(prefix, suffix);
 
-                // FIXME: see "Cycli" which needs to be folded in this.
-                // Cover a special case for this website.
-                // The middle group is potentially a roman numeral
-                // which should be prefixed to the number.
-                if ("I".equals(middle)) {
-                    series.setNumber("1." + series.getNumber());
-                } else if ("II".equals(middle)) {
-                    series.setNumber("2." + series.getNumber());
-                } else if ("III".equals(middle)) {
-                    series.setNumber("3." + series.getNumber());
+                    // FIXME: see "Cycli" which needs to be folded in this.
+                    // Cover a special case for this website.
+                    // The middle group is potentially a roman numeral
+                    // which should be prefixed to the number.
+                    if ("I".equals(middle)) {
+                        series.setNumber("1." + series.getNumber());
+                    } else if ("II".equals(middle)) {
+                        series.setNumber("2." + series.getNumber());
+                    } else if ("III".equals(middle)) {
+                        series.setNumber("3." + series.getNumber());
+                    } else {
+                        // But if it wasn't... add it back to the title including
+                        // the brackets we stripped off initially.
+                        series.setTitle(prefix + '(' + middle + ')');
+                    }
+                    return series;
+
                 } else {
-                    // But if it wasn't... add it back to the title including
-                    // the brackets we stripped off initially.
-                    series.setTitle(prefix + '(' + middle + ')');
+                    // the middle group is the number.
+                    return fromString(prefix, middle);
                 }
-            } else {
-                // the middle group is the number.
-                //noinspection ConstantConditions
-                series = fromString(prefix, middle);
             }
-        } else {
-            // did't match the specific pattern, handle as normal.
-            series = fromString(text);
         }
 
-        return series;
+        // did't match the specific pattern, handle as normal.
+        return fromString(text);
     }
 
     /**
@@ -453,24 +455,25 @@ public class Series
                 } else {
                     // See if the previous one also has a number
                     Series previous = hashMap.get(title);
-                    //noinspection ConstantConditions
-                    if (previous.getNumber().trim().isEmpty()) {
-                        // it doesn't. Remove the previous; we keep the current one.
-                        toDelete.add(previous);
-                        modified = true;
-                        // and update our map (replaces the previous one)
-                        hashMap.put(title, series);
-
-                    } else {
-                        // Both have numbers. See if they are the same.
-                        if (number.equals(previous.getNumber().trim().toLowerCase(locale))) {
-                            // Same exact Series, delete this one
-                            it.remove();
+                    if (previous != null) {
+                        if (previous.getNumber().trim().isEmpty()) {
+                            // it doesn't. Remove the previous; we keep the current one.
+                            toDelete.add(previous);
                             modified = true;
+                            // and update our map (replaces the previous one)
+                            hashMap.put(title, series);
+
+                        } else {
+                            // Both have numbers. See if they are the same.
+                            if (number.equals(previous.getNumber().trim().toLowerCase(locale))) {
+                                // Same exact Series, delete this one
+                                it.remove();
+                                modified = true;
+                            }
+                            //else {
+                            // Nothing to do: this is a different Series number, keep both
+                            //}
                         }
-                        //else {
-                        // Nothing to do: this is a different Series number, keep both
-                        //}
                     }
                 }
             }

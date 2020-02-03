@@ -109,11 +109,14 @@ public class FastScrollerOverlay
         }
 
         int position = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+        if (position == RecyclerView.NO_POSITION) {
+            return;
+        }
 
         String[] popupLines = ((FastScroller.PopupTextProvider) adapter)
                 .getPopupText(mView.getContext(), position);
 
-        boolean hasPopup = popupLines.length > 0 && popupLines[0] != null;
+        boolean hasPopup = popupLines != null && popupLines.length > 0 && popupLines[0] != null;
         mPopupView.setVisibility(hasPopup ? View.VISIBLE : View.INVISIBLE);
         if (hasPopup) {
             String popupText = popupLines[0];

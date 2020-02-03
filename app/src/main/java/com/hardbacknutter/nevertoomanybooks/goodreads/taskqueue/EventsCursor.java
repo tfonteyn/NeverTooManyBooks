@@ -88,9 +88,9 @@ public class EventsCursor
      */
     public boolean isSelected() {
         synchronized (mSelections) {
-            if (mSelections.containsKey(getId())) {
-                //noinspection ConstantConditions
-                return mSelections.get(getId());
+            Boolean isSelected = mSelections.get(getId());
+            if (isSelected != null) {
+                return isSelected;
             } else {
                 return false;
             }

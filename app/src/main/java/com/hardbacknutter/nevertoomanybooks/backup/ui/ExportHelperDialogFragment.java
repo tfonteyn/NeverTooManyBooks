@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -96,7 +96,6 @@ public class ExportHelperDialogFragment
         mDateSinceView = root.findViewById(R.id.date_since);
 
         //noinspection ConstantConditions
-
         return new AlertDialog.Builder(getContext())
                 .setView(root)
                 .setTitle(R.string.export_options_dialog_title)

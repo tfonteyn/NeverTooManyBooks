@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -99,12 +100,12 @@ public class DataManager {
     /** Raw data storage. */
     private final Bundle mRawData;
 
-    public DataManager() {
+    protected DataManager() {
         mRawData = new Bundle();
     }
 
     @VisibleForTesting
-    public DataManager(@NonNull final Bundle rawData) {
+    protected DataManager(@NonNull final Bundle rawData) {
         mRawData = rawData;
     }
 
@@ -215,7 +216,7 @@ public class DataManager {
             putSerializable(key, (Serializable) value);
 
         } else if (value == null) {
-            Logger.warn(App.getAppContext(), TAG, "put|key=`" + key + "`|value=<NULL>");
+            Logger.w(TAG, "put|key=`" + key + "`|value=<NULL>");
             remove(key);
 
         } else {
@@ -376,6 +377,15 @@ public class DataManager {
     }
 
     /**
+     * Store a {@code null} value.
+     *
+     * @param key Key of data object
+     */
+    protected void putNull(@NonNull final String key) {
+        mRawData.putString(key, null);
+    }
+
+    /**
      * Get the Parcelable ArrayList from the collection.
      *
      * @param key Key of data object
@@ -506,8 +516,8 @@ public class DataManager {
         for (Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
             try {
                 String key = entry.getKey();
-                //noinspection ConstantConditions
-                entry.getValue().validate(context, this, key, mValidatorErrorIdMap.get(key));
+                entry.getValue().validate(context, this, key,
+                                          Objects.requireNonNull(mValidatorErrorIdMap.get(key)));
             } catch (@NonNull final ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;

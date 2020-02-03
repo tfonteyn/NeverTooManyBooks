@@ -107,6 +107,8 @@ public class UpdateFieldsFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        //noinspection ConstantConditions
+        @NonNull
         Activity activity = getActivity();
 
         mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
@@ -131,10 +133,8 @@ public class UpdateFieldsFragment
 
         // optional activity title
         if (getArguments() != null && getArguments().containsKey(UniqueId.BKEY_DIALOG_TITLE)) {
-            //noinspection ConstantConditions
             activity.setTitle(getArguments().getString(UniqueId.BKEY_DIALOG_TITLE));
         } else {
-            //noinspection ConstantConditions
             activity.setTitle(R.string.lbl_select_fields);
         }
 

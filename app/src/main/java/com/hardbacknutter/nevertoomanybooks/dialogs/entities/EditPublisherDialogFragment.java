@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -116,7 +116,7 @@ public class EditPublisherDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(R.layout.dialog_edit_publisher, null);
 
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
                 getContext(), android.R.layout.simple_dropdown_item_1line, mDb.getPublisherNames());
 

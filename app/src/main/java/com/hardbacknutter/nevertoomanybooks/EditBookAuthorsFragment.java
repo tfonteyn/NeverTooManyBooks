@@ -355,6 +355,7 @@ public class EditBookAuthorsFragment
             extends DialogFragment {
 
         /** Log tag. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         static final String TAG = "EditBookAuthorDialogFrag";
         /** Key: type. */
         private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
@@ -422,8 +423,7 @@ public class EditBookAuthorsFragment
             @SuppressLint("InflateParams")
             View root = layoutInflater.inflate(R.layout.dialog_edit_book_author, null);
 
-
-            @SuppressWarnings("ConstantConditions")
+            //noinspection ConstantConditions
             DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
                     getContext(), android.R.layout.simple_dropdown_item_1line,
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
