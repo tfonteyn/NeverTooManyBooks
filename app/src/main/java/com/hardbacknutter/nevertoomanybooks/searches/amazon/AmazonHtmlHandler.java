@@ -53,10 +53,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 
-public class AmazonHtmlHandler
+class AmazonHtmlHandler
         extends JsoupBase {
 
     private static final String PRODUCT_SUFFIX_URL = "/gp/product/%1$s";
@@ -92,62 +94,69 @@ public class AmazonHtmlHandler
     private final ArrayList<Series> mSeries = new ArrayList<>();
     /** accumulate all Publishers for this book. */
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
-    /** The fully qualified search url. */
-    private String mPath;
+
+    @NonNull
+    private final Context mLocalizedAppContext;
+    @NonNull
+    private final SearchEngine mSearchEngine;
 
     /**
      * Constructor.
+     * @param localizedAppContext Localised application context
+     * @param searchEngine        the SearchEngine
      */
-    AmazonHtmlHandler() {
+    AmazonHtmlHandler(@NonNull final Context localizedAppContext,
+                      @NonNull final SearchEngine searchEngine) {
         super();
+        mLocalizedAppContext = localizedAppContext;
+        mSearchEngine = searchEngine;
     }
 
     /**
      * Constructor used for testing.
      *
+     * @param localizedAppContext Localised application context
+     * @param searchEngine        the SearchEngine
      * @param doc the JSoup Document.
      */
     @VisibleForTesting
-    AmazonHtmlHandler(@NonNull final Document doc) {
+    AmazonHtmlHandler(@NonNull final Context localizedAppContext,
+                      @NonNull final SearchEngine searchEngine,
+                      @NonNull final Document doc) {
         super(doc);
+        mLocalizedAppContext = localizedAppContext;
+        mSearchEngine = searchEngine;
     }
 
     @NonNull
     @WorkerThread
-    Bundle fetchByNativeId(@NonNull final Context context,
-                           @NonNull final String nativeId,
+    Bundle fetchByNativeId(@NonNull final String nativeId,
                            final boolean[] fetchThumbnail,
                            @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        return fetch(context, AmazonSearchEngine.getBaseURL(context)
-                              + String.format(PRODUCT_SUFFIX_URL, nativeId),
+        return fetch(AmazonSearchEngine.getBaseURL(mLocalizedAppContext)
+                     + String.format(PRODUCT_SUFFIX_URL, nativeId),
                      fetchThumbnail, bookData);
     }
 
     @NonNull
     @WorkerThread
-    private Bundle fetch(@NonNull final Context context,
-                         @NonNull final String path,
+    private Bundle fetch(@NonNull final String path,
                          @NonNull final boolean[] fetchThumbnail,
                          @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
-        mPath = path;
-
-        setUserAgent(SearchCoordinator.USER_AGENT);
-
-        if (loadPage(context, mPath) == null) {
+        if (loadPage(mLocalizedAppContext, path) == null) {
             return bookData;
         }
 
-        return parseDoc(context, fetchThumbnail, bookData);
+        return parseDoc(fetchThumbnail, bookData);
     }
 
     @NonNull
     @VisibleForTesting
-    Bundle parseDoc(@NonNull final Context context,
-                    @NonNull final boolean[] fetchThumbnail,
+    Bundle parseDoc(@NonNull final boolean[] fetchThumbnail,
                     @NonNull final Bundle bookData)
             throws SocketTimeoutException {
 
@@ -168,6 +177,16 @@ public class AmazonHtmlHandler
 
         String title = titleElement.text().trim();
         bookData.putString(DBDefinitions.KEY_TITLE, title);
+
+        Element price = mDoc.selectFirst("span.offer-price");
+        if (price != null) {
+            bookData.putString(DBDefinitions.KEY_PRICE_LISTED, price.text());
+            CurrencyUtils.splitPrice(mSearchEngine.getLocale(mLocalizedAppContext),
+                                     price.text(),
+                                     DBDefinitions.KEY_PRICE_LISTED,
+                                     DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                                     bookData);
+        }
 
         Elements authorSpans = mDoc.select("div#bylineInfo > span.author");
         for (Element span : authorSpans) {
@@ -248,6 +267,8 @@ public class AmazonHtmlHandler
                 case "Language":
                     // french
                 case "Langue":
+                    // the language is a 'DisplayName' so convert to iso first.
+                    data = LanguageUtils.getISO3FromDisplayName(mLocalizedAppContext, data);
                     bookData.putString(DBDefinitions.KEY_LANGUAGE, data);
                     break;
 
@@ -335,7 +356,7 @@ public class AmazonHtmlHandler
             }
             name += FILENAME_SUFFIX;
             // Fetch the actual image
-            String fileSpec = ImageUtils.saveImage(context, imageUrl, name);
+            String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, imageUrl, name);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
                         bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

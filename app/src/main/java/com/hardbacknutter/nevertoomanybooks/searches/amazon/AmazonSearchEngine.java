@@ -35,6 +35,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -65,8 +66,19 @@ public final class AmazonSearchEngine
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "amazon.";
     /** Type: {@code String}. */
-    private static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
-    private static final String SUFFIX_BASE_URL = "/gp/search?index=books";
+    @VisibleForTesting
+    public static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
+
+    /**
+     * <ul>Fields that can be added to the /gp URL
+     * <li>&field-isbn</li>
+     * <li>&field-author</li>
+     * <li>&field-title</li>
+     * <li>&field-publisher</li>
+     * <li>&field-keywords</li>
+     * </ul>
+     */
+    private static final String SEARCH_SUFFIX = "/gp/search?index=books";
 
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
@@ -75,11 +87,32 @@ public final class AmazonSearchEngine
     }
 
     /**
-     * Start an intent to open the Amazon website.
+     * Start an intent to search for an ISBN on the Amazon website.
      *
      * @param context Application context
-     * @param author     to search for
-     * @param series     to search for
+     * @param isbn    to search for
+     */
+    public static void openWebsite(@NonNull final Context context,
+                                   @NonNull final String isbn) {
+        String fields = "";
+        if (!isbn.isEmpty()) {
+            try {
+                fields += "&field-isbn=" + URLEncoder.encode(isbn, UTF_8);
+            } catch (@NonNull final UnsupportedEncodingException e) {
+                Logger.error(context, TAG, e, "Unable to add isbn to URL");
+            }
+        }
+
+        String url = getBaseURL(context) + SEARCH_SUFFIX + fields.trim();
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+    }
+
+    /**
+     * Start an intent to search for an author and/or series on the Amazon website.
+     *
+     * @param context Application context
+     * @param author  to search for
+     * @param series  to search for
      */
     public static void openWebsite(@NonNull final Context context,
                                    @Nullable final String author,
@@ -88,10 +121,10 @@ public final class AmazonSearchEngine
         String cAuthor = cleanupSearchString(author);
         String cSeries = cleanupSearchString(series);
 
-        String extra = "";
+        String fields = "";
         if (!cAuthor.isEmpty()) {
             try {
-                extra += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
+                fields += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
                 Logger.error(context, TAG, e, "Unable to add author to URL");
             }
@@ -99,13 +132,13 @@ public final class AmazonSearchEngine
 
         if (!cSeries.isEmpty()) {
             try {
-                extra += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
+                fields += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
                 Logger.error(context, TAG, e, "Unable to add series to URL");
             }
         }
 
-        String url = getBaseURL(context) + SUFFIX_BASE_URL + extra.trim();
+        String url = getBaseURL(context) + SEARCH_SUFFIX + fields.trim();
         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
@@ -144,6 +177,7 @@ public final class AmazonSearchEngine
                 return Locale.UK;
 
             default:
+                // other amazon sites are (should be ?) just the country code.
                 Locale locale = LocaleUtils.getLocale(context, root);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "getLocale=" + locale);
@@ -164,8 +198,8 @@ public final class AmazonSearchEngine
             return new Bundle();
         }
 
-        return new AmazonHtmlHandler()
-                .fetchByNativeId(context, nativeId, fetchThumbnail, new Bundle());
+        return new AmazonHtmlHandler(context, this)
+                .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());
     }
 
     @NonNull

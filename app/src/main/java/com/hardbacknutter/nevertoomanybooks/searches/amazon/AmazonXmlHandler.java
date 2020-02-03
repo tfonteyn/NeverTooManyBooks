@@ -231,6 +231,7 @@ class AmazonXmlHandler
      */
     private static final String XML_ERROR = "Error";
     private static final String XML_CODE = "Code";
+    @SuppressWarnings("unused")
     private static final String XML_CODE_RequestThrottled = "RequestThrottled";
 
     //    private static final String XML_ID = "id";

@@ -69,11 +69,11 @@ class AmazonHtmlHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        AmazonHtmlHandler handler = new AmazonHtmlHandler(doc);
+        AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, new AmazonSearchEngine(), doc);
         // we've set the doc, so no internet download will be done.
         try {
             boolean[] fetchThumbnail = {false, false};
-            mBookData = handler.parseDoc(mContext, fetchThumbnail, mBookData);
+            mBookData = handler.parseDoc(fetchThumbnail, mBookData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -87,7 +87,9 @@ class AmazonHtmlHandlerTest
         assertEquals("30 Jan. 2020", mBookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("608", mBookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", mBookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("English", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("eng", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals(14.49d, mBookData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
+        assertEquals("GBP", mBookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
         ArrayList<Publisher> allPublishers = mBookData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
@@ -120,11 +122,11 @@ class AmazonHtmlHandlerTest
         assertNotNull(doc);
         assertTrue(doc.hasText());
 
-        AmazonHtmlHandler handler = new AmazonHtmlHandler(doc);
+        AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, new AmazonSearchEngine(), doc);
         // we've set the doc, so no internet download will be done.
         try {
             boolean[] fetchThumbnail = {false, false};
-            mBookData = handler.parseDoc(mContext, fetchThumbnail, mBookData);
+            mBookData = handler.parseDoc(fetchThumbnail, mBookData);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }
@@ -138,7 +140,9 @@ class AmazonHtmlHandlerTest
         assertEquals("12 Jan. 2017", mBookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("336", mBookData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Paperback", mBookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("English", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("eng", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals(5.84d, mBookData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
+        assertEquals("GBP", mBookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
         ArrayList<Publisher> allPublishers = mBookData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
