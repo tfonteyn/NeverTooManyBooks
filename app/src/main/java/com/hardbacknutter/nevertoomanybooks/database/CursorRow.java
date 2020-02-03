@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.entities.NameValueHolder;
 
 /**
  * A handy wrapper allowing to fetch columns by name.
@@ -47,7 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
  * always pass the id additionally/separately. This gives the calling code a change to use
  * for example the foreign key id.
  */
-public class CursorRow {
+public class CursorRow
+        implements NameValueHolder {
 
     /** Log tag. */
     private static final String TAG = "CursorRow";
@@ -182,7 +184,6 @@ public class CursorRow {
     }
 
     /**
-     *
      * See the comments on methods in {@link android.database.CursorWindow}
      * for info on type conversions which explains our use of getLong/getDouble.
      *

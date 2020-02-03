@@ -40,9 +40,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
@@ -299,6 +299,6 @@ public abstract class EditBookBaseFragment
             extends ViewModel {
 
         /** key: fragmentTag. */
-        final Set<String> fragments = new HashSet<>();
+        final Collection<String> fragments = new HashSet<>();
     }
 }

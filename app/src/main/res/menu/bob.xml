@@ -39,7 +39,7 @@
     <item
         android:id="@id/MENU_LEVEL_PREFERRED_COLLAPSE"
         android:icon="@drawable/ic_unfold_less"
-        android:title="@string/menu_level_preferred_collapse" />
+        android:title="@string/menu_level_reset" />
 
     <item
         android:id="@id/MENU_LEVEL_EXPAND"

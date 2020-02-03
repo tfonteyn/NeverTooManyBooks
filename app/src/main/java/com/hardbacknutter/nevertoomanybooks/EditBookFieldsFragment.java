@@ -52,6 +52,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
@@ -172,9 +173,9 @@ public class EditBookFieldsFragment
         mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, true);
         mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
         mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
-        //noinspection ConstantConditions
         mScanIsbnButton.setOnClickListener(
-                v -> mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE));
+                v -> Objects.requireNonNull(mScannerModel)
+                            .scan(this, UniqueId.REQ_SCAN_BARCODE));
 
         Field<String> field;
 
@@ -238,13 +239,6 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        // needs to be done here (instead of in onCreate) due to ViewPager2
-        setHasOptionsMenu(isVisible());
-    }
-
-    @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.menu_strict_isbn)
@@ -278,8 +272,7 @@ public class EditBookFieldsFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case UniqueId.REQ_SCAN_BARCODE: {
-                //noinspection ConstantConditions
-                mScannerModel.setScannerStarted(false);
+                Objects.requireNonNull(mScannerModel).setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
                     if (BuildConfig.DEBUG) {
                         //noinspection ConstantConditions

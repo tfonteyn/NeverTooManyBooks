@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,28 +30,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@id/MENU_SERIES_DELETE"
-        android:icon="@drawable/ic_delete"
-        android:orderInCategory="@integer/MENU_ORDER_DELETE"
-        android:title="@string/menu_delete" />
-
-    <item
         android:id="@id/MENU_SERIES_EDIT"
         android:icon="@drawable/ic_edit"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
         android:title="@string/menu_edit" />
-
-    <item
-        android:id="@id/MENU_SERIES_SET_COMPLETE"
-        android:icon="@drawable/ic_check_box"
-        android:orderInCategory="@integer/MENU_ORDER_COMPLETE"
-        android:title="@string/menu_set_complete" />
-
-    <item
-        android:id="@id/MENU_SERIES_SET_INCOMPLETE"
-        android:icon="@drawable/ic_check_box_outline_blank"
-        android:orderInCategory="@integer/MENU_ORDER_INCOMPLETE"
-        android:title="@string/menu_set_incomplete" />
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"

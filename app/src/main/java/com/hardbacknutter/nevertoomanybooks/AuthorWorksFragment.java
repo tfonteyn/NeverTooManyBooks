@@ -144,7 +144,7 @@ public class AuthorWorksFragment
 //        super.onResume();
 //        if (getActivity() instanceof BaseActivity) {
 //            BaseActivity activity = (BaseActivity) getActivity();
-//            if (activity.isGoingToRecreate()) {
+//            if (activity.maybeRecreate()) {
 //                return;
 //            }
 //        }
@@ -156,7 +156,7 @@ public class AuthorWorksFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.o_author_works, menu);
+        inflater.inflate(R.menu.author_works, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

@@ -32,6 +32,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -55,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
+import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
 
@@ -126,6 +129,12 @@ public abstract class BookBaseFragment
     public void onResume() {
         super.onResume();
 
+        // This is done here using isVisible() due to ViewPager2
+        // It ensures fragments in a ViewPager2 will refresh their individual option menus.
+        // Children NOT running in a ViewPager2 must override this in their onResume()
+        // with a simple setHasOptionsMenu(true);
+        setHasOptionsMenu(isVisible());
+
         // set the View member as the Views will be (re)created each time.
         //noinspection ConstantConditions
         getFields().setParentView(getView());
@@ -162,55 +171,8 @@ public abstract class BookBaseFragment
         mBookModel.setDirty(wasDirty);
         getFields().setAfterFieldChangeListener((field, newValue) -> mBookModel.setDirty(true));
 
-        // this is a good place to do this, as we use data from the book for the title.
-        setActivityTitle(book);
-    }
-
-    /**
-     * This is where you should populate all the fields with the values coming from the book.
-     * The base class (this one) manages all the actual fields, but 'special' fields can/should
-     * be handled in overrides, calling super as the first step.
-     */
-    @CallSuper
-    void onLoadFields(@NonNull final Book book) {
-        getFields().setAllFrom(book);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        /*
-         * We handle R.id.MENU_UPDATE_FROM_INTERNET here,
-         * as it's shown by several children of this class.
-         */
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_UPDATE_FROM_INTERNET:
-                Book book = mBookModel.getBook();
-                ArrayList<Long> bookIds = new ArrayList<>();
-                bookIds.add(book.getId());
-                Intent intent = new Intent(getContext(), BookSearchActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                        .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
-                        // pass the title for displaying to the user
-                        .putExtra(DBDefinitions.KEY_TITLE,
-                                  book.getString(DBDefinitions.KEY_TITLE))
-                        // pass the author for displaying to the user
-                        .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                  book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
-                startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * Set the activity title depending on View or Edit mode.
-     */
-    private void setActivityTitle(@NonNull final Book book) {
-
+        // Set the activity title depending on View or Edit mode.
+        // This is a good place to do this, as we use data from the book for the title.
         //noinspection ConstantConditions
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
@@ -224,6 +186,78 @@ public abstract class BookBaseFragment
                 //noinspection ConstantConditions
                 actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
             }
+        }
+    }
+
+    /**
+     * This is where you should populate all the fields with the values coming from the book.
+     * The base class (this one) manages all the actual fields, but 'special' fields can/should
+     * be handled in overrides, calling super as the first step.
+     */
+    @CallSuper
+    void onLoadFields(@NonNull final Book book) {
+        getFields().setAllFrom(book);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+        if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
+            inflater.inflate(R.menu.sm_open_on_site, menu);
+        }
+        if (menu.findItem(R.id.SUBMENU_AMAZON_SEARCH) == null) {
+            inflater.inflate(R.menu.sm_search_on_amazon, menu);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    @CallSuper
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        @SuppressWarnings("ConstantConditions")
+        @NonNull
+        Context context = getContext();
+
+        Book book = mBookModel.getBook();
+        switch (item.getItemId()) {
+            case R.id.MENU_UPDATE_FROM_INTERNET: {
+                ArrayList<Long> bookIds = new ArrayList<>();
+                bookIds.add(book.getId());
+                Intent intent = new Intent(context, BookSearchActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
+                        .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                        // pass the title for displaying to the user
+                        .putExtra(DBDefinitions.KEY_TITLE,
+                                  book.getString(DBDefinitions.KEY_TITLE))
+                        // pass the author for displaying to the user
+                        .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                                  book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                return true;
+            }
+
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
+                AmazonSearchEngine.openWebsite(context, book.getPrimaryAuthor(context), null);
+                return true;
+            }
+            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
+                AmazonSearchEngine.openWebsite(context, null, book.getPrimarySeries());
+                return true;
+            }
+            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
+                AmazonSearchEngine.openWebsite(context,
+                                               book.getPrimaryAuthor(context),
+                                               book.getPrimarySeries());
+                return true;
+            }
+
+            default:
+                if (MenuHandler.handleOpenOnWebsiteMenus(context, item, book)) {
+                    return true;
+                }
+                return super.onOptionsItemSelected(item);
         }
     }
 

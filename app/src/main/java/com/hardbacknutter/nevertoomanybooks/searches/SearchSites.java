@@ -290,6 +290,7 @@ public final class SearchSites {
     public static int getSiteIdFromResId(@IdRes final int resId) {
         //NEWTHINGS: add new site specific ID: not all sites have/need a resource/menu id.
         switch (resId) {
+            case R.id.MENU_VIEW_BOOK_AT_AMAZON:
             case R.id.site_amazon:
                 return AMAZON;
 

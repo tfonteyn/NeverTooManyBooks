@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,32 +29,22 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@id/MENU_AUTHOR_WORKS"
-        android:icon="@drawable/ic_details"
-        android:title="@string/menu_author_details" />
+    <group
+        android:checkableBehavior="single">
 
-    <item
-        android:id="@id/MENU_AUTHOR_EDIT"
-        android:icon="@drawable/ic_edit"
-        android:orderInCategory="@integer/MENU_ORDER_EDIT"
-        android:title="@string/menu_edit" />
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_ALL"
+            android:checked="true"
+            android:title="@string/menu_author_works_all" />
 
-    <item
-        android:id="@id/MENU_AUTHOR_SET_COMPLETE"
-        android:icon="@drawable/ic_check_box"
-        android:orderInCategory="@integer/MENU_ORDER_COMPLETE"
-        android:title="@string/menu_set_complete" />
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_TOC"
+            android:title="@string/menu_author_works_toc" />
 
-    <item
-        android:id="@id/MENU_AUTHOR_SET_INCOMPLETE"
-        android:icon="@drawable/ic_check_box_outline_blank"
-        android:orderInCategory="@integer/MENU_ORDER_INCOMPLETE"
-        android:title="@string/menu_set_incomplete" />
+        <item
+            android:id="@id/MENU_AUTHOR_WORKS_BOOKS"
+            android:title="@string/menu_author_works_book" />
 
-    <item
-        android:id="@id/MENU_UPDATE_FROM_INTERNET"
-        android:icon="@drawable/ic_cloud_download"
-        android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
-        android:title="@string/menu_update_books" />
+    </group>
+
 </menu>

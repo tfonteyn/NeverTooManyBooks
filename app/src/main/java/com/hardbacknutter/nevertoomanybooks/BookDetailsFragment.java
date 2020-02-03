@@ -163,12 +163,6 @@ public class BookDetailsFragment
     private int mCurrentCoverHandlerIndex = -1;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
         if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
             ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
@@ -300,6 +294,8 @@ public class BookDetailsFragment
     public void onResume() {
         // The parent will kick of the process that triggers {@link #onLoadFields}.
         super.onResume();
+        // No ViewPager2 involved, override the paren
+        setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);
@@ -606,7 +602,7 @@ public class BookDetailsFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.co_book, menu);
+        inflater.inflate(R.menu.book, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -714,12 +710,6 @@ public class BookDetailsFragment
             /* ********************************************************************************** */
 
             default:
-                //noinspection ConstantConditions
-                if (MenuHandler.handleOpenOnWebsiteMenus(getContext(), item, book)) {
-                    return true;
-                }
-
-                // MENU_BOOK_UPDATE_FROM_INTERNET handled in super
                 return super.onOptionsItemSelected(item);
         }
     }
@@ -872,6 +862,9 @@ public class BookDetailsFragment
         ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         if (!tocList.isEmpty()) {
+
+            @SuppressWarnings("ConstantConditions")
+            @NonNull
             Context context = getContext();
             for (TocEntry tocEntry : tocList) {
                 View rowView = getLayoutInflater().inflate(R.layout.row_toc_entry_with_author,
@@ -890,7 +883,6 @@ public class BookDetailsFragment
                     multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 }
                 if (authorView != null) {
-                    //noinspection ConstantConditions
                     authorView.setText(tocEntry.getAuthor().getLabel(context));
                 }
                 if (firstPubView != null) {
@@ -901,7 +893,6 @@ public class BookDetailsFragment
                     } else {
                         firstPubView.setVisibility(View.VISIBLE);
                         // show full date string (if available)
-                        //noinspection ConstantConditions
                         firstPubView.setText(context.getString(R.string.brackets, date));
                     }
                 }

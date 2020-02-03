@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.NameValueHolder;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
@@ -58,7 +59,7 @@ final class MenuHandler {
         boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
 
         prepareOpenOnWebsiteMenu(menu, book.getNativeIds());
-        prepareOpenOnWebsiteAmazonMenu(menu, hasAuthor, hasSeries);
+        prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
     }
 
     static void prepareOptionalMenus(@NonNull final Menu menu,
@@ -78,8 +79,9 @@ final class MenuHandler {
                             && cursorRow.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
 
         prepareOpenOnWebsiteMenu(menu, nativeIds);
-        prepareOpenOnWebsiteAmazonMenu(menu, hasAuthor, hasSeries);
+        prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
     }
+
 
     private static void prepareOpenOnWebsiteMenu(@NonNull final Menu menu,
                                                  @NonNull final SparseArray<String> nativeIds) {
@@ -102,9 +104,50 @@ final class MenuHandler {
         }
     }
 
-    private static void prepareOpenOnWebsiteAmazonMenu(@NonNull final Menu menu,
-                                                       final boolean hasAuthor,
-                                                       final boolean hasSeries) {
+    static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
+                                            @NonNull final MenuItem menuItem,
+                                            @NonNull final NameValueHolder holder) {
+        switch (menuItem.getItemId()) {
+            case R.id.MENU_VIEW_BOOK_AT_AMAZON:
+                AmazonSearchEngine.openWebsite(
+                        context, holder.getString(DBDefinitions.KEY_ISBN));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
+                GoodreadsSearchEngine.openWebsite(
+                        context, holder.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_ISFDB:
+                IsfdbSearchEngine.openWebsite(
+                        context, holder.getLong(DBDefinitions.KEY_EID_ISFDB));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
+                LibraryThingSearchEngine.openWebsite(
+                        context, holder.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
+                OpenLibrarySearchEngine.openWebsite(
+                        context, holder.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
+                return true;
+
+            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
+                StripInfoSearchEngine.openWebsite(
+                        context, holder.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
+                return true;
+
+            //NEWTHINGS: add new site specific ID: add case
+
+            default:
+                return false;
+        }
+    }
+
+    private static void prepareSearchOnAmazonMenu(@NonNull final Menu menu,
+                                                  final boolean hasAuthor,
+                                                  final boolean hasSeries) {
 
         MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
         if (subMenuItem == null) {
@@ -121,92 +164,6 @@ final class MenuHandler {
               .setVisible(hasAuthor && hasSeries);
             sm.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
               .setVisible(hasSeries);
-        }
-    }
-
-    static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
-                                            @NonNull final MenuItem menuItem,
-                                            @NonNull final Book book) {
-        switch (menuItem.getItemId()) {
-            case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
-                GoodreadsSearchEngine.openWebsite(
-                        context, book.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                IsfdbSearchEngine.openWebsite(
-                        context, book.getLong(DBDefinitions.KEY_EID_ISFDB));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
-                LibraryThingSearchEngine.openWebsite(
-                        context, book.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
-                OpenLibrarySearchEngine.openWebsite(
-                        context, book.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
-                StripInfoSearchEngine.openWebsite(
-                        context, book.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
-                return true;
-
-            //NEWTHINGS: add new site specific ID: add case
-
-            /* ********************************************************************************** */
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR:
-                AmazonSearchEngine.openWebsite(context, book.getPrimaryAuthor(context), null);
-                return true;
-
-            case R.id.MENU_AMAZON_BOOKS_IN_SERIES:
-                AmazonSearchEngine.openWebsite(context, null, book.getPrimarySeries());
-                return true;
-
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES:
-                AmazonSearchEngine.openWebsite(
-                        context, book.getPrimaryAuthor(context), book.getPrimarySeries());
-                return true;
-
-            default:
-                return false;
-        }
-    }
-
-    static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
-                                            @NonNull final MenuItem menuItem,
-                                            @NonNull final CursorRow cursorRow) {
-        switch (menuItem.getItemId()) {
-            case R.id.MENU_VIEW_BOOK_AT_GOODREADS:
-                GoodreadsSearchEngine.openWebsite(
-                        context, cursorRow.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_ISFDB:
-                IsfdbSearchEngine.openWebsite(
-                        context, cursorRow.getLong(DBDefinitions.KEY_EID_ISFDB));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING:
-                LibraryThingSearchEngine.openWebsite(
-                        context, cursorRow.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY:
-                OpenLibrarySearchEngine.openWebsite(
-                        context, cursorRow.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
-                return true;
-
-            case R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE:
-                StripInfoSearchEngine.openWebsite(
-                        context, cursorRow.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE));
-                return true;
-
-            //NEWTHINGS: add new site specific ID: add case
-
-            default:
-                return false;
         }
     }
 }

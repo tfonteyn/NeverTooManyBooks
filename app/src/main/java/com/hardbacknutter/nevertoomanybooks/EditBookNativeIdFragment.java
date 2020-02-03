@@ -60,7 +60,7 @@ public class EditBookNativeIdFragment
     private EditText mEidStripInfoView;
 
     /** Show all sites, instead of just the enabled sites. */
-    private boolean mShowAllSites;
+    private boolean mShowAllSites = true;
 
     @Override
     @Nullable
@@ -92,7 +92,7 @@ public class EditBookNativeIdFragment
         fields.addString(mEidStripInfoView, DBDefinitions.KEY_EID_STRIP_INFO_BE)
               .setRelatedFields(R.id.lbl_site_strip_info_be);
 
-        setSiteVisibility(false);
+        setSiteVisibility(mShowAllSites);
     }
 
     @CallSuper
@@ -102,13 +102,6 @@ public class EditBookNativeIdFragment
 
         //noinspection ConstantConditions
         ViewFocusOrder.fix(getView());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // needs to be done here (instead of in onCreate) due to ViewPager2
-        setHasOptionsMenu(isVisible());
     }
 
     @Override

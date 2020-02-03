@@ -332,13 +332,6 @@ public class EditBookTocFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        // needs to be done here (instead of in onCreate) due to ViewPager2
-        setHasOptionsMenu(isVisible());
-    }
-
-    @Override
     protected void onLoadFields(@NonNull final Book book) {
         super.onLoadFields(book);
 
@@ -449,7 +442,7 @@ public class EditBookTocFragment
         Resources r = getResources();
 
         TocEntry item = mList.get(position);
-        @SuppressWarnings("ConstantConditions")
+        //noinspection ConstantConditions
         Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT,
                  r.getInteger(R.integer.MENU_ORDER_EDIT),
@@ -652,7 +645,7 @@ public class EditBookTocFragment
                 textView.setText(getString(R.string.error_auto_toc_population_failed));
             }
 
-            @SuppressWarnings("ConstantConditions")
+            //noinspection ConstantConditions
             AlertDialog dialog =
                     new AlertDialog.Builder(getContext())
                             .setIconAttribute(android.R.attr.alertDialogIcon)

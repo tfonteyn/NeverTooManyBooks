@@ -184,7 +184,7 @@ public class CoverHandler {
      */
     void onCreateContextMenu() {
         Menu menu = MenuPicker.createMenu(mContext);
-        new MenuInflater(mContext).inflate(R.menu.c_image, menu);
+        new MenuInflater(mContext).inflate(R.menu.image, menu);
 
         CharSequence title;
         if (getCoverFile().exists()) {
@@ -481,7 +481,6 @@ public class CoverHandler {
             File file = null;
             try (InputStream is = mContext.getContentResolver().openInputStream(uri)) {
                 file = StorageUtils.saveInputStreamToFile(mContext, is, getCoverFile());
-
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "Unable to copy content to file", e);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -91,72 +91,4 @@
         android:icon="@drawable/ic_goodreads"
         android:orderInCategory="@integer/MENU_ORDER_SEND_TO_GOODREADS"
         android:title="@string/gr_menu_send_to_goodreads" />
-
-    <item
-        android:id="@id/SUBMENU_VIEW_BOOK_AT_SITE"
-        android:icon="@drawable/ic_link"
-        android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_SITE"
-        android:title="@string/menu_view_book_at"
-        >
-        <menu>
-            <!-- //NEWTHINGS: add new site specific ID: add -->
-            <item
-                android:id="@id/MENU_VIEW_BOOK_AT_GOODREADS"
-                android:icon="@drawable/ic_link"
-                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_GOODREADS"
-                android:title="@string/site_goodreads" />
-
-            <item
-                android:id="@id/MENU_VIEW_BOOK_AT_LIBRARY_THING"
-                android:icon="@drawable/ic_link"
-                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING"
-                android:title="@string/site_library_thing" />
-
-            <item
-                android:id="@id/MENU_VIEW_BOOK_AT_STRIP_INFO_BE"
-                android:icon="@drawable/ic_link"
-                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE"
-                android:title="@string/site_stripinfo" />
-
-            <item
-                android:id="@id/MENU_VIEW_BOOK_AT_ISFDB"
-                android:icon="@drawable/ic_link"
-                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_ISFDB"
-                android:title="@string/site_isfdb" />
-
-            <item
-                android:id="@id/MENU_VIEW_BOOK_AT_OPEN_LIBRARY"
-                android:icon="@drawable/ic_link"
-                android:orderInCategory="@integer/MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY"
-                android:title="@string/site_open_library" />
-        </menu>
-    </item>
-
-    <item
-        android:id="@id/SUBMENU_AMAZON_SEARCH"
-        android:icon="@drawable/ic_search"
-        android:orderInCategory="@integer/MENU_ORDER_AMAZON"
-        android:title="@string/amazon_ellipsis"
-        >
-        <menu>
-            <item
-                android:id="@id/MENU_AMAZON_BOOKS_BY_AUTHOR"
-                android:icon="@drawable/ic_search"
-                android:orderInCategory="@integer/MENU_ORDER_AMAZON_AUTHOR"
-                android:title="@string/menu_amazon_books_by_author" />
-
-            <item
-                android:id="@id/MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES"
-                android:icon="@drawable/ic_search"
-                android:orderInCategory="@integer/MENU_ORDER_AMAZON_AUTHOR_IN_SERIES"
-                android:title="@string/menu_amazon_books_by_author_in_series" />
-
-            <item
-                android:id="@id/MENU_AMAZON_BOOKS_IN_SERIES"
-                android:icon="@drawable/ic_search"
-                android:orderInCategory="@integer/MENU_ORDER_AMAZON_SERIES"
-                android:title="@string/menu_amazon_books_in_series" />
-        </menu>
-    </item>
-
 </menu>

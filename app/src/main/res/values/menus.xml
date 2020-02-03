@@ -47,11 +47,16 @@
     <integer name="MENU_ORDER_SEND_TO_GOODREADS">730</integer>
 
     <integer name="MENU_ORDER_VIEW_BOOK_AT_SITE">800</integer>
+    <!-- General interest first -->
     <integer name="MENU_ORDER_VIEW_BOOK_AT_GOODREADS">805</integer>
     <integer name="MENU_ORDER_VIEW_BOOK_AT_LIBRARY_THING">810</integer>
     <integer name="MENU_ORDER_VIEW_BOOK_AT_OPEN_LIBRARY">815</integer>
+    <!-- Selected interest second -->
     <integer name="MENU_ORDER_VIEW_BOOK_AT_ISFDB">820</integer>
     <integer name="MENU_ORDER_VIEW_BOOK_AT_STRIPINFO_BE">850</integer>
+    <!-- Shops last -->
+    <integer name="MENU_ORDER_VIEW_BOOK_AT_AMAZON">890</integer>
+
 
     <integer name="MENU_ORDER_AMAZON">900</integer>
     <integer name="MENU_ORDER_AMAZON_AUTHOR">905</integer>
@@ -116,6 +121,7 @@
     <!-- View a book at an external site.
      NEWTHINGS: add new site specific ID: add a menu id -->
     <item name="SUBMENU_VIEW_BOOK_AT_SITE" type="id" />
+    <item name="MENU_VIEW_BOOK_AT_AMAZON" type="id" />
     <item name="MENU_VIEW_BOOK_AT_GOODREADS" type="id" />
     <item name="MENU_VIEW_BOOK_AT_LIBRARY_THING" type="id" />
     <item name="MENU_VIEW_BOOK_AT_ISFDB" type="id" />
