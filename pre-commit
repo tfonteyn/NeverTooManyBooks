@@ -9,21 +9,10 @@
 # it wants to stop the commit.
 #
 
-# make sure table types are Temporary (i.e. not Standard)
-function checkTempTableUsage {
-
-  grep  -e "^[^/].*TableTypes.Standard" $1
-  if [ $? == 0 ]; then
-    echo "$1 contains TableTypes.Standard, aborting"
-    exit 1
-  fi
-}
 # Main src dir.
 SRC="app/src/main"
 
-
 PR="${SRC}/java/com/hardbacknutter/nevertoomanybooks"
-checkTempTableUsage "${PR}/database/DBDefinitions.java"
 
 MF="AndroidManifest.xml"
 
