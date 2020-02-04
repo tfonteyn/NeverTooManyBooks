@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -97,4 +97,12 @@
 
     <!-- debug user visible strings, not normally seen; here to please lint. -->
     <string name="debug" translatable="false">Debug</string>
+    <string name="debug_dump_prefs" translatable="false">Dump prefs to log</string>
+    <string name="debug_dump_temp_tables" translatable="false">Dump temp tables to log</string>
+
+    <string name="debug_sq_shell" translatable="false">SQLite Shell</string>
+    <string name="debug_sq_shell_run" translatable="false">Run</string>
+    <string name="debug_sq_shell_list_tables" translatable="false">List tables</string>
+
+
 </resources>

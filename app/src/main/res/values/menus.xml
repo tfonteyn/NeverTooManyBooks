@@ -169,12 +169,15 @@
 
     <item name="MENU_SCAN_BARCODE" type="id" />
 
-    <!-- debug options for the options menu; only shown in debug mode. -->
+    <!-- debug options for the about page. -->
     <item name="SUBMENU_DEBUG" type="id" />
+
     <item name="MENU_DEBUG_PREFS" type="id" />
-    <item name="MENU_DEBUG_STYLE" type="id" />
-    <item name="MENU_DEBUG_TRACKER" type="id" />
     <item name="MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE" type="id" />
     <item name="MENU_DEBUG_DUMP_TEMP_TABLES" type="id" />
+
+    <item name="MENU_DEBUG_SQ_SHELL" type="id" />
+    <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
+    <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
 
 </resources>

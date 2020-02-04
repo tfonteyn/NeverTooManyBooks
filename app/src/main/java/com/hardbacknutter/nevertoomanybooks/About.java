@@ -32,13 +32,19 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellActivity;
+import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 
 /**
@@ -47,8 +53,49 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 public class About
         extends BaseActivity {
 
+    public static final int DEBUG_CLICKS = 3;
+    public static final int DEBUG_CLICKS_ALLOW_UPD = 6;
     /** Log tag. */
     private static final String TAG = "AboutActivity";
+
+    private static final int[] DEBUG_MENUS = {
+            R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE,
+            R.id.MENU_DEBUG_SQ_SHELL,
+            R.id.MENU_DEBUG_PREFS,
+            R.id.MENU_DEBUG_DUMP_TEMP_TABLES,
+            };
+
+    private int mDebugClicks = 0;
+    private boolean mSqLiteAllowUpdates = false;
+
+    private final View.OnClickListener mOnClickListener = v -> {
+        switch (v.getId()) {
+            case R.id.MENU_DEBUG_PREFS:
+                Prefs.dumpPreferences(this, null);
+                break;
+
+            case R.id.MENU_DEBUG_DUMP_TEMP_TABLES:
+                try (DAO db = new DAO(TAG)) {
+                    DBHelper.dumpTempTableNames(db.getUnderlyingDatabase());
+                }
+                break;
+
+            case R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE:
+                try (DAO db = new DAO(TAG)) {
+                    db.purgeNodeStates();
+                }
+                break;
+
+            case R.id.MENU_DEBUG_SQ_SHELL:
+                Intent intent = new Intent(this, SqliteShellActivity.class)
+                        .putExtra(SqliteShellFragment.BKEY_ALLOW_UPDATES, mSqLiteAllowUpdates);
+                startActivity(intent);
+                break;
+
+            default:
+                break;
+        }
+    };
 
     @Override
     protected int getLayoutId() {
@@ -72,6 +119,20 @@ public class About
                 getString(R.string.url_sourcecode6, getString(R.string.lbl_about_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
+        findViewById(R.id.icon).setOnClickListener(v -> {
+            mDebugClicks++;
+            if (mDebugClicks == DEBUG_CLICKS) {
+                findViewById(R.id.SUBMENU_DEBUG).setVisibility(View.VISIBLE);
+                for (int id : DEBUG_MENUS) {
+                    View debugMenuView = findViewById(id);
+                    debugMenuView.setVisibility(View.VISIBLE);
+                    debugMenuView.setOnClickListener(mOnClickListener);
+                }
+            }
+            if (mDebugClicks == DEBUG_CLICKS_ALLOW_UPD) {
+                mSqLiteAllowUpdates = true;
+            }
+        });
 
 //        view = findViewById(R.id.contact1);
 //        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact1));
@@ -103,4 +164,5 @@ public class About
             Logger.error(this, TAG, e);
         }
     }
+
 }

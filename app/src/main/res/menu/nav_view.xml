@@ -75,10 +75,4 @@
         android:id="@+id/nav_about"
         android:icon="@drawable/ic_info_outline"
         android:title="@string/menu_about" />
-
-    <item
-        android:id="@id/SUBMENU_DEBUG"
-        android:icon="@drawable/ic_help_outline"
-        android:title="@string/debug"
-        android:visible="false" />
 </menu>
