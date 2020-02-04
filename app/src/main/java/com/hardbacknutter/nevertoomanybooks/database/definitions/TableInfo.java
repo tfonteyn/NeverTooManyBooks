@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -51,6 +52,9 @@ public class TableInfo {
     @NonNull
     private final String mTableName;
 
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final Locale locale;
+
     /**
      * Constructor.
      *
@@ -61,6 +65,8 @@ public class TableInfo {
                      @NonNull final String tableName) {
         mTableName = tableName;
         mColumns = describeTable(db, tableName);
+
+        locale = LocaleUtils.getSystemLocale();
     }
 
     /**
@@ -82,7 +88,7 @@ public class TableInfo {
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
-        String lcName = name.toLowerCase(LocaleUtils.getSystemLocale());
+        String lcName = name.toLowerCase(locale);
         if (!mColumns.containsKey(lcName)) {
             return null;
         }
@@ -102,10 +108,11 @@ public class TableInfo {
                                                   @NonNull final String tableName) {
         Map<String, ColumnInfo> allColumns = new HashMap<>();
 
-        try (Cursor colCsr = db.rawQuery(ColumnInfo.getSql(tableName), null)) {
+
+        try (Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {
             while (colCsr.moveToNext()) {
                 ColumnInfo col = new ColumnInfo(colCsr);
-                allColumns.put(col.name.toLowerCase(LocaleUtils.getSystemLocale()), col);
+                allColumns.put(col.name.toLowerCase(locale), col);
             }
         }
         if (allColumns.isEmpty()) {

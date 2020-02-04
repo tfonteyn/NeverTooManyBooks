@@ -84,7 +84,6 @@ public class ColumnInfo {
     @Nullable
     private final String defaultValue;
 
-
     /**
      * Constructor.
      *
@@ -111,17 +110,6 @@ public class ColumnInfo {
 
     public boolean isPrimaryKey() {
         return mIsPrimaryKey;
-    }
-
-    /**
-     * Get the sql to create the given table.
-     *
-     * @param tableName to get
-     *
-     * @return create statement
-     */
-    static String getSql(@NonNull final String tableName) {
-        return "PRAGMA table_info(" + tableName + ')';
     }
 
     /**
@@ -169,7 +157,6 @@ public class ColumnInfo {
                + ", defaultValue=`" + defaultValue + '`'
                + '}';
     }
-
 
     /**
      * Mapping types to storage classes.
