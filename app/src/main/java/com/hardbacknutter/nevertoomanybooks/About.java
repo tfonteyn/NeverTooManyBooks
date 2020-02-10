@@ -53,20 +53,24 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 public class About
         extends BaseActivity {
 
-    public static final int DEBUG_CLICKS = 3;
-    public static final int DEBUG_CLICKS_ALLOW_UPD = 6;
+    /**
+     * After clicking the icon 3 times, we display the debug options.
+     * SQLite shell updates are not allowed.
+     */
+    private static final int DEBUG_CLICKS = 3;
+    /** After clicking the icon 3 times, the SQLite shell will allow updates. */
+    private static final int DEBUG_CLICKS_ALLOW_UPD = 6;
+
     /** Log tag. */
     private static final String TAG = "AboutActivity";
-
     private static final int[] DEBUG_MENUS = {
-            R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE,
             R.id.MENU_DEBUG_SQ_SHELL,
             R.id.MENU_DEBUG_PREFS,
             R.id.MENU_DEBUG_DUMP_TEMP_TABLES,
             };
 
-    private int mDebugClicks = 0;
-    private boolean mSqLiteAllowUpdates = false;
+    private int mDebugClicks;
+    private boolean mSqLiteAllowUpdates;
 
     private final View.OnClickListener mOnClickListener = v -> {
         switch (v.getId()) {
@@ -77,12 +81,6 @@ public class About
             case R.id.MENU_DEBUG_DUMP_TEMP_TABLES:
                 try (DAO db = new DAO(TAG)) {
                     DBHelper.dumpTempTableNames(db.getUnderlyingDatabase());
-                }
-                break;
-
-            case R.id.MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE:
-                try (DAO db = new DAO(TAG)) {
-                    db.purgeNodeStates();
                 }
                 break;
 
@@ -109,7 +107,7 @@ public class About
 
         // Version Number
         TextView view = findViewById(R.id.version);
-        PackageInfo packageInfo = App.getPackageInfo(0);
+        final PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {
             view.setText(packageInfo.versionName);
         }
@@ -154,8 +152,8 @@ public class About
      */
     private void sendContactEmail(@StringRes final int emailId) {
         try {
-            String subject = '[' + getString(R.string.app_name) + "] ";
-            Intent intent = new Intent(Intent.ACTION_SEND)
+            final String subject = '[' + getString(R.string.app_name) + "] ";
+            final Intent intent = new Intent(Intent.ACTION_SEND)
                     .setType("text/plain")
                     .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(emailId)})
                     .putExtra(Intent.EXTRA_SUBJECT, subject);
