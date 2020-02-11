@@ -1,0 +1,139 @@
+/*
+ * @Copyright 2020 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors;
+
+import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.Collection;
+
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
+
+/**
+ * Interface for view-specific accessors. One of these must be implemented for
+ * each view type that is supported.
+ *
+ * @param <T> type of Field value.
+ */
+public interface FieldDataAccessor<T> {
+
+    /**
+     * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
+     * <strong>Implementation note</strong>: we don't provide a onCreateViewHolder()
+     * method on purpose.
+     * Using that would need to deal with {@code null} values.
+     */
+    void setView(@NonNull View view);
+
+    void setField(@NonNull final Fields.Field<T> field);
+
+    @Nullable
+    FieldFormatter<T> getFormatter();
+
+    /**
+     * Set the formatter to use for this field.
+     *
+     * @param formatter to use
+     *
+     * @return Field (for chaining)
+     */
+    FieldDataAccessor<T> setFormatter(@NonNull FieldFormatter<T> formatter);
+
+    /**
+     * Get the value from the view associated with the Field and return it as an Object.
+     *
+     * <strong>Note:</strong> an implementation should always return a value.
+     * This would/should usually be the default the Widget.
+     * e.g. a text based widget should return "" even if the value was never set.
+     *
+     * @return the value
+     */
+    @NonNull
+    T getValue();
+
+    /**
+     * Use the passed value to set the Field.
+     * <p>
+     * If {@code null} is passed in, the implementation should set the widget to
+     * its native default value. (e.g. string -> "", number -> 0, etc)
+     *
+     * @param value to set.
+     */
+    void setValue(@NonNull T value);
+
+    /**
+     * Fetch the value from the passed DataManager, and set the Field.
+     *
+     * @param source Collection to load data from.
+     */
+    void setValue(@NonNull DataManager source);
+
+    /**
+     * Get the value from the view associated with the Field
+     * and put a <strong>native typed value</strong> in the passed collection.
+     *
+     * @param target Collection to save value into.
+     */
+    void getValue(@NonNull DataManager target);
+
+    /**
+     * Check if this field is considered to be 'empty'.
+     * The encapsulated type decides what 'empty' means.
+     * <p>
+     * This default implementation considers
+     * <ul>
+     * <li>Number == 0</li>
+     * <li>Boolean == false</li>
+     * <li>empty Collection</li>
+     * <li>empty String</li>
+     * </ul>
+     * to be empty.
+     * If the test can be optimized (i.e. if {@link #getValue} can be shortcut),
+     * then you should override this default method.
+     *
+     * @return {@code true} if empty.
+     */
+    default boolean isEmpty() {
+        final T value = getValue();
+        return value instanceof Number && ((Number) value).doubleValue() == 0.0d
+               || value instanceof Boolean && !(Boolean) value
+               || value instanceof Collection && ((Collection) value).isEmpty()
+               || value.toString().isEmpty();
+    }
+
+    /**
+     * @param isEditable {@code true} if the user can edit the field
+     */
+    default FieldDataAccessor<T> setEditable(final boolean isEditable) {
+        return this;
+    }
+}
