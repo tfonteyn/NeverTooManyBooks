@@ -101,7 +101,7 @@
 
     <!-- 'medium' detail text field; for example Series title, ... -->
     <style name="Text">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
@@ -134,7 +134,6 @@
 
     <!-- On loan to X. -->
     <style name="Text.OnLoanBar">
-        <item name="android:layout_width">0dp</item>
         <item name="android:background">?android:attr/colorForeground</item>
         <item name="android:paddingStart">@dimen/indent2</item>
         <item name="android:paddingEnd">@dimen/indent2</item>
@@ -172,6 +171,26 @@
     <!-- EditText fields -->
     <!-- *************************************************************************************** -->
 
+    <style name="Envelope.EditText"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:layout_marginEnd">@dimen/indent1</item>
+    </style>
+
+    <style name="Envelope.EditText.SeriesNum">
+        <item name="android:layout_width">200dp</item>
+    </style>
+
+    <style name="Envelope.AutoCompleteTextView"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:layout_marginEnd">@dimen/indent1</item>
+    </style>
+
     <!-- Base style for all EditText and AutoComplete; not to be used directly in layouts. -->
     <style name="EditText">
         <item name="android:layout_width">0dp</item>
@@ -204,9 +223,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:inputType">text|textCapCharacters</item>
-        <!-- 3 dots to indicate 3 characters. NOT an ellipsis. -->
-        <item name="android:hint">...</item>
-        <item name="android:ems">3</item>
+        <item name="android:ems">5</item>
         <item name="android:maxLength">3</item>
         <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
@@ -254,7 +271,7 @@
         <item name="android:padding">@dimen/border2</item>
         <item name="android:background">?android:attr/selectableItemBackground</item>
         <item name="android:focusable">true</item>
-        <item name="android:src">@drawable/ic_arrow_drop_down</item>
+        <item name="android:src">@drawable/ic_view_list</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -356,21 +373,6 @@
     <!-- a row that can be 'selected' -->
     <style name="OptionRow.Selectable">
         <item name="android:background">@drawable/color_selector_row_highlight</item>
-    </style>
-
-    <!-- Menu label for options in a list. Flashes when clicked. -->
-    <style name="OptionRow.Menu">
-        <item name="android:padding">@dimen/border2</item>
-        <item name="android:drawablePadding">@dimen/border3</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
-    </style>
-    <!-- Used for a dedicated 'help' TextView associated with a menu option
-         The 48dp indent is a calculated value based on the menu item itself:
-            padding + drawablePadding + standard icon size (i.e. 24dp) -->
-    <style name="OptionRow.Menu.Blurb">
-        <item name="android:paddingStart">48dp</item>
-        <item name="android:paddingEnd">0dp</item>
     </style>
 
     <!-- Option in the list shown as a Checkable (RadioButton, Checkbox ...).
@@ -610,10 +612,9 @@
     </style>
 
     <!-- A button as wide as the screen. -->
-    <style name="WideButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_width">match_parent</item>
+    <style name="MenuButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">320dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_margin">@dimen/border2</item>
     </style>
 

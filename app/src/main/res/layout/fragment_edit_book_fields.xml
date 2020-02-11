@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -93,32 +93,23 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
-            style="@style/Label.Field"
-            android:labelFor="@id/title"
-            android:text="@string/lbl_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            />
-
-        <EditText
-            android:id="@+id/title"
-            style="@style/titleTextEntry"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_title"
-            tools:ignore="Autofill"
-            />
+            app:layout_constraintTop_toBottomOf="@id/author"
+            >
 
-        <TextView
-            android:id="@+id/lbl_isbn"
-            style="@style/Label.Field"
-            android:labelFor="@id/isbn"
-            android:text="@string/lbl_isbn"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/title"
+                style="@style/titleTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btn_altIsbn"
@@ -130,20 +121,29 @@
             app:icon="@drawable/ic_autorenew"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
-            app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_isbn"
             app:layout_constraintStart_toStartOf="parent"
             tools:enabled="true"
             />
 
-        <EditText
-            android:id="@+id/isbn"
-            style="@style/EditText.Isbn.Large"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_isbn"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_isbn"
             app:layout_constraintEnd_toStartOf="@id/btn_scan"
             app:layout_constraintStart_toEndOf="@id/btn_altIsbn"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-            tools:ignore="Autofill"
-            tools:text="123456789X123"
-            />
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/isbn"
+                style="@style/EditText.Isbn.Large"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                tools:text="123456789X123"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btn_scan"
@@ -155,7 +155,7 @@
             app:icon="@drawable/ic_barcode"
             app:iconGravity="textStart"
             app:iconPadding="0dp"
-            app:layout_constraintBaseline_toBaselineOf="@id/isbn"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_isbn"
             app:layout_constraintEnd_toEndOf="parent"
             />
 
@@ -165,7 +165,7 @@
             android:labelFor="@id/series"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/isbn"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             />
 
         <Button
@@ -192,53 +192,43 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_genre"
-            style="@style/Label.Field"
-            android:labelFor="@id/genre"
-            android:text="@string/lbl_genre"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_genre"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bookshelves"
-            />
+            >
 
-        <AutoCompleteTextView
-            android:id="@+id/genre"
-            style="@style/autoCompleteTextEntry"
-            app:layout_constraintEnd_toStartOf="@id/btn_genre"
+            <AutoCompleteTextView
+                android:id="@+id/genre"
+                style="@style/autoCompleteTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="LabelFor"
+                tools:text="Fiction"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_description"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_description"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
-            />
+            >
 
-        <ImageButton
-            android:id="@+id/btn_genre"
-            style="@style/DropDownMenu"
-            android:contentDescription="@string/lbl_genre"
-            app:layout_constraintBottom_toBottomOf="@id/genre"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/genre"
-            app:layout_constraintTop_toTopOf="@id/genre"
-            />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/description"
+                style="@style/notesTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                tools:text="@tools:sample/lorem/random"
+                />
 
-        <TextView
-            android:id="@+id/lbl_description"
-            style="@style/Label.Field"
-            android:layout_width="wrap_content"
-            android:labelFor="@id/description"
-            android:text="@string/lbl_description"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/genre"
-            />
-
-        <EditText
-            android:id="@+id/description"
-            style="@style/notesTextEntry"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_description"
-            tools:ignore="Autofill"
-            tools:text="@tools:sample/lorem/random"
-            />
+        </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

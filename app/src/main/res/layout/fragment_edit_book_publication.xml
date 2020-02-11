@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -42,137 +42,100 @@
         android:layout_margin="@dimen/border1"
         >
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_format"
-            style="@style/Label.Field"
-            android:labelFor="@id/format"
-            android:text="@string/lbl_format"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_format"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            />
+            >
 
-        <AutoCompleteTextView
-            android:id="@+id/format"
-            style="@style/bookFormatTextEntry"
-            app:layout_constraintEnd_toStartOf="@id/btn_format"
+            <AutoCompleteTextView
+                android:id="@+id/format"
+                style="@style/bookFormatTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="LabelFor"
+                tools:text="Hardcover"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_color"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_color"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_format"
-            tools:text="Hardcover"
-            />
+            >
 
-        <ImageButton
-            android:id="@+id/btn_format"
-            style="@style/DropDownMenu"
-            android:contentDescription="@string/lbl_format"
-            app:layout_constraintBottom_toBottomOf="@id/format"
+            <AutoCompleteTextView
+                android:id="@+id/color"
+                style="@style/bookColorTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="LabelFor"
+                tools:text="Black &amp; White"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_language"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_language"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/format"
-            app:layout_constraintTop_toTopOf="@id/format"
-            />
-
-        <TextView
-            android:id="@+id/lbl_color"
-            style="@style/Label.Field"
-            android:labelFor="@id/color"
-            android:text="@string/lbl_color"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/format"
-            />
-
-        <AutoCompleteTextView
-            android:id="@+id/color"
-            style="@style/bookColorTextEntry"
-            app:layout_constraintEnd_toStartOf="@id/btn_color"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_color"
-            tools:text="Black &amp; White"
-            />
+            >
 
-        <ImageButton
-            android:id="@+id/btn_color"
-            style="@style/DropDownMenu"
-            android:contentDescription="@string/lbl_color"
-            app:layout_constraintBottom_toBottomOf="@id/color"
+            <AutoCompleteTextView
+                android:id="@+id/language"
+                style="@style/languageTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="LabelFor"
+                tools:text="Quenya"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_publisher"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_publisher"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/color"
-            app:layout_constraintTop_toTopOf="@id/color"
-            />
-
-        <TextView
-            android:id="@+id/lbl_language"
-            style="@style/Label.Field"
-            android:labelFor="@id/language"
-            android:text="@string/lbl_language"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/color"
-            />
-
-        <AutoCompleteTextView
-            android:id="@+id/language"
-            style="@style/languageTextEntry"
-            app:layout_constraintEnd_toStartOf="@id/btn_language"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_language"
-            tools:text="Quenya"
-            />
+            >
 
-        <ImageButton
-            android:id="@+id/btn_language"
-            style="@style/DropDownMenu"
-            android:contentDescription="@string/lbl_language"
-            app:layout_constraintBottom_toBottomOf="@id/language"
+            <AutoCompleteTextView
+                android:id="@+id/publisher"
+                style="@style/personalNameTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="LabelFor"
+                tools:text="Printed Press"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_print_run"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_print_run"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/language"
-            app:layout_constraintTop_toTopOf="@id/language"
-            />
-
-        <TextView
-            android:id="@+id/lbl_publisher"
-            style="@style/Label.Field"
-            android:labelFor="@id/publisher"
-            android:text="@string/lbl_publisher"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/language"
-            />
-
-        <AutoCompleteTextView
-            android:id="@+id/publisher"
-            style="@style/personalNameTextEntry"
-            app:layout_constraintEnd_toStartOf="@id/btn_publisher"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
-            tools:text="Printed Press"
-            />
+            >
 
-        <ImageButton
-            android:id="@+id/btn_publisher"
-            style="@style/DropDownMenu"
-            android:contentDescription="@string/lbl_publisher"
-            app:layout_constraintBottom_toBottomOf="@id/publisher"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/publisher"
-            app:layout_constraintTop_toTopOf="@id/publisher"
-            />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/print_run"
+                style="@style/notesTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                tools:text="limited to 150 copies"
+                />
 
-        <TextView
-            android:id="@+id/lbl_print_run"
-            style="@style/Label.Field"
-            android:labelFor="@id/print_run"
-            android:text="@string/lbl_print_run"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/publisher"
-            />
-
-        <EditText
-            android:id="@+id/print_run"
-            style="@style/notesTextEntry"
-            android:maxLines="3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
-            tools:ignore="Autofill"
-            tools:text="limited to 150 copies"
-            />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/lbl_first_publication"
@@ -180,7 +143,7 @@
             android:layout_width="0dp"
             android:text="@string/lbl_first_publication"
             app:layout_constraintStart_toStartOf="@id/first_publication"
-            app:layout_constraintTop_toBottomOf="@id/print_run"
+            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
             />
 
         <TextView
@@ -189,7 +152,7 @@
             android:layout_width="0dp"
             android:text="@string/lbl_date_published"
             app:layout_constraintStart_toStartOf="@id/date_published"
-            app:layout_constraintTop_toBottomOf="@id/print_run"
+            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -224,62 +187,63 @@
             app:constraint_referenced_ids="first_publication,date_published"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_pages"
-            style="@style/Label.Field"
-            android:labelFor="@id/pages"
-            android:text="@string/lbl_pages"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_pages"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_pages"
-            />
+            >
+            <!-- genericTextEntry: so details like 'intro pages', 'appendix pages'
+                 etc can be used -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/pages"
+                style="@style/genericTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                tools:text="999"
+                />
 
-        <!-- input type simpleTextEntry, so details like 'intro pages', 'appendix pages'
-             etc can be used -->
-        <EditText
-            android:id="@+id/pages"
-            style="@style/genericTextEntry"
-            app:layout_constraintEnd_toEndOf="parent"
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_price_listed_currency"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:layout_width="wrap_content"
+            android:hint="@string/lbl_currency"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_listed"
+            app:layout_constraintEnd_toStartOf="@id/lbl_price_listed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_pages"
-            tools:ignore="Autofill"
-            tools:text="999"
-            />
+            >
 
-        <TextView
+            <AutoCompleteTextView
+                android:id="@+id/price_listed_currency"
+                style="@style/EditText.Currency"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_listed"
-            style="@style/Label.Field"
-            android:labelFor="@id/price_listed"
-            android:text="@string/lbl_price_listed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pages"
-            />
-
-        <AutoCompleteTextView
-            android:id="@+id/price_listed_currency"
-            style="@style/EditText.Currency"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
-            tools:ignore="Autofill,LabelFor"
-            />
-
-        <ImageButton
-            android:id="@+id/btn_price_listed_currency"
-            style="@style/DropDownMenu"
-            android:contentDescription="@string/lbl_price_listed"
-            app:layout_constraintBottom_toBottomOf="@id/price_listed_currency"
-            app:layout_constraintStart_toEndOf="@id/price_listed_currency"
-            />
-
-        <EditText
-            android:id="@+id/price_listed"
-            style="@style/priceTextEntry"
-            android:layout_width="0dp"
-            app:layout_constraintBaseline_toBaselineOf="@id/price_listed_currency"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_price_listed"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_price_listed_currency"
-            tools:ignore="Autofill"
-            tools:text="14.99"
-            />
+            app:layout_constraintStart_toEndOf="@id/lbl_price_listed_currency"
+            app:layout_constraintTop_toBottomOf="@id/lbl_pages"
+            >
+
+            <!-- genericTextEntry: this field can come from a search -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/price_listed"
+                style="@style/genericTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                tools:text="14.99"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

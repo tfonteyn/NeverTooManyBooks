@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/fieldIndent3"
+            app:layout_constraintGuide_begin="@dimen/fieldGuidelineIndent"
             />
 
         <androidx.constraintlayout.widget.Group
@@ -114,36 +114,34 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_search_text"
-            style="@style/Label.Field"
-            android:text="@string/lbl_search_criteria"
+            style="@style/Envelope.EditText"
+            android:hint="@string/hint_search_text"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/isbn"
-            />
+            >
 
-        <EditText
-            android:id="@+id/filter_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_search_text"
-            android:inputType="textMultiLine"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_search_text"
-            tools:ignore="Autofill"
-            />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/filter_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btn_search"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:focusable="false"
+            style="@style/MenuButton"
             android:text="@android:string/search_go"
+            app:icon="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filter_text"
+            app:layout_constraintTop_toBottomOf="@id/lbl_search_text"
             />
 
         <TextView

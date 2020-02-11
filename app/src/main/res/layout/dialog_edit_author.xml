@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -35,48 +35,48 @@
     style="@style/DialogFrame"
     >
 
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_family_name"
-        style="@style/Label.Field"
-        android:labelFor="@id/family_name"
-        android:text="@string/lbl_family_name"
+        style="@style/Envelope.AutoCompleteTextView"
+        android:hint="@string/lbl_family_name"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        >
 
-    <AutoCompleteTextView
-        android:id="@+id/family_name"
-        style="@style/personalNameTextEntry"
+        <AutoCompleteTextView
+            android:id="@+id/family_name"
+            style="@style/personalNameTextEntry"
+            android:layout_width="match_parent"
+            tools:ignore="LabelFor"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_given_names"
+        style="@style/Envelope.AutoCompleteTextView"
+        android:hint="@string/lbl_given_names"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_family_name"
-        tools:ignore="Autofill"
-        />
+        >
 
-    <TextView
-        android:id="@+id/lbl_given_names"
-        style="@style/Label.Field"
-        android:labelFor="@id/given_names"
-        android:text="@string/lbl_given_names"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/family_name"
-        />
+        <AutoCompleteTextView
+            android:id="@+id/given_names"
+            style="@style/personalNameTextEntry"
+            android:layout_width="match_parent"
+            tools:ignore="LabelFor"
+            />
 
-    <AutoCompleteTextView
-        android:id="@+id/given_names"
-        style="@style/personalNameTextEntry"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
-        tools:ignore="Autofill"
-        />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <CheckBox
         android:id="@+id/cbx_is_complete"
         style="@style/CheckboxEntry"
         android:text="@string/lbl_is_complete"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/given_names"
+        app:layout_constraintTop_toBottomOf="@id/lbl_given_names"
         />
 
     <TextView

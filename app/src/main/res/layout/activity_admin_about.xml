@@ -93,12 +93,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/fieldIndent3"
+            app:layout_constraintGuide_begin="@dimen/fieldGuidelineIndent"
             />
 
         <TextView
             android:id="@id/SUBMENU_DEBUG"
-            style="@style/Label.Header"
+            style="@style/Label.Header.Small"
             android:paddingTop="16dp"
             android:text="@string/debug"
             android:visibility="gone"
@@ -107,49 +107,40 @@
             tools:visibility="visible"
             />
 
-        <TextView
-            android:id="@id/MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE"
+        <Button
+            android:id="@id/MENU_DEBUG_SQ_SHELL"
+            style="@style/MenuButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/border2"
-            android:text="@string/lbl_purge_blns"
+            android:text="@string/debug_sq_shell"
             android:visibility="gone"
+            app:icon="@drawable/ic_keyboard"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
             app:layout_constraintTop_toBottomOf="@id/SUBMENU_DEBUG"
             tools:visibility="visible"
             />
 
-        <TextView
-            android:id="@id/MENU_DEBUG_SQ_SHELL"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/border2"
-            android:text="@string/debug_sq_shell"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
-            app:layout_constraintTop_toBottomOf="@id/MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE"
-            tools:visibility="visible"
-            />
-
-        <TextView
+        <Button
             android:id="@id/MENU_DEBUG_PREFS"
+            style="@style/MenuButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/border2"
+            app:icon="@drawable/ic_details"
             android:text="@string/debug_dump_prefs"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
             app:layout_constraintTop_toBottomOf="@id/MENU_DEBUG_SQ_SHELL"
             tools:visibility="visible"
             />
 
-        <TextView
+        <Button
             android:id="@id/MENU_DEBUG_DUMP_TEMP_TABLES"
+            style="@style/MenuButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/border2"
+            app:icon="@drawable/ic_details"
             android:text="@string/debug_dump_temp_tables"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
             app:layout_constraintTop_toBottomOf="@id/MENU_DEBUG_PREFS"
             tools:visibility="visible"

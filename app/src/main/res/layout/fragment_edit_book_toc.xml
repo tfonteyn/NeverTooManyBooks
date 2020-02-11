@@ -36,14 +36,6 @@
     android:layout_margin="@dimen/border1"
     >
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/indent_fields"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/fieldIndent3"
-        />
-
     <CheckBox
         android:id="@+id/cbx_is_anthology"
         style="@style/CheckboxEntry.Small"
@@ -65,44 +57,68 @@
         tools:checked="true"
         />
 
-    <AutoCompleteTextView
-        android:id="@+id/author"
-        style="@style/personalNameTextEntry"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_author"
+        style="@style/Envelope.AutoCompleteTextView"
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cbx_multiple_authors"
-        tools:ignore="Autofill,SelectableText"
-        />
+        >
 
-    <EditText
-        android:id="@+id/title"
-        style="@style/titleTextEntry"
+        <AutoCompleteTextView
+            android:id="@+id/author"
+            style="@style/personalNameTextEntry"
+            android:layout_width="match_parent"
+            tools:ignore="LabelFor"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_title"
+        style="@style/Envelope.EditText"
         android:hint="@string/lbl_title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/author"
-        tools:ignore="Autofill,SelectableText"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_author"
+        >
 
-    <EditText
-        android:id="@+id/first_publication"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/title"
+            style="@style/titleTextEntry"
+            android:layout_width="match_parent"
+            tools:ignore="Autofill"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_first_publication"
+        style="@style/Envelope.EditText"
         android:layout_width="80dp"
-        android:layout_height="wrap_content"
         android:hint="@string/lbl_year"
-        android:inputType="number"
-        android:maxLength="4"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
-        app:layout_constraintTop_toBottomOf="@id/title"
-        tools:ignore="Autofill"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_title"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/first_publication"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLength="4"
+            tools:ignore="Autofill"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btn_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/btn_confirm_add"
-        app:layout_constraintBaseline_toBaselineOf="@id/first_publication"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_first_publication"
         app:layout_constraintEnd_toEndOf="parent"
         />
 
@@ -115,7 +131,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/first_publication"
+        app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
         tools:listitem="@layout/row_edit_toc_entry"
         />
 

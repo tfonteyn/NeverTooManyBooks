@@ -45,97 +45,87 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/indent_fields"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/fieldIndent3"
-            />
-
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
-            style="@style/Label.Field"
-            android:text="@string/lbl_author"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_author"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            />
+            >
 
-        <!-- no style used on purpose -->
-        <EditText
-            android:id="@+id/author"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:hint="@string/lbl_author"
-            android:inputType="textMultiLine"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_author"
-            tools:ignore="Autofill"
-            />
+            <!-- no style used on purpose -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
 
-        <TextView
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
-            style="@style/Label.Field"
-            android:text="@string/lbl_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            />
-
-        <!-- no style used on purpose -->
-        <EditText
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/Envelope.EditText"
             android:hint="@string/lbl_title"
-            android:inputType="textMultiLine"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_title"
-            tools:ignore="Autofill"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            >
 
-        <TextView
+            <!-- no style used on purpose -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
-            style="@style/Label.Field"
-            android:text="@string/lbl_series"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            />
-
-        <!-- no style used on purpose -->
-        <EditText
-            android:id="@+id/series"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            style="@style/Envelope.EditText"
             android:hint="@string/lbl_series"
-            android:inputType="textMultiLine"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_series"
-            tools:ignore="Autofill"
-            />
-
-        <TextView
-            android:id="@+id/lbl_keywords"
-            style="@style/Label.Field"
-            android:text="@string/lbl_keywords"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/series"
-            />
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            >
 
-        <!-- no style used on purpose -->
-        <EditText
-            android:id="@+id/keywords"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            <!-- no style used on purpose -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/series"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_keywords"
+            style="@style/Envelope.EditText"
             android:hint="@string/lbl_keywords"
-            android:inputType="textMultiLine"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
-            tools:ignore="Autofill"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_series"
+            >
+
+            <!-- no style used on purpose -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/keywords"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/books_found"
@@ -145,7 +135,7 @@
             android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/keywords"
+            app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
             tools:text="# books found"
             />
 

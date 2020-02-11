@@ -44,100 +44,94 @@
         android:layout_margin="@dimen/border1"
         >
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/indent_fields"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/fieldIndent3"
-            />
-
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
-            style="@style/Label.Field"
-            android:text="@string/lbl_author"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_author"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            />
+            >
 
-        <AutoCompleteTextView
-            android:id="@+id/author"
-            style="@style/personalNameTextEntry"
-            android:hint="@string/lbl_author"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_author"
-            />
+            <AutoCompleteTextView
+                android:id="@+id/author"
+                style="@style/personalNameTextEntry"
+                android:layout_width="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                tools:ignore="LabelFor"
+                />
 
-        <TextView
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
-            style="@style/Label.Field"
-            android:text="@string/lbl_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/author"
-            />
-
-        <EditText
-            android:id="@+id/title"
-            style="@style/titleTextEntry"
+            style="@style/Envelope.EditText"
             android:hint="@string/lbl_title"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_title"
-            tools:ignore="Autofill"
-            />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
+            >
+
+            <!-- no style used on purpose -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/title"
+                style="@style/titleTextEntry"
+                android:layout_width="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- made visible from code if applicable -->
         <androidx.constraintlayout.widget.Group
             android:id="@+id/publisher_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="lbl_publisher,publisher_info,publisher"
+            app:constraint_referenced_ids="lbl_publisher,publisher_info"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
-            style="@style/Label.Field"
-            android:text="@string/lbl_publisher"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_publisher"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            />
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            tools:visibility="visible"
+            >
+
+            <!-- no style used on purpose -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/publisher"
+                style="@style/personalNameTextEntry"
+                android:layout_width="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/publisher_info"
             style="@style/Label.Field"
-            android:paddingStart="@dimen/border2"
             android:text="@string/warning_isfdb_only"
+            android:textStyle="italic"
             android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/lbl_publisher"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            tools:ignore="RtlSymmetry"
-            />
-
-        <EditText
-            android:id="@+id/publisher"
-            style="@style/personalNameTextEntry"
-            android:hint="@string/lbl_publisher"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/publisher_info"
-            tools:ignore="Autofill"
+            app:layout_constraintEnd_toEndOf="@id/lbl_publisher"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
+            tools:visibility="visible"
             />
 
         <Button
             android:id="@+id/btn_search"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border3"
+            style="@style/MenuButton"
             android:text="@android:string/search_go"
+            app:icon="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/publisher"
+            app:layout_constraintTop_toBottomOf="@id/publisher_info"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,79 +33,78 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="@dimen/border1"
     tools:context=".searches.librarything.LibraryThingRegistrationActivity"
     >
 
     <include layout="@layout/inc_appbar" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+        <TextView
+            android:id="@+id/b1"
+            style="@style/Blurb"
+            android:text="@string/lt_info"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/register_url"
+            style="@style/Url"
+            android:layout_marginTop="@dimen/border1"
+            android:text="@string/lt_url_text_register"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/b1"
+            />
+
+        <TextView
+            android:id="@+id/dev_key_url"
+            style="@style/Url"
+            android:layout_marginTop="@dimen/border1"
+            android:text="@string/lt_url_text_dev_key"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/register_url"
+            />
+
+        <TextView
+            android:id="@+id/b2"
+            style="@style/Blurb"
+            android:layout_marginTop="@dimen/border1"
+            android:text="@string/lt_lbl_key"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dev_key_url"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_series_num"
+            style="@style/Envelope.EditText"
+            android:hint="@string/hint_developer_key"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/b2"
             >
 
-            <androidx.constraintlayout.widget.Guideline
-                android:id="@+id/indents"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_begin="@dimen/indent3"
-                />
-
-            <TextView
-                android:id="@+id/b1"
-                style="@style/Blurb"
-                android:text="@string/lt_info"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/register_url"
-                style="@style/Url"
-                android:layout_marginTop="@dimen/border1"
-                android:text="@string/lt_url_text_register"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/b1"
-                />
-
-            <TextView
-                android:id="@+id/dev_key_url"
-                style="@style/Url"
-                android:layout_marginTop="@dimen/border1"
-                android:text="@string/lt_url_text_dev_key"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/register_url"
-                />
-
-            <TextView
-                android:id="@+id/b2"
-                style="@style/Blurb"
-                android:layout_marginTop="@dimen/border1"
-                android:text="@string/lt_lbl_key"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/dev_key_url"
-                />
-
-            <!-- no style used on purpose -->
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/dev_key"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_developer_key"
                 android:inputType="text"
                 android:maxLines="1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/indents"
-                app:layout_constraintTop_toBottomOf="@id/b2"
                 tools:ignore="Autofill"
                 />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
         android:id="@+id/fab"

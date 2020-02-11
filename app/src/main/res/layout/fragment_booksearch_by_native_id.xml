@@ -48,7 +48,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/fieldIndent3"
+            app:layout_constraintGuide_begin="@dimen/fieldGuidelineIndent"
             />
 
         <TextView
@@ -118,38 +118,40 @@
                 />
         </RadioGroup>
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_native_id"
-            style="@style/Label.Field"
-            android:labelFor="@id/native_id"
-            android:text="@string/lbl_site_book_id"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_site_book_id"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/sites_group"
-            />
-
-        <!-- input type & drawable will be reset by code as needed -->
-        <EditText
-            android:id="@+id/native_id"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:enabled="false"
-            android:drawableStart="@drawable/ic_apps"
-            android:textAppearance="?android:attr/textAppearanceLarge"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/lbl_native_id"
-            tools:ignore="Autofill"
-            />
+            app:layout_constraintTop_toBottomOf="@id/sites_group"
+            >
+
+            <!-- input type & drawable will be reset by code as needed -->
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/native_id"
+                style="@style/personalNameTextEntry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_apps"
+                android:enabled="false"
+                android:inputType="number"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btn_search"
+            style="@style/MenuButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@android:string/search_go"
-            app:layout_constraintBaseline_toBaselineOf="@id/native_id"
+            app:icon="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/native_id"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_native_id"
+            app:layout_constraintStart_toEndOf="@id/lbl_native_id"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -121,39 +121,31 @@
             app:constraint_referenced_ids="read_start,read_end"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_location"
-            style="@style/Label.Field"
-            android:labelFor="@id/location"
-            android:text="@string/lbl_location_long"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_location"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_read_buttons"
-            />
+            >
 
-        <AutoCompleteTextView
-            android:id="@+id/location"
-            style="@style/autoCompleteTextEntry"
-            app:layout_constraintEnd_toStartOf="@id/btn_location"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_location"
-            />
+            <AutoCompleteTextView
+                android:id="@+id/location"
+                style="@style/autoCompleteTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="LabelFor"
+                tools:text="Under the stairs"
+                />
 
-        <ImageButton
-            android:id="@+id/btn_location"
-            style="@style/DropDownMenu"
-            android:contentDescription="@string/lbl_location"
-            app:layout_constraintBottom_toBottomOf="@id/location"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/location"
-            app:layout_constraintTop_toTopOf="@id/location"
-            />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/lbl_date_acquired"
             style="@style/Label.Field"
             android:text="@string/lbl_date_acquired"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/location"
+            app:layout_constraintTop_toBottomOf="@id/lbl_location"
             />
 
         <Button
@@ -164,54 +156,65 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_price_paid_currency"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:layout_width="wrap_content"
+            android:hint="@string/lbl_currency"
+            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid"
+            app:layout_constraintEnd_toStartOf="@id/lbl_price_paid"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+
+            <AutoCompleteTextView
+                android:id="@+id/price_paid_currency"
+                style="@style/EditText.Currency"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid"
-            style="@style/Label.Field"
-            android:labelFor="@id/price_paid"
-            android:text="@string/lbl_price_paid"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/date_acquired"
-            />
-
-        <AutoCompleteTextView
-            android:id="@+id/price_paid_currency"
-            style="@style/EditText.Currency"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
-            tools:ignore="Autofill,LabelFor"
-            />
-
-        <ImageButton
-            android:id="@+id/btn_price_paid_currency"
-            style="@style/DropDownMenu"
-            android:contentDescription="@string/lbl_price_paid"
-            app:layout_constraintBottom_toBottomOf="@id/price_paid_currency"
-            app:layout_constraintStart_toEndOf="@id/price_paid_currency"
-            />
-
-        <EditText
-            android:id="@+id/price_paid"
-            style="@style/priceTextEntry"
-            android:layout_width="0dp"
-            app:layout_constraintBaseline_toBaselineOf="@id/price_paid_currency"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_price_paid"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btn_price_paid_currency"
-            tools:ignore="Autofill"
-            tools:text="14.99"
-            />
+            app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
+            app:layout_constraintTop_toBottomOf="@id/date_acquired"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/price_paid"
+                style="@style/priceTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                tools:text="12.99"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/lbl_edition"
             style="@style/Label.Field"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/price_paid"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
             />
 
-        <Button
+        <!--        <Button-->
+        <!--            android:id="@+id/edition"-->
+        <!--            style="@style/DataEntryButton"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/lbl_edition"-->
+        <!--            />-->
+
+        <com.google.android.material.chip.ChipGroup
             android:id="@+id/edition"
-            style="@style/DataEntryButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
             />
@@ -225,24 +228,24 @@
             tools:checked="true"
             />
 
-        <TextView
-            android:id="@+id/lbl_notes"
-            style="@style/Label.Field"
-            android:labelFor="@id/notes"
-            android:text="@string/lbl_personal_notes"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
-            />
-
-        <EditText
-            android:id="@+id/notes"
-            style="@style/notesTextEntry"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_personal_notes"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-            tools:ignore="Autofill"
-            tools:text="@tools:sample/lorem/random"
-            />
+            app:layout_constraintTop_toBottomOf="@id/cbx_signed"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/notes"
+                style="@style/notesTextEntry"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                tools:text="@tools:sample/lorem/random"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

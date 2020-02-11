@@ -38,24 +38,31 @@
     tools:context=".EditBookAuthorsFragment"
     >
 
-    <AutoCompleteTextView
-        android:id="@+id/author"
-        style="@style/personalNameTextEntry"
-        android:layout_marginStart="@dimen/indent1"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_author"
+        style="@style/Envelope.AutoCompleteTextView"
         android:hint="@string/lbl_author"
-        app:layout_constraintEnd_toStartOf="@id/btn_add"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/author"
+            style="@style/personalNameTextEntry"
+            android:layout_width="match_parent"
+            tools:ignore="LabelFor"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btn_add"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="@string/btn_confirm_add"
-        app:layout_constraintBaseline_toBaselineOf="@id/author"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/author"
+        app:layout_constraintTop_toBottomOf="@id/lbl_author"
         />
 
     <androidx.recyclerview.widget.RecyclerView
