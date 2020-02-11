@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
 /**
- * A crude sql shell
+ * A crude sql shell.
  */
 public class SqliteShellFragment
         extends Fragment {
@@ -77,7 +77,7 @@ public class SqliteShellFragment
     private DAO db;
     private SynchronizedDb syncDb;
 
-    private boolean mAllowUpdates = false;
+    private boolean mAllowUpdates;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -90,9 +90,9 @@ public class SqliteShellFragment
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sqlite_shell, container, false);
         inputView = view.findViewById(R.id.input);
         outputView = view.findViewById(R.id.output);
@@ -139,13 +139,14 @@ public class SqliteShellFragment
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.MENU_DEBUG_SQ_SHELL_RUN:
+            case R.id.MENU_DEBUG_SQ_SHELL_RUN: {
                 executeSql(inputView.getText().toString().trim());
                 return true;
-
-            case R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES:
+            }
+            case R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES: {
                 executeSql(SQL_LIST_TABLES);
                 return true;
+            }
 
             default:
                 return super.onOptionsItemSelected(item);

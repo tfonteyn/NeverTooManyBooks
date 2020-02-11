@@ -144,13 +144,14 @@ public class SearchOrderFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_RESET:
+            case R.id.MENU_RESET: {
                 //noinspection ConstantConditions
                 Locale locale = LocaleUtils.getUserLocale(getContext());
                 //noinspection ConstantConditions
                 mModel.resetList(getContext(), locale, mOurType);
                 mListAdapter.notifyDataSetChanged();
                 return true;
+            }
 
             default:
                 return super.onOptionsItemSelected(item);

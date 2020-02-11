@@ -46,6 +46,7 @@ import java.io.File;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 /**
@@ -95,7 +96,7 @@ public class ZoomedImageDialogFragment
 
         Bundle args = requireArguments();
         String fileSpec = args.getString(BKEY_IMAGE_PATH);
-        Objects.requireNonNull(fileSpec, "image path must be passed in args");
+        Objects.requireNonNull(fileSpec, ErrorMsg.ARGS_MISSING_IMAGE_PATH);
         mImageFile = new File(fileSpec);
     }
 

@@ -88,7 +88,8 @@ public class AdminActivity
 
     @Override
     public void onBackPressed() {
-        ActivityResultDataModel model = new ViewModelProvider(this).get(ResultDataModel.class);
+        final ActivityResultDataModel model = new ViewModelProvider(this)
+                .get(ResultDataModel.class);
         setResult(Activity.RESULT_OK, model.getResultData());
         super.onBackPressed();
     }

@@ -97,6 +97,7 @@
       <option name="VARIABLE_ANNOTATION_WRAP" value="2" />
     </codeStyleSettings>
     <codeStyleSettings language="XML">
+      <option name="RIGHT_MARGIN" value="120" />
       <indentOptions>
         <option name="CONTINUATION_INDENT_SIZE" value="4" />
       </indentOptions>

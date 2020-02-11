@@ -37,9 +37,9 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.EditBookshelvesActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -99,7 +100,7 @@ public class EditBookshelfDialogFragment
         mDb = new DAO(TAG);
 
         mBookshelf = requireArguments().getParcelable(DBDefinitions.KEY_FK_BOOKSHELF);
-        Objects.requireNonNull(mBookshelf, "Bookshelf must be passed in args");
+        Objects.requireNonNull(mBookshelf, ErrorMsg.ARGS_MISSING_BOOKSHELF);
 
         if (savedInstanceState == null) {
             mName = mBookshelf.getName();
@@ -120,7 +121,7 @@ public class EditBookshelfDialogFragment
         mNameView.setText(mName);
 
         //noinspection ConstantConditions
-        return new AlertDialog.Builder(getContext())
+        return new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.lbl_bookshelf)
@@ -209,7 +210,7 @@ public class EditBookshelfDialogFragment
     private void mergeShelves(@NonNull final Bookshelf source,
                               @NonNull final Bookshelf destination) {
         //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_edit)
                 .setTitle(R.string.title_edit_bookshelf)
                 .setMessage(R.string.confirm_merge_bookshelves)

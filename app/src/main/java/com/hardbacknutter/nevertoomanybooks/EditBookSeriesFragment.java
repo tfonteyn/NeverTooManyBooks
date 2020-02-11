@@ -40,12 +40,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -55,6 +55,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -101,7 +102,7 @@ public class EditBookSeriesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_list_series, container, false);
+        final View view = inflater.inflate(R.layout.fragment_edit_book_series, container, false);
         mListView = view.findViewById(android.R.id.list);
         mSeriesNameView = view.findViewById(R.id.series);
         mSeriesNumberView = view.findViewById(R.id.series_num);
@@ -118,13 +119,13 @@ public class EditBookSeriesFragment
             getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
         }
 
-        DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
-                getContext(), android.R.layout.simple_dropdown_item_1line,
+        final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item,
                 mBookModel.getDb().getSeriesTitles());
         mSeriesNameView.setAdapter(nameAdapter);
 
         // set up the list view. The adapter is setup in onLoadFields
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(layoutManager);
         mListView.setHasFixedSize(true);
 
@@ -145,7 +146,7 @@ public class EditBookSeriesFragment
         mListView.setAdapter(mListAdapter);
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
 
-        SimpleItemTouchHelperCallback sitHelperCallback =
+        final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
@@ -166,7 +167,7 @@ public class EditBookSeriesFragment
     }
 
     private void onAdd() {
-        String name = mSeriesNameView.getText().toString().trim();
+        final String name = mSeriesNameView.getText().toString().trim();
         if (name.isEmpty()) {
             Snackbar.make(mSeriesNameView, R.string.warning_missing_name,
                           Snackbar.LENGTH_LONG).show();
@@ -176,7 +177,7 @@ public class EditBookSeriesFragment
         //noinspection ConstantConditions
         final Locale bookLocale = mBookModel.getBook().getLocale(getContext());
 
-        Series newSeries = new Series(name);
+        final Series newSeries = new Series(name);
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
 
         // see if it already exists
@@ -242,12 +243,12 @@ public class EditBookSeriesFragment
         // At this point, we know the name of the Series was modified
         // and the it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
-        String allBooks = getString(R.string.bookshelf_all_books);
-        String message = getString(R.string.confirm_apply_series_changed,
+        final String allBooks = getString(R.string.bookshelf_all_books);
+        final String message = getString(R.string.confirm_apply_series_changed,
                                    series.getTitle(),
                                    tmpData.getTitle(),
                                    allBooks);
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_scope_of_change)
                 .setMessage(message)
@@ -266,7 +267,7 @@ public class EditBookSeriesFragment
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                                   "series=" + series,
                                                   "tmpSeries=" + tmpData);
-                        new AlertDialog.Builder(getContext())
+                        new MaterialAlertDialogBuilder(getContext())
                                 .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .setMessage(R.string.error_unexpected_error)
                                 .show();
@@ -344,9 +345,9 @@ public class EditBookSeriesFragment
             super.onCreate(savedInstanceState);
             mDb = new DAO(TAG);
 
-            Bundle args = requireArguments();
+            final Bundle args = requireArguments();
             mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
-            Objects.requireNonNull(mSeries, "Series must be passed in args");
+            Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
 
             if (savedInstanceState == null) {
                 mSeriesName = mSeries.getTitle();
@@ -372,17 +373,16 @@ public class EditBookSeriesFragment
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-            Objects.requireNonNull(getTargetFragment(), "no target fragment set");
+            Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
 
             // Reminder: *always* use the activity inflater here.
             //noinspection ConstantConditions
-            LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-            View root = layoutInflater.inflate(R.layout.dialog_edit_book_series, null);
+            final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+            final View root = layoutInflater.inflate(R.layout.dialog_edit_book_series, null);
 
             //noinspection ConstantConditions
-            DiacriticArrayAdapter<String> seriesNameAdapter = new DiacriticArrayAdapter<>(
-                    getContext(), android.R.layout.simple_dropdown_item_1line,
-                    mDb.getSeriesTitles());
+            final DiacriticArrayAdapter<String> seriesNameAdapter = new DiacriticArrayAdapter<>(
+                    getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
 
             // the dialog fields != screen fields.
             mTitleView = root.findViewById(R.id.series);
@@ -399,7 +399,7 @@ public class EditBookSeriesFragment
                 mNumberView.setText(mSeriesNumber);
             }
 
-            return new AlertDialog.Builder(getContext())
+            return new MaterialAlertDialogBuilder(getContext())
                     .setView(root)
                     .setTitle(R.string.title_edit_series)
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
@@ -414,7 +414,7 @@ public class EditBookSeriesFragment
                         }
 
                         // Create a new Series as a holder for all changes.
-                        Series tmpSeries = new Series(mSeriesName);
+                        final Series tmpSeries = new Series(mSeriesName);
 
                         // allow for future layout(s) not displaying the isComplete checkbox
                         if (mIsCompleteView != null) {
@@ -480,7 +480,8 @@ public class EditBookSeriesFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            View view = getLayoutInflater().inflate(R.layout.row_edit_series_list, parent, false);
+            final View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_series_list, parent, false);
             return new Holder(view);
         }
 
@@ -504,8 +505,8 @@ public class EditBookSeriesFragment
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> {
-                EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
-                Bundle args = new Bundle(1);
+                final EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
+                final Bundle args = new Bundle(1);
                 args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
                 frag.setArguments(args);
                 frag.setTargetFragment(EditBookSeriesFragment.this, 0);

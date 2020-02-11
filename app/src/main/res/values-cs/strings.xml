@@ -431,10 +431,10 @@
     <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
-    <string name="pt_bob_authors_display">Zobrazit autory jako</string>
+    <string name="pt_bob_author_name_format">Formátování jména autora</string>
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
-    <string name="pt_bob_authors_sort">Seřadit autory podle</string>
+    <string name="pt_bob_author_name_sort">Třídění autorských jmen</string>
     <string name="pt_bob_font_scale">Velikost položek na seznamu knih</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
     <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
@@ -452,10 +452,10 @@
     <string name="pt_ui_language">Jazyk</string>
     <string name="pt_ui_system_locale">Národní prostředí systému</string>
     <string name="pt_ui_theme">Téma</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Pod každým %1$s</string>
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Pouze pod primárním %1$s</string>
-    <string name="pv_bob_author_name_family_first">Zobrazovat nejprve příjmení, tj. „Čapek, Karel“</string>
-    <string name="pv_bob_author_name_given_first">Zobrazovat nejprve křestní jméno, tj. „Karel Čapek“</string>
+    <string name="pv_bob_books_under_multiple_each_author">Pod každým autor</string>
+    <string name="pv_bob_books_under_multiple_each_series">Pod každým série</string>
+    <string name="pv_bob_books_under_multiple_primary_author_only">Pouze pod primárním autor</string>
+    <string name="pv_bob_books_under_multiple_primary_series_only">Pouze pod primárním série</string>
     <string name="menu_rebuild_fts">Obnovit FTS</string>
     <string name="retry">Opakovat</string>
     <string name="style_builtin_acquired_date">Získáno</string>
@@ -624,7 +624,7 @@
     <string name="btn_scan_barcode">Naskenujte čárový kód</string>
     <string name="lbl_author_type_inking">Inkoust</string>
     <string name="lbl_select_website">Vyberte web.:</string>
-    <string name="lbl_site_book_id">ID webové stránky:</string>
+    <string name="lbl_site_book_id">ID webové stránky</string>
     <string name="fab_add_book_by_native_id">ID webové stránky</string>
     <string name="warning_enable_at_least_1_website">Pro každou kategorii povolte alespoň jeden web.</string>
     <string name="pt_camera_next_action">Akce po pořízení snímku</string>
@@ -649,5 +649,7 @@
     <string name="legacy_record">Zastaralý záznam #%1$d</string>
     <string name="legacy_description">Tento záznam je zastaralý a nelze jej obnovit. Je vhodné jej odstranit.</string>
     <string name="book_format_dimensions">Rozměry</string>
+    <string name="pv_bob_author_name_family_first">tj. „Čapek, Karel“</string>
+    <string name="pv_bob_author_name_given_first">tj. „Karel Čapek“</string>
 
 </resources>

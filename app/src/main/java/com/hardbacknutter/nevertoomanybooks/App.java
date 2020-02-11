@@ -242,9 +242,9 @@ public class App
     public static PackageInfo getPackageInfo(final int flags) {
         PackageInfo packageInfo = null;
         try {
-            Context context = sInstance.getApplicationContext();
+            final Context context = sInstance.getApplicationContext();
             // Get app info from the manifest
-            PackageManager manager = context.getPackageManager();
+            final PackageManager manager = context.getPackageManager();
             packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
         }
@@ -268,14 +268,14 @@ public class App
                                                        .getSystemService(NOTIFICATION_SERVICE);
         }
 
-        Intent intent = new Intent(context, StartupActivity.class)
+        final Intent intent = new Intent(context, StartupActivity.class)
                 .setAction(Intent.ACTION_MAIN)
                 .addCategory(Intent.CATEGORY_LAUNCHER);
 
         // The PendingIntent to launch our activity if the user selects this notification
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-        Notification notification = new Notification.Builder(context)
+        final Notification notification = new Notification.Builder(context)
                 .setSmallIcon(R.drawable.ic_info_outline)
                 .setContentTitle(title)
                 .setContentText(message)
@@ -297,7 +297,7 @@ public class App
      */
     public static int getAttrResId(@NonNull final Context context,
                                    @AttrRes final int attr) {
-        TypedValue tv = new TypedValue();
+        final TypedValue tv = new TypedValue();
         context.getTheme().resolveAttribute(attr, tv, true);
         return tv.resourceId;
     }
@@ -314,8 +314,8 @@ public class App
     @ColorInt
     public static int getColorInt(@NonNull final Context context,
                                   @AttrRes final int attr) {
-        Resources.Theme theme = context.getTheme();
-        TypedValue tv = new TypedValue();
+        final Resources.Theme theme = context.getTheme();
+        final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return context.getResources().getColor(tv.resourceId, theme);
     }
@@ -333,14 +333,14 @@ public class App
     @SuppressWarnings("unused")
     public static int getTextSize(@NonNull final Context context,
                                   @AttrRes final int attr) {
-        Resources.Theme theme = context.getTheme();
-        TypedValue tv = new TypedValue();
+        final Resources.Theme theme = context.getTheme();
+        final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
 
-        int[] textSizeAttr = new int[]{android.R.attr.textSize};
-        int indexOfAttrTextSize = 0;
-        TypedArray ta = context.obtainStyledAttributes(tv.data, textSizeAttr);
-        int textSize = ta.getDimensionPixelSize(indexOfAttrTextSize, -1);
+        final int[] textSizeAttr = new int[]{android.R.attr.textSize};
+        final int indexOfAttrTextSize = 0;
+        final TypedArray ta = context.obtainStyledAttributes(tv.data, textSizeAttr);
+        final int textSize = ta.getDimensionPixelSize(indexOfAttrTextSize, -1);
         ta.recycle();
 
         return textSize;
@@ -363,7 +363,7 @@ public class App
      */
     @SuppressWarnings("unused")
     public static void hideKeyboard(@NonNull final View view) {
-        InputMethodManager imm = (InputMethodManager)
+        final InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -437,9 +437,9 @@ public class App
     @NonNull
     public static Resources getLocalizedResources(@NonNull final Context context,
                                                   @NonNull final Locale desiredLocale) {
-        Configuration current = context.getResources().getConfiguration();
-        Configuration configuration = new Configuration(current);
-        String lang = desiredLocale.getLanguage();
+        final Configuration current = context.getResources().getConfiguration();
+        final Configuration configuration = new Configuration(current);
+        final String lang = desiredLocale.getLanguage();
         if (lang.length() == 2) {
             configuration.setLocale(desiredLocale);
         } else {
@@ -447,7 +447,7 @@ public class App
             configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromIso3(context, lang)));
         }
 
-        Context localizedContext = context.createConfigurationContext(configuration);
+        final Context localizedContext = context.createConfigurationContext(configuration);
         return localizedContext.getResources();
     }
 
@@ -457,7 +457,7 @@ public class App
      * @return the version
      */
     public static long getVersion() {
-        PackageInfo packageInfo = getPackageInfo(0);
+        final PackageInfo packageInfo = getPackageInfo(0);
         if (packageInfo != null) {
             if (Build.VERSION.SDK_INT >= 28) {
                 return packageInfo.getLongVersionCode();
@@ -493,14 +493,15 @@ public class App
     @Override
     @CallSuper
     public void onConfigurationChanged(@NonNull final Configuration newConfig) {
-        String localeSpec = LocaleUtils.getPersistedLocaleSpec(sInstance.getApplicationContext());
+        final String localeSpec = LocaleUtils
+                .getPersistedLocaleSpec(sInstance.getApplicationContext());
         // override in the new config
         newConfig.setLocale(LocaleUtils.createLocale(localeSpec));
         // propagate to registered callbacks.
         super.onConfigurationChanged(newConfig);
 
         if (BuildConfig.DEBUG /* always */) {
-            Locale locale;
+            final Locale locale;
             if (Build.VERSION.SDK_INT >= 24) {
                 locale = newConfig.getLocales().get(0);
             } else {

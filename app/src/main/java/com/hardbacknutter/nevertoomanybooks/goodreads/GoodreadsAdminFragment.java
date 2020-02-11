@@ -30,6 +30,9 @@ package com.hardbacknutter.nevertoomanybooks.goodreads;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -75,6 +78,8 @@ public class GoodreadsAdminFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
         mGoodreadsTaskModel.getTaskProgressMessage().observe(getViewLifecycleOwner(), message -> {
 //            if (mProgressDialog != null) {
@@ -118,13 +123,33 @@ public class GoodreadsAdminFragment
 
         root.findViewById(R.id.lbl_send_all_books_to_goodreads)
             .setOnClickListener(v -> onSend(false));
+    }
 
-        // Start the activity that shows the active GoodReads tasks
-        root.findViewById(R.id.lbl_background_tasks)
-            .setOnClickListener(v -> {
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+
+        menu.add(Menu.NONE, R.id.MENU_GOODREADS_TASKS, 0, R.string.gr_tq_menu_background_tasks)
+            .setIcon(R.drawable.ic_format_list_bulleted)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_GOODREADS_TASKS: {
+                // Start the activity that shows the active GoodReads tasks
                 Intent intent = new Intent(getContext(), TasksAdminActivity.class);
                 startActivity(intent);
-            });
+                return true;
+            }
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void onImport(final boolean isSync) {

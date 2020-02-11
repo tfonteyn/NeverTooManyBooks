@@ -25,40 +25,10 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors;
 
-import android.app.Activity;
-import android.os.Bundle;
+class NoViewException
+        extends RuntimeException {
 
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
-
-/**
- * Hosting activity for showing an author.
- */
-public class AuthorWorksActivity
-        extends BaseActivity {
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_main_nav;
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        replaceFragment(R.id.main_fragment, AuthorWorksFragment.class, AuthorWorksFragment.TAG);
-    }
-
-    @Override
-    public void onBackPressed() {
-        final ActivityResultDataModel model = new ViewModelProvider(this)
-                .get(AuthorWorksModel.class);
-        setResult(Activity.RESULT_OK, model.getResultData());
-        super.onBackPressed();
-    }
+    private static final long serialVersionUID = -7501110352359786502L;
 }

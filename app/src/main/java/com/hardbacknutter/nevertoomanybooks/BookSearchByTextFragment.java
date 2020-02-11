@@ -71,6 +71,7 @@ public class BookSearchByTextFragment
     private AutoCompleteTextView mAuthorView;
     /** User input field. */
     private EditText mTitleView;
+
     /** User input field. ENHANCE: add auto-completion for publishers? */
     private EditText mPublisherView;
     /** Used to set visibility on a group of widgets all related to the Publisher. */
@@ -87,7 +88,7 @@ public class BookSearchByTextFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_booksearch_by_text, container, false);
+        final View view = inflater.inflate(R.layout.fragment_booksearch_by_text, container, false);
         mAuthorView = view.findViewById(R.id.author);
         mTitleView = view.findViewById(R.id.title);
         mPublisherView = view.findViewById(R.id.publisher);
@@ -100,7 +101,7 @@ public class BookSearchByTextFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        boolean usePublisher = SearchSites.usePublisher(getContext());
+        final boolean usePublisher = SearchSites.usePublisher(getContext());
         mPublisherGroup.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
 
         //noinspection ConstantConditions
@@ -113,8 +114,8 @@ public class BookSearchByTextFragment
         getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
             copyView2Model();
 
-            String authorSearchText = mSearchCoordinator.getAuthorSearchText();
-            String titleSearchText = mSearchCoordinator.getTitleSearchText();
+            final String authorSearchText = mSearchCoordinator.getAuthorSearchText();
+            final String titleSearchText = mSearchCoordinator.getTitleSearchText();
 
             if (!authorSearchText.isEmpty()) {
                 // Always add the current search text to the list of recent searches.
@@ -163,7 +164,7 @@ public class BookSearchByTextFragment
         // Now get an adapter based on the combined names
         //noinspection ConstantConditions
         mAuthorAdapter = new DiacriticArrayAdapter<>(
-                getContext(), android.R.layout.simple_dropdown_item_1line, authors);
+                getContext(), R.layout.dropdown_menu_popup_item, authors);
         mAuthorView.setAdapter(mAuthorAdapter);
     }
 
@@ -171,7 +172,7 @@ public class BookSearchByTextFragment
     private ArrayList<String> getAuthorNames(@NonNull final Iterable<String> authorNames) {
 
         //noinspection ConstantConditions
-        Locale locale = LocaleUtils.getUserLocale(getContext());
+        final Locale locale = LocaleUtils.getUserLocale(getContext());
 
         final ArrayList<String> authors =
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
@@ -201,7 +202,8 @@ public class BookSearchByTextFragment
                                mSearchCoordinator.getTitleSearchText());
         }
 
-        ArrayList<Author> authors = bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> authors =
+                bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (authors == null || authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
             bookData.putString(UniqueId.BKEY_SEARCH_AUTHOR,
@@ -213,7 +215,7 @@ public class BookSearchByTextFragment
                                mSearchCoordinator.getPublisherSearchText());
         }
 
-        Intent intent = new Intent(getContext(), EditBookActivity.class)
+        final Intent intent = new Intent(getContext(), EditBookActivity.class)
                 .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
         startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
         clearPreviousSearchCriteria();

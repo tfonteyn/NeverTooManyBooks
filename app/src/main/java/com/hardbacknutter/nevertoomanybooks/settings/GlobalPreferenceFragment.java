@@ -33,10 +33,11 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -73,7 +74,7 @@ public class GlobalPreferenceFragment
                 boolean current = PreferenceManager.getDefaultSharedPreferences(getContext())
                                                    .getBoolean(Prefs.pk_reformat_titles_sort, true);
 
-                new AlertDialog.Builder(getContext())
+                new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setMessage(R.string.warning_rebuild_orderby_columns)
                         // this dialog is important. Make sure the user pays some attention

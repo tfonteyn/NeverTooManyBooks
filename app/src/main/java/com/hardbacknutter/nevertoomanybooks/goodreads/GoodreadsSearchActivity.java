@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
@@ -136,7 +137,8 @@ public class GoodreadsSearchActivity
                            getString(R.string.site_goodreads)));
 
         mModel = new ViewModelProvider(this).get(GrSearchViewModel.class);
-        mModel.init(Objects.requireNonNull(getIntent().getExtras()), savedInstanceState);
+        mModel.init(Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.ARGS_MISSING_EXTRAS),
+                    savedInstanceState);
 
         mModel.getWorks().observe(this, goodreadsWorks -> {
             mWorks.clear();
@@ -224,7 +226,7 @@ public class GoodreadsSearchActivity
         Snackbar.make(mListView, msg, Snackbar.LENGTH_LONG).show();
     }
 
-    public static class GrSearchViewModel
+    static class GrSearchViewModel
             extends ViewModel {
 
         private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();

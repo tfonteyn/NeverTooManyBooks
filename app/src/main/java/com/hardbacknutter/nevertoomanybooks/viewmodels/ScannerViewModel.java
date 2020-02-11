@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -40,6 +39,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -121,10 +121,10 @@ public class ScannerViewModel
         // detect emulator for testing
         if (Build.PRODUCT.startsWith("sdk")) {
             // when used, the file must be in the root external app dir.
-            File file = new File(StorageUtils.getRootDir(context),
-                                 "barcode.jpg");
+            final File file = new File(StorageUtils.getRootDir(context),
+                                       "barcode.jpg");
             if (file.exists()) {
-                Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
+                final Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
                 if (data != null
                     && data.getExtras() != null
                     && data.getExtras().containsKey("data")) {
@@ -146,7 +146,7 @@ public class ScannerViewModel
      * @return flag
      */
     public boolean isFirstStart() {
-        boolean isFirst = mFirstStart;
+        final boolean isFirst = mFirstStart;
         mFirstStart = false;
         return isFirst;
     }
@@ -250,14 +250,15 @@ public class ScannerViewModel
      */
     private void noScannerDialog(@NonNull final Fragment fragment) {
 
-        String msg = fragment.getString(R.string.info_bad_scanner) + '\n'
-                     + fragment.getString(R.string.info_install_scanner_recommendation);
-        new AlertDialog.Builder(fragment.getContext())
+        final String msg = fragment.getString(R.string.info_bad_scanner) + '\n'
+                           + fragment.getString(R.string.info_install_scanner_recommendation);
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(fragment.getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setOnDismissListener(d -> {
-                    Intent intent = new Intent(fragment.getContext(), SettingsActivity.class)
+                    final Intent intent = new Intent(fragment.getContext(), SettingsActivity.class)
                             .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                       Prefs.psk_barcode_scanner);
 
@@ -274,16 +275,17 @@ public class ScannerViewModel
      */
     private void scannerFailedDialog(@NonNull final Fragment fragment) {
         //
-        String msg = fragment.getString(R.string.warning_scanner_failed_to_start)
-                     + "\n\n"
-                     + fragment.getString(R.string.warning_scanner_retry_install);
+        final String msg = fragment.getString(R.string.warning_scanner_failed_to_start)
+                           + "\n\n"
+                           + fragment.getString(R.string.warning_scanner_retry_install);
 
-        new AlertDialog.Builder(fragment.getContext())
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(fragment.getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setNeutralButton(R.string.lbl_settings, (dialog, which) -> {
-                    Intent intent = new Intent(fragment.getContext(), SettingsActivity.class)
+                    final Intent intent = new Intent(fragment.getContext(), SettingsActivity.class)
                             .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                       Prefs.psk_barcode_scanner);
 

@@ -43,12 +43,12 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -179,7 +179,7 @@ public class LendBookDialogFragment
         }
 
         //noinspection ConstantConditions
-        return new AlertDialog.Builder(getContext())
+        return new MaterialAlertDialogBuilder(getContext())
                 .setView(root)
                 .setTitle(mTitle)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
@@ -263,7 +263,7 @@ public class LendBookDialogFragment
 
         //noinspection ConstantConditions
         DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
-                getContext(), android.R.layout.simple_dropdown_item_1line, people);
+                getContext(), R.layout.dropdown_menu_popup_item, people);
         mLoaneeView.setAdapter(adapter);
     }
 

@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.BitUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 
 public final class LegacyPreferences {
@@ -201,7 +202,7 @@ public final class LegacyPreferences {
 //                        @BooklistStyle.ListHeaderOption
                         int shi = ((Integer) oldValue) & BooklistStyle.SUMMARY_SHOW_ALL;
                         // this is now a PBitmask, stored as a Set
-                        ed.putStringSet(Prefs.pk_bob_header, Prefs.toStringSet(shi));
+                        ed.putStringSet(Prefs.pk_bob_header, BitUtils.toStringSet(shi));
                         break;
 
                     /*

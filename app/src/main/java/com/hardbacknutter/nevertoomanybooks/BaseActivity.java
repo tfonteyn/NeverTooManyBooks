@@ -52,6 +52,7 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -117,12 +118,12 @@ public abstract class BaseActivity
     @Nullable
     private NavigationView mNavigationView;
 
-    public void setIsRecreating() {
+    protected void setIsRecreating() {
         sActivityRecreateStatus = ActivityStatus.isRecreating;
     }
 
-    protected boolean isRecreating() {
-        boolean isRecreating = sActivityRecreateStatus == ActivityStatus.isRecreating;
+    boolean isRecreating() {
+        final boolean isRecreating = sActivityRecreateStatus == ActivityStatus.isRecreating;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
             Log.d(TAG, "EXIT"
@@ -149,7 +150,7 @@ public abstract class BaseActivity
      * apply the user-preferred Locale before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
-        Context localizedContext = LocaleUtils.applyLocale(base);
+        final Context localizedContext = LocaleUtils.applyLocale(base);
         super.attachBaseContext(localizedContext);
         // preserve, so we can check for changes in onResume.
         mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(localizedContext);
@@ -163,17 +164,17 @@ public abstract class BaseActivity
 
         super.onCreate(savedInstanceState);
 
-        int layoutId = getLayoutId();
+        final int layoutId = getLayoutId();
         if (layoutId != 0) {
             setContentView(layoutId);
         }
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
         // Normal setup of the action bar now
-        ActionBar bar = getSupportActionBar();
+        final ActionBar bar = getSupportActionBar();
         if (bar != null) {
             // default on all activities is to show the "up" (back) button
             bar.setDisplayHomeAsUpEnabled(true);
@@ -209,7 +210,7 @@ public abstract class BaseActivity
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean maybeRecreate() {
-        boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
+        final boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
         if (localeChanged) {
             LocaleUtils.onLocaleChanged();
         }
@@ -292,7 +293,7 @@ public abstract class BaseActivity
             tag = fragmentTag;
         }
 
-        FragmentManager fm = getSupportFragmentManager();
+        final FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(tag) == null) {
             Fragment frag;
             try {
@@ -301,8 +302,8 @@ public abstract class BaseActivity
                 throw new IllegalStateException("not a fragment class: " + fragmentClass.getName());
             }
             frag.setArguments(getIntent().getExtras());
-            FragmentTransaction ft = fm.beginTransaction()
-                                       .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            final FragmentTransaction ft =
+                    fm.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
             if (isAdd) {
                 ft.add(containerViewId, frag, tag);
@@ -418,7 +419,7 @@ public abstract class BaseActivity
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             // Default handler for home icon
-            case android.R.id.home:
+            case android.R.id.home: {
                 // the home icon is only == hamburger menu, at the top level
                 if (isTaskRoot()) {
                     if (mDrawerLayout != null) {
@@ -429,6 +430,7 @@ public abstract class BaseActivity
                 // otherwise, home is an 'up' event. Simulate the user pressing the 'back' key.
                 onBackPressed();
                 return true;
+            }
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -452,7 +454,7 @@ public abstract class BaseActivity
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_SETTINGS");
                 }
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     if (data.getBooleanExtra(BKEY_RECREATE, false)) {
                         setNeedsRecreating();
                     }

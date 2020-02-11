@@ -40,8 +40,9 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Locale;
 
@@ -270,7 +271,7 @@ public final class TipManager {
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 
-            new AlertDialog.Builder(context)
+            new MaterialAlertDialogBuilder(context)
                     .setView(root)
                     .setTitle(R.string.tip_dialog_title)
                     .setNeutralButton(R.string.btn_disable_message, (dialog, which) -> {

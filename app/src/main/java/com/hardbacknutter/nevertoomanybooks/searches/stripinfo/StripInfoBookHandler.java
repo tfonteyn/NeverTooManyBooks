@@ -78,7 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 public class StripInfoBookHandler
         extends JsoupBase {
 
-    public static final String FILENAME_SUFFIX = "_SI";
+    private static final String FILENAME_SUFFIX = "_SI";
 
     /** read-timeout. Default is 10_000. */
     private static final int READ_TIMEOUT = 60_000;

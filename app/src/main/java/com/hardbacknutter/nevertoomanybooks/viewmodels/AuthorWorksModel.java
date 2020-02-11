@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
@@ -91,7 +92,7 @@ public class AuthorWorksModel
         if (mDb == null) {
             mDb = new DAO(TAG);
 
-            long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+            final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             if (authorId == 0) {
                 throw new IllegalArgumentException("Author id must be passed in args");
             }
@@ -111,7 +112,7 @@ public class AuthorWorksModel
 
     @NonNull
     public ArrayList<TocEntry> getTocEntries() {
-        Objects.requireNonNull(mTocEntries);
+        Objects.requireNonNull(mTocEntries, ErrorMsg.NULL_TOC_ENTRY);
         return mTocEntries;
     }
 
@@ -122,7 +123,7 @@ public class AuthorWorksModel
 
     public void delTocEntry(@NonNull final Context context,
                             @NonNull final TocEntry item) {
-        Objects.requireNonNull(mTocEntries);
+        Objects.requireNonNull(mTocEntries, ErrorMsg.NULL_TOC_ENTRY);
         switch (item.getType()) {
             case Toc:
                 if (mDb.deleteTocEntry(item.getId()) == 1) {

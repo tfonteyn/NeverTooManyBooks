@@ -91,7 +91,7 @@ public class EditBookshelvesFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_bookshelves, container, false);
+        final View view = inflater.inflate(R.layout.fragment_edit_bookshelves, container, false);
         mListView = view.findViewById(R.id.bookshelfList);
         return view;
     }
@@ -117,13 +117,13 @@ public class EditBookshelvesFragment
         //noinspection ConstantConditions
         mAdapter = new BookshelfAdapter(getContext());
 
-        FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
+        final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_add);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> editItem(
                 new Bookshelf("", BooklistStyle.getDefaultStyle(getContext(), mModel.getDb()))));
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
         mListView.addItemDecoration(
@@ -137,7 +137,8 @@ public class EditBookshelvesFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
-            .setIcon(R.drawable.ic_delete);
+            .setIcon(R.drawable.ic_delete)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -153,27 +154,30 @@ public class EditBookshelvesFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_PURGE_BLNS) {
-            Bookshelf bookshelf = mModel.getSelectedBookshelf();
-            if (bookshelf != null) {
-                //noinspection ConstantConditions
-                StandardDialogs
-                        .purgeBLNSDialog(getContext(), R.string.lbl_bookshelf, bookshelf, () ->
-                                mModel.getDb().purgeNodeStatesByBookshelf(bookshelf.getId()));
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_PURGE_BLNS: {
+                final Bookshelf bookshelf = mModel.getSelectedBookshelf();
+                if (bookshelf != null) {
+                    //noinspection ConstantConditions
+                    StandardDialogs.purgeBLNS(getContext(), R.string.lbl_bookshelf, bookshelf, () ->
+                            mModel.getDb().purgeNodeStatesByBookshelf(bookshelf.getId()));
+                }
+                return true;
             }
-            return true;
-        }
 
-        return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void onCreateContextMenu(final int position) {
 
-        Bookshelf bookshelf = mModel.getBookshelf(position);
+        final Bookshelf bookshelf = mModel.getBookshelf(position);
 
-        Resources r = getResources();
+        final Resources r = getResources();
         //noinspection ConstantConditions
-        Menu menu = MenuPicker.createMenu(getContext());
+        final Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT,
                  r.getInteger(R.integer.MENU_ORDER_EDIT),
                  R.string.menu_edit)
@@ -183,7 +187,7 @@ public class EditBookshelvesFragment
                  R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        String title = bookshelf.getName();
+        final String title = bookshelf.getName();
         new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
     }
@@ -199,7 +203,7 @@ public class EditBookshelvesFragment
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           @NonNull final Integer position) {
 
-        Bookshelf bookshelf = mModel.getBookshelf(position);
+        final Bookshelf bookshelf = mModel.getBookshelf(position);
 
         switch (menuItem.getItemId()) {
             case R.id.MENU_EDIT:
@@ -279,7 +283,7 @@ public class EditBookshelvesFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            View view = mInflater.inflate(R.layout.row_edit_bookshelf, parent, false);
+            final View view = mInflater.inflate(R.layout.row_edit_bookshelf, parent, false);
             return new Holder(view);
         }
 
@@ -287,7 +291,7 @@ public class EditBookshelvesFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            Bookshelf bookshelf = mModel.getBookshelf(position);
+            final Bookshelf bookshelf = mModel.getBookshelf(position);
 
             holder.nameView.setText(bookshelf.getName());
 
@@ -331,6 +335,5 @@ public class EditBookshelvesFragment
         public int getItemCount() {
             return mModel.getBookshelves().size();
         }
-
     }
 }

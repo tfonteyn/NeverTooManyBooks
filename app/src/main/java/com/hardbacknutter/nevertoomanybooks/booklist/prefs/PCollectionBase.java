@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
  * <p>
@@ -91,9 +93,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     @Override
     public void writeToParcel(@NonNull final Parcel dest) {
         if (!mIsPersistent) {
+            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
             // builtin ? write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeList(new ArrayList<>(Objects.requireNonNull(mNonPersistedValue)));
+            dest.writeList(new ArrayList<>(mNonPersistedValue));
         } else {
             // write the actual value, this could be the default if we have no value, but that
             // is ok anyhow.
@@ -119,7 +122,8 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
 
     public void clear() {
         if (!mIsPersistent) {
-            Objects.requireNonNull(mNonPersistedValue).clear();
+            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            mNonPersistedValue.clear();
         } else {
             remove();
         }
@@ -132,7 +136,8 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     public void add(@NonNull final E element) {
         if (!mIsPersistent) {
-            Objects.requireNonNull(mNonPersistedValue).add(element);
+            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            mNonPersistedValue.add(element);
         } else {
             SharedPreferences.Editor ed = getPrefs().edit();
             add(ed, getPrefs().getString(getKey(), null), element);
@@ -171,7 +176,8 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
      */
     public void remove(@NonNull final E element) {
         if (!mIsPersistent) {
-            Objects.requireNonNull(mNonPersistedValue).remove(element);
+            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            mNonPersistedValue.remove(element);
         } else {
             String list = getPrefs().getString(getKey(), null);
             if (list != null && !list.isEmpty()) {

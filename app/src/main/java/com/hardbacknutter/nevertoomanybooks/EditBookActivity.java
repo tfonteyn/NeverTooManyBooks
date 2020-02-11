@@ -92,7 +92,7 @@ public class EditBookActivity
                 // We assume if the user explicitly went to settings to change the scanner
                 // they want to use it.
                 if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
-                    ScannerViewModel model =
+                    final ScannerViewModel model =
                             new ViewModelProvider(this).get(ScannerViewModel.class);
                     model.resetScanner();
                 }
@@ -105,21 +105,22 @@ public class EditBookActivity
     @Override
     public void onBackPressed() {
 
-        BookBaseFragmentModel model = new ViewModelProvider(this).get(BookBaseFragmentModel.class);
+        final BookBaseFragmentModel model =
+                new ViewModelProvider(this).get(BookBaseFragmentModel.class);
 
-        FragmentManager fm = getSupportFragmentManager();
-        int backStackEntryCount = fm.getBackStackEntryCount();
+        final FragmentManager fm = getSupportFragmentManager();
+        final int backStackEntryCount = fm.getBackStackEntryCount();
 
         // 1. Check for the current (i.e. in resumed state) fragment having unfinished edits
         if (backStackEntryCount > 0) {
-            String tag = fm.getBackStackEntryAt(backStackEntryCount - 1).getName();
-            Fragment frag = fm.findFragmentByTag(tag);
+            final String tag = fm.getBackStackEntryAt(backStackEntryCount - 1).getName();
+            final Fragment frag = fm.findFragmentByTag(tag);
             if (frag instanceof DataEditor && frag.isResumed()) {
                 //noinspection unchecked
-                DataEditor<Book> dataEditor = ((DataEditor<Book>) frag);
+                final DataEditor<Book> dataEditor = ((DataEditor<Book>) frag);
                 if (dataEditor.hasUnfinishedEdits()) {
-                    StandardDialogs.unsavedEditsDialog(this, null,
-                                                       super::onBackPressed);
+                    StandardDialogs.unsavedEdits(this, null,
+                                                 super::onBackPressed);
                     return;
                 }
             }
@@ -127,8 +128,8 @@ public class EditBookActivity
 
         // 2. If we're at the top level, check if the book was changed.
         if (backStackEntryCount == 0 && model.isDirty()) {
-            StandardDialogs.unsavedEditsDialog(this, null,
-                                               () -> cleanupAndSetResults(model, true));
+            StandardDialogs.unsavedEdits(this, null,
+                                         () -> cleanupAndSetResults(model, true));
             return;
         }
 

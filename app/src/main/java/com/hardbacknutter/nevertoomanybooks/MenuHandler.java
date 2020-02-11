@@ -55,8 +55,10 @@ final class MenuHandler {
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final Book book) {
 
-        boolean hasAuthor = !book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY).isEmpty();
-        boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY).isEmpty();
+        final boolean hasAuthor = !book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY)
+                                       .isEmpty();
+        final boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY)
+                                       .isEmpty();
 
         prepareOpenOnWebsiteMenu(menu, getNativeIds(book));
         prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
@@ -65,10 +67,10 @@ final class MenuHandler {
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final RowDataHolder rowData) {
 
-        boolean hasAuthor = rowData.contains(DBDefinitions.KEY_FK_AUTHOR)
-                            && rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
-        boolean hasSeries = rowData.contains(DBDefinitions.KEY_FK_SERIES)
-                            && rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+        final boolean hasAuthor = rowData.contains(DBDefinitions.KEY_FK_AUTHOR)
+                                  && rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
+        final boolean hasSeries = rowData.contains(DBDefinitions.KEY_FK_SERIES)
+                                  && rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
 
         prepareOpenOnWebsiteMenu(menu, getNativeIds(rowData));
         prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
@@ -84,15 +86,15 @@ final class MenuHandler {
      */
     @NonNull
     private static SparseArray<String> getNativeIds(@NonNull final RowDataHolder rowData) {
-        SparseArray<String> nativeIds = new SparseArray<>();
+        final SparseArray<String> nativeIds = new SparseArray<>();
         for (String key : DBDefinitions.NATIVE_ID_KEYS) {
-            String value = rowData.getString(key);
+            final String value = rowData.getString(key);
             if (!value.isEmpty() && !"0".equals(value)) {
                 nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
             }
         }
         // explicitly add Amazon if we have a valid ISBN
-        ISBN isbn = ISBN.createISBN(rowData.getString(DBDefinitions.KEY_ISBN));
+        final ISBN isbn = ISBN.createISBN(rowData.getString(DBDefinitions.KEY_ISBN));
         if (isbn.isValid(true)) {
             nativeIds.put(SearchSites.AMAZON, isbn.asText());
         }
@@ -102,18 +104,18 @@ final class MenuHandler {
     private static void prepareOpenOnWebsiteMenu(@NonNull final Menu menu,
                                                  @NonNull final SparseArray<String> nativeIds) {
 
-        MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
+        final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
         if (subMenuItem == null) {
             return;
         }
 
-        boolean show = nativeIds.size() > 0;
+        final boolean show = nativeIds.size() > 0;
         subMenuItem.setVisible(show);
         if (show) {
-            SubMenu sm = subMenuItem.getSubMenu();
+            final SubMenu sm = subMenuItem.getSubMenu();
             // display/hide menu items on their presence in the nativeIds list.
             for (int item = 0; item < sm.size(); item++) {
-                int menuId = sm.getItem(item).getItemId();
+                final int menuId = sm.getItem(item).getItemId();
                 sm.findItem(menuId)
                   .setVisible(nativeIds.get(SearchSites.getSiteIdFromResId(menuId)) != null);
             }
@@ -165,15 +167,15 @@ final class MenuHandler {
                                                   final boolean hasAuthor,
                                                   final boolean hasSeries) {
 
-        MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
+        final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
         if (subMenuItem == null) {
             return;
         }
 
-        boolean show = hasAuthor || hasSeries;
+        final boolean show = hasAuthor || hasSeries;
         subMenuItem.setVisible(show);
         if (show) {
-            SubMenu sm = subMenuItem.getSubMenu();
+            final SubMenu sm = subMenuItem.getSubMenu();
             sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
               .setVisible(hasAuthor);
             sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)

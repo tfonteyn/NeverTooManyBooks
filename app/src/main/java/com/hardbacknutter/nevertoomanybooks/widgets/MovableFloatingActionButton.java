@@ -82,11 +82,10 @@ public class MovableFloatingActionButton
     public boolean onTouch(@NonNull final View view,
                            @NonNull final MotionEvent motionEvent) {
 
-        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view
+        final ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view
                 .getLayoutParams();
 
-        int action = motionEvent.getAction();
-        switch (action) {
+        switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN: {
                 downRawX = motionEvent.getRawX();
                 downRawY = motionEvent.getRawY();
@@ -95,11 +94,11 @@ public class MovableFloatingActionButton
                 return true;
             }
             case MotionEvent.ACTION_UP: {
-                float upRawX = motionEvent.getRawX();
-                float upRawY = motionEvent.getRawY();
+                final float upRawX = motionEvent.getRawX();
+                final float upRawY = motionEvent.getRawY();
 
-                float upDX = upRawX - downRawX;
-                float upDY = upRawY - downRawY;
+                final float upDX = upRawX - downRawX;
+                final float upDY = upRawY - downRawY;
 
                 if (Math.abs(upDX) < CLICK_DRAG_TOLERANCE
                     && Math.abs(upDY) < CLICK_DRAG_TOLERANCE) {
@@ -110,12 +109,12 @@ public class MovableFloatingActionButton
                 }
             }
             case MotionEvent.ACTION_MOVE: {
-                int viewWidth = view.getWidth();
-                int viewHeight = view.getHeight();
+                final int viewWidth = view.getWidth();
+                final int viewHeight = view.getHeight();
 
-                View viewParent = (View) view.getParent();
-                int parentWidth = viewParent.getWidth();
-                int parentHeight = viewParent.getHeight();
+                final View viewParent = (View) view.getParent();
+                final int parentWidth = viewParent.getWidth();
+                final int parentHeight = viewParent.getHeight();
 
                 float newX = motionEvent.getRawX() + dX;
                 // Don't allow the FAB past the left/right hand side of the parent

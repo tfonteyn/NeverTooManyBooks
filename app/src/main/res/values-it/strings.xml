@@ -429,12 +429,21 @@
     <string name="progress_msg_starting_up">Avvio…</string>
     <string name="progress_msg_upgrading">Sto aggiornando…</string>
     <string name="pt_allow_mobile_data">Consenti l\'utilizzo dei dati mobili</string>
+
     <string name="pt_bob_books_under_multiple_authors">Libri con autori multipli</string>
     <string name="pt_bob_books_under_multiple_series">Libri in serie multiple</string>
-    <string name="pt_bob_authors_display">Visualizza autori come</string>
+    <string name="pv_bob_books_under_multiple_each_author">Sotto ciascuno autore</string>
+    <string name="pv_bob_books_under_multiple_each_series">Sotto ciascuno serie</string>
+    <string name="pv_bob_books_under_multiple_primary_author_only">Solo sotto autore primario</string>
+    <string name="pv_bob_books_under_multiple_primary_series_only">Solo sotto serie primario</string>
+
+    <string name="pt_bob_author_name_format">Formattazione del nome dell\'autore</string>
+    <string name="pt_bob_author_name_sort">Ordinamento dei nomi degli autori</string>
+    <string name="pv_bob_author_name_family_first">es. «Alighieri, Dante»</string>
+    <string name="pv_bob_author_name_given_first">es. «Dante Alighieri»</string>
+
     <string name="pt_bob_header">Riassunto dettagli nel titolo</string>
     <string name="pt_bob_list_rebuild_state">Stato di avvio dell\'elenco libri</string>
-    <string name="pt_bob_authors_sort">Ordina autori per</string>
     <string name="pt_bob_font_scale">Dimensione degli elementi dell\'elenco libri</string>
     <string name="pt_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
     <string name="pt_bob_thumbnails_show">Mostra miniature</string>
@@ -454,10 +463,7 @@
     <string name="pt_ui_language">Lingua</string>
     <string name="pt_ui_system_locale">Impostazioni locali di sistema</string>
     <string name="pt_ui_theme">Tema</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Sotto ciascuno %1$s</string>
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Solo sotto %1$s primario</string>
-    <string name="pv_bob_author_name_family_first">Prima il cognome, ad es. «Alighieri, Dante»</string>
-    <string name="pv_bob_author_name_given_first">Prima il nome, ad es. «Dante Alighieri»</string>
+
     <string name="pv_reformat_titles_prefixes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
     <string name="menu_rebuild_fts">Ricrea FTS</string>
     <string name="retry">Riprova</string>
@@ -627,7 +633,7 @@
     <string name="btn_scan_barcode">Scansione codice a barre</string>
     <string name="lbl_author_type_inking">Inchiostro</string>
     <string name="lbl_select_website">Seleziona un sito Web:</string>
-    <string name="lbl_site_book_id">ID libro del sito Web:</string>
+    <string name="lbl_site_book_id">ID libro del sito Web</string>
     <string name="fab_add_book_by_native_id">ID libro del sito web</string>
     <string name="warning_enable_at_least_1_website">Abilita almeno un sito Web per ogni categoria.</string>
     <string name="pt_camera_next_action">Azione dopo aver scattato una foto</string>

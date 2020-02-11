@@ -86,7 +86,7 @@ public class RecyclerViewViewHolderBase
         super(itemView);
 
         // Don't enable the whole row, so buttons keep working
-        View rd = itemView.findViewById(R.id.ROW_ONCLICK_TARGET);
+        final View rd = itemView.findViewById(R.id.ROW_ONCLICK_TARGET);
         // but if we did not define a details row subview, use the row itself anyhow.
         rowDetailsView = rd != null ? rd : itemView;
         rowDetailsView.setFocusable(false);
@@ -112,8 +112,8 @@ public class RecyclerViewViewHolderBase
     private static int getColorInt(@NonNull final Context context,
                                    @SuppressWarnings("SameParameterValue") @AttrRes
                                    final int attr) {
-        Resources.Theme theme = context.getTheme();
-        TypedValue tv = new TypedValue();
+        final Resources.Theme theme = context.getTheme();
+        final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return context.getResources().getColor(tv.resourceId, theme);
     }

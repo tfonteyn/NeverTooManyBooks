@@ -384,7 +384,7 @@ public class ISBN {
         if (type == Type.INVALID) {
             return mAsText;
         }
-        Objects.requireNonNull(mDigits);
+        Objects.requireNonNull(mDigits, "mDigits");
 
         switch (type) {
             case ISBN13: {

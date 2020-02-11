@@ -38,6 +38,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -185,19 +186,19 @@ public class SearchTask
 
             switch (by[0]) {
                 case NativeId:
-                    Objects.requireNonNull(mNativeId);
+                    Objects.requireNonNull(mNativeId, ErrorMsg.NULL_NATIVE_ID);
                     bookData = ((SearchEngine.ByNativeId) mSearchEngine)
                             .searchByNativeId(context, mNativeId, mFetchThumbnail);
                     break;
 
                 case ISBN:
-                    Objects.requireNonNull(mIsbnStr);
+                    Objects.requireNonNull(mIsbnStr, ErrorMsg.NULL_ISBN_STR);
                     bookData = ((SearchEngine.ByIsbn) mSearchEngine)
                             .searchByIsbn(context, mIsbnStr, mFetchThumbnail);
                     break;
 
                 case Barcode:
-                    Objects.requireNonNull(mIsbnStr);
+                    Objects.requireNonNull(mIsbnStr, ErrorMsg.NULL_ISBN_STR);
                     bookData = ((SearchEngine.ByBarcode) mSearchEngine)
                             .searchByBarcode(context, mIsbnStr, mFetchThumbnail);
                     break;

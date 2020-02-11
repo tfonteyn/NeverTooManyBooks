@@ -29,9 +29,9 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -69,7 +69,7 @@ public class AdvancedPreferenceFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
-                new AlertDialog.Builder(getContext())
+                new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.lbl_purge_blns)
                         .setMessage(R.string.info_purge_blns_all)
@@ -105,7 +105,7 @@ public class AdvancedPreferenceFragment
                 String msg = getString(R.string.info_cleanup_files_text, formattedSize,
                                        getString(R.string.lbl_send_debug_info));
 
-                new AlertDialog.Builder(getContext())
+                new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.lbl_purge_files)
                         .setMessage(msg)
@@ -122,7 +122,7 @@ public class AdvancedPreferenceFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
-                new AlertDialog.Builder(getContext())
+                new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.debug)
                         .setMessage(R.string.debug_send_info_text)

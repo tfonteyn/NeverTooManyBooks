@@ -41,6 +41,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -100,7 +101,7 @@ public class ExportCSVTask
 
             if (!isCancelled()) {
                 // send to user destination
-                Objects.requireNonNull(mExportHelper.uri);
+                Objects.requireNonNull(mExportHelper.uri, ErrorMsg.NULL_URI);
                 StorageUtils.exportFile(context, ExportHelper.getTempFile(context),
                                         mExportHelper.uri);
             }

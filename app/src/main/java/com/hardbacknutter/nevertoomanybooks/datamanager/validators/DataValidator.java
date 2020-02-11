@@ -35,7 +35,7 @@ import androidx.annotation.StringRes;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * Interface for all field-level validators.
+ * Interface for all data-level validators.
  */
 public interface DataValidator {
 

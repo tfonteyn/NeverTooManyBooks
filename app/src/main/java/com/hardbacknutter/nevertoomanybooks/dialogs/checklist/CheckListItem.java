@@ -38,6 +38,8 @@ import androidx.annotation.NonNull;
 public interface CheckListItem
         extends Parcelable {
 
+    long getItemId();
+
     /**
      * Get the user friendly label to display.
      *

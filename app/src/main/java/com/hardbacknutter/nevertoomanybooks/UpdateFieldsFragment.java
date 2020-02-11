@@ -44,11 +44,11 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -98,7 +98,8 @@ public class UpdateFieldsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_update_from_internet, container, false);
+        final View view = inflater
+                .inflate(R.layout.fragment_update_from_internet, container, false);
         mFieldListView = view.findViewById(R.id.manage_fields_scrollview);
         return view;
     }
@@ -109,7 +110,7 @@ public class UpdateFieldsFragment
 
         //noinspection ConstantConditions
         @NonNull
-        Activity activity = getActivity();
+        final Activity activity = getActivity();
 
         mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
@@ -124,7 +125,7 @@ public class UpdateFieldsFragment
         mUpdateFieldsModel.getAllUpdatesFinishedMessage()
                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
 
-        FragmentManager fm = getChildFragmentManager();
+        final FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             // reconnect after a fragment restart
@@ -139,7 +140,7 @@ public class UpdateFieldsFragment
         }
 
         // FAB lives in Activity layout.
-        FloatingActionButton fabButton = activity.findViewById(R.id.fab);
+        final FloatingActionButton fabButton = activity.findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_cloud_download);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> prepareUpdate());
@@ -166,14 +167,14 @@ public class UpdateFieldsFragment
      */
     private void populateFields() {
         for (FieldUsage usage : mUpdateFieldsModel.getFieldUsages()) {
-            View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
-                                                   mFieldListView, false);
+            final View row = getLayoutInflater().inflate(R.layout.row_update_from_internet,
+                                                         mFieldListView, false);
 
-            TextView fieldLabel = row.findViewById(R.id.field);
+            final TextView fieldLabel = row.findViewById(R.id.field);
             //noinspection ConstantConditions
             fieldLabel.setText(usage.getLabel(getContext()));
 
-            CompoundButton cb = row.findViewById(R.id.cbx_usage);
+            final CompoundButton cb = row.findViewById(R.id.cbx_usage);
             cb.setChecked(usage.isWanted());
             cb.setText(usage.getUsageLabel(getContext()));
             cb.setTag(R.id.TAG_FIELD_USAGE, usage);
@@ -201,7 +202,8 @@ public class UpdateFieldsFragment
             // no changes committed, we got data to use temporarily
             case UniqueId.REQ_PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    SiteList sites = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
+                    final SiteList sites =
+                            data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                     if (sites != null) {
                         mUpdateFieldsModel.setSiteList(sites);
                     }
@@ -218,7 +220,7 @@ public class UpdateFieldsFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        Resources r = getResources();
+        final Resources r = getResources();
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
                  r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
                  R.string.lbl_websites)
@@ -237,7 +239,7 @@ public class UpdateFieldsFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_PREFS_SEARCH_SITES: {
-                Intent intent = new Intent(getContext(), SearchAdminActivity.class)
+                final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
                                   (Parcelable) SiteList.Type.Data)
                         .putExtra(SiteList.Type.Data.getBundleKey(),
@@ -251,6 +253,7 @@ public class UpdateFieldsFragment
                 populateFields();
                 return true;
             }
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -262,12 +265,12 @@ public class UpdateFieldsFragment
      * @return {@code true} if at least one field is selected
      */
     private boolean hasSelections() {
-        int nChildren = mFieldListView.getChildCount();
+        final int nChildren = mFieldListView.getChildCount();
         for (int i = 0; i < nChildren; i++) {
-            View view = mFieldListView.getChildAt(i);
-            CompoundButton cb = view.findViewById(R.id.cbx_usage);
+            final View view = mFieldListView.getChildAt(i);
+            final CompoundButton cb = view.findViewById(R.id.cbx_usage);
             if (cb != null) {
-                FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
+                final FieldUsage fieldUsage = (FieldUsage) cb.getTag(R.id.TAG_FIELD_USAGE);
                 if (fieldUsage.isWanted()) {
                     return true;
                 }
@@ -301,7 +304,7 @@ public class UpdateFieldsFragment
         final FieldUsage covers = mUpdateFieldsModel.getFieldUsage(UniqueId.BKEY_THUMBNAIL);
         if (covers != null && covers.getUsage().equals(Overwrite)) {
             // check if the user really wants to overwrite all covers
-            new AlertDialog.Builder(getContext())
+            new MaterialAlertDialogBuilder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setTitle(R.string.menu_update_fields)
                     .setMessage(R.string.confirm_overwrite_thumbnail)
@@ -366,7 +369,7 @@ public class UpdateFieldsFragment
                     // UpdateFieldsModel.BKEY_LAST_BOOK_ID, long
                     // UniqueId.BKEY_BOOK_MODIFIED, boolean
                     // DBDefinitions.KEY_PK_ID, long (can be absent)
-                    Intent data = new Intent().putExtras(message.result);
+                    final Intent data = new Intent().putExtras(message.result);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, data);
                 }

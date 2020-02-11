@@ -192,14 +192,12 @@ public final class ParseUtils {
      */
     public static long toLong(@Nullable final Object source)
             throws NumberFormatException {
-        // handle null and native type first!
+
         if (source == null) {
             return 0;
-        } else if (source instanceof Long) {
-            return (long) source;
 
-        } else if (source instanceof Integer) {
-            return ((Integer) source).longValue();
+        } else if (source instanceof Number) {
+            return ((Number) source).longValue();
 
         } else {
             String stringValue = source.toString().trim();
@@ -227,16 +225,16 @@ public final class ParseUtils {
      */
     public static boolean toBoolean(@Nullable final Object source)
             throws NumberFormatException {
-        // handle null and native type first!
+
         if (source == null) {
             return false;
+
         } else if (source instanceof Boolean) {
             return (boolean) source;
 
-        } else if (source instanceof Integer || source instanceof Long) {
-            return (long) source != 0;
-//        } else if (source instanceof Float || source instanceof Double) {
-//            return (double) source != 0.0;
+        } else if (source instanceof Number) {
+            return ((Number) source).longValue() != 0;
+
         } else {
             // is it a String?
             return parseBoolean(source.toString(), true);
@@ -309,14 +307,12 @@ public final class ParseUtils {
     public static float toFloat(@Nullable final Object source,
                                 @Nullable final Locale sourceLocale)
             throws NumberFormatException {
-        // handle null and native type first!
+
         if (source == null) {
             return 0f;
-        } else if (source instanceof Float) {
-            return (float) source;
 
-        } else if (source instanceof Double) {
-            return ((Double) source).floatValue();
+        } else if (source instanceof Number) {
+            return ((Number) source).floatValue();
 
         } else {
             String stringValue = source.toString().trim();
@@ -388,14 +384,12 @@ public final class ParseUtils {
     public static double toDouble(@Nullable final Object source,
                                   @Nullable final Locale sourceLocale)
             throws NumberFormatException {
-        // handle null and native type first!
-        if (source == null) {
-            return 0;
-        } else if (source instanceof Double) {
-            return (Double) source;
 
-        } else if (source instanceof Float) {
-            return ((Float) source).doubleValue();
+        if (source == null) {
+            return 0d;
+
+        } else if (source instanceof Number) {
+            return ((Number) source).doubleValue();
 
         } else {
             String stringValue = source.toString().trim();

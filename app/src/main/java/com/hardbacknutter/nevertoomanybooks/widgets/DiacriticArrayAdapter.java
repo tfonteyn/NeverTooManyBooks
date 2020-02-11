@@ -209,7 +209,6 @@ public class DiacriticArrayAdapter<T>
      * @param textViewResourceId The id of the TextView within the layout resource to be populated
      * @param objects            The objects to represent in the ListView.
      */
-    @SuppressWarnings("WeakerAccess")
     public DiacriticArrayAdapter(@NonNull Context context,
                                  @LayoutRes int resource,
                                  @IdRes int textViewResourceId,

@@ -95,15 +95,15 @@ public class IsbnValidationTextWatcher
     }
 
     public void validate(@NonNull final String codeStr) {
-        int len = codeStr.length();
+        final int len = codeStr.length();
         boolean valid = false;
         if (len == 10 || len == 13
             || (len == 12 && !mStrictIsbn)) {
-            ISBN code = new ISBN(codeStr, mStrictIsbn);
+            final ISBN code = new ISBN(codeStr, mStrictIsbn);
             valid = code.isValid(mStrictIsbn);
         }
 
-        Drawable[] ds = mTextView.getCompoundDrawablesRelative();
+        final Drawable[] ds = mTextView.getCompoundDrawablesRelative();
         if (ds[0] != null) {
             ds[0].setAlpha(valid ? 255 : 0);
         }

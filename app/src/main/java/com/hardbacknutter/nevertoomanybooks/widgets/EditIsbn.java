@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,7 +101,7 @@ public class EditIsbn
         setKeyListener(DigitsKeyListener.getInstance(ISBN_DIGITS));
 
         // hide the virtual keyboard.
-        InputMethodManager imm = getContext().getSystemService(InputMethodManager.class);
+        final InputMethodManager imm = getContext().getSystemService(InputMethodManager.class);
         if (imm != null && imm.isActive(this)) {
             imm.hideSoftInputFromWindow(getWindowToken(), 0);
         }
@@ -114,8 +114,8 @@ public class EditIsbn
      * @param keyChar to handle
      */
     public void onKey(@NonNull final CharSequence keyChar) {
-        int start = getSelectionStart();
-        int end = getSelectionEnd();
+        final int start = getSelectionStart();
+        final int end = getSelectionEnd();
         //noinspection ConstantConditions
         getText().replace(start, end, keyChar);
         setSelection(start + 1, start + 1);
@@ -131,8 +131,8 @@ public class EditIsbn
      */
     public void onKey(final int keyCode) {
         try {
-            int start = getSelectionStart();
-            int end = getSelectionEnd();
+            final int start = getSelectionStart();
+            final int end = getSelectionEnd();
 
             if (keyCode == KeyEvent.KEYCODE_DEL) {
                 if (start < end) {

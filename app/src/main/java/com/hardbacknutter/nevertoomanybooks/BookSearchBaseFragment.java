@@ -40,11 +40,11 @@ import android.view.MenuItem;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -102,7 +102,7 @@ public abstract class BookSearchBaseFragment
 
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
-        FragmentManager fm = getChildFragmentManager();
+        final FragmentManager fm = getChildFragmentManager();
         mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
         if (mProgressDialog != null) {
             // reconnect after a fragment restart
@@ -121,7 +121,7 @@ public abstract class BookSearchBaseFragment
     @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        Resources r = getResources();
+        final Resources r = getResources();
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
                  r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
                  R.string.lbl_websites)
@@ -136,14 +136,15 @@ public abstract class BookSearchBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_PREFS_SEARCH_SITES:
-                Intent intent = new Intent(getContext(), SearchAdminActivity.class)
+            case R.id.MENU_PREFS_SEARCH_SITES: {
+                final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                         .putExtra(SearchAdminModel.BKEY_LIST_TYPE,
                                   (Parcelable) SiteList.Type.Data)
                         .putExtra(SiteList.Type.Data.getBundleKey(),
                                   mSearchCoordinator.getSiteList());
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
                 return true;
+            }
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -163,10 +164,10 @@ public abstract class BookSearchBaseFragment
             return;
         }
 
-        String searchErrors = message.result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
+        final String searchErrors = message.result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
         if (searchErrors != null) {
             //noinspection ConstantConditions
-            new AlertDialog.Builder(getContext())
+            new MaterialAlertDialogBuilder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setTitle(R.string.title_search_failed)
                     .setMessage(searchErrors)

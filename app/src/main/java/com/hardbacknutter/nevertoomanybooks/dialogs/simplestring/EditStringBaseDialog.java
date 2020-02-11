@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,8 +39,8 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -105,8 +105,7 @@ abstract class EditStringBaseDialog {
         mContext = context;
         mDb = db;
         mBookChangedListener = new WeakReference<>(listener);
-        mAdapter = new DiacriticArrayAdapter<>(
-                context, android.R.layout.simple_dropdown_item_1line, list);
+        mAdapter = new DiacriticArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);
     }
 
     @NonNull
@@ -133,7 +132,7 @@ abstract class EditStringBaseDialog {
             ((AutoCompleteTextView) mEditText).setAdapter(mAdapter);
         }
 
-        new AlertDialog.Builder(mContext)
+        new MaterialAlertDialogBuilder(mContext)
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(title)

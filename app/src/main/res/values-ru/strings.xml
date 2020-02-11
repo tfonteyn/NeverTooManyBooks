@@ -430,10 +430,10 @@
     <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
-    <string name="pt_bob_authors_display">Показать авторов как</string>
+    <string name="pt_bob_author_name_format">Форматирование имени автора</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
-    <string name="pt_bob_authors_sort">Сортировать авторов по</string>
+    <string name="pt_bob_author_name_sort">Сортировка имени автора</string>
     <string name="pt_bob_font_scale">Размер элемента списка книг</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
     <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
@@ -451,10 +451,10 @@
     <string name="pt_ui_language">язык</string>
     <string name="pt_ui_system_locale">Локаль системы</string>
     <string name="pt_ui_theme">тема</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Под каждым %1$s</string>
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Только под первым %1$s</string>
-    <string name="pv_bob_author_name_family_first">Первая фамилия, например «Достоевский, Фёдор»</string>
-    <string name="pv_bob_author_name_given_first">Первое имя, например «Фёдор Достоевский»</string>
+    <string name="pv_bob_books_under_multiple_each_author">Под каждым автор</string>
+    <string name="pv_bob_books_under_multiple_each_series">Под каждым серии</string>
+    <string name="pv_bob_books_under_multiple_primary_author_only">Только под первым автор</string>
+    <string name="pv_bob_books_under_multiple_primary_series_only">Только под первым серии</string>
     <string name="menu_rebuild_fts">Переобрать FTS</string>
     <string name="retry">Повторить</string>
     <string name="style_builtin_acquired_date">приобретенный</string>
@@ -623,7 +623,7 @@
     <string name="btn_scan_barcode">Сканирование штрих-кода</string>
     <string name="lbl_author_type_inking">красочного</string>
     <string name="lbl_select_website">Выберите сайт:</string>
-    <string name="lbl_site_book_id">Идентификатор книги сайта:</string>
+    <string name="lbl_site_book_id">Идентификатор книги сайта</string>
     <string name="fab_add_book_by_native_id">Идентификатор книги сайта</string>
     <string name="warning_enable_at_least_1_website">Включите хотя бы один веб-сайт для каждой категории.</string>
     <string name="pt_camera_next_action">Действие после съемки</string>
@@ -648,5 +648,7 @@
     <string name="legacy_record">Устаревшая запись #%1$d</string>
     <string name="legacy_description">Эта запись устарела и не может быть восстановлена. Желательно удалить его.</string>
     <string name="book_format_dimensions">размеры</string>
+    <string name="pv_bob_author_name_family_first">например «Достоевский, Фёдор»</string>
+    <string name="pv_bob_author_name_given_first">например «Фёдор Достоевский»</string>
 
 </resources>

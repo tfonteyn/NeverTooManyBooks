@@ -27,24 +27,12 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<LinearLayout
+<TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    style="@style/OptionRow"
-    android:orientation="vertical"
-    >
-
-    <!-- what the user sees, with an optional drawable at the 'start' added from code -->
-    <TextView
-        android:id="@+id/menu_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border2"
-        android:drawablePadding="@dimen/border2"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        tools:drawableStart="@drawable/ic_image"
-        tools:text="menu item"
-        />
-
-</LinearLayout>
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:padding="16dp"
+    android:textAppearance="?attr/textAppearanceSubtitle1"
+    />

@@ -47,6 +47,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
@@ -110,7 +113,7 @@ public class StylePickerDialogFragment
 
         Bundle args = requireArguments();
         mCurrentStyle = args.getParcelable(UniqueId.BKEY_STYLE);
-        Objects.requireNonNull(mCurrentStyle, "Style must be passed in args");
+        Objects.requireNonNull(mCurrentStyle, ErrorMsg.ARGS_MISSING_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
 
         loadStyles();
@@ -133,7 +136,7 @@ public class StylePickerDialogFragment
                                                    mCurrentStyle, this::onStyleSelected);
         listView.setAdapter(mAdapter);
 
-        return new AlertDialog.Builder(getContext())
+        return new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.title_select_style)
                 .setView(root)
                 .setNeutralButton(R.string.btn_customize, (dialog, which) -> {

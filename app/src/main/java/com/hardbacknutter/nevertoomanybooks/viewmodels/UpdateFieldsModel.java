@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -152,7 +153,7 @@ public class UpdateFieldsModel
 
             mDb = new DAO(TAG);
             // use global preference.
-            Locale locale = LocaleUtils.getUserLocale(context);
+            final Locale locale = LocaleUtils.getUserLocale(context);
             setSiteList(SiteList.getList(context, locale, SiteList.Type.Data));
 
             if (args != null) {
@@ -171,7 +172,7 @@ public class UpdateFieldsModel
      */
     private void initFields(@NonNull final Context context) {
 
-        SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences p = PreferenceManager.getDefaultSharedPreferences(context);
 
         addListField(p, UniqueId.BKEY_AUTHOR_ARRAY, R.string.lbl_author,
                      DBDefinitions.KEY_FK_AUTHOR);
@@ -249,7 +250,7 @@ public class UpdateFieldsModel
                               @NonNull final String prefKey) {
 
         if (App.isUsed(prefKey)) {
-            FieldUsage fieldUsage = FieldUsage.createListField(fieldId, nameStringId, p);
+            final FieldUsage fieldUsage = FieldUsage.createListField(fieldId, nameStringId, p);
             mFieldUsages.put(fieldId, fieldUsage);
         }
     }
@@ -268,7 +269,7 @@ public class UpdateFieldsModel
                           @NonNull final FieldUsage.Usage defValue) {
 
         if (App.isUsed(fieldId)) {
-            FieldUsage fieldUsage = FieldUsage.create(fieldId, nameStringId, p, defValue);
+            final FieldUsage fieldUsage = FieldUsage.create(fieldId, nameStringId, p, defValue);
             mFieldUsages.put(fieldId, fieldUsage);
         }
     }
@@ -285,10 +286,10 @@ public class UpdateFieldsModel
     private void addRelatedField(@NonNull final String primaryFieldId,
                                  @NonNull final String relatedFieldId,
                                  @StringRes final int nameStringId) {
-        FieldUsage primaryField = mFieldUsages.get(primaryFieldId);
+        final FieldUsage primaryField = mFieldUsages.get(primaryFieldId);
 
         if (primaryField != null && primaryField.isWanted()) {
-            FieldUsage fu = primaryField.createRelatedField(relatedFieldId, nameStringId);
+            final FieldUsage fu = primaryField.createRelatedField(relatedFieldId, nameStringId);
             mFieldUsages.put(relatedFieldId, fu);
         }
     }
@@ -299,8 +300,9 @@ public class UpdateFieldsModel
      * @param context Current context
      */
     public void writePreferences(@NonNull final Context context) {
-        SharedPreferences.Editor ed = PreferenceManager.getDefaultSharedPreferences(context)
-                                                       .edit();
+        final SharedPreferences.Editor ed =
+                PreferenceManager.getDefaultSharedPreferences(context).edit();
+
         for (FieldUsage fieldUsage : mFieldUsages.values()) {
             fieldUsage.getUsage().write(ed, fieldUsage.fieldId);
         }
@@ -365,8 +367,8 @@ public class UpdateFieldsModel
     private boolean nextBook(@NonNull final Context context) {
 
         try {
-            int idCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
-            int langCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
+            final int idCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
+            final int langCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_LANGUAGE);
 
             // loop/skip until we start a search for a book.
             while (mCurrentCursor.moveToNext() && !mIsCancelled) {
@@ -407,9 +409,9 @@ public class UpdateFieldsModel
                 mCurrentFieldsWanted = filter(context, mFieldUsages, mCurrentBookData);
 
                 // Grab the searchable fields. Ideally we will have an ISBN but we may not.
-                String isbn = mCurrentBookData.getString(DBDefinitions.KEY_ISBN);
-                String title = mCurrentBookData.getString(DBDefinitions.KEY_TITLE);
-                String author = mCurrentBookData.getString(
+                final String isbn = mCurrentBookData.getString(DBDefinitions.KEY_ISBN);
+                final String title = mCurrentBookData.getString(DBDefinitions.KEY_TITLE);
+                final String author = mCurrentBookData.getString(
                         DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
                 if (!mCurrentFieldsWanted.isEmpty()) {
@@ -430,12 +432,12 @@ public class UpdateFieldsModel
                     }
 
                     // Collect native ids we can use
-                    SparseArray<String> nativeIds = new SparseArray<>();
+                    final SparseArray<String> nativeIds = new SparseArray<>();
                     for (String key : DBDefinitions.NATIVE_ID_KEYS) {
                         // values can be Long and String, and it's a Bundle, need to get as Object
                         Object o = mCurrentBookData.get(key);
                         if (o != null) {
-                            String value = o.toString().trim();
+                            final String value = o.toString().trim();
                             if (!value.isEmpty() && !"0".equals(value)) {
                                 nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
                             }
@@ -448,12 +450,13 @@ public class UpdateFieldsModel
 
                     if (canSearch) {
                         // optional
-                        String publisher = mCurrentBookData.getString(DBDefinitions.KEY_PUBLISHER);
+                        final String publisher = mCurrentBookData
+                                .getString(DBDefinitions.KEY_PUBLISHER);
                         if (publisher != null && !publisher.isEmpty()) {
                             setPublisherSearchText(publisher);
                         }
 
-                        boolean[] thumbs = new boolean[2];
+                        final boolean[] thumbs = new boolean[2];
                         for (int cIdx = 0; cIdx < 2; cIdx++) {
                             thumbs[cIdx] = mCurrentFieldsWanted
                                     .containsKey(UniqueId.BKEY_FILE_SPEC[cIdx]);
@@ -493,7 +496,7 @@ public class UpdateFieldsModel
                                         @NonNull final Bundle bookData) {
         if (!mIsCancelled && !bookData.isEmpty()) {
             // Filter the data to remove keys we don't care about
-            Collection<String> toRemove = new ArrayList<>();
+            final Collection<String> toRemove = new ArrayList<>();
             for (String key : bookData.keySet()) {
                 FieldUsage fieldUsage = mCurrentFieldsWanted.get(key);
                 if (fieldUsage == null || !fieldUsage.isWanted()) {
@@ -545,7 +548,7 @@ public class UpdateFieldsModel
                     }
                 }
 
-                Book book = new Book();
+                final Book book = new Book();
                 book.putAll(bookData);
                 // failures to update are ignored.
                 mDb.updateBook(context, mCurrentBookId, book, 0);
@@ -565,8 +568,8 @@ public class UpdateFieldsModel
                                                 @NonNull final Bundle bookData,
                                                 final FieldUsage usage,
                                                 final int cIdx) {
-        String uuid = mCurrentBookData.getString(DBDefinitions.KEY_BOOK_UUID);
-        Objects.requireNonNull(uuid);
+        final String uuid = mCurrentBookData.getString(DBDefinitions.KEY_BOOK_UUID);
+        Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
         boolean copyThumb = false;
         switch (usage.getUsage()) {
             case CopyIfBlank:
@@ -584,10 +587,10 @@ public class UpdateFieldsModel
         }
 
         if (copyThumb) {
-            String fileSpec = bookData.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
+            final String fileSpec = bookData.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
             if (fileSpec != null) {
-                File downloadedFile = new File(fileSpec);
-                File destination = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+                final File downloadedFile = new File(fileSpec);
+                final File destination = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
                 StorageUtils.renameFile(downloadedFile, destination);
             }
         }
@@ -614,7 +617,7 @@ public class UpdateFieldsModel
         super.cancel(false);
 
         // Prepare the task result.
-        TaskListener.TaskStatus taskStatus;
+        final TaskListener.TaskStatus taskStatus;
         if (mIsCancelled) {
             taskStatus = TaskListener.TaskStatus.Cancelled;
         } else if (e != null) {
@@ -623,7 +626,7 @@ public class UpdateFieldsModel
             taskStatus = TaskListener.TaskStatus.Success;
         }
 
-        Bundle data = new Bundle();
+        final Bundle data = new Bundle();
         data.putLong(BKEY_LAST_BOOK_ID, mCurrentBookId);
 
         // all books || a list of books || (single book && ) not cancelled
@@ -639,7 +642,7 @@ public class UpdateFieldsModel
             }
         }
 
-        TaskListener.FinishMessage<Bundle> message = new TaskListener.FinishMessage<>(
+        final TaskListener.FinishMessage<Bundle> message = new TaskListener.FinishMessage<>(
                 R.id.TASK_ID_UPDATE_FIELDS, taskStatus, data, e);
         // the last book id which was handled; can be used to restart the update.
         mFromBookIdOnwards = message.result.getLong(UpdateFieldsModel.BKEY_LAST_BOOK_ID);
@@ -661,7 +664,7 @@ public class UpdateFieldsModel
                                            @NonNull final Map<String, FieldUsage> requestedFields,
                                            @NonNull final Bundle bookData) {
 
-        Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
+        final Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
         for (FieldUsage usage : requestedFields.values()) {
             switch (usage.getUsage()) {
                 case Skip:
@@ -716,9 +719,9 @@ public class UpdateFieldsModel
                                   final FieldUsage usage,
                                   final int cIdx) {
         // - If it's a thumbnail, then see if it's missing or empty.
-        String uuid = bookData.getString(DBDefinitions.KEY_BOOK_UUID);
-        Objects.requireNonNull(uuid);
-        File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+        final String uuid = bookData.getString(DBDefinitions.KEY_BOOK_UUID);
+        Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
+        final File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
         if (!file.exists() || file.length() == 0) {
             fieldUsages.put(usage.fieldId, usage);
         }
@@ -778,7 +781,7 @@ public class UpdateFieldsModel
         }
 
         // Get the list from the new data, if it's present.
-        ArrayList<T> newDataList = destination.getParcelableArrayList(key);
+        final ArrayList<T> newDataList = destination.getParcelableArrayList(key);
         if (newDataList != null && !newDataList.isEmpty()) {
             // do the actual append by copying new data to the source list
             // if the latter does not already have the object.

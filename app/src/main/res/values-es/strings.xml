@@ -430,12 +430,19 @@
     <string name="progress_msg_starting_up">Arrancando…</string>
     <string name="progress_msg_upgrading">Actualizando…</string>
     <string name="pt_allow_mobile_data">Permitir el uso de datos móviles</string>
+
     <string name="pt_bob_books_under_multiple_authors">Libros con varios autores</string>
     <string name="pt_bob_books_under_multiple_series">Libros en varias series</string>
-    <string name="pt_bob_authors_display">Mostrar autores como</string>
+    <string name="pv_bob_books_under_multiple_each_author">Bajo cada autorр</string>
+    <string name="pv_bob_books_under_multiple_each_series">Bajo cada serie</string>
+    <string name="pv_bob_books_under_multiple_primary_author_only">Sólo bajo primer autor</string>
+    <string name="pv_bob_books_under_multiple_primary_series_only">Sólo bajo primer serie</string>
+
+    <string name="pt_bob_author_name_format">Formato de nombre de autor</string>
+    <string name="pt_bob_author_name_sort">Clasificación del nombre del autor</string>
+
     <string name="pt_bob_header">Resumen en la cabecera</string>
     <string name="pt_bob_list_rebuild_state">Estado de inicio de la lista de libros</string>
-    <string name="pt_bob_authors_sort">Ordenar autores por</string>
     <string name="pt_bob_font_scale">Tamaño de los elementos en el listado</string>
     <string name="pt_thumbnails_cache_resized">Miniaturas redimensionadas en caché</string>
     <string name="pt_bob_thumbnails_show">Mostrar miniaturas</string>
@@ -455,10 +462,7 @@
     <string name="pt_ui_language">Idioma</string>
     <string name="pt_ui_system_locale">Sistema local</string>
     <string name="pt_ui_theme">El tema</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Bajo cada %1$s</string>
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Sólo bajo primer %1$s</string>
-    <string name="pv_bob_author_name_family_first">Apellido primero, por ejemplo «Pérez Galdós, Benito»</string>
-    <string name="pv_bob_author_name_given_first">Nombre primero, por ejemplo «Benito Pérez Galdós»</string>
+
     <string name="pv_reformat_titles_prefixes">el|la|lo|los|las|un|una|unos|unas</string>
     <string name="menu_rebuild_fts">Reconstruir FTS</string>
     <string name="retry">Reintentar</string>
@@ -628,7 +632,7 @@
     <string name="btn_scan_barcode">Escanear código de barras</string>
     <string name="lbl_author_type_inking">entintado</string>
     <string name="lbl_select_website">Selecciona un sitio web:</string>
-    <string name="lbl_site_book_id">ID del libro del sitio web:</string>
+    <string name="lbl_site_book_id">ID del libro del sitio web</string>
     <string name="fab_add_book_by_native_id">Identificación del libro del sitio web</string>
     <string name="warning_enable_at_least_1_website">Habilite al menos un sitio web para cada categoría.</string>
     <string name="pt_camera_next_action">Acción después de tomar una foto</string>
@@ -653,5 +657,7 @@
     <string name="legacy_record">Registro obsoleto #%1$d</string>
     <string name="legacy_description">Este registro está obsoleto y no se puede recuperar. Es recomendable eliminarlo.</string>
     <string name="book_format_dimensions">Dimensiones</string>
+    <string name="pv_bob_author_name_family_first">por ejemplo «Pérez Galdós, Benito»</string>
+    <string name="pv_bob_author_name_given_first">por ejemplo «Benito Pérez Galdós»</string>
 
 </resources>

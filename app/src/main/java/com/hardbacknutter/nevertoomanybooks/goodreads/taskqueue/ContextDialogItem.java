@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,8 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Collection;
 
@@ -67,7 +68,7 @@ public class ContextDialogItem
         if (!items.isEmpty()) {
             final ContextDialogItem[] itemArray = new ContextDialogItem[items.size()];
             items.toArray(itemArray);
-            new AlertDialog.Builder(context)
+            new MaterialAlertDialogBuilder(context)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setTitle(R.string.title_select_an_action)
                     .setItems(itemArray, (dialog, which) -> itemArray[which].mHandler.run())

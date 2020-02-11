@@ -41,6 +41,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriter;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -97,9 +98,10 @@ public class BackupTask
 
             writer.backup(context, mExportHelper, getProgressListener());
             if (!isCancelled()) {
+                Objects.requireNonNull(mExportHelper.uri, ErrorMsg.NULL_URI);
                 // the export was successful
                 StorageUtils.exportFile(context, ExportHelper.getTempFile(context),
-                                        Objects.requireNonNull(mExportHelper.uri));
+                                        mExportHelper.uri);
 
                 // if the backup was a full one (not a 'since') remember that.
                 if ((mExportHelper.options & ExportHelper.EXPORT_SINCE) == 0) {

@@ -933,20 +933,23 @@
 
     <!-- Preference Category: author -->
     <!-- SwitchPreference - Display Authors by family (default) or given name. -->
-    <string name="pt_bob_authors_display">Show authors as</string>
+    <string name="pt_bob_author_name_format">Author name formatting</string>
     <!-- SwitchPreference - Sorting Authors by family (default) or given name. -->
-    <string name="pt_bob_authors_sort">Sort authors by</string>
+    <string name="pt_bob_author_name_sort">Author name sorting</string>
 
-    <string name="pv_bob_author_name_given_first">Given name first e.g. “Phillis Wheatley”</string>
-    <string name="pv_bob_author_name_family_first">Family name first e.g. “Wheatley, Phillis”</string>
+    <string name="pv_bob_author_name_given_first">e.g. “Phillis Wheatley”</string>
+    <string name="pv_bob_author_name_family_first">e.g. “Wheatley, Phillis”</string>
+
     <!-- SwitchPreference -->
-    <string name="pt_bob_books_under_multiple_authors">Books with multiple authors</string>
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Under primary %1$s only</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Under each %1$s</string>
+    <string name="pt_bob_books_under_multiple_authors">Show books with multiple authors</string>
+    <string name="pv_bob_books_under_multiple_primary_author_only">under their primary author only</string>
+    <string name="pv_bob_books_under_multiple_each_author">under each author</string>
 
     <!-- Preference Category: Series -->
     <!-- SwitchPreference -->
-    <string name="pt_bob_books_under_multiple_series">Books in multiple series</string>
+    <string name="pt_bob_books_under_multiple_series">Show books in multiple series</string>
+    <string name="pv_bob_books_under_multiple_primary_series_only">under their primary series only</string>
+    <string name="pv_bob_books_under_multiple_each_series">under each series</string>
 
 
     <!-- ####################################################################################### -->
@@ -1217,9 +1220,9 @@
     <!-- ####################################################################################### -->
 
     <!-- e.g. "size of a file" MB/kB/B refer to the IEC decimal notation 1kB == 1000B-->
-    <string name="megabytes">%.2fMB</string>
-    <string name="kilobytes">%.2fkB</string>
-    <string name="bytes">%.0fB</string>
+    <string name="megabytes">%1$.2fMB</string>
+    <string name="kilobytes">%1$.2fkB</string>
+    <string name="bytes">%1$.0fB</string>
 
     <string name="size_hidden">Hidden</string>
     <string name="size_x_small">X-Small</string>
@@ -1411,7 +1414,7 @@
     <string name="lbl_cover_images">Cover images</string>
     <string name="lbl_read_and_unread">Read &amp; Unread</string>
 
-    <string name="lbl_site_book_id">Website book ID:</string>
+    <string name="lbl_site_book_id">Website book ID</string>
     <string name="lbl_select_website">Select a website:</string>
 
     <!-- short and long label for the same field -->
@@ -1624,5 +1627,12 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
+
+    <!-- Should internal formatting of price/currency fail, then this fallback format is used.
+        By default is displays "[currency][value]" with 2 decimal digits.
+        Currency: %1$s
+        Value: %2$.2f
+    -->
+    <string name="fallback_currency_format">%1$s%2$.2f</string>
 
 </resources>

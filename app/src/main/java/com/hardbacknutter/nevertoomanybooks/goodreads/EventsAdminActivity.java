@@ -35,7 +35,8 @@ import android.view.MenuItem;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -84,9 +85,10 @@ public class EventsAdminActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
-        if (item.getItemId() == R.id.MENU_RESET) {
-            if (item.getItemId() == R.id.MENU_RESET) {
-                new AlertDialog.Builder(this)
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_RESET: {
+                new MaterialAlertDialogBuilder(this)
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setMessage(R.string.gr_tq_btn_cleanup_old_events)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -96,10 +98,12 @@ public class EventsAdminActivity
                         })
                         .create()
                         .show();
+                return true;
             }
-        }
 
-        return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**

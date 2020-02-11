@@ -61,12 +61,12 @@ public class ClassicOverlay
                        final int popupLeft,
                        final int popupTop) {
 
-        int width = parent.getWidth();
+        final int width = parent.getWidth();
 
         // 75% of total available width
-        int left = width / 8;
+        final int left = width / 8;
         // 10% from top
-        int top = parent.getHeight() / 10;
+        final int top = parent.getHeight() / 10;
 
         popupView.layout(left, top, width - left, top + popupHeight);
     }

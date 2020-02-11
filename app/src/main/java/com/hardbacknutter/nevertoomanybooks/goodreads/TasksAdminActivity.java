@@ -35,7 +35,8 @@ import android.view.MenuItem;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.List;
 
@@ -79,20 +80,24 @@ public class TasksAdminActivity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_RESET) {
-            new AlertDialog.Builder(this)
-                    .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setMessage(R.string.gr_tq_btn_cleanup_old_tasks)
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        QueueManager.getQueueManager().cleanupOldTasks();
-                        refreshData();
-                    })
-                    .create()
-                    .show();
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_RESET: {
+                new MaterialAlertDialogBuilder(this)
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setMessage(R.string.gr_tq_btn_cleanup_old_tasks)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            QueueManager.getQueueManager().cleanupOldTasks();
+                            refreshData();
+                        })
+                        .create()
+                        .show();
+                return true;
+            }
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**

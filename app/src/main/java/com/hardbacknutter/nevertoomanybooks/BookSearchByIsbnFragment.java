@@ -42,14 +42,15 @@ import android.widget.Button;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
@@ -108,7 +109,7 @@ public class BookSearchByIsbnFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
+        final View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
         mIsbnView = view.findViewById(R.id.isbn);
         mAltIsbnButton = view.findViewById(R.id.btn_altIsbn);
         return view;
@@ -118,7 +119,7 @@ public class BookSearchByIsbnFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
+        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
             mScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
         }
@@ -127,10 +128,10 @@ public class BookSearchByIsbnFragment
 
         getActivity().setTitle(R.string.title_search_isbn);
 
-        View view = getView();
+        final View view = getView();
         // stop lint being very annoying...
-        Objects.requireNonNull(mIsbnView);
-        Objects.requireNonNull(mAltIsbnButton);
+        Objects.requireNonNull(mIsbnView, "mIsbnView");
+        Objects.requireNonNull(mAltIsbnButton, "mAltIsbnButton");
 
         // copyModel2View();
         mIsbnView.setText(mSearchCoordinator.getIsbnSearchText());
@@ -148,7 +149,7 @@ public class BookSearchByIsbnFragment
         view.findViewById(R.id.key_9).setOnClickListener(v -> mIsbnView.onKey("9"));
         view.findViewById(R.id.key_X).setOnClickListener(v -> mIsbnView.onKey("X"));
 
-        Button delBtn = view.findViewById(R.id.isbn_del);
+        final Button delBtn = view.findViewById(R.id.isbn_del);
         delBtn.setOnClickListener(v -> mIsbnView.onKey(KeyEvent.KEYCODE_DEL));
         delBtn.setOnLongClickListener(v -> {
             mIsbnView.setText("");
@@ -196,13 +197,13 @@ public class BookSearchByIsbnFragment
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.MENU_SCAN_BARCODE:
-                mScanMode = Objects.requireNonNull(mScannerModel)
-                                   .scan(this, UniqueId.REQ_SCAN_BARCODE);
+            case R.id.MENU_SCAN_BARCODE: {
+                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
                 return true;
-
+            }
             case R.id.MENU_STRICT_ISBN: {
-                boolean checked = !item.isChecked();
+                final boolean checked = !item.isChecked();
                 item.setChecked(checked);
                 mIsbnValidationTextWatcher.setStrictIsbn(checked);
                 mSearchCoordinator.setStrictIsbn(checked);
@@ -232,8 +233,8 @@ public class BookSearchByIsbnFragment
         super.onSearchCancelled();
 
         if (mScanMode) {
-            mScanMode = Objects.requireNonNull(mScannerModel)
-                               .scan(this, UniqueId.REQ_SCAN_BARCODE);
+            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
         }
     }
 
@@ -252,13 +253,14 @@ public class BookSearchByIsbnFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 // go scan next book until the user cancels scanning.
                 if (mScanMode) {
-                    mScanMode = Objects.requireNonNull(mScannerModel)
-                                       .scan(this, UniqueId.REQ_SCAN_BARCODE);
+                    Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                    mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
                 }
                 break;
             }
             case UniqueId.REQ_SCAN_BARCODE: {
-                Objects.requireNonNull(mScannerModel).setScannerStarted(false);
+                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
                     if (BuildConfig.DEBUG) {
                         //noinspection ConstantConditions
@@ -266,7 +268,8 @@ public class BookSearchByIsbnFragment
                     }
 
                     //noinspection ConstantConditions
-                    String barCode = mScannerModel.getScanner().getBarcode(getContext(), data);
+                    final String barCode = mScannerModel.getScanner()
+                                                        .getBarcode(getContext(), data);
                     if (barCode != null) {
                         //noinspection ConstantConditions
                         mIsbnView.setText(barCode);
@@ -282,31 +285,33 @@ public class BookSearchByIsbnFragment
                 // Settings initiated from the local menu or dialog box.
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     // update the search sites list.
-                    SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
+                    final SiteList siteList =
+                            data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                     if (siteList != null) {
-                        SearchCoordinator model =
+                        final SearchCoordinator model =
                                 new ViewModelProvider(this).get(SearchCoordinator.class);
                         model.setSiteList(siteList);
                     }
 
                     // init the scanner if it was changed.
                     if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
-                        Objects.requireNonNull(mScannerModel).resetScanner();
+                        Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                        mScannerModel.resetScanner();
                     }
                 }
 
                 if (mScanMode) {
-                    mScanMode = Objects.requireNonNull(mScannerModel)
-                                       .scan(this, UniqueId.REQ_SCAN_BARCODE);
+                    Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                    mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
                 }
                 break;
             }
             case UniqueId.REQ_UPDATE_GOOGLE_PLAY_SERVICES: {
                 if (mScanMode) {
                     if (resultCode == Activity.RESULT_OK) {
+                        Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                         // go scan next book until the user cancels scanning.
-                        mScanMode = Objects.requireNonNull(mScannerModel)
-                                           .scan(this, UniqueId.REQ_SCAN_BARCODE);
+                        mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
                     } else {
                         mScanMode = false;
                     }
@@ -336,14 +341,15 @@ public class BookSearchByIsbnFragment
      */
     private void prepareSearch(@NonNull final String userEntry) {
 
-        boolean strictIsbn = mSearchCoordinator.isStrictIsbn();
-        ISBN code = new ISBN(userEntry, strictIsbn);
+        final boolean strictIsbn = mSearchCoordinator.isStrictIsbn();
+        final ISBN code = new ISBN(userEntry, strictIsbn);
 
         // not a valid code ?
         if (!code.isValid(strictIsbn)) {
             if (mScanMode) {
+                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                 //noinspection ConstantConditions
-                Objects.requireNonNull(mScannerModel).onInvalidBeep(getContext());
+                mScannerModel.onInvalidBeep(getContext());
             }
 
             //noinspection ConstantConditions
@@ -352,8 +358,8 @@ public class BookSearchByIsbnFragment
                           Snackbar.LENGTH_LONG).show();
 
             if (mScanMode) {
-                mScanMode = Objects.requireNonNull(mScannerModel)
-                                   .scan(this, UniqueId.REQ_SCAN_BARCODE);
+                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
             }
             return;
         }
@@ -362,8 +368,9 @@ public class BookSearchByIsbnFragment
         mSearchCoordinator.setIsbnSearchText(code.asText());
 
         if (strictIsbn && mScanMode) {
+            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
             //noinspection ConstantConditions
-            Objects.requireNonNull(mScannerModel).onValidBeep(getContext());
+            mScannerModel.onValidBeep(getContext());
         }
 
         // See if ISBN already exists in our database, if not then start the search.
@@ -372,7 +379,7 @@ public class BookSearchByIsbnFragment
             startSearch();
         } else {
             //noinspection ConstantConditions
-            new AlertDialog.Builder(getContext())
+            new MaterialAlertDialogBuilder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setTitle(R.string.title_duplicate_book)
                     .setMessage(R.string.confirm_duplicate_book_message)
@@ -382,13 +389,13 @@ public class BookSearchByIsbnFragment
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                         clearPreviousSearchCriteria();
                         if (mScanMode) {
-                            mScanMode = Objects.requireNonNull(mScannerModel)
-                                               .scan(this, UniqueId.REQ_SCAN_BARCODE);
+                            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
                         }
                     })
                     // User wants to review the existing book
                     .setNeutralButton(R.string.edit, (dialog, which) -> {
-                        Intent intent = new Intent(getContext(), EditBookActivity.class)
+                        final Intent intent = new Intent(getContext(), EditBookActivity.class)
                                 .putExtra(DBDefinitions.KEY_PK_ID, existingId);
                         startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                     })
@@ -405,9 +412,9 @@ public class BookSearchByIsbnFragment
         // The isbn field will always be present as we searched on one.
         // The title field, *might* be there but *might* be empty.
         // So a valid result means we either need a title, or a third field.
-        String title = bookData.getString(DBDefinitions.KEY_TITLE);
+        final String title = bookData.getString(DBDefinitions.KEY_TITLE);
         if ((title != null && !title.isEmpty()) || bookData.size() > 2) {
-            Intent intent = new Intent(getContext(), EditBookActivity.class)
+            final Intent intent = new Intent(getContext(), EditBookActivity.class)
                     .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
             clearPreviousSearchCriteria();

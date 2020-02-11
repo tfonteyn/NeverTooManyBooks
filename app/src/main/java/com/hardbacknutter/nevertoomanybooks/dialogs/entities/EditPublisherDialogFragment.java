@@ -36,9 +36,9 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -99,7 +100,7 @@ public class EditPublisherDialogFragment
         mDb = new DAO(TAG);
 
         mPublisher = requireArguments().getParcelable(DBDefinitions.KEY_PUBLISHER);
-        Objects.requireNonNull(mPublisher, "Publisher must be passed in args");
+        Objects.requireNonNull(mPublisher, ErrorMsg.ARGS_MISSING_PUBLISHER);
 
         if (savedInstanceState == null) {
             mName = mPublisher.getName();
@@ -118,13 +119,13 @@ public class EditPublisherDialogFragment
 
         //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
-                getContext(), android.R.layout.simple_dropdown_item_1line, mDb.getPublisherNames());
+                getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
 
         mNameView = root.findViewById(R.id.name);
         mNameView.setText(mName);
         mNameView.setAdapter(mAdapter);
 
-        return new AlertDialog.Builder(getContext())
+        return new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.lbl_publisher)

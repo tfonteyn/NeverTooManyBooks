@@ -51,6 +51,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
@@ -73,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.ImportCSVTask;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ExportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -137,7 +139,7 @@ public class ImportExportFragment
         super.onActivityCreated(savedInstanceState);
 
         boolean autoStartBackup = false;
-        Bundle args = getArguments();
+        final Bundle args = getArguments();
         if (args != null) {
             autoStartBackup = args.getBoolean(BKEY_AUTO_START_BACKUP, false);
         }
@@ -166,7 +168,7 @@ public class ImportExportFragment
             mProgressDialog.setCancellable(mTaskModel.getTask());
         }
 
-        View root = getView();
+        final View root = getView();
 
         // Export (backup) to Archive
         //noinspection ConstantConditions
@@ -188,7 +190,7 @@ public class ImportExportFragment
         // Export database
         root.findViewById(R.id.lbl_copy_database)
             .setOnClickListener(v -> {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 startActivityForResult(intent, REQ_EXPORT_DATABASE);
             });
 
@@ -215,8 +217,8 @@ public class ImportExportFragment
                 // The user selected a file to backup to.
                 // Next step asks for the options and/or starts the Backup task.
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-                    Uri uri = data.getData();
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
                     if (uri != null) {
                         showBackupOptions(uri);
                     }
@@ -227,8 +229,8 @@ public class ImportExportFragment
                 // The user selected a file to import from.
                 // Next step asks for the options and/or starts the Import task.
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-                    Uri uri = data.getData();
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
                     if (uri != null) {
                         showImportOptions(uri);
                     }
@@ -239,8 +241,8 @@ public class ImportExportFragment
                 // The user selected a file to export to.
                 // Next step starts the export task.
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-                    Uri uri = data.getData();
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
                     if (uri != null) {
                         exportToCSV(uri);
                     }
@@ -251,8 +253,8 @@ public class ImportExportFragment
                 // The user selected a file to import.
                 // Next step asks for the options and/or starts the import task.
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-                    Uri uri = data.getData();
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
                     if (uri != null) {
                         showImportFromCSVOptions(uri);
                     }
@@ -263,8 +265,8 @@ public class ImportExportFragment
                 // The user selected a directory where to export the databases to.
                 // Next step is to do the actual export.
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
-                    Uri uri = data.getData();
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
                     if (uri != null) {
                         @StringRes
                         int msgId;
@@ -309,7 +311,7 @@ public class ImportExportFragment
      */
     private void startImportFromArchive() {
         // or should we use Intent.ACTION_OPEN_DOCUMENT ?
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
+        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*");
         startActivityForResult(intent, ImportExportFragment.REQ_PICK_FILE_FOR_ARCHIVE_IMPORT);
@@ -323,13 +325,14 @@ public class ImportExportFragment
     private void showImportOptions(@NonNull final Uri uri) {
         ImportHelper importHelper = new ImportHelper(ImportHelper.ALL, uri);
         //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_import_from_archive)
                 .setMessage(R.string.import_option_info_all_books)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setNeutralButton(R.string.btn_options, (dialog, which) -> {
                     // ask user what options they want
-                    boolean validDated = BackupManager.archiveHasValidDates(getContext(), uri);
+                    final boolean validDated =
+                            BackupManager.archiveHasValidDates(getContext(), uri);
                     ImportHelperDialogFragment.newInstance(importHelper, validDated)
                                               .show(getChildFragmentManager(),
                                                     ImportHelperDialogFragment.TAG);
@@ -346,7 +349,8 @@ public class ImportExportFragment
      * @param importHelper final options to use
      */
     private void onImportOptionsSet(@NonNull final ImportHelper importHelper) {
-        RestoreTask task = new RestoreTask(importHelper, mImportHelperModel.getTaskListener());
+        final RestoreTask task =
+                new RestoreTask(importHelper, mImportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_importing, false, true, 0);
@@ -367,7 +371,7 @@ public class ImportExportFragment
     private void startImportFromCsv() {
         // Verify - this can be a dangerous operation
         //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_import_book_data)
                 .setMessage(R.string.warning_import_be_cautious)
@@ -375,7 +379,7 @@ public class ImportExportFragment
                         dialog.dismiss())
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
                     // or should we use Intent.ACTION_OPEN_DOCUMENT ?
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
+                    final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                             .addCategory(Intent.CATEGORY_OPENABLE)
                             // Android bug? When using "text/csv" we cannot select a csv file?
                             .setType("text/*");
@@ -391,19 +395,19 @@ public class ImportExportFragment
      * @param uri to read
      */
     private void showImportFromCSVOptions(@NonNull final Uri uri) {
-        ImportHelper settings = new ImportHelper(Options.BOOK_CSV, uri);
+        final ImportHelper settings = new ImportHelper(Options.BOOK_CSV, uri);
 
-        View content = getLayoutInflater().inflate(R.layout.dialog_import_options, null);
-        content.findViewById(R.id.cbx_group).setVisibility(View.GONE);
+        final View view = getLayoutInflater().inflate(R.layout.dialog_import_options, null);
+        view.findViewById(R.id.cbx_group).setVisibility(View.GONE);
 
-        Checkable radioNewAndUpdatedBooks = content.findViewById(R.id.radioNewAndUpdatedBooks);
+        final Checkable radioNewAndUpdatedBooks = view.findViewById(R.id.radioNewAndUpdatedBooks);
         // propose the careful option.
         radioNewAndUpdatedBooks.setChecked(true);
 
         //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_import_from_csv)
-                .setView(content)
+                .setView(view)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> {
                     if (radioNewAndUpdatedBooks.isChecked()) {
@@ -424,8 +428,8 @@ public class ImportExportFragment
     private void importFromCSV(@NonNull final Uri uri,
                                final ImportHelper importHelper) {
         //noinspection ConstantConditions
-        ImportCSVTask task = new ImportCSVTask(getContext(), uri, importHelper,
-                                               mImportHelperModel.getTaskListener());
+        final ImportCSVTask task = new ImportCSVTask(getContext(), uri, importHelper,
+                                                     mImportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_importing, false, true, 0);
@@ -487,8 +491,8 @@ public class ImportExportFragment
         }
 
         // Transform the result data into a user friendly report.
-        Importer.Results results = importHelper.getResults();
-        StringBuilder msg = new StringBuilder();
+        final Importer.Results results = importHelper.getResults();
+        final StringBuilder msg = new StringBuilder();
 
         if (results.booksCreated > 0 || results.booksUpdated > 0) {
             msg.append("\n• ").append(getString(R.string.progress_msg_n_created_m_updated,
@@ -509,10 +513,10 @@ public class ImportExportFragment
             msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
 
-        int failed = results.failedCsvLines.size();
+        final int failed = results.failedCsvLines.size();
         if (failed > 0) {
-            int fs;
-            List<Pair<Integer, String>> list;
+            final int fs;
+            final List<Pair<Integer, String>> list;
             // keep it sensible, list maximum 10 lines.
             if (failed > 10) {
                 fs = R.string.warning_import_csv_failed_lines_lots;
@@ -528,7 +532,7 @@ public class ImportExportFragment
         }
 
         //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setTitle(titleId)
                 .setMessage(msg)
                 .setPositiveButton(R.string.done, (dialog, which) -> {
@@ -567,7 +571,7 @@ public class ImportExportFragment
         }
 
         //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.error_import_failed)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
@@ -584,8 +588,8 @@ public class ImportExportFragment
      */
     private void startBackup() {
         //noinspection ConstantConditions
-        String fileName = BackupManager.getDefaultBackupFileName(getContext());
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+        final String fileName = BackupManager.getDefaultBackupFileName(getContext());
+        final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
                 .putExtra(Intent.EXTRA_TITLE, fileName);
@@ -598,9 +602,9 @@ public class ImportExportFragment
      * @param uri to write to
      */
     private void showBackupOptions(@NonNull final Uri uri) {
-        ExportHelper exportHelper = new ExportHelper(ExportHelper.ALL, uri);
+        final ExportHelper exportHelper = new ExportHelper(ExportHelper.ALL, uri);
         //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_backup_to_archive)
                 .setMessage(R.string.export_info_backup_all)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
@@ -622,7 +626,7 @@ public class ImportExportFragment
      * @param exportHelper final options to use
      */
     private void onBackupOptionsSet(@NonNull final ExportHelper exportHelper) {
-        BackupTask task = new BackupTask(exportHelper, mExportHelperModel.getTaskListener());
+        final BackupTask task = new BackupTask(exportHelper, mExportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_backing_up, false, true, 0);
@@ -641,7 +645,7 @@ public class ImportExportFragment
      * Step 1 in the CSV export procedure: prompt the user for a uri to export to.
      */
     private void startExportToCsv() {
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+        final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("text/csv")
                 .putExtra(Intent.EXTRA_TITLE, CSV_EXPORT_FILE_NAME);
@@ -655,9 +659,9 @@ public class ImportExportFragment
      */
     private void exportToCSV(@NonNull final Uri uri) {
         //noinspection ConstantConditions
-        ExportCSVTask task = new ExportCSVTask(getContext(),
-                                               new ExportHelper(Options.BOOK_CSV, uri),
-                                               mExportHelperModel.getTaskListener());
+        final ExportCSVTask task = new ExportCSVTask(getContext(),
+                                                     new ExportHelper(Options.BOOK_CSV, uri),
+                                                     mExportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_backing_up, false, true, 0);
@@ -734,8 +738,8 @@ public class ImportExportFragment
     private void onExportFinished(@NonNull final ExportHelper exportHelper,
                                   final boolean offerEmail) {
         // Transform the result data into a user friendly report.
-        Exporter.Results results = exportHelper.getResults();
-        StringBuilder msg = new StringBuilder();
+        final Exporter.Results results = exportHelper.getResults();
+        final StringBuilder msg = new StringBuilder();
 
         // slightly misleading. The text currently says "processed" but it's really "exported".
         if (results.booksExported > 0) {
@@ -766,7 +770,7 @@ public class ImportExportFragment
         }
 
         //noinspection ConstantConditions
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.progress_end_backup_success)
                 .setMessage(msg)
                 .setPositiveButton(R.string.done, (d, which) -> {
@@ -792,7 +796,7 @@ public class ImportExportFragment
         if (e instanceof IOException) {
             // see if we can find the exact cause
             if (e.getCause() instanceof ErrnoException) {
-                int errno = ((ErrnoException) e.getCause()).errno;
+                final int errno = ((ErrnoException) e.getCause()).errno;
                 // write failed: ENOSPC (No space left on device)
                 if (errno == OsConstants.ENOSPC) {
                     msg = getString(R.string.error_storage_no_space_left);
@@ -820,7 +824,7 @@ public class ImportExportFragment
         }
 
         //noinspection ConstantConditions
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.error_backup_failed)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
@@ -835,13 +839,13 @@ public class ImportExportFragment
      */
     private void emailExportFile(@NonNull final ExportHelper exportHelper) {
 
-        String subject = '[' + getString(R.string.app_name) + "] "
-                         + getString(R.string.lbl_export_to_csv);
+        final String subject = '[' + getString(R.string.app_name) + "] "
+                               + getString(R.string.lbl_export_to_csv);
 
         ArrayList<Uri> uris = new ArrayList<>();
         uris.add(exportHelper.uri);
         try {
-            Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+            final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
                     .setType("plain/text")
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);

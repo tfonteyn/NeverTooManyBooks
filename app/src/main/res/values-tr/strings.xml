@@ -429,10 +429,9 @@
     <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
     <string name="pt_bob_books_under_multiple_authors">Birden fazla yazarlı kitaplar</string>
     <string name="pt_bob_books_under_multiple_series">Birden fazla seride bulunan kitaplar</string>
-    <string name="pt_bob_authors_display">Yazarları olarak görüntüle</string>
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string name="pt_bob_list_rebuild_state">Kitap listesi başlangıç durumu</string>
-    <string name="pt_bob_authors_sort">Yazarları sırala</string>
+    <string name="pt_bob_author_name_sort">Yazar adı sıralama</string>
     <string name="pt_bob_font_scale">Kitap dizelgesi öğeleri boyutu</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
     <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
@@ -450,10 +449,10 @@
     <string name="pt_ui_language">Dil</string>
     <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
     <string name="pt_ui_theme">Tema</string>
-    <string name="pv_bob_books_under_multiple_each_1s">Her %1$s altında</string>
-    <string name="pv_bob_books_under_multiple_primary_1s_only">Yalnızca birincil %1$s altında</string>
-    <string name="pv_bob_author_name_family_first">Soyad başta, örneğin “Nesin, Aziz”</string>
-    <string name="pv_bob_author_name_given_first">Ad başta, örneğin “Aziz Nesin”</string>
+    <string name="pv_bob_books_under_multiple_each_author">Her yazar altında</string>
+    <string name="pv_bob_books_under_multiple_each_series">Her dizi altında</string>
+    <string name="pv_bob_books_under_multiple_primary_author_only">Yalnızca birincil yazar altında</string>
+    <string name="pv_bob_books_under_multiple_primary_series_only">Yalnızca birincil dizi altında</string>
     <string name="menu_rebuild_fts">FTS\'yi yeniden yapıla</string>
     <string name="retry">Yeniden dene</string>
     <string name="style_builtin_acquired_date">Edinilen</string>
@@ -623,7 +622,7 @@
     <string name="btn_scan_barcode">Barkod tara</string>
     <string name="lbl_author_type_inking">mürekkepleme</string>
     <string name="lbl_select_website">Bir web sitesi seçin:</string>
-    <string name="lbl_site_book_id">Web sitesi kitap kimliği:</string>
+    <string name="lbl_site_book_id">Web sitesi kitap kimliği</string>
     <string name="fab_add_book_by_native_id">Web sitesi kitap kimliği</string>
     <string name="warning_enable_at_least_1_website">Her kategori için en az bir web sitesini etkinleştirin.</string>
     <string name="pt_camera_next_action">Fotoğraf çektikten sonraki eylem</string>
@@ -648,5 +647,8 @@
     <string name="legacy_record">Eski kayıt #%1$d</string>
     <string name="legacy_description">Bu kayıt kullanılmıyor ve kurtarılamıyor. Silmeniz önerilir.</string>
     <string name="book_format_dimensions">Boyutlar</string>
+    <string name="pt_bob_author_name_format">Yazar adı biçimlendirme</string>
+    <string name="pv_bob_author_name_family_first">Örneğin “Nesin, Aziz”</string>
+    <string name="pv_bob_author_name_given_first">Örneğin “Aziz Nesin”</string>
 
 </resources>

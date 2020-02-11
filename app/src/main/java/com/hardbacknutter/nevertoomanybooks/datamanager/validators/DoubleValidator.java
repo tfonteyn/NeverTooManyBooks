@@ -32,6 +32,8 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.util.Locale;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -42,8 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * Float, Integer, Long are casted to Double.
  * <p>
  * {@code null} or empty string become 0d.
- * <p>
- * All locales are taken into account for parsing.
+ *
+ * URGENT: review the use of the Locale: user or system ?
  */
 public class DoubleValidator
         implements DataValidator {
@@ -51,11 +53,14 @@ public class DoubleValidator
     /** Default to apply if the field is {@code null} or empty. */
     private final double mDefaultValue;
 
+    private final Locale mLocale;
+
     /**
      * Constructor; default value is 0d.
      */
     public DoubleValidator() {
         mDefaultValue = 0d;
+        mLocale = LocaleUtils.getSystemLocale();
     }
 
     /**
@@ -65,6 +70,7 @@ public class DoubleValidator
      */
     public DoubleValidator(final double defValue) {
         mDefaultValue = defValue;
+        mLocale = LocaleUtils.getSystemLocale();
     }
 
     @Override
@@ -75,26 +81,19 @@ public class DoubleValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        Double value;
+        double value;
         Object obj = dataManager.get(key);
         if (obj == null) {
             value = mDefaultValue;
-        } else if (obj instanceof Double) {
-            value = (Double) obj;
-        } else if (obj instanceof Float) {
-            value = ((Float) obj).doubleValue();
-        } else if (obj instanceof Long) {
-            value = ((Long) obj).doubleValue();
-        } else if (obj instanceof Integer) {
-            value = ((Integer) obj).doubleValue();
+        } else if (obj instanceof Number) {
+            value = ((Number) obj).doubleValue();
         } else {
             String stringValue = obj.toString().trim();
             if (stringValue.isEmpty()) {
                 value = mDefaultValue;
             } else {
                 try {
-                    // Locale taken into account
-                    value = ParseUtils.parseDouble(stringValue, LocaleUtils.getUserLocale(context));
+                    value = ParseUtils.parseDouble(stringValue, mLocale);
 
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(R.string.vldt_real_expected_for_x,

@@ -37,9 +37,9 @@ import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -103,7 +104,7 @@ public class EditSeriesDialogFragment
         mDb = new DAO(TAG);
 
         mSeries = requireArguments().getParcelable(DBDefinitions.KEY_FK_SERIES);
-        Objects.requireNonNull(mSeries, "Series must be passed in args");
+        Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
 
         if (savedInstanceState == null) {
             mName = mSeries.getTitle();
@@ -125,7 +126,7 @@ public class EditSeriesDialogFragment
 
         //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
-                getContext(), android.R.layout.simple_dropdown_item_1line, mDb.getSeriesTitles());
+                getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
 
         // the dialog fields != screen fields.
         mNameView = root.findViewById(R.id.name);
@@ -135,7 +136,7 @@ public class EditSeriesDialogFragment
         mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
-        return new AlertDialog.Builder(getContext())
+        return new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.title_edit_series)

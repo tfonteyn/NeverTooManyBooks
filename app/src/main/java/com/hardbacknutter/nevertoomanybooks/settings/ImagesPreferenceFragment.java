@@ -29,8 +29,9 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
@@ -59,7 +60,7 @@ public class ImagesPreferenceFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
-                new AlertDialog.Builder(getContext())
+                new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.lbl_purge_image_cache)
                         .setMessage(R.string.lbl_purge_image_cache)

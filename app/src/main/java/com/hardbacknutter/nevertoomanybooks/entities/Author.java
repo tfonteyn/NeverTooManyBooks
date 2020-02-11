@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.BitUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
@@ -483,7 +483,7 @@ public class Author
     @NonNull
     public String getTypeLabels(@NonNull final Context context) {
         if (mType != TYPE_UNKNOWN) {
-            List<String> list = Csv.bitmaskToList(context, TYPES, mType);
+            List<String> list = BitUtils.toListOfStrings(context, TYPES, mType);
             if (!list.isEmpty()) {
                 return context.getString(R.string.brackets, TextUtils.join(", ", list));
             }

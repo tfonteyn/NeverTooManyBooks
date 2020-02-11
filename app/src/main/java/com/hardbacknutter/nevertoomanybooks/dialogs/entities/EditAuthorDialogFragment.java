@@ -38,9 +38,9 @@ import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -112,7 +113,7 @@ public class EditAuthorDialogFragment
         mDb = new DAO(TAG);
 
         mAuthor = requireArguments().getParcelable(DBDefinitions.KEY_FK_AUTHOR);
-        Objects.requireNonNull(mAuthor, "Author must be passed in args");
+        Objects.requireNonNull(mAuthor, ErrorMsg.ARGS_MISSING_AUTHOR);
 
         if (savedInstanceState == null) {
             mFamilyName = mAuthor.getFamilyName();
@@ -138,10 +139,10 @@ public class EditAuthorDialogFragment
 
         //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
-                context, android.R.layout.simple_dropdown_item_1line,
+                context, R.layout.dropdown_menu_popup_item,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
         DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
-                context, android.R.layout.simple_dropdown_item_1line,
+                context, R.layout.dropdown_menu_popup_item,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
         // the dialog fields != screen fields.
@@ -156,7 +157,7 @@ public class EditAuthorDialogFragment
         mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
         mIsCompleteView.setChecked(mIsComplete);
 
-        return new AlertDialog.Builder(context)
+        return new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.title_edit_author)

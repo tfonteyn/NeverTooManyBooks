@@ -39,9 +39,10 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 import java.util.Objects;
@@ -51,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -126,7 +128,7 @@ public class EditTocEntryDialogFragment
 
         Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
         mTocEntry = currentArgs.getParcelable(BKEY_TOC_ENTRY);
-        Objects.requireNonNull(mTocEntry, "TocEntry must be passed in args");
+        Objects.requireNonNull(mTocEntry, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
 
         mHasMultipleAuthors = currentArgs.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
     }
@@ -152,7 +154,7 @@ public class EditTocEntryDialogFragment
         mPubDateTextView.setText(mTocEntry.getFirstPublication());
 
         //noinspection ConstantConditions
-        return new AlertDialog.Builder(getContext())
+        return new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setView(root)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
@@ -167,7 +169,7 @@ public class EditTocEntryDialogFragment
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions
                 mAuthorAdapter = new DiacriticArrayAdapter<>(
-                        getContext(), android.R.layout.simple_dropdown_item_1line,
+                        getContext(), R.layout.dropdown_menu_popup_item,
                         mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 mAuthorTextView.setAdapter(mAuthorAdapter);
             }

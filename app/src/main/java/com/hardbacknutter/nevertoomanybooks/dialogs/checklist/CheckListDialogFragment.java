@@ -45,6 +45,8 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -119,7 +122,7 @@ public class CheckListDialogFragment
 
         args = savedInstanceState != null ? savedInstanceState : args;
         mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
-        Objects.requireNonNull(mList, "Checklist must be passed in args");
+        Objects.requireNonNull(mList, ErrorMsg.ARGS_MISSING_CHECKLIST);
     }
 
     @NonNull
@@ -144,7 +147,7 @@ public class CheckListDialogFragment
 
         //noinspection ConstantConditions
         AlertDialog dialog =
-                new AlertDialog.Builder(getContext())
+                new MaterialAlertDialogBuilder(getContext())
                         .setView(root)
                         .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                         .setPositiveButton(android.R.string.ok, (d, which) -> {

@@ -135,7 +135,9 @@ public class SimpleXmlFilter {
     /**
      * Constructor.
      *
-     * @param root filter
+     * @param root   filter
+     * @param locale <strong>Must</strong> be the Locale for the source data.
+     *               (and NOT simply the system/user).
      */
     public SimpleXmlFilter(@NonNull final XmlFilter root,
                            @Nullable final Locale locale) {
@@ -559,6 +561,9 @@ public class SimpleXmlFilter {
         @Nullable
         private final Locale mLocale;
 
+        /**
+         * @param locale <strong>Must</strong> be the Locale for the source data.
+         */
         DoubleAttrFilter(@NonNull final String key,
                          @NonNull final String name,
                          @Nullable final Locale locale) {

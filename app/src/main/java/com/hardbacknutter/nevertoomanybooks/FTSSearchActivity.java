@@ -91,6 +91,21 @@ public class FTSSearchActivity
     private EditText mAuthorView;
     /** search field. */
     private EditText mTitleView;
+    /** User entered search text. */
+    private String mKeywordsSearchText;
+    /** search field. */
+    private EditText mKeywordsView;
+    /** show the number of results. */
+    private TextView mBooksFound;
+    /** The results list. */
+    private ArrayList<Long> mBookIdsFound;
+    /** Indicates user has changed something since the last search. */
+    private boolean mSearchIsDirty;
+    /** Timer reset each time the user clicks, in order to detect an idle time. */
+    private long mIdleStart;
+    /** Timer object for background idle searches. */
+    @Nullable
+    private Timer mTimer;
     /** Detect text changes and call userIsActive(...). */
     private final TextWatcher mTextWatcher = new TextWatcher() {
         @Override
@@ -112,21 +127,6 @@ public class FTSSearchActivity
             userIsActive(true);
         }
     };
-    /** User entered search text. */
-    private String mKeywordsSearchText;
-    /** search field. */
-    private EditText mKeywordsView;
-    /** show the number of results. */
-    private TextView mBooksFound;
-    /** The results list. */
-    private ArrayList<Long> mBookIdsFound;
-    /** Indicates user has changed something since the last search. */
-    private boolean mSearchIsDirty;
-    /** Timer reset each time the user clicks, in order to detect an idle time. */
-    private long mIdleStart;
-    /** Timer object for background idle searches. */
-    @Nullable
-    private Timer mTimer;
     /** search field. */
     private EditText mSeriesTitleView;
 
@@ -142,8 +142,8 @@ public class FTSSearchActivity
 
         mDb = new DAO(TAG);
 
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState
-                                                        : getIntent().getExtras();
+        final Bundle currentArgs = savedInstanceState != null ? savedInstanceState
+                                                              : getIntent().getExtras();
         if (currentArgs != null) {
             mAuthorSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_AUTHOR);
             mTitleSearchText = currentArgs.getString(DBDefinitions.KEY_TITLE);
@@ -238,9 +238,10 @@ public class FTSSearchActivity
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
-            case R.id.MENU_REBUILD_FTS:
+            case R.id.MENU_REBUILD_FTS: {
                 mDb.rebuildFts();
                 return true;
+            }
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -343,7 +344,7 @@ public class FTSSearchActivity
      * Stop the timer.
      */
     private void stopIdleTimer() {
-        Timer timer;
+        final Timer timer;
         // Synchronize since this is relevant to more than 1 thread.
         synchronized (this) {
             timer = mTimer;
@@ -367,7 +368,7 @@ public class FTSSearchActivity
             boolean doSearch = false;
             // Synchronize since this is relevant to more than 1 thread.
             synchronized (this) {
-                boolean idle = (System.nanoTime() - mIdleStart) > NANO_TO_SECONDS;
+                final boolean idle = (System.nanoTime() - mIdleStart) > NANO_TO_SECONDS;
                 if (idle) {
                     // Stop the timer, it will be restarted when the user changes something
                     stopIdleTimer();

@@ -183,8 +183,8 @@ public class LibraryThingSearchEngine
 
         if (showAlert) {
             Intent intent = new Intent(context, LibraryThingRegistrationActivity.class);
-            StandardDialogs.registrationDialog(context, R.string.site_library_thing,
-                                               intent, required, prefName);
+            StandardDialogs.registerOnSite(context, R.string.site_library_thing,
+                                           intent, required, prefName);
         }
 
         return showAlert;

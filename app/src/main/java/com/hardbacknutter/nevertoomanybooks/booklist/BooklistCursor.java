@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -348,14 +349,9 @@ public class BooklistCursor
 
             // Set as the active cursor
             mActiveCursor = mCursors.get(cursorId);
-            if (mActiveCursor == null) {
-                if (BuildConfig.DEBUG /* always */) {
-                    throw new IllegalStateException("onMove"
-                                                    + "|cursorId=" + cursorId
-                                                    + "|mActiveCursor is NULL");
-                }
-                return false;
-            }
+            Objects.requireNonNull(mActiveCursor, "onMove"
+                                                  + "|cursorId=" + cursorId
+                                                  + "|mActiveCursor is NULL");
 
             // and finally set its position correctly
             return mActiveCursor.moveToPosition(newPosition - cursorStartPos);

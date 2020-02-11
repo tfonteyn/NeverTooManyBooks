@@ -112,15 +112,15 @@ public class AuthorWorksFragment
         mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
         mModel.init(requireArguments());
 
-        Context context = getContext();
+        final Context context = getContext();
 
         //noinspection ConstantConditions
         getActivity().setTitle(mModel.getScreenTitle(context));
 
         //noinspection ConstantConditions
-        RecyclerView listView = getView().findViewById(R.id.authorWorks);
+        final RecyclerView listView = getView().findViewById(R.id.authorWorks);
         listView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         listView.setLayoutManager(linearLayoutManager);
         listView.addItemDecoration(
                 new DividerItemDecoration(context, linearLayoutManager.getOrientation()));
@@ -164,23 +164,24 @@ public class AuthorWorksFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.MENU_AUTHOR_WORKS_ALL:
+            case R.id.MENU_AUTHOR_WORKS_ALL: {
                 item.setChecked(true);
                 mModel.loadTocEntries(true, true);
                 mAdapter.notifyDataSetChanged();
                 return true;
-
-            case R.id.MENU_AUTHOR_WORKS_TOC:
+            }
+            case R.id.MENU_AUTHOR_WORKS_TOC: {
                 item.setChecked(true);
                 mModel.loadTocEntries(true, false);
                 mAdapter.notifyDataSetChanged();
                 return true;
-
-            case R.id.MENU_AUTHOR_WORKS_BOOKS:
+            }
+            case R.id.MENU_AUTHOR_WORKS_BOOKS: {
                 item.setChecked(true);
                 mModel.loadTocEntries(false, true);
                 mAdapter.notifyDataSetChanged();
                 return true;
+            }
 
             default:
                 return super.onOptionsItemSelected(item);
@@ -188,18 +189,18 @@ public class AuthorWorksFragment
     }
 
     private void onCreateContextMenu(final int position) {
-        Resources r = getResources();
+        final Resources r = getResources();
 
-        TocEntry item = mModel.getTocEntries().get(position);
+        final TocEntry item = mModel.getTocEntries().get(position);
 
         //noinspection ConstantConditions
-        Menu menu = MenuPicker.createMenu(getContext());
+        final Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_DELETE,
                  r.getInteger(R.integer.MENU_ORDER_DELETE),
                  R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        String title = item.getTitle();
+        final String title = item.getTitle();
         new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
     }
@@ -214,7 +215,7 @@ public class AuthorWorksFragment
      */
     private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
                                           @NonNull final Integer position) {
-        TocEntry item = mModel.getTocEntries().get(position);
+        final TocEntry item = mModel.getTocEntries().get(position);
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (menuItem.getItemId()) {
@@ -222,8 +223,8 @@ public class AuthorWorksFragment
                 switch (item.getType()) {
                     case Book:
                         //noinspection ConstantConditions
-                        StandardDialogs.deleteBookAlert(getContext(), item.getTitle(),
-                                                        item.getAuthors(), () -> {
+                        StandardDialogs.deleteBook(getContext(), item.getTitle(),
+                                                   item.getAuthors(), () -> {
                                     mModel.delTocEntry(getContext(), item);
                                     mAdapter.notifyItemRemoved(position);
                                 });
@@ -231,7 +232,7 @@ public class AuthorWorksFragment
 
                     case Toc:
                         //noinspection ConstantConditions
-                        StandardDialogs.deleteTocEntryAlert(getContext(), item, () -> {
+                        StandardDialogs.deleteTocEntry(getContext(), item, () -> {
                             mModel.delTocEntry(getContext(), item);
                             mAdapter.notifyItemRemoved(position);
                         });
@@ -337,8 +338,8 @@ public class AuthorWorksFragment
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
-            TocEntry.Type type = TocEntry.Type.get((char) viewType);
-            View itemView;
+            final TocEntry.Type type = TocEntry.Type.get((char) viewType);
+            final View itemView;
             switch (type) {
                 case Toc:
                     itemView = mInflater.inflate(R.layout.row_toc_entry, parent, false);
@@ -357,7 +358,7 @@ public class AuthorWorksFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            TocEntry tocEntry = mModel.getTocEntries().get(position);
+            final TocEntry tocEntry = mModel.getTocEntries().get(position);
             final Context context = getContext();
 
             String title = tocEntry.getTitle();
@@ -419,9 +420,10 @@ public class AuthorWorksFragment
         public String[] getPopupText(@NonNull final Context context,
                                      final int position) {
             // make sure it's still in range.
-            int clampedPosition = MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
+            final int clampedPosition =
+                    MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
 
-            String title = mModel.getTocEntries().get(clampedPosition)
+            final String title = mModel.getTocEntries().get(clampedPosition)
                                  .getTitle();
 //                         .substring(0, 1).toUpperCase(LocaleUtils.getUserLocale(context));
             return new String[]{title};

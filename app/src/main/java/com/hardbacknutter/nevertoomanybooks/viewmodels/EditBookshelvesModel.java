@@ -129,7 +129,7 @@ public class EditBookshelvesModel
         mList.addAll(mDb.getBookshelves());
 
         for (int i = 0; i < mList.size(); i++) {
-            Bookshelf bookshelf = mList.get(i);
+            final Bookshelf bookshelf = mList.get(i);
             if (bookshelf.getId() == selectedBookshelfId) {
                 mSelectedPosition.setValue(i);
                 mSelectedBookshelf = bookshelf;

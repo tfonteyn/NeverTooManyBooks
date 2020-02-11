@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,10 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public abstract class Options
         implements Parcelable {
@@ -84,9 +88,7 @@ public abstract class Options
     }
 
     public void validate() {
-        if (uri == null) {
-            throw new IllegalStateException("Uri not set");
-        }
+        Objects.requireNonNull(uri, ErrorMsg.NULL_URI);
     }
 
     @SuppressWarnings("SameReturnValue")

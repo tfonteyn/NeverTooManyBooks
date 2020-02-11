@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.scanner;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -45,6 +44,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -268,7 +268,7 @@ public final class ScannerManager {
         String msg = context.getString(R.string.error_google_play_store_missing) + '\n'
                      + context.getString(R.string.info_install_scanner_recommendation);
 
-        new AlertDialog.Builder(context)
+        new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)

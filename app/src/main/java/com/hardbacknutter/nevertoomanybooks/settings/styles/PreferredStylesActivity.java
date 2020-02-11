@@ -51,12 +51,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -113,7 +114,8 @@ public class PreferredStylesActivity
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        mModel.init(this, Objects.requireNonNull(getIntent().getExtras()));
+        mModel.init(this, Objects.requireNonNull(getIntent().getExtras(),
+                                                 ErrorMsg.ARGS_MISSING_EXTRAS));
 
         mListView = findViewById(R.id.stylesList);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -169,7 +171,7 @@ public class PreferredStylesActivity
         switch (requestCode) {
             case UniqueId.REQ_EDIT_STYLE: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
 
                     if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
@@ -212,7 +214,8 @@ public class PreferredStylesActivity
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
 
         menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
-            .setIcon(R.drawable.ic_delete);
+            .setIcon(R.drawable.ic_delete)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -229,16 +232,19 @@ public class PreferredStylesActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
-        if (item.getItemId() == R.id.MENU_PURGE_BLNS) {
-            BooklistStyle selected = mListAdapter.getSelected();
-            if (selected != null) {
-                StandardDialogs.purgeBLNSDialog(this, R.string.lbl_style, selected, () ->
-                        mModel.purgeBLNS(selected.getId()));
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_PURGE_BLNS: {
+                BooklistStyle selected = mListAdapter.getSelected();
+                if (selected != null) {
+                    StandardDialogs.purgeBLNS(this, R.string.lbl_style, selected, () ->
+                            mModel.purgeBLNS(selected.getId()));
+                }
+                return true;
             }
-            return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private void onCreateContextMenu(final int position) {

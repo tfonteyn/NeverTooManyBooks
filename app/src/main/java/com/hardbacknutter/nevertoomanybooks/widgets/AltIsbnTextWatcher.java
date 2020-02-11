@@ -81,10 +81,10 @@ public class AltIsbnTextWatcher
 
     @Override
     public void afterTextChanged(@NonNull final Editable s) {
-        String isbnStr = s.toString();
+        final String isbnStr = s.toString();
         switch (isbnStr.length()) {
             case 13: {
-                ISBN isbn = ISBN.createISBN(isbnStr);
+                final ISBN isbn = ISBN.createISBN(isbnStr);
                 if (isbn.isIsbn10Compat()) {
                     mAltIsbn = isbn.asText(ISBN.Type.ISBN10);
                     mAltIsbnButton.setEnabled(true);
@@ -93,7 +93,7 @@ public class AltIsbnTextWatcher
                 break;
             }
             case 10: {
-                ISBN isbn = ISBN.createISBN(isbnStr);
+                final ISBN isbn = ISBN.createISBN(isbnStr);
                 if (isbn.isValid(true)) {
                     mAltIsbn = isbn.asText(ISBN.Type.ISBN13);
                     mAltIsbnButton.setEnabled(true);

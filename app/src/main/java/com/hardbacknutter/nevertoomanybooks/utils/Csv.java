@@ -27,16 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.content.Context;
 import android.text.TextUtils;
-import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * CSV utilities.
@@ -143,80 +137,6 @@ public final class Csv {
             }
         }
         return result.toString();
-    }
-
-    /**
-     * Not strictly a Csv method, but closely related as it's usually (always?) followed
-     * by sending the list to a join method.
-     *
-     * @param context Current context
-     * @param map     Map with bits mapped to resource IDs
-     * @param bitmask to turn into strings
-     *
-     * @return list of Strings with the names for each bit.
-     */
-    public static List<String> bitmaskToList(@NonNull final Context context,
-                                             @NonNull final Map<Integer, Integer> map,
-                                             final long bitmask) {
-        List<String> list = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-            if ((entry.getKey() & bitmask) != 0) {
-                list.add(context.getString(entry.getValue()));
-            }
-        }
-        return list;
-    }
-
-    public static List<String> bitmaskToList(@NonNull final Context context,
-                                             @NonNull final SparseArray<Integer> map,
-                                             final long bitmask) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < map.size(); i++) {
-            if ((map.keyAt(i) & bitmask) != 0) {
-                list.add(context.getString(map.valueAt(i)));
-            }
-        }
-        return list;
-    }
-
-    /**
-     * Not strictly a Csv method, but closely related as it's usually (always?) followed
-     * by sending the list to a join method.
-     *
-     * @param map     Map with bits mapped to strings
-     * @param bitmask to turn into strings
-     *
-     * @return list of Strings with the names for each bit.
-     */
-    public static List<String> bitmaskToList(@NonNull final Map<Integer, String> map,
-                                             final long bitmask) {
-        List<String> list = new ArrayList<>();
-        for (Map.Entry<Integer, String> entry : map.entrySet()) {
-            if ((entry.getKey() & bitmask) != 0) {
-                list.add(entry.getValue());
-            }
-        }
-        return list;
-    }
-
-    /**
-     * Not strictly a Csv method, but closely related as it's usually (always?) followed
-     * by sending the list to a join method.
-     *
-     * @param map     Map with bits mapped to strings
-     * @param bitmask to turn into strings
-     *
-     * @return list of Strings with the names for each bit.
-     */
-    public static List<String> bitmaskToList(@NonNull final SparseArray<String> map,
-                                             final long bitmask) {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < map.size(); i++) {
-            if ((map.keyAt(i) & bitmask) != 0) {
-                list.add(map.valueAt(i));
-            }
-        }
-        return list;
     }
 
     public interface Formatter<E> {

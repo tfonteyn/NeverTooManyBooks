@@ -37,6 +37,8 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -54,17 +56,17 @@ public final class StandardDialogs {
 
     /**
      * Show a dialog asking if unsaved edits should be ignored.
-     *
+     * <p>
      * To show the Save and/or Exit button, you must provide a Runnable, even an empty one.
      *
      * @param context Current context
      * @param onSave  (optional) Runnable to execute if the user clicks the Save button.
      * @param onExit  (optional) Runnable to execute if the user clicks the Exit button.
      */
-    public static void unsavedEditsDialog(@NonNull final Context context,
-                                          @Nullable final Runnable onSave,
-                                          @Nullable final Runnable onExit) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+    public static void unsavedEdits(@NonNull final Context context,
+                                    @Nullable final Runnable onSave,
+                                    @Nullable final Runnable onExit) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_details_have_changed)
                 .setMessage(R.string.warning_unsaved_edits)
@@ -87,10 +89,10 @@ public final class StandardDialogs {
      * @param series    Series we're about to delete
      * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
-    public static void deleteSeriesAlert(@NonNull final Context context,
-                                         @NonNull final Series series,
-                                         @NonNull final Runnable onConfirm) {
-        new AlertDialog.Builder(context)
+    public static void deleteSeries(@NonNull final Context context,
+                                    @NonNull final Series series,
+                                    @NonNull final Runnable onConfirm) {
+        new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_series)
                 .setMessage(context.getString(R.string.confirm_delete_series, series.getTitle()))
@@ -107,10 +109,10 @@ public final class StandardDialogs {
      * @param tocEntry  TocEntry we're about to delete
      * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
-    public static void deleteTocEntryAlert(@NonNull final Context context,
-                                           @NonNull final TocEntry tocEntry,
-                                           @NonNull final Runnable onConfirm) {
-        new AlertDialog.Builder(context)
+    public static void deleteTocEntry(@NonNull final Context context,
+                                      @NonNull final TocEntry tocEntry,
+                                      @NonNull final Runnable onConfirm) {
+        new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_toc_entry)
                 .setMessage(context.getString(R.string.confirm_delete_toc_entry,
@@ -130,10 +132,10 @@ public final class StandardDialogs {
      * @param authorList Authors of book we're about to delete
      * @param onConfirm  Runnable to execute if the user clicks the confirm button.
      */
-    public static void deleteBookAlert(@NonNull final Context context,
-                                       @NonNull final String title,
-                                       @NonNull final List<Author> authorList,
-                                       @NonNull final Runnable onConfirm) {
+    public static void deleteBook(@NonNull final Context context,
+                                  @NonNull final String title,
+                                  @NonNull final List<Author> authorList,
+                                  @NonNull final Runnable onConfirm) {
 
         // Format the list of authors nicely
         StringBuilder authors = new StringBuilder();
@@ -155,7 +157,7 @@ public final class StandardDialogs {
             }
         }
 
-        new AlertDialog.Builder(context)
+        new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_book)
                 .setMessage(context.getString(R.string.confirm_delete_book, title, authors))
@@ -174,11 +176,11 @@ public final class StandardDialogs {
      * @param required  Show third button allowing disabling message or not.
      * @param prefName  Preference name to use for disabling the message if requested
      */
-    public static void registrationDialog(@NonNull final Context context,
-                                          @StringRes final int siteResId,
-                                          @NonNull final Intent intent,
-                                          final boolean required,
-                                          @NonNull final String prefName) {
+    public static void registerOnSite(@NonNull final Context context,
+                                      @StringRes final int siteResId,
+                                      @NonNull final Intent intent,
+                                      final boolean required,
+                                      @NonNull final String prefName) {
 
         String site = context.getString(siteResId);
         String message;
@@ -189,7 +191,7 @@ public final class StandardDialogs {
                                         context.getString(R.string.lbl_credentials));
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(context)
+        AlertDialog dialog = new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_registration)
                 .setMessage(message)
@@ -216,15 +218,15 @@ public final class StandardDialogs {
      * @param entity    the entity (from which we'll display the label)
      * @param onConfirm Runnable to execute if the user clicks the confirm button.
      */
-    public static void purgeBLNSDialog(@NonNull final Context context,
-                                       @StringRes final int label,
-                                       @NonNull final Entity entity,
-                                       @NonNull final Runnable onConfirm) {
+    public static void purgeBLNS(@NonNull final Context context,
+                                 @StringRes final int label,
+                                 @NonNull final Entity entity,
+                                 @NonNull final Runnable onConfirm) {
 
         String msg = context.getString(R.string.info_purge_blns_item_name,
                                        context.getString(label),
                                        entity.getLabel(context));
-        new AlertDialog.Builder(context)
+        new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(msg)

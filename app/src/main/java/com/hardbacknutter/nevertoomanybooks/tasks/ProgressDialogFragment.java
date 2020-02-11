@@ -44,6 +44,8 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 
@@ -145,7 +147,7 @@ public class ProgressDialogFragment
         }
 
         //noinspection ConstantConditions
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
+        AlertDialog dialog = new MaterialAlertDialogBuilder(getContext())
                 .setView(root)
                 .create();
         // this is really needed, as it would be to easy to cancel without.

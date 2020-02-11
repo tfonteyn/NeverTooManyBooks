@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,6 +46,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
  * init/updatePostLayout methods accesses some protected members.
  * But we need to stop Group from manipulating the referenced views themselves,
  * hence we override (and do not call the super) for {@link #updatePreLayout(ConstraintLayout)}.
+ * There probably is a better way of doing this.
  */
 public class ExtGroup
         extends androidx.constraintlayout.widget.Group {

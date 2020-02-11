@@ -329,7 +329,7 @@ public abstract class BackupReaderAbstract
         //noinspection ResultOfMethodCallIgnored
         currentCover.setLastModified(coverDate.getTime());
 
-        Objects.requireNonNull(mResults);
+        Objects.requireNonNull(mResults, "mResults");
         if (exists) {
             mResults.coversUpdated++;
         } else {

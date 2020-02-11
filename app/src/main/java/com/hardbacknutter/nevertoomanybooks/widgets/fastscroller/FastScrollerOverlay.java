@@ -76,7 +76,7 @@ public class FastScrollerOverlay
     FastScrollerOverlay(@NonNull final RecyclerView view,
                         final int thumbWidth,
                         @NonNull final Consumer<TextView> popupStyle) {
-        Context context = view.getContext();
+        final Context context = view.getContext();
 
         mView = view;
         mThumbWidth = thumbWidth;
@@ -87,7 +87,7 @@ public class FastScrollerOverlay
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         popupStyle.accept(mPopupView);
 
-        ViewGroupOverlay overlay = mView.getOverlay();
+        final ViewGroupOverlay overlay = mView.getOverlay();
         overlay.add(mPopupView);
 
         mAnimationHelper = new DefaultAnimationHelper(mView);
@@ -98,25 +98,27 @@ public class FastScrollerOverlay
     public void showOverlay(final boolean isDragging,
                             final int thumbCenter) {
 
-        RecyclerView.Adapter adapter = mView.getAdapter();
+        final RecyclerView.Adapter adapter = mView.getAdapter();
         if (!(adapter instanceof FastScroller.PopupTextProvider)) {
             return;
         }
 
-        RecyclerView.LayoutManager layoutManager = mView.getLayoutManager();
+        final RecyclerView.LayoutManager layoutManager = mView.getLayoutManager();
         if (!(layoutManager instanceof LinearLayoutManager)) {
             return;
         }
 
-        int position = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+        final int position = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
         if (position == RecyclerView.NO_POSITION) {
             return;
         }
 
-        String[] popupLines = ((FastScroller.PopupTextProvider) adapter)
+        final String[] popupLines = ((FastScroller.PopupTextProvider) adapter)
                 .getPopupText(mView.getContext(), position);
 
-        boolean hasPopup = popupLines != null && popupLines.length > 0 && popupLines[0] != null;
+        final boolean hasPopup = popupLines != null
+                                 && popupLines.length > 0
+                                 && popupLines[0] != null;
         mPopupView.setVisibility(hasPopup ? View.VISIBLE : View.INVISIBLE);
         if (hasPopup) {
             String popupText = popupLines[0];
@@ -124,30 +126,30 @@ public class FastScrollerOverlay
                 popupText += '\n' + popupLines[1];
             }
 
-            int layoutDirection = mView.getLayoutDirection();
+            final int layoutDirection = mView.getLayoutDirection();
             mPopupView.setLayoutDirection(layoutDirection);
 
-            int viewWidth = mView.getWidth();
-            int viewHeight = mView.getHeight();
+            final int viewWidth = mView.getWidth();
+            final int viewHeight = mView.getHeight();
 
             mTempRect.set(mView.getPaddingLeft(), mView.getPaddingTop(),
                           mView.getPaddingRight(), mView.getPaddingBottom());
-            Rect padding = mTempRect;
+            final Rect padding = mTempRect;
 
-            FrameLayout.LayoutParams popupLPs = (FrameLayout.LayoutParams)
+            final FrameLayout.LayoutParams popupLPs = (FrameLayout.LayoutParams)
                     mPopupView.getLayoutParams();
 
             // Only need to (re)measure if the text is different.
             if (!Objects.equals(mPopupView.getText(), popupText)) {
                 mPopupView.setText(popupText);
 
-                int widthMeasureSpec = ViewGroup.getChildMeasureSpec(
+                final int widthMeasureSpec = ViewGroup.getChildMeasureSpec(
                         View.MeasureSpec.makeMeasureSpec(viewWidth, View.MeasureSpec.EXACTLY),
                         padding.left + padding.right + mThumbWidth
                         + popupLPs.leftMargin + popupLPs.rightMargin,
                         popupLPs.width);
 
-                int heightMeasureSpec = ViewGroup.getChildMeasureSpec(
+                final int heightMeasureSpec = ViewGroup.getChildMeasureSpec(
                         View.MeasureSpec.makeMeasureSpec(viewHeight, View.MeasureSpec.EXACTLY),
                         padding.top + padding.bottom
                         + popupLPs.topMargin + popupLPs.bottomMargin,
@@ -156,9 +158,9 @@ public class FastScrollerOverlay
                 mPopupView.measure(widthMeasureSpec, heightMeasureSpec);
             }
 
-            int popupWidth = mPopupView.getMeasuredWidth();
-            int popupHeight = mPopupView.getMeasuredHeight();
-            int popupLeft;
+            final int popupWidth = mPopupView.getMeasuredWidth();
+            final int popupHeight = mPopupView.getMeasuredHeight();
+            final int popupLeft;
             if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
                 popupLeft = padding.left + mThumbWidth + popupLPs.leftMargin;
             } else {
@@ -166,7 +168,7 @@ public class FastScrollerOverlay
                             - padding.right - mThumbWidth - popupLPs.rightMargin;
             }
 
-            int popupAnchorY;
+            final int popupAnchorY;
             switch (popupLPs.gravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
                 case Gravity.CENTER_HORIZONTAL:
                     popupAnchorY = popupHeight / 2;
@@ -184,7 +186,7 @@ public class FastScrollerOverlay
                     break;
             }
 
-            int popupTop = MathUtils.clamp(thumbCenter - popupAnchorY,
+            final int popupTop = MathUtils.clamp(thumbCenter - popupAnchorY,
                                            padding.top + popupLPs.topMargin,
                                            viewHeight - padding.bottom
                                            - popupLPs.bottomMargin - popupHeight);
@@ -223,8 +225,8 @@ public class FastScrollerOverlay
                        final int popupHeight,
                        final int popupLeft,
                        final int popupTop) {
-        int scrollX = parent.getScrollX() + popupLeft;
-        int scrollY = parent.getScrollY() + popupTop;
+        final int scrollX = parent.getScrollX() + popupLeft;
+        final int scrollY = parent.getScrollY() + popupTop;
         popupView.layout(scrollX, scrollY, scrollX + popupWidth, scrollY + popupHeight);
     }
 }

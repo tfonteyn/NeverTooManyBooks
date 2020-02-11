@@ -185,7 +185,7 @@ public class BitmaskPreference
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            Bundle args = getArguments();
+            final Bundle args = getArguments();
             if (args != null) {
                 mNotSetString = args.getString(BKEY_NOT_SET_STRING);
             }

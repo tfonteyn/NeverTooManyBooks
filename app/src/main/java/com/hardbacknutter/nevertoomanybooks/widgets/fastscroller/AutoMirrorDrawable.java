@@ -65,7 +65,7 @@ public class AutoMirrorDrawable
     @Override
     public void draw(@NonNull final Canvas canvas) {
         if (needMirroring()) {
-            float centerX = getBounds().exactCenterX();
+            final float centerX = getBounds().exactCenterX();
             canvas.scale(-1, 1, centerX, 0);
             super.draw(canvas);
             canvas.scale(-1, 1, centerX, 0);
@@ -91,9 +91,9 @@ public class AutoMirrorDrawable
 
     @Override
     public boolean getPadding(@NonNull final Rect padding) {
-        boolean hasPadding = super.getPadding(padding);
+        final boolean hasPadding = super.getPadding(padding);
         if (needMirroring()) {
-            int paddingStart = padding.left;
+            final int paddingStart = padding.left;
             padding.left = padding.right;
             padding.right = paddingStart;
         }

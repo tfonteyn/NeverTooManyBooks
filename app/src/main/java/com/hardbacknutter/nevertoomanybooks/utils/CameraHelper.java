@@ -49,6 +49,7 @@ import java.io.OutputStream;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 public class CameraHelper {
@@ -165,7 +166,7 @@ public class CameraHelper {
                                           .getAbsolutePath();
             bm = BitmapFactory.decodeFile(fileSpec);
         } else {
-            Objects.requireNonNull(data);
+            Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
             bm = data.getParcelableExtra("data");
         }
 
@@ -199,7 +200,7 @@ public class CameraHelper {
             }
 
         } else {
-            Objects.requireNonNull(data);
+            Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
             Bitmap bm = data.getParcelableExtra("data");
             if (bm != null) {
                 if (mRotationAngle != 0) {

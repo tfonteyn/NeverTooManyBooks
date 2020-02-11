@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
@@ -132,10 +133,8 @@ public final class QueueManager {
     }
 
     public static QueueManager getQueueManager() {
-        if (sInstance == null) {
-            // do not lazy initialize here. We want the QueueManager running at startup.
-            throw new IllegalStateException("init was not called?");
-        }
+        // do not lazy initialize here. We want the QueueManager running at startup.
+        Objects.requireNonNull(sInstance, "init was not called?");
         return sInstance;
     }
 

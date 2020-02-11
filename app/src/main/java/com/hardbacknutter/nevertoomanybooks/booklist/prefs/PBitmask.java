@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@ import androidx.preference.PreferenceManager;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.BitUtils;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}.
@@ -81,7 +81,7 @@ public class PBitmask
         if (value == null || value.isEmpty()) {
             return defValue;
         }
-        return Prefs.toInteger(value);
+        return BitUtils.from(value);
     }
 
     /**
@@ -94,7 +94,7 @@ public class PBitmask
         } else if (value == null) {
             remove();
         } else {
-            getPrefs().edit().putStringSet(getKey(), Prefs.toStringSet(value)).apply();
+            getPrefs().edit().putStringSet(getKey(), BitUtils.toStringSet(value)).apply();
         }
     }
 
@@ -107,7 +107,7 @@ public class PBitmask
         if (value == null) {
             ed.remove(getKey());
         } else {
-            ed.putStringSet(getKey(), Prefs.toStringSet(value));
+            ed.putStringSet(getKey(), BitUtils.toStringSet(value));
         }
     }
 
@@ -115,7 +115,7 @@ public class PBitmask
     @NonNull
     public String toString() {
         return "PBitmask{" + super.toString()
-               + ",value=`" + Prefs.toStringSet(get()) + '`'
+               + ",value=`" + BitUtils.toStringSet(get()) + '`'
                + '}';
     }
 
@@ -138,7 +138,7 @@ public class PBitmask
                     return mDefaultValue;
                 }
             }
-            return Prefs.toInteger(value);
+            return BitUtils.from(value);
         }
     }
 }

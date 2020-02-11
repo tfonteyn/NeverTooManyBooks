@@ -108,8 +108,8 @@ public class GoodreadsSearchEngine
 
         if (show) {
             Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
-            StandardDialogs.registrationDialog(context, R.string.site_goodreads,
-                                               intent, required, key);
+            StandardDialogs.registerOnSite(context, R.string.site_goodreads,
+                                           intent, required, key);
         }
         return show;
     }

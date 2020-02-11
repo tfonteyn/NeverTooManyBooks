@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -140,8 +140,7 @@ public class SimpleItemTouchHelperCallback
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
             if (viewHolder instanceof ItemTouchHelperViewHolder) {
                 // Let the view holder know that this item is being moved or dragged
-                ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-                itemViewHolder.onItemDragStarted();
+                ((ItemTouchHelperViewHolder) viewHolder).onItemDragStarted();
             }
         }
 
@@ -157,8 +156,7 @@ public class SimpleItemTouchHelperCallback
 
         if (viewHolder instanceof ItemTouchHelperViewHolder) {
             // Tell the view holder it's time to restore the idle state
-            ItemTouchHelperViewHolder itemViewHolder = (ItemTouchHelperViewHolder) viewHolder;
-            itemViewHolder.onItemDragFinished();
+            ((ItemTouchHelperViewHolder) viewHolder).onItemDragFinished();
         }
     }
 

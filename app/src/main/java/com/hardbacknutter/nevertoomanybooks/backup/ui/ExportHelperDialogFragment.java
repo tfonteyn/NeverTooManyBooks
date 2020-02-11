@@ -36,8 +36,8 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -96,7 +96,7 @@ public class ExportHelperDialogFragment
         mDateSinceView = root.findViewById(R.id.date_since);
 
         //noinspection ConstantConditions
-        return new AlertDialog.Builder(getContext())
+        return new MaterialAlertDialogBuilder(getContext())
                 .setView(root)
                 .setTitle(R.string.export_options_dialog_title)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())

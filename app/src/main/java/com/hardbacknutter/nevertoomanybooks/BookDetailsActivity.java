@@ -67,7 +67,7 @@ public class BookDetailsActivity
 
     @Override
     public void onBackPressed() {
-        ActivityResultDataModel model = new ViewModelProvider(this)
+        final ActivityResultDataModel model = new ViewModelProvider(this)
                 .get(BookBaseFragmentModel.class);
         // Set the current visible book id as the Activity result data.
         setResult(Activity.RESULT_OK, model.getResultData());

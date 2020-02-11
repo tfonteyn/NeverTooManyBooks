@@ -33,7 +33,8 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.IOException;
 
@@ -75,7 +76,7 @@ public class RequestAuthTask
      */
     public static void prompt(@NonNull final Context context,
                               @NonNull final TaskListener<GrStatus> taskListener) {
-        new AlertDialog.Builder(context)
+        new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_security)
                 .setTitle(R.string.title_authorized_needed)
                 .setMessage(R.string.gr_authorization_needed)

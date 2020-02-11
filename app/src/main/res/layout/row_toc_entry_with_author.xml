@@ -56,6 +56,7 @@
     <TextView
         android:id="@+id/title"
         style="@style/Text"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
@@ -66,7 +67,6 @@
         android:id="@+id/year"
         style="@style/Text.Small"
         app:layout_constraintBaseline_toBaselineOf="@id/author"
-        app:layout_constraintEnd_toStartOf="@id/author"
         app:layout_constraintStart_toEndOf="@id/indent_fields"
         app:layout_constraintTop_toBottomOf="@id/title"
         tools:ignore="SelectableText"

@@ -75,7 +75,8 @@ public class BookSearchByNativeIdFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_booksearch_by_native_id, container, false);
+        final View view = inflater
+                .inflate(R.layout.fragment_booksearch_by_native_id, container, false);
         mNativeIdView = view.findViewById(R.id.native_id);
         mSearchBtn = view.findViewById(R.id.btn_search);
         mRadioGroup = view.findViewById(R.id.sites_group);
@@ -89,16 +90,16 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_native_id);
 
-//       View root = getView();
+//       final View root = getView();
 //
 //       int visibleSites = 0;
 //        RadioButton singleVisibleBtn = null;
-//        Locale locale = LocaleUtils.getUserLocale(getContext());
-//        SiteList siteList = SiteList.getList(getContext(), locale, SiteList.Type.Data);
+//        final Locale locale = LocaleUtils.getUserLocale(getContext());
+//        final SiteList siteList = SiteList.getList(getContext(), locale, SiteList.Type.Data);
 //        for (Site site : siteList.getSites(true)) {
 //            int resId = site.getResId();
 //            if (resId != View.NO_ID) {
-//                RadioButton btn = root.findViewById(resId);
+//                final RadioButton btn = root.findViewById(resId);
 //                if (btn != null) {
 //                    btn.setVisibility(site.isEnabled() ? View.VISIBLE : View.GONE);
 //                    if (site.isEnabled()) {
@@ -119,11 +120,11 @@ public class BookSearchByNativeIdFragment
 //            mNativeIdView.setEnabled(true);
 //        }
 
-        Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
+        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
-            int checkedId = args.getInt(BKEY_SITE_RES_ID, View.NO_ID);
+            final int checkedId = args.getInt(BKEY_SITE_RES_ID, View.NO_ID);
             if (checkedId != View.NO_ID) {
-                RadioButton btn = mRadioGroup.findViewById(checkedId);
+                final RadioButton btn = mRadioGroup.findViewById(checkedId);
                 if (btn.getVisibility() == View.VISIBLE) {
                     btn.setChecked(true);
                     mNativeIdView.setEnabled(true);
@@ -149,8 +150,8 @@ public class BookSearchByNativeIdFragment
 
     @Override
     protected boolean onSearch() {
-        int siteId = SearchSites.getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
-        String nativeId = mNativeIdView.getText().toString().trim();
+        final int siteId = SearchSites.getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
+        final String nativeId = mNativeIdView.getText().toString().trim();
         //noinspection ConstantConditions
         return mSearchCoordinator.searchByNativeId(getContext(),
                                                    Site.createDataSite(siteId), nativeId);
@@ -158,7 +159,7 @@ public class BookSearchByNativeIdFragment
 
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
-        Intent intent = new Intent(getContext(), EditBookActivity.class)
+        final Intent intent = new Intent(getContext(), EditBookActivity.class)
                 .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
         startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
         clearPreviousSearchCriteria();
@@ -189,9 +190,9 @@ public class BookSearchByNativeIdFragment
     private void onSiteSelect(@NonNull final RadioGroup group,
                               final int checkedId) {
 
-        Site site = Site.createDataSite(SearchSites.getSiteIdFromResId(checkedId));
+        final Site site = Site.createDataSite(SearchSites.getSiteIdFromResId(checkedId));
         //noinspection ConstantConditions
-        SearchEngine searchEngine = site.getSearchEngine(getContext());
+        final SearchEngine searchEngine = site.getSearchEngine(getContext());
         if (!searchEngine.isAvailable(getContext())) {
             // If the selected site needs registration, prompt the user.
             searchEngine.promptToRegister(getContext(), true, "native_id");

@@ -143,7 +143,7 @@ public class StartupViewModel
      */
     public static void setScheduleOrderByRebuild(@NonNull final Context context,
                                                  final boolean flag) {
-        SharedPreferences.Editor ed = PreferenceManager
+        final SharedPreferences.Editor ed = PreferenceManager
                 .getDefaultSharedPreferences(context).edit();
         if (flag) {
             ed.putBoolean(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED, true);
@@ -197,10 +197,11 @@ public class StartupViewModel
      */
     public void init(@NonNull final Context context) {
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        int maintenanceCountdown = prefs.getInt(PREF_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
-        int backupCountdown = prefs
+        final int maintenanceCountdown = prefs
+                .getInt(PREF_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
+        final int backupCountdown = prefs
                 .getInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN, Prefs.STARTUP_BACKUP_COUNTDOWN);
 
         prefs.edit()
@@ -332,7 +333,7 @@ public class StartupViewModel
         @Override
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("BuildLanguageMappingsTask");
-            Context context = App.getLocalizedAppContext();
+            final Context context = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getTaskId());
@@ -373,7 +374,7 @@ public class StartupViewModel
 
         @Override
         protected Boolean doInBackground(final Void... voids) {
-            Context context = App.getAppContext();
+            final Context context = App.getAppContext();
 
             ScannerFactory factory = new GoogleBarcodeScanner.GoogleBarcodeScannerFactory();
             if (factory.isAvailable(context)) {
@@ -413,7 +414,7 @@ public class StartupViewModel
         @Override
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("DBCleanerTask");
-            Context context = App.getLocalizedAppContext();
+            final Context context = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getTaskId());
@@ -421,7 +422,7 @@ public class StartupViewModel
             publishProgress(new TaskListener.ProgressMessage(
                     getTaskId(), context.getString(R.string.progress_msg_optimizing)));
             try {
-                DBCleaner cleaner = new DBCleaner(mDb);
+                final DBCleaner cleaner = new DBCleaner(mDb);
 
                 // do a mass update of any languages not yet converted to ISO 639-2 codes
                 cleaner.languages(context);
@@ -479,7 +480,7 @@ public class StartupViewModel
         @WorkerThread
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("RebuildFtsTask");
-            Context context = App.getLocalizedAppContext();
+            final Context context = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getTaskId());
@@ -532,7 +533,7 @@ public class StartupViewModel
         @WorkerThread
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("RebuildOrderByTitleColumnsTask");
-            Context context = App.getLocalizedAppContext();
+            final Context context = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getTaskId());
@@ -541,7 +542,7 @@ public class StartupViewModel
             publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
                     R.string.progress_msg_rebuilding_search_index)));
             try {
-                boolean reorder = Prefs.reorderTitleForSorting(context);
+                final boolean reorder = Prefs.reorderTitleForSorting(context);
                 mDb.rebuildOrderByTitleColumns(context, reorder);
                 return true;
 
@@ -586,7 +587,7 @@ public class StartupViewModel
         @Override
         protected Boolean doInBackground(final Void... params) {
             Thread.currentThread().setName("AnalyzeDbTask");
-            Context context = App.getLocalizedAppContext();
+            final Context context = App.getLocalizedAppContext();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
                 Log.d(TAG, "doInBackground|taskId=" + getTaskId());

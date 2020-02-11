@@ -109,9 +109,9 @@ public class DefaultAnimationHelper
         }
         mShowingScrollbar = false;
 
-        boolean isLayoutRtl = mView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-        int width = Math.max(trackView.getWidth(), thumbView.getWidth());
-        float translationX;
+        final boolean isLayoutRtl = mView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        final int width = Math.max(trackView.getWidth(), thumbView.getWidth());
+        final float translationX;
         if (isLayoutRtl) {
             translationX = trackView.getLeft() == 0 ? -width : 0;
         } else {

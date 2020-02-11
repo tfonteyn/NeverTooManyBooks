@@ -60,9 +60,10 @@ public class EditBookshelvesActivity
     public void onBackPressed() {
         Intent resultData = new Intent();
 
-        EditBookshelvesModel model = new ViewModelProvider(this).get(EditBookshelvesModel.class);
+        final EditBookshelvesModel model = new ViewModelProvider(this)
+                .get(EditBookshelvesModel.class);
 
-        Bookshelf selectedBookshelf = model.getSelectedBookshelf();
+        final Bookshelf selectedBookshelf = model.getSelectedBookshelf();
         if (selectedBookshelf != null) {
             resultData.putExtra(DBDefinitions.KEY_PK_ID, selectedBookshelf.getId());
         }

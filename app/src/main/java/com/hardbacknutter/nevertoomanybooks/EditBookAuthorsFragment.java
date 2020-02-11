@@ -43,13 +43,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -58,6 +58,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -107,7 +108,7 @@ public class EditBookAuthorsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_list_author, container, false);
+        final View view = inflater.inflate(R.layout.fragment_edit_book_authors, container, false);
         mListView = view.findViewById(android.R.id.list);
         mAuthorNameView = view.findViewById(R.id.author);
         return view;
@@ -123,13 +124,14 @@ public class EditBookAuthorsFragment
             getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
         }
 
-        List<String> names = mBookModel.getDb().getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED);
-        DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
-                getContext(), android.R.layout.simple_dropdown_item_1line, names);
+        final List<String> names =
+                mBookModel.getDb().getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED);
+        final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item, names);
         mAuthorNameView.setAdapter(nameAdapter);
 
         // set up the list view. The adapter is setup in onLoadFields
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(layoutManager);
         mListView.setHasFixedSize(true);
 
@@ -150,7 +152,7 @@ public class EditBookAuthorsFragment
         mListView.setAdapter(mListAdapter);
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
 
-        SimpleItemTouchHelperCallback sitHelperCallback =
+        final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mListView);
@@ -170,14 +172,14 @@ public class EditBookAuthorsFragment
     }
 
     private void onAdd() {
-        String name = mAuthorNameView.getText().toString().trim();
+        final String name = mAuthorNameView.getText().toString().trim();
         if (name.isEmpty()) {
             Snackbar.make(mAuthorNameView, R.string.warning_missing_name,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
 
-        Author newAuthor = Author.fromString(name);
+        final Author newAuthor = Author.fromString(name);
 
         // see if it already exists
         //noinspection ConstantConditions
@@ -246,12 +248,12 @@ public class EditBookAuthorsFragment
         // At this point, we know the name of the Author was modified
         // and the it's used in more than one place.
         // We need to ask the user if they want to make the changes globally.
-        String allBooks = getString(R.string.bookshelf_all_books);
-        String message = getString(R.string.confirm_apply_author_changed,
+        final String allBooks = getString(R.string.bookshelf_all_books);
+        final String message = getString(R.string.confirm_apply_author_changed,
                                    author.getSorting(getContext()),
                                    tmpData.getSorting(getContext()),
                                    allBooks);
-        new AlertDialog.Builder(getContext())
+        new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_scope_of_change)
                 .setMessage(message)
@@ -271,7 +273,7 @@ public class EditBookAuthorsFragment
                         Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
                                                   "author=" + author,
                                                   "tmpAuthor=" + tmpData);
-                        new AlertDialog.Builder(getContext())
+                        new MaterialAlertDialogBuilder(getContext())
                                 .setIconAttribute(android.R.attr.alertDialogIcon)
                                 .setMessage(R.string.error_unexpected_error)
                                 .show();
@@ -385,9 +387,9 @@ public class EditBookAuthorsFragment
             super.onCreate(savedInstanceState);
             mDb = new DAO(TAG);
 
-            Bundle args = requireArguments();
+            final Bundle args = requireArguments();
             mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
-            Objects.requireNonNull(mAuthor, "Author must be passed in args");
+            Objects.requireNonNull(mAuthor, ErrorMsg.ARGS_MISSING_AUTHOR);
 
             if (savedInstanceState == null) {
                 mFamilyName = mAuthor.getFamilyName();
@@ -415,20 +417,20 @@ public class EditBookAuthorsFragment
         @Override
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-            Objects.requireNonNull(getTargetFragment(), "no target fragment set");
+            Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
 
             // Reminder: *always* use the activity inflater here.
             //noinspection ConstantConditions
-            LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+            final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
             @SuppressLint("InflateParams")
-            View root = layoutInflater.inflate(R.layout.dialog_edit_book_author, null);
+            final View root = layoutInflater.inflate(R.layout.dialog_edit_book_author, null);
 
             //noinspection ConstantConditions
-            DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
-                    getContext(), android.R.layout.simple_dropdown_item_1line,
+            final DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
+                    getContext(), R.layout.dropdown_menu_popup_item,
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
-            DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
-                    getContext(), android.R.layout.simple_dropdown_item_1line,
+            final DiacriticArrayAdapter<String> mGivenNameAdapter = new DiacriticArrayAdapter<>(
+                    getContext(), R.layout.dropdown_menu_popup_item,
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
             // the dialog fields != screen fields.
@@ -447,8 +449,8 @@ public class EditBookAuthorsFragment
 
             mUseTypeBtn = root.findViewById(R.id.use_author_type_button);
             if (mUseTypeBtn != null) {
-                boolean useAuthorType = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
-                Group authorTypeGroup = root.findViewById(R.id.author_type_group);
+                final boolean useAuthorType = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
+                final Group authorTypeGroup = root.findViewById(R.id.author_type_group);
                 authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
                 if (useAuthorType) {
 
@@ -490,7 +492,7 @@ public class EditBookAuthorsFragment
                 }
             }
 
-            return new AlertDialog.Builder(getContext())
+            return new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_edit)
                     .setView(root)
                     .setTitle(R.string.title_edit_author)
@@ -508,7 +510,7 @@ public class EditBookAuthorsFragment
                         mGivenNames = mGivenNamesView.getText().toString().trim();
 
                         // Create a new Author as a holder for all changes.
-                        Author tmpAuthor = new Author(mFamilyName, mGivenNames);
+                        final Author tmpAuthor = new Author(mFamilyName, mGivenNames);
 
                         // allow for future layout(s) not displaying the isComplete checkbox
                         if (mIsCompleteView != null) {
@@ -543,10 +545,10 @@ public class EditBookAuthorsFragment
             if (getResources().getConfiguration().orientation
                 == Configuration.ORIENTATION_LANDSCAPE) {
                 // force the dialog to be big enough
-                Dialog dialog = getDialog();
+                final Dialog dialog = getDialog();
                 if (dialog != null) {
-                    int width = ViewGroup.LayoutParams.MATCH_PARENT;
-                    int height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    final int width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    final int height = ViewGroup.LayoutParams.WRAP_CONTENT;
                     //noinspection ConstantConditions
                     dialog.getWindow().setLayout(width, height);
                 }
@@ -585,7 +587,7 @@ public class EditBookAuthorsFragment
             // and this is more user friendly if they flip the switch more than once.
             mUseTypeBtn.setChecked(enable);
             for (int i = 0; i < mTypeButtons.size(); i++) {
-                CompoundButton typeBtn = mTypeButtons.valueAt(i);
+                final CompoundButton typeBtn = mTypeButtons.valueAt(i);
                 typeBtn.setEnabled(enable);
             }
         }
@@ -627,7 +629,8 @@ public class EditBookAuthorsFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            View view = getLayoutInflater().inflate(R.layout.row_edit_author_list, parent, false);
+            final View view = getLayoutInflater()
+                    .inflate(R.layout.row_edit_author_list, parent, false);
             return new Holder(view);
         }
 

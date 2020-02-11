@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public class StyleGroupsModel
         extends ViewModel {
@@ -65,7 +66,7 @@ public class StyleGroupsModel
     public void init(@NonNull final Bundle args) {
         if (mStyle == null) {
             mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
-            Objects.requireNonNull(mStyle, "Style must be passed in args");
+            Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
             mList = createList();
         }
     }

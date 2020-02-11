@@ -67,19 +67,19 @@ public class FastScroller {
             throw new IllegalArgumentException("Not a LinearLayoutManager");
         }
 
-        Context context = recyclerView.getContext();
-        StateListDrawable verticalThumbDrawable = (StateListDrawable)
+        final Context context = recyclerView.getContext();
+        final StateListDrawable verticalThumbDrawable = (StateListDrawable)
                 context.getDrawable(R.drawable.fastscroll_thumb);
-        Drawable verticalTrackDrawable =
+        final Drawable verticalTrackDrawable =
                 context.getDrawable(R.drawable.fastscroll_track);
-        StateListDrawable horizontalThumbDrawable = (StateListDrawable)
+        final StateListDrawable horizontalThumbDrawable = (StateListDrawable)
                 context.getDrawable(R.drawable.fastscroll_thumb);
-        Drawable horizontalTrackDrawable =
+        final Drawable horizontalTrackDrawable =
                 context.getDrawable(R.drawable.fastscroll_track);
 
-        Resources resources = context.getResources();
+        final Resources resources = context.getResources();
         //noinspection ConstantConditions
-        FastScrollerImpl fastScroller = new FastScrollerImpl(
+        final FastScrollerImpl fastScroller = new FastScrollerImpl(
                 recyclerView,
                 verticalThumbDrawable, verticalTrackDrawable,
                 horizontalThumbDrawable, horizontalTrackDrawable,
@@ -90,7 +90,7 @@ public class FastScroller {
 
         //Note: do not test the adapter here for being a PopupTextProvider,
         // it can still be null.
-        OverlayProvider overlay = null;
+        final OverlayProvider overlay;
         int thumbWidth = verticalThumbDrawable.getIntrinsicWidth();
         switch (FS_OVERLAY) {
             case Classic:
@@ -106,6 +106,9 @@ public class FastScroller {
                                                   PopupStyles.DEFAULT);
                 break;
             }
+            default:
+                overlay = null;
+                break;
         }
 
         fastScroller.setOverlayProvider(overlay);
@@ -122,8 +125,8 @@ public class FastScroller {
     @ColorInt
     static int getColorInt(@NonNull final Context context,
                            @SuppressWarnings("SameParameterValue") @AttrRes final int attr) {
-        Resources.Theme theme = context.getTheme();
-        TypedValue tv = new TypedValue();
+        final Resources.Theme theme = context.getTheme();
+        final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
         return context.getResources().getColor(tv.resourceId, theme);
     }

@@ -78,7 +78,7 @@ abstract class ApiHandlerNative {
             "Unexpected status code from API: ";
 
     @NonNull
-    protected final GoodreadsAuth mGoodreadsAuth;
+    final GoodreadsAuth mGoodreadsAuth;
 
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull

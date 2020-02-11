@@ -113,9 +113,10 @@ public class BookSearchActivity
         if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
-                SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
+                final SiteList siteList =
+                        data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                 if (siteList != null) {
-                    SearchCoordinator model =
+                    final SearchCoordinator model =
                             new ViewModelProvider(this).get(SearchCoordinator.class);
                     model.setSiteList(siteList);
                 }
@@ -126,7 +127,7 @@ public class BookSearchActivity
                 // We assume if the user explicitly went to settings to change the scanner
                 // they want to use it.
                 if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
-                    ScannerViewModel model =
+                    final ScannerViewModel model =
                             new ViewModelProvider(this).get(ScannerViewModel.class);
                     model.resetScanner();
                 }
@@ -138,7 +139,8 @@ public class BookSearchActivity
 
     @Override
     public void onBackPressed() {
-        ActivityResultDataModel model = new ViewModelProvider(this).get(ResultDataModel.class);
+        final ActivityResultDataModel model = new ViewModelProvider(this)
+                .get(ResultDataModel.class);
         setResult(Activity.RESULT_OK, model.getResultData());
         super.onBackPressed();
     }

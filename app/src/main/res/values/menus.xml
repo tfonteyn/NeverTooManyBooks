@@ -173,11 +173,11 @@
     <item name="SUBMENU_DEBUG" type="id" />
 
     <item name="MENU_DEBUG_PREFS" type="id" />
-    <item name="MENU_DEBUG_PURGE_TBL_BOOK_LIST_NODE_STATE" type="id" />
     <item name="MENU_DEBUG_DUMP_TEMP_TABLES" type="id" />
 
     <item name="MENU_DEBUG_SQ_SHELL" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
+    <item name="MENU_GOODREADS_TASKS" type="id" />
 
 </resources>

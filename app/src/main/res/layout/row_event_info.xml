@@ -48,7 +48,6 @@
     <TextView
         android:id="@+id/title"
         style="@style/Text"
-        android:layout_width="0dp"
         android:focusable="false"
         android:textIsSelectable="false"
         android:textStyle="bold"
@@ -61,7 +60,6 @@
     <TextView
         android:id="@+id/author"
         style="@style/Text"
-        android:layout_width="0dp"
         android:focusable="false"
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="@id/title"
@@ -105,7 +103,6 @@
     <TextView
         android:id="@+id/date"
         style="@style/Text.Small"
-        android:layout_width="0dp"
         android:focusable="false"
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"

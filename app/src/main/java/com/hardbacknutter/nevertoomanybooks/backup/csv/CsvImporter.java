@@ -432,6 +432,7 @@ public class CsvImporter
      * @param bookId the book id to lookup in our database
      */
     private boolean updateOnlyIfNewer(@NonNull final DAO db,
+                                      @SuppressWarnings("TypeMayBeWeakened")
                                       @NonNull final Book book,
                                       final long bookId) {
 
@@ -767,7 +768,8 @@ public class CsvImporter
      *
      * @throws ImportException iif no suitable column is present
      */
-    private void requireColumnOrThrow(@NonNull final Book book,
+    private void requireColumnOrThrow(@SuppressWarnings("TypeMayBeWeakened")
+                                      @NonNull final Book book,
                                       @NonNull final String... names)
             throws ImportException {
         for (String name : names) {
@@ -788,7 +790,8 @@ public class CsvImporter
      *
      * @throws ImportException if the required column is blank
      */
-    private void requireNonBlankOrThrow(@NonNull final Book book,
+    private void requireNonBlankOrThrow(@SuppressWarnings("TypeMayBeWeakened")
+                                        @NonNull final Book book,
                                         final int row,
                                         @SuppressWarnings("SameParameterValue")
                                         @NonNull final String name)
@@ -808,7 +811,8 @@ public class CsvImporter
      * @throws ImportException if no suitable column is present
      */
     @SuppressWarnings("unused")
-    private void requireNonBlankOrThrow(@NonNull final Book book,
+    private void requireNonBlankOrThrow(@SuppressWarnings("TypeMayBeWeakened")
+                                        @NonNull final Book book,
                                         final int row,
                                         @NonNull final String... names)
             throws ImportException {

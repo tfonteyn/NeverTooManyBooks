@@ -86,7 +86,7 @@ public class Md2PopupBackground
         mPaint.setAntiAlias(true);
         mPaint.setColor(FastScroller.getColorInt(context, R.attr.colorControlActivated));
         mPaint.setStyle(Paint.Style.FILL);
-        Resources resources = context.getResources();
+        final Resources resources = context.getResources();
         mPaddingStart = resources.getDimensionPixelOffset(R.dimen.afs_md2_popup_padding_start);
         mPaddingEnd = resources.getDimensionPixelOffset(R.dimen.afs_md2_popup_padding_end);
     }
@@ -143,18 +143,18 @@ public class Md2PopupBackground
 
         mPath.reset();
 
-        Rect bounds = getBounds();
+        final Rect bounds = getBounds();
         float width = bounds.width();
-        float height = bounds.height();
-        float r = height / 2;
-        float sqrt2 = (float) Math.sqrt(2);
+        final float height = bounds.height();
+        final float r = height / 2;
+        final float sqrt2 = (float) Math.sqrt(2);
         // Ensure we are convex.
         width = Math.max(r + sqrt2 * r, width);
         pathArcTo(mPath, r, r, r, 90, 180);
-        float o1X = width - sqrt2 * r;
+        final float o1X = width - sqrt2 * r;
         pathArcTo(mPath, o1X, r, r, -90, 45f);
-        float r2 = r / 5;
-        float o2X = width - sqrt2 * r2;
+        final float r2 = r / 5;
+        final float o2X = width - sqrt2 * r2;
         pathArcTo(mPath, o2X, r, r2, -45, 90);
         pathArcTo(mPath, o1X, r, r, 45f, 45f);
         mPath.close();

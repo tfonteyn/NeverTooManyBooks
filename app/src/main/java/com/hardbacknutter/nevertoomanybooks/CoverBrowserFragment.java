@@ -45,7 +45,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -53,6 +52,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -62,6 +62,7 @@ import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -111,8 +112,8 @@ public class CoverBrowserFragment
     @NonNull
     public static CoverBrowserFragment newInstance(@NonNull final String isbn,
                                                    final int cIdx) {
-        CoverBrowserFragment frag = new CoverBrowserFragment();
-        Bundle args = new Bundle(1);
+        final CoverBrowserFragment frag = new CoverBrowserFragment();
+        final Bundle args = new Bundle(1);
         args.putString(DBDefinitions.KEY_ISBN, isbn);
         args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
         frag.setArguments(args);
@@ -126,7 +127,7 @@ public class CoverBrowserFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Objects.requireNonNull(getTargetFragment(), "no target fragment set");
+        Objects.requireNonNull(getTargetFragment(), ErrorMsg.NO_TARGET_FRAGMENT_SET);
 
         mGalleryAdapter = new GalleryAdapter(ImageUtils.SCALE_MEDIUM);
 
@@ -144,15 +145,15 @@ public class CoverBrowserFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.dialog_cover_browser, null);
+        final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+        final View root = layoutInflater.inflate(R.layout.dialog_cover_browser, null);
 
         // keep the user informed.
         mStatusTextView = root.findViewById(R.id.statusMessage);
 
         // The gallery displays a list of images, one for each edition.
-        RecyclerView listView = root.findViewById(R.id.gallery);
-        LinearLayoutManager galleryLayoutManager = new LinearLayoutManager(getContext());
+        final RecyclerView listView = root.findViewById(R.id.gallery);
+        final LinearLayoutManager galleryLayoutManager = new LinearLayoutManager(getContext());
         galleryLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
         listView.setLayoutManager(galleryLayoutManager);
         //noinspection ConstantConditions
@@ -192,7 +193,7 @@ public class CoverBrowserFragment
         });
 
         //noinspection ConstantConditions
-        return new AlertDialog.Builder(getContext())
+        return new MaterialAlertDialogBuilder(getContext())
                 .setView(root)
                 .create();
     }
@@ -232,7 +233,8 @@ public class CoverBrowserFragment
             return;
         }
 
-        Objects.requireNonNull(mGalleryAdapter).notifyDataSetChanged();
+        Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
+        mGalleryAdapter.notifyDataSetChanged();
 
         // Show help message
         mStatusTextView.setText(R.string.info_tap_on_thumb);
@@ -246,9 +248,9 @@ public class CoverBrowserFragment
      * @param fileInfo the file we got, if any
      */
     private void setGalleryImage(@NonNull final CoverBrowserViewModel.FileInfo fileInfo) {
-        Objects.requireNonNull(mGalleryAdapter);
+        Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
 
-        int editionIndex = mAlternativeEditions.indexOf(fileInfo.isbn);
+        final int editionIndex = mAlternativeEditions.indexOf(fileInfo.isbn);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
             Log.d(TAG, "setGalleryImage"
@@ -257,7 +259,7 @@ public class CoverBrowserFragment
 
         if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
             // Load the temp file and apply to the gallery view
-            File tmpFile = new File(fileInfo.fileSpec);
+            final File tmpFile = new File(fileInfo.fileSpec);
             if (tmpFile.exists()) {
                 tmpFile.deleteOnExit();
                 mGalleryAdapter.notifyItemChanged(editionIndex);
@@ -292,15 +294,15 @@ public class CoverBrowserFragment
 
         if (fileInfo.fileSpec != null && !fileInfo.fileSpec.isEmpty()) {
             // Load the temp file and apply to the switcher
-            File file = new File(fileInfo.fileSpec);
+            final File file = new File(fileInfo.fileSpec);
             if (file.length() > ImageUtils.MIN_IMAGE_FILE_SIZE) {
                 // store the path. It will be send back to the caller.
                 mSelectedFileSpec = file.getAbsolutePath();
 
                 //noinspection ConstantConditions
                 @Nullable
-                Bitmap bm = ImageUtils.createScaledBitmap(getContext(), file,
-                                                          ImageUtils.SCALE_X_LARGE);
+                final Bitmap bm = ImageUtils.createScaledBitmap(getContext(), file,
+                                                                ImageUtils.SCALE_X_LARGE);
                 if (bm != null) {
                     mImageSwitcherView.setImageDrawable(new BitmapDrawable(getResources(), bm));
                     mImageSwitcherView.setVisibility(View.VISIBLE);
@@ -348,7 +350,7 @@ public class CoverBrowserFragment
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter(@ImageUtils.Scale final int scale) {
             //noinspection ConstantConditions
-            int maxSize = ImageUtils.getMaxImageSize(getContext(), scale);
+            final int maxSize = ImageUtils.getMaxImageSize(getContext(), scale);
             mHeight = maxSize;
             mWidth = maxSize;
         }
@@ -358,7 +360,7 @@ public class CoverBrowserFragment
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            ImageView imageView = new ImageView(parent.getContext());
+            final ImageView imageView = new ImageView(parent.getContext());
             // Deliberately keep sizes fixed (square) to prevent gallery constantly changing size.
             imageView.setLayoutParams(new ViewGroup.LayoutParams(mWidth, mHeight));
             imageView.setBackgroundResource(R.drawable.border);
@@ -370,7 +372,7 @@ public class CoverBrowserFragment
                                      final int position) {
 
             // fetch an image based on the isbn
-            String isbn = mAlternativeEditions.get(position);
+            final String isbn = mAlternativeEditions.get(position);
 
             // Get the image file; try the sizes in order as specified here.
             holder.fileInfo = mModel.getFileManager()
@@ -415,7 +417,7 @@ public class CoverBrowserFragment
             // image from gallery clicked -> load it into the larger preview (imageSwitcher).
             holder.imageView.setOnClickListener(v -> {
                 // check if we actually have a preview in the gallery
-                String fileSpec = holder.fileInfo.fileSpec;
+                final String fileSpec = holder.fileInfo.fileSpec;
                 if (fileSpec != null && !fileSpec.isEmpty()) {
                     //noinspection ConstantConditions
                     if (holder.fileInfo.size.equals(SearchEngine.CoverByIsbn.ImageSize.Large)) {

@@ -148,7 +148,7 @@ public class PreferredStylesViewModel
 
         } else {
             // Existing Style edited.
-            BooklistStyle origStyle = mList.get(editedRow);
+            final BooklistStyle origStyle = mList.get(editedRow);
             if (!origStyle.equals(style)) {
                 if (origStyle.isUserDefined()) {
                     // A clone of an user-defined. Put it directly after the user-defined
