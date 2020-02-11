@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TrackedCursor;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -228,7 +229,7 @@ public class BooksOnBookshelfModel
             }
         }
 
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
+        final Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
 
         if (currentArgs == null) {
             // Get preferred booklist state to use from preferences;
@@ -241,7 +242,7 @@ public class BooksOnBookshelfModel
                                                BooklistBuilder.PREF_REBUILD_SAVED_STATE);
         }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // Restore list position on bookshelf
         mTopRowRowId = prefs.getLong(PREF_BOB_TOP_ROW_ID, 0);
 
@@ -304,7 +305,7 @@ public class BooksOnBookshelfModel
 
     @NonNull
     public Bookshelf getCurrentBookshelf() {
-        Objects.requireNonNull(mCurrentBookshelf);
+        Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
         return mCurrentBookshelf;
     }
 
@@ -326,7 +327,7 @@ public class BooksOnBookshelfModel
      */
     @NonNull
     public BooklistStyle getCurrentStyle(@NonNull final Context context) {
-        Objects.requireNonNull(mCurrentBookshelf);
+        Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
         return mCurrentBookshelf.getStyle(context, mDb);
     }
 
@@ -338,7 +339,7 @@ public class BooksOnBookshelfModel
      */
     public void setCurrentStyle(@NonNull final Context context,
                                 @NonNull final BooklistStyle style) {
-        Objects.requireNonNull(mCurrentBookshelf);
+        Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
         mCurrentBookshelf.setStyle(context, mDb, style);
     }
 
@@ -350,7 +351,7 @@ public class BooksOnBookshelfModel
      */
     public void onStyleChanged(@NonNull final Context context,
                                @NonNull final BooklistStyle style) {
-        Objects.requireNonNull(mCurrentBookshelf);
+        Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
 
         // save the new bookshelf/style combination
         mCurrentBookshelf.setAsPreferred(context);
@@ -420,12 +421,12 @@ public class BooksOnBookshelfModel
      * @param context Current context
      */
     public void initBookList(@NonNull final Context context) {
-        Objects.requireNonNull(mCurrentBookshelf);
+        Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
 
-        BooklistStyle style = mCurrentBookshelf.getStyle(context, mDb);
+        final BooklistStyle style = mCurrentBookshelf.getStyle(context, mDb);
 
         // get a new builder and add the required extra domains
-        BooklistBuilder blb = new BooklistBuilder(mCurrentBookshelf, style);
+        final BooklistBuilder blb = new BooklistBuilder(mCurrentBookshelf, style);
 
         // Title for displaying + the book language
         blb.addExtraDomain(DBDefinitions.DOM_TITLE,
@@ -443,6 +444,11 @@ public class BooksOnBookshelfModel
         // The read flag
         blb.addExtraDomain(DBDefinitions.DOM_BOOK_READ,
                            DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ),
+                           false);
+
+        // Always get the ISBN
+        blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISBN,
+                           DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN),
                            false);
 
         // Always get the Author ID (the name is depending on style).
@@ -488,28 +494,20 @@ public class BooksOnBookshelfModel
                                false);
         }
 
-        /*
-         * If we do not use a background task for the extras,
-         * then we add the needed extras columns to the main query.
-         * Depending on the device speed, and how the user uses styles,
-         * BOTH methods can be advantageous.
-         * Hence this is a preference <strong>per style</strong>.
-         */
-        if (!style.useTaskForExtras()) {
-            if (style.isExtraUsed(DBDefinitions.KEY_BOOKSHELF)) {
-                blb.addExtraDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
-                                   BOOKSHELVES_CSV_SOURCE_EXPRESSION, false);
-            }
+        if (style.isExtraUsed(DBDefinitions.KEY_BOOKSHELF)) {
+            blb.addExtraDomain(DBDefinitions.DOM_BOOKSHELF_CSV,
+                               BOOKSHELVES_CSV_SOURCE_EXPRESSION, false);
+        }
 
-            // we fetch ONLY the primary author
-            if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-                blb.addExtraDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
-                                   style.showAuthorGivenNameFirst(context)
-                                   ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                                   : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
-                                   false);
-            }
-            // and for now, don't get the author type.
+        // we fetch ONLY the primary author
+        if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+            blb.addExtraDomain(DBDefinitions.DOM_AUTHOR_FORMATTED,
+                               style.showAuthorGivenNameFirst(context)
+                               ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
+                               : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
+                               false);
+        }
+        // for now, don't get the author type.
 //                if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
 //                    blb.addExtraDomain(DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
 //                                      DBDefinitions.TBL_BOOK_AUTHOR
@@ -517,31 +515,25 @@ public class BooksOnBookshelfModel
 //                                      false);
 //                }
 
-            if (style.isExtraUsed(DBDefinitions.KEY_PUBLISHER)) {
-                blb.addExtraDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PUBLISHER),
-                                   false);
-            }
-            if (style.isExtraUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
-                blb.addExtraDomain(DBDefinitions.DOM_DATE_PUBLISHED,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED),
-                                   false);
-            }
-            if (style.isExtraUsed(DBDefinitions.KEY_ISBN)) {
-                blb.addExtraDomain(DBDefinitions.DOM_BOOK_ISBN,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN),
-                                   false);
-            }
-            if (style.isExtraUsed(DBDefinitions.KEY_FORMAT)) {
-                blb.addExtraDomain(DBDefinitions.DOM_BOOK_FORMAT,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT),
-                                   false);
-            }
-            if (style.isExtraUsed(DBDefinitions.KEY_LOCATION)) {
-                blb.addExtraDomain(DBDefinitions.DOM_BOOK_LOCATION,
-                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION),
-                                   false);
-            }
+        if (style.isExtraUsed(DBDefinitions.KEY_PUBLISHER)) {
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_PUBLISHER,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PUBLISHER),
+                               false);
+        }
+        if (style.isExtraUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
+            blb.addExtraDomain(DBDefinitions.DOM_DATE_PUBLISHED,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED),
+                               false);
+        }
+        if (style.isExtraUsed(DBDefinitions.KEY_FORMAT)) {
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_FORMAT,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT),
+                               false);
+        }
+        if (style.isExtraUsed(DBDefinitions.KEY_LOCATION)) {
+            blb.addExtraDomain(DBDefinitions.DOM_BOOK_LOCATION,
+                               DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION),
+                               false);
         }
 
         // if we have a list of ID's, ignore other criteria.
@@ -635,7 +627,7 @@ public class BooksOnBookshelfModel
      * @return {@code true} if this book is available for lending.
      */
     public boolean isAvailable(@NonNull final RowDataHolder rowData) {
-        String loanee;
+        final String loanee;
         if (rowData.contains(DBDefinitions.KEY_LOANEE)) {
             loanee = rowData.getString(DBDefinitions.KEY_LOANEE);
         } else {
@@ -657,14 +649,14 @@ public class BooksOnBookshelfModel
                                    @NonNull final RowDataHolder rowData) {
         if (rowData.contains(DBDefinitions.KEY_FK_AUTHOR)
             && rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0) {
-            Author author = mDb.getAuthor(rowData.getLong(DBDefinitions.KEY_FK_AUTHOR));
+            final Author author = mDb.getAuthor(rowData.getLong(DBDefinitions.KEY_FK_AUTHOR));
             if (author != null) {
                 return author.getLabel(context);
             }
 
         } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_KIND)
                    == BooklistGroup.RowKind.BOOK) {
-            List<Author> authors = mDb.getAuthorsByBookId(
+            final List<Author> authors = mDb.getAuthorsByBookId(
                     rowData.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
                 return authors.get(0).getLabel(context);
@@ -684,13 +676,13 @@ public class BooksOnBookshelfModel
     public String getSeriesFromRow(@NonNull final RowDataHolder rowData) {
         if (rowData.contains(DBDefinitions.KEY_FK_SERIES)
             && rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0) {
-            Series series = mDb.getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
+            final Series series = mDb.getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
             if (series != null) {
                 return series.getTitle();
             }
         } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_KIND)
                    == BooklistGroup.RowKind.BOOK) {
-            ArrayList<Series> series =
+            final ArrayList<Series> series =
                     mDb.getSeriesByBookId(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0).getTitle();
@@ -710,7 +702,7 @@ public class BooksOnBookshelfModel
 
     @SuppressWarnings("UnusedReturnValue")
     public boolean reloadCurrentBookshelf(@NonNull final Context context) {
-        Bookshelf newBookshelf = Bookshelf.getBookshelf(context, mDb, true);
+        final Bookshelf newBookshelf = Bookshelf.getBookshelf(context, mDb, true);
         if (!newBookshelf.equals(mCurrentBookshelf)) {
             // if it was.. switch to it.
             mCurrentBookshelf = newBookshelf;
@@ -765,46 +757,46 @@ public class BooksOnBookshelfModel
 
     @Nullable
     public ArrayList<RowStateDAO.ListRowDetails> getTargetRows() {
-        Objects.requireNonNull(mCursor);
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().getTargetRows(mDesiredCentralBookId);
     }
 
     public boolean toggleNode(final long rowId) {
-        Objects.requireNonNull(mCursor);
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().toggleNode(rowId);
     }
 
     @NonNull
     public BooklistCursor getNewListCursor() {
-        Objects.requireNonNull(mCursor);
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().getNewListCursor();
     }
 
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
-        Objects.requireNonNull(mCursor);
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().getCurrentBookIdList();
     }
 
     @NonNull
     public String createFlattenedBooklist() {
-        Objects.requireNonNull(mCursor);
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().createFlattenedBooklist();
     }
 
     public int getListPosition(final long rowId) {
-        Objects.requireNonNull(mCursor);
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().getListPosition(rowId);
     }
 
     public void expandAllNodes(final int topLevel,
                                final boolean expand) {
-        Objects.requireNonNull(mCursor);
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         mCursor.getBooklistBuilder().expandAllNodes(topLevel, expand);
     }
 
     public void saveAllNodes() {
-        Objects.requireNonNull(mCursor);
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         mCursor.getBooklistBuilder().saveAllNodes();
     }
 
@@ -876,7 +868,7 @@ public class BooksOnBookshelfModel
          */
         @NonNull
         public String getFtsSearchText() {
-            Collection<String> list = new ArrayList<>();
+            final Collection<String> list = new ArrayList<>();
 
             if (ftsAuthor != null && !ftsAuthor.isEmpty()) {
                 list.add(ftsAuthor);

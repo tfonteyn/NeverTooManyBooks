@@ -49,16 +49,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -76,7 +74,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
  */
 public class EditBookFieldsFragment
-        extends EditBookBaseFragment {
+        extends EditBookBaseFragment
+        implements CoverHandler.HostingFragment {
 
     /** Log tag. */
     public static final String TAG = "EditBookFieldsFragment";
@@ -121,7 +120,7 @@ public class EditBookFieldsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
+        final View view = inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
         mAuthorView = view.findViewById(R.id.author);
         mSeriesView = view.findViewById(R.id.series);
         mTitleView = view.findViewById(R.id.title);
@@ -145,23 +144,29 @@ public class EditBookFieldsFragment
     @Override
     protected void initFields() {
         super.initFields();
-        Fields fields = getFields();
+        final Fields fields = getFields();
 
-        // book fields
+        //noinspection ConstantConditions
+        final boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
+        if (!showAuthSeriesOnTabs) {
+            // The button to bring up the fragment to edit Authors.
+            // Not shown if the user preferences are set to use an extra tab for this.
+            // defined, but populated/stored manually
+            fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
+                  .setRelatedFields(R.id.lbl_author);
+            mAuthorView.setOnClickListener(v -> showEditListFragment(new EditBookAuthorsFragment(),
+                                                                     EditBookAuthorsFragment.TAG));
+
+            // The button to bring up the fragment to edit Series.
+            // Not shown if the user preferences are set to use an extra tab for this.
+            // defined, but populated/stored manually
+            fields.define(mSeriesView, DBDefinitions.KEY_SERIES_TITLE)
+                  .setRelatedFields(R.id.lbl_series);
+            mSeriesView.setOnClickListener(v -> showEditListFragment(new EditBookSeriesFragment(),
+                                                                     EditBookSeriesFragment.TAG));
+        }
 
         fields.addString(mTitleView, DBDefinitions.KEY_TITLE);
-
-        // defined, but populated/stored manually
-        fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
-              .setRelatedFields(R.id.lbl_author);
-        mAuthorView.setOnClickListener(v -> showEditListFragment(new EditBookAuthorsFragment(),
-                                                                 EditBookAuthorsFragment.TAG));
-
-        // defined, but populated/stored manually
-        fields.define(mSeriesView, DBDefinitions.KEY_SERIES_TITLE)
-              .setRelatedFields(R.id.lbl_series);
-        mSeriesView.setOnClickListener(v -> showEditListFragment(new EditBookSeriesFragment(),
-                                                                 EditBookSeriesFragment.TAG));
 
         fields.addString(mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
@@ -173,25 +178,25 @@ public class EditBookFieldsFragment
         mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, true);
         mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
         mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
-        mScanIsbnButton.setOnClickListener(
-                v -> Objects.requireNonNull(mScannerModel)
-                            .scan(this, UniqueId.REQ_SCAN_BARCODE));
+        mScanIsbnButton.setOnClickListener(v -> {
+            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+            mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+        });
 
-        Field<String> field;
-
-        field = fields.addString(mGenreView, DBDefinitions.KEY_GENRE)
-                      .setRelatedFields(R.id.lbl_genre);
-        initValuePicker(field, mGenreView, R.string.lbl_genre, R.id.btn_genre,
-                        mBookModel.getGenres());
+        fields.addString(mGenreView, DBDefinitions.KEY_GENRE)
+              .setRelatedFields(R.id.lbl_genre)
+              .setAutocomplete(mGenreView, mBookModel.getGenres());
 
         // Personal fields
 
-        // defined, but populated/stored manually
+        // The button to bring up the dialog to edit Bookshelves.
         // Storing the list back into the book is handled by onCheckListEditorSave
-        field = fields.define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
-                      .setRelatedFields(R.id.lbl_bookshelves);
-        initCheckListEditor(field, mBookshelvesView, R.string.lbl_bookshelves_long,
-                            () -> mBookModel.getEditableBookshelvesList());
+        // defined, but populated/stored manually
+        fields.define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
+              .setRelatedFields(R.id.lbl_bookshelves)
+              .addCheckListPicker(getChildFragmentManager(), mBookshelvesView,
+                                  R.string.lbl_bookshelves_long,
+                                  () -> mBookModel.getEditableBookshelvesList());
     }
 
     @CallSuper
@@ -214,12 +219,17 @@ public class EditBookFieldsFragment
         super.onLoadFields(book);
 
         if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
-            setupCoverView(book, 0, ImageUtils.SCALE_MEDIUM);
-            setupCoverView(book, 1, ImageUtils.SCALE_MEDIUM);
-        }
+            // Hook up the indexed cover image.
+            mCoverHandler[0] = new CoverHandler(this, mProgressBar,
+                                                book, mIsbnView, 0,
+                                                mCoverView[0], ImageUtils.SCALE_MEDIUM);
 
+            mCoverHandler[1] = new CoverHandler(this, mProgressBar,
+                                                book, mIsbnView, 1,
+                                                mCoverView[1], ImageUtils.SCALE_MEDIUM);
+        }
         //noinspection ConstantConditions
-        boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
+        final boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
 
         if (!showAuthSeriesOnTabs) {
             populateAuthorListField(book);
@@ -238,6 +248,12 @@ public class EditBookFieldsFragment
         }
     }
 
+    /** Called by the CoverHandler when a context menu is selected. */
+    @Override
+    public void setCurrentCoverIndex(final int cIdx) {
+        mCurrentCoverHandlerIndex = cIdx;
+    }
+
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
@@ -251,13 +267,18 @@ public class EditBookFieldsFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_STRICT_ISBN) {
-            mStrictIsbn = !item.isChecked();
-            item.setChecked(mStrictIsbn);
-            mIsbnValidationTextWatcher.setStrictIsbn(mStrictIsbn);
-            return true;
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_STRICT_ISBN: {
+                mStrictIsbn = !item.isChecked();
+                item.setChecked(mStrictIsbn);
+                mIsbnValidationTextWatcher.setStrictIsbn(mStrictIsbn);
+                return true;
+            }
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -272,7 +293,8 @@ public class EditBookFieldsFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case UniqueId.REQ_SCAN_BARCODE: {
-                Objects.requireNonNull(mScannerModel).setScannerStarted(false);
+                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
                     if (BuildConfig.DEBUG) {
                         //noinspection ConstantConditions
@@ -280,20 +302,20 @@ public class EditBookFieldsFragment
                     }
 
                     //noinspection ConstantConditions
-                    String barCode = mScannerModel.getScanner().getBarcode(getContext(), data);
+                    final String barCode =
+                            mScannerModel.getScanner().getBarcode(getContext(), data);
                     if (barCode != null) {
                         mBookModel.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
                         return;
                     }
                 }
-
                 return;
             }
 
             default: {
                 // handle any cover image request codes
                 if (mCurrentCoverHandlerIndex >= -1) {
-                    boolean handled = mCoverHandler[mCurrentCoverHandlerIndex]
+                    final boolean handled = mCoverHandler[mCurrentCoverHandlerIndex]
                             .onActivityResult(requestCode, resultCode, data);
                     mCurrentCoverHandlerIndex = -1;
                     if (handled) {
@@ -337,60 +359,21 @@ public class EditBookFieldsFragment
     }
 
     /**
-     * Hook up the indexed cover image.
-     *
-     * @param book  the book
-     * @param cIdx  0..n image index
-     * @param scale image scale to apply
-     */
-    private void setupCoverView(@NonNull final Book book,
-                                final int cIdx,
-                                @SuppressWarnings("SameParameterValue")
-                                @ImageUtils.Scale final int scale) {
-
-        mCoverHandler[cIdx] = new CoverHandler(this, mProgressBar,
-                                               book, mIsbnView, cIdx,
-                                               mCoverView[cIdx], scale);
-        mCoverHandler[cIdx].setImage();
-
-        // Allow zooming by clicking on the image;
-        // If there is no actual image, bring up the context menu instead.
-        mCoverView[cIdx].setOnClickListener(v -> {
-            File image = mCoverHandler[cIdx].getCoverFile();
-            if (image.exists()) {
-                ZoomedImageDialogFragment.show(getParentFragmentManager(), image);
-            } else {
-                mCurrentCoverHandlerIndex = cIdx;
-                mCoverHandler[cIdx].onCreateContextMenu();
-            }
-        });
-
-        mCoverView[cIdx].setOnLongClickListener(v -> {
-            mCurrentCoverHandlerIndex = cIdx;
-            mCoverHandler[cIdx].onCreateContextMenu();
-            return true;
-        });
-    }
-
-    /**
      * Handle the Bookshelf default.
      * <p>
      * <br>{@inheritDoc}
      */
     @Override
-    protected void onLoadFieldsFromNewData(@NonNull final Book book,
-                                           @Nullable final Bundle args) {
-        super.onLoadFieldsFromNewData(book, args);
+    protected void onAddFromNewData(@NonNull final Book book,
+                                    @Nullable final Bundle args) {
+        super.onAddFromNewData(book, args);
 
-        // If the new book is not on any Bookshelf, use the current bookshelf as default
-        ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-
+        // If the new book is not on any Bookshelf, add the current bookshelf by default
+        final ArrayList<Bookshelf> list =
+                book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         if (list.isEmpty()) {
             //noinspection ConstantConditions
-            Bookshelf bookshelf = mBookModel.getBookshelf(getContext());
-
-            getFields().getField(mBookshelvesView).setValue(bookshelf.getName());
-            // add to set, and store in book.
+            final Bookshelf bookshelf = mBookModel.getBookshelf(getContext());
             list.add(bookshelf);
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
@@ -399,10 +382,10 @@ public class EditBookFieldsFragment
     private void populateAuthorListField(@NonNull final Book book) {
         //noinspection ConstantConditions
         @NonNull
-        Context context = getContext();
-        Locale locale = LocaleUtils.getUserLocale(context);
+        final Context context = getContext();
+        final Locale locale = LocaleUtils.getUserLocale(context);
 
-        ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        final ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(),
                                                            locale, false)) {
             mBookModel.setDirty(true);
@@ -415,7 +398,8 @@ public class EditBookFieldsFragment
             // in which case it contains whatever the user typed.
             value = book.getString(UniqueId.BKEY_SEARCH_AUTHOR);
         }
-        getFields().getField(mAuthorView).setValue(value);
+
+        getFields().getField(mAuthorView).getAccessor().setValue(value);
     }
 
     private void populateSeriesListField(@NonNull final Book book) {
@@ -423,7 +407,7 @@ public class EditBookFieldsFragment
         @NonNull
         Context context = getContext();
 
-        ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        final ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(),
                                                            book.getLocale(context), false)) {
             mBookModel.setDirty(true);
@@ -439,28 +423,17 @@ public class EditBookFieldsFragment
                 value += ' ' + getString(R.string.and_others);
             }
         }
-        getFields().getField(mSeriesView).setValue(value);
+
+        getFields().getField(mSeriesView).getAccessor().setValue(value);
     }
 
     private void populateBookshelvesField(final Book book) {
 
-        ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        final ArrayList<Bookshelf> list =
+                book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
 
         //noinspection ConstantConditions
-        String value = Csv.join(", ", list, bookshelf -> bookshelf.getLabel(getContext()));
-        getFields().getField(mBookshelvesView).setValue(value);
-
-        // above code simply shows all bookshelves. Below, we show first one only + "et.al".
-        // String value;
-        // if (list.isEmpty()) {
-        //     value = "";
-        // } else {
-        //     //noinspection ConstantConditions
-        //     value = list.get(0).getLabel(getContext());
-        //     if (list.size() > 1) {
-        //         value += ' ' + getString(R.string.and_others);
-        //     }
-        // }
-        // getFields().getField(R.id.bookshelves).setValue(value);
+        final String value = Csv.join(", ", list, bookshelf -> bookshelf.getLabel(getContext()));
+        getFields().getField(mBookshelvesView).getAccessor().setValue(value);
     }
 }

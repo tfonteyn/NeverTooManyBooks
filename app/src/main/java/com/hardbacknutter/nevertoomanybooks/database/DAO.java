@@ -3353,10 +3353,8 @@ public class DAO
                         // Try to set the appropriate value, but if that fails, just use TEXT...
                         switch (columnInfo.storageClass) {
                             case Real: {
-                                if (entry instanceof Float) {
-                                    cv.put(columnInfo.name, (Float) entry);
-                                } else if (entry instanceof Double) {
-                                    cv.put(columnInfo.name, (Double) entry);
+                                if (entry instanceof Number) {
+                                    cv.put(columnInfo.name, ((Number) entry).doubleValue());
                                 } else {
                                     // Theoretically we should only get here during an import,
                                     // where everything is handled as a String.
@@ -4722,7 +4720,6 @@ public class DAO
                 + ',' + TBL_BOOKS.dot(KEY_LOCATION)
                 + ',' + TBL_BOOKS.dot(KEY_FORMAT)
                 + ',' + TBL_BOOKS.dot(KEY_PUBLISHER)
-                + ',' + TBL_BOOKS.dot(KEY_ISBN)
                 + ',' + TBL_BOOKS.dot(KEY_DATE_PUBLISHED)
 
                 + ',' + "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')"

@@ -66,7 +66,9 @@ import com.hardbacknutter.nevertoomanybooks.cropper.CropImageActivity;
 import com.hardbacknutter.nevertoomanybooks.cropper.CropImageViewTouchBase;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -81,6 +83,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 /**
  * Handler for a displayed Cover ImageView element.
  * Offers context menus and all operations applicable on a Cover image.
+ * The fragment using this must implement {@link HostingFragment} if it hosts more then 1
+ * instance of this class. See {@link #onViewContextItemSelected}.
+ * It informs the fragment of the cover image index to use in its
+ * {@link Fragment#onActivityResult(int, int, Intent)}
+ *
  * <p>
  * Layer Type to use for the Cropper.
  * <p>
@@ -108,8 +115,7 @@ public class CoverHandler {
     /** After taking a picture, edit. */
     private static final int CAMERA_NEXT_ACTION_EDIT = 2;
 
-
-    /** The fragment hosting us. */
+    /** The fragment hosting us. Should implement HostingFragment. */
     @NonNull
     private final Fragment mFragment;
     @NonNull
@@ -139,7 +145,7 @@ public class CoverHandler {
     /**
      * Constructor.
      *
-     * @param fragment    the hosting fragment
+     * @param fragment    the hosting fragment, should implement {@link HostingFragment}
      * @param progressBar (optional) a progress bar
      * @param book        the book whose cover we're handling
      * @param isbnView    the view to read the *current* ISBN from
@@ -163,9 +169,28 @@ public class CoverHandler {
         mIsbnView = isbnView;
         mCIdx = cIdx;
         mCoverView = coverView;
-        int maxSize = ImageUtils.getMaxImageSize(mContext, scale);
+        final int maxSize = ImageUtils.getMaxImageSize(mContext, scale);
         mMaxHeight = maxSize;
         mMaxWidth = maxSize;
+
+        // Allow zooming by clicking on the image;
+        // If there is no actual image, bring up the context menu instead.
+        mCoverView.setOnClickListener(v -> {
+            final File image = getCoverFile();
+            if (image.exists()) {
+                ZoomedImageDialogFragment.show(fragment.getParentFragmentManager(), image);
+            } else {
+                onCreateContextMenu();
+            }
+        });
+
+        mCoverView.setOnLongClickListener(v -> {
+            onCreateContextMenu();
+            return true;
+        });
+
+        // finally load the image.
+        setImage(getCoverFile());
     }
 
     /**
@@ -182,7 +207,7 @@ public class CoverHandler {
     /**
      * Context menu for the image.
      */
-    void onCreateContextMenu() {
+    private void onCreateContextMenu() {
         Menu menu = MenuPicker.createMenu(mContext);
         new MenuInflater(mContext).inflate(R.menu.image, menu);
 
@@ -191,7 +216,7 @@ public class CoverHandler {
             title = mContext.getString(R.string.title_cover);
         } else {
             // there is no current image; only show the replace menu
-            MenuItem menuItem = menu.findItem(R.id.SUBMENU_THUMB_REPLACE);
+            final MenuItem menuItem = menu.findItem(R.id.SUBMENU_THUMB_REPLACE);
             menu = menuItem.getSubMenu();
             title = menuItem.getTitle();
         }
@@ -214,6 +239,14 @@ public class CoverHandler {
      */
     private boolean onViewContextItemSelected(@NonNull final MenuItem menuItem,
                                               @NonNull final Integer position) {
+
+        // prepare the fragment for results.
+        // This is needed as for example when we start the camera, we can't tell afterwards
+        // which index we're handling. So let the fragment know BEFORE.
+        if (mFragment instanceof HostingFragment) {
+            ((HostingFragment) mFragment).setCurrentCoverIndex(mCIdx);
+        }
+
         switch (menuItem.getItemId()) {
             case R.id.MENU_DELETE: {
                 deleteCoverFile(mContext);
@@ -273,21 +306,20 @@ public class CoverHandler {
      *
      * @return {@code true} when handled, {@code false} if unknown requestCode
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {
         switch (requestCode) {
             case UniqueId.REQ_ACTION_COVER_BROWSER: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     processCoverBrowserResult(data);
                 }
                 return true;
             }
             case UniqueId.REQ_ACTION_GET_CONTENT: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     processChooserResult(data);
                 }
                 return true;
@@ -295,10 +327,10 @@ public class CoverHandler {
             case UniqueId.REQ_ACTION_IMAGE_CAPTURE: {
                 if (resultCode == Activity.RESULT_OK) {
                     //noinspection ConstantConditions
-                    File source = mCameraHelper.getFile(mContext, data);
+                    final File source = mCameraHelper.getFile(mContext, data);
                     if (source != null && source.exists()) {
                         // always store/display first.
-                        File destination = getCoverFile();
+                        final File destination = getCoverFile();
 
                         //URGENT: check file size and ask user if we should compress it
                         // and add a preference to 'always compress if over certain size'
@@ -308,8 +340,9 @@ public class CoverHandler {
                         setImage(destination);
                         // anything else?
                         @CameraNextAction
-                        int action = PIntString.getListPreference(Prefs.pk_camera_image_action,
-                                                                  CAMERA_NEXT_ACTION_NOTHING);
+                        final int action =
+                                PIntString.getListPreference(Prefs.pk_camera_image_action,
+                                                             CAMERA_NEXT_ACTION_NOTHING);
                         switch (action) {
                             case CAMERA_NEXT_ACTION_CROP:
                                 cropCoverFile();
@@ -332,8 +365,9 @@ public class CoverHandler {
             case UniqueId.REQ_CROP_IMAGE:
             case UniqueId.REQ_EDIT_IMAGE: {
                 if (resultCode == Activity.RESULT_OK) {
-                    File source = StorageUtils.getTempCoverFile(mContext, TEMP_COVER_FILENAME);
-                    File destination = getCoverFile();
+                    final File source = StorageUtils
+                            .getTempCoverFile(mContext, TEMP_COVER_FILENAME);
+                    final File destination = getCoverFile();
                     StorageUtils.renameFile(source, destination);
                     setImage(destination);
                     return true;
@@ -348,15 +382,11 @@ public class CoverHandler {
         }
     }
 
-    void setImage() {
-        setImage(getCoverFile());
-    }
-
     /**
      * Put the cover image on screen, <strong>and update the book</strong> with the file name.
      */
     private void setImage(@Nullable final File file) {
-        long fileLen = file == null ? 0 : file.length();
+        final long fileLen = file == null ? 0 : file.length();
 
         if (fileLen > ImageUtils.MIN_IMAGE_FILE_SIZE) {
             new ImageUtils.ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, true)
@@ -381,15 +411,15 @@ public class CoverHandler {
      * Get the File object for the cover of the book we are editing.
      */
     @NonNull
-    File getCoverFile() {
+    private File getCoverFile() {
         // for existing books, we use the UUID and the index to get the stored file.
-        String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
         if (!uuid.isEmpty()) {
             return StorageUtils.getCoverFileForUuid(mCoverView.getContext(), uuid, mCIdx);
         }
 
         // for new books, check the bundle.
-        String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[mCIdx]);
+        final String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[mCIdx]);
         if (!fileSpec.isEmpty()) {
             return new File(fileSpec);
         }
@@ -408,7 +438,7 @@ public class CoverHandler {
 
         // Ensure that the cached images for this book are deleted (if present).
         // Yes, this means we also delete the ones where != index, but we don't care; it's a cache.
-        String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
         if (!uuid.isEmpty()) {
             CoversDAO.delete(context, uuid);
         }
@@ -440,11 +470,11 @@ public class CoverHandler {
             return;
         }
 
-        String isbnStr = mIsbnView.getText().toString();
+        final String isbnStr = mIsbnView.getText().toString();
         if (!isbnStr.isEmpty()) {
-            ISBN isbn = ISBN.createISBN(isbnStr);
+            final ISBN isbn = ISBN.createISBN(isbnStr);
             if (isbn.isValid(true)) {
-                CoverBrowserFragment coverBrowser = CoverBrowserFragment
+                final CoverBrowserFragment coverBrowser = CoverBrowserFragment
                         .newInstance(isbn.asText(), mCIdx);
                 // we must use the same fragment manager as the hosting fragment...
                 coverBrowser.show(mFragment.getParentFragmentManager(), CoverBrowserFragment.TAG);
@@ -463,10 +493,10 @@ public class CoverHandler {
      * we take that image and stuff it into the view.
      */
     private void processCoverBrowserResult(@NonNull final Intent data) {
-        String fileSpec = data.getStringExtra(UniqueId.BKEY_FILE_SPEC[mCIdx]);
+        final String fileSpec = data.getStringExtra(UniqueId.BKEY_FILE_SPEC[mCIdx]);
         if (fileSpec != null && !fileSpec.isEmpty()) {
-            File source = new File(fileSpec);
-            File destination = getCoverFile();
+            final File source = new File(fileSpec);
+            final File destination = getCoverFile();
             StorageUtils.renameFile(source, destination);
             setImage(destination);
         }
@@ -476,7 +506,7 @@ public class CoverHandler {
      * The Intent.ACTION_GET_CONTENT has provided us with an image, process it.
      */
     private void processChooserResult(@NonNull final Intent data) {
-        Uri uri = data.getData();
+        final Uri uri = data.getData();
         if (uri != null) {
             File file = null;
             try (InputStream is = mContext.getContentResolver().openInputStream(uri)) {
@@ -510,7 +540,7 @@ public class CoverHandler {
      * Call out the Intent.ACTION_GET_CONTENT to get an image from an external app.
      */
     private void startChooser() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
+        final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                 .setType(IMAGE_MIME_TYPE);
         mFragment.startActivityForResult(
                 Intent.createChooser(intent, mContext.getString(R.string.title_select_image)),
@@ -521,17 +551,17 @@ public class CoverHandler {
      * Crop the image using our internal code in {@link CropImageActivity}.
      */
     private void cropCoverFile() {
-        File inputFile = getCoverFile();
+        final File inputFile = getCoverFile();
         // Get the output file spec.
-        File outputFile = StorageUtils.getTempCoverFile(mContext, TEMP_COVER_FILENAME);
+        final File outputFile = StorageUtils.getTempCoverFile(mContext, TEMP_COVER_FILENAME);
         // delete any orphaned file.
         StorageUtils.deleteFile(outputFile);
 
-        boolean wholeImage = PreferenceManager
+        final boolean wholeImage = PreferenceManager
                 .getDefaultSharedPreferences(mContext)
                 .getBoolean(Prefs.pk_image_cropper_frame_whole, false);
 
-        Intent intent = new Intent(mContext, CropImageActivity.class)
+        final Intent intent = new Intent(mContext, CropImageActivity.class)
                 .putExtra(CropImageActivity.BKEY_IMAGE_ABSOLUTE_PATH,
                           inputFile.getAbsolutePath())
                 .putExtra(CropImageActivity.BKEY_OUTPUT_ABSOLUTE_PATH,
@@ -545,12 +575,12 @@ public class CoverHandler {
      * Edit the image using an external application.
      */
     private void editCoverFile() {
-        File inputFile = getCoverFile();
-        File outputFile = StorageUtils.getTempCoverFile(mContext, TEMP_COVER_FILENAME);
+        final File inputFile = getCoverFile();
+        final File outputFile = StorageUtils.getTempCoverFile(mContext, TEMP_COVER_FILENAME);
 
-        //TODO: we should revoke the permissions afterwards!
-        Uri inputUri = GenericFileProvider.getUriForFile(mContext, inputFile);
-        Uri outputUri = GenericFileProvider.getUriForFile(mContext, outputFile);
+        //TODO: we really should revoke the permissions afterwards
+        final Uri inputUri = GenericFileProvider.getUriForFile(mContext, inputFile);
+        final Uri outputUri = GenericFileProvider.getUriForFile(mContext, outputFile);
 
         Intent intent = new Intent(Intent.ACTION_EDIT)
                 .setDataAndType(inputUri, IMAGE_MIME_TYPE)
@@ -559,7 +589,7 @@ public class CoverHandler {
                 // write access see below
                 .putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
 
-        List<ResolveInfo> resInfoList =
+        final List<ResolveInfo> resInfoList =
                 mContext.getPackageManager()
                         .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (!resInfoList.isEmpty()) {
@@ -570,8 +600,9 @@ public class CoverHandler {
                                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             }
 
-            intent = Intent.createChooser(intent, mContext.getString(R.string.edit));
-            mFragment.startActivityForResult(intent, UniqueId.REQ_EDIT_IMAGE);
+            mFragment.startActivityForResult(
+                    Intent.createChooser(intent, mContext.getString(R.string.edit)),
+                    UniqueId.REQ_EDIT_IMAGE);
 
         } else {
             Snackbar.make(mCoverView, mFragment.getString(R.string.error_no_image_editor),
@@ -583,6 +614,11 @@ public class CoverHandler {
     @Retention(RetentionPolicy.SOURCE)
     @interface CameraNextAction {
 
+    }
+
+    public interface HostingFragment {
+
+        void setCurrentCoverIndex(final int cIdx);
     }
 
     private static class RotateTask

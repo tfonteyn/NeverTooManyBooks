@@ -67,7 +67,7 @@ public class EditBookNativeIdFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_book_native_id, container, false);
+        final View view = inflater.inflate(R.layout.fragment_edit_book_native_id, container, false);
         mEidGoodreadsView = view.findViewById(R.id.site_goodreads);
         mEidIsfdbView = view.findViewById(R.id.site_isfdb);
         mEidLibraryThingView = view.findViewById(R.id.site_library_thing);
@@ -79,7 +79,7 @@ public class EditBookNativeIdFragment
     @Override
     protected void initFields() {
         super.initFields();
-        Fields fields = getFields();
+        final Fields fields = getFields();
 
         fields.addString(mEidGoodreadsView, DBDefinitions.KEY_EID_GOODREADS_BOOK)
               .setRelatedFields(R.id.lbl_site_goodreads);
@@ -126,19 +126,24 @@ public class EditBookNativeIdFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_SHOW_ALL) {
-            mShowAllSites = !item.isChecked();
-            item.setChecked(mShowAllSites);
-            setSiteVisibility(mShowAllSites);
-            return true;
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (item.getItemId()) {
+            case R.id.MENU_SHOW_ALL: {
+                mShowAllSites = !item.isChecked();
+                item.setChecked(mShowAllSites);
+                setSiteVisibility(mShowAllSites);
+                return true;
+            }
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private void setSiteVisibility(final boolean showAllSites) {
 
         @SearchSites.Id
-        int sites;
+        final int sites;
 
         if (showAllSites) {
             sites = SearchSites.SEARCH_FLAG_MASK;
@@ -148,8 +153,8 @@ public class EditBookNativeIdFragment
             sites = SiteList.getList(getContext(), locale, SiteList.Type.Data).getEnabledSites();
         }
 
-        Fields fields = getFields();
-        View parent = getView();
+        final Fields fields = getFields();
+        final View parent = getView();
 
         //noinspection ConstantConditions
         fields.getField(mEidGoodreadsView).setVisibility(

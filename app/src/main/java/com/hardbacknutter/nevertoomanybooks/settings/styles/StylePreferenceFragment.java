@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -108,7 +109,7 @@ public class StylePreferenceFragment
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
         for (BooklistGroup group : BooklistGroup.getAllGroups("", false)) {
-            group.addPreferences(screen, mStyle.hasGroup(group.getId()));
+            group.setPreferencesVisible(screen, mStyle.hasGroup(group.getId()));
         }
 
         super.onResume();
@@ -120,7 +121,7 @@ public class StylePreferenceFragment
 
     /**
      * Update summary texts.
-     *
+     * <p>
      * Reminder: prefs lookups can return {@code null} as the screen swaps in and out sub screens.
      */
     @Override
@@ -213,9 +214,10 @@ public class StylePreferenceFragment
         switch (requestCode) {
             case UniqueId.REQ_EDIT_STYLE_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     // replace the current style with the edited copy
-                    mStyle = Objects.requireNonNull(data.getParcelableExtra(UniqueId.BKEY_STYLE));
+                    mStyle = Objects.requireNonNull(data.getParcelableExtra(UniqueId.BKEY_STYLE),
+                                                    ErrorMsg.ARGS_MISSING_STYLE);
                     mResultDataModel.putResultData(UniqueId.BKEY_STYLE_MODIFIED, true);
                     mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
                 }

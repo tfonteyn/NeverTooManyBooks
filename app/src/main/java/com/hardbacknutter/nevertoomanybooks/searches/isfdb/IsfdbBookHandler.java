@@ -61,9 +61,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 public class IsfdbBookHandler
         extends AbstractBase {
@@ -564,11 +564,14 @@ public class IsfdbBookHandler
 
                 } else if ("Price:".equalsIgnoreCase(fieldName)) {
                     tmpString = fieldLabelElement.nextSibling().toString().trim();
-                    CurrencyUtils.splitPrice(IsfdbSearchEngine.SITE_LOCALE,
-                                             tmpString,
-                                             DBDefinitions.KEY_PRICE_LISTED,
-                                             DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                             bookData);
+                    Money money = new Money(IsfdbSearchEngine.SITE_LOCALE, tmpString);
+                    if (money.getCurrency() != null) {
+                        bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, money.doubleValue());
+                        bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                                           money.getCurrency());
+                    } else {
+                        bookData.putString(DBDefinitions.KEY_PRICE_LISTED, tmpString);
+                    }
 
                 } else if ("Pages:".equalsIgnoreCase(fieldName)) {
                     tmpString = fieldLabelElement.nextSibling().toString().trim();

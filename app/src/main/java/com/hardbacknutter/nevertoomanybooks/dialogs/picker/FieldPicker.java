@@ -31,16 +31,19 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Provides an AlertDialog with an optional title and message.
@@ -49,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
  * @param <T> type of the actual Object that is represented by a row in the selection list.
  *            Right now, this is ALWAYS {@code String} and we use {@link #toString()}.
  *            Using another type is bound to bring up issues.
- *            This limitation is due to {@link Field#format}.
  */
 public class FieldPicker<T>
         extends ValuePicker {
@@ -62,17 +64,64 @@ public class FieldPicker<T>
      * @param field   to get/set
      * @param list    list to choose from
      */
-    public FieldPicker(@NonNull final Context context,
-                       @Nullable final CharSequence title,
-                       @NonNull final Field<T> field,
-                       @NonNull final List<T> list) {
+    private FieldPicker(@NonNull final Context context,
+                        @Nullable final CharSequence title,
+                        @NonNull final Field<T> field,
+                        @NonNull final List<T> list) {
         super(context, title, null, false);
 
         FieldListAdapter<T> adapter = new FieldListAdapter<>(context, field, list, item -> {
             dismiss();
-            field.setValue(item);
+            // Update, display and notify
+            field.getAccessor().setValue(item);
+            field.onChanged();
         });
         setAdapter(adapter, adapter.getPreSelectedPosition());
+    }
+
+    /**
+     * The 'drop-down' menu button next to an AutoCompleteTextView field.
+     * Allows us to show a list of strings to choose from.
+     * <p>
+     * Note that a {@link ValuePicker} uses a plain AlertDialog.
+     *
+     * @param field         {@link Field} to edit
+     * @param fieldButton   field/button to bind the PickListener to
+     * @param fieldView     view to connect
+     * @param dialogTitleId title of the dialog box.
+     * @param list          list of strings to choose from.
+     */
+    public static void create(@NonNull final AutoCompleteTextView fieldView,
+                              @NonNull final View fieldButton,
+                              @NonNull final Field<String> field,
+                              @StringRes final int dialogTitleId,
+                              @NonNull final List<String> list) {
+        // only bother when it's in use
+        if (!field.isUsed()) {
+            return;
+        }
+
+        Context context = fieldView.getContext();
+
+        if (list.isEmpty()) {
+            fieldButton.setEnabled(false);
+            return;
+        }
+        // We got a list, set it up.
+
+        // Get the list to use in the AutoCompleteTextView
+        DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
+                context, R.layout.dropdown_menu_popup_item, list);
+
+        fieldView.setAdapter(adapter);
+
+        // Get the drop-down button for the list and setup dialog
+        fieldButton.setOnClickListener(v -> {
+            FieldPicker<String> picker = new FieldPicker<>(context,
+                                                           context.getString(dialogTitleId),
+                                                           field, list);
+            picker.show();
+        });
     }
 
     private static class FieldListAdapter<T>
@@ -112,7 +161,7 @@ public class FieldPicker<T>
             int position = 0;
 
             for (T listEntry : items) {
-                if (listEntry.equals(field.getValue())) {
+                if (listEntry.equals(field.getAccessor().getValue())) {
                     mPreSelectedPosition = position;
                     break;
                 }
@@ -141,7 +190,7 @@ public class FieldPicker<T>
                                      final int position) {
 
             T item = mItems.get(position);
-            holder.textView.setText(mField.format(holder.textView.getContext(), item));
+            mField.getAccessor().setValue(item);
 
             // onClick on the whole view.
             holder.itemView.setOnClickListener(v -> mListener.onPicked(item));

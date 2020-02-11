@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,14 +28,18 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
 /**
  * An item (entity) in a database table always has an id and some user-friendly label
  * aka 'displayName'.
+ *
+ * Must be Parcelable.
  */
-public interface Entity {
+public interface Entity
+        extends Parcelable {
 
     /**
      * Get the database row id of the entity.

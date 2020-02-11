@@ -54,6 +54,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
@@ -133,6 +134,7 @@ public abstract class BookBaseFragment
         // It ensures fragments in a ViewPager2 will refresh their individual option menus.
         // Children NOT running in a ViewPager2 must override this in their onResume()
         // with a simple setHasOptionsMenu(true);
+        // https://issuetracker.google.com/issues/144442240
         setHasOptionsMenu(isVisible());
 
         // set the View member as the Views will be (re)created each time.
@@ -169,12 +171,12 @@ public abstract class BookBaseFragment
         onLoadFields(book);
         // restore the dirt-status and the listener
         mBookModel.setDirty(wasDirty);
-        getFields().setAfterFieldChangeListener((field, newValue) -> mBookModel.setDirty(true));
+        getFields().setAfterFieldChangeListener(field -> mBookModel.setDirty(true));
 
         // Set the activity title depending on View or Edit mode.
         // This is a good place to do this, as we use data from the book for the title.
         //noinspection ConstantConditions
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             if (book.isNew()) {
                 // EDIT NEW book
@@ -196,7 +198,7 @@ public abstract class BookBaseFragment
      */
     @CallSuper
     void onLoadFields(@NonNull final Book book) {
-        getFields().setAllFrom(book);
+        getFields().setAll(book);
     }
 
     @Override
@@ -218,9 +220,10 @@ public abstract class BookBaseFragment
 
         @SuppressWarnings("ConstantConditions")
         @NonNull
-        Context context = getContext();
+        final Context context = getContext();
 
-        Book book = mBookModel.getBook();
+        final Book book = mBookModel.getBook();
+
         switch (item.getItemId()) {
             case R.id.MENU_UPDATE_FROM_INTERNET: {
                 ArrayList<Long> bookIds = new ArrayList<>();
@@ -237,7 +240,6 @@ public abstract class BookBaseFragment
                 startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
                 return true;
             }
-
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 AmazonSearchEngine.openWebsite(context, book.getPrimaryAuthor(context), null);
                 return true;
@@ -253,11 +255,12 @@ public abstract class BookBaseFragment
                 return true;
             }
 
-            default:
+            default: {
                 if (MenuHandler.handleOpenOnWebsiteMenus(context, item, book)) {
                     return true;
                 }
                 return super.onOptionsItemSelected(item);
+            }
         }
     }
 
@@ -267,7 +270,7 @@ public abstract class BookBaseFragment
      * @param message to display
      */
     private void showUserMessage(@Nullable final String message) {
-        View view = getView();
+        final View view = getView();
         if (view != null && message != null && !message.isEmpty()) {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
         }
@@ -284,9 +287,9 @@ public abstract class BookBaseFragment
         switch (requestCode) {
             case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data);
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
 
-                    long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
+                    final long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
                     if (newId != 0) {
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.

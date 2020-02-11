@@ -81,7 +81,7 @@ public class BookDetailsFragmentModel
             }
 
             // got list ?
-            String navTableName = args.getString(BKEY_NAV_TABLE);
+            final String navTableName = args.getString(BKEY_NAV_TABLE);
             if (navTableName != null && !navTableName.isEmpty()) {
                 // ok, we have a list, get the rowId we need to be on.
                 final long rowId = args.getLong(BKEY_NAV_ROW_ID, 0);

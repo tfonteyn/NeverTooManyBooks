@@ -48,6 +48,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataCrossValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator;
@@ -58,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
@@ -212,6 +214,9 @@ public class DataManager
             //noinspection unchecked
             putParcelableArrayList(key, (ArrayList<Parcelable>) value);
 
+        } else if (value instanceof Money) {
+            putMoney(key, (Money) value);
+
         } else if (value instanceof Serializable) {
             putSerializable(key, (Serializable) value);
 
@@ -235,6 +240,12 @@ public class DataManager
      */
     @Nullable
     public Object get(@NonNull final String key) {
+        if (DBDefinitions.MONEY_KEYS.contains(key)) {
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "get -> getMoney");
+            }
+            return getMoney(key);
+        }
         return mRawData.get(key);
     }
 
@@ -294,6 +305,43 @@ public class DataManager
     }
 
     /**
+     * Get a Money value.
+     *
+     * @param key Key of data object
+     *
+     * @return a Money value.
+     */
+    @Nullable
+    private Money getMoney(@NonNull final String key) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "getMoney");
+        }
+        if (mRawData.containsKey(key)) {
+            return new Money(getDouble(key),
+                             getString(key + DBDefinitions.SUFFIX_KEY_CURRENCY));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Store a Money value.
+     *
+     * @param key   Key of data object
+     * @param money to store
+     */
+    private void putMoney(@NonNull final String key,
+                          @NonNull final Money money) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "putMoney");
+        }
+        mRawData.putDouble(key, money.doubleValue());
+        if (money.getCurrency() != null) {
+            mRawData.putString(key + DBDefinitions.SUFFIX_KEY_CURRENCY, money.getCurrency());
+        }
+    }
+
+    /**
      * Get a double value.
      *
      * @param key Key of data object
@@ -322,7 +370,7 @@ public class DataManager
      *
      * @return a float value.
      */
-    float getFloat(@NonNull final String key) {
+    public float getFloat(@NonNull final String key) {
         return ParseUtils.toFloat(mRawData.get(key), null);
     }
 
@@ -332,8 +380,8 @@ public class DataManager
      * @param key   Key of data object
      * @param value to store
      */
-    void putFloat(@NonNull final String key,
-                  final float value) {
+    public void putFloat(@NonNull final String key,
+                         final float value) {
         mRawData.putFloat(key, value);
     }
 

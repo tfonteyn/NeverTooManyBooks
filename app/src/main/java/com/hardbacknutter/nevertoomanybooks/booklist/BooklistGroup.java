@@ -55,7 +55,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
@@ -262,15 +261,14 @@ public class BooklistGroup
      * @param category to set
      */
     static void setCategoryVisibility(@NonNull final PreferenceCategory category) {
-        boolean catVis = false;
         int i = 0;
-        while (!catVis && i < category.getPreferenceCount()) {
+        while (i < category.getPreferenceCount()) {
             if (category.getPreference(i).isVisible()) {
-                catVis = true;
+                category.setVisible(true);
+                return;
             }
             i++;
         }
-        category.setVisible(catVis);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -351,20 +349,13 @@ public class BooklistGroup
      * Preference UI support.
      * <p>
      * This method can be called multiple times.
-     * <p>
-     * Implementations should add the preferences only if they are not already present
-     * and if the current method call has visibility set to true.
-     * <p>
      * Visibility of individual preferences should always be updated.
-     * <p>
-     * Add the Preference objects that this group will contribute to a Style.
-     * TODO: could/should do this from xml instead I suppose.
      *
      * @param screen  which hosts the prefs
      * @param visible whether to make the preferences visible
      */
-    public void addPreferences(@NonNull final PreferenceScreen screen,
-                               final boolean visible) {
+    public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
+                                      final boolean visible) {
     }
 
     /**
@@ -438,29 +429,13 @@ public class BooklistGroup
         }
 
         @Override
-        public void addPreferences(@NonNull final PreferenceScreen screen,
-                                   final boolean visible) {
+        public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
+                                          final boolean visible) {
 
             PreferenceCategory category = screen.findPreference(Prefs.psk_style_series);
             if (category != null) {
-                Context context = screen.getContext();
-
                 SwitchPreference pShowAll = category
                         .findPreference(Prefs.pk_bob_books_under_multiple_series);
-                if (visible && pShowAll == null) {
-                    String description = context.getString(R.string.lbl_series);
-                    pShowAll = new SwitchPreference(context);
-                    pShowAll.setTitle(R.string.pt_bob_books_under_multiple_series);
-                    pShowAll.setIcon(R.drawable.ic_functions);
-                    pShowAll.setKey(Prefs.pk_bob_books_under_multiple_series);
-                    pShowAll.setDefaultValue(false);
-
-                    pShowAll.setSummaryOn(context.getString(
-                            R.string.pv_bob_books_under_multiple_each_1s, description));
-                    pShowAll.setSummaryOff(context.getString(
-                            R.string.pv_bob_books_under_multiple_primary_1s_only, description));
-                    category.addPreference(pShowAll);
-                }
                 if (pShowAll != null) {
                     pShowAll.setVisible(visible);
                 }
@@ -551,46 +526,19 @@ public class BooklistGroup
         }
 
         @Override
-        public void addPreferences(@NonNull final PreferenceScreen screen,
-                                   final boolean visible) {
+        public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
+                                          final boolean visible) {
 
             PreferenceCategory category = screen.findPreference(Prefs.psk_style_author);
             if (category != null) {
-                Context context = screen.getContext();
-
                 SwitchPreference pShowAll = category
                         .findPreference(Prefs.pk_bob_books_under_multiple_authors);
-                if (visible && pShowAll == null) {
-                    pShowAll = new SwitchPreference(context);
-                    String description = context.getString(R.string.lbl_author);
-                    pShowAll.setTitle(R.string.pt_bob_books_under_multiple_authors);
-                    pShowAll.setIcon(R.drawable.ic_functions);
-                    pShowAll.setKey(Prefs.pk_bob_books_under_multiple_authors);
-                    pShowAll.setDefaultValue(false);
-                    pShowAll.setSummaryOn(context.getString(
-                            R.string.pv_bob_books_under_multiple_each_1s, description));
-                    pShowAll.setSummaryOff(context.getString(
-                            R.string.pv_bob_books_under_multiple_primary_1s_only, description));
-
-                    category.addPreference(pShowAll);
-                }
                 if (pShowAll != null) {
                     pShowAll.setVisible(visible);
                 }
 
                 SwitchPreference pGivenNameFirst = category
                         .findPreference(Prefs.pk_bob_format_author_name);
-                if (visible && pGivenNameFirst == null) {
-                    pGivenNameFirst = new SwitchPreference(context);
-                    pGivenNameFirst.setTitle(R.string.pt_bob_authors_display);
-                    pGivenNameFirst.setIcon(R.drawable.ic_reorder);
-                    pGivenNameFirst.setKey(Prefs.pk_bob_format_author_name);
-                    pGivenNameFirst.setDefaultValue(false);
-                    pGivenNameFirst.setSummaryOn(R.string.pv_bob_author_name_given_first);
-                    pGivenNameFirst.setSummaryOff(R.string.pv_bob_author_name_family_first);
-
-                    category.addPreference(pGivenNameFirst);
-                }
                 if (pGivenNameFirst != null) {
                     pGivenNameFirst.setVisible(visible);
                 }
@@ -846,9 +794,7 @@ public class BooklistGroup
                         @Id
                         int id = 0; id <= ROW_KIND_MAX; id++) {
                     rowKind = ALL_KINDS.get(id);
-                    if (rowKind == null) {
-                        throw new IllegalStateException("Missing id: " + id);
-                    }
+                    Objects.requireNonNull(rowKind, "Missing id: " + id);
 
                     String prefix = rowKind.mKeyPrefix;
                     if (!prefixes.add(prefix)) {
@@ -1077,7 +1023,7 @@ public class BooklistGroup
          */
         @NonNull
         public Domain getFormattedDomain() {
-            return Objects.requireNonNull(mFormattedDomain);
+            return Objects.requireNonNull(mFormattedDomain, "mFormattedDomain");
         }
 
 
@@ -1088,7 +1034,7 @@ public class BooklistGroup
          */
         @NonNull
         String getFormattedDomainExpression() {
-            return Objects.requireNonNull(mFormattedDomainExpression);
+            return Objects.requireNonNull(mFormattedDomainExpression, "mFormattedDomainExpression");
         }
 
 
@@ -1102,7 +1048,7 @@ public class BooklistGroup
          */
         @NonNull
         CompoundKey getCompoundKey() {
-            return Objects.requireNonNull(mCompoundKey);
+            return Objects.requireNonNull(mCompoundKey, "mCompoundKey");
         }
 
         @NonNull
@@ -1126,20 +1072,21 @@ public class BooklistGroup
 
                  RowKind.AUTHOR,
                  RowKind.SERIES,
-                 RowKind.GENRE,
                  RowKind.PUBLISHER,
+                 RowKind.BOOKSHELF,
                  RowKind.READ_STATUS,
 
                  RowKind.LOANED,
 
                  RowKind.TITLE_LETTER,
                  RowKind.SERIES_TITLE_LETTER,
+
+                 RowKind.GENRE,
                  RowKind.FORMAT,
                  RowKind.COLOR,
                  RowKind.LOCATION,
                  RowKind.LANGUAGE,
                  RowKind.RATING,
-                 RowKind.BOOKSHELF,
 
                  RowKind.DATE_PUBLISHED_YEAR,
                  RowKind.DATE_PUBLISHED_MONTH,

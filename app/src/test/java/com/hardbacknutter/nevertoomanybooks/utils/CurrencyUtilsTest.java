@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,83 +27,80 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.os.Bundle;
-
 import java.util.Locale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CurrencyUtilsTest {
-
-    private static final String KEY_PRICE = "p";
-    private static final String KEY_CURRENCY = "c";
-
-    @Mock
-    private Bundle mBundle;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mBundle = BundleMock.mock();
-    }
 
     /** Country with ',' as thousands, and '.' as decimal separator. */
     @Test
     void splitPrice10() {
 
         Locale locale = Locale.UK;
+        Money money;
 
-        CurrencyUtils.splitPrice(locale, "$10.50", KEY_PRICE, KEY_CURRENCY, mBundle);
-        assertEquals("USD", mBundle.getString(KEY_CURRENCY));
-        assertEquals(10.50d, mBundle.getDouble(KEY_PRICE));
+        money = new Money(locale, "$10.50");
+        assertEquals("USD", money.getCurrency());
+        assertEquals(10.50d, money.doubleValue());
 
-        CurrencyUtils.splitPrice(locale, "£10.50", KEY_PRICE, KEY_CURRENCY, mBundle);
-        assertEquals("GBP", mBundle.getString(KEY_CURRENCY));
-        assertEquals(10.50d, mBundle.getDouble(KEY_PRICE));
+        money = new Money(locale, "£10.50");
+        assertEquals("GBP", money.getCurrency());
+        assertEquals(10.50d, money.doubleValue());
 
-        CurrencyUtils.splitPrice(locale, "EUR 10.50", KEY_PRICE, KEY_CURRENCY, mBundle);
-        assertEquals("EUR", mBundle.getString(KEY_CURRENCY));
-        assertEquals(10.50d, mBundle.getDouble(KEY_PRICE));
+        money = new Money(locale, "EUR 10.50");
+        assertEquals("EUR", money.getCurrency());
+        assertEquals(10.50d, money.doubleValue());
+    }
+
+    @Test
+    void splitPrice100() {
+
+        Locale locale = Locale.UK;
+        Money money;
+
+        money = new Money(locale, "10.50");
+        assertNull(money.getCurrency());
+        assertEquals(0.0d, money.doubleValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice20() {
         Locale locale = new Locale("nl", "BE");
+        Money money;
 
-        CurrencyUtils.splitPrice(locale, "fr10,50", KEY_PRICE, KEY_CURRENCY, mBundle);
-        assertEquals("BEF", mBundle.getString(KEY_CURRENCY));
-        assertEquals(10.50d, mBundle.getDouble(KEY_PRICE));
+        money = new Money(locale, "fr10,50");
+        assertEquals("BEF", money.getCurrency());
+        assertEquals(10.50d, money.doubleValue());
 
-        CurrencyUtils.splitPrice(locale, "$10.50", KEY_PRICE, KEY_CURRENCY, mBundle);
-        assertEquals("USD", mBundle.getString(KEY_CURRENCY));
-        assertEquals(10.50d, mBundle.getDouble(KEY_PRICE));
+        money = new Money(locale, "$10.50");
+        assertEquals("USD", money.getCurrency());
+        assertEquals(10.50d, money.doubleValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice21() {
         Locale locale = new Locale("nl", "NL");
+        Money money;
 
-        CurrencyUtils.splitPrice(locale, "£10.50", KEY_PRICE, KEY_CURRENCY, mBundle);
-        assertEquals("GBP", mBundle.getString(KEY_CURRENCY));
-        assertEquals(10.50d, mBundle.getDouble(KEY_PRICE));
+        money = new Money(locale, "£10.50");
+        assertEquals("GBP", money.getCurrency());
+        assertEquals(10.50d, money.doubleValue());
     }
 
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice22() {
         Locale locale = new Locale("nl", "NL");
+        Money money;
 
-        CurrencyUtils.splitPrice(locale, "EUR 10.50", KEY_PRICE, KEY_CURRENCY, mBundle);
-        assertEquals("EUR", mBundle.getString(KEY_CURRENCY));
-        assertEquals(10.50d, mBundle.getDouble(KEY_PRICE));
+        money = new Money(locale, "EUR 10.50");
+        assertEquals("EUR", money.getCurrency());
+        assertEquals(10.50d, money.doubleValue());
     }
 }

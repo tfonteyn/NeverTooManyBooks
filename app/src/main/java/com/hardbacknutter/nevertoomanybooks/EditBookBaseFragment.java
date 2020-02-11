@@ -29,20 +29,16 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
@@ -51,13 +47,10 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.FieldPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Base class for all fragments that appear in {@link EditBookFragment}.
@@ -82,22 +75,29 @@ public abstract class EditBookBaseFragment
             // store
             book.putBookshelves(mBookModel.getDb(), list);
             // and refresh on screen
-            getFields().getField(R.id.bookshelves)
-                       .setValue(Csv.join(", ", book.getParcelableArrayList(
-                               UniqueId.BKEY_BOOKSHELF_ARRAY), Bookshelf::getName));
+            String value = Csv.join(", ", book.getParcelableArrayList(
+                    UniqueId.BKEY_BOOKSHELF_ARRAY), Bookshelf::getName);
+            Field<String> field = getFields().getField(R.id.bookshelves);
+            field.getAccessor().setValue(value);
+            field.onChanged();
 
         } else if (destinationFieldId == R.id.edition) {
             book.putEditions(list);
-            getFields().getField(R.id.edition)
-                       .setValue(book.getLong(DBDefinitions.KEY_EDITION_BITMASK));
+            Long value = book.getLong(DBDefinitions.KEY_EDITION_BITMASK);
+            Field<Long> field = getFields().getField(R.id.edition);
+            field.getAccessor().setValue(value);
+            field.onChanged();
         }
     };
 
     private final PartialDatePickerDialogFragment.PartialDatePickerResultsListener
             mPartialDatePickerResultsListener =
-            (destinationFieldId, year, month, day) ->
-                    getFields().getField(destinationFieldId)
-                               .setValue(DateUtils.buildPartialDate(year, month, day));
+            (destinationFieldId, year, month, day) -> {
+                String value = DateUtils.buildPartialDate(year, month, day);
+                Field<String> field = getFields().getField(destinationFieldId);
+                field.getAccessor().setValue(value);
+                field.onChanged();
+            };
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -117,7 +117,7 @@ public abstract class EditBookBaseFragment
         // We hide the tab bar when editing Authors/Series on pop-up screens.
         // Make sure to set it visible here.
         //noinspection ConstantConditions
-        View tabBarLayout = getActivity().findViewById(R.id.tab_panel);
+        final View tabBarLayout = getActivity().findViewById(R.id.tab_panel);
         if (tabBarLayout != null) {
             tabBarLayout.setVisibility(View.VISIBLE);
         }
@@ -151,7 +151,8 @@ public abstract class EditBookBaseFragment
     public void onPause() {
         onSaveFields(mBookModel.getBook());
         //noinspection ConstantConditions
-        UnfinishedEdits model = new ViewModelProvider(getActivity()).get(UnfinishedEdits.class);
+        final UnfinishedEdits model =
+                new ViewModelProvider(getActivity()).get(UnfinishedEdits.class);
         if (hasUnfinishedEdits()) {
             // Flag up this fragment as having unfinished edits.
             model.fragments.add(getTag());
@@ -163,12 +164,12 @@ public abstract class EditBookBaseFragment
 
     @Override
     protected void onLoadFields(@NonNull final Book book) {
-        super.onLoadFields(book);
-
         // new book ?
         if (book.isNew()) {
-            onLoadFieldsFromNewData(book, getArguments());
+            onAddFromNewData(book, getArguments());
         }
+
+        super.onLoadFields(book);
     }
 
     /**
@@ -176,16 +177,20 @@ public abstract class EditBookBaseFragment
      * <p>
      * Override for handling specific field defaults, e.g. Bookshelf.
      *
+     * @param book to add to
      * @param args a Bundle to load values from
      */
-    void onLoadFieldsFromNewData(@NonNull final Book book,
-                                 @Nullable final Bundle args) {
-        // Check if we have any data, for example from a Search
+    void onAddFromNewData(@NonNull final Book book,
+                          @Nullable final Bundle args) {
         if (args != null) {
-            Bundle rawData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
+            final Bundle rawData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
             if (rawData != null) {
-                // if we do, add if not there yet
-                getFields().setAllFrom(rawData, false);
+                for (String key : rawData.keySet()) {
+                    // add, but do not overwrite
+                    if (!book.contains(key)) {
+                        book.put(key, rawData.get(key));
+                    }
+                }
             }
         }
     }
@@ -199,96 +204,7 @@ public abstract class EditBookBaseFragment
      */
     @CallSuper
     public void onSaveFields(@NonNull final Book book) {
-        getFields().putAllInto(book);
-    }
-
-    /**
-     * The 'drop-down' menu button next to an AutoCompleteTextView field.
-     * Allows us to show a {@link FieldPicker#FieldPicker} with a list of strings
-     * to choose from.
-     * <p>
-     * Note that a {@link ValuePicker} uses a plain AlertDialog.
-     *
-     * @param field         {@link Field} to edit
-     * @param fieldView     view to connect
-     * @param dialogTitleId title of the dialog box.
-     * @param fieldButtonId field/button to bind the PickListener to (can be same as fieldId)
-     * @param list          list of strings to choose from.
-     */
-    void initValuePicker(@NonNull final Field<String> field,
-                         @NonNull final AutoCompleteTextView fieldView,
-                         @StringRes final int dialogTitleId,
-                         @IdRes final int fieldButtonId,
-                         @NonNull final List<String> list) {
-        // only bother when it's in use
-        if (!field.isUsed()) {
-            return;
-        }
-
-        //noinspection ConstantConditions
-        View fieldButton = getView().findViewById(fieldButtonId);
-
-        if (list.isEmpty()) {
-            fieldButton.setEnabled(false);
-            return;
-        }
-        // We got a list, set it up.
-
-        // Get the list to use in the AutoCompleteTextView
-        //noinspection ConstantConditions
-        DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
-                getContext(), android.R.layout.simple_dropdown_item_1line, list);
-
-        fieldView.setAdapter(adapter);
-
-        // Get the drop-down button for the list and setup dialog
-        fieldButton.setOnClickListener(v -> {
-            FieldPicker<String> picker = new FieldPicker<>(getContext(),
-                                                           getString(dialogTitleId),
-                                                           field, list);
-            picker.show();
-        });
-    }
-
-    /**
-     * Setup a date picker with the passed field.
-     *
-     * @param field         {@link Field} to edit
-     * @param fieldView     view to connect
-     * @param dialogTitleId title of the dialog box.
-     * @param todayIfNone   if true, and if the field was empty, pre-populate with today's date
-     */
-    void initPartialDatePicker(@NonNull final Field<String> field,
-                               @NonNull final View fieldView,
-                               @StringRes final int dialogTitleId,
-                               final boolean todayIfNone) {
-        // only bother when it's in use
-        if (field.isUsed()) {
-            fieldView.setOnClickListener(v -> PartialDatePickerDialogFragment
-                    .newInstance(fieldView.getId(), dialogTitleId, field.getValue(), todayIfNone)
-                    .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG));
-        }
-    }
-
-    /**
-     * Setup a checklist picker with the passed field.
-     *
-     * @param field         {@link Field} to edit
-     * @param fieldView     view to connect
-     * @param dialogTitleId title of the dialog box.
-     * @param listGetter    {@link CheckListDialogFragment.ListGetter}
-     *                      interface to get the *current* list
-     */
-    void initCheckListEditor(@NonNull final Field<?> field,
-                             @NonNull final View fieldView,
-                             @StringRes final int dialogTitleId,
-                             @NonNull final CheckListDialogFragment.ListGetter listGetter) {
-        // only bother when it's in use
-        if (field.isUsed()) {
-            fieldView.setOnClickListener(v -> CheckListDialogFragment
-                    .newInstance(fieldView.getId(), dialogTitleId, listGetter.getList())
-                    .show(getChildFragmentManager(), CheckListDialogFragment.TAG));
-        }
+        getFields().getAll(book);
     }
 
     /**

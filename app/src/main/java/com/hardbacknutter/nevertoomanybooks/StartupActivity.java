@@ -40,11 +40,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.PermissionChecker;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
@@ -112,8 +112,8 @@ public class StartupActivity
         mProgressMessageView = findViewById(R.id.progressMessage);
 
         // Version Number
-        TextView view = findViewById(R.id.version);
-        PackageInfo packageInfo = App.getPackageInfo(0);
+        final TextView view = findViewById(R.id.version);
+        final PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {
             view.setText(packageInfo.versionName);
         }
@@ -215,13 +215,13 @@ public class StartupActivity
             return;
         }
         // Display upgrade message if necessary, otherwise go on to next stage
-        String upgradeMessage = UpgradeMessageManager.getUpgradeMessage(this);
+        final String upgradeMessage = UpgradeMessageManager.getUpgradeMessage(this);
         if (upgradeMessage.isEmpty()) {
             startNextStage();
             return;
         }
 
-        new AlertDialog.Builder(this)
+        new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.lbl_about_upgrade)
                 .setIcon(R.drawable.ic_info_outline)
                 .setMessage(Html.fromHtml(upgradeMessage))
@@ -243,7 +243,7 @@ public class StartupActivity
     private void backupRequired() {
         mModel.setBackupRequired(false);
         if (mModel.isProposeBackup()) {
-            new AlertDialog.Builder(this)
+            new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_help_outline)
                     .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
@@ -263,11 +263,11 @@ public class StartupActivity
      * If requested earlier, run a backup now.
      */
     private void gotoMainScreen() {
-        Intent intent = new Intent(this, BooksOnBookshelf.class);
+        final Intent intent = new Intent(this, BooksOnBookshelf.class);
         startActivity(intent);
 
         if (mModel.isBackupRequired()) {
-            Intent backupIntent = new Intent(this, AdminActivity.class)
+            final Intent backupIntent = new Intent(this, AdminActivity.class)
                     .putExtra(ImportExportFragment.BKEY_AUTO_START_BACKUP, true);
             startActivity(backupIntent);
         }
@@ -294,7 +294,7 @@ public class StartupActivity
 //            return false;
 //        }
 
-        int msgId = StorageUtils.initSharedDirectories(this);
+        final int msgId = StorageUtils.initSharedDirectories(this);
         if (msgId != 0) {
             Snackbar.make(mProgressMessageView, msgId, Snackbar.LENGTH_LONG).show();
         }

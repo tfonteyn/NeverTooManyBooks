@@ -54,9 +54,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 class AmazonHtmlHandler
         extends JsoupBase {
@@ -180,12 +180,13 @@ class AmazonHtmlHandler
 
         Element price = mDoc.selectFirst("span.offer-price");
         if (price != null) {
-            bookData.putString(DBDefinitions.KEY_PRICE_LISTED, price.text());
-            CurrencyUtils.splitPrice(mSearchEngine.getLocale(mLocalizedAppContext),
-                                     price.text(),
-                                     DBDefinitions.KEY_PRICE_LISTED,
-                                     DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                     bookData);
+            Money money = new Money(mSearchEngine.getLocale(mLocalizedAppContext), price.text());
+            if (money.getCurrency() != null) {
+                bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, money.doubleValue());
+                bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, money.getCurrency());
+            } else {
+                bookData.putString(DBDefinitions.KEY_PRICE_LISTED, price.text());
+            }
         }
 
         Elements authorSpans = mDoc.select("div#bylineInfo > span.author");

@@ -40,11 +40,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -127,7 +129,7 @@ public class BookBaseFragmentModel
 
             if (args != null) {
                 // load the book data
-                Bundle bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
+                final Bundle bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
                 if (bookData != null) {
                     // if we have a populated bundle, e.g. after an internet search, use that.
                     mBook = new Book();
@@ -137,7 +139,7 @@ public class BookBaseFragmentModel
 
                 } else {
                     // otherwise, check if we have an id, e.g. user clicked on a book in a list.
-                    long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+                    final long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
                     // Either load from database or create a new 'empty' book.
                     mBook = new Book(bookId, mDb);
                 }
@@ -191,9 +193,42 @@ public class BookBaseFragmentModel
         mBook = new Book(bookId, mDb);
     }
 
+    /**
+     * Gets a complete list of Bookshelves each reflecting the book being on that shelf or not.
+     *
+     * @return list with {@link SelectableItem}
+     */
     @NonNull
     public ArrayList<CheckListItem> getEditableBookshelvesList() {
-        return mBook.getEditableBookshelvesList(mDb);
+        final ArrayList<CheckListItem> list = new ArrayList<>();
+        // get the list of all shelves the book is currently on.
+        final List<Bookshelf> currentShelves =
+                mBook.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+        // Loop through all bookshelves in the database and build the list for this book
+        for (Bookshelf bookshelf : mDb.getBookshelves()) {
+            final boolean selected = currentShelves.contains(bookshelf);
+            list.add(new SelectableItem(bookshelf.getName(), bookshelf.getId(), selected));
+        }
+        return list;
+    }
+
+    /**
+     * Gets a complete list of Editions each reflecting the book being that edition or not.
+     *
+     * @param context Current context
+     *
+     * @return list with {@link SelectableItem}
+     */
+    @NonNull
+    public ArrayList<CheckListItem> getEditableEditionList(@NonNull final Context context) {
+        final ArrayList<CheckListItem> list = new ArrayList<>();
+        // key: bit; value: labelId
+        for (Map.Entry<Integer, Integer> entry : Book.EDITIONS.entrySet()) {
+            Integer key = entry.getKey();
+            boolean selected = (key & mBook.getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0;
+            list.add(new SelectableItem(context.getString(entry.getValue()), key, selected));
+        }
+        return list;
     }
 
     public void reload() {
@@ -219,8 +254,8 @@ public class BookBaseFragmentModel
      */
     public boolean isSingleUsage(@NonNull final Context context,
                                  @NonNull final Author author) {
-        long nrOfReferences = mDb.countBooksByAuthor(context, author)
-                              + mDb.countTocEntryByAuthor(context, author);
+        final long nrOfReferences = mDb.countBooksByAuthor(context, author)
+                                    + mDb.countTocEntryByAuthor(context, author);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
@@ -236,7 +271,7 @@ public class BookBaseFragmentModel
     public boolean isSingleUsage(final Context context,
                                  final Series series,
                                  final Locale bookLocale) {
-        long nrOfReferences = mDb.countBooksInSeries(context, series, bookLocale);
+        final long nrOfReferences = mDb.countBooksInSeries(context, series, bookLocale);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
@@ -249,16 +284,16 @@ public class BookBaseFragmentModel
      */
     public boolean saveBook(@NonNull final Context context) {
         if (mBook.isNew()) {
-            long id = mDb.insertBook(context, mBook);
+            final long id = mDb.insertBook(context, mBook);
             if (id > 0) {
                 // if the user added a cover to the new book, make it permanent
                 for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
+                    final String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
                     if (!fileSpec.isEmpty()) {
-                        File downloadedFile = new File(fileSpec);
-                        String uuid = mDb.getBookUuid(id);
+                        final String uuid = mDb.getBookUuid(id);
                         if (uuid != null) {
-                            File destination = StorageUtils
+                            final File downloadedFile = new File(fileSpec);
+                            final File destination = StorageUtils
                                     .getCoverFileForUuid(context, uuid, cIdx);
                             StorageUtils.renameFile(downloadedFile, destination);
                         }
@@ -297,7 +332,7 @@ public class BookBaseFragmentModel
      * @return {@code true} if the book is available for lending.
      */
     public boolean isAvailable() {
-        String loanee = getLoanee();
+        final String loanee = getLoanee();
         return loanee == null || getLoanee().isEmpty();
     }
 

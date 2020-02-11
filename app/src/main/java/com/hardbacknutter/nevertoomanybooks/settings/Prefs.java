@@ -33,14 +33,12 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,7 +102,6 @@ public final class Prefs {
 
     public static final String pk_bob_levels_rebuild_state = "style.booklist.levels.rebuild.state";
     public static final String pk_bob_levels_default = "style.booklist.levels.default";
-    public static final String pk_bob_use_task_for_extras = "style.booklist.task.extras";
     public static final String pk_bob_style_name = "style.booklist.name";
     public static final String pk_bob_groups = "style.booklist.groups";
     public static final String pk_bob_preferred_style = "style.booklist.preferred";
@@ -174,49 +171,6 @@ public final class Prefs {
     private static final String TAG = "Prefs";
 
     private Prefs() {
-    }
-
-    /**
-     * Convert a set where each element represents one bit to an int bitmask.
-     *
-     * @param set the set
-     *
-     * @return the value
-     */
-    @NonNull
-    public static Integer toInteger(@NonNull final Iterable<String> set) {
-        int tmp = 0;
-        for (String s : set) {
-            tmp += Integer.parseInt(s);
-        }
-        return tmp;
-    }
-
-    /**
-     * Convert an int (bitmask) to a set where each element represents one bit.
-     *
-     * @param bitmask the value
-     *
-     * @return the set
-     */
-    @NonNull
-    public static Set<String> toStringSet(@IntRange(from = 0, to = 0xFFFF)
-                                          @NonNull final Integer bitmask) {
-        if (bitmask < 0) {
-            throw new IllegalArgumentException("bitmask=" + bitmask);
-        }
-
-        Set<String> set = new HashSet<>();
-        int tmp = bitmask;
-        int bit = 1;
-        while (tmp != 0) {
-            if ((tmp & 1) == 1) {
-                set.add(String.valueOf(bit));
-            }
-            bit *= 2;
-            tmp = tmp >> 1;
-        }
-        return set;
     }
 
     /**

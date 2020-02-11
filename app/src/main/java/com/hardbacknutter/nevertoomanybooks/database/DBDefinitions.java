@@ -380,6 +380,11 @@ public final class DBDefinitions {
     /* ======================================================================================
      *  Keys used as domain names / Bundle keys.
      * ====================================================================================== */
+    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
+    public static final String SUFFIX_KEY_ORDER_BY = "_ob";
+    /** Suffix added to a price column name to create a joined currency column. */
+    public static final String SUFFIX_KEY_CURRENCY = "_currency";
+
     /** Primary key. */
     public static final String KEY_PK_ID = "_id";
     /** Primary key. */
@@ -431,15 +436,18 @@ public final class DBDefinitions {
 //                DBDefinitions.KEY_EID_LCCN
     };
 
+
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF = "bookshelf";
     public static final String KEY_BOOKSHELF_CSV = "bookshelves_csv";
 
     /** {@link #TBL_AUTHORS} {@link #TBL_BOOK_AUTHOR} */
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
-    public static final String KEY_AUTHOR_FAMILY_NAME_OB;
+    public static final String KEY_AUTHOR_FAMILY_NAME_OB =
+            KEY_AUTHOR_FAMILY_NAME + SUFFIX_KEY_ORDER_BY;
     public static final String KEY_AUTHOR_GIVEN_NAMES = "given_names";
-    public static final String KEY_AUTHOR_GIVEN_NAMES_OB;
+    public static final String KEY_AUTHOR_GIVEN_NAMES_OB =
+            KEY_AUTHOR_GIVEN_NAMES + SUFFIX_KEY_ORDER_BY;
     public static final String KEY_AUTHOR_IS_COMPLETE = "author_complete";
     public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
     public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
@@ -448,7 +456,7 @@ public final class DBDefinitions {
 
     /** {@link #TBL_SERIES} {@link #TBL_BOOK_SERIES} */
     public static final String KEY_SERIES_TITLE = "series_name";
-    public static final String KEY_SERIES_TITLE_OB;
+    public static final String KEY_SERIES_TITLE_OB = KEY_SERIES_TITLE + SUFFIX_KEY_ORDER_BY;
     public static final String KEY_SERIES_FORMATTED = "series_formatted";
     public static final String KEY_SERIES_IS_COMPLETE = "series_complete";
     public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
@@ -461,14 +469,14 @@ public final class DBDefinitions {
     public static final String KEY_DATE_LAST_UPDATED = "last_update_date";
     public static final String KEY_UUID = "uuid";
     public static final String KEY_TITLE = "title";
-    public static final String KEY_TITLE_OB;
+    public static final String KEY_TITLE_OB = KEY_TITLE + SUFFIX_KEY_ORDER_BY;
     public static final String KEY_ISBN = "isbn";
     public static final String KEY_DATE_FIRST_PUBLICATION = "first_publication";
     public static final String KEY_PUBLISHER = "publisher";
     public static final String KEY_DATE_PUBLISHED = "date_published";
     public static final String KEY_PRINT_RUN = "print_run";
     public static final String KEY_PRICE_LISTED = "list_price";
-    public static final String KEY_PRICE_LISTED_CURRENCY = "list_price_currency";
+    public static final String KEY_PRICE_LISTED_CURRENCY = KEY_PRICE_LISTED + SUFFIX_KEY_CURRENCY;
     public static final String KEY_PAGES = "pages";
     public static final String KEY_FORMAT = "format";
     public static final String KEY_COLOR = "color";
@@ -481,7 +489,7 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKS} Personal data. */
     public static final String KEY_PRICE_PAID = "price_paid";
-    public static final String KEY_PRICE_PAID_CURRENCY = "price_paid_currency";
+    public static final String KEY_PRICE_PAID_CURRENCY = KEY_PRICE_PAID + SUFFIX_KEY_CURRENCY;
     public static final String KEY_DATE_ACQUIRED = "date_acquired";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_READ = "read";
@@ -515,6 +523,12 @@ public final class DBDefinitions {
     public static final String KEY_BL_NODE_VISIBLE = "visible";
     public static final String KEY_BL_NODE_EXPANDED = "expanded";
 
+    /**
+     * All money keys.
+     * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.
+     */
+    public static final String MONEY_KEYS = KEY_PRICE_LISTED + ',' + KEY_PRICE_PAID;
+
     /* ======================================================================================
      *  Keys used as column alias names / Bundle keys.
      * ====================================================================================== */
@@ -542,14 +556,6 @@ public final class DBDefinitions {
     public static final String KEY_TOC_TYPE = "type";
 
     static {
-        // Suffix added to a column name to create a specific 'order by' copy of that column.
-        final String COLUMN_SUFFIX_ORDER_BY = "_ob";
-
-        KEY_AUTHOR_FAMILY_NAME_OB = KEY_AUTHOR_FAMILY_NAME + COLUMN_SUFFIX_ORDER_BY;
-        KEY_AUTHOR_GIVEN_NAMES_OB = KEY_AUTHOR_GIVEN_NAMES + COLUMN_SUFFIX_ORDER_BY;
-        KEY_TITLE_OB = KEY_TITLE + COLUMN_SUFFIX_ORDER_BY;
-        KEY_SERIES_TITLE_OB = KEY_SERIES_TITLE + COLUMN_SUFFIX_ORDER_BY;
-
         /* ======================================================================================
          *  Table definitions
          * ====================================================================================== */

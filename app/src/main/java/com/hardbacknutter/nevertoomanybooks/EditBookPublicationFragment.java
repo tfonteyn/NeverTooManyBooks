@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +41,9 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
@@ -66,7 +69,8 @@ public class EditBookPublicationFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_edit_book_publication, container, false);
+        final View view = inflater
+                .inflate(R.layout.fragment_edit_book_publication, container, false);
         mPagesView = view.findViewById(R.id.pages);
         mFormatView = view.findViewById(R.id.format);
         mColorView = view.findViewById(R.id.color);
@@ -85,67 +89,56 @@ public class EditBookPublicationFragment
      * <p>
      * <br>{@inheritDoc}
      */
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void initFields() {
         super.initFields();
-        Fields fields = getFields();
+        final Fields fields = getFields();
 
         // A DateFieldFormatter can be shared between multiple fields.
-        Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
-
-        Field<String> field;
-
-        // book fields
+        final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
 
         fields.addString(mPagesView, DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
-        field = fields.addString(mFormatView, DBDefinitions.KEY_FORMAT)
-                      .setRelatedFields(R.id.lbl_format);
-        initValuePicker(field, mFormatView, R.string.lbl_format, R.id.btn_format,
-                        mBookModel.getFormats());
+        fields.addString(mFormatView, DBDefinitions.KEY_FORMAT)
+              .setRelatedFields(R.id.lbl_format)
+              .setAutocomplete(mFormatView, mBookModel.getFormats());
 
-        field = fields.addString(mColorView, DBDefinitions.KEY_COLOR)
-                      .setRelatedFields(R.id.lbl_color);
-        initValuePicker(field, mColorView, R.string.lbl_color, R.id.btn_color,
-                        mBookModel.getColors());
+        fields.addString(mColorView, DBDefinitions.KEY_COLOR)
+              .setRelatedFields(R.id.lbl_color)
+              .setAutocomplete(mColorView, mBookModel.getColors());
 
-        field = fields.addString(mLanguageView, DBDefinitions.KEY_LANGUAGE)
-                      .setFormatter(new Fields.LanguageFormatter())
-                      .setRelatedFields(R.id.lbl_language);
-        initValuePicker(field, mLanguageView, R.string.lbl_language, R.id.btn_language,
-                        mBookModel.getLanguagesCodes());
+        fields.addString(mLanguageView, DBDefinitions.KEY_LANGUAGE)
+              .setRelatedFields(R.id.lbl_language)
+              .setFormatter(new LanguageFormatter())
+              .setAutocomplete(mLanguageView, mBookModel.getLanguagesCodes());
 
-        field = fields.addString(mPublisherView, DBDefinitions.KEY_PUBLISHER)
-                      .setRelatedFields(R.id.lbl_publisher);
-        initValuePicker(field, mPublisherView, R.string.lbl_publisher, R.id.btn_publisher,
-                        mBookModel.getPublishers());
+        fields.addString(mPublisherView, DBDefinitions.KEY_PUBLISHER)
+              .setRelatedFields(R.id.lbl_publisher)
+              .setAutocomplete(mPublisherView, mBookModel.getPublishers());
 
-        field = fields.addString(mDatePublishedView,
-                                 DBDefinitions.KEY_DATE_PUBLISHED)
-                      .setFormatter(dateFormatter)
-                      .setRelatedFields(R.id.lbl_date_published);
-        initPartialDatePicker(field, mDatePublishedView, R.string.lbl_date_published, false);
+        fields.addString(mDatePublishedView, DBDefinitions.KEY_DATE_PUBLISHED)
+              .setRelatedFields(R.id.lbl_date_published)
+              .setFormatter(dateFormatter)
+              .addDatePicker(getChildFragmentManager(), mDatePublishedView,
+                             R.string.lbl_date_published, false);
 
         fields.addString(mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        field = fields.addString(mFirstPubView,
-                                 DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-                      .setFormatter(dateFormatter)
-                      .setRelatedFields(R.id.lbl_first_publication);
-        initPartialDatePicker(field, mFirstPubView, R.string.lbl_first_publication, false);
+        fields.addString(mFirstPubView, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+              .setRelatedFields(R.id.lbl_first_publication)
+              .setFormatter(dateFormatter)
+              .addDatePicker(getChildFragmentManager(), mFirstPubView,
+                             R.string.lbl_first_publication, false);
 
-        fields.addMonetary(mPriceListedView, DBDefinitions.KEY_PRICE_LISTED)
-              .setInputIsDecimal();
-
-        field = fields
-                .addString(mPriceListedCurrencyView,
-                           DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
-                .setRelatedFields(R.id.lbl_price_listed, R.id.price_listed_currency);
-        initValuePicker(field, mPriceListedCurrencyView, R.string.lbl_currency,
-                        R.id.btn_price_listed_currency,
-                        mBookModel.getListPriceCurrencyCodes());
+        // MUST be defined before the currency.
+        fields.addMoneyValue(mPriceListedView, DBDefinitions.KEY_PRICE_LISTED);
+        fields.addString(mPriceListedCurrencyView, DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
+              .setRelatedFields(R.id.lbl_price_listed,
+                                R.id.lbl_price_listed_currency, R.id.price_listed_currency)
+              .setAutocomplete(mPriceListedCurrencyView, mBookModel.getListPriceCurrencyCodes());
     }
 
     @CallSuper

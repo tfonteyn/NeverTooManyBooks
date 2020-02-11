@@ -64,11 +64,11 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
 import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.CurrencyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
@@ -115,7 +115,8 @@ public class Book
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
     /** first edition ever of this work/content/story. */
     public static final int EDITION_FIRST = 1;
-
+    /** mapping the edition bit to a resource string for displaying. Ordered. */
+    public static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
     /*
      * {@link DBDefinitions#KEY_EDITION_BITMASK}.
      * <p>
@@ -149,11 +150,8 @@ public class Book
                                              | EDITION_SLIPCASE
                                              | EDITION_SIGNED
                                              | EDITION_BOOK_CLUB;
-
     /** Log tag. */
     private static final String TAG = "Book";
-    /** mapping the edition bit to a resource string for displaying. Ordered. */
-    private static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
 
     /*
      * NEWTHINGS: edition: add label for the type
@@ -498,26 +496,6 @@ public class Book
     }
 
     /**
-     * Gets a complete list of Bookshelves each reflecting the book being on that shelf or not.
-     *
-     * @param db Database Access
-     *
-     * @return list with {@link SelectableItem}
-     */
-    @NonNull
-    public ArrayList<CheckListItem> getEditableBookshelvesList(@NonNull final DAO db) {
-        ArrayList<CheckListItem> list = new ArrayList<>();
-        // get the list of all shelves the book is currently on.
-        List<Bookshelf> currentShelves = getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-        // Loop through all bookshelves in the database and build the list for this book
-        for (Bookshelf bookshelf : db.getBookshelves()) {
-            boolean selected = currentShelves.contains(bookshelf);
-            list.add(new SelectableItem(bookshelf.getName(), bookshelf.getId(), selected));
-        }
-        return list;
-    }
-
-    /**
      * Set the Bookshelves.
      *
      * @param db    Database Access
@@ -527,30 +505,11 @@ public class Book
                                @NonNull final Iterable<CheckListItem> items) {
         ArrayList<Bookshelf> currentShelves = new ArrayList<>();
         for (CheckListItem item : items) {
-            long bookshelfId = ((SelectableItem) item).getItemId();
+            long bookshelfId = item.getItemId();
             currentShelves.add(db.getBookshelf(bookshelfId));
         }
 
         putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, currentShelves);
-    }
-
-    /**
-     * Gets a complete list of Editions each reflecting the book being that edition or not.
-     *
-     * @param context Current context
-     *
-     * @return list with {@link SelectableItem}
-     */
-    @NonNull
-    public ArrayList<CheckListItem> getEditableEditionList(@NonNull final Context context) {
-        ArrayList<CheckListItem> list = new ArrayList<>();
-        // key: bit; value: labelId
-        for (Map.Entry<Integer, Integer> entry : EDITIONS.entrySet()) {
-            Integer key = entry.getKey();
-            boolean selected = (key & getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0;
-            list.add(new SelectableItem(context.getString(entry.getValue()), key, selected));
-        }
-        return list;
     }
 
     /**
@@ -562,7 +521,7 @@ public class Book
         @Edition
         int bitmask = 0;
         for (CheckListItem item : items) {
-            bitmask |= ((SelectableItem) item).getItemId();
+            bitmask |= item.getItemId();
         }
 
         bitmask &= EDITIONS_MASK;
@@ -803,9 +762,9 @@ public class Book
         // cleanup/build all price related fields
         Bundle bundleHelper = new Bundle();
         preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_LISTED,
-                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY, bundleHelper);
+                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_PAID,
-                        DBDefinitions.KEY_PRICE_PAID_CURRENCY, bundleHelper);
+                        DBDefinitions.KEY_PRICE_PAID_CURRENCY);
 
         // make sure there are only valid external id's present
         preprocessExternalIds(context, isNew);
@@ -819,28 +778,23 @@ public class Book
      * <p>
      *
      * @param bookLocale   the book Locale
-     * @param bundleHelper a Bundle, passed in to allow mocking.
      */
     @VisibleForTesting
     void preprocessPrice(@NonNull final Locale bookLocale,
                          @NonNull final String valueKey,
-                         @NonNull final String currencyKey,
-                         @NonNull final Bundle bundleHelper) {
+                         @NonNull final String currencyKey) {
         // handle a price without a currency.
         if (contains(valueKey) && !contains(currencyKey)) {
             // we presume the user bought the book in their own currency.
-            bundleHelper.clear();
-            CurrencyUtils.splitPrice(bookLocale, getString(valueKey),
-                                     valueKey, currencyKey, bundleHelper);
-
-            if (bundleHelper.containsKey(valueKey)) {
-                double price = bundleHelper.getDouble(valueKey);
-                remove(valueKey);
-                putDouble(valueKey, price);
-                String currency = bundleHelper.getString(currencyKey);
-                putString(currencyKey, currency != null ? currency : "");
+            Money money = new Money(bookLocale, getString(valueKey));
+            if (money.getCurrency() != null) {
+                putDouble(valueKey, money.doubleValue());
+                putString(currencyKey, money.getCurrency().toUpperCase(bookLocale));
+                return;
             }
+            // else just leave the original in the data
         }
+
         // Make sure currencies are uppercase
         if (contains(currencyKey)) {
             putString(currencyKey, getString(currencyKey).toUpperCase(bookLocale));

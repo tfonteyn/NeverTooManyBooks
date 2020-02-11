@@ -27,62 +27,55 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
-import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.util.SparseArray;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.Checkable;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentManager;
 
-import java.lang.ref.WeakReference;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import com.google.android.material.chip.ChipGroup;
+
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Currency;
-import java.util.Date;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.AccessorFactory;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.BitmaskChipGroupAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EntityListChipGroupAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.FieldDataAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
- * This is the class that manages data and views for an Activity/Fragment; access to the data that
- * each view represents should be handled via this class (and its related classes) where
- * possible.
+ * This is the class that manages data and views for an Activity/Fragment;
+ * access to the data that each view represents should be handled via this class
+ * (and its related classes) where possible.
  * <ul>Features provides are:
- * <li> handling of visibility via preferences / 'mUsageKey' property of a field.</li>
+ * <li> handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
  * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
  * as expected as will setting the value of a Spinner). As new view types are added, it
- * will be necessary to add new {@link FieldDataAccessor} implementations.</li>
+ * will be necessary to add new {@link FieldDataAccessor} implementations.
+ * In some specific circumstances, an accessor can be defined manually.</li>
  * <li> Custom data accessors and formatter to provide application-specific data rules.</li>
  * <li> simplified extraction of data.</li>
  * </ul>
@@ -90,27 +83,40 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Formatter and Accessors
  * <p>
  * It is up to each accessor to decide what to do with any formatter defined for a field.
- * The fields themselves have extract() and format() methods that will apply the formatter
- * functions (if present) or just pass the value through.
+ * Formatters only really make sense for TextView and EditText elements.
+ * Formatters should implement {@link FieldFormatter#format(Context, Object)} where the Object
+ * is transformed to a String - DO NOT CHANGE class variables while doing this.
+ * In contrast {@link FieldFormatter#apply(Object, View)} CAN change class variables
+ * but should leave the real formatter to the format method.
  * <p>
- * On a set(), the accessor should call format() function then apply the value
- * On a get() the accessor should retrieve the value and apply the extract() function.
- * <p>
- * The use of a formatter typically results in all values being converted to strings so
- * they should be avoided for most non-string data.
+ * This way, other code can access {@link FieldFormatter#format(Context, Object)}
+ * without side-effects.
+ *
  * <ul>Data flows to and from a view as follows:
- * <li>IN  ( no formatter ):
- * <br>(DataManager/Bundle) -> transform (in accessor) -> View</li>
- * <li>IN  (with formatter):
- * <br>(DataManager/Bundle) -> format() (via accessor) -> transform (in accessor) -> View</li>
- * <li>OUT ( no formatter ):
- * <br>(DataManager/Bundle) -> transform (in accessor) -> Object</li>
+ * <li>IN  (no formatter ):<br>
+ * {@link FieldDataAccessor#setValue(DataManager)} ->
+ * {@link FieldDataAccessor#setValue(Object)} ->
+ * populates the View.
+ * </li>
+ * <li>IN  (with formatter):<br>
+ * {@link FieldDataAccessor#setValue(DataManager)} ->
+ * {@link FieldDataAccessor#setValue(Object)} ->
+ * {@link FieldFormatter#apply(Object, View)} ->
+ * populates the View..
+ * </li>
+ * <li>OUT (no formatter ):
+ * View -> {@link FieldDataAccessor#getValue()} ->  {@link FieldDataAccessor#getValue(DataManager)}
+ * </li>
  * <li>OUT (with formatter):
- * <br>(DataManager/Bundle) -> transform (in accessor) -> extract (via accessor) -> Object</li>
+ * View ->  {@link FieldFormatter#extract(View)} ->
+ * {@link FieldDataAccessor#getValue()} -> {@link FieldDataAccessor#getValue(DataManager)}
+ * </li>
  * </ul>
  */
 public class Fields {
 
+    /** Common error message. */
+    private static final String ERROR_KEY_SHOULD_NOT_BE_EMPTY = "key should not be empty";
     /** the list with all fields. */
     private final SparseArray<Field> mAllFields = new SparseArray<>();
 
@@ -125,11 +131,10 @@ public class Fields {
         mAfterFieldChangeListener = listener;
     }
 
-    private void afterFieldChange(@NonNull final Field<?> field,
-                                  @Nullable final Object newValue) {
+    private void afterFieldChange(@NonNull final Field<?> field) {
         if (mAfterFieldChangeListener != null) {
             //noinspection unchecked
-            mAfterFieldChangeListener.afterFieldChange(field, newValue);
+            mAfterFieldChangeListener.afterFieldChange(field);
         }
     }
 
@@ -141,37 +146,17 @@ public class Fields {
      * Define a String field. It will be added as usual, but all read/writes
      * to the {@link DataManager} or {@code Bundle} will be suppressed.
      *
-     * @param view     View to use
-     * @param usageKey The preference key to check if this Field is used or not.
-     *                 Not being in use merely means it's not displayed;
-     *                 all functionality (populate, storage...) is still executed.
+     * @param view      View to use
+     * @param entityKey The preference key to check if this Field is used or not.
+     *                  Not being in use merely means it's not displayed;
+     *                  all functionality (populate, storage...) is still executed.
      *
      * @return The resulting Field.
      */
     @NonNull
     public Field<String> define(@NonNull final View view,
-                                @NonNull final String usageKey) {
-        Field<String> field = new Field<>(this, view, "", usageKey);
-        mAllFields.put(view.getId(), field);
-        return field;
-    }
-
-    /**
-     * Define a Monetary field. It will be added as usual, but all read/writes
-     * to the {@link DataManager} or {@code Bundle} will be suppressed.
-     * *
-     *
-     * @param view     View to use
-     * @param usageKey The preference key to check if this Field is used or not.
-     *                 Not being in use merely means it's not displayed;
-     *                 all functionality (populate, storage...) is still executed.
-     *
-     * @return The resulting Field.
-     */
-    @NonNull
-    public Field<Double> defineMonetary(@NonNull final View view,
-                                        @NonNull final String usageKey) {
-        Field<Double> field = new Field<>(this, view, "", usageKey);
+                                @NonNull final String entityKey) {
+        Field<String> field = new Field<>(this, view.getId(), "", entityKey, view);
         mAllFields.put(view.getId(), field);
         return field;
     }
@@ -190,14 +175,38 @@ public class Fields {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
             if (key.isEmpty()) {
-                throw new IllegalArgumentException("key should not be empty");
+                throw new IllegalArgumentException(ERROR_KEY_SHOULD_NOT_BE_EMPTY);
             }
         }
-        Field<String> field = new Field<>(this, view, key, key);
+
+        Field<String> field = new Field<>(this, view.getId(), key, key, view);
         mAllFields.put(view.getId(), field);
         return field;
     }
 
+    /**
+     * Add a field to this collection.
+     *
+     * @param view      View to use
+     * @param key       Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param entityKey The preference key to check if this Field(Entity) is used or not.
+     *
+     * @return The resulting Field.
+     */
+    public Field<List<Entity>> addCsvListEntity(@NonNull final View view,
+                                                @NonNull final String key,
+                                                @NonNull final String entityKey) {
+        if (BuildConfig.DEBUG /* always */) {
+            // sanity check
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException(ERROR_KEY_SHOULD_NOT_BE_EMPTY);
+            }
+        }
+
+        Field<List<Entity>> field = new Field<>(this, view.getId(), key, entityKey, view);
+        mAllFields.put(view.getId(), field);
+        return field;
+    }
 
     /**
      * Add a Boolean field to this collection.
@@ -213,32 +222,11 @@ public class Fields {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
             if (key.isEmpty()) {
-                throw new IllegalArgumentException("key should not be empty");
+                throw new IllegalArgumentException(ERROR_KEY_SHOULD_NOT_BE_EMPTY);
             }
         }
-        Field<Boolean> field = new Field<>(this, view, key, key);
-        mAllFields.put(view.getId(), field);
-        return field;
-    }
 
-    /**
-     * Add a Long field to this collection.
-     *
-     * @param view View to use
-     * @param key  Key used to access a {@link DataManager} or {@code Bundle}.
-     *
-     * @return The resulting Field.
-     */
-    @NonNull
-    public Field<Long> addLong(@NonNull final View view,
-                               @NonNull final String key) {
-        if (BuildConfig.DEBUG /* always */) {
-            // sanity check
-            if (key.isEmpty()) {
-                throw new IllegalArgumentException("key should not be empty");
-            }
-        }
-        Field<Long> field = new Field<>(this, view, key, key);
+        Field<Boolean> field = new Field<>(this, view.getId(), key, key, view);
         mAllFields.put(view.getId(), field);
         return field;
     }
@@ -257,36 +245,179 @@ public class Fields {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
             if (key.isEmpty()) {
-                throw new IllegalArgumentException("key should not be empty");
+                throw new IllegalArgumentException(ERROR_KEY_SHOULD_NOT_BE_EMPTY);
             }
         }
-        Field<Float> field = new Field<>(this, view, key, key);
+
+        Field<Float> field = new Field<>(this, view.getId(), key, key, view);
         mAllFields.put(view.getId(), field);
         return field;
     }
 
     /**
-     * Add a Monetary field to this collection.
+     * Add a {@link Money} field; used for <strong>display only</strong>.
+     * Handles both value and currency parts.
      *
      * @param view View to use
      * @param key  Key used to access a {@link DataManager} or {@code Bundle}.
      *
      * @return The resulting Field.
      */
-    @NonNull
-    public Field<Double> addMonetary(@NonNull final View view,
-                                     @NonNull final String key) {
+    public Field<Money> addMoney(@NonNull final View view,
+                                 @NonNull final String key) {
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
             if (key.isEmpty()) {
-                throw new IllegalArgumentException("key should not be empty");
+                throw new IllegalArgumentException(ERROR_KEY_SHOULD_NOT_BE_EMPTY);
             }
         }
-        Field<Double> field = new Field<>(this, view, key, key);
+
+        Field<Money> field = new Field<>(this, view.getId(), key, key, view);
         mAllFields.put(view.getId(), field);
         return field;
     }
 
+    /**
+     * Add a the value part of a {@link Money} field; used for <strong>editing only</strong>.
+     * The currency part must be handled separately.
+     *
+     * @param view View to use
+     * @param key  Key used to access a {@link DataManager} or {@code Bundle}.
+     *
+     * @return The resulting Field.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public Field<Double> addMoneyValue(@NonNull final View view,
+                                       @NonNull final String key) {
+        if (BuildConfig.DEBUG /* always */) {
+            // sanity check
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException(ERROR_KEY_SHOULD_NOT_BE_EMPTY);
+            }
+        }
+
+        EditTextAccessor<Double> acc = new EditTextAccessor<>();
+        acc.setDecimalInput(true);
+        // don't reformat after each text change... for double values this
+        // is FAR to annoying due to the trailing ".0"
+        acc.setEnableReformat(false);
+
+        // Creating this formatter locally as it's a bit dubious
+        // Money or Double (as a Number) comes in, Double goes out
+        // The main (only) reason to use it is the extract.
+        acc.setFormatter(new FieldFormatter<Number>() {
+            @NonNull
+            @Override
+            public String format(@NonNull final Context context,
+                                 @Nullable final Number rawValue) {
+
+                if (rawValue == null) {
+                    return "";
+                }
+
+                double dv = rawValue.doubleValue();
+                if (dv == 0.0d) {
+                    return "";
+                }
+
+                String formatted = String.valueOf(dv);
+                if (formatted.endsWith(".0")) {
+                    return formatted.substring(0, formatted.length() - 2);
+                } else {
+                    return formatted;
+                }
+            }
+
+            @Override
+            public void apply(@Nullable final Number rawValue,
+                              @NonNull final View view) {
+                ((TextView) view).setText(format(view.getContext(), rawValue));
+            }
+
+            @NonNull
+            @Override
+            public Number extract(@NonNull final View view) {
+                String sv = ((TextView) view).getText().toString().trim();
+                // URGENT: review the use of the Locale: user or system ?
+                return ParseUtils.parseDouble(sv, LocaleUtils.getSystemLocale());
+            }
+        });
+
+        Field<Double> field = new Field<>(this, view.getId(), key, key, acc);
+        mAllFields.put(view.getId(), field);
+        return field;
+    }
+
+    /**
+     * Add an Bitmask field to this collection.
+     * It's hardwired to use a {@link ChipGroup} and matching formatter.
+     *
+     * @param view       View to use
+     * @param key        Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param allValues  map with all possible values
+     * @param isEditable {@code true} if the user can edit the field
+     *
+     * @return The resulting Field.
+     */
+    @NonNull
+    public Field<Integer> addBitmask(@NonNull final View view,
+                                     @NonNull final String key,
+                                     @NonNull final Map<Integer, String> allValues,
+                                     final boolean isEditable) {
+        if (BuildConfig.DEBUG /* always */) {
+            // sanity check
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException(ERROR_KEY_SHOULD_NOT_BE_EMPTY);
+            }
+        }
+
+        BitmaskChipGroupAccessor acc = new BitmaskChipGroupAccessor();
+        acc.setBitmask(allValues);
+        acc.setEditable(isEditable);
+
+        Field<Integer> field = new Field<>(this, view.getId(), key, key, acc);
+        mAllFields.put(view.getId(), field);
+        return field;
+    }
+
+    /**
+     * Add a field to this collection.
+     * <p>
+     * View: ChipGroup showing a Chip for each element in the value list.
+     * <p>
+     * Edit: ChipGroup showing a Chip for each element in the <strong>allValues</strong>
+     * with the ones in the value list being selected.
+     *
+     * @param view       View to use
+     * @param key        Key used to access a {@link DataManager} or {@code Bundle}.
+     * @param entityKey  The preference key to check if this Field is used or not.
+     * @param allValues  list with all possible values
+     * @param isEditable {@code true} if the user can edit the field
+     *
+     * @return The resulting Field.
+     */
+    @NonNull
+    public Field<ArrayList<Entity>> addEntityList(@NonNull final View view,
+                                                  @NonNull final String key,
+                                                  @NonNull final String entityKey,
+                                                  @NonNull final List<Entity> allValues,
+                                                  final boolean isEditable) {
+        if (BuildConfig.DEBUG /* always */) {
+            // sanity check
+            if (key.isEmpty()) {
+                throw new IllegalArgumentException(ERROR_KEY_SHOULD_NOT_BE_EMPTY);
+            }
+        }
+
+        EntityListChipGroupAccessor acc = new EntityListChipGroupAccessor();
+        acc.setList(allValues);
+        acc.setEditable(isEditable);
+
+        Field<ArrayList<Entity>> field = new Field<>(this, view.getId(), key, entityKey, acc);
+        mAllFields.put(view.getId(), field);
+        return field;
+    }
 
     /**
      * Return the Field associated with the passed layout ID.
@@ -299,7 +430,8 @@ public class Fields {
      * @throws IllegalArgumentException if the field does not exist.
      */
     @NonNull
-    public <T> Field<T> getField(@IdRes final int fieldId) {
+    public <T> Field<T> getField(@IdRes final int fieldId)
+            throws IllegalArgumentException {
         //noinspection unchecked
         Field<T> field = (Field<T>) mAllFields.get(fieldId);
         if (field != null) {
@@ -315,42 +447,17 @@ public class Fields {
     }
 
     /**
-     * Load fields from the passed bundle.
-     *
-     * @param rawData       with data to load.
-     * @param withOverwrite if {@code true}, all fields are copied.
-     *                      If {@code false}, only non-existent fields are copied.
-     */
-    public void setAllFrom(@NonNull final Bundle rawData,
-                           final boolean withOverwrite) {
-        if (withOverwrite) {
-            for (int f = 0; f < mAllFields.size(); f++) {
-                Field field = mAllFields.valueAt(f);
-                field.setValueFrom(rawData);
-            }
-        } else {
-            for (int f = 0; f < mAllFields.size(); f++) {
-                Field field = mAllFields.valueAt(f);
-                if (!field.getKey().isEmpty() && rawData.containsKey(field.getKey())) {
-                    Object value = rawData.get(field.getKey());
-                    if (value != null) {
-                        //noinspection unchecked
-                        field.setValue(value);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Load all fields from the passed {@link DataManager}.
      *
      * @param dataManager DataManager to load Field objects from.
      */
-    public void setAllFrom(@NonNull final DataManager dataManager) {
+    public void setAll(@NonNull final DataManager dataManager) {
         for (int f = 0; f < mAllFields.size(); f++) {
             Field field = mAllFields.valueAt(f);
-            field.setValueFrom(dataManager);
+            if (field.isAutoPopulated()) {
+                // do NOT call onChanged, as this is the initial load
+                field.getAccessor().setValue(dataManager);
+            }
         }
     }
 
@@ -359,11 +466,11 @@ public class Fields {
      *
      * @param dataManager DataManager to put Field objects in.
      */
-    public void putAllInto(@NonNull final DataManager dataManager) {
+    public void getAll(@NonNull final DataManager dataManager) {
         for (int f = 0; f < mAllFields.size(); f++) {
             Field field = mAllFields.valueAt(f);
-            if (!field.getKey().isEmpty()) {
-                field.putValueInto(dataManager);
+            if (field.isAutoPopulated()) {
+                field.getAccessor().getValue(dataManager);
             }
         }
     }
@@ -399,1169 +506,44 @@ public class Fields {
      */
     public interface AfterFieldChangeListener<T> {
 
-        void afterFieldChange(@NonNull Field<T> field,
-                              @Nullable T newValue);
-    }
-
-    /**
-     * Interface for view-specific accessors. One of these must be implemented for
-     * each view type that is supported.
-     *
-     * @param <T> type of Field value.
-     */
-    public interface FieldDataAccessor<T> {
-
-        /**
-         * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
-         * <strong>Implementation note</strong>: we don't provide a onCreateViewHolder() method on purpose.
-         * Using that would need to deal with {@code null} values.
-         */
-        void setView(@NonNull View view);
-
-        /**
-         * Set the optional formatter.
-         *
-         * @param formatter to use
-         */
-        void setFormatter(@NonNull FieldFormatter formatter);
-
-        /**
-         * Call the wrapped formatter. See {@link FieldFormatter}.
-         *
-         * @param context Current context
-         * @param source  Input value
-         *
-         * @return The formatted value.
-         */
-        @NonNull
-        String format(@NonNull final Context context,
-                      @Nullable T source);
-
-        /**
-         * Call the wrapped formatter. See {@link FieldFormatter}.
-         *
-         * @param source The value to be back-translated
-         *
-         * @return The extracted value
-         */
-        @NonNull
-        T extract(@NonNull String source);
-
-        /**
-         * Get the value from the view associated with the Field and return it as an Object.
-         *
-         * <strong>Note:</strong> an implementation should always return a value.
-         * This would/should usually be the default the Widget.
-         * e.g. a text based widget should return "" even if the value was never set.
-         *
-         * @return the value
-         *
-         * @throws NoViewException if the associated View is not available
-         */
-        @NonNull
-        T getValue()
-                throws NoViewException;
-
-        /**
-         * Use the passed value to set the Field.
-         * <p>
-         * If {@code null} is passed in, the implementation should set the widget to
-         * its native default value. (e.g. string -> "", number -> 0, etc)
-         *
-         * @param value to set.
-         */
-        void setValue(@Nullable T value);
-
-        /**
-         * Fetch the value from the passed Bundle, and set the Field.
-         *
-         * @param source Collection to load data from.
-         */
-        void setValue(@NonNull Bundle source);
-
-        /**
-         * Fetch the value from the passed DataManager, and set the Field.
-         *
-         * @param source Collection to load data from.
-         */
-        void setValue(@NonNull DataManager source);
-
-        /**
-         * Get the value from the view associated with the Field
-         * and put a <strong>native typed value</strong> in the passed collection.
-         *
-         * @param target Collection to save value into.
-         */
-        void getValueAndPut(@NonNull DataManager target);
-
-        /**
-         * Check if this field is considered to be 'empty'.
-         * The encapsulated type decides what 'empty' means.
-         * <p>
-         * If the test can be optimized, then you should override this default method.
-         *
-         * @return {@code true} if empty.
-         */
-        default boolean isEmpty() {
-            return isEmpty(getValue());
-        }
-
-        /**
-         * Generic helper method to see if the given value is considered empty.
-         * <p>
-         * This default implementation considers numbers == 0, boolean == false
-         * and empty strings to be empty.
-         *
-         * @param value to test
-         *
-         * @return {@code true} if empty.
-         */
-        default boolean isEmpty(@NonNull final T value) {
-            return value instanceof Number && ((Number) value).doubleValue() == 0.0d
-                   || value instanceof Boolean && !(Boolean) value
-                   || value.toString().isEmpty();
-        }
-    }
-
-    /**
-     * Interface definition for Field formatter.
-     *
-     * <strong>Do not store Context or View in a formatter.</strong>
-     *
-     * @param <T> type of Field value.
-     */
-    public interface FieldFormatter<T> {
-
-        /**
-         * Format a string for applying to a View.
-         * If the source is {@code null}, implementations should return "" (and log an error)
-         *
-         * @param context Current context
-         * @param source  Input value
-         *
-         * @return The formatted value.
-         */
-        @NonNull
-        String format(@NonNull final Context context,
-                      @Nullable T source);
-
-        /**
-         * This method is intended to be called from a {@link FieldDataAccessor}.
-         * <p>
-         * Extract a formatted {@code String} from the displayed version.
-         *
-         * @param source The value to be back-translated
-         *
-         * @return The extracted value
-         */
-        @NonNull
-        T extract(@NonNull String source);
-    }
-
-    /**
-     * TextWatcher for EditText fields. Sets the Field value after each EditText change.
-     */
-    private static class DecimalTextWatcher
-            implements TextWatcher {
-
-        private static final String DIGITS = "0123456789";
-        private final String mDecimalSeparator;
-        /**
-         * Strong reference to View is fine.
-         * This watcher will get destroyed when the View gets destroyed.
-         * <strong>Note:</strong> do NOT keep a strong reference to the watcher itself!
-         */
-        @NonNull
-        private final EditText mView;
-        DecimalTextWatcher(@NonNull final EditText view) {
-            mView = view;
-            Locale locale = LocaleUtils.getUserLocale(mView.getContext());
-            DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
-            DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
-            mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());
-        }
-
-        @Override
-        public void beforeTextChanged(@NonNull final CharSequence s,
-                                      final int start,
-                                      final int count,
-                                      final int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(@NonNull final CharSequence s,
-                                  final int start,
-                                  final int before,
-                                  final int count) {
-
-        }
-
-        @Override
-        public void afterTextChanged(@NonNull final Editable editable) {
-            // allow only one decimal separator
-            if (editable.toString().contains(mDecimalSeparator)) {
-                mView.setKeyListener(DigitsKeyListener.getInstance(DIGITS));
-            } else {
-                mView.setKeyListener(DigitsKeyListener.getInstance(DIGITS + mDecimalSeparator));
-            }
-
-        }
-
-//        public static class DecimalDigitsInputFilter
-//                implements InputFilter {
-//
-//            Pattern mPattern;
-//
-//            public DecimalDigitsInputFilter(@NonNull final Context context,
-//                                            final int digitsBeforeZero,
-//                                            final int digitsAfterZero) {
-//                DecimalFormatSymbols d =
-//                        new DecimalFormatSymbols(LocaleUtils.getUserLocale(context));
-//                String s = "\\\\" + d.getDecimalSeparator();
-//                mPattern = Pattern.compile(
-//                        "[0-9]{0," + (digitsBeforeZero - 1) + "}+"
-//                        + "((" + s + "[0-9]{0," + (digitsAfterZero - 1) + "})?)"
-//                        + ""
-//                        + "|(" + s + ")?");
-//            }
-//
-//            @Override
-//            public CharSequence filter(CharSequence source,
-//                                       int start,
-//                                       int end,
-//                                       Spanned dest,
-//                                       int dstart,
-//                                       int dend) {
-//
-//                Matcher matcher = mPattern.matcher(dest);
-//                if (!matcher.matches()) {
-//                    return "";
-//                }
-//                return null;
-//            }
-//        }
-    }
-
-    /**
-     * TextWatcher for EditText fields. Sets the Field value after each EditText change.
-     *
-     * @param <T> type of Field value.
-     */
-    private static class ReformatTextWatcher<T>
-            implements TextWatcher {
-
-        /** Log tag. */
-        private static final String TAG = "ReformatTextWatcher";
-
-        @NonNull
-        private final Field<T> mField;
-
-        ReformatTextWatcher(@NonNull final Field<T> field) {
-            mField = field;
-        }
-
-        @Override
-        public void beforeTextChanged(@NonNull final CharSequence s,
-                                      final int start,
-                                      final int count,
-                                      final int after) {
-        }
-
-        @Override
-        public void onTextChanged(@NonNull final CharSequence s,
-                                  final int start,
-                                  final int before,
-                                  final int count) {
-        }
-
-        @Override
-        public void afterTextChanged(@NonNull final Editable s) {
-            // extract to native value
-            T value = mField.extract(s.toString().trim());
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_TEXT_WATCHER) {
-                Log.d(TAG, "afterTextChanged|s=`" + s.toString() + '`'
-                           + "|extract=`" + value + '`');
-            }
-
-            // Set the field with the new data.
-            // This will also redisplay the data, re-formatted as needed.
-            mField.setValue(value);
-        }
-    }
-
-    /**
-     * Base implementation.
-     *
-     * @param <T> type of Field value.
-     */
-    private abstract static class BaseDataAccessor<T>
-            implements FieldDataAccessor<T> {
-
-        /** Log tag. */
-        private static final String TAG = "BaseDataAccessor";
-
-        @NonNull
-        final Field<T> mField;
-        @Nullable
-        private WeakReference<View> mView;
-        @Nullable
-        private FieldFormatter<T> mFormatter;
-
-        BaseDataAccessor(@NonNull final Field<T> field) {
-            mField = field;
-        }
-
-        @Nullable
-        public View getView() {
-            return mView != null ? mView.get() : null;
-        }
-
-        @Override
-        public void setView(@NonNull final View view) {
-            mView = new WeakReference<>(view);
-        }
-
-        /**
-         * Add on onTouch listener that signals a 'dirty' event when touched.
-         * This is/should only be used for fields with Views
-         * <ul>
-         * <li>{@link Checkable}</li>
-         * <li>{@link RatingBar}</li>
-         * </ul>
-         * or similar
-         *
-         * @param view The view to watch
-         */
-        @SuppressWarnings("SameReturnValue")
-        @SuppressLint("ClickableViewAccessibility")
-        void addTouchSignalsDirty(@NonNull final View view) {
-            view.setOnTouchListener((v, event) -> {
-                if (MotionEvent.ACTION_UP == event.getAction()) {
-                    mField.getFields().afterFieldChange(mField, null);
-                }
-                return false;
-            });
-        }
-
-        public void setFormatter(@NonNull final FieldFormatter formatter) {
-            //noinspection unchecked
-            mFormatter = formatter;
-        }
-
-        /**
-         * Wrapper around {@link FieldFormatter#format}.
-         *
-         * @param context Current context
-         * @param value   to format
-         *
-         * @return The formatted value
-         */
-        @NonNull
-        public String format(@NonNull final Context context,
-                             @Nullable final T value) {
-            if (mFormatter != null) {
-                try {
-                    return mFormatter.format(context, value);
-
-                } catch (@NonNull final ClassCastException e) {
-                    // Due to the way a Book loads data from the database,
-                    // it's possible that it gets the column type wrong.
-                    // See {@link BookCursor} class docs.
-                    Logger.error(context, TAG, e, value);
-                }
-            }
-
-            // if we don't have a formatter, or if we had a ClassCastException
-            if (value == null || isEmpty(value)) {
-                return "";
-            }
-            return value.toString();
-        }
-
-        /**
-         * Wrapper around {@link FieldFormatter#extract}.
-         *
-         * @param source The value to be back-translated
-         *
-         * @return The extracted value
-         */
-        @NonNull
-        public T extract(@NonNull final String source) {
-            if (mFormatter != null) {
-                return mFormatter.extract(source);
-            } else {
-                // all non-String field should have formatters.
-                // If we get an Exception here then the developer made a boo-boo.
-                return (T) source;
-            }
-        }
-    }
-
-    /**
-     * Implementation that stores and retrieves data from a local string variable
-     * for fields without a layout.
-     * <p>
-     * Does not use a {@link FieldFormatter}.
-     */
-    private static class StringDataAccessor
-            extends BaseDataAccessor<String> {
-
-        @NonNull
-        private String mLocalValue = "";
-
-        StringDataAccessor(@NonNull final Field<String> field) {
-            super(field);
-        }
-
-        @Override
-        public void getValueAndPut(@NonNull final DataManager target) {
-            target.putString(mField.getKey(), mLocalValue);
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return mLocalValue.isEmpty();
-        }
-
-        @NonNull
-        @Override
-        public String getValue() {
-            return mLocalValue;
-        }
-
-        @Override
-        public void setValue(@Nullable final String value) {
-            mLocalValue = value != null ? value.trim() : "";
-        }
-
-        @Override
-        public void setValue(@NonNull final Bundle source) {
-            setValue(source.getString(mField.getKey(), ""));
-        }
-
-        @Override
-        public void setValue(@NonNull final DataManager source) {
-            setValue(source.getString(mField.getKey()));
-        }
-    }
-
-    /**
-     * Base implementation for TextView/EditText.
-     *
-     * @param <T> type of Field value.
-     */
-    private abstract static class TextFieldAccessor<T>
-            extends BaseDataAccessor<T> {
-
-        /**
-         * Constructor.
-         *
-         * @param field to use
-         */
-        TextFieldAccessor(@NonNull final Field<T> field) {
-            super(field);
-        }
-
-        @Override
-        public boolean isEmpty() {
-            String strValue = getValue().toString();
-            return strValue.isEmpty()
-                   // Integer/Long
-                   || "0".equals(strValue)
-                   // Float/Double
-                   || "0.0".equals(strValue)
-                   // Boolean (theoretically this should not happen... but paranoia... ).
-                   || "false".equals(strValue);
-        }
-
-        @Override
-        public void getValueAndPut(@NonNull final DataManager target) {
-            // We don't know the type <T> so put as Object (DataManager will auto-detect).
-            target.put(mField.getKey(), getValue());
-        }
-
-        @Override
-        public void setValue(@NonNull final Bundle source) {
-            //noinspection unchecked
-            setValue((T) source.get(mField.getKey()));
-        }
-
-        @Override
-        public void setValue(@NonNull final DataManager source) {
-            //noinspection unchecked
-            setValue((T) source.get(mField.getKey()));
-        }
-    }
-
-    /**
-     * Implementation that stores and retrieves data from a TextView.
-     * This is treated differently to an EditText in that HTML is (optionally) displayed properly.
-     * <p>
-     * The actual value is simply stored in a local variable. No attempt to extract is done.
-     * <p>
-     * Uses {@link FieldFormatter#format} only.
-     *
-     * @param <T> type of Field value.
-     */
-    private static class TextViewAccessor<T>
-            extends TextFieldAccessor<T> {
-
-        private boolean mFormatHtml;
-
-        @Nullable
-        private T mRawValue;
-
-        /**
-         * Constructor.
-         *
-         * @param field to use
-         */
-        TextViewAccessor(@NonNull final Field<T> field) {
-            super(field);
-        }
-
-        @NonNull
-        @Override
-        public T getValue() {
-            if (mRawValue != null) {
-                return mRawValue;
-            } else {
-                // The only situation where mRawValue would be null is when T is a String.
-                // If we violate that, the next line will cause an Exception
-                return (T) "";
-            }
-        }
-
-        @Override
-        public void setValue(@Nullable final T value) {
-            TextView view = (TextView) getView();
-            if (view != null) {
-                mRawValue = value;
-                if (mFormatHtml) {
-                    String body = format(view.getContext(), mRawValue);
-
-                    view.setText(LinkifyUtils.fromHtml(body));
-                    view.setMovementMethod(LinkMovementMethod.getInstance());
-
-                    view.setFocusable(true);
-                    view.setTextIsSelectable(true);
-
-                } else {
-                    view.setText(format(view.getContext(), mRawValue));
-                }
-            }
-        }
-
-        /**
-         * Set the TextViewAccessor to support HTML.
-         *
-         * @param showHtml if {@code true} this view will display HTML
-         */
-        @SuppressWarnings("WeakerAccess")
-        public void setShowHtml(final boolean showHtml) {
-            mFormatHtml = showHtml;
-        }
-    }
-
-    /**
-     * Implementation that stores and retrieves data from an EditText.
-     * <p>
-     * Uses {@link FieldFormatter#format} and {@link FieldFormatter#extract}.
-     *
-     * @param <T> type of Field value.
-     */
-    private static class EditTextAccessor<T>
-            extends TextFieldAccessor<T> {
-
-        @NonNull
-        private final TextWatcher mReformatTextWatcher;
-        private boolean mIsDecimal;
-
-        /**
-         * Constructor.
-         *
-         * @param field to use
-         */
-        EditTextAccessor(@NonNull final Field<T> field) {
-            super(field);
-            mReformatTextWatcher = new ReformatTextWatcher<>(field);
-        }
-
-        @NonNull
-        @Override
-        public T getValue() {
-            EditText view = (EditText) getView();
-            if (view != null) {
-                return extract(view.getText().toString().trim());
-            }
-            throw new NoViewException();
-        }
-
-        @Override
-        public void setValue(@Nullable final T value) {
-            EditText view = (EditText) getView();
-            if (view != null) {
-                // 2018-12-11: There was recursion due to the setText call.
-                // So now disabling the TextWatcher while doing the latter.
-                // We don't want another thread re-enabling the listener before we're done
-                synchronized (mReformatTextWatcher) {
-                    view.removeTextChangedListener(mReformatTextWatcher);
-
-                    String newVal = format(view.getContext(), value);
-                    // do not use extract, we compare formatted/formatted value
-                    String oldVal = view.getText().toString().trim();
-                    if (!newVal.equals(oldVal)) {
-                        if (view instanceof AutoCompleteTextView) {
-                            // prevent auto-completion to kick in / stop the dropdown from opening.
-                            // this happened if the field had the focus when we'd be populating it.
-                            ((AutoCompleteTextView) view).setText(newVal, false);
-                        } else {
-                            view.setText(newVal);
-                        }
-                    }
-                    view.addTextChangedListener(mReformatTextWatcher);
-                }
-            }
-        }
-
-        /**
-         * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
-         * See class docs: {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils}.
-         */
-        void setDecimalInput() {
-            mIsDecimal = true;
-        }
-
-        @Override
-        public void setView(@NonNull final View view) {
-            super.setView(view);
-            EditText editText = (EditText) view;
-
-            editText.addTextChangedListener(mReformatTextWatcher);
-
-            if (mIsDecimal) {
-                // do not keep a reference to the watcher! Doing so would cause a leak.
-                editText.addTextChangedListener(new DecimalTextWatcher(editText));
-            }
-        }
-    }
-
-    /**
-     * Spinner accessor. Assumes the Spinner contains a list of Strings and
-     * sets the spinner to the matching item.
-     * <p>
-     * Uses {@link FieldFormatter#format} and {@link FieldFormatter#extract}.
-     */
-    private static class SpinnerAccessor
-            extends BaseDataAccessor<String> {
-
-        SpinnerAccessor(@NonNull final Field<String> field) {
-            super(field);
-        }
-
-        @Override
-        public void getValueAndPut(@NonNull final DataManager target) {
-            target.putString(mField.getKey(), getValue());
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return getValue().isEmpty();
-        }
-
-        @Override
-        @NonNull
-        public String getValue() {
-            Spinner spinner = (Spinner) getView();
-            if (spinner != null) {
-                Object selItem = spinner.getSelectedItem();
-                if (selItem != null) {
-                    return extract(selItem.toString().trim());
-                } else {
-                    return "";
-                }
-            }
-            throw new NoViewException();
-        }
-
-        @Override
-        public void setValue(@Nullable final String value) {
-            Spinner spinner = (Spinner) getView();
-            if (spinner != null) {
-                String formatted = format(spinner.getContext(), value);
-                for (int i = 0; i < spinner.getCount(); i++) {
-                    if (spinner.getItemAtPosition(i).equals(formatted)) {
-                        spinner.setSelection(i);
-                        return;
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void setValue(@NonNull final Bundle source) {
-            setValue(source.getString(mField.getKey(), ""));
-        }
-
-        @Override
-        public void setValue(@NonNull final DataManager source) {
-            setValue(source.getString(mField.getKey()));
-        }
-    }
-
-    private static class NoViewException
-            extends RuntimeException {
-
-        private static final long serialVersionUID = -7501110352359786502L;
-    }
-
-    /**
-     * Checkable accessor.
-     * <p>
-     * When set to {@code false} we make it {@code View.GONE} as well.
-     *
-     * <ul>{@link Checkable} covers more then just a Checkbox:
-     * <li>CheckBox, RadioButton, Switch</li>
-     * <li>ToggleButton extend CompoundButton</li>
-     * <li>CheckedTextView extends TextView</li>
-     * </ul>
-     * <p>
-     * Does not use a {@link FieldFormatter}.
-     */
-    private static class CheckableAccessor
-            extends BaseDataAccessor<Boolean> {
-
-        CheckableAccessor(@NonNull final Field<Boolean> field) {
-            super(field);
-        }
-
-        @Override
-        public void setView(@NonNull final View view) {
-            super.setView(view);
-            addTouchSignalsDirty(view);
-        }
-
-        @Override
-        public void getValueAndPut(@NonNull final DataManager target) {
-            target.putBoolean(mField.getKey(), getValue());
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return !getValue();
-        }
-
-        @NonNull
-        @Override
-        public Boolean getValue() {
-            Checkable cb = (Checkable) getView();
-            if (cb != null) {
-                return cb.isChecked();
-            }
-            throw new NoViewException();
-        }
-
-        @Override
-        public void setValue(@Nullable final Boolean value) {
-            Checkable cb = (Checkable) getView();
-            if (cb != null) {
-                if (value != null) {
-                    ((View) cb).setVisibility(value ? View.VISIBLE : View.GONE);
-                    cb.setChecked(value);
-                } else {
-                    cb.setChecked(false);
-                }
-            }
-        }
-
-        @Override
-        public void setValue(@NonNull final Bundle source) {
-            setValue(source.getBoolean(mField.getKey()));
-        }
-
-        @Override
-        public void setValue(@NonNull final DataManager source) {
-            setValue(source.getBoolean(mField.getKey()));
-        }
-    }
-
-    /**
-     * RatingBar accessor.
-     * <p>
-     * Does not use a {@link FieldFormatter}.
-     */
-    private static class RatingBarAccessor
-            extends BaseDataAccessor<Float> {
-
-        RatingBarAccessor(@NonNull final Field<Float> field) {
-            super(field);
-        }
-
-        @Override
-        public void setView(@NonNull final View view) {
-            super.setView(view);
-            addTouchSignalsDirty(view);
-        }
-
-        @Override
-        public void getValueAndPut(@NonNull final DataManager target) {
-            target.putFloat(mField.getKey(), getValue());
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return getValue().equals(0.0f);
-        }
-
-        @NonNull
-        @Override
-        public Float getValue() {
-            RatingBar bar = (RatingBar) getView();
-            if (bar != null) {
-                return bar.getRating();
-            }
-            throw new NoViewException();
-        }
-
-        @Override
-        public void setValue(@Nullable final Float value) {
-            RatingBar bar = (RatingBar) getView();
-            if (bar != null) {
-                if (value != null) {
-                    bar.setRating(value);
-                } else {
-                    bar.setRating(0.0f);
-                }
-            }
-        }
-
-        @Override
-        public void setValue(@NonNull final Bundle source) {
-            setValue(source.getFloat(mField.getKey()));
-        }
-
-        @Override
-        public void setValue(@NonNull final DataManager source) {
-            setValue(source.getFloat(mField.getKey()));
-        }
-    }
-
-    /**
-     * FieldFormatter for 'date' fields.
-     * <ul>
-     * <li>Multiple fields: <strong>yes</strong></li>
-     * <li>Extract: <strong>SQL date, UTC timezone</strong></li>
-     * </ul>
-     */
-    public static class DateFieldFormatter
-            implements FieldFormatter<String> {
-
-        /**
-         * Display as a human-friendly date, local timezone.
-         */
-        @Override
-        @NonNull
-        public String format(@NonNull final Context context,
-                             @Nullable final String source) {
-            if (source == null || source.isEmpty()) {
-                return "";
-            }
-
-            Locale locale = LocaleUtils.getUserLocale(context);
-            return DateUtils.toPrettyDate(locale, source);
-        }
-
-        /**
-         * Extract as an SQL date, UTC timezone.
-         */
-        @Override
-        @NonNull
-        public String extract(@NonNull final String source) {
-            Date d = DateUtils.parseDate(source);
-            if (d != null) {
-                return DateUtils.utcSqlDate(d);
-            }
-            return source;
-        }
-    }
-
-    /**
-     * FieldFormatter for 'price' fields.
-     * <ul>
-     * <li>Multiple fields: <strong>no</strong></li>
-     * <li>Extract: <strong>local variable</strong></li>
-     * </ul>
-     */
-    public static class MonetaryFormatter
-            implements FieldFormatter<Double> {
-
-        /** Log tag. */
-        private static final String TAG = "MonetaryFormatter";
-
-        /** Optional; if null we use the user Locale. */
-        @Nullable
-        private Locale mLocale;
-
-        /** Optional. */
-        @Nullable
-        private String mCurrencyCode;
-
-        @NonNull
-        private Double mRawValue = 0.0D;
-
-        /**
-         * Set the Locale for the formatter/parser; used for testing.
-         *
-         * @param locale to use (if any)
-         */
-        @VisibleForTesting
-        public MonetaryFormatter setLocale(@Nullable final Locale locale) {
-            mLocale = locale;
-            return this;
-        }
-
-        /**
-         * Set the currency code.
-         *
-         * @param currencyCode to use (if any)
-         */
-        public MonetaryFormatter setCurrencyCode(@Nullable final String currencyCode) {
-            mCurrencyCode = currencyCode;
-            return this;
-        }
-
-        @NonNull
-        @Override
-        public String format(@NonNull final Context context,
-                             @Nullable final Double source) {
-            if (source == null || source.equals(0.0d)) {
-                mRawValue = 0.0d;
-                return "";
-            }
-            mRawValue = source;
-
-            if (mCurrencyCode == null || mCurrencyCode.isEmpty()) {
-                return String.valueOf(source);
-            }
-
-            if (mLocale == null) {
-                mLocale = LocaleUtils.getUserLocale(context);
-            }
-
-            try {
-                // Always use the current Locale for formatting
-                DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
-                nf.setCurrency(Currency.getInstance(mCurrencyCode));
-                // the result is rather dire... most currency symbols are shown as 3-char codes
-                // e.g. 'EUR','US$',...
-                return nf.format(source);
-
-            } catch (@NonNull final IllegalArgumentException e) {
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "currencyCode=" + mCurrencyCode + "|source=" + source, e);
-                }
-
-                // fallback if getting a Currency instance fail.
-                return mCurrencyCode + ' ' + String.format(mLocale, "%.2f", source);
-            }
-        }
-
-        @NonNull
-        @Override
-        public Double extract(@NonNull final String source) {
-            return mRawValue;
-        }
-
-        // The ICU NumberFormatter is only available from ICU level 60, but Android lags behind:
-        // https://developer.android.com/guide/topics/resources/internationalization
-        // #versioning-nougat
-        // So you need Android 9 (API level 28) and even then, the NumberFormatter
-        // is not available in android.icu.* so you still would need to bundle the full ICU lib
-        // For now, this is to much overkill.
-//        @TargetApi(28)
-//        private String icuFormat(@NonNull final Float money) {
-//            https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/
-//            com/ibm/icu/number/NumberFormatter.java
-//            and UnitWidth.NARROW
-//            return "";
-//        }
-    }
-
-    /**
-     * FieldFormatter for 'page' fields. If the value is numerical, output "x pages"
-     * Otherwise outputs the original source value.
-     * <ul>
-     * <li>Multiple fields: <strong>no</strong></li>
-     * <li>Extract: <strong>local variable</strong></li>
-     * </ul>
-     */
-    public static class PagesFormatter
-            implements FieldFormatter<String> {
-
-        @NonNull
-        private final String mPagesString;
-        @NonNull
-        private String mRawValue = "";
-
-        public PagesFormatter(@NonNull final Context context) {
-            mPagesString = context.getString(R.string.lbl_x_pages);
-        }
-
-        @NonNull
-        @Override
-        public String format(@NonNull final Context context,
-                             @Nullable final String source) {
-
-            if (source != null && !source.isEmpty() && !"0".equals(source)) {
-                mRawValue = source;
-
-                try {
-                    int pages = Integer.parseInt(source);
-                    return String.format(mPagesString, pages);
-                } catch (@NonNull final NumberFormatException ignore) {
-                    // don't log, both formats are valid.
-                }
-                // stored pages was alphanumeric.
-                return source;
-            }
-
-            mRawValue = "";
-            return "";
-        }
-
-        @NonNull
-        @Override
-        public String extract(@NonNull final String source) {
-            return mRawValue;
-        }
-    }
-
-    /**
-     * FieldFormatter for language fields.
-     * <ul>
-     * <li>Multiple fields: <strong>yes</strong></li>
-     * <li>Extract: <strong>ISO3 code</strong></li>
-     * </ul>
-     */
-    public static class LanguageFormatter
-            implements FieldFormatter<String> {
-
-        @NonNull
-        @Override
-        public String format(@NonNull final Context context,
-                             @Nullable final String source) {
-            if (source == null || source.isEmpty()) {
-                return "";
-            }
-
-            return LanguageUtils.getDisplayName(context, source);
-        }
-
-        /**
-         * Transform a localised language name to its ISO equivalent.
-         *
-         * @param source The value to be back-translated
-         *
-         * @return the ISO3 code for the language
-         */
-        @NonNull
-        @Override
-        public String extract(@NonNull final String source) {
-            return LanguageUtils.getISO3FromDisplayName(App.getAppContext(), source);
-        }
-    }
-
-    /**
-     * FieldFormatter for a 'bitmask' field. Formats the checked items as a CSV String.
-     * <ul>
-     * <li>Multiple fields: <strong>no</strong></li>
-     * <li>Extract: <strong>local variable</strong></li>
-     * </ul>
-     */
-    public static class BitMaskFormatter
-            implements FieldFormatter<Long> {
-
-        /**
-         * Editions.
-         * Key: the edition bit.
-         * Value: the label.
-         */
-        @NonNull
-        private final Map<Integer, String> mMap;
-
-        private Long mRawValue = 0L;
-
-        /**
-         * Constructor.
-         *
-         * @param editions a map with all supported editions
-         */
-        public BitMaskFormatter(@NonNull final Map<Integer, String> editions) {
-            mMap = editions;
-        }
-
-        @NonNull
-        @Override
-        public String format(@NonNull final Context context,
-                             @Nullable final Long source) {
-            if (source == null || source == 0) {
-                mRawValue = 0L;
-                return "";
-            }
-
-            mRawValue = source;
-            return TextUtils.join(", ", Csv.bitmaskToList(mMap, mRawValue));
-        }
-
-        @NonNull
-        @Override
-        public Long extract(@NonNull final String source) {
-            return mRawValue;
-        }
+        void afterFieldChange(@NonNull Field<T> field);
     }
 
     /**
      * Field definition contains all information and methods necessary to manage display and
      * extraction of data in a view.
      *
-     * <strong>Note:</strong> mUsageKey is only visual.
-     * The logic around the view itself is still put in place and called upon.
-     * i.e. invisible fields are still populated with data etc...
-     *
      * @param <T> type of Field value.
      */
     public static class Field<T> {
 
-        /** Log tag. */
-        private static final String TAG = "Field";
-
         /** Field ID. */
         @IdRes
         private final int mId;
+
         /**
-         * Key (can be blank) used to access a {@link DataManager} or {@code Bundle}.
+         * Key used to access a {@link DataManager} or {@code Bundle}.
+         * <ul>
+         * <li>key is set<br>
+         * Data is fetched from the {@link DataManager} (or Bundle), and populated on the screen.
+         * Extraction depends on the formatter in use.
+         * </li>
+         * <li>key is not set ("")<br>
+         * field is defined, but data handling must be done manually.
+         * </li>
+         * </ul>
          * <p>
-         * - key is set, and doNoFetch==false:
-         * ==> fetched from the {@link DataManager} (or Bundle), and populated on the screen
-         * ==> extracted from the screen and put in {@link DataManager} (or Bundle)
-         * <p>
-         * - key is set, and doNoFetch==true:
-         * ==> fetched from the {@link DataManager} (or Bundle), but populating
-         * the screen must be done manually.
-         * ==> extracted from the screen and put in {@link DataManager} (or Bundle)
-         * <p>
-         * - key is not set (""): field is defined, but data handling is fully manual.
+         * See {@link #isAutoPopulated()}.
          */
         @NonNull
         private final String mKey;
 
         /**
          * The preference key (field-name) to check if this Field is used or not.
+         * i.e. the key to be used for {@code App.isUsed(mIsUsedKey)}.
          */
         @NonNull
-        private final String mUsageKey;
+        private final String mIsUsedKey;
 
         /**
          * Accessor to use (automatically defined).
@@ -1573,110 +555,65 @@ public class Fields {
         /** Parent collection. */
         @SuppressWarnings("FieldNotUsedInToString")
         @NonNull
-        private final Fields mFields;
+        private final Fields mParentCollection;
 
+        /** Fields that need to follow visibility. */
         @Nullable
         @IdRes
         private int[] mRelatedFields;
 
         /**
-         * Option indicating that even though field has a key, it should NOT be fetched
-         * from a {@link DataManager} (or Bundle).
-         * This is usually done for synthetic fields needed when putting the data
-         * into the {@link DataManager} (or Bundle).
+         * Constructor.
+         *
+         * @param parentCollection Parent collection
+         * @param id               for this field.
+         * @param key              Key used to access a {@link DataManager} or {@code Bundle}.
+         *                         Set to "" to suppress all access.
+         * @param entityKey        The preference key to check if this Field is used or not.
          */
-        private boolean mDoNoFetch;
+        @VisibleForTesting
+        public Field(@NonNull final Fields parentCollection,
+                     final int id,
+                     @NonNull final String key,
+                     @NonNull final String entityKey,
+                     @NonNull final FieldDataAccessor<T> fieldDataAccessor) {
 
+            mParentCollection = parentCollection;
+            mId = id;
+
+            mKey = key;
+            mIsUsedKey = entityKey;
+
+            mFieldDataAccessor = fieldDataAccessor;
+            mFieldDataAccessor.setField(this);
+        }
 
         /**
          * Constructor.
          *
-         * @param fields   Parent collection
-         * @param view     for this field. Is only used to read the id/type from.
-         *                 <strong>NOT cached!</strong>
-         * @param key      Key used to access a {@link DataManager} or {@code Bundle}.
-         *                 Set to "" to suppress all access.
-         * @param usageKey The preference key to check if this Field is used or not.
-         *                 Not being in use merely means it's not displayed;
-         *                 all functionality (populate, storage...) is still executed.
+         * @param parentCollection Parent collection
+         * @param id               for this field.
+         * @param key              Key used to access a {@link DataManager} or {@code Bundle}.
+         *                         Set to "" to suppress all access.
+         * @param entityKey        The preference key to check if this Field(Entity) is used or not.
+         * @param view             for this field. Is only used to read the type from.
+         *                         <strong>NOT cached!</strong>
          */
         @VisibleForTesting
-        public Field(@NonNull final Fields fields,
-                     @NonNull final View view,
+        public Field(@NonNull final Fields parentCollection,
+                     final int id,
                      @NonNull final String key,
-                     @NonNull final String usageKey) {
+                     @NonNull final String entityKey,
+                     @NonNull final View view) {
 
-            mFields = fields;
-            mId = view.getId();
+            mParentCollection = parentCollection;
+            mId = id;
 
             mKey = key;
-            mUsageKey = usageKey;
+            mIsUsedKey = entityKey;
 
-            // don't cache the 'isUsed' status; the user can change it at all times.
-            if (!App.isUsed(mUsageKey)) {
-                view.setVisibility(View.GONE);
-            }
-
-            mFieldDataAccessor = createAccessor(view);
-        }
-
-        /**
-         * Automatically determine a suitable FieldDataAccessor based on the View type.
-         *
-         * @param view to process
-         *
-         * @return FieldDataAccessor
-         */
-        @NonNull
-        private FieldDataAccessor<T> createAccessor(@NonNull final View view) {
-
-            FieldDataAccessor accessor;
-
-            if (view instanceof CompoundButton) {
-                //noinspection unchecked
-                accessor = new CheckableAccessor((Field<Boolean>) this);
-
-                // this was nasty... a MaterialButton implements Checkable,
-                // but you have to double check (pardon the pun) whether it IS checkable.
-                // now replaced by above CompoundButton; but leaving this comment for the future.
-//            } else if ((view instanceof MaterialButton) && ((MaterialButton) view).isCheckable()){
-//                //noinspection unchecked
-//                accessor = new CheckableAccessor((Field<Boolean>) this);
-//
-//            } else if (!((view instanceof MaterialButton)) && (view instanceof Checkable)) {
-//                // the opposite of above, do not accept the MaterialButton.
-//                //noinspection unchecked
-//                accessor = new CheckableAccessor((Field<Boolean>) this);
-
-            } else if (view instanceof EditText) {
-                accessor = new EditTextAccessor<>(this);
-
-            } else if (view instanceof Button) {
-                // a Button *is* a TextView
-                accessor = new TextViewAccessor<>(this);
-
-            } else if (view instanceof TextView) {
-                accessor = new TextViewAccessor<>(this);
-
-            } else if (view instanceof RatingBar) {
-                //noinspection unchecked
-                accessor = new RatingBarAccessor((Field<Float>) this);
-
-            } else if (view instanceof Spinner) {
-                //noinspection unchecked
-                accessor = new SpinnerAccessor((Field<String>) this);
-
-            } else {
-                // field has no layout, store in a dummy String.
-                //noinspection unchecked
-                accessor = new StringDataAccessor((Field<String>) this);
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "Using StringDataAccessor|key=" + mKey);
-                }
-            }
-
-            //noinspection unchecked
-            return (FieldDataAccessor<T>) accessor;
+            mFieldDataAccessor = AccessorFactory.createAccessor(view);
+            mFieldDataAccessor.setField(this);
         }
 
         /**
@@ -1690,65 +627,6 @@ public class Fields {
             mFieldDataAccessor.setView(view);
         }
 
-        @NonNull
-        Fields getFields() {
-            return mFields;
-        }
-
-        /**
-         * @param formatter to use
-         *
-         * @return Field (for chaining)
-         */
-        @NonNull
-        public Field<T> setFormatter(@NonNull final FieldFormatter formatter) {
-            mFieldDataAccessor.setFormatter(formatter);
-            return this;
-        }
-
-        /**
-         * Enable HTML (only applicable to TextView based fields).
-         *
-         * @return Field (for chaining)
-         */
-        @SuppressWarnings("UnusedReturnValue")
-        @NonNull
-        public Field<T> setShowHtml(final boolean showHtml) {
-            if (mFieldDataAccessor instanceof TextViewAccessor) {
-                ((TextViewAccessor) mFieldDataAccessor).setShowHtml(showHtml);
-            } else if (BuildConfig.DEBUG /* always */) {
-                throw new IllegalStateException("Field is not a TextView");
-            }
-            return this;
-        }
-
-        /**
-         * Enable decimal editing restriction(only applicable to EditText based fields).
-         *
-         * @return Field (for chaining)
-         */
-        @SuppressWarnings("UnusedReturnValue")
-        @NonNull
-        public Field<T> setInputIsDecimal() {
-            if (mFieldDataAccessor instanceof EditTextAccessor) {
-                ((EditTextAccessor) mFieldDataAccessor).setDecimalInput();
-            } else if (BuildConfig.DEBUG /* always */) {
-                throw new IllegalStateException("Field is not an EditText");
-            }
-            return this;
-        }
-
-        /**
-         * @param doNoFetch {@code true} to stop the field being fetched from the database
-         *
-         * @return Field (for chaining)
-         */
-        @NonNull
-        public Field<T> setDoNotFetch(final boolean doNoFetch) {
-            mDoNoFetch = doNoFetch;
-            return this;
-        }
-
         /**
          * set the field ids which should follow visibility with this Field.
          * <p>
@@ -1757,6 +635,8 @@ public class Fields {
          * but that means creating a group for EACH field. That would be overkill.
          *
          * @param relatedFields labels etc
+         *
+         * @return Field (for chaining)
          */
         public Field<T> setRelatedFields(@NonNull @IdRes final int... relatedFields) {
             mRelatedFields = relatedFields;
@@ -1769,7 +649,7 @@ public class Fields {
          * @return {@code true} if the field *can* be visible
          */
         public boolean isUsed() {
-            return App.isUsed(mUsageKey);
+            return App.isUsed(mIsUsedKey);
         }
 
         /**
@@ -1784,7 +664,7 @@ public class Fields {
                                    final boolean keepHidden) {
 
             View view = parent.findViewById(mId);
-            boolean isUsed = App.isUsed(mUsageKey);
+            boolean isUsed = App.isUsed(mIsUsedKey);
 
             int visibility = view.getVisibility();
 
@@ -1799,13 +679,14 @@ public class Fields {
                         visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
 
                     } else {
-                        visibility = !isEmpty() ? View.VISIBLE : View.GONE;
+                        visibility = !mFieldDataAccessor.isEmpty() ? View.VISIBLE : View.GONE;
                     }
                 } else {
                     visibility = isUsed ? View.VISIBLE : View.GONE;
                 }
                 view.setVisibility(visibility);
             }
+
             // related fields follow main field visibility
             setRelatedFieldsVisibility(parent, visibility);
         }
@@ -1845,6 +726,18 @@ public class Fields {
             }
         }
 
+        /**
+         * Convenience wrapper for {@link FieldDataAccessor#setFormatter(FieldFormatter)}.
+         *
+         * @param formatter to use
+         *
+         * @return Field (for chaining)
+         */
+        public Field<T> setFormatter(@NonNull final FieldFormatter<T> formatter) {
+            mFieldDataAccessor.setFormatter(formatter);
+            return this;
+        }
+
         @IdRes
         public int getId() {
             return mId;
@@ -1856,92 +749,21 @@ public class Fields {
         }
 
         /**
-         * Return the current value of this field.
+         * Check if this field can be automatically populated.
          *
-         * @return Current value in native form.
+         * @return {@code true} if it can
          */
+        boolean isAutoPopulated() {
+            return !mKey.isEmpty();
+        }
+
         @NonNull
-        public T getValue() {
-            return mFieldDataAccessor.getValue();
+        public FieldDataAccessor<T> getAccessor() {
+            return mFieldDataAccessor;
         }
 
-        /**
-         * Set the value of this Field.
-         * <p>
-         * Calls {@link Fields#afterFieldChange(Field, Object)}.
-         *
-         * @param source New value
-         */
-        public void setValue(@NonNull final T source) {
-            mFieldDataAccessor.setValue(source);
-            mFields.afterFieldChange(this, source);
-        }
-
-        /**
-         * Convenience method to check if the value is considered empty.
-         *
-         * @return {@code true} if this field is empty.
-         */
-        public boolean isEmpty() {
-            return mFieldDataAccessor.isEmpty();
-        }
-
-        /**
-         * Get the current value of this field and put it into the DataManager.
-         */
-        void putValueInto(@NonNull final DataManager target) {
-            mFieldDataAccessor.getValueAndPut(target);
-        }
-
-        /**
-         * Set the value of this field from the passed Bundle.
-         * Useful for getting access to raw data values from a saved data bundle.
-         */
-        void setValueFrom(@NonNull final Bundle source) {
-            if (!mKey.isEmpty() && !mDoNoFetch) {
-                // do NOT call afterFieldChange, as this is the initial load
-                mFieldDataAccessor.setValue(source);
-            }
-        }
-
-        /**
-         * Set the value of this field from the passed DataManager.
-         * Useful for getting access to raw data values from a saved data bundle.
-         */
-        void setValueFrom(@NonNull final DataManager source) {
-            if (!mKey.isEmpty() && !mDoNoFetch) {
-                // do NOT call afterFieldChange, as this is the initial load
-                mFieldDataAccessor.setValue(source);
-            }
-        }
-
-        /**
-         * Wrapper to {@link FieldDataAccessor#format}.
-         *
-         * @param context Current context
-         * @param source  String to format
-         *
-         * @return The formatted value. Or "" if the source is {@code null}.
-         */
-        @NonNull
-        public String format(@NonNull final Context context,
-                             @Nullable final T source) {
-            if (source == null) {
-                return "";
-            }
-            return mFieldDataAccessor.format(context, source);
-        }
-
-        /**
-         * Wrapper to {@link FieldDataAccessor#extract(String)}.
-         *
-         * @param source String to extract
-         *
-         * @return The extracted value
-         */
-        @NonNull
-        T extract(@NonNull final String source) {
-            return mFieldDataAccessor.extract(source);
+        public void onChanged() {
+            mParentCollection.afterFieldChange(this);
         }
 
         @Override
@@ -1949,12 +771,108 @@ public class Fields {
         public String toString() {
             return "Field{"
                    + "mId=" + mId
-                   + ", mUsageKey='" + mUsageKey + '\''
+                   + ", mIsUsedKey='" + mIsUsedKey + '\''
                    + ", mKey='" + mKey + '\''
-                   + ", mDoNoFetch=" + mDoNoFetch
                    + ", mFieldDataAccessor=" + mFieldDataAccessor
                    + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
                    + '}';
+        }
+
+        /**
+         * Setup an adapter for the AutoCompleteTextView, using the (optional)
+         * formatter.
+         *
+         * <strong>Set the formatter (if needed) BEFORE calling this method</strong>
+         *
+         * @param fieldView view to connect
+         * @param list      with auto complete values
+         */
+        public void setAutocomplete(@NonNull final AutoCompleteTextView fieldView,
+                                    @NonNull final List<String> list) {
+            // only bother when it's in use and we have a list
+            if (App.isUsed(mIsUsedKey) && !list.isEmpty()) {
+                //noinspection unchecked
+                FormattedDiacriticArrayAdapter adapter = new FormattedDiacriticArrayAdapter(
+                        fieldView.getContext(), list,
+                        (FieldFormatter<String>) mFieldDataAccessor.getFormatter());
+                fieldView.setAdapter(adapter);
+            }
+        }
+
+        /**
+         * Setup a date picker.
+         *
+         * <strong>Set the formatter (if needed) BEFORE calling this method</strong>
+         *
+         * @param fragmentManager to use
+         * @param fieldView       view to connect
+         * @param dialogTitleId   title of the dialog box.
+         * @param todayIfNone     if true, and if the field was empty,
+         *                        pre-populate with today's date
+         */
+        public void addDatePicker(@NonNull final FragmentManager fragmentManager,
+                                  @NonNull final View fieldView,
+                                  @StringRes final int dialogTitleId,
+                                  final boolean todayIfNone) {
+            // only bother when it's in use
+            if (App.isUsed(mIsUsedKey)) {
+                fieldView.setOnClickListener(v -> PartialDatePickerDialogFragment
+                        .newInstance(fieldView.getId(), dialogTitleId,
+                                     (String) getAccessor().getValue(), todayIfNone)
+                        .show(fragmentManager, PartialDatePickerDialogFragment.TAG));
+            }
+        }
+
+        /**
+         * Setup a checklist picker.
+         *
+         * @param fieldView     view to connect
+         * @param dialogTitleId title of the dialog box.
+         * @param listGetter    {@link CheckListDialogFragment.ListGetter}
+         */
+        public void addCheckListPicker(@NonNull final FragmentManager fragmentManager,
+                                       @NonNull final View fieldView,
+                                       @StringRes final int dialogTitleId,
+                                       @NonNull
+                                       final CheckListDialogFragment.ListGetter listGetter) {
+            // only bother when it's in use
+            if (App.isUsed(mIsUsedKey)) {
+                fieldView.setOnClickListener(v -> CheckListDialogFragment
+                        .newInstance(fieldView.getId(), dialogTitleId,
+                                     listGetter.getList())
+                        .show(fragmentManager, CheckListDialogFragment.TAG));
+            }
+        }
+    }
+
+    public static class FormattedDiacriticArrayAdapter
+            extends DiacriticArrayAdapter<String> {
+
+        @Nullable
+        private final FieldFormatter<String> mFormatter;
+
+        /**
+         * Constructor.
+         *
+         * @param context   Current context.
+         * @param objects   The objects to represent in the list view
+         * @param formatter to use
+         */
+        FormattedDiacriticArrayAdapter(@NonNull final Context context,
+                                       @NonNull final List<String> objects,
+                                       @Nullable final FieldFormatter<String> formatter) {
+            super(context, R.layout.dropdown_menu_popup_item, 0, objects);
+            mFormatter = formatter;
+        }
+
+        @Nullable
+        @Override
+        public String getItem(final int position) {
+            if (mFormatter != null) {
+                return mFormatter.format(getContext(), super.getItem(position));
+            } else {
+                return super.getItem(position);
+            }
         }
     }
 }

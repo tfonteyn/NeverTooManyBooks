@@ -58,7 +58,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter;
@@ -122,31 +121,6 @@ public class BooklistStyle
             };
     /** default style when none is set yet. */
     public static final int DEFAULT_STYLE_ID = Builtin.AUTHOR_THEN_SERIES_ID;
-
-    /** Extra book data to show at lowest level. (the bit numbers are NOT stored anywhere) */
-    public static final int EXTRAS_BOOKSHELVES = 1;
-    /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_LOCATION = 1 << 1;
-    /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_FORMAT = 1 << 2;
-    /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_PUBLISHER = 1 << 3;
-    /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_PUB_DATE = 1 << 4;
-    /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_AUTHOR = 1 << 5;
-    /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_ISBN = 1 << 6;
-    /** Extra book data to show at lowest level. */
-    public static final int EXTRAS_UNUSED_BIT = 1 << 7;
-    /** Extra book data to show at lowest level. */
-    @SuppressWarnings("WeakerAccess")
-    public static final int EXTRAS_THUMBNAIL = 1 << 8;
-    /** Mask for the extras that can be fetched by {@link BooklistAdapter}.GetBookExtrasTask}. */
-    public static final int EXTRAS_BY_TASK = EXTRAS_BOOKSHELVES
-                                             | EXTRAS_LOCATION | EXTRAS_FORMAT
-                                             | EXTRAS_PUBLISHER | EXTRAS_PUB_DATE
-                                             | EXTRAS_AUTHOR | EXTRAS_ISBN;
 
     /**
      * Text Scaling.
@@ -257,8 +231,6 @@ public class BooklistStyle
     private PBoolean mSortAuthorGivenNameFirst;
     /** All groups in this style. */
     private PStyleGroups mStyleGroups;
-    /** Fetch the extras by using a task or not. */
-    private PBoolean mFetchExtrasByTask;
     /**
      * All extra fields in an <strong>ordered</strong> map.
      * <p>
@@ -374,7 +346,6 @@ public class BooklistStyle
         mSortAuthorGivenNameFirst.set(in);
         mStyleGroups.set(in);
 
-        mFetchExtrasByTask.set(in);
         // the collection is ordered, so we don't need the keys.
         for (PBoolean extra : mAllExtras.values()) {
             extra.set(in);
@@ -449,6 +420,7 @@ public class BooklistStyle
      *
      * @return style, <strong>or {@code null} if not found</strong>
      */
+    @SuppressWarnings("unused")
     @Nullable
     public static BooklistStyle getStyle(@NonNull final DAO db,
                                          final long id) {
@@ -532,9 +504,6 @@ public class BooklistStyle
 
         mThumbnailScale = new PInteger(Prefs.pk_bob_thumbnail_scale, mUuid,
                                        isUserDefined(), ImageUtils.SCALE_MEDIUM);
-
-        mFetchExtrasByTask = new PBoolean(Prefs.pk_bob_use_task_for_extras, mUuid,
-                                          isUserDefined(), true);
 
         // all extra details for book-rows.
         mAllExtras = new LinkedHashMap<>();
@@ -625,7 +594,6 @@ public class BooklistStyle
         mSortAuthorGivenNameFirst.writeToParcel(dest);
         mStyleGroups.writeToParcel(dest);
 
-        mFetchExtrasByTask.writeToParcel(dest);
         // the collection is ordered, so we don't write the keys.
         for (PBoolean extra : mAllExtras.values()) {
             extra.writeToParcel(dest);
@@ -700,21 +668,27 @@ public class BooklistStyle
     }
 
     /**
-     * @return {@code true} if this style is user defined.
+     * Check if this is a user defined style.
+     *
+     * @return flag
      */
     public boolean isUserDefined() {
         return mNameResId == 0;
     }
 
     /**
-     * @return {@code true} if the style is among preferred styles.
+     * Check if this is a user preferred style.
+     *
+     * @return flag
      */
     public boolean isPreferred() {
         return mIsPreferred.isTrue();
     }
 
     /**
-     * @param isPreferred set to {@code true} if the style should become a preferred style.
+     * Set this style as a user preferred style.
+     *
+     * @param isPreferred flag
      */
     public void setPreferred(final boolean isPreferred) {
         mIsPreferred.set(isPreferred);
@@ -759,8 +733,6 @@ public class BooklistStyle
         map.put(mSortAuthorGivenNameFirst.getKey(), mSortAuthorGivenNameFirst);
         // the groups that are used by the style
         map.put(mStyleGroups.getKey(), mStyleGroups);
-        // whether the extras will be fetched by a background task (or not)
-        map.put(mFetchExtrasByTask.getKey(), mFetchExtrasByTask);
 
         // properties that can be shown as extra information for each line in the booklist
         // As we're collecting the actual preferences, we use the preference key
@@ -815,17 +787,6 @@ public class BooklistStyle
                 ourPPref.set(ed, p.get());
             }
         }
-    }
-
-    /**
-     * Whether the user prefers the book details (extras) to be fetched in the background,
-     * or immediately.
-     *
-     * @return {@code true} when a background task should be used.
-     */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean useTaskForExtras() {
-        return mFetchExtrasByTask.isTrue();
     }
 
     /**
@@ -923,6 +884,8 @@ public class BooklistStyle
 
     /**
      * Passed a template style, copy the group structure to this style.
+     *
+     * @param context Current context
      */
     @SuppressWarnings("unused")
     public void setGroups(@NonNull final Context context,
@@ -1049,7 +1012,8 @@ public class BooklistStyle
     /**
      * Convenience method for use in the Preferences screen.
      *
-     * @param all {@code true} to get all, {@code false} for only the active filters
+     * @param context Current context
+     * @param all     {@code true} to get all, {@code false} for only the active filters
      *
      * @return the list of in-use filter names in a human readable format.
      */
@@ -1112,59 +1076,6 @@ public class BooklistStyle
 
         Collections.sort(labels);
         return labels;
-    }
-
-    /**
-     * A quicker way of getting the status of all extra-fields in one go instead of implementing
-     * individual getters for each.
-     *
-     * @return bitmask with the 'extra' fields that are in use (visible) for this style.
-     */
-    @ExtraOption
-    public int getExtraFieldsStatus() {
-        int extras = 0;
-
-        //noinspection ConstantConditions
-        if (mAllExtras.get(UniqueId.BKEY_THUMBNAIL).isTrue()) {
-            extras |= EXTRAS_THUMBNAIL;
-        }
-
-        //noinspection ConstantConditions
-        if (mAllExtras.get(DBDefinitions.KEY_BOOKSHELF).isTrue()) {
-            extras |= EXTRAS_BOOKSHELVES;
-        }
-
-        //noinspection ConstantConditions
-        if (mAllExtras.get(DBDefinitions.KEY_LOCATION).isTrue()) {
-            extras |= EXTRAS_LOCATION;
-        }
-
-        //noinspection ConstantConditions
-        if (mAllExtras.get(DBDefinitions.KEY_PUBLISHER).isTrue()) {
-            extras |= EXTRAS_PUBLISHER;
-        }
-
-        //noinspection ConstantConditions
-        if (mAllExtras.get(DBDefinitions.KEY_DATE_PUBLISHED).isTrue()) {
-            extras |= EXTRAS_PUB_DATE;
-        }
-
-        //noinspection ConstantConditions
-        if (mAllExtras.get(DBDefinitions.KEY_ISBN).isTrue()) {
-            extras |= EXTRAS_ISBN;
-        }
-
-        //noinspection ConstantConditions
-        if (mAllExtras.get(DBDefinitions.KEY_FORMAT).isTrue()) {
-            extras |= EXTRAS_FORMAT;
-        }
-
-        //noinspection ConstantConditions
-        if (mAllExtras.get(DBDefinitions.KEY_AUTHOR_FORMATTED).isTrue()) {
-            extras |= EXTRAS_AUTHOR;
-        }
-
-        return extras;
     }
 
     /**
@@ -1309,7 +1220,6 @@ public class BooklistStyle
                + "\nmThumbnailScale=" + mThumbnailScale
                + "\nmStyleGroups=" + mStyleGroups
 
-               + "\nmFetchExtrasByTask=" + mFetchExtrasByTask
                + "\nmAllExtras=" + mAllExtras
                + "\nmAllFilters=\n" + mAllFilters
                + '}';
@@ -1391,22 +1301,6 @@ public class BooklistStyle
 
     public void updateHelper() {
         Helper.S_USER_STYLES.put(mUuid, this);
-    }
-
-    @IntDef(flag = true, value = {
-            EXTRAS_BOOKSHELVES,
-            EXTRAS_LOCATION,
-            EXTRAS_FORMAT,
-            EXTRAS_PUBLISHER,
-            EXTRAS_PUB_DATE,
-            EXTRAS_AUTHOR,
-            EXTRAS_ISBN,
-            //EXTRAS_UNUSED_BIT.
-            EXTRAS_THUMBNAIL
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ExtraOption {
-
     }
 
     @IntDef(flag = true, value = {SUMMARY_SHOW_BOOK_COUNT,

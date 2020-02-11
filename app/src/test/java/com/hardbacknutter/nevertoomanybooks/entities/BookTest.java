@@ -86,7 +86,7 @@ class BookTest {
         final Locale bookLocale = book.getLocale(mContext);
 
         book.preprocessPrice(bookLocale, KEY_PRICE_LISTED,
-                             KEY_PRICE_LISTED_CURRENCY, mBundleHelper);
+                             KEY_PRICE_LISTED_CURRENCY);
         // dump(book);
 
         assertEquals(1.23d, book.getDouble(KEY_PRICE_LISTED));
@@ -104,9 +104,9 @@ class BookTest {
         final Locale bookLocale = book.getLocale(mContext);
 
         book.preprocessPrice(bookLocale, KEY_PRICE_LISTED,
-                             KEY_PRICE_LISTED_CURRENCY, mBundleHelper);
+                             KEY_PRICE_LISTED_CURRENCY);
         book.preprocessPrice(bookLocale, KEY_PRICE_PAID,
-                             KEY_PRICE_PAID_CURRENCY, mBundleHelper);
+                             KEY_PRICE_PAID_CURRENCY);
         //dump(book);
 
         assertEquals(0d, book.getDouble(KEY_PRICE_LISTED));
@@ -126,9 +126,9 @@ class BookTest {
         final Locale bookLocale = book.getLocale(mContext);
 
         book.preprocessPrice(bookLocale, KEY_PRICE_LISTED,
-                             KEY_PRICE_LISTED_CURRENCY, mBundleHelper);
+                             KEY_PRICE_LISTED_CURRENCY);
         book.preprocessPrice(bookLocale, KEY_PRICE_PAID,
-                             KEY_PRICE_PAID_CURRENCY, mBundleHelper);
+                             KEY_PRICE_PAID_CURRENCY);
         //dump(book);
 
         assertEquals(0d, book.getDouble(KEY_PRICE_LISTED));
@@ -146,7 +146,7 @@ class BookTest {
         final Locale bookLocale = book.getLocale(mContext);
 
         book.preprocessPrice(bookLocale, KEY_PRICE_LISTED,
-                             KEY_PRICE_LISTED_CURRENCY, mBundleHelper);
+                             KEY_PRICE_LISTED_CURRENCY);
         //dump(book);
 
         assertEquals(45d, book.getDouble(KEY_PRICE_LISTED));

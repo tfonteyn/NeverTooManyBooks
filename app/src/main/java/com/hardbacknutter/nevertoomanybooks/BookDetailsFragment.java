@@ -58,31 +58,37 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.CsvFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.HtmlFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.LanguageFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MonetaryFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 
 /**
@@ -92,7 +98,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
  * Do NOT assume fields are empty by default when populating them manually.
  */
 public class BookDetailsFragment
-        extends BookBaseFragment {
+        extends BookBaseFragment
+        implements CoverHandler.HostingFragment {
 
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
@@ -107,14 +114,19 @@ public class BookDetailsFragment
     /** The views. */
     private CompoundButton mIsAnthologyCbx;
     private CompoundButton mSignedCbx;
+    private CompoundButton mReadCbx;
+
+    private ChipGroup mBookshelvesView;
+    private ChipGroup mEditionView;
+
     private RatingBar mRatingView;
+
     private TextView mAuthorView;
     private TextView mSeriesView;
     private TextView mTitleView;
     private TextView mDescriptionView;
     private TextView mIsbnView;
     private TextView mGenreView;
-    private TextView mBookshelvesView;
     private TextView mPricePaidView;
     private TextView mPriceListedView;
     private TextView mLoanedToView;
@@ -130,7 +142,6 @@ public class BookDetailsFragment
             }
         }
     };
-    private CompoundButton mReadCbx;
     private TextView mPagesView;
     private TextView mFormatView;
     private TextView mColorView;
@@ -141,10 +152,10 @@ public class BookDetailsFragment
     private TextView mFirstPubView;
     private TextView mNotesView;
     private TextView mLocationView;
-    private TextView mEditionView;
     private TextView mDateAcquiredView;
     private TextView mDateReadStartView;
     private TextView mDateReadEndView;
+
     /** Switch the user can flick to display/hide the TOC (if present). */
     private CompoundButton mTocButton;
     /** We display/hide the TOC header label as needed. */
@@ -174,7 +185,8 @@ public class BookDetailsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_book_details, container, false);
+        final View view = inflater.inflate(R.layout.fragment_book_details, container, false);
+
         mTopScrollView = view.findViewById(R.id.topScroller);
 
         mReadCbx = view.findViewById(R.id.cbx_read);
@@ -238,20 +250,19 @@ public class BookDetailsFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         mBookDetailsFragmentModel = new ViewModelProvider(this).get(BookDetailsFragmentModel.class);
 
-        // The book will get loaded, fields will be initialised and
-        // the population logic will be triggered.
+        // The book will get loaded and fields will be initialised
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            mCurrentCoverHandlerIndex = savedInstanceState
-                    .getInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, -1);
+            mCurrentCoverHandlerIndex =
+                    savedInstanceState.getInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, -1);
         }
 
         mBookDetailsFragmentModel.init(mBookModel.getDb(), getArguments(),
                                        mBookModel.getBook().getId());
 
         //noinspection ConstantConditions
-        FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
+        final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_edit);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> startEditBook());
@@ -294,7 +305,7 @@ public class BookDetailsFragment
     public void onResume() {
         // The parent will kick of the process that triggers {@link #onLoadFields}.
         super.onResume();
-        // No ViewPager2 involved, override the paren
+        // No ViewPager2 involved, override the parent (see google bug comment there)
         setHasOptionsMenu(true);
 
         //noinspection ConstantConditions
@@ -318,7 +329,6 @@ public class BookDetailsFragment
         }
 
         switch (requestCode) {
-
             case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
             case UniqueId.REQ_BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
@@ -367,6 +377,12 @@ public class BookDetailsFragment
         }
     }
 
+    /** Called by the CoverHandler when a context menu is selected. */
+    @Override
+    public void setCurrentCoverIndex(final int cIdx) {
+        mCurrentCoverHandlerIndex = cIdx;
+    }
+
     @NonNull
     @Override
     Fields getFields() {
@@ -376,14 +392,17 @@ public class BookDetailsFragment
     @Override
     protected void initFields() {
         super.initFields();
-        Fields fields = mBookDetailsFragmentModel.getFields();
+        final Fields fields = mBookDetailsFragmentModel.getFields();
         // already initialised ?
         if (!fields.isEmpty()) {
             return;
         }
 
+        //noinspection ConstantConditions
+        final Locale locale = LocaleUtils.getUserLocale(getContext());
+
         // A DateFieldFormatter can be shared between multiple fields.
-        Fields.FieldFormatter dateFormatter = new Fields.DateFieldFormatter();
+        final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
 
         // book fields
         fields.addString(mTitleView, DBDefinitions.KEY_TITLE);
@@ -391,33 +410,31 @@ public class BookDetailsFragment
         // defined, but populated manually
         fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author)
-              .setShowHtml(true);
+              .setFormatter(new HtmlFormatter());
 
-        // defined, but populated manually
-        fields.define(mSeriesView, DBDefinitions.KEY_SERIES_TITLE)
-              .setRelatedFields(R.id.lbl_series);
+        // The Series field is a single String with line-breaks between multiple Series.
+        // Each line will be prefixed with a "• "
+        fields.addCsvListEntity(mSeriesView, UniqueId.BKEY_SERIES_ARRAY,
+                                DBDefinitions.KEY_SERIES_TITLE)
+              .setRelatedFields(R.id.lbl_series)
+              .setFormatter(new CsvFormatter("\n", "• "));
 
         fields.addString(mIsbnView, DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
         fields.addString(mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
-              .setShowHtml(true)
-              .setRelatedFields(R.id.lbl_description);
-
-        // defined, but populated manually
-        fields.define(mIsAnthologyCbx, DBDefinitions.KEY_TOC_BITMASK)
-              .setRelatedFields(R.id.lbl_anthology);
+              .setRelatedFields(R.id.lbl_description)
+              .setFormatter(new HtmlFormatter());
 
         fields.addString(mGenreView, DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
         fields.addString(mLanguageView, DBDefinitions.KEY_LANGUAGE)
-              .setFormatter(new Fields.LanguageFormatter())
-              .setRelatedFields(R.id.lbl_language);
+              .setRelatedFields(R.id.lbl_language)
+              .setFormatter(new LanguageFormatter());
 
-        //noinspection ConstantConditions
         fields.addString(mPagesView, DBDefinitions.KEY_PAGES)
-              .setFormatter(new Fields.PagesFormatter(getContext()));
+              .setFormatter(new PagesFormatter());
 
         fields.addString(mFormatView, DBDefinitions.KEY_FORMAT);
 
@@ -426,29 +443,33 @@ public class BookDetailsFragment
         fields.addString(mPublisherView, DBDefinitions.KEY_PUBLISHER);
 
         fields.addString(mDatePublishedView, DBDefinitions.KEY_DATE_PUBLISHED)
-              .setFormatter(dateFormatter)
-              .setRelatedFields(R.id.lbl_date_published);
+              .setRelatedFields(R.id.lbl_date_published)
+              .setFormatter(dateFormatter);
 
-        fields.addString(mFirstPubView,
-                         DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-              .setFormatter(dateFormatter)
-              .setRelatedFields(R.id.lbl_first_publication);
+        fields.addString(mFirstPubView, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+              .setRelatedFields(R.id.lbl_first_publication)
+              .setFormatter(dateFormatter);
 
         fields.addString(mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        // defined, but populated manually
-        fields.defineMonetary(mPriceListedView, DBDefinitions.KEY_PRICE_LISTED)
-              .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
+        fields.addMoney(mPriceListedView, DBDefinitions.KEY_PRICE_LISTED)
+              .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed)
+              .setFormatter(new MonetaryFormatter(locale));
 
         // Personal fields
-        fields.addString(mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
-              .setFormatter(dateFormatter)
-              .setRelatedFields(R.id.lbl_date_acquired);
+        fields.addEntityList(mBookshelvesView, UniqueId.BKEY_BOOKSHELF_ARRAY,
+                             DBDefinitions.KEY_BOOKSHELF,
+                             new ArrayList<>(mBookModel.getDb().getBookshelves()),
+                             false)
+              .setRelatedFields(R.id.lbl_bookshelves);
 
-        fields.addLong(mEditionView, DBDefinitions.KEY_EDITION_BITMASK)
-              .setFormatter(new Fields.BitMaskFormatter(Book.getEditions(getContext())))
-              .setRelatedFields(R.id.lbl_edition);
+        fields.addString(mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
+              .setRelatedFields(R.id.lbl_date_acquired)
+              .setFormatter(dateFormatter);
+
+        fields.addBitmask(mEditionView, DBDefinitions.KEY_EDITION_BITMASK,
+                          Book.getEditions(getContext()), false);
 
         fields.addString(mLocationView, DBDefinitions.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
@@ -457,29 +478,25 @@ public class BookDetailsFragment
               .setRelatedFields(R.id.lbl_rating);
 
         fields.addString(mNotesView, DBDefinitions.KEY_PRIVATE_NOTES)
-              .setShowHtml(true)
-              .setRelatedFields(R.id.lbl_notes);
+              .setRelatedFields(R.id.lbl_notes)
+              .setFormatter(new HtmlFormatter());
 
         fields.addString(mDateReadStartView, DBDefinitions.KEY_READ_START)
-              .setFormatter(dateFormatter)
-              .setRelatedFields(R.id.lbl_read_start);
+              .setRelatedFields(R.id.lbl_read_start)
+              .setFormatter(dateFormatter);
 
         fields.addString(mDateReadEndView, DBDefinitions.KEY_READ_END)
-              .setFormatter(dateFormatter)
-              .setRelatedFields(R.id.lbl_read_end);
+              .setRelatedFields(R.id.lbl_read_end)
+              .setFormatter(dateFormatter);
 
         fields.addBoolean(mReadCbx, DBDefinitions.KEY_READ);
 
         fields.addBoolean(mSignedCbx, DBDefinitions.KEY_SIGNED)
               .setRelatedFields(R.id.lbl_signed);
 
-        // defined, but populated manually
-        fields.defineMonetary(mPricePaidView, DBDefinitions.KEY_PRICE_PAID)
-              .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
-
-        // defined, but populated manually
-        fields.define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
-              .setRelatedFields(R.id.lbl_bookshelves);
+        fields.addMoney(mPricePaidView, DBDefinitions.KEY_PRICE_PAID)
+              .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid)
+              .setFormatter(new MonetaryFormatter(locale));
     }
 
     /**
@@ -488,7 +505,7 @@ public class BookDetailsFragment
      * </p>
      * <br>{@inheritDoc}
      *
-     * @param book
+     * @param book to load
      */
     @Override
     protected void onLoadFields(@NonNull final Book book) {
@@ -496,31 +513,28 @@ public class BookDetailsFragment
 
         populateAuthorListField(book);
 
-        if (App.isUsed(DBDefinitions.KEY_FK_SERIES)) {
-            populateSeriesListField(book);
-        }
-        if (App.isUsed(DBDefinitions.KEY_BOOKSHELF)) {
-            populateBookshelvesField(book);
-        }
-
-        populatePriceFields(book);
-
-        // handle non-text fields
+        // handle special fields
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             populateLoanedToField(mBookModel.getLoanee());
         }
 
         if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
-            boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
-                                                Book.TOC_MULTIPLE_WORKS);
+            final boolean isAnthology =
+                    book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
             mIsAnthologyCbx.setChecked(isAnthology);
 
             populateToc(book);
         }
 
         if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
-            setupCoverViews(book, 0, ImageUtils.SCALE_LARGE);
-            setupCoverViews(book, 1, ImageUtils.SCALE_SMALL);
+            // Hook up the indexed cover image.
+            mCoverHandler[0] = new CoverHandler(this, mProgressBar,
+                                                book, mIsbnView, 0,
+                                                mCoverView[0], ImageUtils.SCALE_LARGE);
+
+            mCoverHandler[1] = new CoverHandler(this, mProgressBar,
+                                                book, mIsbnView, 1,
+                                                mCoverView[1], ImageUtils.SCALE_SMALL);
         }
 
         // hide unwanted and empty fields
@@ -547,272 +561,25 @@ public class BookDetailsFragment
     }
 
     /**
-     * If all 'fields' are View.GONE, set 'sectionLabelId' to View.GONE as well.
-     * Otherwise, set 'sectionLabelId' to View.VISIBLE.
-     *
-     * @param sectionLabelId field to set
-     * @param fields         to check
-     */
-    private void setSectionLabelVisibility(@IdRes final int sectionLabelId,
-                                           @NonNull final View... fields) {
-        //noinspection ConstantConditions
-        View fieldView = getView().findViewById(sectionLabelId);
-        if (fieldView != null) {
-            for (View view : fields) {
-                if (view != null && view.getVisibility() != View.GONE) {
-                    // at least one field was visible
-                    fieldView.setVisibility(View.VISIBLE);
-                    return;
-                }
-            }
-            // all fields were gone.
-            fieldView.setVisibility(View.GONE);
-        }
-    }
-
-    private void setupCoverViews(@NonNull final Book book,
-                                 final int cIdx,
-                                 @ImageUtils.Scale final int scale) {
-
-        mCoverHandler[cIdx] = new CoverHandler(this, mProgressBar,
-                                               book, mIsbnView, cIdx,
-                                               mCoverView[cIdx], scale);
-        mCoverHandler[cIdx].setImage();
-
-        // Allow zooming by clicking on the image;
-        // If there is no actual image, bring up the context menu instead.
-        mCoverView[cIdx].setOnClickListener(v -> {
-            File image = mCoverHandler[cIdx].getCoverFile();
-            if (image.exists()) {
-                ZoomedImageDialogFragment.show(getParentFragmentManager(), image);
-            } else {
-                mCurrentCoverHandlerIndex = cIdx;
-                mCoverHandler[cIdx].onCreateContextMenu();
-            }
-        });
-
-        mCoverView[cIdx].setOnLongClickListener(v -> {
-            mCurrentCoverHandlerIndex = cIdx;
-            mCoverHandler[cIdx].onCreateContextMenu();
-            return true;
-        });
-    }
-
-    @Override
-    @CallSuper
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.book, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        Book book = mBookModel.getBook();
-
-        boolean isSaved = !book.isNew();
-        boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
-        boolean isAvailable = mBookModel.isAvailable();
-
-        menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
-        menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
-
-        //FIXME: swiping through the flattened booklist will not see
-        // the duplicated book until we go back to BoB.
-        // Easiest solution would be to remove the dup. option from this screen...
-        menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
-
-        //noinspection ConstantConditions
-        menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-            .setVisible(GoodreadsHandler.isShowSyncMenus(getContext()));
-
-        // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-        boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
-        menu.findItem(R.id.MENU_BOOK_LOAN_ADD)
-            .setVisible(lendingIsUsed && isSaved && isAvailable);
-        menu.findItem(R.id.MENU_BOOK_LOAN_DELETE)
-            .setVisible(lendingIsUsed && isSaved && !isAvailable);
-
-        MenuHandler.prepareOptionalMenus(menu, book);
-
-        super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-
-        Book book = mBookModel.getBook();
-
-        switch (item.getItemId()) {
-
-            case R.id.MENU_BOOK_EDIT: {
-                startEditBook();
-                return true;
-            }
-            case R.id.MENU_BOOK_DELETE: {
-                String title = book.getString(DBDefinitions.KEY_TITLE);
-                List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-                //noinspection ConstantConditions
-                StandardDialogs.deleteBookAlert(getContext(), title, authors, () -> {
-                    mBookModel.deleteBook(getContext());
-
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mBookModel.getResultData());
-                    getActivity().finish();
-                });
-                return true;
-            }
-            case R.id.MENU_BOOK_DUPLICATE: {
-                Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
-                startActivityForResult(dupIntent, UniqueId.REQ_BOOK_DUPLICATE);
-                return true;
-            }
-            case R.id.MENU_BOOK_READ:
-            case R.id.MENU_BOOK_UNREAD: {
-                // toggle 'read' status of the book
-                Field<Boolean> field = getFields().getField(mReadCbx);
-                field.setValue(mBookModel.toggleRead());
-                return true;
-            }
-
-            /* ********************************************************************************** */
-
-            case R.id.MENU_BOOK_LOAN_ADD: {
-                //noinspection ConstantConditions
-                LendBookDialogFragment.newInstance(getContext(), book)
-                                      .show(getChildFragmentManager(), LendBookDialogFragment.TAG);
-                return true;
-            }
-            case R.id.MENU_BOOK_LOAN_DELETE: {
-                mBookModel.deleteLoan();
-                populateLoanedToField(null);
-                return true;
-            }
-            /* ********************************************************************************** */
-
-            case R.id.MENU_SHARE: {
-                //noinspection ConstantConditions
-                startActivity(Intent.createChooser(book.getShareBookIntent(getContext()),
-                                                   getString(R.string.menu_share_this)));
-                return true;
-            }
-            case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG)
-                        .show();
-                //noinspection ConstantConditions
-                new SendOneBookTask(book.getId(), mBookModel.getGoodreadsTaskListener(getContext()))
-                        .execute();
-                return true;
-            }
-            /* ********************************************************************************** */
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void startEditBook() {
-        Intent editIntent = new Intent(getContext(), EditBookActivity.class)
-                .putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
-        startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onContextItemSelected(@NonNull final MenuItem menuItem) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (menuItem.getItemId()) {
-            case R.id.MENU_BOOK_LOAN_DELETE:
-                mBookModel.deleteLoan();
-                populateLoanedToField(null);
-                return true;
-
-            default:
-                return super.onContextItemSelected(menuItem);
-        }
-    }
-
-    /**
-     * The author field is a single csv String.
+     * The author field is a single csv String but with very specific formatting for
+     * the author type.
      */
     private void populateAuthorListField(@NonNull final Book book) {
-        ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        Field<String> field = getFields().getField(mAuthorView);
-        field.setValue(Csv.join("<br>", list, true, "• ",
-                                this::formatAuthor));
-    }
-
-    /**
-     * The formatter for the {@link Csv#join} used by {@link #populateAuthorListField(Book)}.
-     *
-     * @param author to format
-     *
-     * @return HTML formatted author with optional type
-     */
-    private String formatAuthor(@NonNull final Author author) {
-        final Context context = getContext();
-        //noinspection ConstantConditions
-        String authorLabel = author.getLabel(context);
-        if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
-            String type = author.getTypeLabels(context);
-            if (!type.isEmpty()) {
-                authorLabel += " <small><i>" + type + "</i></small>";
-            }
-        }
-
-        return authorLabel;
-    }
-
-    /**
-     * The Series field is a single String with line-breaks between multiple Series.
-     * Each line will be prefixed with a "• "
-     */
-    private void populateSeriesListField(@NonNull final Book book) {
-
-        ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-
-        Field<String> field = getFields().getField(mSeriesView);
-        //noinspection ConstantConditions
-        field.setValue(Csv.join("\n", list, true, "• ",
-                                series -> series.getLabel(getContext())));
-    }
-
-    /**
-     * The bookshelves field is a single csv String.
-     */
-    private void populateBookshelvesField(@NonNull final Book book) {
-
-        ArrayList<Bookshelf> list = book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-        Field<String> field = getFields().getField(mBookshelvesView);
-        field.setValue(Csv.join(", ", list, Bookshelf::getName));
-    }
-
-    /**
-     * We need to use the <strong>current</strong> currency code, so we cannot define (easily)
-     * the formatter in {@link #initFields()}.
-     * <p>
-     * Using a formatter object is a little overkill, but this leaves future changes easier.
-     */
-    private void populatePriceFields(@NonNull final Book book) {
-
-        if (App.isUsed(DBDefinitions.KEY_PRICE_LISTED)) {
-            Fields.MonetaryFormatter listedFormatter = new Fields.MonetaryFormatter()
-                    .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-            getFields().getField(mPriceListedView)
-                       .setFormatter(listedFormatter)
-                       .setValue(book.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        }
-
-        if (App.isUsed(DBDefinitions.KEY_PRICE_PAID)) {
-            Fields.MonetaryFormatter paidFormatter = new Fields.MonetaryFormatter()
-                    .setCurrencyCode(book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
-            getFields().getField(mPricePaidView)
-                       .setFormatter(paidFormatter)
-                       .setValue(book.getDouble(DBDefinitions.KEY_PRICE_PAID));
-        }
+        final ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        getFields().getField(mAuthorView).getAccessor().setValue(
+                Csv.join("<br>", list, true, "• ",
+                         author -> {
+                             final Context context = getContext();
+                             //noinspection ConstantConditions
+                             String authorLabel = author.getLabel(context);
+                             if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
+                                 String type = author.getTypeLabels(context);
+                                 if (!type.isEmpty()) {
+                                     authorLabel += " <small><i>" + type + "</i></small>";
+                                 }
+                             }
+                             return authorLabel;
+                         }));
     }
 
     /**
@@ -859,26 +626,27 @@ public class BookDetailsFragment
         mTocView.setVisibility(View.GONE);
         mTocButton.setChecked(false);
 
-        ArrayList<TocEntry> tocList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        final ArrayList<TocEntry> tocList =
+                book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         if (!tocList.isEmpty()) {
 
             @SuppressWarnings("ConstantConditions")
             @NonNull
-            Context context = getContext();
+            final Context context = getContext();
             for (TocEntry tocEntry : tocList) {
-                View rowView = getLayoutInflater().inflate(R.layout.row_toc_entry_with_author,
-                                                           mTocView, false);
+                final View rowView = getLayoutInflater()
+                        .inflate(R.layout.row_toc_entry_with_author, mTocView, false);
 
-                TextView titleView = rowView.findViewById(R.id.title);
-                TextView authorView = rowView.findViewById(R.id.author);
-                TextView firstPubView = rowView.findViewById(R.id.year);
-                CheckBox multipleBooksView = rowView.findViewById(R.id.cbx_multiple_books);
+                final TextView titleView = rowView.findViewById(R.id.title);
+                final TextView authorView = rowView.findViewById(R.id.author);
+                final TextView firstPubView = rowView.findViewById(R.id.year);
+                final CheckBox multipleBooksView = rowView.findViewById(R.id.cbx_multiple_books);
 
                 titleView.setText(tocEntry.getTitle());
 
                 if (multipleBooksView != null) {
-                    boolean isSet = tocEntry.getBookCount() > 1;
+                    final boolean isSet = tocEntry.getBookCount() > 1;
                     multipleBooksView.setChecked(isSet);
                     multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 }
@@ -886,7 +654,7 @@ public class BookDetailsFragment
                     authorView.setText(tocEntry.getAuthor().getLabel(context));
                 }
                 if (firstPubView != null) {
-                    String date = tocEntry.getFirstPublication();
+                    final String date = tocEntry.getFirstPublication();
                     // "< 4" covers empty and illegal dates
                     if (date.length() < 4) {
                         firstPubView.setVisibility(View.GONE);
@@ -909,11 +677,166 @@ public class BookDetailsFragment
     }
 
     /**
+     * If all 'fields' are View.GONE, set 'sectionLabelId' to View.GONE as well.
+     * Otherwise, set 'sectionLabelId' to View.VISIBLE.
+     *
+     * @param sectionLabelId field to set
+     * @param fields         to check
+     */
+    private void setSectionLabelVisibility(@IdRes final int sectionLabelId,
+                                           @NonNull final View... fields) {
+        //noinspection ConstantConditions
+        final View fieldView = getView().findViewById(sectionLabelId);
+        if (fieldView != null) {
+            for (View view : fields) {
+                if (view != null && view.getVisibility() != View.GONE) {
+                    // at least one field was visible
+                    fieldView.setVisibility(View.VISIBLE);
+                    return;
+                }
+            }
+            // all fields were gone.
+            fieldView.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        inflater.inflate(R.menu.book, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        Book book = mBookModel.getBook();
+
+        final boolean isSaved = !book.isNew();
+        final boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
+        final boolean isAvailable = mBookModel.isAvailable();
+
+        menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
+        menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
+
+        //FIXME: swiping through the flattened booklist will not see
+        // the duplicated book until we go back to BoB.
+        // Easiest solution would be to remove the dup. option from this screen...
+        menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
+
+        //noinspection ConstantConditions
+        menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
+            .setVisible(GoodreadsHandler.isShowSyncMenus(getContext()));
+
+        // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
+        final boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
+        menu.findItem(R.id.MENU_BOOK_LOAN_ADD)
+            .setVisible(lendingIsUsed && isSaved && isAvailable);
+        menu.findItem(R.id.MENU_BOOK_LOAN_DELETE)
+            .setVisible(lendingIsUsed && isSaved && !isAvailable);
+
+        MenuHandler.prepareOptionalMenus(menu, book);
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    @CallSuper
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+
+        final Book book = mBookModel.getBook();
+
+        switch (item.getItemId()) {
+            case R.id.MENU_BOOK_EDIT: {
+                startEditBook();
+                return true;
+            }
+            case R.id.MENU_BOOK_DELETE: {
+                final String title = book.getString(DBDefinitions.KEY_TITLE);
+                final List<Author> authors =
+                        book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+                //noinspection ConstantConditions
+                StandardDialogs.deleteBook(getContext(), title, authors, () -> {
+                    mBookModel.deleteBook(getContext());
+
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mBookModel.getResultData());
+                    getActivity().finish();
+                });
+                return true;
+            }
+            case R.id.MENU_BOOK_DUPLICATE: {
+                final Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
+                        .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
+                startActivityForResult(dupIntent, UniqueId.REQ_BOOK_DUPLICATE);
+                return true;
+            }
+            case R.id.MENU_BOOK_READ:
+            case R.id.MENU_BOOK_UNREAD: {
+                // toggle 'read' status of the book
+                final Field<Boolean> field = getFields().getField(mReadCbx);
+                field.getAccessor().setValue(mBookModel.toggleRead());
+                return true;
+            }
+            case R.id.MENU_BOOK_LOAN_ADD: {
+                //noinspection ConstantConditions
+                LendBookDialogFragment.newInstance(getContext(), book)
+                                      .show(getChildFragmentManager(), LendBookDialogFragment.TAG);
+                return true;
+            }
+            case R.id.MENU_BOOK_LOAN_DELETE: {
+                mBookModel.deleteLoan();
+                populateLoanedToField(null);
+                return true;
+            }
+            case R.id.MENU_SHARE: {
+                //noinspection ConstantConditions
+                startActivity(Intent.createChooser(book.getShareBookIntent(getContext()),
+                                                   getString(R.string.menu_share_this)));
+                return true;
+            }
+            case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
+                //noinspection ConstantConditions
+                Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG)
+                        .show();
+                //noinspection ConstantConditions
+                new SendOneBookTask(book.getId(), mBookModel.getGoodreadsTaskListener(getContext()))
+                        .execute();
+                return true;
+            }
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void startEditBook() {
+        final Intent editIntent = new Intent(getContext(), EditBookActivity.class)
+                .putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
+        startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
+    }
+
+    @Override
+    @CallSuper
+    public boolean onContextItemSelected(@NonNull final MenuItem menuItem) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (menuItem.getItemId()) {
+            case R.id.MENU_BOOK_LOAN_DELETE:
+                mBookModel.deleteLoan();
+                populateLoanedToField(null);
+                return true;
+
+            default:
+                return super.onContextItemSelected(menuItem);
+        }
+    }
+
+    /**
      * Listener to handle 'fling' events; we could handle others but need to be
      * careful about possible clicks and scrolling.
      *
      * <a href="https://developer.android.com/training/gestures/detector.html#detect-a-subset-of-supported-gestures">
-     *     detect-a-subset-of-supported-gestures</a>
+     * detect-a-subset-of-supported-gestures</a>
      */
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {
@@ -924,7 +847,7 @@ public class BookDetailsFragment
                                final float velocityX,
                                final float velocityY) {
 
-            FlattenedBooklist fbl = mBookDetailsFragmentModel.getFlattenedBooklist();
+            final FlattenedBooklist fbl = mBookDetailsFragmentModel.getFlattenedBooklist();
             if (fbl == null) {
                 return false;
             }
@@ -934,7 +857,7 @@ public class BookDetailsFragment
             if (Math.abs(velocityX / velocityY) > 2) {
                 // Work out which way to move, and do it.
                 if (fbl.move(velocityX <= 0)) {
-                    long bookId = fbl.getBookId();
+                    final long bookId = fbl.getBookId();
                     // only reload if it's a different book
                     if (bookId != mBookModel.getBook().getId()) {
                         mBookModel.moveTo(bookId);
