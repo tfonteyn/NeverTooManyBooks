@@ -53,7 +53,7 @@ public class TableInfo {
     private final String mTableName;
 
     @SuppressWarnings("FieldNotUsedInToString")
-    private final Locale locale;
+    private final Locale mLocale;
 
     /**
      * Constructor.
@@ -64,9 +64,10 @@ public class TableInfo {
     public TableInfo(@NonNull final SynchronizedDb db,
                      @NonNull final String tableName) {
         mTableName = tableName;
-        mColumns = describeTable(db, tableName);
 
-        locale = LocaleUtils.getSystemLocale();
+        mLocale = LocaleUtils.getSystemLocale();
+
+        mColumns = describeTable(db, tableName);
     }
 
     /**
@@ -88,7 +89,7 @@ public class TableInfo {
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
-        String lcName = name.toLowerCase(locale);
+        String lcName = name.toLowerCase(mLocale);
         if (!mColumns.containsKey(lcName)) {
             return null;
         }
@@ -108,11 +109,10 @@ public class TableInfo {
                                                   @NonNull final String tableName) {
         Map<String, ColumnInfo> allColumns = new HashMap<>();
 
-
         try (Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {
             while (colCsr.moveToNext()) {
                 ColumnInfo col = new ColumnInfo(colCsr);
-                allColumns.put(col.name.toLowerCase(locale), col);
+                allColumns.put(col.name.toLowerCase(mLocale), col);
             }
         }
         if (allColumns.isEmpty()) {
