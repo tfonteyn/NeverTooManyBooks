@@ -168,7 +168,7 @@ public class TableDefinition
      *
      * @param db SQLiteDatabase
      */
-    public void create(@NonNull final SQLiteDatabase db) {
+    private void create(@NonNull final SQLiteDatabase db) {
         db.execSQL(def(mName, true, true, false));
         for (IndexDefinition index : mIndexes) {
             index.create(db);

@@ -68,11 +68,9 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -337,7 +335,7 @@ public class EditBookTocFragment
     }
 
     @Override
-    protected void onLoadFields(@NonNull final Book book) {
+    void onLoadFields(@NonNull final Book book) {
         super.onLoadFields(book);
 
         // used to call Search sites to populate the TOC
@@ -460,13 +458,13 @@ public class EditBookTocFragment
                  R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        final String title = item.getTitle();
+        final String title = item.getLabel(getContext());
         new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
     }
 
     /**
-     * Using {@link ValuePicker} for context menus.
+     * Using {@link MenuPicker} for context menus.
      *
      * @param menuItem that was selected
      * @param position in the list
@@ -644,10 +642,12 @@ public class EditBookTocFragment
 
             final TextView textView = root.findViewById(R.id.content);
             if (hasToc) {
+                //noinspection ConstantConditions
                 final StringBuilder message =
                         new StringBuilder(getString(R.string.warning_toc_confirm))
                                 .append("\n\n")
-                                .append(Csv.join(", ", mTocEntries, TocEntry::getTitle));
+                                .append(Csv.join(", ", mTocEntries,
+                                                 tocEntry -> tocEntry.getLabel(getContext())));
                 textView.setText(message);
 
             } else {
@@ -682,7 +682,7 @@ public class EditBookTocFragment
                 mListener.get().commitIsfdbData(mTocBitMask, mTocEntries);
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onCommitToc|" + Logger.WEAK_REFERENCE_DEAD);
+                    Log.d(TAG, "onCommitToc|" + ErrorMsg.WEAK_REFERENCE);
                 }
             }
         }
@@ -693,7 +693,7 @@ public class EditBookTocFragment
                 mListener.get().getNextEdition();
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onGetNext|" + Logger.WEAK_REFERENCE_DEAD);
+                    Log.d(TAG, "onGetNext|" + ErrorMsg.WEAK_REFERENCE);
                 }
             }
         }

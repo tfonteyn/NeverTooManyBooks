@@ -78,14 +78,13 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditColorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditFormatDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditGenreDialog;
@@ -367,8 +366,9 @@ public class BooksOnBookshelf
                 @Override
                 public void onScrollStateChanged(@NonNull final RecyclerView recyclerView,
                                                  final int newState) {
-                    //FIXME: this is not called when the fast scroller stops scrolling
-                    //but it's not unusable... the slighted swipe of the user brings the FAB back.
+                    // TODO: this is not called when the fast scroller stops scrolling
+                    // but that can be ignored for now...
+                    // the slighted swipe of the user brings the FAB back.
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         showFABMenu(false);
@@ -1280,7 +1280,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Using {@link ValuePicker} for context menus.
+     * Using {@link MenuPicker} for context menus.
      *
      * @param menuItem that was selected
      * @param position in the list
@@ -1288,8 +1288,8 @@ public class BooksOnBookshelf
      * @return {@code true} if handled.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean onContextItemSelected(@NonNull final MenuItem menuItem,
-                                         @NonNull final Integer position) {
+    private boolean onContextItemSelected(@NonNull final MenuItem menuItem,
+                                          @NonNull final Integer position) {
 
         final RowDataHolder cursorRow =
                 new CursorRow(Objects.requireNonNull(mModel.getListCursor(), ErrorMsg.NULL_CURSOR));
@@ -1621,8 +1621,8 @@ public class BooksOnBookshelf
         if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.SUMMARY_SHOW_FILTER)) {
             final Collection<String> filterText = new ArrayList<>();
             final Collection<Filter> filters = mModel.getCurrentBookshelf()
-                                               .getStyle(this, mModel.getDb())
-                                               .getFilters();
+                                                     .getStyle(this, mModel.getDb())
+                                                     .getFilters();
             for (Filter f : filters) {
                 if (f.isActive()) {
                     filterText.add(f.getLabel(this));

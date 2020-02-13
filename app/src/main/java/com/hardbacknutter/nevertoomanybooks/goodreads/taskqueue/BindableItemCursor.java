@@ -31,7 +31,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 
-public interface BindableItemCursor<BI extends BindableItem>
+interface BindableItemCursor<BI extends BindableItem>
         extends Cursor {
 
     long getId();

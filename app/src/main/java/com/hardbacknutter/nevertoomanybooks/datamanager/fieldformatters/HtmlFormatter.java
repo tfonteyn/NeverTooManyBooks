@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,42 +39,39 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 /**
  * FieldFormatter for 'html' fields.
  * <ul>
- * <li>Multiple fields: <strong>no</strong></li>
- * <li>Extract: <strong>local variable</strong></li>
+ * <li>Multiple fields: <strong>yes</strong> as long as 'html' has the same value...</li>
  * </ul>
  */
-public class HtmlFormatter
-        implements FieldFormatter<String> {
+public class HtmlFormatter<T>
+        implements FieldFormatter<T> {
 
-    @Nullable
-    private String mRawValue;
+    private final boolean mEnableLinks;
+
+    /**
+     * Constructor.
+     *
+     * @param enableLinks {@code true} to enable links.
+     *                    Do not enable if the View has an onClickListener
+     */
+    public HtmlFormatter(final boolean enableLinks) {
+        mEnableLinks = enableLinks;
+    }
 
     @NonNull
     @Override
     public String format(@NonNull final Context context,
-                         @Nullable final String rawValue) {
-        if (rawValue == null) {
-            return "";
-        } else {
-            return rawValue;
+                         @Nullable final T rawValue) {
+        return rawValue != null ? String.valueOf(rawValue) : "";
+    }
+
+    @Override
+    public void apply(@Nullable final T rawValue,
+                      @NonNull final TextView view) {
+
+        view.setText(LinkifyUtils.fromHtml(format(view.getContext(), rawValue)));
+
+        if (mEnableLinks) {
+            view.setMovementMethod(LinkMovementMethod.getInstance());
         }
-    }
-
-    @Override
-    public void apply(@Nullable final String rawValue,
-                      @NonNull final View view) {
-        mRawValue = rawValue;
-
-        TextView textView = (TextView) view;
-        textView.setText(LinkifyUtils.fromHtml(format(view.getContext(), rawValue)));
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
-        textView.setFocusable(true);
-        textView.setTextIsSelectable(true);
-    }
-
-    @NonNull
-    @Override
-    public String extract(@NonNull final View view) {
-        return mRawValue != null ? mRawValue : "";
     }
 }

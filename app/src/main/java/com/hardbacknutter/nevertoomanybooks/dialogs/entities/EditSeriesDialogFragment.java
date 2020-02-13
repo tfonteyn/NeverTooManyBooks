@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -78,7 +77,7 @@ public class EditSeriesDialogFragment
     /** The Series we're editing. */
     private Series mSeries;
     /** Current edit. */
-    private String mName;
+    private String mTitle;
     /** Current edit. */
     private boolean mIsComplete;
 
@@ -107,10 +106,10 @@ public class EditSeriesDialogFragment
         Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
 
         if (savedInstanceState == null) {
-            mName = mSeries.getTitle();
+            mTitle = mSeries.getTitle();
             mIsComplete = mSeries.isComplete();
         } else {
-            mName = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
+            mTitle = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE,
                                                         false);
         }
@@ -130,7 +129,7 @@ public class EditSeriesDialogFragment
 
         // the dialog fields != screen fields.
         mNameView = root.findViewById(R.id.name);
-        mNameView.setText(mName);
+        mNameView.setText(mTitle);
         mNameView.setAdapter(mAdapter);
 
         mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
@@ -142,8 +141,8 @@ public class EditSeriesDialogFragment
                 .setTitle(R.string.title_edit_series)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
-                    mName = mNameView.getText().toString().trim();
-                    if (mName.isEmpty()) {
+                    mTitle = mNameView.getText().toString().trim();
+                    if (mTitle.isEmpty()) {
                         Snackbar.make(mNameView, R.string.warning_missing_name,
                                       Snackbar.LENGTH_LONG).show();
                         return;
@@ -151,13 +150,13 @@ public class EditSeriesDialogFragment
                     mIsComplete = mIsCompleteView.isChecked();
 
                     // anything actually changed ?
-                    if (mSeries.getTitle().equals(mName)
+                    if (mSeries.getTitle().equals(mTitle)
                         && mSeries.isComplete() == mIsComplete) {
                         return;
                     }
 
                     // this is a global update, so just set and update.
-                    mSeries.setTitle(mName);
+                    mSeries.setTitle(mTitle);
                     mSeries.setComplete(mIsComplete);
                     // There is no book involved here, so use the users Locale instead
                     // and store the changes
@@ -172,7 +171,7 @@ public class EditSeriesDialogFragment
                                             .onBookChanged(0, BookChangedListener.SERIES, null);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookChanged|" + Logger.WEAK_REFERENCE_DEAD);
+                            Log.d(TAG, "onBookChanged|" + ErrorMsg.WEAK_REFERENCE);
                         }
                     }
                 })
@@ -182,7 +181,7 @@ public class EditSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_SERIES_TITLE, mName);
+        outState.putString(DBDefinitions.KEY_SERIES_TITLE, mTitle);
         outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
     }
 
@@ -197,7 +196,7 @@ public class EditSeriesDialogFragment
 
     @Override
     public void onPause() {
-        mName = mNameView.getText().toString().trim();
+        mTitle = mNameView.getText().toString().trim();
         mIsComplete = mIsCompleteView.isChecked();
         super.onPause();
     }

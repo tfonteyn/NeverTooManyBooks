@@ -58,6 +58,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.AuthorFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -141,7 +143,7 @@ public class EditBookAuthorsFragment
     }
 
     @Override
-    protected void onLoadFields(@NonNull final Book book) {
+    void onLoadFields(@NonNull final Book book) {
         super.onLoadFields(book);
 
         mList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
@@ -250,9 +252,9 @@ public class EditBookAuthorsFragment
         // We need to ask the user if they want to make the changes globally.
         final String allBooks = getString(R.string.bookshelf_all_books);
         final String message = getString(R.string.confirm_apply_author_changed,
-                                   author.getSorting(getContext()),
-                                   tmpData.getSorting(getContext()),
-                                   allBooks);
+                                         author.getLabel(getContext()),
+                                         tmpData.getLabel(getContext()),
+                                         allBooks);
         new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_scope_of_change)
@@ -329,21 +331,11 @@ public class EditBookAuthorsFragment
 
         @NonNull
         final TextView authorView;
-        @NonNull
-        final TextView authorSortView;
-        @NonNull
-        final TextView authorTypeView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
 
             authorView = itemView.findViewById(R.id.row_author);
-            authorSortView = itemView.findViewById(R.id.row_author_sort);
-            authorTypeView = itemView.findViewById(R.id.row_author_type);
-
-            if (!App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
-                authorTypeView.setVisibility(View.GONE);
-            }
         }
     }
 
@@ -611,6 +603,9 @@ public class EditBookAuthorsFragment
     protected class AuthorListAdapter
             extends RecyclerViewAdapterBase<Author, Holder> {
 
+        @NonNull
+        private final FieldFormatter<Author> mFormatter;
+
         /**
          * Constructor.
          *
@@ -622,6 +617,8 @@ public class EditBookAuthorsFragment
                           @NonNull final List<Author> items,
                           @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
+
+            mFormatter = new AuthorFormatter(Author.Details.Full, false);
         }
 
         @NonNull
@@ -639,26 +636,8 @@ public class EditBookAuthorsFragment
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            final Context context = getContext();
-
             final Author author = getItem(position);
-            final String authorLabel = author.getLabel(context);
-            holder.authorView.setText(authorLabel);
-
-            if (!authorLabel.equals(author.getSorting(context))) {
-                holder.authorSortView.setVisibility(View.VISIBLE);
-                holder.authorSortView.setText(author.getSorting(context));
-            } else {
-                holder.authorSortView.setVisibility(View.GONE);
-            }
-
-            if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)
-                && author.getType() != Author.TYPE_UNKNOWN) {
-                holder.authorTypeView.setText(author.getTypeLabels(context));
-                holder.authorTypeView.setVisibility(View.VISIBLE);
-            } else {
-                holder.authorTypeView.setVisibility(View.GONE);
-            }
+            mFormatter.apply(author, holder.authorView);
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> {

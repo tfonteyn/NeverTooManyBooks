@@ -35,10 +35,10 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -50,11 +50,10 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.BitUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -251,7 +250,7 @@ public class Author
     /**
      * Full constructor.
      *
-     * @param id        ID of the Author in the database.
+     * @param id      ID of the Author in the database.
      * @param rowData with data
      */
     public Author(final long id,
@@ -366,6 +365,18 @@ public class Author
         return new Author(buildFamilyName.toString(), buildGivenNames.toString());
     }
 
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if we want "given-names last-name" formatted authors.
+     */
+    public static boolean displayGivenNameFirst(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_bob_format_author_name, false);
+    }
+
     public boolean isComplete() {
         return mIsComplete;
     }
@@ -410,23 +421,6 @@ public class Author
         mType |= type & TYPE_MASK;
     }
 
-    /**
-     * Gets a complete list of Types each reflecting the Author being that type or not.
-     *
-     * @return list with {@link SelectableItem}
-     */
-    @NonNull
-    public ArrayList<CheckListItem> getEditableTypeList(@NonNull final Context context) {
-
-        ArrayList<CheckListItem> list = new ArrayList<>();
-        for (Map.Entry<Integer, Integer> entry : TYPES.entrySet()) {
-            Integer key = entry.getKey();
-            boolean selected = (key & mType) != 0;
-            list.add(new SelectableItem(context.getString(entry.getValue()), key, selected));
-        }
-        return list;
-    }
-
     @Override
     public long getId() {
         return mId;
@@ -437,32 +431,16 @@ public class Author
     }
 
     /**
-     * Return the 'human readable' version of the name (e.g. 'Isaac Asimov').
-     *
-     * @param context Current context
-     *
-     * @return formatted Author name
-     */
-    @NonNull
-    public String getLabel(@NonNull final Context context) {
-        if (!mGivenNames.isEmpty()) {
-            return mGivenNames + ' ' + mFamilyName;
-        } else {
-            return mFamilyName;
-        }
-    }
-
-    /**
-     * Return the name in a sortable form (e.g. 'Asimov, Isaac').
+     * Return the preferred 'human readable' version of the name.
      *
      * @param context Current context
      *
      * @return formatted name
      */
     @NonNull
-    public String getSorting(@NonNull final Context context) {
+    public String getLabel(@NonNull final Context context) {
         if (!mGivenNames.isEmpty()) {
-            if (Prefs.sortAuthorGivenNameFirst(context)) {
+            if (displayGivenNameFirst(context)) {
                 return mGivenNames + ' ' + mFamilyName;
             } else {
                 return mFamilyName + ", " + mGivenNames;
@@ -470,6 +448,27 @@ public class Author
         } else {
             return mFamilyName;
         }
+    }
+
+    /**
+     * Return the preferred 'human readable' version of the name,
+     * combined (if enabled) with the author type.
+     * The latter uses HTML formatting.
+     *
+     * @param context Current context
+     *
+     * @return HTML formatted name and type.
+     */
+    @NonNull
+    public String getExtLabel(@NonNull final Context context) {
+        String authorLabel = getLabel(context);
+        if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
+            String type = getTypeLabels(context);
+            if (!type.isEmpty()) {
+                authorLabel += " <small><i>" + type + "</i></small>";
+            }
+        }
+        return authorLabel;
     }
 
     /**
@@ -481,7 +480,7 @@ public class Author
      * @return csv string, can be empty, but never {@code null}.
      */
     @NonNull
-    public String getTypeLabels(@NonNull final Context context) {
+    private String getTypeLabels(@NonNull final Context context) {
         if (mType != TYPE_UNKNOWN) {
             List<String> list = BitUtils.toListOfStrings(context, TYPES, mType);
             if (!list.isEmpty()) {
@@ -666,6 +665,10 @@ public class Author
                + ", mIsComplete=" + mIsComplete
                + ", mType=0b" + Integer.toBinaryString(mType)
                + '}';
+    }
+
+    public enum Details {
+        Full, Normal, Short
     }
 
     @IntDef(flag = true,

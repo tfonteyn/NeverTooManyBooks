@@ -50,18 +50,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -127,7 +122,7 @@ public class AuthorWorksFragment
 
         FastScroller.init(listView);
 
-        mAdapter = new TocAdapter(context, mModel.getDb());
+        mAdapter = new TocAdapter(context);
         listView.setAdapter(mAdapter);
 
         if (savedInstanceState == null) {
@@ -200,13 +195,13 @@ public class AuthorWorksFragment
                  R.string.menu_delete)
             .setIcon(R.drawable.ic_delete);
 
-        final String title = item.getTitle();
+        final String title = item.getLabel(getContext());
         new MenuPicker<>(getContext(), title, menu, position, this::onContextItemSelected)
                 .show();
     }
 
     /**
-     * Using {@link ValuePicker} for context menus.
+     * Using {@link MenuPicker} for context menus.
      *
      * @param menuItem that was selected
      * @param position in the list
@@ -223,7 +218,7 @@ public class AuthorWorksFragment
                 switch (item.getType()) {
                     case Book:
                         //noinspection ConstantConditions
-                        StandardDialogs.deleteBook(getContext(), item.getTitle(),
+                        StandardDialogs.deleteBook(getContext(), item.getLabel(getContext()),
                                                    item.getAuthors(), () -> {
                                     mModel.delTocEntry(getContext(), item);
                                     mAdapter.notifyItemRemoved(position);
@@ -319,19 +314,15 @@ public class AuthorWorksFragment
 
         /** Caching the inflater. */
         private final LayoutInflater mInflater;
-        private final DAO mDb;
 
         /**
          * Constructor.
          *
          * @param context Current context
-         * @param db      Database Access
          */
-        TocAdapter(@NonNull final Context context,
-                   @NonNull final DAO db) {
+        TocAdapter(@NonNull final Context context) {
             super();
             mInflater = LayoutInflater.from(context);
-            mDb = db;
         }
 
         @NonNull
@@ -359,16 +350,12 @@ public class AuthorWorksFragment
                                      final int position) {
 
             final TocEntry tocEntry = mModel.getTocEntries().get(position);
+
+            @SuppressWarnings("ConstantConditions")
+            @NonNull
             final Context context = getContext();
 
-            String title = tocEntry.getTitle();
-            //noinspection ConstantConditions
-            if (Prefs.reorderTitleForDisplaying(context)) {
-                Locale locale = tocEntry.getLocale(context, mDb,
-                                                   LocaleUtils.getUserLocale(context));
-                title = LocaleUtils.reorderTitle(context, title, locale);
-            }
-            holder.titleView.setText(title);
+            holder.titleView.setText(tocEntry.getLabel(context));
 
             // optional
             if (holder.authorView != null) {
@@ -423,9 +410,7 @@ public class AuthorWorksFragment
             final int clampedPosition =
                     MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
 
-            final String title = mModel.getTocEntries().get(clampedPosition)
-                                 .getTitle();
-//                         .substring(0, 1).toUpperCase(LocaleUtils.getUserLocale(context));
+            final String title = mModel.getTocEntries().get(clampedPosition).getLabel(context);
             return new String[]{title};
         }
     }

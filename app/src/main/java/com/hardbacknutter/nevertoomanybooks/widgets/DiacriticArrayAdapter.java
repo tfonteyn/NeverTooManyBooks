@@ -209,10 +209,10 @@ public class DiacriticArrayAdapter<T>
      * @param textViewResourceId The id of the TextView within the layout resource to be populated
      * @param objects            The objects to represent in the ListView.
      */
-    public DiacriticArrayAdapter(@NonNull Context context,
-                                 @LayoutRes int resource,
-                                 @IdRes int textViewResourceId,
-                                 @NonNull List<T> objects) {
+    protected DiacriticArrayAdapter(@NonNull Context context,
+                                    @LayoutRes int resource,
+                                    @IdRes int textViewResourceId,
+                                    @NonNull List<T> objects) {
         this(context, resource, textViewResourceId, objects, false);
     }
 
@@ -437,7 +437,7 @@ public class DiacriticArrayAdapter<T>
      * @return The Context associated with this adapter.
      */
     @NonNull
-    public Context getContext() {
+    protected Context getContext() {
         return mContext;
     }
 

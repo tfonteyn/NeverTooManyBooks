@@ -325,10 +325,8 @@ public class Series
                     // the suffix group is the number.
                     series = fromString(prefix, suffix);
 
-                    // FIXME: see "Cycli" which needs to be folded in this.
-                    // Cover a special case for this website.
-                    // The middle group is potentially a roman numeral
-                    // which should be prefixed to the number.
+                    // Cover a special case were the middle group is potentially
+                    // a roman numeral which should be prefixed to the number.
                     if ("I".equals(middle)) {
                         series.setNumber("1." + series.getNumber());
                     } else if ("II".equals(middle)) {
@@ -565,22 +563,18 @@ public class Series
      */
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        if (!mNumber.isEmpty()) {
-            return mTitle + " (" + mNumber + ')';
-        } else {
-            return mTitle;
-        }
-    }
 
-    /**
-     * @return the title suitable for sorting (on screen)
-     */
-    @NonNull
-    public String getSorting() {
+        Locale locale = LocaleUtils.getUserLocale(context);
+        // overkill...  see the getLocale method for more comments
+        // try (DAO db = new DAO(TAG)) {
+        //     locale = getLocale(context, db, LocaleUtils.getUserLocale(context));
+        // }
+        String title = reorderTitleForDisplaying(context, locale);
+
         if (!mNumber.isEmpty()) {
-            return mTitle + " (" + mNumber + ')';
+            return title + " (" + mNumber + ')';
         } else {
-            return mTitle;
+            return title;
         }
     }
 
@@ -646,21 +640,22 @@ public class Series
     @NonNull
     @Override
     public Locale getLocale(@NonNull final Context context,
-                            @NonNull final DAO db,
+                            @Nullable final DAO db,
                             @NonNull final Locale bookLocale) {
 
         //FIXME: need a reliable way to cache the Locale here. See also {@link #pruneList}
         // were we use batch mode. Also: a french book belonging to a dutch series...
         // the series title OB is wrong.
         //URGENT: *store* the language of a series.
-        String lang = db.getSeriesLanguage(mId);
-        if (!lang.isEmpty()) {
-            Locale seriesLocale = LocaleUtils.getLocale(context, lang);
-            if (seriesLocale != null) {
-                return seriesLocale;
+        if (db != null) {
+            String lang = db.getSeriesLanguage(mId);
+            if (!lang.isEmpty()) {
+                Locale seriesLocale = LocaleUtils.getLocale(context, lang);
+                if (seriesLocale != null) {
+                    return seriesLocale;
+                }
             }
         }
-
         return bookLocale;
     }
 
@@ -734,4 +729,7 @@ public class Series
                + '}';
     }
 
+    public enum Details {
+        Full, Normal, Short
+    }
 }

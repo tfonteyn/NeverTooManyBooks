@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -37,7 +36,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -50,19 +48,29 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.AuthorListFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.CsvFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
+import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -78,7 +86,7 @@ public class EditBookFieldsFragment
         implements CoverHandler.HostingFragment {
 
     /** Log tag. */
-    public static final String TAG = "EditBookFieldsFragment";
+    private static final String TAG = "EditBookFieldsFragment";
     private static final String BKEY_CONTEXT_MENU_OPEN_INDEX = TAG + ":imgIndex";
 
     /** the covers. */
@@ -88,18 +96,10 @@ public class EditBookFieldsFragment
     /** Track on which cover view the context menu was used; stored in savedInstanceState. */
     private int mCurrentCoverHandlerIndex = -1;
 
-    /** The views. */
-    private View mTitleView;
-    private View mAuthorView;
-    private View mSeriesView;
-    private View mDescriptionView;
-    private View mBookshelvesView;
-
+    /** The ISBN views. */
     private EditText mIsbnView;
     private Button mAltIsbnButton;
     private Button mScanIsbnButton;
-
-    private AutoCompleteTextView mGenreView;
 
     /** manage the validation check next to the ISBN field. */
     private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
@@ -121,13 +121,7 @@ public class EditBookFieldsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
-        mAuthorView = view.findViewById(R.id.author);
-        mSeriesView = view.findViewById(R.id.series);
-        mTitleView = view.findViewById(R.id.title);
-        mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
-        mGenreView = view.findViewById(R.id.genre);
-        mBookshelvesView = view.findViewById(R.id.bookshelves);
 
         mAltIsbnButton = view.findViewById(R.id.btn_altIsbn);
         mScanIsbnButton = view.findViewById(R.id.btn_scan);
@@ -139,64 +133,6 @@ public class EditBookFieldsFragment
             mCoverView[1].setVisibility(View.GONE);
         }
         return view;
-    }
-
-    @Override
-    protected void initFields() {
-        super.initFields();
-        final Fields fields = getFields();
-
-        //noinspection ConstantConditions
-        final boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
-        if (!showAuthSeriesOnTabs) {
-            // The button to bring up the fragment to edit Authors.
-            // Not shown if the user preferences are set to use an extra tab for this.
-            // defined, but populated/stored manually
-            fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
-                  .setRelatedFields(R.id.lbl_author);
-            mAuthorView.setOnClickListener(v -> showEditListFragment(new EditBookAuthorsFragment(),
-                                                                     EditBookAuthorsFragment.TAG));
-
-            // The button to bring up the fragment to edit Series.
-            // Not shown if the user preferences are set to use an extra tab for this.
-            // defined, but populated/stored manually
-            fields.define(mSeriesView, DBDefinitions.KEY_SERIES_TITLE)
-                  .setRelatedFields(R.id.lbl_series);
-            mSeriesView.setOnClickListener(v -> showEditListFragment(new EditBookSeriesFragment(),
-                                                                     EditBookSeriesFragment.TAG));
-        }
-
-        fields.addString(mTitleView, DBDefinitions.KEY_TITLE);
-
-        fields.addString(mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
-              .setRelatedFields(R.id.lbl_description);
-
-        // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        fields.addString(mIsbnView, DBDefinitions.KEY_ISBN)
-              .setRelatedFields(R.id.lbl_isbn);
-        // but we still support visual aids for ISBN and other codes.
-        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, true);
-        mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
-        mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
-        mScanIsbnButton.setOnClickListener(v -> {
-            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-            mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
-        });
-
-        fields.addString(mGenreView, DBDefinitions.KEY_GENRE)
-              .setRelatedFields(R.id.lbl_genre)
-              .setAutocomplete(mGenreView, mBookModel.getGenres());
-
-        // Personal fields
-
-        // The button to bring up the dialog to edit Bookshelves.
-        // Storing the list back into the book is handled by onCheckListEditorSave
-        // defined, but populated/stored manually
-        fields.define(mBookshelvesView, DBDefinitions.KEY_BOOKSHELF)
-              .setRelatedFields(R.id.lbl_bookshelves)
-              .addCheckListPicker(getChildFragmentManager(), mBookshelvesView,
-                                  R.string.lbl_bookshelves_long,
-                                  () -> mBookModel.getEditableBookshelvesList());
     }
 
     @CallSuper
@@ -215,9 +151,81 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    protected void onLoadFields(@NonNull final Book book) {
+    protected void initFields() {
+        super.initFields();
+        final Fields fields = getFields();
+
+        //noinspection ConstantConditions
+        final boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
+
+        // The buttons to bring up the fragment to edit Authors / Series.
+        // Not shown if the user preferences are set to use an extra tab for this.
+        if (!showAuthSeriesOnTabs) {
+            fields.<List<Author>>add(R.id.author, new TextAccessor<>(),
+                                     UniqueId.BKEY_AUTHOR_ARRAY,
+                                     DBDefinitions.KEY_FK_AUTHOR)
+                    .setRelatedFields(R.id.lbl_author)
+                    .setFormatter(new AuthorListFormatter(Author.Details.Short, false));
+
+            fields.<List<Series>>add(R.id.series, new TextAccessor<>(),
+                                     UniqueId.BKEY_SERIES_ARRAY,
+                                     DBDefinitions.KEY_SERIES_TITLE)
+                    .setRelatedFields(R.id.lbl_series)
+                    .setFormatter(new SeriesListFormatter(Series.Details.Short, false));
+        }
+
+        fields.<String>add(R.id.title, new EditTextAccessor<>(), DBDefinitions.KEY_TITLE);
+
+        fields.<String>add(R.id.description, new EditTextAccessor<>(),
+                           DBDefinitions.KEY_DESCRIPTION)
+                .setRelatedFields(R.id.lbl_description);
+
+        // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
+        fields.<String>add(R.id.isbn, new EditTextAccessor<>(), DBDefinitions.KEY_ISBN)
+                .setRelatedFields(R.id.lbl_isbn);
+
+        fields.<String>add(R.id.genre, new EditTextAccessor<>(), DBDefinitions.KEY_GENRE)
+                .setRelatedFields(R.id.lbl_genre);
+
+        // Personal fields
+
+        // The button to bring up the dialog to edit Bookshelves.
+        // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
+        fields.<List<Entity>>add(R.id.bookshelves, new EditTextAccessor<>(),
+                                 UniqueId.BKEY_BOOKSHELF_ARRAY,
+                                 DBDefinitions.KEY_BOOKSHELF)
+                .setRelatedFields(R.id.lbl_bookshelves)
+                .setFormatter(new CsvFormatter());
+    }
+
+    @Override
+    void onLoadFields(@NonNull final Book book) {
+
+        //noinspection ConstantConditions
+        final boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
+
+        if (!showAuthSeriesOnTabs) {
+            // Prune any duplicates.
+            pruneList(book, UniqueId.BKEY_AUTHOR_ARRAY, LocaleUtils.getUserLocale(getContext()));
+            pruneList(book, UniqueId.BKEY_SERIES_ARRAY, book.getLocale(getContext()));
+
+            // No authors ? Fallback to a potential failed search result
+            // which would contain whatever the user searched for.
+            ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+            if (list.isEmpty()) {
+                String searchText = book.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+                if (!searchText.isEmpty()) {
+                    list.add(Author.fromString(searchText));
+                    book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+                    book.remove(UniqueId.BKEY_SEARCH_AUTHOR);
+                }
+            }
+        }
+
+        // load as normal now.
         super.onLoadFields(book);
 
+        // handle special fields
         if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
@@ -228,23 +236,76 @@ public class EditBookFieldsFragment
                                                 book, mIsbnView, 1,
                                                 mCoverView[1], ImageUtils.SCALE_MEDIUM);
         }
-        //noinspection ConstantConditions
-        final boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
-
-        if (!showAuthSeriesOnTabs) {
-            populateAuthorListField(book);
-            populateSeriesListField(book);
-        }
-
-        populateBookshelvesField(book);
 
         // hide unwanted fields
         //noinspection ConstantConditions
         getFields().resetVisibility(getView(), false, false);
 
         if (showAuthSeriesOnTabs) {
-            getFields().getField(mAuthorView).setVisibility(getView(), View.GONE);
-            getFields().getField(mSeriesView).setVisibility(getView(), View.GONE);
+            getFields().getField(R.id.author).setVisibility(getView(), View.GONE);
+            getFields().getField(R.id.series).setVisibility(getView(), View.GONE);
+        }
+    }
+
+    private void pruneList(@NonNull final Book book,
+                           @NonNull final String key,
+                           @NonNull final Locale locale) {
+
+        final ArrayList<? extends ItemWithFixableId> list = book.getParcelableArrayList(key);
+        //noinspection ConstantConditions
+        if (!list.isEmpty() && ItemWithFixableId.pruneList(list, getContext(), mBookModel.getDb(),
+                                                           locale, false)) {
+            mBookModel.setDirty(true);
+            book.putParcelableArrayList(key, list);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // The views will now have been restored to the fields. (re-)add the helpers
+
+        //noinspection ConstantConditions
+        final boolean showAuthSeriesOnTabs = EditBookFragment.showAuthSeriesOnTabs(getContext());
+        if (!showAuthSeriesOnTabs) {
+            getFields().getField(R.id.author).getAccessor().getView().setOnClickListener(
+                    v -> showEditListFragment(new EditBookAuthorsFragment(),
+                                              EditBookAuthorsFragment.TAG));
+
+            getFields().getField(R.id.series).getAccessor().getView().setOnClickListener(
+                    v -> showEditListFragment(new EditBookSeriesFragment(),
+                                              EditBookSeriesFragment.TAG));
+        }
+
+        /// visual aids for ISBN and other codes.
+        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, true);
+        mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
+        mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
+        mScanIsbnButton.setOnClickListener(v -> {
+            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+            mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+        });
+
+        addAutocomplete(R.id.genre, mBookModel.getGenres());
+
+        Field field = getFields().getField(R.id.bookshelves);
+        // only bother when it's in use
+        if (field.isUsed()) {
+            field.getAccessor().getView().setOnClickListener(v -> {
+                DAO db = mBookModel.getDb();
+                // get the list of all shelves the book is currently on.
+                final List<Bookshelf> current =
+                        mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+
+                // Loop through all bookshelves in the database and build the list for this book
+                final ArrayList<SelectableEntity> items = new ArrayList<>();
+                for (Bookshelf bookshelf : db.getBookshelves()) {
+                    items.add(new SelectableEntity(bookshelf, current.contains(bookshelf)));
+                }
+                CheckListDialogFragment
+                        .newInstance(R.id.bookshelves, R.string.lbl_bookshelves_long, items)
+                        .show(getChildFragmentManager(), CheckListDialogFragment.TAG);
+            });
         }
     }
 
@@ -298,7 +359,7 @@ public class EditBookFieldsFragment
                 if (resultCode == Activity.RESULT_OK) {
                     if (BuildConfig.DEBUG) {
                         //noinspection ConstantConditions
-                        mScannerModel.fakeBarcodeScan(getContext(), data);
+                        mScannerModel.fakeScanInEmulator(getContext(), data);
                     }
 
                     //noinspection ConstantConditions
@@ -377,63 +438,5 @@ public class EditBookFieldsFragment
             list.add(bookshelf);
             book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
-    }
-
-    private void populateAuthorListField(@NonNull final Book book) {
-        //noinspection ConstantConditions
-        @NonNull
-        final Context context = getContext();
-        final Locale locale = LocaleUtils.getUserLocale(context);
-
-        final ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(),
-                                                           locale, false)) {
-            mBookModel.setDirty(true);
-            book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-        }
-
-        String value = book.getAuthorTextShort(context);
-        if (value.isEmpty() && book.contains(UniqueId.BKEY_SEARCH_AUTHOR)) {
-            // allow this fallback. It's used after a search that did not return results,
-            // in which case it contains whatever the user typed.
-            value = book.getString(UniqueId.BKEY_SEARCH_AUTHOR);
-        }
-
-        getFields().getField(mAuthorView).getAccessor().setValue(value);
-    }
-
-    private void populateSeriesListField(@NonNull final Book book) {
-        //noinspection ConstantConditions
-        @NonNull
-        Context context = getContext();
-
-        final ArrayList<Series> list = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
-        if (!list.isEmpty() && ItemWithFixableId.pruneList(list, context, mBookModel.getDb(),
-                                                           book.getLocale(context), false)) {
-            mBookModel.setDirty(true);
-            book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
-        }
-
-        String value;
-        if (list.isEmpty()) {
-            value = "";
-        } else {
-            value = list.get(0).getLabel(context);
-            if (list.size() > 1) {
-                value += ' ' + getString(R.string.and_others);
-            }
-        }
-
-        getFields().getField(mSeriesView).getAccessor().setValue(value);
-    }
-
-    private void populateBookshelvesField(final Book book) {
-
-        final ArrayList<Bookshelf> list =
-                book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-
-        //noinspection ConstantConditions
-        final String value = Csv.join(", ", list, bookshelf -> bookshelf.getLabel(getContext()));
-        getFields().getField(mBookshelvesView).getAccessor().setValue(value);
     }
 }

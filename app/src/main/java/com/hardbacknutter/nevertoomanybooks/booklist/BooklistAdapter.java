@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.drawable.Drawable;
@@ -65,8 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
@@ -186,7 +187,7 @@ public class BooklistAdapter
             case RowKind.BOOK:
                 throw new IllegalStateException();
 
-            // plain old Strings
+                // plain old Strings
             case RowKind.BOOKSHELF:
             case RowKind.DATE_ACQUIRED_DAY:
             case RowKind.DATE_ACQUIRED_YEAR:
@@ -505,16 +506,6 @@ public class BooklistAdapter
             }
         }
 
-        @NonNull
-        Context getContext() {
-            return itemView.getContext();
-        }
-
-        @NonNull
-        Locale getLocale() {
-            return LocaleUtils.getUserLocale(itemView.getContext());
-        }
-
         /**
          * Bind the data to the views in the holder.
          *
@@ -617,11 +608,11 @@ public class BooklistAdapter
                    @NonNull final BooklistStyle style) {
             super(itemView);
 
-            Context context = getContext();
+            Context context = itemView.getContext();
 
             mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
 
-            mReorderTitle = Prefs.reorderTitleForDisplaying(context);
+            mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(context);
 
             // now predetermine field usage & visibility.
 
@@ -680,16 +671,14 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final RowDataHolder rowData,
-                                     @NonNull final BooklistStyle style) {
+        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+                              @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
             String title = rowData.getString(DBDefinitions.KEY_TITLE);
-
             if (mReorderTitle) {
-                Context context = mTitleView.getContext();
                 String language = rowData.getString(DBDefinitions.KEY_LANGUAGE);
-                title = LocaleUtils.reorderTitle(context, title, language);
+                title = ItemWithTitle.reorderTitle(itemView.getContext(), title, language);
             }
             mTitleView.setText(title);
 
@@ -707,7 +696,7 @@ public class BooklistAdapter
 
             if (mEditionIsUsed && rowData.contains(DBDefinitions.KEY_EDITION_BITMASK)) {
                 boolean isSet = (rowData.getInt(DBDefinitions.KEY_EDITION_BITMASK)
-                                 & Book.EDITION_FIRST) != 0;
+                                 & Book.Edition.FIRST) != 0;
                 mEditionView.setVisibility(isSet ? View.VISIBLE : View.GONE);
                 mEditionView.setChecked(isSet);
             }
@@ -731,8 +720,8 @@ public class BooklistAdapter
                         String currentUuid = (String) v.getTag(R.id.TAG_ITEM);
                         File file = StorageUtils.getCoverFileForUuid(activity, currentUuid, 0);
                         if (file.exists()) {
-                            ZoomedImageDialogFragment.show(activity.getSupportFragmentManager(),
-                                                           file);
+                            ZoomedImageDialogFragment
+                                    .show(activity.getSupportFragmentManager(), file);
                         }
                     });
                 }
@@ -774,10 +763,9 @@ public class BooklistAdapter
             }
             if ((mPublisherIsUsed && rowData.contains(DBDefinitions.KEY_PUBLISHER))
                 || (mPubDateIsUsed && rowData.contains(DBDefinitions.KEY_DATE_PUBLISHED))) {
-                showOrHide(mPublisherView, getPublisherAndPubDateText(getLocale(),
-                                                                      rowData,
-                                                                      mPublisherIsUsed,
-                                                                      mPubDateIsUsed));
+                Locale locale = LocaleUtils.getUserLocale(itemView.getContext());
+                showOrHide(mPublisherView, getPublisherAndPubDateText(
+                        locale, rowData, mPublisherIsUsed, mPubDateIsUsed));
             }
         }
 
@@ -867,12 +855,11 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final RowDataHolder rowData,
-                                     @NonNull final BooklistStyle style) {
+        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+                              @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
-            setText(rowData.getString(mKey),
-                    rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
+            setText(rowData.getString(mKey), rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL));
         }
 
         /**
@@ -933,18 +920,16 @@ public class BooklistAdapter
                     int i = (int) Float.parseFloat(text);
                     // If valid, format the description
                     if (i >= 0 && i <= Book.RATING_STARS) {
-                        super.setText(
-                                getContext().getResources()
-                                            .getQuantityString(R.plurals.n_stars, i, i),
-                                level);
+                        Resources resources = itemView.getContext().getResources();
+                        super.setText(resources.getQuantityString(R.plurals.n_stars, i, i), level);
                         return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(TAG, e);
                 }
             }
-
-            super.setText(text, level);
+            // null or NumberFormatException
+            super.setText(null, level);
         }
     }
 
@@ -970,7 +955,7 @@ public class BooklistAdapter
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()) {
-                super.setText(LanguageUtils.getDisplayName(getContext(), text), level);
+                super.setText(LanguageUtils.getDisplayName(itemView.getContext(), text), level);
             } else {
                 super.setText(text, level);
             }
@@ -1028,17 +1013,19 @@ public class BooklistAdapter
                             @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty()) {
                 try {
-                    int i = Integer.parseInt(text);
-                    // If valid, get the short name
-                    if (i > 0 && i <= 12) {
-                        super.setText(DateUtils.getMonthName(getLocale(), i, false), level);
+                    int m = Integer.parseInt(text);
+                    Locale locale = LocaleUtils.getUserLocale(itemView.getContext());
+                    // If valid, get the name
+                    if (m > 0 && m <= 12) {
+                        super.setText(DateUtils.getMonthName(locale, m, false), level);
                         return;
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(TAG, e);
                 }
             }
-            super.setText(text, level);
+            // null, empty or NumberFormatException
+            super.setText("", level);
         }
     }
 
@@ -1051,6 +1038,8 @@ public class BooklistAdapter
         /** Whether titles should be reordered. */
         private final boolean mReorderTitle;
 
+        String mLanguage;
+
         /**
          * Constructor.
          *
@@ -1062,17 +1051,26 @@ public class BooklistAdapter
             super(itemView, key, R.string.hint_empty_series,
                   DBDefinitions.KEY_SERIES_IS_COMPLETE);
 
-            mReorderTitle = Prefs.reorderTitleForDisplaying(getContext());
+            mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(this.itemView.getContext());
+        }
+
+        @Override
+        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+                              @NonNull final BooklistStyle style) {
+            super.onBindViewHolder(rowData, style);
+            // grab the book language
+            mLanguage = rowData.getString(DBDefinitions.KEY_LANGUAGE);
         }
 
         @Override
         public void setText(@Nullable final String text,
                             @IntRange(from = 1) final int level) {
             if (text != null && !text.isEmpty() && mReorderTitle) {
-                // URGENT: translated series are not reordered unless the app runs in that language
-                // solution/problem: we would need the Series id (and not just the titel)
-                // to call {@link DAO#getSeriesLanguage(long)}
-                super.setText(LocaleUtils.reorderTitle(getContext(), text, getLocale()), level);
+                // FIXME: translated series are reordered in the book's language
+                // It should be done using the Series language
+                // but as long as we don't store the Series language there is no point
+                String title = ItemWithTitle.reorderTitle(itemView.getContext(), text, mLanguage);
+                super.setText(title, level);
             } else {
                 super.setText(text, level);
             }
@@ -1124,8 +1122,8 @@ public class BooklistAdapter
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final RowDataHolder rowData,
-                                     @NonNull final BooklistStyle style) {
+        void onBindViewHolder(@NonNull final RowDataHolder rowData,
+                              @NonNull final BooklistStyle style) {
             super.onBindViewHolder(rowData, style);
 
             Drawable lock = null;

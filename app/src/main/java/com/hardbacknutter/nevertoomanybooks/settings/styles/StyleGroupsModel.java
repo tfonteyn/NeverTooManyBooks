@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
-public class StyleGroupsModel
+class StyleGroupsModel
         extends ViewModel {
 
     private static final String TAG = "StyleGroupsModel";

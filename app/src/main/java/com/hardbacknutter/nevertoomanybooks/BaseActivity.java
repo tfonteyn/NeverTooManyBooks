@@ -209,7 +209,7 @@ public abstract class BaseActivity
      * @return {@code true} if a recreate was triggered.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean maybeRecreate() {
+    private boolean maybeRecreate() {
         final boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
         if (localeChanged) {
             LocaleUtils.onLocaleChanged();
@@ -333,15 +333,15 @@ public abstract class BaseActivity
      * @param itemId  menu item resource id
      * @param visible flag
      */
-    protected void setNavigationItemVisibility(@IdRes final int itemId,
-                                               final boolean visible) {
+    void setNavigationItemVisibility(@IdRes final int itemId,
+                                     final boolean visible) {
         if (mNavigationView != null) {
             mNavigationView.getMenu().findItem(itemId).setVisible(visible);
         }
     }
 
     @CallSuper
-    protected boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+    boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
 
         switch (item.getItemId()) {
@@ -394,7 +394,7 @@ public abstract class BaseActivity
         }
     }
 
-    protected void closeNavigationDrawer() {
+    void closeNavigationDrawer() {
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         }
@@ -404,7 +404,7 @@ public abstract class BaseActivity
      * There was a search requested by the user; bring up the advanced form (activity).
      */
     @SuppressWarnings("SameReturnValue")
-    protected boolean onAdvancedSearchRequested() {
+    boolean onAdvancedSearchRequested() {
         Intent intent = new Intent(this, FTSSearchActivity.class);
         startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
         return true;

@@ -376,6 +376,15 @@
             tools:text="1938"
             />
 
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/edition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:chipSpacing="@dimen/roChipSpacing"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintTop_toBottomOf="@id/first_publication"
+            />
+
         <!-- Genre -->
 
         <TextView
@@ -383,7 +392,7 @@
             style="@style/Label.Section"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/first_publication"
+            app:layout_constraintTop_toBottomOf="@id/edition"
             />
 
         <TextView
@@ -429,10 +438,10 @@
         <TextView
             android:id="@+id/notes"
             style="@style/Text"
+            android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-            tools:ignore="SelectableText"
             tools:text="The best book of all times."
             />
 
@@ -441,15 +450,6 @@
           This is due to font size of the labels being smaller than the data.
           iow: the data fields form the vertical chain.
          -->
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/edition"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:chipSpacing="@dimen/roChipSpacing"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
-            app:layout_constraintTop_toBottomOf="@id/notes"
-            />
 
         <!-- Has this book been signed -->
 
@@ -465,7 +465,7 @@
             android:id="@+id/cbx_signed"
             style="@style/Flag.Generic"
             app:layout_constraintStart_toEndOf="@id/lbl_signed"
-            app:layout_constraintTop_toBottomOf="@id/edition"
+            app:layout_constraintTop_toBottomOf="@id/notes"
             tools:checked="true"
             />
 
@@ -571,14 +571,13 @@
             app:layout_constraintTop_toBottomOf="@id/location"
             />
 
-        <!-- reminder: setTextIsSelectable/setFocusable is forced from code -->
         <TextView
             android:id="@+id/description"
             style="@style/Text"
+            android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_description"
-            tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>

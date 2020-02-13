@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * <p>
  * Uses JSoup screen scraping.
  */
-public class IsfdbEditionsHandler
+class IsfdbEditionsHandler
         extends AbstractBase {
 
     /** Log tag. */

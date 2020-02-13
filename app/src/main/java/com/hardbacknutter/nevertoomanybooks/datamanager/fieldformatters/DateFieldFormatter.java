@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -48,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * </ul>
  */
 public class DateFieldFormatter
-        implements FieldFormatter<String> {
+        implements EditFieldFormatter<String> {
 
     /**
      * Display as a human-friendly date, local timezone.
@@ -59,15 +58,10 @@ public class DateFieldFormatter
                          @Nullable final String rawValue) {
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
+        } else {
+            Locale locale = LocaleUtils.getUserLocale(context);
+            return DateUtils.toPrettyDate(locale, rawValue);
         }
-        Locale locale = LocaleUtils.getUserLocale(context);
-        return DateUtils.toPrettyDate(locale, rawValue);
-    }
-
-    @Override
-    public void apply(@Nullable final String rawValue,
-                      @NonNull final View view) {
-        ((TextView) view).setText(format(view.getContext(), rawValue));
     }
 
     /**
@@ -75,8 +69,8 @@ public class DateFieldFormatter
      */
     @Override
     @NonNull
-    public String extract(@NonNull final View view) {
-        String text = ((TextView) view).getText().toString().trim();
+    public String extract(@NonNull final TextView view) {
+        String text = view.getText().toString().trim();
         Date d = DateUtils.parseDate(text);
         if (d != null) {
             return DateUtils.utcSqlDate(d);

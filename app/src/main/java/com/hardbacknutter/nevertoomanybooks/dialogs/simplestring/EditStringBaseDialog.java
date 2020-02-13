@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 abstract class EditStringBaseDialog {
@@ -109,7 +109,7 @@ abstract class EditStringBaseDialog {
     }
 
     @NonNull
-    public Context getContext() {
+    Context getContext() {
         return mContext;
     }
 
@@ -118,9 +118,9 @@ abstract class EditStringBaseDialog {
      * @param dialogLayoutId dialog content view layout
      * @param title          dialog title
      */
-    protected void edit(@NonNull final String currentText,
-                        @LayoutRes final int dialogLayoutId,
-                        @StringRes final int title) {
+    void edit(@NonNull final String currentText,
+              @LayoutRes final int dialogLayoutId,
+              @StringRes final int title) {
 
         // Build the base dialog
         final View root = LayoutInflater.from(mContext).inflate(dialogLayoutId, null);
@@ -163,7 +163,7 @@ abstract class EditStringBaseDialog {
             mBookChangedListener.get().onBookChanged(0, changeFlags, data);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onBookChanged|" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onBookChanged|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
     }

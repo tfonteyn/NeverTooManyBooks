@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 /**
  * Class to store an index using a table name and a list of domain definitions.
  */
-public class IndexDefinition {
+class IndexDefinition {
 
     /** Table to which index applies. */
     @NonNull

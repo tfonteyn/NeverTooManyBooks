@@ -56,10 +56,8 @@ public class SearchSuggestionProvider
      * - res/xml/searchable.xml/searchSuggestAuthority
      * - SearchSuggestionProvider.java/AUTHORITY
      */
-    public static final String AUTHORITY = App.getAppPackageName() + ".SearchSuggestionProvider";
+    private static final String AUTHORITY = App.getAppPackageName() + ".SearchSuggestionProvider";
 
-    /** Required. This mode bit configures the suggestions database to record recent queries. */
-    public static final int MODE = DATABASE_MODE_QUERIES;
     /** Log tag. */
     private static final String TAG = "SearchSuggestionProv";
 
@@ -71,7 +69,8 @@ public class SearchSuggestionProvider
      * Constructor.
      */
     public SearchSuggestionProvider() {
-        setupSuggestions(AUTHORITY, MODE);
+        // DATABASE_MODE_QUERIES configures the suggestions database to record recent queries.
+        setupSuggestions(AUTHORITY, DATABASE_MODE_QUERIES);
     }
 
     @Override

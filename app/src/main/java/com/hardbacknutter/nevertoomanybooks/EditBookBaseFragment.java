@@ -29,37 +29,33 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
-import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
  * Base class for all fragments that appear in {@link EditBookFragment}.
- * <p>
- * Full list:
- * {@link EditBookFieldsFragment}
- * {@link EditBookPublicationFragment}
- * {@link EditBookNotesFragment}
- * {@link EditBookTocFragment}
  */
 public abstract class EditBookBaseFragment
         extends BookBaseFragment
@@ -69,35 +65,19 @@ public abstract class EditBookBaseFragment
     private Fields mFields;
 
     private final CheckListDialogFragment.CheckListResultsListener
-            mCheckListResultsListener = (destinationFieldId, list) -> {
-        Book book = mBookModel.getBook();
-        if (destinationFieldId == R.id.bookshelves) {
-            // store
-            book.putBookshelves(mBookModel.getDb(), list);
-            // and refresh on screen
-            String value = Csv.join(", ", book.getParcelableArrayList(
-                    UniqueId.BKEY_BOOKSHELF_ARRAY), Bookshelf::getName);
-            Field<String> field = getFields().getField(R.id.bookshelves);
-            field.getAccessor().setValue(value);
-            field.onChanged();
-
-        } else if (destinationFieldId == R.id.edition) {
-            book.putEditions(list);
-            Long value = book.getLong(DBDefinitions.KEY_EDITION_BITMASK);
-            Field<Long> field = getFields().getField(R.id.edition);
-            field.getAccessor().setValue(value);
-            field.onChanged();
-        }
+            mCheckListResultsListener = (fieldId, value) -> {
+        Field<List<Entity>> field = getFields().getField(fieldId);
+        //mBookModel.getBook().putParcelableArrayList(field.getKey(), value);
+        field.getAccessor().setValue(value);
+        field.onChanged();
     };
 
     private final PartialDatePickerDialogFragment.PartialDatePickerResultsListener
-            mPartialDatePickerResultsListener =
-            (destinationFieldId, year, month, day) -> {
-                String value = DateUtils.buildPartialDate(year, month, day);
-                Field<String> field = getFields().getField(destinationFieldId);
-                field.getAccessor().setValue(value);
-                field.onChanged();
-            };
+            mPartialDatePickerResultsListener = (fieldId, value) -> {
+        Field<String> field = getFields().getField(fieldId);
+        field.getAccessor().setValue(value);
+        field.onChanged();
+    };
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -134,7 +114,6 @@ public abstract class EditBookBaseFragment
     @Override
     void initFields() {
         mFields = new Fields();
-        super.initFields();
     }
 
     /**
@@ -163,7 +142,7 @@ public abstract class EditBookBaseFragment
     }
 
     @Override
-    protected void onLoadFields(@NonNull final Book book) {
+    void onLoadFields(@NonNull final Book book) {
         // new book ?
         if (book.isNew()) {
             onAddFromNewData(book, getArguments());
@@ -205,6 +184,50 @@ public abstract class EditBookBaseFragment
     @CallSuper
     public void onSaveFields(@NonNull final Book book) {
         getFields().getAll(book);
+    }
+
+    /**
+     * Setup an adapter for the AutoCompleteTextView, using the (optional)
+     * formatter.
+     *
+     * @param fieldId view to connect
+     * @param list    with auto complete values
+     */
+    void addAutocomplete(@IdRes final int fieldId,
+                         @NonNull final List<String> list) {
+        Field field = getFields().getField(fieldId);
+        // only bother when it's in use and we have a list
+        if (field.isUsed() && !list.isEmpty()) {
+            AutoCompleteTextView view = (AutoCompleteTextView) field.getAccessor().getView();
+            //noinspection unchecked
+            Fields.FormattedDiacriticArrayAdapter adapter =
+                    new Fields.FormattedDiacriticArrayAdapter(
+                            view.getContext(), list,
+                            (FieldFormatter<String>) field.getAccessor().getFormatter());
+            view.setAdapter(adapter);
+        }
+    }
+
+    /**
+     * Setup a date picker.
+     *
+     * @param fieldId       view to connect
+     * @param dialogTitleId title of the dialog box.
+     * @param todayIfNone   if true, and if the field was empty,
+     *                      pre-populate with today's date
+     */
+    void addDatePicker(@IdRes final int fieldId,
+                       @StringRes final int dialogTitleId,
+                       final boolean todayIfNone) {
+        Field field = getFields().getField(fieldId);
+        // only bother when it's in use
+        if (field.isUsed()) {
+            View view = field.getAccessor().getView();
+            view.setOnClickListener(v -> PartialDatePickerDialogFragment
+                    .newInstance(fieldId, dialogTitleId,
+                                 (String) field.getAccessor().getValue(), todayIfNone)
+                    .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG));
+        }
     }
 
     /**

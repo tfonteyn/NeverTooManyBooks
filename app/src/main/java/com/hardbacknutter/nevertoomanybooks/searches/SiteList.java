@@ -105,7 +105,7 @@ public class SiteList
      *
      * @param in Parcel to construct the object from
      */
-    protected SiteList(@NonNull final Parcel in) {
+    private SiteList(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mType = in.readParcelable(Type.class.getClassLoader());
         mList = new ArrayList<>();

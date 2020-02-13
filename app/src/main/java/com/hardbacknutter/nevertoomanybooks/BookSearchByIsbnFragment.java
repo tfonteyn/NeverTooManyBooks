@@ -264,7 +264,7 @@ public class BookSearchByIsbnFragment
                 if (resultCode == Activity.RESULT_OK) {
                     if (BuildConfig.DEBUG) {
                         //noinspection ConstantConditions
-                        mScannerModel.fakeBarcodeScan(getContext(), data);
+                        mScannerModel.fakeScanInEmulator(getContext(), data);
                     }
 
                     //noinspection ConstantConditions

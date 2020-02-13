@@ -27,10 +27,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.database.Cursor;
+
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+
 /**
- * Read-only interface that fronts a Bundle or Cursor, or... compatible view.
+ * Read-only interface that allows a method to take both a custom {@link Cursor}
+ * and a {@link DataManager} as an argument without having to distinguish between them.
  */
 public interface RowDataHolder {
 

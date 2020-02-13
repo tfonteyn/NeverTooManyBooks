@@ -29,22 +29,20 @@ package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import android.content.Context;
 
-import java.util.Locale;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MonetaryFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class MonetaryFormatterTest {
+class MoneyFormatterTest {
 
     @Mock
     Context mContext;
@@ -59,19 +57,19 @@ class MonetaryFormatterTest {
 
     @Test
     void format01() {
-        FieldFormatter<Money> f = new MonetaryFormatter(Locale.US);
+        FieldFormatter<Money> f = new MoneyFormatter();
         assertEquals("$10.50", f.format(mContext, new Money(10.50d, "USD")));
     }
 
     @Test
     void format02() {
-        FieldFormatter<Money> f = new MonetaryFormatter(Locale.UK);
+        FieldFormatter<Money> f = new MoneyFormatter();
         assertEquals("USD10.50", f.format(mContext, new Money(10.50d, "USD")));
     }
 
     @Test
     void format03() {
-        FieldFormatter<Money> f = new MonetaryFormatter(Locale.GERMANY);
+        FieldFormatter<Money> f = new MoneyFormatter();
         assertEquals("10,50 USD", f.format(mContext, new Money(10.50d, "USD")));
     }
 
@@ -81,7 +79,7 @@ class MonetaryFormatterTest {
      */
     @Test
     void format10() {
-        FieldFormatter<Money> f = new MonetaryFormatter(Locale.GERMANY);
+        FieldFormatter<Money> f = new MoneyFormatter();
         assertEquals("10,50 €", f.format(mContext, new Money(10.50d, "EUR")));
     }
 
@@ -90,7 +88,7 @@ class MonetaryFormatterTest {
      */
     @Test
     void format11() {
-        FieldFormatter<Money> f = new MonetaryFormatter(Locale.UK);
+        FieldFormatter<Money> f = new MoneyFormatter();
         assertEquals("€10.50", f.format(mContext, new Money(10.50d, "EUR")));
     }
 }

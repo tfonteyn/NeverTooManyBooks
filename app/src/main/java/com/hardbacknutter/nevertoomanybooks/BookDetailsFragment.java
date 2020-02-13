@@ -47,7 +47,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -58,37 +57,41 @@ import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.CsvFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.BitmaskChipGroupAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.CompoundButtonAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EntityListChipGroupAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.RatingBarAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.AuthorListFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.HtmlFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.LanguageFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MonetaryFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.PagesFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
 
 /**
@@ -110,26 +113,22 @@ public class BookDetailsFragment
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
-
-    /** The views. */
-    private CompoundButton mIsAnthologyCbx;
-    private CompoundButton mSignedCbx;
-    private CompoundButton mReadCbx;
-
-    private ChipGroup mBookshelvesView;
-    private ChipGroup mEditionView;
-
-    private RatingBar mRatingView;
-
-    private TextView mAuthorView;
-    private TextView mSeriesView;
-    private TextView mTitleView;
-    private TextView mDescriptionView;
     private TextView mIsbnView;
-    private TextView mGenreView;
-    private TextView mPricePaidView;
-    private TextView mPriceListedView;
+
+    /** Label for anthologies. */
+    private TextView mIsAnthologyLabelView;
+    /** Checkbox for anthologies. Set manually. */
+    private CompoundButton mIsAnthologyCbx;
+    /** Switch the user can flick to display/hide the TOC (if present). */
+    private CompoundButton mTocButton;
+    /** We display/hide the TOC header label as needed. */
+    private View mTocLabelView;
+    /** The TOC list. */
+    private LinearLayout mTocView;
+    /** The loanee banner. */
     private TextView mLoanedToView;
+
+    /** Listen for changes. */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
@@ -142,34 +141,19 @@ public class BookDetailsFragment
             }
         }
     };
-    private TextView mPagesView;
-    private TextView mFormatView;
-    private TextView mColorView;
-    private TextView mLanguageView;
-    private TextView mPublisherView;
-    private TextView mDatePublishedView;
-    private TextView mPrintRunView;
-    private TextView mFirstPubView;
-    private TextView mNotesView;
-    private TextView mLocationView;
-    private TextView mDateAcquiredView;
-    private TextView mDateReadStartView;
-    private TextView mDateReadEndView;
 
-    /** Switch the user can flick to display/hide the TOC (if present). */
-    private CompoundButton mTocButton;
-    /** We display/hide the TOC header label as needed. */
-    private View mTocLabelView;
-    /** The TOC list. */
-    private LinearLayout mTocView;
     /** The scroll view encompassing the entire fragment page. */
     private NestedScrollView mTopScrollView;
+
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
+
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
-    /** Contains the flattened booklist for next/previous paging. */
+
+    /** Contains the flattened booklist for next/previous paging and the Fields collection. */
     private BookDetailsFragmentModel mBookDetailsFragmentModel;
+
     /** Track on which cover view the context menu was used. */
     private int mCurrentCoverHandlerIndex = -1;
 
@@ -189,39 +173,16 @@ public class BookDetailsFragment
 
         mTopScrollView = view.findViewById(R.id.topScroller);
 
-        mReadCbx = view.findViewById(R.id.cbx_read);
-        mSignedCbx = view.findViewById(R.id.cbx_signed);
-        mAuthorView = view.findViewById(R.id.author);
-        mSeriesView = view.findViewById(R.id.series);
-        mBookshelvesView = view.findViewById(R.id.bookshelves);
-        mPriceListedView = view.findViewById(R.id.price_listed);
-        mPricePaidView = view.findViewById(R.id.price_paid);
-        mTitleView = view.findViewById(R.id.title);
-        mDescriptionView = view.findViewById(R.id.description);
         mIsbnView = view.findViewById(R.id.isbn);
-        mGenreView = view.findViewById(R.id.genre);
-        mPagesView = view.findViewById(R.id.pages);
-        mFormatView = view.findViewById(R.id.format);
-        mColorView = view.findViewById(R.id.color);
-        mLanguageView = view.findViewById(R.id.language);
-        mPublisherView = view.findViewById(R.id.publisher);
-        mDatePublishedView = view.findViewById(R.id.date_published);
-        mPrintRunView = view.findViewById(R.id.print_run);
-        mFirstPubView = view.findViewById(R.id.first_publication);
-        mRatingView = view.findViewById(R.id.rating);
-        mNotesView = view.findViewById(R.id.notes);
-        mLocationView = view.findViewById(R.id.location);
-        mEditionView = view.findViewById(R.id.edition);
-        mDateAcquiredView = view.findViewById(R.id.date_acquired);
-        mDateReadStartView = view.findViewById(R.id.read_start);
-        mDateReadEndView = view.findViewById(R.id.read_end);
 
         // Anthology/TOC fields
+        mIsAnthologyLabelView = view.findViewById(R.id.lbl_anthology);
         mIsAnthologyCbx = view.findViewById(R.id.cbx_anthology);
         mTocLabelView = view.findViewById(R.id.lbl_toc);
         mTocView = view.findViewById(R.id.toc);
         mTocButton = view.findViewById(R.id.toc_button);
         if (!App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+            mIsAnthologyLabelView.setVisibility(View.GONE);
             mIsAnthologyCbx.setVisibility(View.GONE);
             mTocLabelView.setVisibility(View.GONE);
             mTocView.setVisibility(View.GONE);
@@ -391,112 +352,129 @@ public class BookDetailsFragment
 
     @Override
     protected void initFields() {
-        super.initFields();
         final Fields fields = mBookDetailsFragmentModel.getFields();
         // already initialised ?
         if (!fields.isEmpty()) {
             return;
         }
 
-        //noinspection ConstantConditions
-        final Locale locale = LocaleUtils.getUserLocale(getContext());
-
-        // A DateFieldFormatter can be shared between multiple fields.
+        // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
+        final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true);
+        final FieldFormatter<Money> moneyFormatter = new MoneyFormatter();
+        final FieldFormatter<String> languageFormatter = new LanguageFormatter();
 
         // book fields
-        fields.addString(mTitleView, DBDefinitions.KEY_TITLE);
+        fields.<String>add(R.id.title, new TextAccessor<>(), DBDefinitions.KEY_TITLE);
 
-        // defined, but populated manually
-        fields.define(mAuthorView, DBDefinitions.KEY_FK_AUTHOR)
-              .setRelatedFields(R.id.lbl_author)
-              .setFormatter(new HtmlFormatter());
+        fields.<List<Author>>add(R.id.author, new TextAccessor<>(),
+                                 UniqueId.BKEY_AUTHOR_ARRAY,
+                                 DBDefinitions.KEY_FK_AUTHOR)
+                .setRelatedFields(R.id.lbl_author)
+                .setFormatter(new AuthorListFormatter(Author.Details.Full, true));
 
         // The Series field is a single String with line-breaks between multiple Series.
         // Each line will be prefixed with a "• "
-        fields.addCsvListEntity(mSeriesView, UniqueId.BKEY_SERIES_ARRAY,
-                                DBDefinitions.KEY_SERIES_TITLE)
-              .setRelatedFields(R.id.lbl_series)
-              .setFormatter(new CsvFormatter("\n", "• "));
+        fields.<List<Series>>add(R.id.series, new TextAccessor<>(),
+                                 UniqueId.BKEY_SERIES_ARRAY,
+                                 DBDefinitions.KEY_SERIES_TITLE)
+                .setRelatedFields(R.id.lbl_series)
+                .setFormatter(new SeriesListFormatter(Series.Details.Full, true));
 
-        fields.addString(mIsbnView, DBDefinitions.KEY_ISBN)
-              .setRelatedFields(R.id.lbl_isbn);
+        fields.<String>add(R.id.isbn, new TextAccessor<>(),
+                           DBDefinitions.KEY_ISBN)
+                .setRelatedFields(R.id.lbl_isbn);
 
-        fields.addString(mDescriptionView, DBDefinitions.KEY_DESCRIPTION)
-              .setRelatedFields(R.id.lbl_description)
-              .setFormatter(new HtmlFormatter());
+        fields.<String>add(R.id.description, new TextAccessor<>(),
+                           DBDefinitions.KEY_DESCRIPTION)
+                .setRelatedFields(R.id.lbl_description)
+                .setFormatter(htmlFormatter);
 
-        fields.addString(mGenreView, DBDefinitions.KEY_GENRE)
-              .setRelatedFields(R.id.lbl_genre);
+        fields.<String>add(R.id.genre, new TextAccessor<>(),
+                           DBDefinitions.KEY_GENRE)
+                .setRelatedFields(R.id.lbl_genre);
 
-        fields.addString(mLanguageView, DBDefinitions.KEY_LANGUAGE)
-              .setRelatedFields(R.id.lbl_language)
-              .setFormatter(new LanguageFormatter());
+        fields.<String>add(R.id.language, new TextAccessor<>(),
+                           DBDefinitions.KEY_LANGUAGE)
+                .setRelatedFields(R.id.lbl_language)
+                .setFormatter(languageFormatter);
 
-        fields.addString(mPagesView, DBDefinitions.KEY_PAGES)
-              .setFormatter(new PagesFormatter());
+        fields.<String>add(R.id.pages, new TextAccessor<>(),
+                           DBDefinitions.KEY_PAGES)
+                .setFormatter(new PagesFormatter());
 
-        fields.addString(mFormatView, DBDefinitions.KEY_FORMAT);
+        fields.<String>add(R.id.format, new TextAccessor<>(),
+                           DBDefinitions.KEY_FORMAT);
 
-        fields.addString(mColorView, DBDefinitions.KEY_COLOR);
+        fields.<String>add(R.id.color, new TextAccessor<>(),
+                           DBDefinitions.KEY_COLOR);
 
-        fields.addString(mPublisherView, DBDefinitions.KEY_PUBLISHER);
+        fields.<String>add(R.id.publisher, new TextAccessor<>(),
+                           DBDefinitions.KEY_PUBLISHER);
 
-        fields.addString(mDatePublishedView, DBDefinitions.KEY_DATE_PUBLISHED)
-              .setRelatedFields(R.id.lbl_date_published)
-              .setFormatter(dateFormatter);
+        fields.<String>add(R.id.date_published, new TextAccessor<>(),
+                           DBDefinitions.KEY_DATE_PUBLISHED)
+                .setRelatedFields(R.id.lbl_date_published)
+                .setFormatter(dateFormatter);
 
-        fields.addString(mFirstPubView, DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-              .setRelatedFields(R.id.lbl_first_publication)
-              .setFormatter(dateFormatter);
+        fields.<String>add(R.id.first_publication, new TextAccessor<>(),
+                           DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+                .setRelatedFields(R.id.lbl_first_publication)
+                .setFormatter(dateFormatter);
 
-        fields.addString(mPrintRunView, DBDefinitions.KEY_PRINT_RUN)
-              .setRelatedFields(R.id.lbl_print_run);
+        fields.<String>add(R.id.print_run, new TextAccessor<>(),
+                           DBDefinitions.KEY_PRINT_RUN)
+                .setRelatedFields(R.id.lbl_print_run);
 
-        fields.addMoney(mPriceListedView, DBDefinitions.KEY_PRICE_LISTED)
-              .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed)
-              .setFormatter(new MonetaryFormatter(locale));
+        fields.<Money>add(R.id.price_listed, new TextAccessor<>(),
+                          DBDefinitions.KEY_PRICE_LISTED)
+                .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed)
+                .setFormatter(moneyFormatter);
 
         // Personal fields
-        fields.addEntityList(mBookshelvesView, UniqueId.BKEY_BOOKSHELF_ARRAY,
-                             DBDefinitions.KEY_BOOKSHELF,
-                             new ArrayList<>(mBookModel.getDb().getBookshelves()),
-                             false)
+        fields.add(R.id.bookshelves,
+                   new EntityListChipGroupAccessor(new ArrayList<>(
+                           mBookModel.getDb().getBookshelves()), false),
+                   UniqueId.BKEY_BOOKSHELF_ARRAY,
+                   DBDefinitions.KEY_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
 
-        fields.addString(mDateAcquiredView, DBDefinitions.KEY_DATE_ACQUIRED)
-              .setRelatedFields(R.id.lbl_date_acquired)
-              .setFormatter(dateFormatter);
+        fields.<String>add(R.id.date_acquired, new TextAccessor<>(),
+                           DBDefinitions.KEY_DATE_ACQUIRED)
+                .setRelatedFields(R.id.lbl_date_acquired)
+                .setFormatter(dateFormatter);
 
-        fields.addBitmask(mEditionView, DBDefinitions.KEY_EDITION_BITMASK,
-                          Book.getEditions(getContext()), false);
+        //noinspection ConstantConditions
+        fields.add(R.id.edition, new BitmaskChipGroupAccessor(
+                           Book.Edition.getEditions(getContext()), false),
+                   DBDefinitions.KEY_EDITION_BITMASK);
 
-        fields.addString(mLocationView, DBDefinitions.KEY_LOCATION)
-              .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
+        fields.<String>add(R.id.location, new TextAccessor<>(), DBDefinitions.KEY_LOCATION)
+                .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-        fields.addFloat(mRatingView, DBDefinitions.KEY_RATING)
+        fields.add(R.id.rating, new RatingBarAccessor(), DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.addString(mNotesView, DBDefinitions.KEY_PRIVATE_NOTES)
-              .setRelatedFields(R.id.lbl_notes)
-              .setFormatter(new HtmlFormatter());
+        fields.<String>add(R.id.notes, new TextAccessor<>(), DBDefinitions.KEY_PRIVATE_NOTES)
+                .setRelatedFields(R.id.lbl_notes)
+                .setFormatter(htmlFormatter);
 
-        fields.addString(mDateReadStartView, DBDefinitions.KEY_READ_START)
-              .setRelatedFields(R.id.lbl_read_start)
-              .setFormatter(dateFormatter);
+        fields.<String>add(R.id.read_start, new TextAccessor<>(), DBDefinitions.KEY_READ_START)
+                .setRelatedFields(R.id.lbl_read_start)
+                .setFormatter(dateFormatter);
 
-        fields.addString(mDateReadEndView, DBDefinitions.KEY_READ_END)
-              .setRelatedFields(R.id.lbl_read_end)
-              .setFormatter(dateFormatter);
+        fields.<String>add(R.id.read_end, new TextAccessor<>(), DBDefinitions.KEY_READ_END)
+                .setRelatedFields(R.id.lbl_read_end)
+                .setFormatter(dateFormatter);
 
-        fields.addBoolean(mReadCbx, DBDefinitions.KEY_READ);
+        fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
 
-        fields.addBoolean(mSignedCbx, DBDefinitions.KEY_SIGNED)
+        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED)
               .setRelatedFields(R.id.lbl_signed);
 
-        fields.addMoney(mPricePaidView, DBDefinitions.KEY_PRICE_PAID)
-              .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid)
-              .setFormatter(new MonetaryFormatter(locale));
+        fields.<Money>add(R.id.price_paid, new TextAccessor<>(), DBDefinitions.KEY_PRICE_PAID)
+                .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid)
+                .setFormatter(moneyFormatter);
     }
 
     /**
@@ -511,8 +489,6 @@ public class BookDetailsFragment
     protected void onLoadFields(@NonNull final Book book) {
         super.onLoadFields(book);
 
-        populateAuthorListField(book);
-
         // handle special fields
         if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
             populateLoanedToField(mBookModel.getLoanee());
@@ -521,6 +497,8 @@ public class BookDetailsFragment
         if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
             final boolean isAnthology =
                     book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            mIsAnthologyLabelView.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
+            mIsAnthologyCbx.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
             mIsAnthologyCbx.setChecked(isAnthology);
 
             populateToc(book);
@@ -543,43 +521,20 @@ public class BookDetailsFragment
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionLabelVisibility(R.id.lbl_publication_section,
-                                  mPublisherView,
-                                  mDatePublishedView,
-                                  mPriceListedView,
-                                  mFirstPubView);
-
-        // Hide the Notes label if none of the notes fields are shown.
+                                  R.id.publisher,
+                                  R.id.date_published,
+                                  R.id.price_listed,
+                                  R.id.first_publication,
+                                  R.id.edition);
+        // Hide the "Personal notes" label if none of the notes fields are shown.
         setSectionLabelVisibility(R.id.lbl_notes,
-                                  mNotesView,
-                                  mEditionView,
-                                  mSignedCbx,
-                                  mDateAcquiredView,
-                                  mPricePaidView,
-                                  mDateReadStartView,
-                                  mDateReadEndView,
-                                  mLocationView);
-    }
-
-    /**
-     * The author field is a single csv String but with very specific formatting for
-     * the author type.
-     */
-    private void populateAuthorListField(@NonNull final Book book) {
-        final ArrayList<Author> list = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
-        getFields().getField(mAuthorView).getAccessor().setValue(
-                Csv.join("<br>", list, true, "• ",
-                         author -> {
-                             final Context context = getContext();
-                             //noinspection ConstantConditions
-                             String authorLabel = author.getLabel(context);
-                             if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
-                                 String type = author.getTypeLabels(context);
-                                 if (!type.isEmpty()) {
-                                     authorLabel += " <small><i>" + type + "</i></small>";
-                                 }
-                             }
-                             return authorLabel;
-                         }));
+                                  R.id.notes,
+                                  R.id.cbx_signed,
+                                  R.id.date_acquired,
+                                  R.id.price_paid,
+                                  R.id.read_start,
+                                  R.id.read_end,
+                                  R.id.location);
     }
 
     /**
@@ -643,7 +598,7 @@ public class BookDetailsFragment
                 final TextView firstPubView = rowView.findViewById(R.id.year);
                 final CheckBox multipleBooksView = rowView.findViewById(R.id.cbx_multiple_books);
 
-                titleView.setText(tocEntry.getTitle());
+                titleView.setText(tocEntry.getLabel(context));
 
                 if (multipleBooksView != null) {
                     final boolean isSet = tocEntry.getBookCount() > 1;
@@ -681,14 +636,16 @@ public class BookDetailsFragment
      * Otherwise, set 'sectionLabelId' to View.VISIBLE.
      *
      * @param sectionLabelId field to set
-     * @param fields         to check
+     * @param fieldIds       to check
      */
     private void setSectionLabelVisibility(@IdRes final int sectionLabelId,
-                                           @NonNull final View... fields) {
+                                           @IdRes final int... fieldIds) {
+        View parent = getView();
         //noinspection ConstantConditions
-        final View fieldView = getView().findViewById(sectionLabelId);
+        final View fieldView = parent.findViewById(sectionLabelId);
         if (fieldView != null) {
-            for (View view : fields) {
+            for (int fieldId : fieldIds) {
+                View view = parent.findViewById(fieldId);
                 if (view != null && view.getVisibility() != View.GONE) {
                     // at least one field was visible
                     fieldView.setVisibility(View.VISIBLE);
@@ -774,7 +731,7 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_READ:
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle 'read' status of the book
-                final Field<Boolean> field = getFields().getField(mReadCbx);
+                final Field<Boolean> field = getFields().getField(R.id.cbx_read);
                 field.getAccessor().setValue(mBookModel.toggleRead());
                 return true;
             }

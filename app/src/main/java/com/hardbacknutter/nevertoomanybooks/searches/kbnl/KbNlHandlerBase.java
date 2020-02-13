@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-public abstract class KbNlHandlerBase
+abstract class KbNlHandlerBase
         extends DefaultHandler {
 
     /** XML tags. */
@@ -67,8 +67,8 @@ public abstract class KbNlHandlerBase
      */
     @SuppressWarnings("SameParameterValue")
     @Nullable
-    protected String digits(@Nullable final CharSequence s,
-                            final boolean isIsbn) {
+    String digits(@Nullable final CharSequence s,
+                  final boolean isIsbn) {
         if (s == null) {
             return null;
         }

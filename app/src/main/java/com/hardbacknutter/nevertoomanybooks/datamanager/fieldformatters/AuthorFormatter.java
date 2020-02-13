@@ -25,41 +25,51 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.checklist;
+package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-/**
- * As used by {@link CheckListDialogFragment}.
- */
-public interface CheckListItem
-        extends Parcelable {
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
-    long getItemId();
+public class AuthorFormatter
+        extends HtmlFormatter<Author> {
 
-    /**
-     * Get the user friendly label to display.
-     *
-     * @param context Current context
-     *
-     * @return the label to use in a {@link CheckListDialogFragment}.
-     */
-    String getLabel(@NonNull Context context);
+    private final Author.Details mDetails;
 
     /**
-     * Getter.
+     * Constructor.
      *
-     * @return status
+     * @param details     how much details to show
+     * @param enableLinks {@code true} to enable links.
+     *                    Do not enable if the View has an onClickListener
      */
-    boolean isSelected();
+    public AuthorFormatter(@NonNull final Author.Details details,
+                           final boolean enableLinks) {
+        super(enableLinks);
+        mDetails = details;
+    }
 
-    /**
-     * Setter.
-     *
-     * @param selected status
-     */
-    void setSelected(boolean selected);
+    @NonNull
+    @Override
+    public String format(@NonNull final Context context,
+                         @Nullable final Author author) {
+        if (author == null) {
+            return "";
+        }
+
+        switch (mDetails) {
+            case Full:
+                return author.getExtLabel(context);
+
+            case Normal:
+                return author.getLabel(context);
+
+            case Short:
+                return author.getGivenNames().substring(0, 1) + ' ' + author.getFamilyName();
+        }
+        return "";
+    }
 }

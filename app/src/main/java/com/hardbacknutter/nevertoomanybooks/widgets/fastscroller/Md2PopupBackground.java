@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * Original code from <a href="https://github.com/zhanghai/AndroidFastScroll">
  * https://github.com/zhanghai/AndroidFastScroll</a>
  */
-public class Md2PopupBackground
+class Md2PopupBackground
         extends Drawable {
 
     @NonNull

@@ -47,7 +47,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 
-public interface AnimationHelper {
+interface AnimationHelper {
 
     void showScrollbar(@NonNull View trackView,
                        @NonNull View thumbView);

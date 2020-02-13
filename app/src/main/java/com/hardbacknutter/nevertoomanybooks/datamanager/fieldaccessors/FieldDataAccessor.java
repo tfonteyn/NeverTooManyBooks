@@ -35,7 +35,7 @@ import androidx.annotation.Nullable;
 import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 
 /**
@@ -54,19 +54,23 @@ public interface FieldDataAccessor<T> {
      */
     void setView(@NonNull View view);
 
-    void setField(@NonNull final Fields.Field<T> field);
+    View getView();
+
+    void setField(@NonNull final Field<T> field);
 
     @Nullable
-    FieldFormatter<T> getFormatter();
+    default FieldFormatter<T> getFormatter() {
+        return null;
+    }
 
     /**
      * Set the formatter to use for this field.
      *
      * @param formatter to use
-     *
-     * @return Field (for chaining)
      */
-    FieldDataAccessor<T> setFormatter(@NonNull FieldFormatter<T> formatter);
+    default void setFormatter(@NonNull FieldFormatter<T> formatter) {
+        throw new IllegalStateException("Formatter not supported");
+    }
 
     /**
      * Get the value from the view associated with the Field and return it as an Object.
@@ -128,12 +132,5 @@ public interface FieldDataAccessor<T> {
                || value instanceof Boolean && !(Boolean) value
                || value instanceof Collection && ((Collection) value).isEmpty()
                || value.toString().isEmpty();
-    }
-
-    /**
-     * @param isEditable {@code true} if the user can edit the field
-     */
-    default FieldDataAccessor<T> setEditable(final boolean isEditable) {
-        return this;
     }
 }

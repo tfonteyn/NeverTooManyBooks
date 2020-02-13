@@ -40,16 +40,14 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
@@ -196,37 +194,18 @@ public class BookBaseFragmentModel
     /**
      * Gets a complete list of Bookshelves each reflecting the book being on that shelf or not.
      *
-     * @return list with {@link SelectableItem}
+     * @return list with {@link SelectableEntity}
      */
     @NonNull
-    public ArrayList<CheckListItem> getEditableBookshelvesList() {
-        final ArrayList<CheckListItem> list = new ArrayList<>();
+    public ArrayList<SelectableEntity> getEditableBookshelvesList() {
+        final ArrayList<SelectableEntity> list = new ArrayList<>();
         // get the list of all shelves the book is currently on.
         final List<Bookshelf> currentShelves =
                 mBook.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         // Loop through all bookshelves in the database and build the list for this book
         for (Bookshelf bookshelf : mDb.getBookshelves()) {
             final boolean selected = currentShelves.contains(bookshelf);
-            list.add(new SelectableItem(bookshelf.getName(), bookshelf.getId(), selected));
-        }
-        return list;
-    }
-
-    /**
-     * Gets a complete list of Editions each reflecting the book being that edition or not.
-     *
-     * @param context Current context
-     *
-     * @return list with {@link SelectableItem}
-     */
-    @NonNull
-    public ArrayList<CheckListItem> getEditableEditionList(@NonNull final Context context) {
-        final ArrayList<CheckListItem> list = new ArrayList<>();
-        // key: bit; value: labelId
-        for (Map.Entry<Integer, Integer> entry : Book.EDITIONS.entrySet()) {
-            Integer key = entry.getKey();
-            boolean selected = (key & mBook.getLong(DBDefinitions.KEY_EDITION_BITMASK)) != 0;
-            list.add(new SelectableItem(context.getString(entry.getValue()), key, selected));
+            list.add(new SelectableEntity(bookshelf, selected));
         }
         return list;
     }

@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
-public class IsfdbBookHandler
+class IsfdbBookHandler
         extends AbstractBase {
 
     /** Log tag. */

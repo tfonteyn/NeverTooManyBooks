@@ -260,7 +260,7 @@ public class BooklistGroup
      *
      * @param category to set
      */
-    static void setCategoryVisibility(@NonNull final PreferenceCategory category) {
+    private static void setCategoryVisibility(@NonNull final PreferenceCategory category) {
         int i = 0;
         while (i < category.getPreferenceCount()) {
             if (category.getPreference(i).isVisible()) {
@@ -297,7 +297,7 @@ public class BooklistGroup
     }
 
     @NonNull
-    public Domain getFormattedDomain() {
+    Domain getFormattedDomain() {
         return RowKind.get(mId).getFormattedDomain();
     }
 
@@ -1022,7 +1022,7 @@ public class BooklistGroup
          * @return the domain
          */
         @NonNull
-        public Domain getFormattedDomain() {
+        Domain getFormattedDomain() {
             return Objects.requireNonNull(mFormattedDomain, "mFormattedDomain");
         }
 
@@ -1110,7 +1110,7 @@ public class BooklistGroup
                  RowKind.DATE_ACQUIRED_DAY,
                 })
         @Retention(RetentionPolicy.SOURCE)
-        public @interface Id {
+        @interface Id {
 
         }
     }

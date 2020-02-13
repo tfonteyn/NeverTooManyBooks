@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 
@@ -193,7 +192,7 @@ public class EditBookshelvesFragment
     }
 
     /**
-     * Using {@link ValuePicker} for context menus.
+     * Using {@link MenuPicker} for context menus.
      *
      * @param menuItem that was selected
      * @param position in the list

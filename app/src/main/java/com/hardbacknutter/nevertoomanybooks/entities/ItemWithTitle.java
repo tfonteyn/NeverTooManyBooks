@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,23 +28,146 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * Basically a wrapper for {@link LocaleUtils#reorderTitle}.
- * <p>
- * Encapsulates getting the title and whether to reorder at all.
+ * Encapsulates getting the title and whether to reorder it.
  */
 public interface ItemWithTitle {
 
+    /**
+     * Cache for the pv_reformat_titles_prefixes strings.
+     * PRIVATE, do not use elsewhere.
+     */
+    Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
+
+    /**
+     * Move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
+     * This method is case sensitive on purpose.
+     *
+     * @param context     Current context
+     * @param title       to reorder
+     * @param titleLocale Locale for the title.
+     *
+     * @return reordered title, or the original if the pattern was not found
+     */
+    @NonNull
+    static String reorderTitle(@NonNull final Context context,
+                               @NonNull final String title,
+                               @NonNull final Locale titleLocale) {
+
+        String[] titleWords = title.split(" ");
+        // Single word titles (or empty titles).. just return.
+        if (titleWords.length < 2) {
+            return title;
+        }
+
+        // we check in order - first match returns.
+        // 1. the Locale passed in
+        // 2. the user preferred Locale
+        // 3. the user device Locale
+        // 4. ENGLISH.
+        Locale[] locales = {titleLocale,
+                            LocaleUtils.getUserLocale(context),
+                            LocaleUtils.getSystemLocale(),
+                            Locale.ENGLISH};
+
+        for (Locale locale : locales) {
+            if (locale == null) {
+                continue;
+            }
+            // Creating the pattern is slow, so we cache it for every Locale.
+            String words = LOCALE_PREFIX_MAP.get(locale);
+            if (words == null) {
+                // the resources bundle in the language that the book (item) is written in.
+                Resources localeResources = App.getLocalizedResources(context, locale);
+                words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
+                LOCALE_PREFIX_MAP.put(locale, words);
+            }
+            // case sensitive, see notes in res/values/string.xml/pv_reformat_titles_prefixes
+            if (words.contains(titleWords[0])) {
+                StringBuilder newTitle = new StringBuilder();
+                for (int i = 1; i < titleWords.length; i++) {
+                    if (i != 1) {
+                        newTitle.append(' ');
+                    }
+                    newTitle.append(titleWords[i]);
+                }
+                newTitle.append(", ").append(titleWords[0]);
+                return newTitle.toString();
+            }
+        }
+        return title;
+    }
+
+    @NonNull
+    static String reorderTitle(@NonNull final Context context,
+                               @NonNull final String title,
+                               @NonNull final String language) {
+        Locale locale = LocaleUtils.getLocale(context, language);
+        if (locale != null) {
+            return reorderTitle(context, title, locale);
+        } else {
+            return title;
+        }
+    }
+
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
+     */
+    static boolean isReorderTitleForDisplaying(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_reformat_titles_display, false);
+    }
+
+    /**
+     * Get the global default for this preference.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
+     */
+    static boolean isReorderTitleForSorting(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_reformat_titles_sort, true);
+    }
+
     @NonNull
     String getTitle();
+
+    /**
+     * Reformat titles for <strong>displaying</strong>.
+     *
+     * @param context     Current context
+     * @param titleLocale Locale to use
+     *
+     * @return reordered title / original title
+     */
+    default String reorderTitleForDisplaying(@NonNull final Context context,
+                                             @NonNull final Locale titleLocale) {
+
+        if (isReorderTitleForDisplaying(context)) {
+            return reorderTitle(context, getTitle(), titleLocale);
+        } else {
+            return getTitle();
+        }
+    }
 
     /**
      * Reformat titles for <strong>use as the OrderBy column</strong>.
@@ -57,8 +180,8 @@ public interface ItemWithTitle {
     default String reorderTitleForSorting(@NonNull final Context context,
                                           @NonNull final Locale titleLocale) {
 
-        if (Prefs.reorderTitleForSorting(context)) {
-            return LocaleUtils.reorderTitle(context, getTitle(), titleLocale);
+        if (isReorderTitleForSorting(context)) {
+            return reorderTitle(context, getTitle(), titleLocale);
         } else {
             return getTitle();
         }

@@ -246,7 +246,7 @@ public abstract class BookSearchBaseFragment
      *
      * @return {@code true} if a search was started
      */
-    protected boolean onSearch() {
+    boolean onSearch() {
         //noinspection ConstantConditions
         return mSearchCoordinator.search(getContext());
     }

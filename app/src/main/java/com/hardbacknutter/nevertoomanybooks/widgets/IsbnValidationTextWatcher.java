@@ -41,8 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * <p>
  * Usage:
  * {@code
- * IsbnValidationTextWatcher watcher = new IsbnValidationTextWatcher(mTextView, strictIsbn);
- * mTextView.addTextChangedListener(watcher);
+ *     IsbnValidationTextWatcher watcher = new IsbnValidationTextWatcher(mTextView, strictIsbn);
+ *     mTextView.addTextChangedListener(watcher);
  * }
  */
 public class IsbnValidationTextWatcher
@@ -94,7 +94,7 @@ public class IsbnValidationTextWatcher
         validate(s.toString());
     }
 
-    public void validate(@NonNull final String codeStr) {
+    private void validate(@NonNull final String codeStr) {
         final int len = codeStr.length();
         boolean valid = false;
         if (len == 10 || len == 13

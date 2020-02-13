@@ -458,7 +458,7 @@ public class SearchCoordinator
      *
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      */
-    public void setFetchThumbnail(@Nullable final boolean[] fetchThumbnail) {
+    protected void setFetchThumbnail(@Nullable final boolean[] fetchThumbnail) {
         mFetchThumbnail = fetchThumbnail;
     }
 

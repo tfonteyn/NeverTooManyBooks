@@ -32,12 +32,9 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 public final class SoundManager {
 
@@ -62,11 +59,8 @@ public final class SoundManager {
             player.start();
         } catch (@NonNull final Resources.NotFoundException e) {
             throw new IllegalStateException(e);
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // No sound is critical.
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "playFile", e);
-            }
         }
     }
 }

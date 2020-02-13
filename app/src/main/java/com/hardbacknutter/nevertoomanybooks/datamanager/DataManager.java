@@ -241,9 +241,6 @@ public class DataManager
     @Nullable
     public Object get(@NonNull final String key) {
         if (DBDefinitions.MONEY_KEYS.contains(key)) {
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "get -> getMoney");
-            }
             return getMoney(key);
         }
         return mRawData.get(key);
@@ -313,9 +310,6 @@ public class DataManager
      */
     @Nullable
     private Money getMoney(@NonNull final String key) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "getMoney");
-        }
         if (mRawData.containsKey(key)) {
             return new Money(getDouble(key),
                              getString(key + DBDefinitions.SUFFIX_KEY_CURRENCY));
@@ -332,9 +326,6 @@ public class DataManager
      */
     private void putMoney(@NonNull final String key,
                           @NonNull final Money money) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "putMoney");
-        }
         mRawData.putDouble(key, money.doubleValue());
         if (money.getCurrency() != null) {
             mRawData.putString(key + DBDefinitions.SUFFIX_KEY_CURRENCY, money.getCurrency());

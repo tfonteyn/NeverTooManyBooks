@@ -71,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -814,7 +815,7 @@ public class BooklistStyle
      *
      * @return scale factor
      */
-    public float getTextScaleFactor() {
+    float getTextScaleFactor() {
         switch (mFontScale.get()) {
             case FONT_SCALE_LARGE:
                 return 1.2f;
@@ -966,7 +967,7 @@ public class BooklistStyle
      * @return group
      */
     @NonNull
-    public BooklistGroup getGroupAt(final int index) {
+    BooklistGroup getGroupAt(final int index) {
         return mStyleGroups.getGroups().get(index);
     }
 
@@ -976,7 +977,7 @@ public class BooklistStyle
      * @return kind
      */
     @BooklistGroup.RowKind.Id
-    public int getGroupKindAt(final int index) {
+    int getGroupKindAt(final int index) {
         return mStyleGroups.getGroupKindAt(index);
     }
 
@@ -1255,13 +1256,12 @@ public class BooklistStyle
         if (mAllExtras.containsKey(key)) {
             PBoolean value = mAllExtras.get(key);
             return App.isUsed(key) && value != null && value.isTrue();
-
         }
         return false;
     }
 
     /**
-     * Wrapper that gets the displayAuthorGivenNameFirst flag from the Author group if we have it,
+     * Wrapper that gets the displayGivenNameFirst flag from the Author group if we have it,
      * or from the global defaults.
      *
      * @param context Current context
@@ -1270,15 +1270,14 @@ public class BooklistStyle
      */
     public boolean showAuthorGivenNameFirst(@NonNull final Context context) {
         if (hasGroup(BooklistGroup.RowKind.AUTHOR)) {
-            BooklistGroup.BooklistAuthorGroup authorGroup =
-                    (BooklistGroup.BooklistAuthorGroup)
-                            (mStyleGroups.getGroup(BooklistGroup.RowKind.AUTHOR));
-            if (authorGroup != null) {
-                return authorGroup.showAuthorGivenNameFirst();
+            BooklistGroup.BooklistAuthorGroup group = (BooklistGroup.BooklistAuthorGroup)
+                    (mStyleGroups.getGroup(BooklistGroup.RowKind.AUTHOR));
+            if (group != null) {
+                return group.showAuthorGivenNameFirst();
             }
         }
         // return the global default.
-        return Prefs.displayAuthorGivenNameFirst(context);
+        return Author.displayGivenNameFirst(context);
     }
 
     /**
@@ -1308,7 +1307,7 @@ public class BooklistStyle
                                   SUMMARY_SHOW_STYLE_NAME,
                                   SUMMARY_SHOW_FILTER})
     @Retention(RetentionPolicy.SOURCE)
-    @interface ListHeaderOption {
+    private @interface ListHeaderOption {
 
     }
 

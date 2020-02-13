@@ -40,7 +40,7 @@ import java.lang.ref.WeakReference;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
 
 /**
@@ -171,7 +171,7 @@ public abstract class TaskBase<Params, Result>
             mTaskListener.get().onProgress(values[0]);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onProgressUpdate|" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onProgressUpdate|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
     }
@@ -184,7 +184,7 @@ public abstract class TaskBase<Params, Result>
                     mTaskId, TaskStatus.Cancelled, result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onCancelled|" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onCancelled|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
     }
@@ -198,7 +198,7 @@ public abstract class TaskBase<Params, Result>
                     mTaskId, status, result, mException));
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onPostExecute|" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onPostExecute|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
     }

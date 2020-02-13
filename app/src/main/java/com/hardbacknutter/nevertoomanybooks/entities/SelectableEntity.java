@@ -25,54 +25,46 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.checklist;
+package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
 /**
- * Default implementation of {@link CheckListItem} encapsulating a {@code long}.
+ * Encapsulate an {@link Entity} and a boolean 'isSelected' flag.
  */
-public class SelectableItem
-        implements CheckListItem {
+public class SelectableEntity
+        implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<SelectableItem> CREATOR =
-            new Creator<SelectableItem>() {
-                @Override
-                public SelectableItem createFromParcel(@NonNull final Parcel source) {
-                    return new SelectableItem(source);
-                }
+    public static final Creator<SelectableEntity> CREATOR = new Creator<SelectableEntity>() {
+        @Override
+        public SelectableEntity createFromParcel(@NonNull final Parcel source) {
+            return new SelectableEntity(source);
+        }
 
-                @Override
-                public SelectableItem[] newArray(final int size) {
-                    return new SelectableItem[size];
-                }
-            };
+        @Override
+        public SelectableEntity[] newArray(final int size) {
+            return new SelectableEntity[size];
+        }
+    };
 
-    /** Label to display. */
-    private final String mLabel;
     /** The item we're encapsulating. */
-    private final long mItemId;
+    private final Entity mEntity;
     /** Status of this item. */
-    private boolean mSelected;
+    private boolean mIsSelected;
 
     /**
      * Constructor.
      *
-     * @param label    to display
-     * @param itemId   the item to represent
-     * @param selected the current status
+     * @param isSelected the current status
      */
-    public SelectableItem(@NonNull final String label,
-                          final long itemId,
-                          final boolean selected) {
-        mItemId = itemId;
-        mSelected = selected;
-        mLabel = label;
+    public SelectableEntity(@NonNull final Entity entity,
+                            final boolean isSelected) {
+        mEntity = entity;
+        mIsSelected = isSelected;
     }
 
     /**
@@ -80,37 +72,28 @@ public class SelectableItem
      *
      * @param in Parcel to construct the object from
      */
-    private SelectableItem(@NonNull final Parcel in) {
-        mItemId = in.readLong();
-        mLabel = in.readString();
-        mSelected = in.readInt() != 0;
+    private SelectableEntity(@NonNull final Parcel in) {
+        mEntity = in.readParcelable(getClass().getClassLoader());
+        mIsSelected = in.readInt() != 0;
     }
 
-    public long getItemId() {
-        return mItemId;
+    public Entity getEntity() {
+        return mEntity;
     }
 
-    @Override
-    public String getLabel(@NonNull final Context context) {
-        return mLabel;
-    }
-
-    @Override
     public boolean isSelected() {
-        return mSelected;
+        return mIsSelected;
     }
 
-    @Override
     public void setSelected(final boolean selected) {
-        mSelected = selected;
+        mIsSelected = selected;
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mItemId);
-        dest.writeString(mLabel);
-        dest.writeInt(mSelected ? 1 : 0);
+        dest.writeParcelable(mEntity, flags);
+        dest.writeInt(mIsSelected ? 1 : 0);
     }
 
     @SuppressWarnings("SameReturnValue")

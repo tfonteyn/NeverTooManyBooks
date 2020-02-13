@@ -50,10 +50,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -101,9 +99,6 @@ public final class LocaleUtils {
     /** Cache for Locales; key: the BOOK language (ISO3). */
     private static final Map<String, Locale> LOCALE_MAP = new HashMap<>();
 
-    /** Cache for the pv_reformat_titles_prefixes strings. */
-    private static final Map<Locale, String> LOCALE_PREFIX_MAP = new HashMap<>();
-
     /** Remember the current language to detect when language is switched. */
     @NonNull
     private static String sPreferredLocaleSpec = SYSTEM_LANGUAGE;
@@ -135,7 +130,7 @@ public final class LocaleUtils {
      *
      * @return {@code true} if valid
      */
-    public static boolean isValid(@Nullable final Locale locale) {
+    private static boolean isValid(@Nullable final Locale locale) {
         if (locale == null) {
             return false;
         }
@@ -221,7 +216,10 @@ public final class LocaleUtils {
         } else {
             updatedContext = updateResourcesLegacy(context, sPreferredLocale);
         }
-        insanityCheck(updatedContext);
+
+        if (BuildConfig.DEBUG /* always */) {
+            insanityCheck(updatedContext);
+        }
         return updatedContext;
     }
 
@@ -306,12 +304,12 @@ public final class LocaleUtils {
     }
 
     /**
-     * Return the user Locale list
+     * Return the user preferred Locale list.
      *
      * @return LocaleList
      */
     @NonNull
-    public static LocaleList getLocaleList(@NonNull final Context context) {
+    public static LocaleList getUserLocaleList(@NonNull final Context context) {
         if (Build.VERSION.SDK_INT >= 24) {
             return context.getResources().getConfiguration().getLocales();
         } else {
@@ -345,6 +343,11 @@ public final class LocaleUtils {
         return context;
     }
 
+    /**
+     * DEBUG ONLY.
+     *
+     * @param context Current context
+     */
     private static void insanityCheck(@NonNull final Context context) {
         String persistedIso3 = createLocale(getPersistedLocaleSpec(context)).getISO3Language();
         String userIso3 = getUserLocale(context).getISO3Language();
@@ -462,77 +465,6 @@ public final class LocaleUtils {
         }
 
         return locale;
-    }
-
-    @NonNull
-    public static String reorderTitle(@NonNull final Context context,
-                                      @NonNull final String title,
-                                      @NonNull final String language) {
-        Locale locale = LocaleUtils.getLocale(context, language);
-        if (locale != null) {
-            return reorderTitle(context, title, locale);
-        } else {
-            return title;
-        }
-    }
-
-    /**
-     * Move "The, A, An" etc... to the end of the title. e.g. "The title" -> "title, The".
-     * This method is case sensitive on purpose.
-     *
-     * @param context     Current context
-     * @param title       to reorder
-     * @param titleLocale Locale for the title.
-     *
-     * @return reordered title, or the original if the pattern was not found
-     */
-    @NonNull
-    public static String reorderTitle(@NonNull final Context context,
-                                      @NonNull final String title,
-                                      @NonNull final Locale titleLocale) {
-
-        String[] titleWords = title.split(" ");
-        // Single word titles (or empty titles).. just return.
-        if (titleWords.length < 2) {
-            return title;
-        }
-
-        // we check in order - first match returns.
-        // 1. the Locale passed in
-        // 2. the user preferred Locale
-        // 3. the user device Locale
-        // 4. ENGLISH.
-        Locale[] locales = {titleLocale,
-                            getUserLocale(context),
-                            getSystemLocale(),
-                            Locale.ENGLISH};
-
-        for (Locale locale : locales) {
-            if (locale == null) {
-                continue;
-            }
-            // Creating the pattern is slow, so we cache it for every Locale.
-            String words = LOCALE_PREFIX_MAP.get(locale);
-            if (words == null) {
-                // the resources bundle in the language that the book (item) is written in.
-                Resources localeResources = App.getLocalizedResources(context, locale);
-                words = localeResources.getString(R.string.pv_reformat_titles_prefixes);
-                LOCALE_PREFIX_MAP.put(locale, words);
-            }
-            // case sensitive, see notes in res/values/string.xml/pv_reformat_titles_prefixes
-            if (words.contains(titleWords[0])) {
-                StringBuilder newTitle = new StringBuilder();
-                for (int i = 1; i < titleWords.length; i++) {
-                    if (i != 1) {
-                        newTitle.append(' ');
-                    }
-                    newTitle.append(titleWords[i]);
-                }
-                newTitle.append(", ").append(titleWords[0]);
-                return newTitle.toString();
-            }
-        }
-        return title;
     }
 
 

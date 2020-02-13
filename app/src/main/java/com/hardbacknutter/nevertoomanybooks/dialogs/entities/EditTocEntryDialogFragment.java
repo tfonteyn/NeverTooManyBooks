@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -219,7 +218,7 @@ public class EditTocEntryDialogFragment
             mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onConfirm|" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onConfirm|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
     }

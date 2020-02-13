@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -44,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  * </ul>
  */
 public class LanguageFormatter
-        implements FieldFormatter<String> {
+        implements EditFieldFormatter<String> {
 
     @NonNull
     @Override
@@ -52,14 +51,9 @@ public class LanguageFormatter
                          @Nullable final String rawValue) {
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
+        } else {
+            return LanguageUtils.getDisplayName(context, rawValue);
         }
-        return LanguageUtils.getDisplayName(context, rawValue);
-    }
-
-    @Override
-    public void apply(@Nullable final String rawValue,
-                      @NonNull final View view) {
-        ((TextView) view).setText(format(view.getContext(), rawValue));
     }
 
     /**
@@ -69,8 +63,8 @@ public class LanguageFormatter
      */
     @NonNull
     @Override
-    public String extract(@NonNull final View view) {
-        String text = ((TextView) view).getText().toString().trim();
+    public String extract(@NonNull final TextView view) {
+        String text = view.getText().toString().trim();
         return LanguageUtils.getISO3FromDisplayName(view.getContext(), text);
     }
 }

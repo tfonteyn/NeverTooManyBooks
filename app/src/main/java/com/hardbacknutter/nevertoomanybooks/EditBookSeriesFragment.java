@@ -135,7 +135,7 @@ public class EditBookSeriesFragment
     }
 
     @Override
-    protected void onLoadFields(@NonNull final Book book) {
+    void onLoadFields(@NonNull final Book book) {
         super.onLoadFields(book);
 
         mList = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -245,9 +245,9 @@ public class EditBookSeriesFragment
         // We need to ask the user if they want to make the changes globally.
         final String allBooks = getString(R.string.bookshelf_all_books);
         final String message = getString(R.string.confirm_apply_series_changed,
-                                   series.getTitle(),
-                                   tmpData.getTitle(),
-                                   allBooks);
+                                         series.getLabel(getContext()),
+                                         tmpData.getLabel(getContext()),
+                                         allBooks);
         new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_scope_of_change)
@@ -300,14 +300,11 @@ public class EditBookSeriesFragment
 
         @NonNull
         final TextView seriesView;
-        @NonNull
-        final TextView seriesSortView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
 
             seriesView = itemView.findViewById(R.id.row_series);
-            seriesSortView = itemView.findViewById(R.id.row_series_sort);
         }
     }
 
@@ -331,7 +328,7 @@ public class EditBookSeriesFragment
         /** The Series we're editing. */
         private Series mSeries;
         /** Current edit. */
-        private String mSeriesName;
+        private String mSeriesTitle;
         /** Current edit. */
         private boolean mSeriesIsComplete;
         /** Current edit. */
@@ -350,11 +347,11 @@ public class EditBookSeriesFragment
             Objects.requireNonNull(mSeries, ErrorMsg.ARGS_MISSING_SERIES);
 
             if (savedInstanceState == null) {
-                mSeriesName = mSeries.getTitle();
+                mSeriesTitle = mSeries.getTitle();
                 mSeriesIsComplete = mSeries.isComplete();
                 mSeriesNumber = mSeries.getNumber();
             } else {
-                mSeriesName = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
+                mSeriesTitle = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
                 mSeriesIsComplete = savedInstanceState
                         .getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, false);
                 mSeriesNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
@@ -386,7 +383,7 @@ public class EditBookSeriesFragment
 
             // the dialog fields != screen fields.
             mTitleView = root.findViewById(R.id.series);
-            mTitleView.setText(mSeriesName);
+            mTitleView.setText(mSeriesTitle);
             mTitleView.setAdapter(seriesNameAdapter);
 
             mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
@@ -406,15 +403,15 @@ public class EditBookSeriesFragment
                     .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                         // don't check on anything else here,
                         // we're doing more extensive checks later on.
-                        mSeriesName = mTitleView.getText().toString().trim();
-                        if (mSeriesName.isEmpty()) {
+                        mSeriesTitle = mTitleView.getText().toString().trim();
+                        if (mSeriesTitle.isEmpty()) {
                             Snackbar.make(mTitleView, R.string.warning_missing_name,
                                           Snackbar.LENGTH_LONG).show();
                             return;
                         }
 
                         // Create a new Series as a holder for all changes.
-                        final Series tmpSeries = new Series(mSeriesName);
+                        final Series tmpSeries = new Series(mSeriesTitle);
 
                         // allow for future layout(s) not displaying the isComplete checkbox
                         if (mIsCompleteView != null) {
@@ -441,14 +438,14 @@ public class EditBookSeriesFragment
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBDefinitions.KEY_FK_SERIES, mSeriesName);
+            outState.putString(DBDefinitions.KEY_FK_SERIES, mSeriesTitle);
             outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mSeriesIsComplete);
             outState.putString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, mSeriesNumber);
         }
 
         @Override
         public void onPause() {
-            mSeriesName = mTitleView.getText().toString().trim();
+            mSeriesTitle = mTitleView.getText().toString().trim();
             if (mIsCompleteView != null) {
                 mSeriesIsComplete = mIsCompleteView.isChecked();
             }
@@ -490,18 +487,8 @@ public class EditBookSeriesFragment
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            final Context context = getContext();
-
             final Series series = getItem(position);
-            final String seriesLabel = series.getLabel(context);
-            holder.seriesView.setText(seriesLabel);
-
-            if (!seriesLabel.equals(series.getSorting())) {
-                holder.seriesSortView.setVisibility(View.VISIBLE);
-                holder.seriesSortView.setText(series.getSorting());
-            } else {
-                holder.seriesSortView.setVisibility(View.GONE);
-            }
+            holder.seriesView.setText(series.getLabel(getContext()));
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> {

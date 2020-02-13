@@ -28,40 +28,63 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
- * FieldFormatter for 'page' fields. If the value is numerical, output "x pages"
- * Otherwise outputs the original source value.
+ * FieldFormatter for 'Number' fields with the value being a 'double'
+ * This includes the {@link Money} class.
+ *
  * <ul>
  * <li>Multiple fields: <strong>yes</strong></li>
+ * <li>Extract: <strong>View</strong></li>
  * </ul>
  */
-public class PagesFormatter
-        implements FieldFormatter<String> {
+public class DoubleNumberFormatter
+        implements EditFieldFormatter<Number> {
 
     @NonNull
     @Override
     public String format(@NonNull final Context context,
-                         @Nullable final String rawValue) {
+                         @Nullable final Number rawValue) {
 
-        if (rawValue == null || rawValue.isEmpty()
-            || "0".equals(rawValue) || "0.0".equals(rawValue)) {
+        if (rawValue == null) {
             return "";
+        }
 
+        double value = rawValue.doubleValue();
+        if (value == 0.0d) {
+            return "";
+        }
+
+        String formatted = String.valueOf(value);
+        if (formatted.endsWith(".0")) {
+            return formatted.substring(0, formatted.length() - 2);
         } else {
-            try {
-                return String.format(context.getString(R.string.lbl_x_pages),
-                                     Integer.parseInt(rawValue));
+            return formatted;
+        }
+    }
 
-            } catch (@NonNull final NumberFormatException ignore) {
-                // don't log, stored pages was alphanumeric.
-                return rawValue;
-            }
+    @NonNull
+    @Override
+    public Number extract(@NonNull final TextView view) {
+        String sv = view.getText().toString().trim();
+        if (sv.isEmpty()) {
+            return 0;
+        }
+
+        try {
+            // getSystemLocale: the user types it in
+            return ParseUtils.parseDouble(sv, LocaleUtils.getSystemLocale());
+        } catch (@NonNull final NumberFormatException e) {
+            // this should never happen... flw
+            return 0;
         }
     }
 }

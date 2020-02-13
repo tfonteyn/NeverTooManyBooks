@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.PreferredStylesViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -276,7 +275,7 @@ public class PreferredStylesActivity
     }
 
     /**
-     * Using {@link ValuePicker} for context menus.
+     * Using {@link MenuPicker} for context menus.
      *
      * @param menuItem that was selected
      * @param position in the list

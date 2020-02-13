@@ -36,8 +36,7 @@ import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 
 /**
  * Base implementation.
@@ -47,28 +46,29 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFor
 public abstract class BaseDataAccessor<T>
         implements FieldDataAccessor<T> {
 
-    Fields.Field<T> mField;
+    Field<T> mField;
     @Nullable
     T mRawValue;
-
+    boolean mIsEditable;
     @Nullable
     private WeakReference<View> mViewReference;
 
-    private boolean mIsEditable;
-
-    public void setField(@NonNull final Fields.Field<T> field) {
+    @Override
+    public void setField(@NonNull final Field<T> field) {
         mField = field;
     }
 
-    @Nullable
-    public View getView() {
+    @NonNull
+    @Override
+    public View getView()
+            throws NoViewException {
         if (mViewReference != null) {
             View view = mViewReference.get();
             if (view != null) {
                 return view;
             }
         }
-        throw new NoViewException();
+        throw new NoViewException("field key=" + mField.getKey());
     }
 
     @Override
@@ -93,23 +93,4 @@ public abstract class BaseDataAccessor<T>
         });
     }
 
-    @Override
-    public FieldDataAccessor<T> setEditable(final boolean editable) {
-        mIsEditable = editable;
-        return this;
-    }
-
-    boolean isEditable() {
-        return mIsEditable;
-    }
-
-    @Override
-    public FieldDataAccessor<T> setFormatter(@NonNull final FieldFormatter formatter) {
-        throw new IllegalStateException("Formatter not supported");
-    }
-
-    @Override
-    public FieldFormatter<T> getFormatter() {
-        return null;
-    }
 }

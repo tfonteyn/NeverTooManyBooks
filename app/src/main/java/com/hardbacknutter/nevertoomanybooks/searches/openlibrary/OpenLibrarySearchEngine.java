@@ -102,7 +102,7 @@ public class OpenLibrarySearchEngine
                    SearchEngine.CoverByIsbn {
 
     /** base urls. */
-    public static final String BASE_URL = "https://openlibrary.org";
+    private static final String BASE_URL = "https://openlibrary.org";
 
     /** Log tag. */
     private static final String TAG = "OpenLibrarySearchEngine";
@@ -400,7 +400,8 @@ public class OpenLibrarySearchEngine
      *      "subtitle":"Alastor 1716",
      *      "weight":"1.4 pounds",
      *      "title":"Alastor: Trullion : Alastor 2262  Marune : Alastor 933 Wyst ",
-     *      "url":"https:\/\/openlibrary.org\/books\/OL10393624M\/Alastor_Trullion_Alastor_2262_Marune_Alastor_933_Wyst",
+     *      "url":"https:\/\/openlibrary.org\/books\/OL10393624M\/
+     *                Alastor_Trullion_Alastor_2262_Marune_Alastor_933_Wyst",
      *      "number_of_pages":479,
      *      "cover":{
      *          "small":"https:\/\/covers.openlibrary.org\/b\/id\/5059003-S.jpg",

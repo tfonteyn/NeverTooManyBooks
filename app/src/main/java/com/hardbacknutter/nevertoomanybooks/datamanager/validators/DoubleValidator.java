@@ -44,8 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * Float, Integer, Long are casted to Double.
  * <p>
  * {@code null} or empty string become 0d.
- *
- * URGENT: review the use of the Locale: user or system ?
  */
 public class DoubleValidator
         implements DataValidator {
@@ -57,19 +55,11 @@ public class DoubleValidator
 
     /**
      * Constructor; default value is 0d.
+     *
+     * getSystemLocale: the user types it in (or it came from an external source)
      */
     public DoubleValidator() {
         mDefaultValue = 0d;
-        mLocale = LocaleUtils.getSystemLocale();
-    }
-
-    /**
-     * Constructor with default value.
-     *
-     * @param defValue Default to apply if the field is empty
-     */
-    public DoubleValidator(final double defValue) {
-        mDefaultValue = defValue;
         mLocale = LocaleUtils.getSystemLocale();
     }
 

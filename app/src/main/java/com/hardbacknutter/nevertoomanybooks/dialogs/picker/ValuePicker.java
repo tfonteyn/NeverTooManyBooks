@@ -123,7 +123,7 @@ public class ValuePicker {
         }
     }
 
-    void setMessage(@Nullable final CharSequence message) {
+    private void setMessage(@Nullable final CharSequence message) {
         if (mMessageView != null) {
             if (message != null && message.length() > 0) {
                 mMessageView.setText(message);

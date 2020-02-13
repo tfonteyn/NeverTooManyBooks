@@ -55,16 +55,13 @@ public class SpinnerAccessor
     @NonNull
     public String getValue() {
         Spinner spinner = (Spinner) getView();
-        if (spinner != null) {
-            Object selItem = spinner.getSelectedItem();
-            if (selItem != null) {
-                return selItem.toString().trim();
-            } else {
-                return "";
-            }
+        Object selItem = spinner.getSelectedItem();
+        if (selItem != null) {
+            return selItem.toString().trim();
+        } else {
+            return "";
         }
 
-        return mRawValue != null ? mRawValue : "";
     }
 
     @Override
@@ -72,12 +69,10 @@ public class SpinnerAccessor
         mRawValue = value;
 
         Spinner spinner = (Spinner) getView();
-        if (spinner != null) {
-            for (int i = 0; i < spinner.getCount(); i++) {
-                if (spinner.getItemAtPosition(i).equals(mRawValue)) {
-                    spinner.setSelection(i);
-                    return;
-                }
+        for (int i = 0; i < spinner.getCount(); i++) {
+            if (spinner.getItemAtPosition(i).equals(mRawValue)) {
+                spinner.setSelection(i);
+                return;
             }
         }
     }

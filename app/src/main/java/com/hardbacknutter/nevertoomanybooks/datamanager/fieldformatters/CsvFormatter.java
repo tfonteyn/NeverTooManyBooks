@@ -28,23 +28,19 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
- * FieldFormatter for a list field. Formats the items as a CSV String.
+ * FieldFormatter for a list field. Formats the Entity's as a CSV String.
  * <ul>
  * <li>Multiple fields: <strong>no</strong></li>
- * <li>Extract: <strong>local variable</strong></li>
  * </ul>
  */
 public class CsvFormatter
@@ -54,8 +50,6 @@ public class CsvFormatter
     private final CharSequence mDelimiter;
     @Nullable
     private final String mPrefix;
-    @Nullable
-    private List<Entity> mRawValue;
 
     public CsvFormatter() {
         mDelimiter = ", ";
@@ -74,22 +68,9 @@ public class CsvFormatter
                          @Nullable final List<Entity> rawValue) {
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
+        } else {
+            return Csv.join(mDelimiter, rawValue, true, mPrefix,
+                            element -> element.getLabel(context));
         }
-
-        return Csv.join(mDelimiter, rawValue, true, mPrefix,
-                        element -> element.getLabel(context));
-    }
-
-    @Override
-    public void apply(@Nullable final List<Entity> rawValue,
-                      @NonNull final View view) {
-        mRawValue = rawValue;
-        ((TextView) view).setText(format(view.getContext(), rawValue));
-    }
-
-    @NonNull
-    @Override
-    public List<Entity> extract(@NonNull final View view) {
-        return mRawValue != null ? mRawValue : new ArrayList<>();
     }
 }

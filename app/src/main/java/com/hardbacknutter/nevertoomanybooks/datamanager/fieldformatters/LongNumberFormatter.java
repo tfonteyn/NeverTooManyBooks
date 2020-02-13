@@ -28,40 +28,53 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-
 /**
- * FieldFormatter for 'page' fields. If the value is numerical, output "x pages"
- * Otherwise outputs the original source value.
+ * FieldFormatter for 'Number' fields with the value being a 'long'
+ *
  * <ul>
  * <li>Multiple fields: <strong>yes</strong></li>
+ * <li>Extract: <strong>View</strong></li>
  * </ul>
  */
-public class PagesFormatter
-        implements FieldFormatter<String> {
+public class LongNumberFormatter
+        implements EditFieldFormatter<Number> {
 
     @NonNull
     @Override
     public String format(@NonNull final Context context,
-                         @Nullable final String rawValue) {
+                         @Nullable final Number rawValue) {
 
-        if (rawValue == null || rawValue.isEmpty()
-            || "0".equals(rawValue) || "0.0".equals(rawValue)) {
+        if (rawValue == null) {
             return "";
+        }
 
-        } else {
-            try {
-                return String.format(context.getString(R.string.lbl_x_pages),
-                                     Integer.parseInt(rawValue));
+        long value = rawValue.longValue();
+        if (value == 0) {
+            return "";
+        }
 
-            } catch (@NonNull final NumberFormatException ignore) {
-                // don't log, stored pages was alphanumeric.
-                return rawValue;
-            }
+        return String.valueOf(value);
+    }
+
+    @NonNull
+    @Override
+    public Number extract(@NonNull final TextView view) {
+        String sv = view.getText().toString().trim();
+        if (sv.isEmpty()) {
+            return 0;
+        }
+
+        try {
+            return Long.parseLong(sv);
+
+        } catch (@NonNull final NumberFormatException e) {
+            // this should never happen... flw
+            return 0;
         }
     }
 }

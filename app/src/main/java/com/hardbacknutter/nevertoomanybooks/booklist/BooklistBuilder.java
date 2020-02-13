@@ -280,32 +280,19 @@ public class BooklistBuilder
     /**
      * Add a domain to the resulting flattened list based on the details provided.
      *
-     * @param domain           Domain to add
-     * @param sourceExpression Expression to use in deriving domain value
-     * @param isSorted         Indicates if it should be added to the sort key
+     * @param domainDetails Domain to add
      *
-     * @return BooklistBuilder (for chaining)
      */
-    @NonNull
-    @SuppressWarnings("UnusedReturnValue")
-    public BooklistBuilder addExtraDomain(@NonNull final Domain domain,
-                                          @Nullable final String sourceExpression,
-                                          final boolean isSorted) {
-        if (!mExtraDomains.containsKey(domain.getName())) {
-            @BuildHelper.Flags
-            int flags = 0;
-            if (isSorted) {
-                flags |= BuildHelper.FLAG_SORTED;
-            }
-            mExtraDomains.put(domain.getName(),
-                              new ExtraDomainDetails(domain, sourceExpression, flags));
+    public void addDomain(@NonNull final ExtraDomainDetails domainDetails) {
+        if (!mExtraDomains.containsKey(domainDetails.domain.getName())) {
+            mExtraDomains.put(domainDetails.domain.getName(), domainDetails);
 
         } else {
             // adding a duplicate here is a bug.
-            throw new IllegalArgumentException("Domain already added: `" + domain.getName() + '`');
+            throw new IllegalArgumentException("Duplicate domain=`"
+                                               + domainDetails.domain.getName() + '`');
         }
 
-        return this;
     }
 
     /**
@@ -998,7 +985,7 @@ public class BooklistBuilder
     /**
      * A value class of extra domains requested by caller before the build() method is called.
      */
-    private static class ExtraDomainDetails {
+    public static class ExtraDomainDetails {
 
         /** Domain to add. */
         @NonNull
@@ -1010,9 +997,9 @@ public class BooklistBuilder
         @BuildHelper.Flags
         final int flags;
 
-        ExtraDomainDetails(@NonNull final Domain domain,
-                           @Nullable final String sourceExpression,
-                           @BuildHelper.Flags final int flags) {
+        public ExtraDomainDetails(@NonNull final Domain domain,
+                                  @Nullable final String sourceExpression,
+                                  @BuildHelper.Flags final int flags) {
             this.domain = domain;
             this.sourceExpression = sourceExpression;
             this.flags = flags;

@@ -143,7 +143,7 @@ public class App
      * Each field has an entry in the Preferences.
      * The key is suffixed with the name of the field.
      */
-    public static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
+    private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
 
     private static final String TAG = "App";
     /** don't assume / allow the day-night theme to have a different integer ID. */

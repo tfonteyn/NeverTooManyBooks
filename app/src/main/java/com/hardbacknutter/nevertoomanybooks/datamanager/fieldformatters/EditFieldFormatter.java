@@ -27,41 +27,27 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
-import android.content.Context;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * FieldFormatter for 'page' fields. If the value is numerical, output "x pages"
- * Otherwise outputs the original source value.
- * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
- * </ul>
+ * Interface definition for Field formatter.
+ *
+ * <strong>Do not store Context or View in a formatter.</strong>
+ *
+ * @param <T> type of Field value.
  */
-public class PagesFormatter
-        implements FieldFormatter<String> {
+public interface EditFieldFormatter<T>
+        extends FieldFormatter<T> {
 
+    /**
+     * Extract the native typed value from the displayed version.
+     *
+     * @param view to extract the value from
+     *
+     * @return The extracted value
+     */
     @NonNull
-    @Override
-    public String format(@NonNull final Context context,
-                         @Nullable final String rawValue) {
-
-        if (rawValue == null || rawValue.isEmpty()
-            || "0".equals(rawValue) || "0.0".equals(rawValue)) {
-            return "";
-
-        } else {
-            try {
-                return String.format(context.getString(R.string.lbl_x_pages),
-                                     Integer.parseInt(rawValue));
-
-            } catch (@NonNull final NumberFormatException ignore) {
-                // don't log, stored pages was alphanumeric.
-                return rawValue;
-            }
-        }
-    }
+    T extract(@NonNull TextView view);
 }

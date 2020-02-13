@@ -79,9 +79,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageExce
  */
 public final class Logger {
 
-    /** Widely used DEBUG error message. */
-    public static final String WEAK_REFERENCE_DEAD = "|Listener was dead";
-
     /** Full log path name. Used by ACRA configuration which only accepts a constant. */
     public static final String LOG_PATH = "log/error.log";
     /** serious errors are written to this file. */

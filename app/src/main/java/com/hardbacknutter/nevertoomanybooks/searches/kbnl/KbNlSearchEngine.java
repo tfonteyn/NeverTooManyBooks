@@ -63,7 +63,7 @@ public class KbNlSearchEngine
                    SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
-    public static final Locale SITE_LOCALE = new Locale("nl", "NL");
+    private static final Locale SITE_LOCALE = new Locale("nl", "NL");
 
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "kbnl.";

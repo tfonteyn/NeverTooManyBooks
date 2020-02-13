@@ -118,11 +118,14 @@ public class Money
             // if we do have an ISO3 code, split the data as required.
             if (currencyCode != null && currencyCode.length() == 3) {
                 try {
-                    mValue = ParseUtils.parseDouble(data[1], locale);
+                    // buffer just in case the getCurrencyCode() fails.
+                    double tmpValue = ParseUtils.parseDouble(data[1], locale);
                     // re-get the code just in case it used a recognised but non-standard string
                     mCurrency = java.util.Currency.getInstance(currencyCode).getCurrencyCode();
+                    mValue = tmpValue;
 
                 } catch (@NonNull final IllegalArgumentException ignore) {
+                    // covers NumberFormatException
                 }
             }
         }

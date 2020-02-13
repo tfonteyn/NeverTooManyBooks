@@ -79,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -3803,7 +3804,7 @@ public class DAO
 
         String rebuildObTitle;
         if (reorder) {
-            rebuildObTitle = LocaleUtils.reorderTitle(context, title, locale);
+            rebuildObTitle = ItemWithTitle.reorderTitle(context, title, locale);
         } else {
             rebuildObTitle = currentObTitle;
         }

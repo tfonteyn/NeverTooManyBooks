@@ -132,7 +132,7 @@ public class ReviewsListApiHandler
      * @return A bundle containing an ArrayList of Bundles, one for each review.
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     @NonNull
@@ -479,15 +479,11 @@ public class ReviewsListApiHandler
         public static final String AUTHORS = "__authors";
         public static final String AUTHOR_NAME_GF = "__author_name";
         public static final String AUTHOR_ROLE = "__author_role";
-
-        public static final String BODY = "__body";
-
         public static final String SHELF = "__shelf";
         public static final String SHELVES = "__shelves";
-
         /** Type: long. */
         public static final String PAGES = "__pages";
-
+        static final String BODY = "__body";
         static final String REVIEW_ID = "__review_id";
 
         static final String START = "__start";

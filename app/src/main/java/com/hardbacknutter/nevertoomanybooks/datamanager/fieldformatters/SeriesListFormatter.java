@@ -32,36 +32,52 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import java.util.List;
 
-/**
- * FieldFormatter for 'page' fields. If the value is numerical, output "x pages"
- * Otherwise outputs the original source value.
- * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
- * </ul>
- */
-public class PagesFormatter
-        implements FieldFormatter<String> {
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+
+public class SeriesListFormatter
+        extends HtmlFormatter<List<Series>> {
+
+    private final Series.Details mDetails;
+
+    /**
+     * Constructor.
+     *
+     * @param details     how much details to show
+     * @param enableLinks {@code true} to enable links.
+     *                    Do not enable if the View has an onClickListener
+     */
+    public SeriesListFormatter(@NonNull final Series.Details details,
+                               final boolean enableLinks) {
+        super(enableLinks);
+        mDetails = details;
+    }
 
     @NonNull
     @Override
     public String format(@NonNull final Context context,
-                         @Nullable final String rawValue) {
-
-        if (rawValue == null || rawValue.isEmpty()
-            || "0".equals(rawValue) || "0.0".equals(rawValue)) {
+                         @Nullable final List<Series> rawValue) {
+        if (rawValue == null || rawValue.isEmpty()) {
             return "";
-
-        } else {
-            try {
-                return String.format(context.getString(R.string.lbl_x_pages),
-                                     Integer.parseInt(rawValue));
-
-            } catch (@NonNull final NumberFormatException ignore) {
-                // don't log, stored pages was alphanumeric.
-                return rawValue;
-            }
         }
+
+        switch (mDetails) {
+            case Full:
+            case Normal:
+                return Csv.join("<br>", rawValue, true, "• ",
+                                series -> series.getLabel(context));
+
+            case Short:
+                if (rawValue.size() > 1) {
+                    return rawValue.get(0).getLabel(context)
+                           + ' ' + context.getString(R.string.and_others);
+                } else {
+                    return rawValue.get(0).getLabel(context);
+                }
+        }
+        return "";
     }
 }

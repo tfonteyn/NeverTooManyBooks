@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * <a href="https://www.goodreads.com/api/index#owned_books.create">owned_books.create</a>
  */
 @SuppressWarnings("unused")
-public class OwnedBookCreateApiHandler
+class OwnedBookCreateApiHandler
         extends com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiHandler {
 
     private static final String URL = GoodreadsHandler.BASE_URL + "/owned_books.xml";

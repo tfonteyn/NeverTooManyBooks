@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.checklist;
+package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -42,14 +42,12 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -57,21 +55,13 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 
 /**
- * DialogFragment to edit a list of {@link CheckListItem} options.
+ * DialogFragment to edit a list of {@link Entity}'s wrapped in {@link SelectableEntity}.
  * <p>
  * Replacement for the AlertDialog with multipleChoice setup.
- * <ul>Pro:
- * <li>Single item list instead of 2 arrays.</li>
- * <li>Item can be anything as long as it implements {@link CheckListItem}</li>
- * <li>Default implementation {@link SelectableItem} encapsulates a long<br>
- * which can be used to represent an id, number, bit in bitmask, ... </li>
- * <li>Layout easy to enhance.</li>
- * </ul>
- * <p>
- * Con: the items <strong>must</strong> be Parcelable.
  */
 public class CheckListDialogFragment
         extends DialogFragment {
@@ -80,15 +70,16 @@ public class CheckListDialogFragment
     public static final String TAG = "CheckListDialogFragment";
 
     /** Argument. */
-    private static final String BKEY_CHECK_LIST = TAG + ":list";
+    private static final String BKEY_LIST = TAG + ":list";
 
-    /** The list of items to display. Object + checkbox. */
-    private ArrayList<CheckListItem> mList;
+    /** The list of items to display. */
+    private ArrayList<SelectableEntity> mList;
+    /** Where to send the result. */
     private WeakReference<CheckListResultsListener> mListener;
 
     /** identifier of the field this dialog is bound to. */
     @IdRes
-    private int mDestinationFieldId;
+    private int mFieldId;
 
     /**
      * Constructor.
@@ -102,13 +93,13 @@ public class CheckListDialogFragment
     public static CheckListDialogFragment newInstance(
             @IdRes final int fieldId,
             @StringRes final int dialogTitleId,
-            @NonNull final ArrayList<CheckListItem> items) {
+            @NonNull final ArrayList<SelectableEntity> items) {
 
         CheckListDialogFragment frag = new CheckListDialogFragment();
         Bundle args = new Bundle(3);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
-        args.putParcelableArrayList(BKEY_CHECK_LIST, items);
+        args.putParcelableArrayList(BKEY_LIST, items);
         frag.setArguments(args);
         return frag;
     }
@@ -118,10 +109,10 @@ public class CheckListDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+        mFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
         args = savedInstanceState != null ? savedInstanceState : args;
-        mList = args.getParcelableArrayList(BKEY_CHECK_LIST);
+        mList = args.getParcelableArrayList(BKEY_LIST);
         Objects.requireNonNull(mList, ErrorMsg.ARGS_MISSING_CHECKLIST);
     }
 
@@ -133,71 +124,57 @@ public class CheckListDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams")
         View root = layoutInflater.inflate(R.layout.dialog_edit_checklist, null);
+        ViewGroup body = root.findViewById(android.R.id.list);
 
         // Takes the list of items and create a list of checkboxes in the display.
-        ViewGroup body = root.findViewById(android.R.id.list);
-        for (CheckListItem item : mList) {
+        for (SelectableEntity item : mList) {
             CompoundButton buttonView = new CheckBox(getContext());
             buttonView.setChecked(item.isSelected());
             //noinspection ConstantConditions
-            buttonView.setText(item.getLabel(getContext()));
+            buttonView.setText(item.getEntity().getLabel(getContext()));
             buttonView.setOnCheckedChangeListener((v, isChecked) -> item.setSelected(isChecked));
             body.addView(buttonView);
         }
 
-        //noinspection ConstantConditions
-        AlertDialog dialog =
-                new MaterialAlertDialogBuilder(getContext())
-                        .setView(root)
-                        .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, which) -> {
-                            if (mListener.get() != null) {
-                                mListener.get().onCheckListEditorSave(mDestinationFieldId,
-                                                                      getSelectedItems(mList));
-                            } else {
-                                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                                    Log.d(TAG, "onCheckListEditorSave|"
-                                               + Logger.WEAK_REFERENCE_DEAD);
-                                }
-                            }
-                        })
-                        .create();
-
         Bundle args = getArguments();
+        @StringRes
+        int titleId = 0;
         if (args != null) {
-            @StringRes
-            int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
-            if (titleId != 0) {
-                dialog.setTitle(titleId);
+            titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
+        }
+
+        //noinspection ConstantConditions
+        return new MaterialAlertDialogBuilder(getContext())
+                .setView(root)
+                .setTitle(titleId != 0 ? titleId : R.string.edit)
+                .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
+                .setPositiveButton(android.R.string.ok, (d, which) -> sendResults())
+                .create();
+    }
+
+    private void sendResults() {
+        if (mListener.get() != null) {
+            // Transfer the selected items to a new list
+            final ArrayList<Entity> result = new ArrayList<>();
+            for (SelectableEntity entry : mList) {
+                if (entry.isSelected()) {
+                    result.add(entry.getEntity());
+                }
+            }
+            mListener.get().onCheckListEditorSave(mFieldId, result);
+
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Log.d(TAG, "onCheckListEditorSave|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
-        return dialog;
     }
 
     @Override
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(BKEY_CHECK_LIST, mList);
-    }
-
-    /**
-     * Get the list of selected items.
-     *
-     * @param list to dissect
-     *
-     * @return filtered list
-     */
-    @NonNull
-    private ArrayList<CheckListItem>
-    getSelectedItems(@NonNull final Collection<CheckListItem> list) {
-        final ArrayList<CheckListItem> result = new ArrayList<>(list.size());
-        for (CheckListItem entry : list) {
-            if (entry.isSelected()) {
-                result.add(entry);
-            }
-        }
-        return result;
+        outState.putParcelableArrayList(BKEY_LIST, mList);
     }
 
     /**
@@ -217,21 +194,10 @@ public class CheckListDialogFragment
         /**
          * reports the results after this dialog was confirmed.
          *
-         * @param destinationFieldId the field this dialog is bound to
-         * @param list               the list of CHECKED options
-         *                           (non-checked options have been removed)
+         * @param fieldId the field this dialog is bound to
+         * @param value   the CHECKED items
          */
-        void onCheckListEditorSave(int destinationFieldId,
-                                   @NonNull ArrayList<CheckListItem> list);
-    }
-
-    /**
-     * Loads the {@link CheckListDialogFragment} with the *current* list,
-     * e.g. not the state of the list at definition time, but the one at creation time.
-     */
-    public interface ListGetter {
-
-        @NonNull
-        ArrayList<CheckListItem> getList();
+        void onCheckListEditorSave(int fieldId,
+                                   @NonNull ArrayList<Entity> value);
     }
 }

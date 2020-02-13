@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
  * Retrieving by bookId is always done ordered by position.
  */
 public class TocEntry
-        implements Parcelable, ItemWithFixableId, ItemWithTitle {
+        implements Entity, ItemWithFixableId, ItemWithTitle {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR =
@@ -216,6 +216,16 @@ public class TocEntry
     @Override
     public String getTitle() {
         return mTitle;
+    }
+
+    @NonNull
+    public String getLabel(@NonNull final Context context) {
+        Locale locale = LocaleUtils.getUserLocale(context);
+        // overkill...  see the getLocale method for more comments
+        // try (DAO db = new DAO(TAG)) {
+        //     locale = getLocale(context, db, LocaleUtils.getUserLocale(context));
+        // }
+        return reorderTitleForDisplaying(context, locale);
     }
 
     public void setTitle(@NonNull final String title) {

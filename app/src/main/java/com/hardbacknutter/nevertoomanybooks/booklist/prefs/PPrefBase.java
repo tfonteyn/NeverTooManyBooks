@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -177,7 +177,7 @@ public abstract class PPrefBase<T>
         return mKey;
     }
 
-    public void remove() {
+    void remove() {
         if (mIsPersistent) {
             getPrefs().edit().remove(getKey()).apply();
         }

@@ -34,7 +34,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -44,6 +43,9 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.LongNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
@@ -53,12 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 public class EditBookNativeIdFragment
         extends EditBookBaseFragment {
 
-    private EditText mEidGoodreadsView;
-    private EditText mEidIsfdbView;
-    private EditText mEidLibraryThingView;
-    private EditText mEidOpenLibraryView;
-    private EditText mEidStripInfoView;
-
     /** Show all sites, instead of just the enabled sites. */
     private boolean mShowAllSites = true;
 
@@ -67,32 +63,7 @@ public class EditBookNativeIdFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_edit_book_native_id, container, false);
-        mEidGoodreadsView = view.findViewById(R.id.site_goodreads);
-        mEidIsfdbView = view.findViewById(R.id.site_isfdb);
-        mEidLibraryThingView = view.findViewById(R.id.site_library_thing);
-        mEidOpenLibraryView = view.findViewById(R.id.site_open_library);
-        mEidStripInfoView = view.findViewById(R.id.site_strip_info_be);
-        return view;
-    }
-
-    @Override
-    protected void initFields() {
-        super.initFields();
-        final Fields fields = getFields();
-
-        fields.addString(mEidGoodreadsView, DBDefinitions.KEY_EID_GOODREADS_BOOK)
-              .setRelatedFields(R.id.lbl_site_goodreads);
-        fields.addString(mEidIsfdbView, DBDefinitions.KEY_EID_ISFDB)
-              .setRelatedFields(R.id.lbl_site_isfdb);
-        fields.addString(mEidLibraryThingView, DBDefinitions.KEY_EID_LIBRARY_THING)
-              .setRelatedFields(R.id.lbl_site_library_thing);
-        fields.addString(mEidOpenLibraryView, DBDefinitions.KEY_EID_OPEN_LIBRARY)
-              .setRelatedFields(R.id.lbl_site_open_library);
-        fields.addString(mEidStripInfoView, DBDefinitions.KEY_EID_STRIP_INFO_BE)
-              .setRelatedFields(R.id.lbl_site_strip_info_be);
-
-        setSiteVisibility(mShowAllSites);
+        return inflater.inflate(R.layout.fragment_edit_book_native_id, container, false);
     }
 
     @CallSuper
@@ -105,7 +76,42 @@ public class EditBookNativeIdFragment
     }
 
     @Override
-    protected void onLoadFields(@NonNull final Book book) {
+    protected void initFields() {
+        super.initFields();
+        final Fields fields = getFields();
+
+        // These FieldFormatter's can be shared between multiple fields.
+        final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
+
+        fields.<Number>add(R.id.site_goodreads, new EditTextAccessor<>(),
+                           DBDefinitions.KEY_EID_GOODREADS_BOOK)
+                .setRelatedFields(R.id.lbl_site_goodreads)
+                .setFormatter(longNumberFormatter);
+
+        fields.<Number>add(R.id.site_isfdb, new EditTextAccessor<>(),
+                           DBDefinitions.KEY_EID_ISFDB)
+                .setRelatedFields(R.id.lbl_site_isfdb)
+                .setFormatter(longNumberFormatter);
+
+        fields.<Number>add(R.id.site_library_thing, new EditTextAccessor<>(),
+                           DBDefinitions.KEY_EID_LIBRARY_THING)
+                .setRelatedFields(R.id.lbl_site_library_thing)
+                .setFormatter(longNumberFormatter);
+
+        fields.<Number>add(R.id.site_strip_info_be, new EditTextAccessor<>(),
+                           DBDefinitions.KEY_EID_STRIP_INFO_BE)
+                .setRelatedFields(R.id.lbl_site_strip_info_be)
+                .setFormatter(longNumberFormatter);
+
+        fields.<String>add(R.id.site_open_library, new EditTextAccessor<>(),
+                           DBDefinitions.KEY_EID_OPEN_LIBRARY)
+                .setRelatedFields(R.id.lbl_site_open_library);
+
+        setSiteVisibility(mShowAllSites);
+    }
+
+    @Override
+    void onLoadFields(@NonNull final Book book) {
         super.onLoadFields(book);
 
         // hide unwanted fields
@@ -157,19 +163,19 @@ public class EditBookNativeIdFragment
         final View parent = getView();
 
         //noinspection ConstantConditions
-        fields.getField(mEidGoodreadsView).setVisibility(
+        fields.getField(R.id.site_goodreads).setVisibility(
                 parent, (sites & SearchSites.GOODREADS) != 0 ? View.VISIBLE : View.GONE);
 
-        fields.getField(mEidIsfdbView).setVisibility(
+        fields.getField(R.id.site_isfdb).setVisibility(
                 parent, (sites & SearchSites.ISFDB) != 0 ? View.VISIBLE : View.GONE);
 
-        fields.getField(mEidLibraryThingView).setVisibility(
+        fields.getField(R.id.site_library_thing).setVisibility(
                 parent, (sites & SearchSites.LIBRARY_THING) != 0 ? View.VISIBLE : View.GONE);
 
-        fields.getField(mEidOpenLibraryView).setVisibility(
+        fields.getField(R.id.site_open_library).setVisibility(
                 parent, (sites & SearchSites.OPEN_LIBRARY) != 0 ? View.VISIBLE : View.GONE);
 
-        fields.getField(mEidStripInfoView).setVisibility(
+        fields.getField(R.id.site_strip_info_be).setVisibility(
                 parent, (sites & SearchSites.STRIP_INFO_BE) != 0 ? View.VISIBLE : View.GONE);
     }
 }

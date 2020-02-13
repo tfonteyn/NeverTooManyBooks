@@ -141,7 +141,6 @@ public final class DEBUG_SWITCHES {
     static final boolean STRICT_MODE = false;
     /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
     static final boolean BOB_FIX_POSITION = false;
-    static final boolean THEME = false;
     static final boolean TRACK = false;
 
     private DEBUG_SWITCHES() {

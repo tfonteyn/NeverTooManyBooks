@@ -49,7 +49,7 @@ public interface Entity
     long getId();
 
     /**
-     * Get the label to use.
+     * Get the label to use. This is for <strong>displaying only</strong>.
      *
      * @param context Current context
      *

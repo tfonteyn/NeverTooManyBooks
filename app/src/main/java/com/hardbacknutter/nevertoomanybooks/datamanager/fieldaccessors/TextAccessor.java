@@ -44,10 +44,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  *
  * @param <T> type of Field value.
  */
-public class TextViewAccessor<T>
+public class TextAccessor<T>
         extends BaseDataAccessor<T> {
 
-    private static final String TAG = "TextViewAccessor";
+    private static final String TAG = "TextAccessor";
 
     @Nullable
     FieldFormatter<T> mFormatter;
@@ -57,10 +57,8 @@ public class TextViewAccessor<T>
         return mFormatter;
     }
 
-    public TextViewAccessor<T> setFormatter(@NonNull final FieldFormatter formatter) {
-        //noinspection unchecked
+    public void setFormatter(@NonNull final FieldFormatter<T> formatter) {
         mFormatter = formatter;
-        return this;
     }
 
     @NonNull
@@ -82,23 +80,21 @@ public class TextViewAccessor<T>
         mRawValue = value;
 
         TextView view = (TextView) getView();
-        if (view != null) {
-            if (mFormatter != null) {
-                try {
-                    mFormatter.apply(mRawValue, view);
-                    return;
+        if (mFormatter != null) {
+            try {
+                mFormatter.apply(mRawValue, view);
+                return;
 
-                } catch (@NonNull final ClassCastException e) {
-                    // Due to the way a Book loads data from the database,
-                    // it's possible that it gets the column type wrong.
-                    // See {@link BookCursor} class docs.
-                    Logger.error(view.getContext(), TAG, e, value);
-                }
+            } catch (@NonNull final ClassCastException e) {
+                // Due to the way a Book loads data from the database,
+                // it's possible that it gets the column type wrong.
+                // See {@link BookCursor} class docs.
+                Logger.error(view.getContext(), TAG, e, value);
             }
-
-            // if we don't have a formatter, or if we had a ClassCastException
-            view.setText(String.valueOf(value));
         }
+
+        // if we don't have a formatter, or if we had a ClassCastException
+        view.setText(String.valueOf(value));
     }
 
     @Override

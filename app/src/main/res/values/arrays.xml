@@ -201,7 +201,7 @@
     </string-array>
     <!-- multi-select: use bitmask values: 1,2,4,8,... NEWTHINGS: edition: add the flag -->
     <string-array name="pv_bob_filter_edition">
-        <!-- Book#EDITION_FIRST = 1 -->
+        <!-- Book#FIRST = 1 -->
         <item>1</item>
         <!-- Book#EDITION_FIRST_IMPRESSION = 1 << 1 -->
         <item>2</item>

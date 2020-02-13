@@ -73,7 +73,7 @@ public class GoogleBarcodeScanner
     }
 
     @Nullable
-    public String decode(@NonNull final Bitmap bm) {
+    private String decode(@NonNull final Bitmap bm) {
         if (mDetector.isOperational()) {
             Frame frame = new Frame.Builder().setBitmap(bm).build();
             SparseArray<Barcode> barCodes = mDetector.detect(frame);

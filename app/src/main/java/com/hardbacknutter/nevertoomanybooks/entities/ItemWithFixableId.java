@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -46,7 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
  * An entity (item) in the database which is capable of finding itself in the database
  * without using its id.
  */
-public interface ItemWithFixableId {
+public interface ItemWithFixableId
+        extends Parcelable {
 
     String TAG = "ItemWithFixableId";
 
@@ -99,7 +101,7 @@ public interface ItemWithFixableId {
             Integer hashCode = item.hashCode();
 
             if (ids.contains(itemId) && !item.isUniqueById() && !hashCodes.contains(hashCode)) {
-                // The base object(id) is unique, but other "list-significant" fields are different.
+                // The base object(id) is unique, but other "list-significant" fields are not.
                 ids.add(itemId);
                 hashCodes.add(hashCode);
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.PRUNE_LIST) {

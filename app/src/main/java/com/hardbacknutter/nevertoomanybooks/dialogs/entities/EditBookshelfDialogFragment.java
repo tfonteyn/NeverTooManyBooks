@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -180,7 +179,7 @@ public class EditBookshelfDialogFragment
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                        Log.d(TAG, "onBookshelfChanged|" + Logger.WEAK_REFERENCE_DEAD);
+                        Log.d(TAG, "onBookshelfChanged|" + ErrorMsg.WEAK_REFERENCE);
                     }
                 }
             }
@@ -222,7 +221,7 @@ public class EditBookshelfDialogFragment
                         mListener.get().onBookshelfChanged(destination.getId(), booksMoved);
                     } else {
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookshelfChanged|" + Logger.WEAK_REFERENCE_DEAD);
+                            Log.d(TAG, "onBookshelfChanged|" + ErrorMsg.WEAK_REFERENCE);
                         }
                     }
                 })

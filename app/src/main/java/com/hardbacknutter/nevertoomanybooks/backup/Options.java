@@ -71,8 +71,8 @@ public abstract class Options
      * @param uri     to read/write. <strong>can be {@code null}</strong> if instead we read/write
      *                to a stream
      */
-    protected Options(final int options,
-                      @Nullable final Uri uri) {
+    Options(final int options,
+            @Nullable final Uri uri) {
         this.options = options;
         this.uri = uri;
     }
@@ -82,12 +82,12 @@ public abstract class Options
      *
      * @param in Parcel to construct the object from
      */
-    protected Options(@NonNull final Parcel in) {
+    Options(@NonNull final Parcel in) {
         options = in.readInt();
         uri = in.readParcelable(getClass().getClassLoader());
     }
 
-    public void validate() {
+    void validate() {
         Objects.requireNonNull(uri, ErrorMsg.NULL_URI);
     }
 

@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.picker;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 
@@ -200,7 +199,7 @@ public class StylePickerDialogFragment
             mListener.get().onStyleChanged(style);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onStyleChanged|" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onStyleChanged|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
 
@@ -315,7 +314,7 @@ public class StylePickerDialogFragment
             }
         }
 
-        public interface SelectionListener<T> {
+        interface SelectionListener<T> {
 
             void onSelected(T o);
         }

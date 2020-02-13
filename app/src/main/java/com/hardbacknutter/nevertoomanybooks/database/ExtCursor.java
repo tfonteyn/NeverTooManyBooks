@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
  * accessing anything.<br>
  * <strong>IMPORTANT:</strong> only gets the types from the table passed to {@link #getType}
  */
-public class ExtCursor
+class ExtCursor
         // disable or enable tracking
         extends SynchronizedCursor {
 //        extends TrackedCursor {

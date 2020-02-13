@@ -30,7 +30,8 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 public final class ErrorMsg {
 
     public static final String NO_TARGET_FRAGMENT_SET = "no target fragment set";
-
+    public static final String KEY_SHOULD_NOT_BE_EMPTY = "key should not be empty";
+    public static final String WEAK_REFERENCE = "Listener was dead";
 
     public static final String NULL_SCANNER_MODEL = "ScannerModel";
     public static final String NULL_INTENT_DATA = "Intent data";

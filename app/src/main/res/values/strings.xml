@@ -1634,5 +1634,12 @@
         Value: %2$.2f
     -->
     <string name="fallback_currency_format">%1$s%2$.2f</string>
+    <string name="lbl_condition_fine">Fine</string>
+    <string name="lbl_condition_very_good">Very good</string>
+    <string name="lbl_condition_good">Good</string>
+    <string name="lbl_condition_fair">Fair</string>
+    <string name="lbl_condition_reading_copy">Reading copy</string>
+    <string name="lbl_dust_cover_missing">Missing</string>
+    <string name="lbl_dust_cover_none_or_unknown">None</string>
 
 </resources>

@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks.dialogs.picker;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -252,10 +252,11 @@ public class PartialDatePickerDialogFragment
         dismiss();
 
         if (mListener.get() != null) {
-            mListener.get().onPartialDatePickerSave(mDestinationFieldId, mYear, mMonth, mDay);
+            String date = DateUtils.buildPartialDate(mYear, mMonth, mDay);
+            mListener.get().onPartialDatePickerSave(mDestinationFieldId, date);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onPartialDatePickerSave|" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onPartialDatePickerSave|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
     }
@@ -316,9 +317,7 @@ public class PartialDatePickerDialogFragment
     public interface PartialDatePickerResultsListener {
 
         void onPartialDatePickerSave(@IdRes int destinationFieldId,
-                                     @Nullable Integer year,
-                                     @Nullable Integer month,
-                                     @Nullable Integer day);
+                                     @NonNull String date);
     }
 
     /**

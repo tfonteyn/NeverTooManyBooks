@@ -116,8 +116,8 @@ public class ScannerViewModel
     /**
      * DEBUG only.
      */
-    public void fakeBarcodeScan(@NonNull final Context context,
-                                @Nullable final Intent data) {
+    public void fakeScanInEmulator(@NonNull final Context context,
+                                   @Nullable final Intent data) {
         // detect emulator for testing
         if (Build.PRODUCT.startsWith("sdk")) {
             // when used, the file must be in the root external app dir.

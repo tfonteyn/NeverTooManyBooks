@@ -133,7 +133,7 @@ public final class Site
      *
      * @param from object to copy
      */
-    protected Site(@NonNull final Site from) {
+    Site(@NonNull final Site from) {
         id = from.id;
         mEnabled = from.mEnabled;
         mName = from.mName;

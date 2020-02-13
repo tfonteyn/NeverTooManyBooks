@@ -60,11 +60,8 @@ public class CompoundButtonAccessor
     @Override
     public Boolean getValue() {
         Checkable cb = (Checkable) getView();
-        if (cb != null) {
-            return cb.isChecked();
-        }
+        return cb.isChecked();
 
-        return mRawValue != null ? mRawValue : false;
     }
 
     @Override
@@ -72,9 +69,7 @@ public class CompoundButtonAccessor
         mRawValue = value;
 
         Checkable cb = (Checkable) getView();
-        if (cb != null) {
-            cb.setChecked(mRawValue);
-        }
+        cb.setChecked(mRawValue);
     }
 
     @Override

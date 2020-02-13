@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  * <li>"mature" covers are not accessible.</li>
  * </ul>
  */
-public class StripInfoBookHandler
+class StripInfoBookHandler
         extends JsoupBase {
 
     private static final String FILENAME_SUFFIX = "_SI";

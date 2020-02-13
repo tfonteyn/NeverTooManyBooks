@@ -52,8 +52,8 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields.Field;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -116,9 +116,15 @@ public abstract class BookBaseFragment
      * <p>
      * Called from {@link #onActivityCreated(Bundle)}.
      */
-    @CallSuper
-    void initFields() {
-    }
+    abstract void initFields();
+
+    /**
+     * Get the fields collection.
+     *
+     * @return the fields
+     */
+    @NonNull
+    abstract Fields getFields();
 
     /**
      * Trigger the Fragment to load its Fields from the Book.
@@ -137,47 +143,15 @@ public abstract class BookBaseFragment
         // https://issuetracker.google.com/issues/144442240
         setHasOptionsMenu(isVisible());
 
-        // set the View member as the Views will be (re)created each time.
-        //noinspection ConstantConditions
-        getFields().setParentView(getView());
-        // and load the content into the views
+        // load the book data into the views
         loadFields();
-    }
-
-    /**
-     * Get the fields collection.
-     *
-     * @return the fields
-     */
-    @NonNull
-    abstract Fields getFields();
-
-    /**
-     * Load all Fields from the actual data store/manager.
-     * <p>
-     * Loads the data while preserving the isDirty() status.
-     * Normally called from the base {@link #onResume},
-     * but can explicitly be called after {@link Book#reload}.
-     * <p>
-     * This is 'final' because we want inheritors to implement {@link #onLoadFields}.
-     */
-    final void loadFields() {
-        Book book = mBookModel.getBook();
-
-        // disabling the AfterFieldChangeListener and preserve the 'dirty' status.
-        getFields().setAfterFieldChangeListener(null);
-        final boolean wasDirty = mBookModel.isDirty();
-        // make it so!
-        onLoadFields(book);
-        // restore the dirt-status and the listener
-        mBookModel.setDirty(wasDirty);
-        getFields().setAfterFieldChangeListener(field -> mBookModel.setDirty(true));
 
         // Set the activity title depending on View or Edit mode.
         // This is a good place to do this, as we use data from the book for the title.
         //noinspection ConstantConditions
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
+            Book book = mBookModel.getBook();
             if (book.isNew()) {
                 // EDIT NEW book
                 actionBar.setTitle(R.string.title_add_book);
@@ -189,6 +163,31 @@ public abstract class BookBaseFragment
                 actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
             }
         }
+    }
+
+    /**
+     * Load all Fields from the book.
+     * <p>
+     * Loads the data while preserving the isDirty() status.
+     * Normally called from the base {@link #onResume},
+     * but can explicitly be called after {@link Book#reload}.
+     * <p>
+     * This is 'final' because we want inheritors to implement {@link #onLoadFields}.
+     */
+    final void loadFields() {
+
+        // Prepare the fields for applying the value to the their View.
+        //noinspection ConstantConditions
+        getFields().prepareForOnLoadsFields(getView());
+        // preserve the 'dirty' status.
+        final boolean wasDirty = mBookModel.isDirty();
+
+        // make it so!
+        onLoadFields(mBookModel.getBook());
+
+        // restore the dirt-status and install the AfterChangeListener
+        mBookModel.setDirty(wasDirty);
+        getFields().setAfterChangeListener(fieldId -> mBookModel.setDirty(true));
     }
 
     /**
@@ -245,13 +244,13 @@ public abstract class BookBaseFragment
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                AmazonSearchEngine.openWebsite(context, null, book.getPrimarySeries());
+                AmazonSearchEngine.openWebsite(context, null, book.getPrimarySeriesTitle());
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
                 AmazonSearchEngine.openWebsite(context,
                                                book.getPrimaryAuthor(context),
-                                               book.getPrimarySeries());
+                                               book.getPrimarySeriesTitle());
                 return true;
             }
 

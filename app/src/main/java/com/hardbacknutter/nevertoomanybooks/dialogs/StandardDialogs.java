@@ -95,7 +95,8 @@ public final class StandardDialogs {
         new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_series)
-                .setMessage(context.getString(R.string.confirm_delete_series, series.getTitle()))
+                .setMessage(context.getString(R.string.confirm_delete_series,
+                                              series.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
                 .create()
@@ -116,7 +117,7 @@ public final class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_delete_toc_entry)
                 .setMessage(context.getString(R.string.confirm_delete_toc_entry,
-                                              tocEntry.getTitle(),
+                                              tocEntry.getLabel(context),
                                               tocEntry.getAuthor().getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())

@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -439,7 +440,8 @@ public class StartupViewModel
                 cleaner.bookAuthors(context);
                 cleaner.bookSeries(context);
 
-                //URGENT: check & log, but don't update yet... need more testing
+                //TEST: we only check & log for now, but don't update yet...
+                // we need to test with bad data
                 cleaner.maybeUpdate(context, true);
                 return true;
 
@@ -542,7 +544,7 @@ public class StartupViewModel
             publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
                     R.string.progress_msg_rebuilding_search_index)));
             try {
-                final boolean reorder = Prefs.reorderTitleForSorting(context);
+                final boolean reorder = ItemWithTitle.isReorderTitleForSorting(context);
                 mDb.rebuildOrderByTitleColumns(context, reorder);
                 return true;
 

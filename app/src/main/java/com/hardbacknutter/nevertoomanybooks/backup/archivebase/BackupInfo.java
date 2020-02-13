@@ -170,7 +170,7 @@ public class BackupInfo {
      *
      * @return version
      */
-    public long getAppVersionCode() {
+    private long getAppVersionCode() {
         // old archives used an Integer, newer use Long.
         Object vo = mBundle.get(INFO_APP_VERSION_CODE);
         if (vo == null) {

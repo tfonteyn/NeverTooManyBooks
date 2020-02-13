@@ -44,10 +44,13 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class BitmaskChipGroupAccessor
         extends BaseDataAccessor<Integer> {
 
-    private Map<Integer, String> mAll;
+    @NonNull
+    private final Map<Integer, String> mAll;
 
-    public void setBitmask(@NonNull final Map<Integer, String> all) {
-        mAll = all;
+    public BitmaskChipGroupAccessor(@NonNull final Map<Integer, String> allValues,
+                                    final boolean isEditable) {
+        mAll = allValues;
+        mIsEditable = isEditable;
     }
 
     @Override
@@ -67,38 +70,36 @@ public class BitmaskChipGroupAccessor
         mRawValue = value;
 
         ViewGroup view = (ViewGroup) getView();
-        if (view != null) {
-            view.removeAllViews();
-            ChipGroup chipGroup = (ChipGroup) view;
-            Context context = chipGroup.getContext();
+        view.removeAllViews();
+        ChipGroup chipGroup = (ChipGroup) view;
+        Context context = chipGroup.getContext();
 
-            // *all* values
-            for (Map.Entry<Integer, String> entry : mAll.entrySet()) {
-                boolean isSet = (entry.getKey() & mRawValue) != 0;
-                // if editable, all values; if not editable only the set values.
-                if (isSet || isEditable()) {
-                    Chip chip = new Chip(context, null,
-                                         R.style.Widget_MaterialComponents_Chip_Choice);
-                    chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-                    chip.setId(entry.getKey());
-                    chip.setText(entry.getValue());
-                    chip.setSelected(isSet);
-                    chip.setClickable(isEditable());
-                    if (isEditable()) {
-                        chip.setOnClickListener(v -> {
-                            int current = v.getId();
-                            if (v.isSelected()) {
-                                // remove
-                                mRawValue &= ~current;
-                            } else {
-                                // add
-                                mRawValue |= current;
-                            }
-                            v.setSelected(!v.isSelected());
-                        });
-                    }
-                    chipGroup.addView(chip);
+        // *all* values
+        for (Map.Entry<Integer, String> entry : mAll.entrySet()) {
+            boolean isSet = (entry.getKey() & mRawValue) != 0;
+            // if editable, all values; if not editable only the set values.
+            if (isSet || mIsEditable) {
+                Chip chip = new Chip(context, null,
+                                     R.style.Widget_MaterialComponents_Chip_Choice);
+                chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+                chip.setId(entry.getKey());
+                chip.setText(entry.getValue());
+                chip.setSelected(isSet);
+                chip.setClickable(mIsEditable);
+                if (mIsEditable) {
+                    chip.setOnClickListener(v -> {
+                        int current = v.getId();
+                        if (v.isSelected()) {
+                            // remove
+                            mRawValue &= ~current;
+                        } else {
+                            // add
+                            mRawValue |= current;
+                        }
+                        v.setSelected(!v.isSelected());
+                    });
                 }
+                chipGroup.addView(chip);
             }
         }
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -46,25 +46,19 @@
     <LinearLayout
         android:id="@id/ROW_ONCLICK_TARGET"
         style="@style/RowTextSection"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_GRABBER_ICON"
         app:layout_constraintStart_toEndOf="@id/ROW_DELETE_BTN"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         >
 
         <TextView
             android:id="@+id/row_series"
             style="@style/RowTextLine.Primary"
-            tools:ignore="SelectableText"
+            android:textIsSelectable="false"
             tools:text="row_series"
             />
 
-        <TextView
-            android:id="@+id/row_series_sort"
-            style="@style/RowTextLine.Secondary"
-            tools:ignore="SelectableText"
-            tools:text="row_series_sort"
-            />
     </LinearLayout>
 
     <ImageView

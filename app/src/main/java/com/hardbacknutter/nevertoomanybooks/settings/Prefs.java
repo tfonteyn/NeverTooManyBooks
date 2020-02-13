@@ -147,6 +147,8 @@ public final class Prefs {
     public static final String psk_style_filters = "psk_style_filters";
     /** Style setting - PreferenceScreen/PreferenceCategory Key. */
     public static final String psk_style_show_details = "psk_style_show_details";
+    public static final String pk_reformat_titles_sort = "reformat.titles.sort";
+    public static final String pk_reformat_titles_display = "reformat.titles.display";
     /** Global settings - PreferenceScreen/PreferenceCategory Key. */
     static final String psk_search_site_order = "psk_search_site_order";
     /** Global settings - Purge action. */
@@ -161,9 +163,6 @@ public final class Prefs {
     static final String psk_credentials_goodreads = "psk_credentials_goodreads";
     /** Global settings - Credentials. */
     static final String psk_credentials_library_thing = "psk_credentials_library_thing";
-    static final String pk_reformat_titles_sort = "reformat.titles.sort";
-    static final String pk_reformat_titles_display = "reformat.titles.display";
-
     /** Global settings - Purge action. */
     static final String psk_purge_blns = "psk_purge_blns";
 
@@ -245,51 +244,4 @@ public final class Prefs {
         Log.d(TAG, "dumpPreferences|" + sb);
     }
 
-    /**
-     * Get the global default for this preference.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if we want "given-names last-name" formatted authors.
-     */
-    public static boolean displayAuthorGivenNameFirst(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(pk_bob_format_author_name, false);
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if we want "given-names last-name" sorted authors.
-     */
-    public static boolean sortAuthorGivenNameFirst(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(pk_bob_sort_author_name, false);
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
-     */
-    public static boolean reorderTitleForDisplaying(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_titles_display, false);
-    }
-
-    /**
-     * Get the global default for this preference.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if titles should be reordered. e.g. "The title" -> "title, The"
-     */
-    public static boolean reorderTitleForSorting(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_titles_sort, true);
-    }
 }

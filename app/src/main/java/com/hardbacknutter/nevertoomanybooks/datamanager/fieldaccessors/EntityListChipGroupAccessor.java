@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * FieldFormatter for a list field. Formats the items as a CSV String.
+ * FieldFormatter for a list field.
  * <ul>
  * <li>Multiple fields: <strong>no</strong></li>
  * <li>Extract: <strong>local variable</strong></li>
@@ -56,10 +56,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 public class EntityListChipGroupAccessor
         extends BaseDataAccessor<ArrayList<Entity>> {
 
-    private List<Entity> mAll;
+    @NonNull
+    private final List<Entity> mAll;
 
-    public void setList(@NonNull final List<Entity> all) {
-        mAll = all;
+    public EntityListChipGroupAccessor(@NonNull final List<Entity> allValues,
+                                       final boolean isEditable) {
+        mAll = allValues;
+        mIsEditable = isEditable;
     }
 
     @Override
@@ -79,36 +82,34 @@ public class EntityListChipGroupAccessor
         mRawValue = value;
 
         ViewGroup view = (ViewGroup) getView();
-        if (view != null) {
-            view.removeAllViews();
-            ChipGroup chipGroup = (ChipGroup) view;
-            Context context = chipGroup.getContext();
+        view.removeAllViews();
+        ChipGroup chipGroup = (ChipGroup) view;
+        Context context = chipGroup.getContext();
 
-            // *all* values
-            for (Entity entity : mAll) {
-                boolean isSet = mRawValue.contains(entity);
-                // if editable, all values; if not editable only the set values.
-                if (isSet || isEditable()) {
-                    Chip chip = new Chip(context, null,
-                                         R.style.Widget_MaterialComponents_Chip_Choice);
-                    chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-                    chip.setTag(entity);
-                    chip.setText(entity.getLabel(context));
-                    chip.setSelected(isSet);
-                    chip.setClickable(isEditable());
-                    if (isEditable()) {
-                        chip.setOnClickListener(v -> {
-                            Entity current = (Entity) v.getTag();
-                            if (v.isSelected()) {
-                                mRawValue.remove(current);
-                            } else {
-                                mRawValue.add(current);
-                            }
-                            v.setSelected(!v.isSelected());
-                        });
-                    }
-                    chipGroup.addView(chip);
+        // *all* values
+        for (Entity entity : mAll) {
+            boolean isSet = mRawValue.contains(entity);
+            // if editable, all values; if not editable only the set values.
+            if (isSet || mIsEditable) {
+                Chip chip = new Chip(context, null,
+                                     R.style.Widget_MaterialComponents_Chip_Choice);
+                chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+                chip.setTag(entity);
+                chip.setText(entity.getLabel(context));
+                chip.setSelected(isSet);
+                chip.setClickable(mIsEditable);
+                if (mIsEditable) {
+                    chip.setOnClickListener(v -> {
+                        Entity current = (Entity) v.getTag();
+                        if (v.isSelected()) {
+                            mRawValue.remove(current);
+                        } else {
+                            mRawValue.add(current);
+                        }
+                        v.setSelected(!v.isSelected());
+                    });
                 }
+                chipGroup.addView(chip);
             }
         }
     }

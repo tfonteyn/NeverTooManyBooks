@@ -149,7 +149,7 @@ public class BookSearchByNativeIdFragment
     }
 
     @Override
-    protected boolean onSearch() {
+    boolean onSearch() {
         final int siteId = SearchSites.getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
         final String nativeId = mNativeIdView.getText().toString().trim();
         //noinspection ConstantConditions

@@ -81,7 +81,7 @@ public class ImportHelper
      *
      * @param in Parcel to construct the object from
      */
-    protected ImportHelper(@NonNull final Parcel in) {
+    private ImportHelper(@NonNull final Parcel in) {
         super(in);
     }
 

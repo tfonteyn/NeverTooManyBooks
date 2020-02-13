@@ -29,8 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,33 +39,20 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
  * FieldFormatter for {@link Money} fields.
  * <ul>
- * <li>Multiple fields: <strong>no</strong></li>
- * <li>Extract: <strong>local variable</strong></li>
+ * <li>Multiple fields: <strong>yes</strong></li>
  * </ul>
  */
-public class MonetaryFormatter
+public class MoneyFormatter
         implements FieldFormatter<Money> {
 
     /** Log tag. */
-    private static final String TAG = "MonetaryFormatter";
-    @NonNull
-    private final Locale mLocale;
-    @Nullable
-    private Money mRawValue;
-
-    /**
-     * Constructor.
-     *
-     * @param locale to use
-     */
-    public MonetaryFormatter(@NonNull final Locale locale) {
-        mLocale = locale;
-    }
+    private static final String TAG = "MoneyFormatter";
 
     @NonNull
     @Override
@@ -78,21 +63,23 @@ public class MonetaryFormatter
             return "";
         }
 
+        String currency = rawValue.getCurrency();
         // no currency ? just display the source value as-is
-        if (rawValue.getCurrency() == null) {
+        if (currency == null || currency.isEmpty()) {
             return String.valueOf(rawValue.doubleValue());
         }
 
         try {
-            DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
-            nf.setCurrency(Currency.getInstance(rawValue.getCurrency()));
+            Locale locale = LocaleUtils.getUserLocale(context);
+            DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
+            nf.setCurrency(Currency.getInstance(currency));
 
             // the result is rather dire... most currency symbols are shown as 3-char codes
             // e.g. 'EUR','US$',...
             return nf.format(rawValue.doubleValue());
 
         } catch (@NonNull final IllegalArgumentException e) {
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "currency=" + rawValue.getCurrency()
                            + "|value=" + rawValue.doubleValue(), e);
             }
@@ -103,30 +90,14 @@ public class MonetaryFormatter
         }
     }
 
-    @Override
-    public void apply(@Nullable final Money rawValue,
-                      @NonNull final View view) {
-        mRawValue = rawValue;
-        ((TextView) view).setText(format(view.getContext(), rawValue));
-    }
-
-    @NonNull
-    @Override
-    public Money extract(@NonNull final View view) {
-        return mRawValue != null ? mRawValue : new Money();
-    }
-
     // The ICU NumberFormatter is only available from ICU level 60, but Android lags behind:
     // https://developer.android.com/guide/topics/resources/internationalization
     // #versioning-nougat
     // So you need Android 9 (API level 28) and even then, the NumberFormatter
     // is not available in android.icu.* so you still would need to bundle the full ICU lib
     // For now, this is to much overkill.
-//        @TargetApi(28)
-//        private String apply(@NonNull final Float money) {
-//            https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/
-//            com/ibm/icu/number/NumberFormatter.java
-//            and UnitWidth.NARROW
-//            return "";
-//        }
+    //
+    //   https://github.com/unicode-org/icu/blob/master/icu4j/main/classes/core/src/
+    //   com/ibm/icu/number/NumberFormatter.java
+    //   and UnitWidth.NARROW
 }

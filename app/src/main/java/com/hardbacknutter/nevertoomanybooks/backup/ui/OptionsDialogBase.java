@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public abstract class OptionsDialogBase<T extends Options>
         extends DialogFragment {
@@ -86,7 +86,7 @@ public abstract class OptionsDialogBase<T extends Options>
             mListener.get().onOptionsSet(options);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onOptionsSet|" + Logger.WEAK_REFERENCE_DEAD);
+                Log.d(TAG, "onOptionsSet|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
     }

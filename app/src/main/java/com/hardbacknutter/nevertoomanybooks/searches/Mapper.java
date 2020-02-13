@@ -32,7 +32,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-public interface Mapper {
+interface Mapper {
 
     /**
      * The key which this mapper will be mapping.

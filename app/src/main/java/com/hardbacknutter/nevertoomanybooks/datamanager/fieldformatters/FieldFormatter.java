@@ -28,7 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters;
 
 import android.content.Context;
-import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -59,19 +59,10 @@ public interface FieldFormatter<T> {
      * <strong>Update class variables (if any) here.</strong>
      *
      * @param rawValue Input value
-     * @param view     to populate
+     * @param view to populate
      */
-    void apply(@Nullable T rawValue,
-               @NonNull View view);
-
-    /**
-     * Extract the native typed value from the displayed version.
-     *
-     * @param view to extract the value from
-     *
-     * @return The extracted value
-     */
-    @NonNull
-    T extract(@NonNull View view);
-
+    default void apply(@Nullable T rawValue,
+                       @NonNull TextView view) {
+        view.setText(format(view.getContext(), rawValue));
+    }
 }

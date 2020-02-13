@@ -70,7 +70,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.ValuePicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -100,7 +99,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  * <p>
  * 2018-11-30: making this a configuration option.
  */
-public class CoverHandler {
+class CoverHandler {
 
     /** Log tag. */
     private static final String TAG = "CoverHandler";
@@ -229,7 +228,7 @@ public class CoverHandler {
     }
 
     /**
-     * Using {@link ValuePicker} for context menus.
+     * Using {@link MenuPicker} for context menus.
      * Reminder: the 'menuItem' here *is* the 'item'.
      *
      * @param menuItem that the user selected
@@ -612,7 +611,7 @@ public class CoverHandler {
 
     @IntDef({CAMERA_NEXT_ACTION_NOTHING, CAMERA_NEXT_ACTION_CROP, CAMERA_NEXT_ACTION_EDIT})
     @Retention(RetentionPolicy.SOURCE)
-    @interface CameraNextAction {
+    private @interface CameraNextAction {
 
     }
 

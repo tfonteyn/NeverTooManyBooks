@@ -44,6 +44,7 @@ import androidx.annotation.VisibleForTesting;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -61,8 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.CheckListItem;
-import com.hardbacknutter.nevertoomanybooks.dialogs.checklist.SelectableItem;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
@@ -71,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -94,7 +94,6 @@ public class Book
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
-
     /**
      * {@link DBDefinitions#KEY_TOC_BITMASK}
      * <p>
@@ -113,60 +112,10 @@ public class Book
     public static final int TOC_SINGLE_AUTHOR_SINGLE_WORK = 0;
     public static final int TOC_MULTIPLE_WORKS = 1;
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
-    /** first edition ever of this work/content/story. */
-    public static final int EDITION_FIRST = 1;
-    /** mapping the edition bit to a resource string for displaying. Ordered. */
-    public static final Map<Integer, Integer> EDITIONS = new LinkedHashMap<>();
-    /*
-     * {@link DBDefinitions#KEY_EDITION_BITMASK}.
-     * <p>
-     * 0%00000000 = a generic edition, or we simply don't know what edition it is.
-     * 0%00000001 = first edition
-     * 0%00000010 = first impression
-     * 0%00000100 = limited edition
-     * 0%00001000 = slipcase
-     * 0%00010000 = signed
-     * <p>
-     * 0%10000000 = book club
-     * <p>
-     * NEWTHINGS: edition: add bit flag and add to mask
-     * Never change the bit value!
-     */
+    /** Extracting a series/nr from the book title. */
     private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
-    /** First printing of 'this' edition. */
-    private static final int EDITION_FIRST_IMPRESSION = 1 << 1;
-    /** This edition had a limited run. (Numbered or not). */
-    private static final int EDITION_LIMITED = 1 << 2;
-    /** This edition comes in a slipcase. */
-    private static final int EDITION_SLIPCASE = 1 << 3;
-    /** This edition is signed. i.e the whole print-run of this edition is signed. */
-    private static final int EDITION_SIGNED = 1 << 4;
-    /** It's a bookclub edition. */
-    private static final int EDITION_BOOK_CLUB = 1 << 7;
-    /** Bitmask for all editions. */
-    private static final int EDITIONS_MASK = EDITION_FIRST
-                                             | EDITION_FIRST_IMPRESSION
-                                             | EDITION_LIMITED
-                                             | EDITION_SLIPCASE
-                                             | EDITION_SIGNED
-                                             | EDITION_BOOK_CLUB;
     /** Log tag. */
     private static final String TAG = "Book";
-
-    /*
-     * NEWTHINGS: edition: add label for the type
-     *
-     * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
-     */
-    static {
-        EDITIONS.put(EDITION_FIRST, R.string.lbl_edition_first_edition);
-        EDITIONS.put(EDITION_FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
-        EDITIONS.put(EDITION_LIMITED, R.string.lbl_edition_limited);
-        EDITIONS.put(EDITION_SIGNED, R.string.lbl_signed);
-        EDITIONS.put(EDITION_SLIPCASE, R.string.lbl_edition_slipcase);
-
-        EDITIONS.put(EDITION_BOOK_CLUB, R.string.lbl_edition_book_club);
-    }
 
     /**
      * Public Constructor.
@@ -196,15 +145,6 @@ public class Book
         if (bookId > 0) {
             reload(db, bookId);
         }
-    }
-
-    @NonNull
-    public static Map<Integer, String> getEditions(@NonNull final Context context) {
-        Map<Integer, String> map = new LinkedHashMap<>();
-        for (Map.Entry<Integer, Integer> entry : EDITIONS.entrySet()) {
-            map.put(entry.getKey(), context.getString(entry.getValue()));
-        }
-        return map;
     }
 
     /**
@@ -496,39 +436,6 @@ public class Book
     }
 
     /**
-     * Set the Bookshelves.
-     *
-     * @param db    Database Access
-     * @param items List of {@link SelectableItem}, each representing a Bookshelf
-     */
-    public void putBookshelves(@NonNull final DAO db,
-                               @NonNull final Iterable<CheckListItem> items) {
-        ArrayList<Bookshelf> currentShelves = new ArrayList<>();
-        for (CheckListItem item : items) {
-            long bookshelfId = item.getItemId();
-            currentShelves.add(db.getBookshelf(bookshelfId));
-        }
-
-        putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, currentShelves);
-    }
-
-    /**
-     * Set the Edition.
-     *
-     * @param items List of {@link SelectableItem}, each representing a single bit==edition
-     */
-    public void putEditions(@NonNull final Iterable<CheckListItem> items) {
-        @Edition
-        int bitmask = 0;
-        for (CheckListItem item : items) {
-            bitmask |= item.getItemId();
-        }
-
-        bitmask &= EDITIONS_MASK;
-        putLong(DBDefinitions.KEY_EDITION_BITMASK, bitmask);
-    }
-
-    /**
      * Get the name of the first author in the list of authors for this book.
      *
      * @param context Current context
@@ -583,7 +490,7 @@ public class Book
      * @return name, or {@code null} if none found
      */
     @Nullable
-    public String getPrimarySeries() {
+    public String getPrimarySeriesTitle() {
         ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         return list.isEmpty() ? null : list.get(0).getTitle();
     }
@@ -592,6 +499,18 @@ public class Book
     @NonNull
     public String getTitle() {
         return getString(DBDefinitions.KEY_TITLE);
+    }
+
+    /**
+     * Get the label to use. This is for <strong>displaying only</strong>.
+     *
+     * @param context Current context
+     *
+     * @return the label to use.
+     */
+    @NonNull
+    public String getLabel(@NonNull final Context context) {
+        return reorderTitleForDisplaying(context, getLocale(context));
     }
 
     public ISBN getValidIsbnOrNull() {
@@ -759,8 +678,13 @@ public class Book
             putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
 
+        // make sure we only store valid bits
+        if (contains(KEY_EDITION_BITMASK)) {
+            int editions = getInt(KEY_EDITION_BITMASK) & Edition.BITMASK;
+            putInt(KEY_EDITION_BITMASK, editions);
+        }
+
         // cleanup/build all price related fields
-        Bundle bundleHelper = new Bundle();
         preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_LISTED,
                         DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_PAID,
@@ -777,7 +701,7 @@ public class Book
      * Helper for {@link #preprocessForStoring(Context, boolean)}.
      * <p>
      *
-     * @param bookLocale   the book Locale
+     * @param bookLocale the book Locale
      */
     @VisibleForTesting
     void preprocessPrice(@NonNull final Locale bookLocale,
@@ -910,15 +834,156 @@ public class Book
 
     }
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef(flag = true, value = {EDITION_FIRST,
-                                  EDITION_FIRST_IMPRESSION,
-                                  EDITION_LIMITED,
-                                  EDITION_SLIPCASE,
-                                  EDITION_SIGNED,
-                                  EDITION_BOOK_CLUB
-    })
-    public @interface Edition {
+    /**
+     * <a href="https://en.wikipedia.org/wiki/List_of_used_book_conditions">wikipedia</a>
+     * <p>
+     * As new means that the book is in the state that it should have been in when it
+     * left the publisher. This is the equivalent of mint condition in numismatics.
+     * <p>
+     * Fine (F or FN) is "as new" but allowing for the normal effects of time on an
+     * unused book that has been protected. A fine book shows no damage.
+     * <p>
+     * Very good (VG) describes a book that is worn but not torn. For many collectors
+     * this is the minimum acceptable condition for all but the rarest items.
+     * Any defects must be noted.
+     * <p>
+     * Good (G) describes the condition of an average used worn book that is complete.
+     * Any defects must be noted.
+     * <p>
+     * Fair shows wear and tear but all the text pages and illustrations or maps are present.
+     * It may lack endpapers, half-title, and even the title page. All defects must be noted.
+     * <p>
+     * Poor describes a book that has the complete text but is so damaged that it is only of
+     * interest to a buyer who seeks a reading copy. If the damage renders the text illegible
+     * then the book is not even poor.
+     * <p>
+     * Ex-library copies must always be designated as such no matter what the condition of the book.
+     * <p>
+     * Book club copies must always be designated as such no matter what the condition of the book.
+     * <p>
+     * Binding copy describes a book in which the pages or leaves are perfect,
+     * but the binding is very bad, loose, off, or non-existent.
+     * <p>
+     * Slightly simplified:
+     * <ol>
+     * <li>Fine (covers As New)</li>
+     * <li>Very good</li>
+     * <li>Good</li>
+     * <li>Fair</li>
+     * <li>Reading copy (covers Poor, Binding copy</li>
+     * </ol>
+     * <p>
+     * Bookclub is covered in Editions which is what it is.
+     * <p>
+     * Book and Dust cover conditions use the same condition 'numbers'
+     * with 0 and 1 doing double duty.
+     */
+    public static final class Condition {
 
+        /** book: the user has not entered a condition. */
+        public static final int UNKNOWN = 0;
+        /**
+         * dust-cover: the book was not issued with a dust-cover (e.g. paperback),
+         * or the user has not entered a condition.
+         */
+        public static final int DUST_COVER_NONE = 0;
+        /** book. */
+        public static final int READING_COPY = 1;
+        /** dust-cover. */
+        public static final int DUST_COVER_MISSING = 1;
+        /** book / dust-cover. */
+        public static final int FAIR = 2;
+        /** book / dust-cover. */
+        public static final int GOOD = 3;
+        /** book / dust-cover. */
+        public static final int VERY_GOOD = 4;
+        /** book / dust-cover. */
+        public static final int FINE = 5;
+
+        /** mapping the book condition to a resource string for displaying. */
+        private static final List<Integer> BOOK =
+                Arrays.asList(R.string.unknown,
+                              R.string.lbl_condition_reading_copy,
+                              R.string.lbl_condition_fair,
+                              R.string.lbl_condition_good,
+                              R.string.lbl_condition_very_good,
+                              R.string.lbl_condition_fine
+                             );
+
+        /** mapping the dust cover condition to a resource string for displaying. */
+        private static final List<Integer> DUST_COVER =
+                Arrays.asList(R.string.lbl_dust_cover_none_or_unknown,
+                              R.string.lbl_dust_cover_missing,
+                              R.string.lbl_condition_fair,
+                              R.string.lbl_condition_good,
+                              R.string.lbl_condition_very_good,
+                              R.string.lbl_condition_fine
+                             );
+    }
+
+    public static final class Edition {
+
+        /*
+         * {@link DBDefinitions#KEY_EDITION_BITMASK}.
+         * <p>
+         * 0%00000000 = a generic edition, or we simply don't know what edition it is.
+         * 0%00000001 = first edition
+         * 0%00000010 = first impression
+         * 0%00000100 = limited edition
+         * 0%00001000 = slipcase
+         * 0%00010000 = signed
+         * <p>
+         * 0%10000000 = book club
+         * <p>
+         * NEWTHINGS: edition: add bit flag and add to mask
+         * Never change the bit value!
+         */
+        /** first edition ever of this work/content/story. */
+        public static final int FIRST = 1;
+
+        /** First printing of 'this' edition. */
+        private static final int FIRST_IMPRESSION = 1 << 1;
+        /** This edition had a limited run. (Numbered or not). */
+        private static final int LIMITED = 1 << 2;
+        /** This edition comes in a slipcase. */
+        private static final int SLIPCASE = 1 << 3;
+        /** This edition is signed. i.e the whole print-run of this edition is signed. */
+        private static final int SIGNED = 1 << 4;
+        /** It's a bookclub edition. */
+        private static final int BOOK_CLUB = 1 << 7;
+        /** Bitmask for all editions. */
+        private static final int BITMASK = FIRST
+                                           | FIRST_IMPRESSION
+                                           | LIMITED
+                                           | SLIPCASE
+                                           | SIGNED
+                                           | BOOK_CLUB;
+
+        /** mapping the edition bit to a resource string for displaying. Ordered. */
+        private static final Map<Integer, Integer> ALL = new LinkedHashMap<>();
+
+        /*
+         * NEWTHINGS: edition: add label for the type
+         *
+         * This is a LinkedHashMap, so the order below is the order they will show up on the screen.
+         */
+        static {
+            ALL.put(FIRST, R.string.lbl_edition_first_edition);
+            ALL.put(FIRST_IMPRESSION, R.string.lbl_edition_first_impression);
+            ALL.put(LIMITED, R.string.lbl_edition_limited);
+            ALL.put(SIGNED, R.string.lbl_signed);
+            ALL.put(SLIPCASE, R.string.lbl_edition_slipcase);
+
+            ALL.put(BOOK_CLUB, R.string.lbl_edition_book_club);
+        }
+
+        @NonNull
+        public static Map<Integer, String> getEditions(@NonNull final Context context) {
+            Map<Integer, String> map = new LinkedHashMap<>();
+            for (Map.Entry<Integer, Integer> entry : ALL.entrySet()) {
+                map.put(entry.getKey(), context.getString(entry.getValue()));
+            }
+            return map;
+        }
     }
 }
