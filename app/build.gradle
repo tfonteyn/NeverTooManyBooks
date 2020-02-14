@@ -148,13 +148,16 @@ dependencies {
     // OAuth for Goodreads secure access.
     implementation 'oauth.signpost:signpost-core:1.2.1.2'
     // Tar file support for backups
-    implementation 'org.apache.commons:commons-compress:1.19'
+    // http://commons.apache.org/proper/commons-compress/
+    implementation 'org.apache.commons:commons-compress:1.20'
+    // http://commons.apache.org/proper/commons-codec/
     implementation 'commons-codec:commons-codec:1.13'
 
     // jsoup HTML parser library @ https://jsoup.org/
     // don't upgrade... 1.12.1 is hitting #990 alike situation, while 1.11.3 works ok.
-    //    implementation 'org.jsoup:jsoup:1.12.1'
-    implementation 'org.jsoup:jsoup:1.11.3'
+//    implementation 'org.jsoup:jsoup:1.11.3'
+//    implementation 'org.jsoup:jsoup:1.12.1'
+    implementation 'org.jsoup:jsoup:1.12.2'
 
     // Embedded ZXing: https://github.com/journeyapps/zxing-android-embedded
     // supporting API <24
