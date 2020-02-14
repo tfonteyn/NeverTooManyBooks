@@ -110,8 +110,6 @@
     <dimen name="cfs_margin">0dp</dimen>
     <dimen name="cfs_minimum_range">50dp</dimen>
 
-    <dimen name="afs_min_touch_target_size">48dp</dimen>
-
     <dimen name="afs_popup_min_size">88dp</dimen>
     <dimen name="afs_popup_margin_end">16dp</dimen>
     <dimen name="afs_popup_text_size">18sp</dimen>

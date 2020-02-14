@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -36,16 +36,6 @@
     <plurals name="n_books_found">
         <item quantity="one">%1$d libro trovato</item>
         <item quantity="other">%1$d libri trovati</item>
-    </plurals>
-
-    <plurals name="n_books">
-        <item quantity="one">%1$d libro</item>
-        <item quantity="other">%1$d libri</item>
-    </plurals>
-
-    <plurals name="n_covers">
-        <item quantity="one">%1$d copertina</item>
-        <item quantity="other">%1$d copertine</item>
     </plurals>
 
     <plurals name="n_stars">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -42,20 +42,6 @@
         <item quantity="zero">No books found</item>
         <item quantity="one">%1$d book found</item>
         <item quantity="other">%1$d books found</item>
-    </plurals>
-
-    <!-- Short text for 'n books' -->
-    <plurals name="n_books">
-        <item quantity="zero">No books</item>
-        <item quantity="one">%1$d book</item>
-        <item quantity="other">%1$s books</item>
-    </plurals>
-
-    <!-- Short text for 'n covers' -->
-    <plurals name="n_covers">
-        <item quantity="zero">No covers</item>
-        <item quantity="one">%1$d cover</item>
-        <item quantity="other">%1$s covers</item>
     </plurals>
 
     <!-- Short text for 'n stars' -->

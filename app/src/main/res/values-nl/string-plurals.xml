@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -32,18 +32,12 @@
         <item quantity="one">%1$d boek op deze plank</item>
         <item quantity="other">%1$d boeken op deze plank</item>
     </plurals>
+
     <plurals name="n_books_found">
         <item quantity="one">%1$d boek gevonden</item>
         <item quantity="other">%1$d boeken gevonden</item>
     </plurals>
-    <plurals name="n_books">
-        <item quantity="one">%1$d boek</item>
-        <item quantity="other">%1$d boeken</item>
-    </plurals>
-    <plurals name="n_covers">
-        <item quantity="one">%1$d omslag</item>
-        <item quantity="other">%1$d omslagen</item>
-    </plurals>
+
     <plurals name="n_stars">
         <item quantity="one">%1$s ster</item>
         <item quantity="other">%1$s sterren</item>
