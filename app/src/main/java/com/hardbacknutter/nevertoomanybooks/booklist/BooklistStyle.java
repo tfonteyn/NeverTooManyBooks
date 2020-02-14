@@ -96,7 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * <p>
  * How to add a new Group:
  * <ol>
- * <li>add it to {@link BooklistGroup.RowKind} and update ROW_KIND_MAX</li>
+ * <li>add it to {@link BooklistGroup.GroupKey} and update ROW_KIND_MAX</li>
  * <li>if necessary add new domain to {@link DBDefinitions }</li>
  * <li>modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains</li>
  * <li>modify {@link BooklistAdapter} ; If it is just a string field,
@@ -274,7 +274,7 @@ public class BooklistStyle
         mUuid = uuid;
         mNameResId = nameId;
         initPrefs();
-        for (@BooklistGroup.RowKind.Id int groupId : groupIds) {
+        for (@BooklistGroup.Id int groupId : groupIds) {
             mStyleGroups.add(BooklistGroup.newInstance(groupId, mUuid, isUserDefined()));
         }
     }
@@ -936,7 +936,7 @@ public class BooklistStyle
      *
      * @param id of group to remove.
      */
-    public void removeGroup(@BooklistGroup.RowKind.Id final int id) {
+    public void removeGroup(@BooklistGroup.Id final int id) {
         mStyleGroups.remove(id);
     }
 
@@ -957,7 +957,7 @@ public class BooklistStyle
      *
      * @return {@code true} if present
      */
-    public boolean hasGroup(@BooklistGroup.RowKind.Id final int id) {
+    public boolean hasGroup(@BooklistGroup.Id final int id) {
         return mStyleGroups.getGroupKinds().contains(id);
     }
 
@@ -976,7 +976,7 @@ public class BooklistStyle
      *
      * @return kind
      */
-    @BooklistGroup.RowKind.Id
+    @BooklistGroup.Id
     int getGroupKindAt(final int index) {
         return mStyleGroups.getGroupKindAt(index);
     }
@@ -1236,7 +1236,7 @@ public class BooklistStyle
     public boolean isUsed(@NonNull final String key) {
         //ENHANCE: we currently don't hide/remove groups based on user preference visibility.
         for (BooklistGroup group : getGroups()) {
-            if (group.getFormattedDomain().getName().equals(key)) {
+            if (group.getDisplayDomain().getName().equals(key)) {
                 return true;
             }
         }
@@ -1269,9 +1269,9 @@ public class BooklistStyle
      * @return {@code true} if we want "given-names last-name" formatted authors.
      */
     public boolean showAuthorGivenNameFirst(@NonNull final Context context) {
-        if (hasGroup(BooklistGroup.RowKind.AUTHOR)) {
+        if (hasGroup(BooklistGroup.AUTHOR)) {
             BooklistGroup.BooklistAuthorGroup group = (BooklistGroup.BooklistAuthorGroup)
-                    (mStyleGroups.getGroup(BooklistGroup.RowKind.AUTHOR));
+                    (mStyleGroups.getGroup(BooklistGroup.AUTHOR));
             if (group != null) {
                 return group.showAuthorGivenNameFirst();
             }
@@ -1337,7 +1337,7 @@ public class BooklistStyle
 
             // load the group ID's from the SharedPreference and populates the Group object list.
             mGroups.clear();
-            for (@BooklistGroup.RowKind.Id int id : get()) {
+            for (@BooklistGroup.Id int id : get()) {
                 mGroups.add(BooklistGroup.newInstance(id, uuid, isUserDefined));
             }
         }
@@ -1349,7 +1349,7 @@ public class BooklistStyle
 
         @Nullable
         BooklistGroup getGroup(@SuppressWarnings("SameParameterValue")
-                               @BooklistGroup.RowKind.Id final int id) {
+                               @BooklistGroup.Id final int id) {
             for (BooklistGroup group : mGroups) {
                 if (group.getId() == id) {
                     return group;
@@ -1363,7 +1363,7 @@ public class BooklistStyle
             return get();
         }
 
-        @BooklistGroup.RowKind.Id
+        @BooklistGroup.Id
         int getGroupKindAt(final int index) {
             return (int) get().toArray()[index];
         }
@@ -1408,10 +1408,10 @@ public class BooklistStyle
          *
          * @param id of group to remove
          */
-        void remove(@BooklistGroup.RowKind.Id final int id) {
+        void remove(@BooklistGroup.Id final int id) {
             Iterator<BooklistGroup> it = mGroups.iterator();
             while (it.hasNext()) {
-                @BooklistGroup.RowKind.Id
+                @BooklistGroup.Id
                 int groupId = it.next().getId();
                 if (groupId == id) {
                     it.remove();
@@ -1663,8 +1663,8 @@ public class BooklistStyle
                 new BooklistStyle(AUTHOR_THEN_SERIES_ID,
                                   AUTHOR_THEN_SERIES_UUID,
                                   R.string.style_builtin_author_series,
-                                  BooklistGroup.RowKind.AUTHOR,
-                                  BooklistGroup.RowKind.SERIES);
+                                  BooklistGroup.AUTHOR,
+                                  BooklistGroup.SERIES);
         private static final String DEFAULT_STYLE_UUID = AUTHOR_THEN_SERIES_UUID;
 
         private static final int UNREAD_AUTHOR_THEN_SERIES_ID = -2;
@@ -1793,8 +1793,8 @@ public class BooklistStyle
             style = new BooklistStyle(UNREAD_AUTHOR_THEN_SERIES_ID,
                                       UNREAD_AUTHOR_THEN_SERIES_UUID,
                                       R.string.style_builtin_unread,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setFilter(Prefs.pk_bob_filter_read, false);
 
@@ -1802,7 +1802,7 @@ public class BooklistStyle
             style = new BooklistStyle(COMPACT_ID,
                                       COMPACT_UUID,
                                       R.string.style_builtin_compact,
-                                      BooklistGroup.RowKind.AUTHOR);
+                                      BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setTextScale(FONT_SCALE_SMALL);
             style.setShowExtra(UniqueId.BKEY_THUMBNAIL, false);
@@ -1811,141 +1811,141 @@ public class BooklistStyle
             style = new BooklistStyle(TITLE_FIRST_LETTER_ID,
                                       TITLE_FIRST_LETTER_UUID,
                                       R.string.style_builtin_first_letter_book_title,
-                                      BooklistGroup.RowKind.TITLE_LETTER);
+                                      BooklistGroup.TITLE_LETTER);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Series
             style = new BooklistStyle(SERIES_ID,
                                       SERIES_UUID,
                                       R.string.style_builtin_series,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Genre
             style = new BooklistStyle(GENRE_ID,
                                       GENRE_UUID,
                                       R.string.style_builtin_genre,
-                                      BooklistGroup.RowKind.GENRE,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.GENRE,
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Loaned
             style = new BooklistStyle(LENDING_ID,
                                       LENDING_UUID,
                                       R.string.style_builtin_loaned,
-                                      BooklistGroup.RowKind.LOANED,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.LOANED,
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Read & Unread
             style = new BooklistStyle(READ_AND_UNREAD_ID,
                                       READ_AND_UNREAD_UUID,
                                       R.string.style_builtin_read_and_unread,
-                                      BooklistGroup.RowKind.READ_STATUS,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.READ_STATUS,
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Publication date
             style = new BooklistStyle(PUBLICATION_DATA_ID,
                                       PUBLICATION_DATA_UUID,
                                       R.string.style_builtin_publication_date,
-                                      BooklistGroup.RowKind.DATE_PUBLISHED_YEAR,
-                                      BooklistGroup.RowKind.DATE_PUBLISHED_MONTH,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.DATE_PUBLISHED_YEAR,
+                                      BooklistGroup.DATE_PUBLISHED_MONTH,
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Added date
             style = new BooklistStyle(DATE_ADDED_ID,
                                       DATE_ADDED_UUID,
                                       R.string.style_builtin_added_date,
-                                      BooklistGroup.RowKind.DATE_ADDED_YEAR,
-                                      BooklistGroup.RowKind.DATE_ADDED_MONTH,
-                                      BooklistGroup.RowKind.DATE_ADDED_DAY,
-                                      BooklistGroup.RowKind.AUTHOR);
+                                      BooklistGroup.DATE_ADDED_YEAR,
+                                      BooklistGroup.DATE_ADDED_MONTH,
+                                      BooklistGroup.DATE_ADDED_DAY,
+                                      BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Acquired date
             style = new BooklistStyle(DATE_ACQUIRED_ID,
                                       DATE_ACQUIRED_UUID,
                                       R.string.style_builtin_acquired_date,
-                                      BooklistGroup.RowKind.DATE_ACQUIRED_YEAR,
-                                      BooklistGroup.RowKind.DATE_ACQUIRED_MONTH,
-                                      BooklistGroup.RowKind.DATE_ACQUIRED_DAY,
-                                      BooklistGroup.RowKind.AUTHOR);
+                                      BooklistGroup.DATE_ACQUIRED_YEAR,
+                                      BooklistGroup.DATE_ACQUIRED_MONTH,
+                                      BooklistGroup.DATE_ACQUIRED_DAY,
+                                      BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Author/Publication date
             style = new BooklistStyle(AUTHOR_AND_YEAR_ID,
                                       AUTHOR_AND_YEAR_UUID,
                                       R.string.style_builtin_author_year,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.DATE_PUBLISHED_YEAR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.DATE_PUBLISHED_YEAR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Format
             style = new BooklistStyle(FORMAT_ID,
                                       FORMAT_UUID,
                                       R.string.style_builtin_format,
-                                      BooklistGroup.RowKind.FORMAT);
+                                      BooklistGroup.FORMAT);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Read date
             style = new BooklistStyle(DATE_READ_ID,
                                       DATE_READ_UUID,
                                       R.string.style_builtin_read_date,
-                                      BooklistGroup.RowKind.DATE_READ_YEAR,
-                                      BooklistGroup.RowKind.DATE_READ_MONTH,
-                                      BooklistGroup.RowKind.AUTHOR);
+                                      BooklistGroup.DATE_READ_YEAR,
+                                      BooklistGroup.DATE_READ_MONTH,
+                                      BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
             style = new BooklistStyle(LOCATION_ID,
                                       LOCATION_UUID,
                                       R.string.style_builtin_location,
-                                      BooklistGroup.RowKind.LOCATION,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.LOCATION,
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
             style = new BooklistStyle(LANGUAGE_ID,
                                       LANGUAGE_UUID,
                                       R.string.style_builtin_language,
-                                      BooklistGroup.RowKind.LANGUAGE,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.LANGUAGE,
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Rating
             style = new BooklistStyle(RATING_ID,
                                       RATING_UUID,
                                       R.string.style_builtin_rating,
-                                      BooklistGroup.RowKind.RATING,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.RATING,
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Bookshelf
             style = new BooklistStyle(BOOKSHELF_ID,
                                       BOOKSHELF_UUID,
                                       R.string.style_builtin_bookshelf,
-                                      BooklistGroup.RowKind.BOOKSHELF,
-                                      BooklistGroup.RowKind.AUTHOR,
-                                      BooklistGroup.RowKind.SERIES);
+                                      BooklistGroup.BOOKSHELF,
+                                      BooklistGroup.AUTHOR,
+                                      BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Update date
             style = new BooklistStyle(DATE_LAST_UPDATE_ID,
                                       DATE_LAST_UPDATE_UUID,
                                       R.string.style_builtin_update_date,
-                                      BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR,
-                                      BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH,
-                                      BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY);
+                                      BooklistGroup.DATE_LAST_UPDATE_YEAR,
+                                      BooklistGroup.DATE_LAST_UPDATE_MONTH,
+                                      BooklistGroup.DATE_LAST_UPDATE_DAY);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setShowExtra(DBDefinitions.KEY_AUTHOR_FORMATTED, true);
 

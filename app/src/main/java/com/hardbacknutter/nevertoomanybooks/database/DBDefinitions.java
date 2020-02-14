@@ -36,7 +36,6 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -265,7 +264,7 @@ public final class DBDefinitions {
      * {@link #TBL_BOOK_LOANEE}.
      * Virtual: returns 0 for 'available' or 1 for 'lend out'
      */
-    public static final Domain DOM_LOANEE_AS_BOOLEAN;
+    public static final Domain DOM_BL_LOANEE_AS_BOOL;
 
 
     /** {@link #TBL_BOOK_AUTHOR}. */
@@ -299,54 +298,14 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_COUNT;
 
     /* ======================================================================================
-     *  {@link BooklistGroup.RowKind} domains.
-     * ====================================================================================== */
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_AUTHOR_SORT;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_SERIES_SORT;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_READ_STATUS;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_TITLE_LETTER;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_SERIES_TITLE_LETTER;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_ADDED_DAY;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_ADDED_MONTH;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_ADDED_YEAR;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_LAST_UPDATED_DAY;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_LAST_UPDATED_MONTH;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_LAST_UPDATED_YEAR;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_READ_DAY;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_READ_MONTH;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_READ_YEAR;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_ACQUIRED_DAY;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_ACQUIRED_MONTH;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_ACQUIRED_YEAR;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_FIRST_PUBLICATION_MONTH;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_FIRST_PUBLICATION_YEAR;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_PUBLISHED_MONTH;
-    /** Display-domain in {@link BooklistGroup.RowKind}. */
-    public static final Domain DOM_RK_DATE_PUBLISHED_YEAR;
-
-    /* ======================================================================================
      *  {@link BooklistBuilder} domains.
      * ====================================================================================== */
+
+    /** For sorting in the {@link BooklistBuilder}. */
+    public static final Domain DOM_BL_AUTHOR_SORT;
+    /** For sorting in the {@link BooklistBuilder}. */
+    public static final Domain DOM_BL_SERIES_SORT;
+
     /**
      * Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
      * so we can sort it numerically regardless of content.
@@ -366,7 +325,7 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_NODE_KEY;
 
     /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link BooklistBuilder}. */
-    public static final Domain DOM_BL_NODE_KIND;
+    public static final Domain DOM_BL_NODE_GROUP;
     /** {@link #TMP_TBL_BOOK_LIST} {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_LEVEL;
     /**
@@ -508,18 +467,24 @@ public final class DBDefinitions {
     /** {@link #TBL_FTS_BOOKS}. */
     public static final String KEY_FTS_AUTHOR_NAME = "author_name";
 
-    /** BooklistBuilder. */
-    public static final String KEY_BL_SERIES_NUM_FLOAT = "ser_num_float";
     public static final String KEY_BOOK_COUNT = "book_count";
-    public static final String KEY_BL_PRIMARY_SERIES_COUNT = "prim_ser_cnt";
 
-    public static final String KEY_BL_NODE_KEY = "root_key";
-    /** The foreign key in the row-state table, pointing to the list table. */
+    /** BooklistBuilder. Virtual domains. */
+    public static final String KEY_BL_AUTHOR_SORT = "bl_aut_sort";
+    public static final String KEY_BL_SERIES_SORT = "bl_ser_sort";
+    public static final String KEY_BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
+    public static final String KEY_BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
+
+    /**
+     * {@link #TBL_BOOK_LIST_NODE_STATE}.
+     * The foreign key in the row-state table, pointing to the list table.
+     */
     public static final String KEY_FK_BL_ROW_ID = "real_row_id";
-
+    /** {@link #TBL_BOOK_LIST_NODE_STATE}. */
+    public static final String KEY_BL_NODE_KEY = "root_key";
     /** {@link #TBL_BOOK_LIST_NODE_STATE} + {@link #TMP_TBL_BOOK_LIST_ROW_STATE}. */
     public static final String KEY_BL_NODE_LEVEL = "level";
-    public static final String KEY_BL_NODE_KIND = "kind";
+    public static final String KEY_BL_NODE_GROUP = "kind";
     public static final String KEY_BL_NODE_VISIBLE = "visible";
     public static final String KEY_BL_NODE_EXPANDED = "expanded";
 
@@ -615,6 +580,9 @@ public final class DBDefinitions {
                         .withDefault(BooklistStyle.DEFAULT_STYLE_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE")
                         .build();
+
+        DOM_FK_BL_ROW_ID =
+                new Domain.Builder(KEY_FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER).build();
 
         /* ======================================================================================
          *  Multi table domains
@@ -821,7 +789,7 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_LOANEE = new Domain.Builder(KEY_LOANEE, ColumnInfo.TYPE_TEXT).notNull().build();
-        DOM_LOANEE_AS_BOOLEAN = new Domain.Builder(KEY_LOANEE_AS_BOOLEAN, ColumnInfo.TYPE_INTEGER)
+        DOM_BL_LOANEE_AS_BOOL = new Domain.Builder(KEY_LOANEE_AS_BOOLEAN, ColumnInfo.TYPE_INTEGER)
                 .notNull().build();
 
         /* ======================================================================================
@@ -866,19 +834,23 @@ public final class DBDefinitions {
          *  BooklistBuilder domains
          * ====================================================================================== */
 
+        DOM_BL_AUTHOR_SORT =
+                new Domain.Builder(KEY_BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT).build();
+
+        DOM_BL_SERIES_SORT =
+                new Domain.Builder(KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT).build();
+
         DOM_BL_SERIES_NUM_FLOAT =
                 new Domain.Builder(KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL).build();
 
         DOM_BL_PRIMARY_SERIES_COUNT =
                 new Domain.Builder(KEY_BL_PRIMARY_SERIES_COUNT, ColumnInfo.TYPE_INTEGER).build();
-        DOM_FK_BL_ROW_ID =
-                new Domain.Builder(KEY_FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER).build();
 
 
         DOM_BL_NODE_KEY =
                 new Domain.Builder(KEY_BL_NODE_KEY, ColumnInfo.TYPE_TEXT).build();
-        DOM_BL_NODE_KIND =
-                new Domain.Builder(KEY_BL_NODE_KIND, ColumnInfo.TYPE_INTEGER).notNull().build();
+        DOM_BL_NODE_GROUP =
+                new Domain.Builder(KEY_BL_NODE_GROUP, ColumnInfo.TYPE_INTEGER).notNull().build();
         DOM_BL_NODE_LEVEL =
                 new Domain.Builder(KEY_BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER).notNull().build();
         DOM_BL_NODE_VISIBLE =
@@ -887,61 +859,6 @@ public final class DBDefinitions {
         DOM_BL_NODE_EXPANDED =
                 new Domain.Builder(KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
                         .withDefault(0).build();
-
-        /* ======================================================================================
-         *  RowKind display-domains
-         * ====================================================================================== */
-        DOM_RK_AUTHOR_SORT =
-                new Domain.Builder("dd_aut_sort", ColumnInfo.TYPE_TEXT).notNull().build();
-
-        DOM_RK_TITLE_LETTER =
-                new Domain.Builder("dd_tit_let", ColumnInfo.TYPE_TEXT).notNull().build();
-        DOM_RK_SERIES_TITLE_LETTER =
-                new Domain.Builder("dd_ser_tit_let", ColumnInfo.TYPE_TEXT).notNull().build();
-
-        DOM_RK_READ_STATUS =
-                new Domain.Builder("dd_rd_sts", ColumnInfo.TYPE_TEXT).notNull().build();
-
-        DOM_RK_SERIES_SORT =
-                new Domain.Builder("dd_ser_sort", ColumnInfo.TYPE_TEXT).build();
-
-        DOM_RK_DATE_ADDED_DAY =
-                new Domain.Builder("dd_add_d", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_ADDED_MONTH =
-                new Domain.Builder("dd_add_m", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_ADDED_YEAR =
-                new Domain.Builder("dd_add_y", ColumnInfo.TYPE_INTEGER).build();
-
-        DOM_RK_DATE_LAST_UPDATED_DAY =
-                new Domain.Builder("dd_upd_d", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_LAST_UPDATED_MONTH =
-                new Domain.Builder("dd_upd_m", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_LAST_UPDATED_YEAR =
-                new Domain.Builder("dd_upd_y", ColumnInfo.TYPE_INTEGER).build();
-
-        DOM_RK_DATE_READ_DAY =
-                new Domain.Builder("dd_rd_d", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_READ_MONTH =
-                new Domain.Builder("dd_rd_m", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_READ_YEAR =
-                new Domain.Builder("dd_rd_y", ColumnInfo.TYPE_INTEGER).build();
-
-        DOM_RK_DATE_ACQUIRED_DAY =
-                new Domain.Builder("dd_acq_d", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_ACQUIRED_MONTH =
-                new Domain.Builder("dd_acq_m", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_ACQUIRED_YEAR =
-                new Domain.Builder("dd_acq_y", ColumnInfo.TYPE_INTEGER).build();
-
-        DOM_RK_DATE_FIRST_PUBLICATION_MONTH =
-                new Domain.Builder("dd_1pub_m", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_FIRST_PUBLICATION_YEAR =
-                new Domain.Builder("dd_1pub_y", ColumnInfo.TYPE_INTEGER).build();
-
-        DOM_RK_DATE_PUBLISHED_MONTH =
-                new Domain.Builder("dd_pub_m", ColumnInfo.TYPE_INTEGER).build();
-        DOM_RK_DATE_PUBLISHED_YEAR =
-                new Domain.Builder("dd_pub_y", ColumnInfo.TYPE_INTEGER).build();
 
         /* ======================================================================================
          *  Book tables.
@@ -1184,7 +1101,7 @@ public final class DBDefinitions {
 
                                             DOM_BL_NODE_KEY,
                                             DOM_BL_NODE_LEVEL,
-                                            DOM_BL_NODE_KIND,
+                                            DOM_BL_NODE_GROUP,
                                             DOM_BL_NODE_EXPANDED
                                            )
                                 .setPrimaryKey(DOM_PK_ID)
@@ -1216,7 +1133,7 @@ public final class DBDefinitions {
                             DOM_BL_NODE_KEY,
                             // Node data
                             DOM_BL_NODE_LEVEL,
-                            DOM_BL_NODE_KIND,
+                            DOM_BL_NODE_GROUP,
                             DOM_BL_NODE_VISIBLE,
                             DOM_BL_NODE_EXPANDED
                            )

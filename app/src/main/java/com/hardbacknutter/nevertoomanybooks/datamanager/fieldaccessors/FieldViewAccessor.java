@@ -39,12 +39,12 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 
 /**
- * Interface for view-specific accessors. One of these must be implemented for
- * each view type that is supported.
+ * Interface for view-specific accessors.
+ * Handles interactions between the data and the View (with optional {@link FieldFormatter}).
  *
  * @param <T> type of Field value.
  */
-public interface FieldDataAccessor<T> {
+public interface FieldViewAccessor<T> {
 
     /**
      * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.

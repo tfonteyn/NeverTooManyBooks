@@ -35,11 +35,13 @@ import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.EditFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -59,6 +61,17 @@ public class EditTextAccessor<T>
         mEnableReformat = true;
     }
 
+    public EditTextAccessor(@Nullable final FieldFormatter<T> formatter) {
+        super(formatter);
+        mEnableReformat = true;
+    }
+
+    EditTextAccessor(@Nullable final FieldFormatter<T> formatter,
+                     final boolean enableReformat) {
+        super(formatter);
+        mEnableReformat = enableReformat;
+    }
+
     /**
      * Enable or disable the formatting text watcher.
      * The default is enabled.
@@ -74,8 +87,11 @@ public class EditTextAccessor<T>
         super.setView(view);
         TextView textView = (TextView) view;
 
-        mReformatTextWatcher = new ReformatTextWatcher(mField, textView, mEnableReformat);
-        textView.addTextChangedListener(mReformatTextWatcher);
+        // If the user can type in this field, watch it.
+        if (mFormatter instanceof EditFieldFormatter) {
+            mReformatTextWatcher = new ChangedTextWatcher(mField, textView, mEnableReformat);
+            textView.addTextChangedListener(mReformatTextWatcher);
+        }
     }
 
     @NonNull
@@ -87,7 +103,7 @@ public class EditTextAccessor<T>
                 // if supported, extract from the View
                 return ((EditFieldFormatter<T>) mFormatter).extract(view);
             } else {
-                // or extract from the locale variable
+                // otherwise use the locale variable
                 return super.getValue();
             }
         } else {
@@ -105,45 +121,51 @@ public class EditTextAccessor<T>
         mRawValue = value;
 
         TextView view = (TextView) getView();
-        // Disable the ReformatTextWatcher. The decimal watcher can stay enabled.
-        synchronized (mReformatTextWatcher) {
+
+        // Disable the ChangedTextWatcher. The decimal watcher can stay enabled.
+        if (mReformatTextWatcher != null) {
             view.removeTextChangedListener(mReformatTextWatcher);
+        }
 
-            // We need to do this in two steps. First format the value as normal.
-            String text;
-            if (mFormatter != null) {
-                try {
-                    text = mFormatter.format(view.getContext(), mRawValue);
+        // We need to do this in two steps. First format the value as normal.
+        String text;
+        if (mFormatter != null) {
+            try {
+                text = mFormatter.format(view.getContext(), mRawValue);
 
-                } catch (@NonNull final ClassCastException e) {
-                    // Due to the way a Book loads data from the database,
-                    // it's possible that it gets the column type wrong.
-                    // See {@link BookCursor} class docs.
-                    Logger.error(view.getContext(), TAG, e, value);
+            } catch (@NonNull final ClassCastException e) {
+                // Due to the way a Book loads data from the database,
+                // it's possible that it gets the column type wrong.
+                // See {@link BookCursor} class docs.
+                Logger.error(view.getContext(), TAG, e, value);
 
-                    text = String.valueOf(value);
-                }
-            } else {
                 text = String.valueOf(value);
             }
+        } else {
+            text = String.valueOf(value);
+        }
 
-            // Second step set the view
-            if (view instanceof AutoCompleteTextView) {
-                // prevent auto-completion to kick in / stop the dropdown from opening.
-                // this happened if the field had the focus when we'd be populating it.
-                ((AutoCompleteTextView) view).setText(text, false);
-            } else {
-                view.setText(text);
-            }
+        // Second step set the view but ...
+        if (view instanceof AutoCompleteTextView) {
+            // prevent auto-completion to kick in / stop the dropdown from opening.
+            // this happened if the field had the focus when we'd be populating it.
+            ((AutoCompleteTextView) view).setText(text, false);
+        } else {
+            view.setText(text);
+        }
 
+        // finally re-enable the watcher
+        if (mReformatTextWatcher != null) {
             view.addTextChangedListener(mReformatTextWatcher);
         }
+
     }
 
     /**
-     * TextWatcher for TextView fields. Sets the Field value after each change.
+     * TextWatcher for TextView fields. Lets the Field know it's changed.
+     * If needed, reformats the on-screen value after each change.
      */
-    class ReformatTextWatcher
+    class ChangedTextWatcher
             implements TextWatcher {
 
         @NonNull
@@ -156,11 +178,10 @@ public class EditTextAccessor<T>
 
         private long lastChange;
 
-        ReformatTextWatcher(@NonNull final Field<T> field,
-                            @NonNull final TextView view,
-                            final boolean enableReformat) {
+        ChangedTextWatcher(@NonNull final Field<T> field,
+                           @NonNull final TextView view,
+                           final boolean enableReformat) {
             mField = field;
-
             mView = view;
             mEnableReformat = enableReformat;
         }
@@ -185,8 +206,10 @@ public class EditTextAccessor<T>
             // react every 0.5 seconds is good enough and easier on the user.
             if (interval > 500) {
                 // reformat if allowed and needed.
-                if (mEnableReformat && mFormatter != null) {
-                    // we should never get here if the formatter is NO an EditFieldFormatter, flw...
+                if (mEnableReformat
+                    && mFormatter != null
+                    && mFormatter instanceof EditFieldFormatter) {
+
                     T value = ((EditFieldFormatter<T>) mFormatter).extract(mView);
                     String formatted = mFormatter.format(mView.getContext(), value);
 

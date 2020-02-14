@@ -50,15 +50,19 @@ public class TextAccessor<T>
     private static final String TAG = "TextAccessor";
 
     @Nullable
-    FieldFormatter<T> mFormatter;
+    final FieldFormatter<T> mFormatter;
+
+    public TextAccessor() {
+        mFormatter = null;
+    }
+
+    public TextAccessor(@Nullable final FieldFormatter<T> formatter) {
+        mFormatter = formatter;
+    }
 
     @Nullable
     public FieldFormatter<T> getFormatter() {
         return mFormatter;
-    }
-
-    public void setFormatter(@NonNull final FieldFormatter<T> formatter) {
-        mFormatter = formatter;
     }
 
     @NonNull

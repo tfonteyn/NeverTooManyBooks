@@ -56,8 +56,8 @@ import static com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.PREF
 import static com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.PREF_REBUILD_SAVED_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KIND;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BL_ROW_ID;
@@ -185,7 +185,7 @@ public class RowStateDAO {
                          + ',' + KEY_BL_NODE_KEY
 
                          + ',' + KEY_BL_NODE_LEVEL
-                         + ',' + KEY_BL_NODE_KIND
+                         + ',' + KEY_BL_NODE_GROUP
 
                          + ',' + KEY_BL_NODE_VISIBLE
                          + ',' + KEY_BL_NODE_EXPANDED
@@ -195,7 +195,7 @@ public class RowStateDAO {
                          + ',' + listTable.dot(KEY_BL_NODE_KEY)
 
                          + ',' + listTable.dot(KEY_BL_NODE_LEVEL)
-                         + ',' + listTable.dot(KEY_BL_NODE_KIND)
+                         + ',' + listTable.dot(KEY_BL_NODE_GROUP)
                          + "\n";
 
         // On first-time builds, get the Preferences-based list
@@ -1071,7 +1071,7 @@ public class RowStateDAO {
 
                 + ',' + KEY_BL_NODE_KEY
                 + ',' + KEY_BL_NODE_LEVEL
-                + ',' + KEY_BL_NODE_KIND
+                + ',' + KEY_BL_NODE_GROUP
                 + ',' + KEY_BL_NODE_EXPANDED
                 + ')'
                 + " SELECT DISTINCT "
@@ -1079,7 +1079,7 @@ public class RowStateDAO {
                 + ",?"
                 + ',' + KEY_BL_NODE_KEY
                 + ',' + KEY_BL_NODE_LEVEL
-                + ',' + KEY_BL_NODE_KIND
+                + ',' + KEY_BL_NODE_GROUP
                 + ',' + KEY_BL_NODE_EXPANDED)
 
                + " FROM " + mTable.getName()

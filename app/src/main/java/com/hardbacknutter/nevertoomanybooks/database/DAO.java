@@ -58,7 +58,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -100,7 +99,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_CSV;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
@@ -778,13 +776,12 @@ public class DAO
         try (Cursor cursor = sSyncedDb.rawQuery(sql, params)) {
             final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                TocEntry tocEntry =
-                        new TocEntry(rowData.getLong(KEY_PK_ID),
-                                     author,
-                                     rowData.getString(KEY_TITLE),
-                                     rowData.getString(KEY_DATE_FIRST_PUBLICATION),
-                                     rowData.getString(KEY_TOC_TYPE).charAt(0),
-                                     rowData.getInt(KEY_BOOK_COUNT));
+                TocEntry tocEntry = new TocEntry(rowData.getLong(KEY_PK_ID),
+                                                 author,
+                                                 rowData.getString(KEY_TITLE),
+                                                 rowData.getString(KEY_DATE_FIRST_PUBLICATION),
+                                                 rowData.getString(KEY_TOC_TYPE).charAt(0),
+                                                 rowData.getInt(KEY_BOOK_COUNT));
                 list.add(tocEntry);
             }
         }
@@ -803,8 +800,7 @@ public class DAO
     private long insertAuthor(@NonNull final Context context,
                               @NonNull final Author /* in/out */ author) {
 
-        Locale authorLocale = author.getLocale(context, this,
-                                               LocaleUtils.getUserLocale(context));
+        Locale authorLocale = author.getLocale(context, this, LocaleUtils.getUserLocale(context));
 
         SynchronizedStatement stmt = mSqlStatementManager.get(STMT_INSERT_AUTHOR);
         if (stmt == null) {
@@ -2253,21 +2249,6 @@ public class DAO
     }
 
     /**
-     * Return a {@link Cursor} for the given {@link Book} id.
-     * <p>
-     * The columns fetched are limited to what is needed for the
-     * {@link BooksOnBookshelf} so called "extras" fields.
-     *
-     * @param bookId to retrieve
-     *
-     * @return {@link Cursor} containing all records, if any
-     */
-    @NonNull
-    public Cursor fetchBookExtrasById(final long bookId) {
-        return sSyncedDb.rawQuery(SqlSelect.BOOK_EXTRAS, new String[]{String.valueOf(bookId)});
-    }
-
-    /**
      * Creates a new bookshelf in the database.
      *
      * @param bookshelf object to insert. Will be updated with the id.
@@ -3633,7 +3614,7 @@ public class DAO
      * <strong>Transaction:</strong> required
      *
      * @param context Application context
-     * @param bookId     the book id
+     * @param bookId  the book id
      */
     private void updateFts(@NonNull final Context context,
                            final long bookId) {
@@ -4228,8 +4209,8 @@ public class DAO
          * @return expression
          */
         @NonNull
-        public static String dayGlob(@NonNull String fieldSpec,
-                                     final boolean toLocal) {
+        public static String day(@NonNull String fieldSpec,
+                                 final boolean toLocal) {
             if (toLocal) {
                 fieldSpec = localDateExpression(fieldSpec);
             }
@@ -4705,35 +4686,6 @@ public class DAO
         static final String LAST_UPDATE_DATE_BY_BOOK_ID =
                 "SELECT " + KEY_DATE_LAST_UPDATED + " FROM " + TBL_BOOKS.getName()
                 + " WHERE " + KEY_PK_ID + "=?";
-
-        /**
-         * Get the booklist extra fields including the bookshelves as a single csv string.
-         * <p>
-         * GROUP_CONCAT: The order of the concatenated elements is arbitrary.
-         */
-        static final String BOOK_EXTRAS =
-                "SELECT "
-                + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN
-                + " AS " + KEY_AUTHOR_FORMATTED
-                // no author type for now.
-                //+ ',' + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK)
-
-                + ',' + TBL_BOOKS.dot(KEY_LOCATION)
-                + ',' + TBL_BOOKS.dot(KEY_FORMAT)
-                + ',' + TBL_BOOKS.dot(KEY_PUBLISHER)
-                + ',' + TBL_BOOKS.dot(KEY_DATE_PUBLISHED)
-
-                + ',' + "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')"
-                + " AS " + KEY_BOOKSHELF_CSV
-
-                + " FROM " + TBL_BOOKS.ref()
-                + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                + TBL_BOOKS.join(TBL_BOOK_BOOKSHELF) + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
-                + " WHERE " + TBL_BOOKS.dot(KEY_PK_ID) + "=?"
-                // primary author only.
-                + " GROUP BY " + KEY_AUTHOR_FORMATTED
-                + " ORDER BY " + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)
-                + " LIMIT 1";
 
         /**
          * Check if a {@link Book} exists.

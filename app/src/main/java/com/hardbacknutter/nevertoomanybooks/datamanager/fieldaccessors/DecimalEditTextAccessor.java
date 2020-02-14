@@ -34,11 +34,13 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -52,6 +54,10 @@ public class DecimalEditTextAccessor<T>
 
     public DecimalEditTextAccessor() {
         super(false);
+    }
+
+    public DecimalEditTextAccessor(@Nullable final FieldFormatter<T> formatter) {
+        super(formatter, false);
     }
 
     @Override

@@ -77,14 +77,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 
 /**
  * Represents the underlying data for a book.
- * <p>
- * URGENT: add condition field for book and for dust-cover
- * fine/new
- * very good
- * good
- * good with bad spine == acceptable?
- * acceptable
- * garbage
  */
 public class Book
         extends DataManager
@@ -835,6 +827,8 @@ public class Book
     }
 
     /**
+     * URGENT: add condition field for book and for dust-cover
+     *
      * <a href="https://en.wikipedia.org/wiki/List_of_used_book_conditions">wikipedia</a>
      * <p>
      * As new means that the book is in the state that it should have been in when it

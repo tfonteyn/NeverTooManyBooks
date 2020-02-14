@@ -136,7 +136,7 @@
             android:title="@string/pt_bob_author_name_sort"
             />
 
-        <!-- Enabled if RowKind 'Author' is present in this style. -->
+        <!-- Enabled if Group 'Author' is present in this style. -->
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_functions"
@@ -147,7 +147,7 @@
             app:isPreferenceVisible="false"
             />
 
-        <!-- Enabled if RowKind 'Author' is present in this style. -->
+        <!-- Enabled if Group 'Author' is present in this style. -->
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_reorder"
@@ -166,7 +166,7 @@
         app:isPreferenceVisible="false"
         >
 
-        <!-- Enabled if RowKind 'Series' is present in this style. -->
+        <!-- Enabled if Group 'Series' is present in this style. -->
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_functions"

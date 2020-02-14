@@ -83,29 +83,25 @@ public class EditBookNativeIdFragment
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 
-        fields.<Number>add(R.id.site_goodreads, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_EID_GOODREADS_BOOK)
-                .setRelatedFields(R.id.lbl_site_goodreads)
-                .setFormatter(longNumberFormatter);
+        fields.add(R.id.site_goodreads, new EditTextAccessor<>(longNumberFormatter),
+                   DBDefinitions.KEY_EID_GOODREADS_BOOK)
+              .setRelatedFields(R.id.lbl_site_goodreads);
 
-        fields.<Number>add(R.id.site_isfdb, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_EID_ISFDB)
-                .setRelatedFields(R.id.lbl_site_isfdb)
-                .setFormatter(longNumberFormatter);
+        fields.add(R.id.site_isfdb, new EditTextAccessor<>(longNumberFormatter),
+                   DBDefinitions.KEY_EID_ISFDB)
+              .setRelatedFields(R.id.lbl_site_isfdb);
 
-        fields.<Number>add(R.id.site_library_thing, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_EID_LIBRARY_THING)
-                .setRelatedFields(R.id.lbl_site_library_thing)
-                .setFormatter(longNumberFormatter);
+        fields.add(R.id.site_library_thing, new EditTextAccessor<>(longNumberFormatter),
+                   DBDefinitions.KEY_EID_LIBRARY_THING)
+              .setRelatedFields(R.id.lbl_site_library_thing);
 
-        fields.<Number>add(R.id.site_strip_info_be, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_EID_STRIP_INFO_BE)
-                .setRelatedFields(R.id.lbl_site_strip_info_be)
-                .setFormatter(longNumberFormatter);
+        fields.add(R.id.site_strip_info_be, new EditTextAccessor<>(longNumberFormatter),
+                   DBDefinitions.KEY_EID_STRIP_INFO_BE)
+              .setRelatedFields(R.id.lbl_site_strip_info_be);
 
-        fields.<String>add(R.id.site_open_library, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_EID_OPEN_LIBRARY)
-                .setRelatedFields(R.id.lbl_site_open_library);
+        fields.add(R.id.site_open_library, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_EID_OPEN_LIBRARY)
+              .setRelatedFields(R.id.lbl_site_open_library);
 
         setSiteVisibility(mShowAllSites);
     }

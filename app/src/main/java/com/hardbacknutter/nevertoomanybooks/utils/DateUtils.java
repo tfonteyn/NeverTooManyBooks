@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.util.Log;
-
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +46,7 @@ import java.util.TimeZone;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * ENHANCE: Migrate to java.time.* ... which requires Android 8.0 (API 26)
@@ -322,7 +321,6 @@ public final class DateUtils {
     }
 
 
-
     /**
      * Pretty format a (potentially partial) SQL date;  Locale based.
      *
@@ -337,30 +335,33 @@ public final class DateUtils {
                                       @NonNull final String dateString)
             throws NumberFormatException {
 
-        switch (dateString.length()) {
-            case 4: {
-                // shortcut for input: YYYY
-                return dateString;
+        if (dateString.length() < 5) {
+            // 0: empty
+            // 1,3: invalid, no need to parse
+            // 2: we *could* parse and add either 1900 or 2000... but this is error prone
+            // 4: shortcut for input: YYYY
+            // Any of the above: just return the incoming string
+            return dateString;
+
+        } else if (dateString.length() == 7) {
+            // shortcut for input: YYYY-MM
+            int month = Integer.parseInt(dateString.substring(5));
+            // just swap: MMM YYYY
+            return getMonthName(locale, month, true) + ' ' + dateString.substring(0, 4);
+
+        } else {
+            // Try and parse
+            Date date = parseDate(dateString);
+            if (date != null) {
+                return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
             }
-            case 7: {
-                // shortcut for input: YYYY-MM
-                int month = Integer.parseInt(dateString.substring(5));
-                // just swap: MMM YYYY
-                return getMonthName(locale, month, true) + ' ' + dateString.substring(0, 4);
+            // failed to parse
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
+                Logger.e(TAG, "toPrettyDate=" + dateString, new Throwable());
             }
-            default: {
-                // Full date or datetime formats
-                Date date = parseDate(dateString);
-                if (date != null) {
-                    return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
-                }
-                // failed to parse
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-                    Log.d(TAG, "toPrettyDate=" + dateString, new Throwable());
-                }
-                return dateString;
-            }
+            return dateString;
         }
+
     }
 
     /**

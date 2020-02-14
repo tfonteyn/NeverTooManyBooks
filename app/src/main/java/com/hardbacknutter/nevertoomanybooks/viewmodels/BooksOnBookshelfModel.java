@@ -489,7 +489,7 @@ public class BooksOnBookshelfModel
 
         if (style.isUsed(DBDefinitions.KEY_LOANEE)) {
             blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                    DBDefinitions.DOM_LOANEE_AS_BOOLEAN,
+                    DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
                     DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN, 0));
         }
 
@@ -654,8 +654,8 @@ public class BooksOnBookshelfModel
                 return author.getLabel(context);
             }
 
-        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_KIND)
-                   == BooklistGroup.RowKind.BOOK) {
+        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP)
+                   == BooklistGroup.BOOK) {
             final List<Author> authors = mDb.getAuthorsByBookId(
                     rowData.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
@@ -680,8 +680,8 @@ public class BooksOnBookshelfModel
             if (series != null) {
                 return series.getTitle();
             }
-        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_KIND)
-                   == BooklistGroup.RowKind.BOOK) {
+        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP)
+                   == BooklistGroup.BOOK) {
             final ArrayList<Series> series =
                     mDb.getSeriesByBookId(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {

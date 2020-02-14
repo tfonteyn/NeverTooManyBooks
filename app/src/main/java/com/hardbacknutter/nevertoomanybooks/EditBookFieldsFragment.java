@@ -67,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFrag
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -161,41 +160,37 @@ public class EditBookFieldsFragment
         // The buttons to bring up the fragment to edit Authors / Series.
         // Not shown if the user preferences are set to use an extra tab for this.
         if (!showAuthSeriesOnTabs) {
-            fields.<List<Author>>add(R.id.author, new TextAccessor<>(),
-                                     UniqueId.BKEY_AUTHOR_ARRAY,
-                                     DBDefinitions.KEY_FK_AUTHOR)
-                    .setRelatedFields(R.id.lbl_author)
-                    .setFormatter(new AuthorListFormatter(Author.Details.Short, false));
+            fields.add(R.id.author, new TextAccessor<>(
+                               new AuthorListFormatter(Author.Details.Short, false)),
+                       UniqueId.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
+                  .setRelatedFields(R.id.lbl_author);
 
-            fields.<List<Series>>add(R.id.series, new TextAccessor<>(),
-                                     UniqueId.BKEY_SERIES_ARRAY,
-                                     DBDefinitions.KEY_SERIES_TITLE)
-                    .setRelatedFields(R.id.lbl_series)
-                    .setFormatter(new SeriesListFormatter(Series.Details.Short, false));
+            fields.add(R.id.series, new TextAccessor<>(
+                               new SeriesListFormatter(Series.Details.Short, false)),
+                       UniqueId.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
+                  .setRelatedFields(R.id.lbl_series);
         }
 
-        fields.<String>add(R.id.title, new EditTextAccessor<>(), DBDefinitions.KEY_TITLE);
+        fields.add(R.id.title, new EditTextAccessor<String>(), DBDefinitions.KEY_TITLE);
 
-        fields.<String>add(R.id.description, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_DESCRIPTION)
-                .setRelatedFields(R.id.lbl_description);
+        fields.add(R.id.description, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_DESCRIPTION)
+              .setRelatedFields(R.id.lbl_description);
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        fields.<String>add(R.id.isbn, new EditTextAccessor<>(), DBDefinitions.KEY_ISBN)
-                .setRelatedFields(R.id.lbl_isbn);
+        fields.add(R.id.isbn, new EditTextAccessor<String>(), DBDefinitions.KEY_ISBN)
+              .setRelatedFields(R.id.lbl_isbn);
 
-        fields.<String>add(R.id.genre, new EditTextAccessor<>(), DBDefinitions.KEY_GENRE)
-                .setRelatedFields(R.id.lbl_genre);
+        fields.add(R.id.genre, new EditTextAccessor<String>(), DBDefinitions.KEY_GENRE)
+              .setRelatedFields(R.id.lbl_genre);
 
         // Personal fields
 
         // The button to bring up the dialog to edit Bookshelves.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
-        fields.<List<Entity>>add(R.id.bookshelves, new EditTextAccessor<>(),
-                                 UniqueId.BKEY_BOOKSHELF_ARRAY,
-                                 DBDefinitions.KEY_BOOKSHELF)
-                .setRelatedFields(R.id.lbl_bookshelves)
-                .setFormatter(new CsvFormatter());
+        fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter()),
+                   UniqueId.BKEY_BOOKSHELF_ARRAY, DBDefinitions.KEY_BOOKSHELF)
+              .setRelatedFields(R.id.lbl_bookshelves);
     }
 
     @Override
@@ -229,12 +224,12 @@ public class EditBookFieldsFragment
         if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
-                                                book, mIsbnView, 0,
-                                                mCoverView[0], ImageUtils.SCALE_MEDIUM);
+                                                book, mIsbnView, 0, mCoverView[0],
+                                                ImageUtils.SCALE_MEDIUM);
 
             mCoverHandler[1] = new CoverHandler(this, mProgressBar,
-                                                book, mIsbnView, 1,
-                                                mCoverView[1], ImageUtils.SCALE_MEDIUM);
+                                                book, mIsbnView, 1, mCoverView[1],
+                                                ImageUtils.SCALE_MEDIUM);
         }
 
         // hide unwanted fields
@@ -288,11 +283,11 @@ public class EditBookFieldsFragment
 
         addAutocomplete(R.id.genre, mBookModel.getGenres());
 
-        Field field = getFields().getField(R.id.bookshelves);
+        final Field field = getFields().getField(R.id.bookshelves);
         // only bother when it's in use
         if (field.isUsed()) {
             field.getAccessor().getView().setOnClickListener(v -> {
-                DAO db = mBookModel.getDb();
+                final DAO db = mBookModel.getDb();
                 // get the list of all shelves the book is currently on.
                 final List<Bookshelf> current =
                         mBookModel.getBook().getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);

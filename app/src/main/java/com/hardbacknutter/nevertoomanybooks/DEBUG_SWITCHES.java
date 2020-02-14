@@ -99,7 +99,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean GOODREADS = false;
     /** {@link LibraryThingSearchEngine}. */
     public static final boolean LIBRARY_THING = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbBookHandler}. */
+    /** {@link com.hardbacknutter.nevertoomanybooks.searches.isfdb}. */
     public static final boolean ISFDB = false;
     /** {@link OpenLibrarySearchEngine}. */
     public static final boolean OPEN_LIBRARY = false;

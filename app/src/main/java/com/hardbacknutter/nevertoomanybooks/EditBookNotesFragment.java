@@ -84,52 +84,43 @@ public class EditBookNotesFragment
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
         final FieldFormatter<Number> doubleNumberFormatter = new DoubleNumberFormatter();
 
-        fields.add(R.id.cbx_read, new CompoundButtonAccessor(),
-                   DBDefinitions.KEY_READ);
-        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(),
-                   DBDefinitions.KEY_SIGNED);
+        fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
+        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED);
 
-        fields.add(R.id.rating, new RatingBarAccessor(),
-                   DBDefinitions.KEY_RATING)
+        fields.add(R.id.rating, new RatingBarAccessor(), DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.<String>add(R.id.notes, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_PRIVATE_NOTES)
-                .setRelatedFields(R.id.lbl_notes);
+        fields.add(R.id.notes, new EditTextAccessor<String>(), DBDefinitions.KEY_PRIVATE_NOTES)
+              .setRelatedFields(R.id.lbl_notes);
 
         // MUST be defined before the currency.
-        fields.<Number>add(R.id.price_paid, new DecimalEditTextAccessor<>(),
-                           DBDefinitions.KEY_PRICE_PAID)
-                .setFormatter(doubleNumberFormatter);
-        fields.<String>add(R.id.lbl_price_paid_currency, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_PRICE_PAID_CURRENCY)
-                .setRelatedFields(R.id.lbl_price_paid,
-                                  R.id.lbl_price_paid_currency, R.id.price_paid_currency);
+        fields.add(R.id.price_paid, new DecimalEditTextAccessor<>(doubleNumberFormatter),
+                   DBDefinitions.KEY_PRICE_PAID);
+        fields.add(R.id.price_paid_currency, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_PRICE_PAID_CURRENCY)
+              .setRelatedFields(R.id.lbl_price_paid,
+                                R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
-        fields.<String>add(R.id.location, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_LOCATION)
-                .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
+        fields.add(R.id.location, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_LOCATION)
+              .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
         //noinspection ConstantConditions
-        fields.add(R.id.edition, new BitmaskChipGroupAccessor(
-                           Book.Edition.getEditions(getContext()), true),
+        fields.add(R.id.edition,
+                   new BitmaskChipGroupAccessor(Book.Edition.getEditions(getContext()), true),
                    DBDefinitions.KEY_EDITION_BITMASK)
               .setRelatedFields(R.id.lbl_edition);
 
-        fields.<String>add(R.id.date_acquired, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_DATE_ACQUIRED)
-                .setRelatedFields(R.id.lbl_date_acquired)
-                .setFormatter(dateFormatter);
+        fields.add(R.id.date_acquired, new EditTextAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_DATE_ACQUIRED)
+              .setRelatedFields(R.id.lbl_date_acquired);
 
-        fields.<String>add(R.id.read_start, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_READ_START)
-                .setRelatedFields(R.id.lbl_read_start)
-                .setFormatter(dateFormatter);
-
-        fields.<String>add(R.id.read_end, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_READ_END)
-                .setRelatedFields(R.id.lbl_read_end)
-                .setFormatter(dateFormatter);
+        fields.add(R.id.read_start, new EditTextAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_READ_START)
+              .setRelatedFields(R.id.lbl_read_start);
+        fields.add(R.id.read_end, new EditTextAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_READ_END)
+              .setRelatedFields(R.id.lbl_read_end);
     }
 
     @Override

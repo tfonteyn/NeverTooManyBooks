@@ -43,8 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.FieldDataAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.FieldViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
@@ -88,7 +87,7 @@ public class Field<T> {
 
     /** Accessor to use. Encapsulates the formatter. */
     @NonNull
-    private final FieldDataAccessor<T> mFieldDataAccessor;
+    private final FieldViewAccessor<T> mFieldDataAccessor;
 
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -108,7 +107,7 @@ public class Field<T> {
      * @param entityKey The preference key to check if this Field is used or not
      */
     Field(final int id,
-          @NonNull final FieldDataAccessor<T> fieldDataAccessor,
+          @NonNull final FieldViewAccessor<T> fieldDataAccessor,
           @NonNull final String key,
           @NonNull final String entityKey) {
 
@@ -121,22 +120,9 @@ public class Field<T> {
     }
 
     @NonNull
-    public FieldDataAccessor<T> getAccessor() {
+    public FieldViewAccessor<T> getAccessor() {
         return mFieldDataAccessor;
     }
-
-    /**
-     * Convenience wrapper for {@link FieldDataAccessor#setFormatter(FieldFormatter)}.
-     *
-     * @param formatter to use
-     *
-     * @return Field (for chaining)
-     */
-    public Field<T> setFormatter(@NonNull final FieldFormatter<T> formatter) {
-        mFieldDataAccessor.setFormatter(formatter);
-        return this;
-    }
-
 
     /**
      * Called from {@link BookBaseFragment} #loadFields() (from onResume())

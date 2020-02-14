@@ -81,49 +81,42 @@ public class EditBookPublicationFragment
         final FieldFormatter<String> languageFormatter = new LanguageFormatter();
         final FieldFormatter<Number> doubleNumberFormatter = new DoubleNumberFormatter();
 
-        fields.<String>add(R.id.pages, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_PAGES)
-                .setRelatedFields(R.id.lbl_pages);
+        fields.add(R.id.pages, new EditTextAccessor<String>(), DBDefinitions.KEY_PAGES)
+              .setRelatedFields(R.id.lbl_pages);
 
-        fields.<String>add(R.id.format, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_FORMAT)
-                .setRelatedFields(R.id.lbl_format);
+        fields.add(R.id.format, new EditTextAccessor<String>(), DBDefinitions.KEY_FORMAT)
+              .setRelatedFields(R.id.lbl_format);
 
-        fields.<String>add(R.id.color, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_COLOR)
-                .setRelatedFields(R.id.lbl_color);
+        fields.add(R.id.color, new EditTextAccessor<String>(), DBDefinitions.KEY_COLOR)
+              .setRelatedFields(R.id.lbl_color);
 
-        fields.<String>add(R.id.language, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_LANGUAGE)
-                .setRelatedFields(R.id.lbl_language)
-                .setFormatter(languageFormatter);
+        fields.add(R.id.language, new EditTextAccessor<>(languageFormatter),
+                   DBDefinitions.KEY_LANGUAGE)
+              .setRelatedFields(R.id.lbl_language);
 
-        fields.<String>add(R.id.publisher, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_PUBLISHER)
-                .setRelatedFields(R.id.lbl_publisher);
+        fields.add(R.id.publisher, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_PUBLISHER)
+              .setRelatedFields(R.id.lbl_publisher);
 
-        fields.<String>add(R.id.date_published, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_DATE_PUBLISHED)
-                .setRelatedFields(R.id.lbl_date_published)
-                .setFormatter(dateFormatter);
+        fields.add(R.id.date_published, new EditTextAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_DATE_PUBLISHED)
+              .setRelatedFields(R.id.lbl_date_published);
 
-        fields.<String>add(R.id.print_run, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_PRINT_RUN)
-                .setRelatedFields(R.id.lbl_print_run);
+        fields.add(R.id.print_run, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_PRINT_RUN)
+              .setRelatedFields(R.id.lbl_print_run);
 
-        fields.<String>add(R.id.first_publication, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-                .setRelatedFields(R.id.lbl_first_publication)
-                .setFormatter(dateFormatter);
+        fields.add(R.id.first_publication, new EditTextAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+              .setRelatedFields(R.id.lbl_first_publication);
 
         // MUST be defined before the currency.
-        fields.<Number>add(R.id.price_listed, new DecimalEditTextAccessor<>(),
-                           DBDefinitions.KEY_PRICE_LISTED)
-                .setFormatter(doubleNumberFormatter);
-        fields.<String>add(R.id.price_listed_currency, new EditTextAccessor<>(),
-                           DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
-                .setRelatedFields(R.id.lbl_price_listed,
-                                  R.id.lbl_price_listed_currency, R.id.price_listed_currency);
+        fields.add(R.id.price_listed, new DecimalEditTextAccessor<>(doubleNumberFormatter),
+                   DBDefinitions.KEY_PRICE_LISTED);
+        fields.add(R.id.price_listed_currency, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
+              .setRelatedFields(R.id.lbl_price_listed,
+                                R.id.lbl_price_listed_currency, R.id.price_listed_currency);
     }
 
     @Override

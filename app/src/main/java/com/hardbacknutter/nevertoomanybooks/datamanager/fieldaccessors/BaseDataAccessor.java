@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
  * @param <T> type of Field value.
  */
 public abstract class BaseDataAccessor<T>
-        implements FieldDataAccessor<T> {
+        implements FieldViewAccessor<T> {
 
     Field<T> mField;
     @Nullable

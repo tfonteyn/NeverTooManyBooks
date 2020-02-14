@@ -39,7 +39,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.FieldDataAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.FieldViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * <li> handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
  * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
  * as expected as will setting the value of a Spinner). As new view types are added, it
- * will be necessary to add new {@link FieldDataAccessor} implementations.
+ * will be necessary to add new {@link FieldViewAccessor} implementations.
  * In some specific circumstances, an accessor can be defined manually.</li>
  * <li> Custom data accessors and formatter to provide application-specific data rules.</li>
  * <li> simplified extraction of data.</li>
@@ -73,22 +73,22 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  *
  * <ul>Data flows to and from a view as follows:
  * <li>IN  (no formatter ):<br>
- * {@link FieldDataAccessor#setValue(DataManager)} ->
- * {@link FieldDataAccessor#setValue(Object)} ->
+ * {@link FieldViewAccessor#setValue(DataManager)} ->
+ * {@link FieldViewAccessor#setValue(Object)} ->
  * populates the View.
  * </li>
  * <li>IN  (with formatter):<br>
- * {@link FieldDataAccessor#setValue(DataManager)} ->
- * {@link FieldDataAccessor#setValue(Object)} ->
+ * {@link FieldViewAccessor#setValue(DataManager)} ->
+ * {@link FieldViewAccessor#setValue(Object)} ->
  * {@link FieldFormatter#apply} ->
  * populates the View..
  * </li>
  * <li>OUT (no formatter ):
- * View -> {@link FieldDataAccessor#getValue()} ->  {@link FieldDataAccessor#getValue(DataManager)}
+ * View -> {@link FieldViewAccessor#getValue()} ->  {@link FieldViewAccessor#getValue(DataManager)}
  * </li>
  * <li>OUT (with formatter):
  * View ->  {@link EditFieldFormatter#extract} ->
- * {@link FieldDataAccessor#getValue()} -> {@link FieldDataAccessor#getValue(DataManager)}
+ * {@link FieldViewAccessor#getValue()} -> {@link FieldViewAccessor#getValue(DataManager)}
  * </li>
  * </ul>
  */
@@ -111,9 +111,9 @@ public class Fields {
      */
     @NonNull
     public <T> Field<T> add(@IdRes final int id,
-                            @NonNull final FieldDataAccessor<T> fieldDataAccessor,
+                            @NonNull final FieldViewAccessor<T> accessor,
                             @NonNull final String key) {
-        return add(id, fieldDataAccessor, key, key);
+        return add(id, accessor, key, key);
     }
 
     /**
@@ -127,7 +127,7 @@ public class Fields {
      */
     @NonNull
     public <T> Field<T> add(@IdRes final int id,
-                            @NonNull final FieldDataAccessor<T> fieldDataAccessor,
+                            @NonNull final FieldViewAccessor<T> accessor,
                             @NonNull final String key,
                             @NonNull final String entityKey) {
 
@@ -138,7 +138,7 @@ public class Fields {
             }
         }
 
-        Field<T> field = new Field<>(id, fieldDataAccessor, key, entityKey);
+        Field<T> field = new Field<>(id, accessor, key, entityKey);
         mAllFields.put(id, field);
         return field;
     }

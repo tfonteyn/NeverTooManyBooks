@@ -890,7 +890,7 @@
     <!-- Preference Category -->
     <string name="pg_general">General</string>
 
-    <!-- Preference Screen; groups (RowKinds) in booklist style -->
+    <!-- Preference Screen; BooklistGroup's in booklist style -->
     <string name="pg_style_groups">Groups</string>
 
     <!-- Preference Screen; filters in booklist style -->

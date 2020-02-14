@@ -63,17 +63,19 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatemen
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_LOANEE_AS_BOOL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KIND;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_PRIMARY_SERIES_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_NUM_FLOAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
@@ -87,15 +89,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE_AS_BOOLEAN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_AUTHOR_SORT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_RK_SERIES_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KIND;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
@@ -281,7 +280,6 @@ public class BooklistBuilder
      * Add a domain to the resulting flattened list based on the details provided.
      *
      * @param domainDetails Domain to add
-     *
      */
     public void addDomain(@NonNull final ExtraDomainDetails domainDetails) {
         if (!mExtraDomains.containsKey(domainDetails.domain.getName())) {
@@ -389,7 +387,7 @@ public class BooklistBuilder
 
         // Will use default increment
         mListTable.addDomain(DOM_PK_ID);
-        // Will use expression based on groups (rowKindPrefix/rowValue); determined later
+        // Will use expression based on groups (rowGroup/rowValue); determined later
         mListTable.addDomain(DOM_BL_NODE_KEY);
 
         final BuildHelper helper = new BuildHelper(mListTable, mStyle);
@@ -397,9 +395,9 @@ public class BooklistBuilder
         helper.addDomain(DOM_BL_NODE_LEVEL, String.valueOf(mStyle.groupCount() + 1),
                          BuildHelper.FLAG_NONE);
         //sorted
-        helper.addDomain(DOM_BL_NODE_LEVEL, null, BuildHelper.FLAG_SORTED);
+        helper.addDomain(DOM_BL_NODE_LEVEL, null, BuildHelper.FLAG_SORT);
 
-        helper.addDomain(DOM_BL_NODE_KIND, String.valueOf(BooklistGroup.RowKind.BOOK),
+        helper.addDomain(DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK),
                          BuildHelper.FLAG_NONE);
 
         helper.addDomain(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID), BuildHelper.FLAG_NONE);
@@ -418,7 +416,6 @@ public class BooklistBuilder
             group.setDomains(helper.getDomainsForCurrentGroup());
         }
         // After adding the groups, we now know if we have a Bookshelf group or not.
-
         // If we want a specific Bookshelf, make sure to filter on it.
         if (!mBookshelf.isAllBooks()) {
             helper.ensureBookshelfGroup(mBookshelf.getId());
@@ -494,33 +491,25 @@ public class BooklistBuilder
 
             // we don't catch exceptions but we do want to log the time it took here.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "build|"
-                           + String.format(Locale.UK, ""
-                                                      + "\ndomains setup        : %5d"
-                                                      + "\nbuild insert         : %5d"
+                Log.d(TAG, "build|" + String.format(
+                        Locale.UK, ""
+                                   + "\ndomain setup        : %5d"
+                                   + "\nbuild insert        : %5d"
+                                   + "\nlist table created  : %5d"
+                                   + "\nbase insert executed: %5d"
+                                   + "\nlist table analyzed : %5d"
+                                   + "\nstate table build   : %5d"
+                                   + "\n============================"
+                                   + "\nTotal time in ms    : %5d",
 
-                                                      + "\nlist table created   : %5d"
-                                                      + "\nbase insert executed : %5d"
-                                                      + "\nlist table analyzed  : %5d"
-
-                                                      + "\nstate table build    : %5d"
-                                                      + "\n============================"
-                                                      + "\nTotal time in ms     : %5d",
-
-                                           (t01_domains_done - t00)
-                                           / NANO_TO_MILLIS,
-                                           (t02_base_insert_prepared - t01_domains_done)
-                                           / NANO_TO_MILLIS,
-                                           (t03_list_table_created - t02_base_insert_prepared)
-                                           / NANO_TO_MILLIS,
-                                           (t04_base_insert_executed - t03_list_table_created)
-                                           / NANO_TO_MILLIS,
-                                           (t05_listTable_analyzed - t04_base_insert_executed)
-                                           / NANO_TO_MILLIS,
-                                           (t06_stateTable_created - t05_listTable_analyzed)
-                                           / NANO_TO_MILLIS,
-                                           (System.nanoTime() - t00) / NANO_TO_MILLIS
-                                          )
+                        (t01_domains_done - t00) / NANO_TO_MILLIS,
+                        (t02_base_insert_prepared - t01_domains_done) / NANO_TO_MILLIS,
+                        (t03_list_table_created - t02_base_insert_prepared) / NANO_TO_MILLIS,
+                        (t04_base_insert_executed - t03_list_table_created) / NANO_TO_MILLIS,
+                        (t05_listTable_analyzed - t04_base_insert_executed) / NANO_TO_MILLIS,
+                        (t06_stateTable_created - t05_listTable_analyzed) / NANO_TO_MILLIS,
+                        (System.nanoTime() - t00) / NANO_TO_MILLIS
+                                                   )
                      );
             }
 
@@ -589,7 +578,7 @@ public class BooklistBuilder
             // Create the INSERT columns clause for the next level up
             StringBuilder listColumns = new StringBuilder()
                     .append(KEY_BL_NODE_LEVEL)
-                    .append(',').append(KEY_BL_NODE_KIND)
+                    .append(',').append(KEY_BL_NODE_GROUP)
                     .append(',').append(KEY_BL_NODE_KEY);
 
             // Create the VALUES clause for the next level up
@@ -746,11 +735,11 @@ public class BooklistBuilder
     public ArrayList<Long> getCurrentBookIdList() {
         String sql = "SELECT " + KEY_FK_BOOK
                      + " FROM " + mListTable.getName()
-                     + " WHERE " + KEY_BL_NODE_KIND + "=?"
+                     + " WHERE " + KEY_BL_NODE_GROUP + "=?"
                      + " ORDER BY " + KEY_FK_BOOK;
 
         try (Cursor cursor = mSyncedDb
-                .rawQuery(sql, new String[]{String.valueOf(BooklistGroup.RowKind.BOOK)})) {
+                .rawQuery(sql, new String[]{String.valueOf(BooklistGroup.BOOK)})) {
             ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
             if (cursor.moveToFirst()) {
                 do {
@@ -793,8 +782,8 @@ public class BooklistBuilder
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 "SELECT COUNT(DISTINCT " + KEY_FK_BOOK + ")"
                 + " FROM " + mListTable.getName()
-                + " WHERE " + KEY_BL_NODE_KIND + "=?")) {
-            stmt.bindLong(1, BooklistGroup.RowKind.BOOK);
+                + " WHERE " + KEY_BL_NODE_GROUP + "=?")) {
+            stmt.bindLong(1, BooklistGroup.BOOK);
             long count = stmt.count();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "getDistinctBookCount"
@@ -815,8 +804,8 @@ public class BooklistBuilder
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 "SELECT COUNT(*)"
                 + " FROM " + mListTable.getName()
-                + " WHERE " + KEY_BL_NODE_KIND + "=?")) {
-            stmt.bindLong(1, BooklistGroup.RowKind.BOOK);
+                + " WHERE " + KEY_BL_NODE_GROUP + "=?")) {
+            stmt.bindLong(1, BooklistGroup.BOOK);
             long count = stmt.count();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 Log.d(TAG, "getBookCount"
@@ -950,7 +939,7 @@ public class BooklistBuilder
             throws Throwable {
         if (!mCloseWasCalled) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|" + mInstanceId);
+                Log.w(TAG, "finalize|" + mInstanceId);
             }
             close();
         }
@@ -1016,12 +1005,14 @@ public class BooklistBuilder
         /** Flag indicating domain is part of the current group. */
         static final int FLAG_GROUP = 1;
         /** Flag indicating domain should be added to the ORDER BY clause. */
-        static final int FLAG_SORTED = 1 << 1;
+        static final int FLAG_SORT = 1 << 1;
         /**
-         * Flag indicating added domain should be sorted in DESC order.
+         * Used in combination with FLAG_SORT.
          * DO NOT USE FOR GROUPED DATA. See notes below.
          */
-        static final int FLAG_SORT_DESCENDING = 1 << 2;
+        static final int FLAG_DESC = 1 << 2;
+        /** Convenience combination flag. */
+        static final int FLAG_SORT_DESC = FLAG_SORT | FLAG_DESC;
 
         @NonNull
         private final TableDefinition mDestinationTable;
@@ -1111,8 +1102,8 @@ public class BooklistBuilder
                 mGroupDomains.add(domain);
             }
 
-            if ((flags & FLAG_SORTED) != 0 && !mSortedColumnsSet.contains(domain)) {
-                boolean isDesc = (flags & FLAG_SORT_DESCENDING) != 0;
+            if ((flags & FLAG_SORT) != 0 && !mSortedColumnsSet.contains(domain)) {
+                boolean isDesc = (flags & FLAG_DESC) != 0;
                 SortedDomains sdi = new SortedDomains(domain, isDesc);
                 mSortedDomains.add(sdi);
                 mSortedColumnsSet.add(domain);
@@ -1128,30 +1119,26 @@ public class BooklistBuilder
 
             switch (group.getId()) {
 
-                case BooklistGroup.RowKind.BOOK:
+                case BooklistGroup.BOOK:
                     // do nothing.
                     break;
 
-                case BooklistGroup.RowKind.AUTHOR: {
+                case BooklistGroup.AUTHOR: {
                     // Save for later use
                     mAuthorGroup = (BooklistGroup.BooklistAuthorGroup) group;
 
                     // Do not sort by it as we'll use the OB column instead
-                    addDomain(group.getFormattedDomain(),
-                              // not using getFormattedDomainExpression() as it depends on pref.
-                              mAuthorGroup.showAuthorGivenNameFirst()
-                              ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                              : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP);
 
-                    // Always sort by DOM_RK_AUTHOR_SORT and user preference order.
+                    // Always sort by DOM_BL_AUTHOR_SORT and user preference order.
                     // Sort uses the OB column.
-                    addDomain(DOM_RK_AUTHOR_SORT,
+                    addDomain(DOM_BL_AUTHOR_SORT,
                               mStyle.sortAuthorByGiven()
                               ? DAO.SqlColumns.EXP_AUTHOR_SORT_FIRST_LAST
                               : DAO.SqlColumns.EXP_AUTHOR_SORT_LAST_FIRST,
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED);
+                              | BuildHelper.FLAG_SORT);
 
                     addDomain(DOM_FK_AUTHOR, TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR),
                               BuildHelper.FLAG_GROUP);
@@ -1161,19 +1148,19 @@ public class BooklistBuilder
 
                     break;
                 }
-                case BooklistGroup.RowKind.SERIES: {
+                case BooklistGroup.SERIES: {
                     // Save for later use
                     mSeriesGroup = (BooklistGroup.BooklistSeriesGroup) group;
 
                     // Do not sort by it as we'll use the OB column instead
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP);
 
-                    // Always sort by DOM_RK_SERIES_SORT.
+                    // Always sort by DOM_BL_SERIES_SORT.
                     // Sort uses the OB column.
-                    addDomain(DOM_RK_SERIES_SORT, TBL_SERIES.dot(KEY_SERIES_TITLE_OB),
+                    addDomain(DOM_BL_SERIES_SORT, TBL_SERIES.dot(KEY_SERIES_TITLE_OB),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED);
+                              | BuildHelper.FLAG_SORT);
 
                     // Group by id (we want the id available and there is a *chance* two
                     // series will have the same name...with bad data
@@ -1195,13 +1182,13 @@ public class BooklistBuilder
                     // This field is not displayed.
                     addDomain(DOM_BL_SERIES_NUM_FLOAT,
                               DAO.SqlColumns.EXP_SERIES_NUMBER_AS_FLOAT,
-                              BuildHelper.FLAG_SORTED);
+                              BuildHelper.FLAG_SORT);
 
                     // The series number as a sorted field for display purposes
                     // and in case of non-numeric data.
                     addDomain(DOM_BOOK_NUM_IN_SERIES,
                               TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES),
-                              BuildHelper.FLAG_SORTED);
+                              BuildHelper.FLAG_SORT);
 
                     // A counter of how many books use the series as a primary series,
                     // so we can skip some series
@@ -1211,149 +1198,136 @@ public class BooklistBuilder
 
                     break;
                 }
-                case BooklistGroup.RowKind.LOANED: {
+                case BooklistGroup.LOANED: {
                     // Saved for later to indicate this group was present
                     mHasLoaneeGroup = true;
 
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED);
+                              | BuildHelper.FLAG_SORT);
 
                     // A simple boolean whether a book is lend out or not.
-                    addDomain(DOM_LOANEE_AS_BOOLEAN, DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN,
+                    addDomain(DOM_BL_LOANEE_AS_BOOL, DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN,
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED);
+                              | BuildHelper.FLAG_SORT);
 
                     break;
                 }
-                case BooklistGroup.RowKind.READ_STATUS: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.READ_STATUS: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED);
+                              | BuildHelper.FLAG_SORT);
 
                     // The READ flag at the lowest level for use with the Book (not grouped)
-                    addDomain(DOM_BOOK_READ, group.getFormattedDomainExpression(),
+                    addDomain(DOM_BOOK_READ, group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_NONE);
                     break;
                 }
 
-                case BooklistGroup.RowKind.BOOKSHELF: {
+                case BooklistGroup.BOOKSHELF: {
                     // Saved for later to indicate this group was present
                     mHasBookshelfGroup = true;
 
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED);
+                              | BuildHelper.FLAG_SORT);
 
                     break;
                 }
 
-                case BooklistGroup.RowKind.PUBLISHER:
-                case BooklistGroup.RowKind.GENRE:
-                case BooklistGroup.RowKind.LANGUAGE:
-                case BooklistGroup.RowKind.LOCATION:
-                case BooklistGroup.RowKind.FORMAT:
-                case BooklistGroup.RowKind.COLOR:
-                case BooklistGroup.RowKind.TITLE_LETTER:
-                case BooklistGroup.RowKind.SERIES_TITLE_LETTER: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.PUBLISHER:
+                case BooklistGroup.GENRE:
+                case BooklistGroup.LANGUAGE:
+                case BooklistGroup.LOCATION:
+                case BooklistGroup.FORMAT:
+                case BooklistGroup.COLOR:
+                case BooklistGroup.TITLE_LETTER:
+                case BooklistGroup.SERIES_TITLE_LETTER: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED);
+                              | BuildHelper.FLAG_SORT);
                     break;
                 }
 
-                case BooklistGroup.RowKind.RATING: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.RATING: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED
                               // sort with highest rated first
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              | BuildHelper.FLAG_SORT_DESC);
                     break;
                 }
 
-                case BooklistGroup.RowKind.DATE_PUBLISHED_YEAR:
-                case BooklistGroup.RowKind.DATE_PUBLISHED_MONTH: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.DATE_PUBLISHED_YEAR:
+                case BooklistGroup.DATE_PUBLISHED_MONTH: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              | BuildHelper.FLAG_SORT_DESC);
 
                     addDomain(DOM_DATE_PUBLISHED, null,
-                              BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              BuildHelper.FLAG_SORT_DESC);
                     break;
                 }
 
-                case BooklistGroup.RowKind.DATE_FIRST_PUB_YEAR:
-                case BooklistGroup.RowKind.DATE_FIRST_PUB_MONTH: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.DATE_FIRST_PUB_YEAR:
+                case BooklistGroup.DATE_FIRST_PUB_MONTH: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              | BuildHelper.FLAG_SORT_DESC);
 
                     addDomain(DOM_DATE_FIRST_PUBLICATION, null,
-                              BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              BuildHelper.FLAG_SORT_DESC);
                     break;
                 }
 
-                case BooklistGroup.RowKind.DATE_READ_YEAR:
-                case BooklistGroup.RowKind.DATE_READ_MONTH:
-                case BooklistGroup.RowKind.DATE_READ_DAY: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.DATE_READ_YEAR:
+                case BooklistGroup.DATE_READ_MONTH:
+                case BooklistGroup.DATE_READ_DAY: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              | BuildHelper.FLAG_SORT_DESC);
 
                     addDomain(DOM_BOOK_READ, null,
-                              BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              BuildHelper.FLAG_SORT_DESC);
                     break;
                 }
 
-                case BooklistGroup.RowKind.DATE_ACQUIRED_YEAR:
-                case BooklistGroup.RowKind.DATE_ACQUIRED_MONTH:
-                case BooklistGroup.RowKind.DATE_ACQUIRED_DAY: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.DATE_ACQUIRED_YEAR:
+                case BooklistGroup.DATE_ACQUIRED_MONTH:
+                case BooklistGroup.DATE_ACQUIRED_DAY: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              | BuildHelper.FLAG_SORT_DESC);
 
                     addDomain(DOM_BOOK_DATE_ACQUIRED, null,
-                              BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              BuildHelper.FLAG_SORT_DESC);
                     break;
                 }
 
-                case BooklistGroup.RowKind.DATE_ADDED_YEAR:
-                case BooklistGroup.RowKind.DATE_ADDED_MONTH:
-                case BooklistGroup.RowKind.DATE_ADDED_DAY: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.DATE_ADDED_YEAR:
+                case BooklistGroup.DATE_ADDED_MONTH:
+                case BooklistGroup.DATE_ADDED_DAY: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              | BuildHelper.FLAG_SORT_DESC);
 
                     addDomain(DOM_BOOK_DATE_ADDED, null,
-                              BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              BuildHelper.FLAG_SORT_DESC);
                     break;
                 }
 
-                case BooklistGroup.RowKind.DATE_LAST_UPDATE_YEAR:
-                case BooklistGroup.RowKind.DATE_LAST_UPDATE_MONTH:
-                case BooklistGroup.RowKind.DATE_LAST_UPDATE_DAY: {
-                    addDomain(group.getFormattedDomain(), group.getFormattedDomainExpression(),
+                case BooklistGroup.DATE_LAST_UPDATE_YEAR:
+                case BooklistGroup.DATE_LAST_UPDATE_MONTH:
+                case BooklistGroup.DATE_LAST_UPDATE_DAY: {
+                    addDomain(group.getDisplayDomain(), group.getDisplayDomainExpression(),
                               BuildHelper.FLAG_GROUP
-                              | BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              | BuildHelper.FLAG_SORT_DESC);
 
                     addDomain(DOM_DATE_LAST_UPDATED, null,
-                              BuildHelper.FLAG_SORTED
-                              | BuildHelper.FLAG_SORT_DESCENDING);
+                              BuildHelper.FLAG_SORT_DESC);
                     break;
                 }
 
-                // NEWTHINGS: RowKind.ROW_KIND_x
+                // NEWTHINGS: Group.ROW_KIND_x
 
                 default:
                     throw new UnexpectedValueException(group.getId());
@@ -1470,8 +1444,8 @@ public class BooklistBuilder
             StringBuilder keyColumn = new StringBuilder();
 
             for (BooklistGroup group : mStyle.getGroups()) {
-                BooklistGroup.CompoundKey key = group.getCompoundKey();
-                keyColumn.append("'/").append(key.getPrefix())
+                BooklistGroup.GroupKey key = group.getCompoundKey();
+                keyColumn.append("'/").append(key.getKeyPrefix())
                          // null becomes an empty String
                          .append("/'||COALESCE(").append(key.getExpression()).append(",'')||");
             }
@@ -1622,12 +1596,11 @@ public class BooklistBuilder
         @Retention(RetentionPolicy.SOURCE)
         @IntDef(flag = true, value = {FLAG_NONE,
                                       FLAG_GROUP,
-                                      FLAG_SORTED,
-                                      FLAG_SORT_DESCENDING
+                                      FLAG_SORT,
+                                      FLAG_SORT_DESC
         })
         @interface Flags {
 
         }
     }
-
 }
