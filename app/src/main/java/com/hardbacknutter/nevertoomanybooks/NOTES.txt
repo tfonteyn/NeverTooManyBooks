@@ -8,7 +8,7 @@ TODO: usage "profile": comics versus fiction books versus non-fiction books.
  * optimize visible fields.
  * optimize maybe different author types.
 
-TODO: New anthology stuff:
+TODO: orphaned TocEntry:
  * when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding
    to new books / wish list?
  * consider a purge based on book for orphan TocEntry (a purge based on Author is already done)

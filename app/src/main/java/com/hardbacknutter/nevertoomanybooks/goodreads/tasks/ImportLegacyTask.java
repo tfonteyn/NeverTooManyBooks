@@ -716,7 +716,7 @@ class ImportLegacyTask
      * attempt to translate as appropriate and will not add the date if it cannot
      * be parsed.
      *
-     * @return reformatted sql date, or {@code null} if not able to parse
+     * @return sql date, or {@code null} if not able to parse
      */
     @Nullable
     private String addDateIfValid(@NonNull final Bundle source,

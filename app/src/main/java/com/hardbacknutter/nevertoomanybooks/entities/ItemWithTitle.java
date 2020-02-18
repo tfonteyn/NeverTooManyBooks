@@ -133,7 +133,7 @@ public interface ItemWithTitle {
      */
     static boolean isReorderTitleForDisplaying(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_titles_display, false);
+                                .getBoolean(Prefs.pk_show_title_reordered, false);
     }
 
     /**
@@ -145,7 +145,7 @@ public interface ItemWithTitle {
      */
     static boolean isReorderTitleForSorting(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_reformat_titles_sort, true);
+                                .getBoolean(Prefs.pk_sort_title_reordered, true);
     }
 
     @NonNull

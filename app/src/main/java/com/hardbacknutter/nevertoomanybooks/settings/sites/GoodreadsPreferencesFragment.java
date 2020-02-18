@@ -25,28 +25,26 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings;
+package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.preference.Preference;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-/**
- * Used/defined in xml/preferences.xml
- */
-public class ImagesPreferenceFragment
+public class GoodreadsPreferencesFragment
         extends BasePreferenceFragment {
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
                                     final String rootKey) {
 
-        setPreferencesFromResource(R.xml.preferences_images, rootKey);
+        setPreferencesFromResource(R.xml.preferences_site_goodreads, rootKey);
 
         initListeners();
     }
@@ -55,22 +53,16 @@ public class ImagesPreferenceFragment
      * Hook up specific listeners/preferences.
      */
     private void initListeners() {
-        // Purge image cache database table.
-        Preference preference = findPreference(Prefs.PSK_PURGE_IMAGE_CACHE);
+        Preference preference;
+
+        preference = findPreference(Prefs.PSK_CREDENTIALS);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .setTitle(R.string.lbl_purge_image_cache)
-                        .setMessage(R.string.lbl_purge_image_cache)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
-                                CoversDAO.deleteAll(getContext()))
-                        .create()
-                        .show();
+                Intent intent = new Intent(getContext(), GoodreadsRegistrationActivity.class);
+                startActivity(intent);
                 return true;
             });
         }
+
     }
 }

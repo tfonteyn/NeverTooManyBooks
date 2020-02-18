@@ -34,7 +34,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -67,13 +66,14 @@ public class GlobalPreferenceFragment
     private void initListeners() {
         Preference preference;
 
-        preference = findPreference(Prefs.pk_reformat_titles_sort);
+        preference = findPreference(Prefs.pk_sort_title_reordered);
         if (preference != null) {
             preference.setOnPreferenceChangeListener((pref, newValue) -> {
-                //noinspection ConstantConditions
-                boolean current = PreferenceManager.getDefaultSharedPreferences(getContext())
-                                                   .getBoolean(Prefs.pk_reformat_titles_sort, true);
+                boolean current = getPreferenceManager().getSharedPreferences()
+                                                        .getBoolean(Prefs.pk_sort_title_reordered,
+                                                                    true);
 
+                //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setMessage(R.string.warning_rebuild_orderby_columns)
@@ -82,9 +82,7 @@ public class GlobalPreferenceFragment
                         .setNegativeButton(android.R.string.cancel, (d, w) ->
                                 StartupViewModel.setScheduleOrderByRebuild(getContext(), false))
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            //prefs.edit()
-                            // .putBoolean(Prefs.pk_reformat_titles_sort, !current).apply();
-                            SwitchPreference sp = findPreference(Prefs.pk_reformat_titles_sort);
+                            SwitchPreference sp = findPreference(Prefs.pk_sort_title_reordered);
                             //noinspection ConstantConditions
                             sp.setChecked(!current);
 
@@ -105,8 +103,8 @@ public class GlobalPreferenceFragment
         switch (key) {
             case Prefs.pk_ui_locale:
             case Prefs.pk_ui_theme:
-            case Prefs.pk_reformat_titles_sort:
-            case Prefs.pk_reformat_titles_display:
+            case Prefs.pk_sort_title_reordered:
+            case Prefs.pk_show_title_reordered:
                 mResultDataModel.putResultData(BaseActivity.BKEY_RECREATE, true);
                 break;
 

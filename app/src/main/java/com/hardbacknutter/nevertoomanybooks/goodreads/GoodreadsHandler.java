@@ -79,6 +79,9 @@ public class GoodreadsHandler {
     public static final String PREFS_HIDE_ALERT = PREF_PREFIX + "hide_alert.";
     /** Whether to show any Goodreads sync menus at all. */
     private static final String PREFS_SHOW_MENUS = PREF_PREFIX + "showMenu";
+    /** Whether to collect genre string from the popular bookshelves. */
+    private static final String PREFS_COLLECT_GENRE = PREF_PREFIX + "search.collect.genre";
+
     /** Authentication handler. */
     @NonNull
     private final GoodreadsAuth mGoodreadsAuth;
@@ -120,6 +123,11 @@ public class GoodreadsHandler {
     public static boolean isShowSyncMenus(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PREFS_SHOW_MENUS, true);
+    }
+
+    public static boolean isCollectGenre(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PREFS_COLLECT_GENRE, true);
     }
 
     /**

@@ -54,6 +54,8 @@
         <TextView
             android:id="@+id/series_num_long"
             style="@style/BooklistBook.BookInfo.SeriesNumLong"
+            android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -64,6 +66,8 @@
         <TextView
             android:id="@+id/series_num"
             style="@style/BooklistBook.BookInfo.SeriesNum"
+            android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintBaseline_toBaselineOf="@id/title"
             app:layout_constraintEnd_toStartOf="@id/title"
             app:layout_constraintStart_toStartOf="parent"

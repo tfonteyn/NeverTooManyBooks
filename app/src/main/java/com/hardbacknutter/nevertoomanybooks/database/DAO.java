@@ -97,9 +97,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
@@ -207,12 +207,12 @@ public class DAO
      * We now use Collate LOCALE and check to see if it is case sensitive.
      * We *hope* in the future Android will add LOCALE_CI (or equivalent).
      * <p>
-     * public static final String COLLATION = " Collate NOCASE ";
-     * public static final String COLLATION = " Collate UNICODE ";
+     * public static final String COLLATION = " Collate NOCASE";
+     * public static final String COLLATION = " Collate UNICODE";
      * <p>
-     * <strong>Note:</strong> Important to have start/end spaces!
+     * <strong>Note:</strong> Important to have a space at the start
      */
-    public static final String COLLATION = " Collate LOCALIZED ";
+    public static final String COLLATION = " Collate LOCALIZED";
     /** Log tag. */
     private static final String TAG = "DAO";
     /** log error string. */
@@ -396,13 +396,6 @@ public class DAO
 
         String sql = SqlAllBooks.withPrimaryAuthorAndSeries(whereClause);
         return sSyncedDb.rawQuery(sql, null);
-    }
-
-    /**
-     * Purge <strong>all</strong> Booklist node state data.
-     */
-    public void purgeNodeStates() {
-        sSyncedDb.execSQL(_DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE);
     }
 
     /**
@@ -3808,6 +3801,9 @@ public class DAO
      * <li>{@link #withPrimaryAuthorAndSeries}: Books with a primary Author and<br>
      * (if they have one) primary Series</li>
      * </ol>
+     *
+     * We use ORDER BY position LIMIT 1, instead of "AND position=1",
+     * to cover the case there is a gap in the sequence.
      */
     private static class SqlAllBooks {
 
@@ -3819,29 +3815,33 @@ public class DAO
                 + " LIMIT 1"
                 + ") AS " + KEY_FK_AUTHOR;
 
-//                // Get the total author count; we use this to add "et. al."
+//                // Get the total author count.
 //                // No longer needed, but leaving for future use.
 //                + ','
 //                + "(SELECT COUNT(*) FROM " + TBL_BOOK_AUTHOR.ref()
 //                + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
 //                + ')' + " AS " + COLUMN_ALIAS_NR_OF_AUTHORS;
 
-        /** Virtual columns: "primary Series id", "number", "total series count". */
+        /**
+         * Virtual columns: "primary Series id", "number", "total series count".
+         * We use ORDER BY position LIMIT 1, instead of "AND position=1",
+         * to cover the case there is a gap in the sequence.
+         */
         private static final String PRIM_SERIES =
                 // Find the first (i.e. primary) Series id.
                 "(SELECT " + KEY_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
                 + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
-                + " ORDER BY " + KEY_BOOK_SERIES_POSITION + " ASC LIMIT 1)"
+                + " ORDER BY " + KEY_BOOK_SERIES_POSITION + " LIMIT 1)"
                 + " AS " + KEY_FK_SERIES
 
                 // Find the Series number for the first (i.e. primary) Series
                 + ','
                 + "(SELECT " + KEY_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
                 + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
-                + " ORDER BY " + KEY_BOOK_SERIES_POSITION + " ASC LIMIT 1"
+                + " ORDER BY " + KEY_BOOK_SERIES_POSITION + " LIMIT 1"
                 + ") AS " + KEY_BOOK_NUM_IN_SERIES
 
-                // Get the total series count; we use this to add "et. al."
+                // Get the total series count.
                 + ','
                 + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
                 + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
@@ -3995,7 +3995,7 @@ public class DAO
 
                    + " FROM (" + ALL_BOOKS
                    + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
-                   + " ORDER BY " + TBL_BOOKS.dot(KEY_TITLE_OB) + ' ' + COLLATION + " ASC"
+                   + " ORDER BY " + TBL_BOOKS.dot(KEY_TITLE_OB) + ' ' + COLLATION
                    + ") b" + SUFFIX;
         }
 
@@ -4420,14 +4420,14 @@ public class DAO
                 + ',' + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN
                 + " AS " + KEY_AUTHOR_FORMATTED
                 + ',' + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)
-                + ',' + TBL_BOOK_AUTHOR.dot(KEY_AUTHOR_TYPE_BITMASK)
+                + ',' + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK)
 
                 + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
                 + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + "=?"
                 + " ORDER BY "
-                + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION) + " ASC"
-                + ',' + KEY_AUTHOR_FAMILY_NAME_OB + COLLATION + "ASC"
-                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB + COLLATION + "ASC";
+                + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)
+                + ',' + KEY_AUTHOR_FAMILY_NAME_OB + COLLATION
+                + ',' + KEY_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /**
          * All Series for a Book; ordered by position, name.
@@ -4445,7 +4445,7 @@ public class DAO
                 + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
                 + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + "=?"
                 + " ORDER BY " + TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION)
-                + ',' + TBL_SERIES.dot(KEY_SERIES_TITLE_OB) + COLLATION + "ASC";
+                + ',' + TBL_SERIES.dot(KEY_SERIES_TITLE_OB) + COLLATION;
 
         /**
          * All TocEntry's for a Book; ordered by position in the book.
@@ -4831,7 +4831,7 @@ public class DAO
                 + '(' + KEY_FK_BOOK
                 + ',' + KEY_FK_AUTHOR
                 + ',' + KEY_BOOK_AUTHOR_POSITION
-                + ',' + KEY_AUTHOR_TYPE_BITMASK
+                + ',' + KEY_BOOK_AUTHOR_TYPE_BITMASK
                 + ") VALUES(?,?,?,?)";
 
         static final String BOOK_SERIES =

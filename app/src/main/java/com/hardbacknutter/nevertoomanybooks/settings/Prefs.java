@@ -46,12 +46,12 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * Upper-case preference keys are internal only.
+ * Uppercase preference keys are internal only.
  * <p>
- * The lower-case pl* preference key names are the ones that define USER settings.
- * See {@link com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity} and children.
+ * The lowercase pk_* preference key names are the ones that define USER settings.
+ * See {@link com.hardbacknutter.nevertoomanybooks.settings}.
  * <p>
- * These keys *MUST* be kept in sync with "res/xml/preferences*.xml"
+ * All keys *MUST* be kept in sync with "res/xml/preferences*.xml"
  */
 public final class Prefs {
 
@@ -59,20 +59,6 @@ public final class Prefs {
     public static final int STARTUP_BACKUP_COUNTDOWN = 5;
     /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
     public static final String PREF_STARTUP_BACKUP_COUNTDOWN = "startup.backupCountdown";
-    /**
-     * Style unique name. This is a stored in our preference file (with the same name)
-     * and is used for backup/restore purposes as the 'ID'.
-     */
-    public static final String PK_STYLE_UUID = "style.booklist.uuid";
-
-
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_author = "psk_style_author";
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_series = "psk_style_series";
-    /** PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_barcode_scanner = "psk_barcode_scanner";
-
 
     /** Preference Key. */
     public static final String pk_ui_locale = "ui.locale";
@@ -100,71 +86,90 @@ public final class Prefs {
     public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
     public static final String pk_image_cropper_layer_type = "compat.image.cropper.viewlayertype";
 
-    public static final String pk_bob_levels_rebuild_state = "style.booklist.levels.rebuild.state";
-    public static final String pk_bob_levels_default = "style.booklist.levels.default";
-    public static final String pk_bob_style_name = "style.booklist.name";
-    public static final String pk_bob_groups = "style.booklist.groups";
-    public static final String pk_bob_preferred_style = "style.booklist.preferred";
-    public static final String pk_bob_font_scale = "style.booklist.scale.font";
-    public static final String pk_bob_thumbnail_scale = "style.booklist.scale.thumbnails";
-    public static final String pk_bob_books_under_multiple_series =
+    public static final String pk_sort_title_reordered = "sort.title.reordered";
+    public static final String pk_show_title_reordered = "show.title.reordered";
+    public static final String pk_sort_author_name_given_first = "sort.author.name.given_first";
+    public static final String pk_show_author_name_given_first = "show.author.name.given_first";
+
+    public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
+
+    /**
+     * Style unique name. This is a stored in our preference file (with the same name)
+     * and is used for backup/restore purposes as the 'ID'.
+     */
+    public static final String PK_STYLE_UUID = "style.booklist.uuid";
+    /** Main style preferences. */
+    public static final String pk_style_name = "style.booklist.name";
+    public static final String pk_style_is_preferred = "style.booklist.preferred";
+    public static final String pk_style_header = "style.booklist.header";
+    public static final String pk_style_levels_expansion = "style.booklist.levels.default";
+    public static final String pk_style_scale_font = "style.booklist.scale.font";
+    public static final String pk_style_scale_thumbnail = "style.booklist.scale.thumbnails";
+
+    /** Style group preferences. */
+    public static final String pk_style_groups = "style.booklist.groups";
+    public static final String pk_style_group_series_show_books_under_each_series =
             "style.booklist.group.series.show.all";
-    public static final String pk_bob_books_under_multiple_authors =
+    public static final String pk_style_group_author_show_books_under_each_author =
             "style.booklist.group.authors.show.all";
-    public static final String pk_bob_format_author_name =
-            "style.booklist.group.authors.show.first_last";
-    public static final String pk_bob_sort_author_name =
-            "style.booklist.sort.author.given_first";
-    /** MultiSelectListPreference. */
-    public static final String pk_bob_header = "style.booklist.show.header";
+    public static final String pk_style_group_author_primary_type =
+            "style.booklist.group.authors.primary.type";
+
     /** Show the cover image for each book. */
-    public static final String pk_bob_show_thumbnails = "style.booklist.show.thumbnails";
+    public static final String pk_style_book_show_thumbnails = "style.booklist.show.thumbnails";
     /** Show list of bookshelves for each book. */
-    public static final String pk_bob_show_bookshelves = "style.booklist.show.bookshelves";
+    public static final String pk_style_book_show_bookshelves = "style.booklist.show.bookshelves";
     /** Show location for each book. */
-    public static final String pk_bob_show_location = "style.booklist.show.location";
+    public static final String pk_style_book_show_location = "style.booklist.show.location";
     /** Show author for each book. */
-    public static final String pk_bob_show_author = "style.booklist.show.author";
+    public static final String pk_style_book_show_author = "style.booklist.show.author";
     /** Show publisher for each book. */
-    public static final String pk_bob_show_publisher = "style.booklist.show.publisher";
+    public static final String pk_style_book_show_publisher = "style.booklist.show.publisher";
     /** Show publication date for each book. */
-    public static final String pk_bob_show_pub_date = "style.booklist.show.publication.date";
+    public static final String pk_style_book_show_pub_date = "style.booklist.show.publication.date";
     /** Show ISBN for each book. */
-    public static final String pk_bob_show_isbn = "style.booklist.show.isbn";
+    public static final String pk_style_book_show_isbn = "style.booklist.show.isbn";
     /** Show format for each book. */
-    public static final String pk_bob_show_format = "style.booklist.show.format";
+    public static final String pk_style_book_show_format = "style.booklist.show.format";
+
     /** Booklist Filter - ListPreference. */
-    public static final String pk_bob_filter_read = "style.booklist.filter.read";
+    public static final String pk_style_filter_read = "style.booklist.filter.read";
     /** Booklist Filter - ListPreference. */
-    public static final String pk_bob_filter_signed = "style.booklist.filter.signed";
+    public static final String pk_style_filter_signed = "style.booklist.filter.signed";
     /** Booklist Filter - ListPreference. */
-    public static final String pk_bob_filter_loaned = "style.booklist.filter.loaned";
+    public static final String pk_style_filter_loaned = "style.booklist.filter.loaned";
     /** Booklist Filter - ListPreference. */
-    public static final String pk_bob_filter_anthology = "style.booklist.filter.anthology";
+    public static final String pk_style_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
-    public static final String pk_bob_filter_editions = "style.booklist.filter.editions";
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_filters = "psk_style_filters";
-    /** Style setting - PreferenceScreen/PreferenceCategory Key. */
-    public static final String psk_style_show_details = "psk_style_show_details";
-    public static final String pk_reformat_titles_sort = "reformat.titles.sort";
-    public static final String pk_reformat_titles_display = "reformat.titles.display";
-    /** Global settings - PreferenceScreen/PreferenceCategory Key. */
-    static final String psk_search_site_order = "psk_search_site_order";
-    /** Global settings - Purge action. */
-    static final String psk_purge_image_cache = "psk_purge_image_cache";
-    /** Global settings - Purge action. */
-    static final String psk_purge_files = "psk_purge_files";
-    /** Global settings - Reset tips. */
-    static final String psk_tip_reset_all = "psk_tip_reset_all";
-    /** Global settings - Send debug info. */
-    static final String psk_send_debug_info = "psk_send_debug_info";
-    /** Global settings - Credentials. */
-    static final String psk_credentials_goodreads = "psk_credentials_goodreads";
-    /** Global settings - Credentials. */
-    static final String psk_credentials_library_thing = "psk_credentials_library_thing";
-    /** Global settings - Purge action. */
-    static final String psk_purge_blns = "psk_purge_blns";
+    public static final String pk_style_filter_editions = "style.booklist.filter.editions";
+
+
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    public static final String PSK_STYLE_AUTHOR = "psk_style_author";
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    public static final String PSK_STYLE_SERIES = "psk_style_series";
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    public static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    public static final String PSK_STYLE_FILTERS = "psk_style_filters";
+
+    /** Site - Credentials. */
+    public static final String PSK_CREDENTIALS = "psk_credentials";
+
+    /** Global - PreferenceScreen/PreferenceCategory Key. */
+    public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
+    /** Global - PreferenceScreen/PreferenceCategory Key. */
+    static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
+    /** Global - Purge action. */
+    static final String PSK_PURGE_IMAGE_CACHE = "psk_purge_image_cache";
+    /** Global - Purge action. */
+    static final String PSK_PURGE_FILES = "psk_purge_files";
+    /** Global - Reset tips. */
+    static final String PSK_TIP_RESET_ALL = "psk_tip_reset_all";
+    /** Global - Send debug info. */
+    static final String PSK_SEND_DEBUG_INFO = "psk_send_debug_info";
+    /** Global - Purge action. */
+    static final String PSK_PURGE_BLNS = "psk_purge_blns";
 
     /** Log tag. */
     private static final String TAG = "Prefs";

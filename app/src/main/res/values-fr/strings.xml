@@ -404,7 +404,7 @@
 
     <string name="pg_general">Général</string>
     <string name="pg_style_groups">Groupes</string>
-    <string name="pt_bob_titles_sort">Trier les titres par</string>
+    <string name="pt_sort_title_reordered">Trier les titres par</string>
     <string name="pg_barcode_scanner">Scanner de code à barres</string>
     <string name="pg_thumbnails">Miniatures</string>
     <string name="pg_ui">Interface utilisateur</string>
@@ -442,8 +442,8 @@
     <string name="pv_bob_books_under_multiple_primary_author_only">Sous auteur principal(e) seulement</string>
     <string name="pv_bob_books_under_multiple_primary_series_only">Sous séries principal(e) seulement</string>
 
-    <string name="pt_bob_author_name_format">Formatage du nom de l\'auteur</string>
-    <string name="pt_bob_author_name_sort">Tri par nom d\'auteur</string>
+    <string name="pt_show_author_name_given_first">Formatage du nom de l\'auteur</string>
+    <string name="pt_sort_author_name_given_first">Tri par nom d\'auteur</string>
 
     <string name="pt_bob_header">Détails du résumé dans l\'en-tête</string>
     <string name="pt_bob_list_rebuild_state">Etat de démarrage de la liste de lecture</string>
@@ -452,8 +452,8 @@
     <string name="pt_bob_thumbnails_show">Montrer les miniatures</string>
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
     <string name="pt_bob_thumbnails_scale">Taille de l\'image dans les listes</string>
-    <string name="pt_reformat_titles_summary_original">Le titre</string>
-    <string name="pt_reformat_titles_summary_reformatted">titre, Le</string>
+    <string name="pt_show_titles_reordered_off">Le titre</string>
+    <string name="pt_show_titles_reordered_on">titre, Le</string>
     <string name="pt_scanning_beep_on_invalid">Beeper si l\'ISBN scanné est invalide</string>
     <string name="pt_scanning_beep_on_valid">Beeper si l\'ISBN scanné est valide</string>
     <string name="pt_scanning_preferred_scanner">Scanner préféré</string>
@@ -600,7 +600,7 @@
     <string name="warning_scanner_failed_to_start">Le scanner n\'a pas pu démarrer.</string>
     <string name="warning_scanner_retry_install">Nous vous suggérons d’essayer d’abord, mais si le problème persiste, réinstallez le scanner ou installez-en un autre.</string>
     <string name="error_import_invalid_archive">Le fichier sélectionné n\'est pas reconnu.</string>
-    <string name="pt_bob_titles_display">Afficher les titres en tant que</string>
+    <string name="pt_show_title_reordered">Afficher les titres en tant que</string>
     <string name="lbl_author_type_cover_artist">couverture</string>
     <string name="lbl_author_type_cover_colorist">couleur de la couverture</string>
     <string name="lbl_local_search_advanced">Avancé</string>
@@ -662,7 +662,7 @@
     <string name="legacy_record">Dossier obsolète #%1$d</string>
     <string name="legacy_description">Cet enregistrement est obsolète et ne peut pas être récupéré. Il est conseillé de le supprimer.</string>
     <string name="book_format_dimensions">Dimensions</string>
-    <string name="pv_bob_author_name_family_first">par exemple «Verne, Jules»</string>
-    <string name="pv_bob_author_name_given_first">par exemple «Jules Verne»</string>
+    <string name="pv_author_name_family_first">par exemple «Verne, Jules»</string>
+    <string name="pv_author_name_given_first">par exemple «Jules Verne»</string>
 
 </resources>

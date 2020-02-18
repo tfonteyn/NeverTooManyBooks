@@ -34,6 +34,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -358,6 +359,10 @@ public class App
                                 .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + fieldName, true);
     }
 
+    public static boolean isUsed(@NonNull final SharedPreferences sharedPreferences,
+                                 @NonNull final String fieldName) {
+        return sharedPreferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + fieldName, true);
+    }
     /**
      * Hide the keyboard.
      */

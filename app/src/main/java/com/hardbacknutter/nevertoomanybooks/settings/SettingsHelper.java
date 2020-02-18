@@ -28,12 +28,10 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
 /**
  * Created to make testing a little easier.
@@ -55,12 +53,6 @@ public class SettingsHelper {
     @NonNull
     public Context getContext() {
         return mContext;
-    }
-
-    @SuppressWarnings("unused")
-    @NonNull
-    public SharedPreferences getSharedPreferences() {
-        return PreferenceManager.getDefaultSharedPreferences(mContext);
     }
 
     /**

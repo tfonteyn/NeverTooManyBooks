@@ -96,10 +96,10 @@ public abstract class PPrefBase<T>
      */
     @NonNull
     protected SharedPreferences getPrefs() {
-        if (mUuid.isEmpty()) {
-            return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
-        } else {
+        if (!mUuid.isEmpty()) {
             return App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
+        } else {
+            return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
         }
     }
 

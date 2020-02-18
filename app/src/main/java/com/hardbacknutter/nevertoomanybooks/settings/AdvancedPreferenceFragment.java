@@ -35,7 +35,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
@@ -45,9 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
  */
 public class AdvancedPreferenceFragment
         extends BasePreferenceFragment {
-
-    /** Log tag. */
-    private static final String TAG = "AdvancedPreferencesFrag";
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
@@ -65,7 +62,7 @@ public class AdvancedPreferenceFragment
         Preference preference;
 
         // Purge BLNS database table.
-        preference = findPreference(Prefs.psk_purge_blns);
+        preference = findPreference(Prefs.PSK_PURGE_BLNS);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -74,18 +71,14 @@ public class AdvancedPreferenceFragment
                         .setTitle(R.string.lbl_purge_blns)
                         .setMessage(R.string.info_purge_blns_all)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            try (DAO db = new DAO(TAG)) {
-                                db.purgeNodeStates();
-                            }
-                        })
+                        .setPositiveButton(android.R.string.ok, (d, w) -> RowStateDAO.clearAll())
                         .create()
                         .show();
                 return true;
             });
         }
 
-        preference = findPreference(Prefs.psk_tip_reset_all);
+        preference = findPreference(Prefs.PSK_TIP_RESET_ALL);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -96,7 +89,7 @@ public class AdvancedPreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.psk_purge_files);
+        preference = findPreference(Prefs.PSK_PURGE_FILES);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
@@ -118,7 +111,7 @@ public class AdvancedPreferenceFragment
             });
         }
 
-        preference = findPreference(Prefs.psk_send_debug_info);
+        preference = findPreference(Prefs.PSK_SEND_DEBUG_INFO);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions

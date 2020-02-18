@@ -125,7 +125,7 @@ public class StyleGroupsActivity
     public void onBackPressed() {
         mModel.updateStyle(this);
 
-        if (mModel.getStyle().getGroups().isEmpty()) {
+        if (mModel.getStyle().getGroupCount() == 0) {
             new MaterialAlertDialogBuilder(this)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setTitle(R.string.pg_style_groups)
@@ -160,7 +160,7 @@ public class StyleGroupsActivity
         }
     }
 
-    protected static class GroupWrapperListAdapter
+    static class GroupWrapperListAdapter
             extends RecyclerViewAdapterBase<StyleGroupsModel.GroupWrapper, Holder> {
 
         /**
@@ -182,7 +182,7 @@ public class StyleGroupsActivity
                                          final int viewType) {
 
             View view = getLayoutInflater()
-                                .inflate(R.layout.row_edit_style_groups, parent, false);
+                    .inflate(R.layout.row_edit_style_groups, parent, false);
             return new Holder(view);
         }
 

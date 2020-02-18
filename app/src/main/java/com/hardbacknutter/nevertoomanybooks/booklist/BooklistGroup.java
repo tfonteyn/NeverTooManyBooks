@@ -37,9 +37,10 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
-import androidx.preference.SwitchPreference;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -56,6 +57,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -155,7 +157,7 @@ public class BooklistGroup
     public static final int LOANED = 6;
     public static final int DATE_PUBLISHED_YEAR = 7;
     public static final int DATE_PUBLISHED_MONTH = 8;
-    public static final int TITLE_LETTER = 9;
+    public static final int BOOK_TITLE_LETTER = 9;
     public static final int DATE_ADDED_YEAR = 10;
     public static final int DATE_ADDED_MONTH = 11;
     public static final int DATE_ADDED_DAY = 12;
@@ -173,8 +175,8 @@ public class BooklistGroup
     public static final int DATE_ACQUIRED_YEAR = 24;
     public static final int DATE_ACQUIRED_MONTH = 25;
     public static final int DATE_ACQUIRED_DAY = 26;
-    public static final int DATE_FIRST_PUB_YEAR = 27;
-    public static final int DATE_FIRST_PUB_MONTH = 28;
+    public static final int DATE_FIRST_PUBLICATION_YEAR = 27;
+    public static final int DATE_FIRST_PUBLICATION_MONTH = 28;
     public static final int COLOR = 29;
     public static final int SERIES_TITLE_LETTER = 30;
 
@@ -241,7 +243,7 @@ public class BooklistGroup
 
         // Uses the OrderBy column so we get the re-ordered version if applicable.
         // Formatting is done in the sql expression.
-        GROUPS.put(TITLE_LETTER,
+        GROUPS.put(BOOK_TITLE_LETTER,
                    new GroupKey(R.string.style_builtin_first_letter_book_title, "t",
                                 new Domain.Builder("blg_tit_let", ColumnInfo.TYPE_TEXT)
                                         .notNull()
@@ -271,13 +273,13 @@ public class BooklistGroup
                                 DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false)));
 
         // UTC. Formatting is done in the sql expression.
-        GROUPS.put(DATE_FIRST_PUB_YEAR,
+        GROUPS.put(DATE_FIRST_PUBLICATION_YEAR,
                    new GroupKey(R.string.lbl_first_pub_year, "yfp",
                                 new Domain.Builder("blg_1pub_y", ColumnInfo.TYPE_INTEGER).build(),
                                 DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
                                                     false)));
         // UTC. Formatting is done after fetching.
-        GROUPS.put(DATE_FIRST_PUB_MONTH,
+        GROUPS.put(DATE_FIRST_PUBLICATION_MONTH,
                    new GroupKey(R.string.lbl_first_pub_month, "mfp",
                                 new Domain.Builder("blg_1pub_m", ColumnInfo.TYPE_INTEGER).build(),
                                 DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
@@ -369,15 +371,9 @@ public class BooklistGroup
         }
     }
 
-    /** Flag indicating the style is user-defined -> our prefs must be persisted. */
-    final boolean mIsUserDefinedStyle;
-    /**
-     * The name of the Preference file (comes from the style that contains this group.
-     * <p>
-     * When set to the empty string, the global preferences will be used.
-     */
     @NonNull
     final String mUuid;
+    final boolean mIsUserDefinedStyle;
     /** The kind of row/group we represent, see {@link GroupKey}. */
     @Id
     private final int mId;
@@ -391,16 +387,16 @@ public class BooklistGroup
     /**
      * Constructor.
      *
-     * @param id                 of group to create
-     * @param uuid               UUID of the style
-     * @param isUserDefinedStyle {@code true} if the group properties should be persisted
+     * <strong>Dev. note:</strong> do not store the style to parcel it... it would recurse.
+     *
+     * @param id    of group to create
+     * @param style the style
      */
     private BooklistGroup(@Id final int id,
-                          @NonNull final String uuid,
-                          final boolean isUserDefinedStyle) {
-        this.mId = id;
-        mUuid = uuid;
-        mIsUserDefinedStyle = isUserDefinedStyle;
+                          @NonNull final BooklistStyle style) {
+        mId = id;
+        mUuid = style.getUuid();
+        mIsUserDefinedStyle = style.isUserDefined();
         initPrefs();
     }
 
@@ -424,46 +420,42 @@ public class BooklistGroup
      * Create a new BooklistGroup of the specified kind, creating any specific
      * subclasses as necessary.
      *
-     * @param id                 of group to create
-     * @param uuid               UUID of the style
-     * @param isUserDefinedStyle {@code true} if the group properties should be persisted
+     * @param id    of group to create
+     * @param style the style
      *
      * @return a group based on the passed in kind
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
     public static BooklistGroup newInstance(@Id final int id,
-                                            @NonNull final String uuid,
-                                            final boolean isUserDefinedStyle) {
+                                            @NonNull final BooklistStyle style) {
         switch (id) {
             case AUTHOR:
-                return new BooklistAuthorGroup(uuid, isUserDefinedStyle);
+                return new BooklistAuthorGroup(style);
             case SERIES:
-                return new BooklistSeriesGroup(uuid, isUserDefinedStyle);
+                return new BooklistSeriesGroup(style);
 
             default:
-                return new BooklistGroup(id, uuid, isUserDefinedStyle);
+                return new BooklistGroup(id, style);
         }
     }
 
     /**
      * Get a list of BooklistGroup's, one for each defined {@link GroupKey}'s.
      *
-     * @param uuid               UUID of the style
-     * @param isUserDefinedStyle {@code true} if the group properties should be persisted
+     * @param style the style
      *
      * @return the list
      */
     @NonNull
-    public static List<BooklistGroup> getAllGroups(@NonNull final String uuid,
-                                                   final boolean isUserDefinedStyle) {
+    public static List<BooklistGroup> getAllGroups(@NonNull final BooklistStyle style) {
         List<BooklistGroup> list = new ArrayList<>();
         // Get the set of all valid <strong>Group</strong> values.
-        // In other words: all valid kinds, <strong>except</strong> the BOOK.
+        // In other words: all valid groups, <strong>except</strong> the BOOK.
         Set<Integer> set = GROUPS.keySet();
         set.remove(BOOK);
         for (@Id int id : set) {
-            list.add(newInstance(id, uuid, isUserDefinedStyle));
+            list.add(newInstance(id, style));
         }
         return list;
     }
@@ -484,6 +476,11 @@ public class BooklistGroup
         }
     }
 
+    @NonNull
+    static GroupKey getCompoundKey(@Id final int id) {
+        return Objects.requireNonNull(GROUPS.get(id));
+    }
+
     /**
      * Format the source string according to the kind.
      *
@@ -492,20 +489,18 @@ public class BooklistGroup
      * Also see {@link BooklistAdapter.GenericStringHolder#setText(String, int)}
      * TODO: come up with a clean solution to merge these.
      *
-     * @param context Current context
-     * @param id      for this row
-     * @param source  text to reformat
+     * @param context  Current context
+     * @param valueStr value (as a String) to reformat
      *
      * @return Formatted string, or original string when no special format
      * was needed or on any failure
      */
     @NonNull
-    public static String format(@NonNull final Context context,
-                                @Id final int id,
-                                @NonNull final String source) {
-        switch (id) {
+    public String format(@NonNull final Context context,
+                         @NonNull final String valueStr) {
+        switch (mId) {
             case READ_STATUS: {
-                switch (source) {
+                switch (valueStr) {
                     case "0":
                         return context.getString(R.string.lbl_unread);
                     case "1":
@@ -515,18 +510,18 @@ public class BooklistGroup
                 }
             }
             case LANGUAGE: {
-                if (source.isEmpty()) {
+                if (valueStr.isEmpty()) {
                     return context.getString(R.string.hint_empty_language);
                 } else {
-                    return LanguageUtils.getDisplayName(context, source);
+                    return LanguageUtils.getDisplayName(context, valueStr);
                 }
             }
             case RATING: {
-                if (source.isEmpty()) {
+                if (valueStr.isEmpty()) {
                     return context.getString(R.string.hint_empty_rating);
                 }
                 try {
-                    int i = Integer.parseInt(source);
+                    int i = Integer.parseInt(valueStr);
                     // If valid, get the name
                     if (i >= 0 && i <= Book.RATING_STARS) {
                         return context.getResources()
@@ -535,7 +530,7 @@ public class BooklistGroup
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(context, TAG, e);
                 }
-                return source;
+                return valueStr;
             }
 
             case DATE_ACQUIRED_MONTH:
@@ -543,11 +538,11 @@ public class BooklistGroup
             case DATE_LAST_UPDATE_MONTH:
             case DATE_PUBLISHED_MONTH:
             case DATE_READ_MONTH: {
-                if (source.isEmpty()) {
+                if (valueStr.isEmpty()) {
                     return context.getString(R.string.hint_empty_month);
                 }
                 try {
-                    int i = Integer.parseInt(source);
+                    int i = Integer.parseInt(valueStr);
                     // If valid, get the short name
                     if (i > 0 && i <= 12) {
                         Locale locale = LocaleUtils.getUserLocale(context);
@@ -556,7 +551,7 @@ public class BooklistGroup
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(context, TAG, e);
                 }
-                return source;
+                return valueStr;
             }
 
             case AUTHOR:
@@ -566,8 +561,8 @@ public class BooklistGroup
             case DATE_ACQUIRED_YEAR:
             case DATE_ADDED_DAY:
             case DATE_ADDED_YEAR:
-            case DATE_FIRST_PUB_MONTH:
-            case DATE_FIRST_PUB_YEAR:
+            case DATE_FIRST_PUBLICATION_MONTH:
+            case DATE_FIRST_PUBLICATION_YEAR:
             case DATE_LAST_UPDATE_DAY:
             case DATE_LAST_UPDATE_YEAR:
             case DATE_PUBLISHED_YEAR:
@@ -580,24 +575,19 @@ public class BooklistGroup
             case LOCATION:
             case PUBLISHER:
             case SERIES:
-            case TITLE_LETTER:
+            case BOOK_TITLE_LETTER:
             case SERIES_TITLE_LETTER:
                 // no specific formatting done.
-                return source;
+                return valueStr;
 
             default:
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "format"
-                               + "|source=" + source
-                               + "|id=" + id);
+                               + "|source=" + valueStr
+                               + "|id=" + mId);
                 }
-                throw new UnexpectedValueException(id);
+                throw new UnexpectedValueException(mId);
         }
-    }
-
-    @NonNull
-    static GroupKey getCompoundKey(@Id final int id) {
-        return Objects.requireNonNull(GROUPS.get(id));
     }
 
     @Id
@@ -720,7 +710,7 @@ public class BooklistGroup
 
              LOANED,
 
-             TITLE_LETTER,
+             BOOK_TITLE_LETTER,
              SERIES_TITLE_LETTER,
 
              GENRE,
@@ -732,8 +722,8 @@ public class BooklistGroup
 
              DATE_PUBLISHED_YEAR,
              DATE_PUBLISHED_MONTH,
-             DATE_FIRST_PUB_YEAR,
-             DATE_FIRST_PUB_MONTH,
+             DATE_FIRST_PUBLICATION_YEAR,
+             DATE_FIRST_PUBLICATION_MONTH,
 
              DATE_READ_YEAR,
              DATE_READ_MONTH,
@@ -785,12 +775,10 @@ public class BooklistGroup
         /**
          * Constructor.
          *
-         * @param uuid               UUID of the style
-         * @param isUserDefinedStyle Flag to indicate this is a user style or a builtin style
+         * @param style the style
          */
-        BooklistSeriesGroup(@NonNull final String uuid,
-                            final boolean isUserDefinedStyle) {
-            super(SERIES, uuid, isUserDefinedStyle);
+        BooklistSeriesGroup(@NonNull final BooklistStyle style) {
+            super(SERIES, style);
         }
 
         /**
@@ -802,6 +790,19 @@ public class BooklistGroup
             super(in);
             initPrefs();
             mAllSeries.set(in);
+        }
+
+        /**
+         * Get the global default for this preference.
+         *
+         * @param context Current context
+         *
+         * @return {@code true} if we want to show a book under each of its Series.
+         */
+        static boolean showBooksUnderEachSeriesGlobalDefault(@NonNull final Context context) {
+            return PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getBoolean(Prefs.pk_style_group_series_show_books_under_each_series, false);
         }
 
         @NonNull
@@ -826,8 +827,8 @@ public class BooklistGroup
         @Override
         void initPrefs() {
             super.initPrefs();
-            mAllSeries = new PBoolean(Prefs.pk_bob_books_under_multiple_series, mUuid,
-                                      mIsUserDefinedStyle);
+            mAllSeries = new PBoolean(Prefs.pk_style_group_series_show_books_under_each_series,
+                                      mUuid, mIsUserDefinedStyle);
         }
 
         @NonNull
@@ -843,19 +844,24 @@ public class BooklistGroup
         public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                           final boolean visible) {
 
-            PreferenceCategory category = screen.findPreference(Prefs.psk_style_series);
+            PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_SERIES);
             if (category != null) {
-                SwitchPreference pShowAll = category
-                        .findPreference(Prefs.pk_bob_books_under_multiple_series);
-                if (pShowAll != null) {
-                    pShowAll.setVisible(visible);
+                Preference preference = category
+                        .findPreference(Prefs.pk_style_group_series_show_books_under_each_series);
+                if (preference != null) {
+                    preference.setVisible(visible);
                 }
 
                 setCategoryVisibility(category);
             }
         }
 
-        boolean showAll() {
+        /**
+         * Get this preference.
+         *
+         * @return {@code true} if we want to show a book under each of its Series.
+         */
+        boolean showBooksUnderEachSeries() {
             return mAllSeries.isTrue();
         }
     }
@@ -882,21 +888,20 @@ public class BooklistGroup
                         return new BooklistAuthorGroup[size];
                     }
                 };
-
+        private final boolean mShowAuthorByGivenNameFirst;
         /** Support for 'Show All Authors of Book' property. */
         private PBoolean mAllAuthors;
-        /** Support for 'Show Given Name First' property. Default: false. */
-        private PBoolean mGivenNameFirst;
+
+        private PBitmask mPrimaryType;
 
         /**
          * Constructor.
          *
-         * @param uuid               UUID of the style
-         * @param isUserDefinedStyle Flag to indicate this is a user style or a builtin style
+         * @param style the style
          */
-        BooklistAuthorGroup(@NonNull final String uuid,
-                            final boolean isUserDefinedStyle) {
-            super(AUTHOR, uuid, isUserDefinedStyle);
+        BooklistAuthorGroup(@NonNull final BooklistStyle style) {
+            super(AUTHOR, style);
+            mShowAuthorByGivenNameFirst = style.isShowAuthorByGivenNameFirst();
         }
 
         /**
@@ -906,8 +911,37 @@ public class BooklistGroup
          */
         private BooklistAuthorGroup(@NonNull final Parcel in) {
             super(in);
+            // actual pref
             mAllAuthors.set(in);
-            mGivenNameFirst.set(in);
+
+            // just a local copy of the style pref
+            mShowAuthorByGivenNameFirst = in.readInt() != 0;
+        }
+
+        /**
+         * Get the global default for this preference.
+         *
+         * @param context Current context
+         *
+         * @return {@code true} if we want to show a book under each of its Authors.
+         */
+        static boolean showBooksUnderEachAuthorGlobalDefault(@NonNull final Context context) {
+            return PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getBoolean(Prefs.pk_style_group_author_show_books_under_each_author, false);
+        }
+
+        /**
+         * Get the global default for this preference.
+         *
+         * @param context Current context
+         *
+         * @return the type of author we consider the primary author
+         */
+        static int getPrimaryTypeGlobalDefault(@NonNull final Context context) {
+            return PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getInt(Prefs.pk_style_group_author_primary_type, Author.TYPE_UNKNOWN);
         }
 
         @NonNull
@@ -919,7 +953,7 @@ public class BooklistGroup
         @NonNull
         @Override
         String getDisplayDomainExpression() {
-            return showAuthorGivenNameFirst()
+            return mShowAuthorByGivenNameFirst
                    ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
                    : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN;
         }
@@ -929,16 +963,19 @@ public class BooklistGroup
                                   final int flags) {
             super.writeToParcel(dest, flags);
             mAllAuthors.writeToParcel(dest);
-            mGivenNameFirst.writeToParcel(dest);
+
+            dest.writeInt(mShowAuthorByGivenNameFirst ? 1 : 0);
         }
 
         @Override
         protected void initPrefs() {
             super.initPrefs();
-            mAllAuthors = new PBoolean(Prefs.pk_bob_books_under_multiple_authors, mUuid,
-                                       mIsUserDefinedStyle);
-            mGivenNameFirst = new PBoolean(Prefs.pk_bob_format_author_name, mUuid,
-                                           mIsUserDefinedStyle);
+            mAllAuthors = new PBoolean(Prefs.pk_style_group_author_show_books_under_each_author,
+                                       mUuid, mIsUserDefinedStyle);
+
+            mPrimaryType = new PBitmask(Prefs.pk_style_group_author_primary_type,
+                                        mUuid, mIsUserDefinedStyle,
+                                        Author.TYPE_UNKNOWN);
         }
 
         @NonNull
@@ -947,7 +984,7 @@ public class BooklistGroup
         public Map<String, PPref> getPreferences() {
             Map<String, PPref> map = super.getPreferences();
             map.put(mAllAuthors.getKey(), mAllAuthors);
-            map.put(mGivenNameFirst.getKey(), mGivenNameFirst);
+            map.put(mPrimaryType.getKey(), mPrimaryType);
             return map;
         }
 
@@ -955,38 +992,40 @@ public class BooklistGroup
         public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                           final boolean visible) {
 
-            PreferenceCategory category = screen.findPreference(Prefs.psk_style_author);
+            PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
             if (category != null) {
-                SwitchPreference pShowAll = category
-                        .findPreference(Prefs.pk_bob_books_under_multiple_authors);
-                if (pShowAll != null) {
-                    pShowAll.setVisible(visible);
+                Preference preference = category
+                        .findPreference(Prefs.pk_style_group_author_show_books_under_each_author);
+                if (preference != null) {
+                    preference.setVisible(visible);
                 }
 
-                SwitchPreference pGivenNameFirst = category
-                        .findPreference(Prefs.pk_bob_format_author_name);
-                if (pGivenNameFirst != null) {
-                    pGivenNameFirst.setVisible(visible);
+                preference = category.findPreference(Prefs.pk_style_group_author_primary_type);
+                if (preference != null) {
+                    preference.setVisible(visible);
                 }
 
                 setCategoryVisibility(category);
             }
         }
 
-        boolean showAll() {
+        /**
+         * Get this preference.
+         *
+         * @return {@code true} if we want to show a book under each of its Authors.
+         */
+        boolean showBooksUnderEachAuthor() {
             return mAllAuthors.isTrue();
         }
 
         /**
-         * @return {@code true} if we want "given-names last-name" formatted authors.
+         * Get this preference.
+         *
+         * @return the type of author we consider the primary author
          */
-        boolean showAuthorGivenNameFirst() {
-            return mGivenNameFirst.isTrue();
-        }
-
         @Author.Type
-        public int getType() {
-            return Author.TYPE_UNKNOWN;
+        int getPrimaryType() {
+            return mPrimaryType.get();
         }
     }
 

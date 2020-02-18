@@ -47,10 +47,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -107,6 +109,56 @@ public class BooksOnBookshelfModel
             + DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PK_ID) + "="
             + DBDefinitions.TBL_BOOK_BOOKSHELF.dot(DBDefinitions.KEY_FK_BOOK)
             + ")";
+
+    /** The fixed list of domains we always need in {@link #initBookList}. */
+    private static final List<BooklistBuilder.BookDomain> FIXED_DOMAIN_LIST = Arrays.asList(
+            // Title for displaying
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_TITLE,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE)),
+            // Title for sorting
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_TITLE_OB,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB)),
+            // the book language is needed for reordering titles
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_BOOK_LANGUAGE,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LANGUAGE)),
+            // Always get the read flag
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_BOOK_READ,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)),
+            // Always get the Author ID (the need for the actual name is depending on the style).
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_FK_AUTHOR,
+                    DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)),
+            // Always get the ISBN
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_BOOK_ISBN,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)),
+            // We want the UUID for the book so we can get thumbnails
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_BOOK_UUID,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_UUID)),
+
+            // external site ID's
+            //NEWTHINGS: add new site specific ID: add
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_EID_ISFDB,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_ISFDB)),
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_EID_GOODREADS_BOOK,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_GOODREADS_BOOK)),
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_EID_LIBRARY_THING,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_LIBRARY_THING)),
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_EID_STRIP_INFO_BE,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_STRIP_INFO_BE)),
+            new BooklistBuilder.BookDomain(
+                    DBDefinitions.DOM_EID_OPEN_LIBRARY,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
+
     /** The result of building the booklist. */
     private final MutableLiveData<BuilderHolder> mBuilderResult = new MutableLiveData<>();
     /** Allows progress message from a task to update the user. */
@@ -136,22 +188,18 @@ public class BooksOnBookshelfModel
      * Used to call {@link GetBookListTask}. Reset to afterwards.
      */
     private long mDesiredCentralBookId;
-
     /**
      * Saved adapter position of top row.
      * See {@link LinearLayoutManager#scrollToPosition(int)}
      */
     private int mItemPosition = RecyclerView.NO_POSITION;
-
     /**
      * Saved view offset of top row.
      * See {@link LinearLayoutManager#scrollToPositionWithOffset(int, int)}
      */
     private int mTopViewOffset;
-
     /** Used by onScroll to detect when the top row has actually changed. */
     private int mPreviousFirstVisibleItemPosition = RecyclerView.NO_POSITION;
-
     /** Preferred booklist state in next rebuild. */
     @BooklistBuilder.ListRebuildMode
     private int mRebuildState;
@@ -423,118 +471,78 @@ public class BooksOnBookshelfModel
     public void initBookList(@NonNull final Context context) {
         Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final BooklistStyle style = mCurrentBookshelf.getStyle(context, mDb);
 
-        // get a new builder and add the required extra domains
-        final BooklistBuilder blb = new BooklistBuilder(mCurrentBookshelf, style);
+        // get a new builder and add the required domains
+        final BooklistBuilder blb = new BooklistBuilder(style, mCurrentBookshelf);
 
-        // Title for displaying
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_TITLE,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE), 0));
-        // the book language is needed for reordering titles
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_BOOK_LANGUAGE,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LANGUAGE), 0));
-        // Title for sorting
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_TITLE_OB,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB), 0));
+        // Add the fixed list of domains we always need.
+        for (BooklistBuilder.BookDomain domainDetails : FIXED_DOMAIN_LIST) {
+            blb.addDomain(domainDetails);
+        }
 
-        // Always get the read flag
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_BOOK_READ,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ), 0));
-
-        // Always get the Author ID (the need for the actual name is depending on the style).
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_FK_AUTHOR,
-                DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR), 0));
-
-        // Always get the ISBN
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_BOOK_ISBN,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN), 0));
-        // external site ID's
-        //NEWTHINGS: add new site specific ID: add
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_EID_ISFDB,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_ISFDB), 0));
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_EID_GOODREADS_BOOK,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_GOODREADS_BOOK), 0));
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_EID_LIBRARY_THING,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_LIBRARY_THING), 0));
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_EID_STRIP_INFO_BE,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_STRIP_INFO_BE), 0));
-        blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-                DBDefinitions.DOM_EID_OPEN_LIBRARY,
-                DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_OPEN_LIBRARY), 0));
-
-
-        if (style.isUsed(DBDefinitions.KEY_EDITION_BITMASK)) {
+        // Add the conditional domains
+        if (App.isUsed(prefs, DBDefinitions.KEY_EDITION_BITMASK)) {
             // The edition bitmask
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK), 0));
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)));
         }
 
-        if (style.isUsed(DBDefinitions.KEY_SIGNED)) {
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+        if (App.isUsed(prefs, DBDefinitions.KEY_SIGNED)) {
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_BOOK_SIGNED,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED), 0));
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED)));
         }
 
-        if (style.isUsed(DBDefinitions.KEY_LOANEE)) {
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+        if (App.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
-                    DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN, 0));
+                    DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN));
         }
 
-        if (style.isExtraUsed(DBDefinitions.KEY_BOOKSHELF)) {
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+        if (style.isBookDetailUsed(prefs, DBDefinitions.KEY_BOOKSHELF)) {
+            // This collects a CSV list of the bookshelves the book is on.
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_BOOKSHELF_CSV,
-                    BOOKSHELVES_CSV_SOURCE_EXPRESSION, 0));
+                    BOOKSHELVES_CSV_SOURCE_EXPRESSION));
         }
 
         // we fetch ONLY the primary author
-        if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+        if (style.isBookDetailUsed(prefs, DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_AUTHOR_FORMATTED,
-                    style.showAuthorGivenNameFirst(context)
+                    style.isShowAuthorByGivenNameFirst()
                     ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                    : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN,
-                    0));
+                    : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN));
         }
         // for now, don't get the author type.
-        // if (style.isExtraUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
-        //     blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
-        //             DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
-        //             DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK),
-        //             0));
+        // if (style.isBookDetailUsed(prefs, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+        //     blb.addDomain(new BooklistBuilder.BookDomain(
+        //         DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+        //         DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
         // }
 
-        if (style.isExtraUsed(DBDefinitions.KEY_PUBLISHER)) {
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+        if (style.isBookDetailUsed(prefs, DBDefinitions.KEY_PUBLISHER)) {
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_BOOK_PUBLISHER,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PUBLISHER), 0));
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_PUBLISHER)));
         }
-        if (style.isExtraUsed(DBDefinitions.KEY_DATE_PUBLISHED)) {
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+        if (style.isBookDetailUsed(prefs, DBDefinitions.KEY_DATE_PUBLISHED)) {
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_DATE_PUBLISHED,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED), 0));
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED)));
         }
-        if (style.isExtraUsed(DBDefinitions.KEY_FORMAT)) {
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+        if (style.isBookDetailUsed(prefs, DBDefinitions.KEY_FORMAT)) {
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_BOOK_FORMAT,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT), 0));
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT)));
         }
-        if (style.isExtraUsed(DBDefinitions.KEY_LOCATION)) {
-            blb.addDomain(new BooklistBuilder.ExtraDomainDetails(
+        if (style.isBookDetailUsed(prefs, DBDefinitions.KEY_LOCATION)) {
+            blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_BOOK_LOCATION,
-                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION), 0));
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
         }
 
         // if we have a list of ID's, ignore other criteria.
@@ -984,14 +992,13 @@ public class BooksOnBookshelfModel
         private final BuilderHolder mHolder;
         @Nullable
         private final BooklistCursor mCurrentListCursor;
-        /** Resulting Cursor. */
-        private BooklistCursor mTempListCursor;
 
         /**
          * Constructor.
          *
          * @param bookListBuilder      the builder
          * @param currentListCursor    Current displayed list cursor.
+         *                             (needed for potential cleanup actions)
          * @param desiredCentralBookId current position in the list.
          * @param listState            Requested list state
          * @param taskListener         listener
@@ -1016,15 +1023,17 @@ public class BooksOnBookshelfModel
         @WorkerThread
         protected BuilderHolder doInBackground(final Void... params) {
             Thread.currentThread().setName("GetBookListTask");
-            // timers removed as all 'real' time spend here is in mBuilder.build.
             try {
-                // Build the underlying data and preserve this state
+                // Build the underlying data
+                // (performance: this is where all the actual action is done)
                 mBuilder.build(mHolder.listState);
+                //  and preserve this state
                 mHolder.listState = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
 
                 if (isCancelled()) {
                     return mHolder;
                 }
+                // process the results.
 
                 // these are the row(s) we want to center the new list on.
                 mHolder.resultTargetRows = mBuilder.getTargetRows(mHolder.desiredCentralBookId);
@@ -1033,14 +1042,12 @@ public class BooksOnBookshelfModel
 
                 // Now we have the expanded groups as needed, get the list cursor
                 // The cursor will hold a reference to the builder.
-                mTempListCursor = mBuilder.getNewListCursor();
+                mHolder.resultListCursor = mBuilder.getNewListCursor();
                 // get a count() from the cursor in background task because the setAdapter()
                 // call will do a count() and potentially block the UI thread while it
                 // pages through the entire cursor. Doing it here makes subsequent calls faster.
-                mTempListCursor.getCount();
+                mHolder.resultListCursor.getCount();
 
-                // Set the results.
-                mHolder.resultListCursor = mTempListCursor;
                 mHolder.resultDistinctBookCount = mBuilder.getDistinctBookCount();
                 mHolder.resultTotalBookCount = mBuilder.getBookCount();
 
@@ -1065,7 +1072,7 @@ public class BooksOnBookshelfModel
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "cleanup", mException);
             }
-            BooklistBuilder.closeCursor(mTempListCursor, mCurrentListCursor);
+            BooklistBuilder.closeCursor(mHolder.resultListCursor, mCurrentListCursor);
         }
     }
 

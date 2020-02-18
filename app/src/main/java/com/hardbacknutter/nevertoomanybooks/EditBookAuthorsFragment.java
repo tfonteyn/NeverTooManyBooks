@@ -393,7 +393,7 @@ public class EditBookAuthorsFragment
                 mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
                 mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
                                                             false);
-                mType = savedInstanceState.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
+                mType = savedInstanceState.getInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             }
         }
 
@@ -441,7 +441,8 @@ public class EditBookAuthorsFragment
 
             mUseTypeBtn = root.findViewById(R.id.use_author_type_button);
             if (mUseTypeBtn != null) {
-                final boolean useAuthorType = App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
+                final boolean useAuthorType = App
+                        .isUsed(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
                 final Group authorTypeGroup = root.findViewById(R.id.author_type_group);
                 authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
                 if (useAuthorType) {
@@ -553,7 +554,7 @@ public class EditBookAuthorsFragment
             outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
             outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
             outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
-            outState.putInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK, mType);
+            outState.putInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, mType);
         }
 
         @Override

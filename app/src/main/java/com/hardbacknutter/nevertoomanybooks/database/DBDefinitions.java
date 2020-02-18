@@ -229,9 +229,9 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_READ;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_BOOK_READ_START;
+    public static final Domain DOM_BOOK_DATE_READ_START;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_BOOK_READ_END;
+    public static final Domain DOM_BOOK_DATE_READ_END;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_SIGNED;
     /** {@link #TBL_BOOKS}. A rating goes from 0 to 5 stars, in 0.5 increments. */
@@ -294,8 +294,7 @@ public final class DBDefinitions {
      */
     public static final Domain DOM_FTS_AUTHOR_NAME;
 
-    /** Virtual: used in multiple places where books are counted. */
-    public static final Domain DOM_BOOK_COUNT;
+
 
     /* ======================================================================================
      *  {@link BooklistBuilder} domains.
@@ -305,6 +304,9 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_AUTHOR_SORT;
     /** For sorting in the {@link BooklistBuilder}. */
     public static final Domain DOM_BL_SERIES_SORT;
+
+    /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
+    public static final Domain DOM_BL_BOOK_COUNT;
 
     /**
      * Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
@@ -410,7 +412,7 @@ public final class DBDefinitions {
     public static final String KEY_AUTHOR_IS_COMPLETE = "author_complete";
     public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
     public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
-    public static final String KEY_AUTHOR_TYPE_BITMASK = "author_type";
+    public static final String KEY_BOOK_AUTHOR_TYPE_BITMASK = "author_type";
     public static final String KEY_BOOK_AUTHOR_POSITION = "author_position";
 
     /** {@link #TBL_SERIES} {@link #TBL_BOOK_SERIES} */
@@ -740,10 +742,10 @@ public final class DBDefinitions {
         DOM_BOOK_READ =
                 new Domain.Builder(KEY_READ, ColumnInfo.TYPE_BOOLEAN)
                         .notNull().withDefault(0).build();
-        DOM_BOOK_READ_START =
+        DOM_BOOK_DATE_READ_START =
                 new Domain.Builder(KEY_READ_START, ColumnInfo.TYPE_DATE)
                         .notNull().withDefaultEmptyString().build();
-        DOM_BOOK_READ_END =
+        DOM_BOOK_DATE_READ_END =
                 new Domain.Builder(KEY_READ_END, ColumnInfo.TYPE_DATE)
                         .notNull().withDefaultEmptyString().build();
         DOM_BOOK_SIGNED =
@@ -797,7 +799,7 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_AUTHOR_TYPE_BITMASK =
-                new Domain.Builder(KEY_AUTHOR_TYPE_BITMASK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(KEY_BOOK_AUTHOR_TYPE_BITMASK, ColumnInfo.TYPE_INTEGER)
                         .notNull().withDefault(0).build();
         DOM_BOOK_AUTHOR_POSITION =
                 new Domain.Builder(KEY_BOOK_AUTHOR_POSITION, ColumnInfo.TYPE_INTEGER)
@@ -825,14 +827,11 @@ public final class DBDefinitions {
                         .notNull().withDefault(0).build();
 
         /* ======================================================================================
-         *  Virtual domains (column alias)
-         * ====================================================================================== */
-        DOM_BOOK_COUNT =
-                new Domain.Builder(KEY_BOOK_COUNT, ColumnInfo.TYPE_INTEGER).build();
-
-        /* ======================================================================================
          *  BooklistBuilder domains
          * ====================================================================================== */
+
+        DOM_BL_BOOK_COUNT =
+                new Domain.Builder(KEY_BOOK_COUNT, ColumnInfo.TYPE_INTEGER).build();
 
         DOM_BL_AUTHOR_SORT =
                 new Domain.Builder(KEY_BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT).build();
@@ -916,8 +915,8 @@ public final class DBDefinitions {
                              DOM_BOOK_DATE_ACQUIRED,
 
                              DOM_BOOK_READ,
-                             DOM_BOOK_READ_START,
-                             DOM_BOOK_READ_END,
+                             DOM_BOOK_DATE_READ_START,
+                             DOM_BOOK_DATE_READ_END,
 
                              DOM_BOOK_EDITION_BITMASK,
                              DOM_BOOK_SIGNED,
@@ -1065,7 +1064,7 @@ public final class DBDefinitions {
 
         // Prefix name of BOOK_LIST-related tables.
         final String DB_TN_BOOK_LIST_PREFIX = "book_list";
-        // this one is a standard table!
+        // this one is a standard table to preserve the state across app restarts
         TBL_BOOK_LIST_NODE_STATE =
                 new TableDefinition(DB_TN_BOOK_LIST_PREFIX + "_node_settings")
                         .setAlias("bl_ns");
@@ -1092,9 +1091,7 @@ public final class DBDefinitions {
             TMP_TBL_BOOK_LIST_NAVIGATOR.setType(TableType.Standard);
         }
 
-        /*
-         * Stores the node state across application restarts.
-         */
+        // Stores the node state across application restarts.
         TBL_BOOK_LIST_NODE_STATE.addDomains(DOM_PK_ID,
                                             DOM_FK_BOOKSHELF,
                                             DOM_FK_STYLE,

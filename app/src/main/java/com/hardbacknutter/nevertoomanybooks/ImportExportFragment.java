@@ -65,7 +65,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.LegacyPreferences;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.RestoreTask;
 import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
@@ -483,12 +482,6 @@ public class ImportExportFragment
 
     private void onImportFinished(@StringRes final int titleId,
                                   @NonNull final ImportHelper importHelper) {
-
-        // Check if there are any BookCatalogue preferences that need migrating.
-        if ((importHelper.options & Options.PREFERENCES) != 0) {
-            //noinspection ConstantConditions
-            LegacyPreferences.migrateLegacyPreferences(getContext());
-        }
 
         // Transform the result data into a user friendly report.
         final Importer.Results results = importHelper.getResults();

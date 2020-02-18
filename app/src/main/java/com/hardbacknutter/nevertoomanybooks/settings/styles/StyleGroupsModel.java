@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
-class StyleGroupsModel
+public class StyleGroupsModel
         extends ViewModel {
 
     private static final String TAG = "StyleGroupsModel";
@@ -87,15 +87,14 @@ class StyleGroupsModel
     @NonNull
     private ArrayList<GroupWrapper> createList() {
         // Build an array list with the groups from the style
-        ArrayList<GroupWrapper> wrappers = new ArrayList<>(mStyle.groupCount());
+        ArrayList<GroupWrapper> wrappers = new ArrayList<>(mStyle.getGroupCount());
         for (BooklistGroup group : mStyle.getGroups()) {
             wrappers.add(new GroupWrapper(group, true));
         }
         // Get all other groups and add any missing ones to the list so the user can
         // add them if wanted.
-        for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle.getUuid(),
-                                                              mStyle.isUserDefined())) {
-            if (!mStyle.hasGroup(group.getId())) {
+        for (BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
+            if (!mStyle.containsGroup(group.getId())) {
                 wrappers.add(new GroupWrapper(group, false));
             }
         }

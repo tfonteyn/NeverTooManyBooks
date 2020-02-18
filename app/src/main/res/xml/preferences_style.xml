@@ -57,7 +57,7 @@
             />
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleExtraFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
             android:icon="@drawable/ic_details"
             android:key="psk_style_show_details"
             android:title="@string/pg_bob_show_details"
@@ -68,7 +68,7 @@
             android:entries="@array/pe_bob_header"
             android:entryValues="@array/pv_bob_header"
             android:icon="@drawable/ic_view_headline"
-            android:key="style.booklist.show.header"
+            android:key="style.booklist.header"
             android:title="@string/pt_bob_header"
             />
 
@@ -129,12 +129,35 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_sort_by_alpha"
-            android:key="style.booklist.sort.author.given_first"
-            android:summaryOff="@string/pv_bob_author_name_family_first"
-            android:summaryOn="@string/pv_bob_author_name_given_first"
-            android:title="@string/pt_bob_author_name_sort"
+            android:icon="@drawable/ic_reorder"
+            android:key="show.author.name.given_first"
+            android:summaryOff="@string/pv_author_name_family_first"
+            android:summaryOn="@string/pv_author_name_given_first"
+            android:title="@string/pt_show_author_name_given_first"
             />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_sort_by_alpha"
+            android:key="sort.author.name.given_first"
+            android:summaryOff="@string/pv_author_name_family_first"
+            android:summaryOn="@string/pv_author_name_given_first"
+            android:title="@string/pt_sort_author_name_given_first"
+            />
+
+
+        <!-- Enabled if Group 'Author' is present in this style. -->
+        <!-- The default is 'not set', which means we take the Author in position 1 to be the primary. -->
+        <MultiSelectListPreference
+            android:defaultValue="@array/empty_array"
+            android:entries="@array/pe_author_type"
+            android:entryValues="@array/pv_author_type"
+            android:icon="@drawable/ic_sort_by_alpha"
+            android:key="style.booklist.group.authors.primary.type"
+            android:title="@string/pt_primary_author_type"
+            app:isPreferenceVisible="false"
+            />
+
 
         <!-- Enabled if Group 'Author' is present in this style. -->
         <SwitchPreference
@@ -144,17 +167,6 @@
             android:summaryOff="@string/pv_bob_books_under_multiple_primary_author_only"
             android:summaryOn="@string/pv_bob_books_under_multiple_each_author"
             android:title="@string/pt_bob_books_under_multiple_authors"
-            app:isPreferenceVisible="false"
-            />
-
-        <!-- Enabled if Group 'Author' is present in this style. -->
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_reorder"
-            android:key="style.booklist.group.authors.show.first_last"
-            android:summaryOff="@string/pv_bob_author_name_family_first"
-            android:summaryOn="@string/pv_bob_author_name_given_first"
-            android:title="@string/pt_bob_author_name_format"
             app:isPreferenceVisible="false"
             />
 

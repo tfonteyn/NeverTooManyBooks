@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
@@ -98,10 +97,9 @@ public class LibraryThingSearchEngine
                    SearchEngine.CoverByIsbn,
                    SearchEngine.AlternativeEditions {
 
-    private static final String TAG = "LibraryThingSE";
-
     /** base urls. */
     public static final String BASE_URL = "https://www.librarything.com";
+    private static final String TAG = "LibraryThingSE";
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "librarything.";
     /** Preference that contains the dev key for the user. Type: {@code String}. */
@@ -134,7 +132,7 @@ public class LibraryThingSearchEngine
      * View a Book on the web site.
      *
      * @param context Current context
-     * @param bookId     site native book id to show
+     * @param bookId  site native book id to show
      */
     public static void openWebsite(@NonNull final Context context,
                                    final long bookId) {
@@ -190,12 +188,6 @@ public class LibraryThingSearchEngine
         return showAlert;
     }
 
-    @NonNull
-    @Override
-    public Locale getLocale(@NonNull final Context context) {
-        return Locale.US;
-    }
-
     /**
      * Get the dev key.
      *
@@ -213,9 +205,10 @@ public class LibraryThingSearchEngine
         return "";
     }
 
-    @SuppressWarnings("unused")
-    static void resetTips(@NonNull final Context context) {
-        TipManager.reset(context, PREFS_HIDE_ALERT);
+    @NonNull
+    @Override
+    public Locale getLocale(@NonNull final Context context) {
+        return Locale.US;
     }
 
     /**

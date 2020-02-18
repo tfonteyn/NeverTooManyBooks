@@ -399,7 +399,7 @@
 
     <string name="pg_general">Obecné</string>
     <string name="pg_style_groups">Seskupení</string>
-    <string name="pt_bob_titles_sort">Seřadit tituly podle</string>
+    <string name="pt_sort_title_reordered">Seřadit tituly podle</string>
     <string name="pg_barcode_scanner">Čtečka kódů</string>
     <string name="pg_thumbnails">Náhledy</string>
     <string name="pg_ui">Uživatelské rozhraní</string>
@@ -431,10 +431,10 @@
     <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
     <string name="pt_bob_books_under_multiple_authors">Knihy s více autory</string>
     <string name="pt_bob_books_under_multiple_series">Knihy ve více sériích</string>
-    <string name="pt_bob_author_name_format">Formátování jména autora</string>
+    <string name="pt_show_author_name_given_first">Formátování jména autora</string>
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
-    <string name="pt_bob_author_name_sort">Třídění autorských jmen</string>
+    <string name="pt_sort_author_name_given_first">Třídění autorských jmen</string>
     <string name="pt_bob_font_scale">Velikost položek na seznamu knih</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
     <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
@@ -586,7 +586,7 @@
     <string name="warning_scanner_retry_install">Doporučujeme zkusit to znovu jako první, ale pokud problém přetrvává, nainstalujte znovu skener nebo nainstalujte jiný skener.</string>
     <string name="error_import_invalid_archive">Vybraný soubor není rozpoznán.</string>
     <string name="lbl_author_type_writer">spisovatel</string>
-    <string name="pt_bob_titles_display">Zobrazit tituly jako</string>
+    <string name="pt_show_title_reordered">Zobrazit tituly jako</string>
     <string name="lbl_author_type_artist">ilustrace</string>
     <string name="lbl_author_type_cover_artist">ilustrace knihy</string>
     <string name="lbl_author_type_cover_colorist">barva obálky knihy</string>
@@ -649,7 +649,7 @@
     <string name="legacy_record">Zastaralý záznam #%1$d</string>
     <string name="legacy_description">Tento záznam je zastaralý a nelze jej obnovit. Je vhodné jej odstranit.</string>
     <string name="book_format_dimensions">Rozměry</string>
-    <string name="pv_bob_author_name_family_first">tj. „Čapek, Karel“</string>
-    <string name="pv_bob_author_name_given_first">tj. „Karel Čapek“</string>
+    <string name="pv_author_name_family_first">tj. „Čapek, Karel“</string>
+    <string name="pv_author_name_given_first">tj. „Karel Čapek“</string>
 
 </resources>

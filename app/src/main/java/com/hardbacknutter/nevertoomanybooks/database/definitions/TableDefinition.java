@@ -645,6 +645,20 @@ public class TableDefinition
     }
 
     /**
+     * Return a left outer join and condition from this table to another using foreign keys.
+     * <p>
+     * format: LEFT OUTER JOIN [to-name] [to-alias] ON [pk/fk match]
+     *
+     * @param to Table this table will be joined with
+     *
+     * @return SQL fragment
+     */
+    @NonNull
+    public String leftOuterJoin(@NonNull final TableDefinition to) {
+        return " LEFT OUTER JOIN " + to.ref() + " ON (" + fkMatch(to) + ')';
+    }
+
+    /**
      * Return the FK condition that applies between this table and the 'to' table.
      * <p>
      * format: [to-alias].[to-pk] = [from-alias].[from-pk]

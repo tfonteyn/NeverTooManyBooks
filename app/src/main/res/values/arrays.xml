@@ -251,4 +251,17 @@
         <item>@string/size_xx_large</item>
     </string-array>
 
+    <!-- MultiSelectListPreference - Determines which author type is considered the primary author of a book -->
+    <!-- Mainly of interest for comics (e.g. writer, artist). See Author class for the values. -->
+    <!-- this is a multi-select, i.e. each item is a checkbox, the user can select any/all -->
+    <string-array name="pe_author_type">
+        <item>@string/lbl_author_type_writer</item>
+        <item>@string/lbl_author_type_artist</item>
+    </string-array>
+    <!-- multi-select: use bitmask values: 1,2,4,8,...-->
+    <string-array name="pv_author_type">
+        <item>1</item>
+        <item>4096</item>
+    </string-array>
+
 </resources>

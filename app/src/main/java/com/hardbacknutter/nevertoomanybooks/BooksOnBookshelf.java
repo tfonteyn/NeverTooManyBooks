@@ -1074,9 +1074,6 @@ public class BooksOnBookshelf
                 // not entirely sure this is needed
                 mModel.saveAllNodes();
             });
-        } else {
-            // not entirely sure this is needed
-            mModel.saveAllNodes();
         }
 
         // Prepare the list header fields.
@@ -1185,10 +1182,10 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-                final boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
+                final boolean useLending = App.isUsed(DBDefinitions.KEY_LOANEE);
                 final boolean isAvailable = mModel.isAvailable(rowData);
-                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(lendingIsUsed && isAvailable);
-                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(lendingIsUsed && !isAvailable);
+                menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
+                menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
                     .setVisible(GoodreadsHandler.isShowSyncMenus(this));
@@ -1606,7 +1603,7 @@ public class BooksOnBookshelf
      * Display or hide the style name field in the header.
      */
     private void setHeaderStyleName() {
-        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.SUMMARY_SHOW_STYLE_NAME)) {
+        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.HEADER_SHOW_STYLE_NAME)) {
             mStyleNameView.setText(mModel.getCurrentStyle(this).getLabel(this));
             mStyleNameView.setVisibility(View.VISIBLE);
         } else {
@@ -1618,7 +1615,7 @@ public class BooksOnBookshelf
      * Display or hide the search/filter text field in the header.
      */
     private void setHeaderFilterText() {
-        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.SUMMARY_SHOW_FILTER)) {
+        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.HEADER_SHOW_FILTER)) {
             final Collection<String> filterText = new ArrayList<>();
             final Collection<Filter> filters = mModel.getCurrentBookshelf()
                                                      .getStyle(this, mModel.getDb())
@@ -1649,7 +1646,7 @@ public class BooksOnBookshelf
      * Display or hide the number of books in the current list.
      */
     private void setHeaderBookCount() {
-        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.SUMMARY_SHOW_BOOK_COUNT)) {
+        if (mModel.getCurrentStyle(this).showHeader(BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
             final int totalBooks = mModel.getTotalBooks();
             final int uniqueBooks = mModel.getUniqueBooks();
             final String stringArgs;
@@ -1683,7 +1680,7 @@ public class BooksOnBookshelf
 
         // for each level, set the visibility of the views.
         for (int i = 0; i < mHeaderTextView.length; i++) {
-            if (i < style.groupCount() && style.showHeader(BooklistStyle.HEADER_LEVELS[i])) {
+            if (i < style.getGroupCount() && style.showHeader(BooklistStyle.HEADER_LEVELS[i])) {
                 // the actual text will be filled in as/when the user scrolls
                 mHeaderTextView[i].setText("");
                 mHeaderTextView[i].setVisibility(View.VISIBLE);

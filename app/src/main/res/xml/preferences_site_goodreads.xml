@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,30 +30,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/site_isfdb">
+        android:title="@string/site_goodreads">
+
+        <Preference
+            android:icon="@drawable/ic_security"
+            android:key="psk_credentials"
+            android:title="@string/lbl_credentials">
+        </Preference>
 
         <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_search"
-            android:key="isfdb.search.uses.publisher"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_search_uses_publisher" />
-
-        <SwitchPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:icon="@drawable/ic_cloud_download"
-            android:key="isfdb.search.toc.series"
+            android:key="goodreads.search.collect.genre"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_collect_series_info_from_toc" />
-
-        <!--<EditTextPreference-->
-        <!--android:defaultValue="http://www.isfdb.org"-->
-        <!--android:icon="@drawable/ic_link"-->
-        <!--android:inputType="textUri"-->
-        <!--android:key="isfdb.host.url"-->
-        <!--android:title="@string/ISFDB" />-->
+            android:title="@string/pt_goodreads_collect_genre" />
 
     </PreferenceCategory>
 

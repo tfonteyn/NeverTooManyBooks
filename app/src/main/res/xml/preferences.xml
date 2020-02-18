@@ -86,23 +86,46 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/lbl_format">
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_sort_by_alpha"
-            android:key="reformat.titles.sort"
-            android:summaryOff="@string/pt_reformat_titles_summary_original"
-            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-            android:title="@string/pt_bob_titles_sort" />
+        android:title="@string/lbl_formatting">
 
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_reorder"
-            android:key="reformat.titles.display"
-            android:summaryOff="@string/pt_reformat_titles_summary_original"
-            android:summaryOn="@string/pt_reformat_titles_summary_reformatted"
-            android:title="@string/pt_bob_titles_display" />
+            android:key="show.author.name.given_first"
+            android:summaryOff="@string/pv_author_name_family_first"
+            android:summaryOn="@string/pv_author_name_given_first"
+            android:title="@string/pt_show_author_name_given_first"
+            />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_reorder"
+            android:key="show.title.reordered"
+            android:summaryOff="@string/pt_show_titles_reordered_off"
+            android:summaryOn="@string/pt_show_titles_reordered_on"
+            android:title="@string/pt_show_title_reordered" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/lbl_sorting">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_sort_by_alpha"
+            android:key="sort.author.name.given_first"
+            android:summaryOff="@string/pv_author_name_family_first"
+            android:summaryOn="@string/pv_author_name_given_first"
+            android:title="@string/pt_sort_author_name_given_first" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:icon="@drawable/ic_sort_by_alpha"
+            android:key="sort.title.reordered"
+            android:summaryOff="@string/pt_show_titles_reordered_off"
+            android:summaryOn="@string/pt_show_titles_reordered_on"
+            android:title="@string/pt_sort_title_reordered" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -125,7 +148,7 @@
             android:entries="@array/pe_bob_list_state"
             android:entryValues="@array/pv_bob_list_state"
             android:icon="@drawable/ic_view_list"
-            android:key="style.booklist.levels.rebuild.state"
+            android:key="booklist.rebuild.state"
             android:title="@string/pt_bob_list_rebuild_state" />
 
     </PreferenceCategory>

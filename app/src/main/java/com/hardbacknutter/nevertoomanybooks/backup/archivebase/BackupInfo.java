@@ -199,7 +199,6 @@ public class BackupInfo {
         return mBundle.getInt(INFO_SDK);
     }
 
-    @SuppressWarnings("unused")
     public boolean hasDatabase() {
         return mBundle.getBoolean(INFO_HAS_DATABASE, false);
     }

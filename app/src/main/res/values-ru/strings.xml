@@ -398,7 +398,7 @@
 
     <string name="pg_general">Основные</string>
     <string name="pg_style_groups">Группирование</string>
-    <string name="pt_bob_titles_sort">Сортировать названия по</string>
+    <string name="pt_sort_title_reordered">Сортировать названия по</string>
     <string name="pg_barcode_scanner">Сканер штрих-кода</string>
     <string name="pg_thumbnails">Миниатюры</string>
     <string name="pg_ui">Пользовательский интерфейс</string>
@@ -430,10 +430,10 @@
     <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
     <string name="pt_bob_books_under_multiple_authors">Книги с множеством авторов</string>
     <string name="pt_bob_books_under_multiple_series">Книги в множестве серий</string>
-    <string name="pt_bob_author_name_format">Форматирование имени автора</string>
+    <string name="pt_show_author_name_given_first">Форматирование имени автора</string>
     <string name="pt_bob_header">Суммарная информация в заголовке</string>
     <string name="pt_bob_list_rebuild_state">Состояние запуска списка книг</string>
-    <string name="pt_bob_author_name_sort">Сортировка имени автора</string>
+    <string name="pt_sort_author_name_given_first">Сортировка имени автора</string>
     <string name="pt_bob_font_scale">Размер элемента списка книг</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
     <string name="pt_bob_thumbnails_show">Показывать миниатюры</string>
@@ -585,7 +585,7 @@
     <string name="warning_scanner_failed_to_start">Сканер не запустился.</string>
     <string name="warning_scanner_retry_install">Мы рекомендуем сначала повторить попытку, но если она не работает, переустановите сканер или установите другой сканер.</string>
     <string name="error_import_invalid_archive">Выбранный файл не распознан.</string>
-    <string name="pt_bob_titles_display">Показать названия как</string>
+    <string name="pt_show_title_reordered">Показать названия как</string>
     <string name="lbl_author_type_artist">иллюстрации</string>
     <string name="lbl_author_type_cover_artist">иллюстрация обложки книги</string>
     <string name="lbl_author_type_cover_colorist">цвета обложки книги</string>
@@ -648,7 +648,7 @@
     <string name="legacy_record">Устаревшая запись #%1$d</string>
     <string name="legacy_description">Эта запись устарела и не может быть восстановлена. Желательно удалить его.</string>
     <string name="book_format_dimensions">размеры</string>
-    <string name="pv_bob_author_name_family_first">например «Достоевский, Фёдор»</string>
-    <string name="pv_bob_author_name_given_first">например «Фёдор Достоевский»</string>
+    <string name="pv_author_name_family_first">например «Достоевский, Фёдор»</string>
+    <string name="pv_author_name_given_first">например «Фёдор Достоевский»</string>
 
 </resources>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,6 +39,6 @@ public class IsfdbPreferencesFragment
     public void onCreatePreferences(final Bundle savedInstanceState,
                                     final String rootKey) {
 
-        setPreferencesFromResource(R.xml.preferences_isfdb, rootKey);
+        setPreferencesFromResource(R.xml.preferences_site_isfdb, rootKey);
     }
 }

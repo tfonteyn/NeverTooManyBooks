@@ -399,7 +399,7 @@
 
     <string name="pg_general">Generale</string>
     <string name="pg_style_groups">Raggruppamenti</string>
-    <string name="pt_bob_titles_sort">Ordina titoli per</string>
+    <string name="pt_sort_title_reordered">Ordina titoli per</string>
     <string name="pg_barcode_scanner">Scanner di codici a barre</string>
     <string name="pg_thumbnails">Miniature</string>
     <string name="pg_ui">Interfaccia Utente</string>
@@ -437,10 +437,10 @@
     <string name="pv_bob_books_under_multiple_primary_author_only">Solo sotto autore primario</string>
     <string name="pv_bob_books_under_multiple_primary_series_only">Solo sotto serie primario</string>
 
-    <string name="pt_bob_author_name_format">Formattazione del nome dell\'autore</string>
-    <string name="pt_bob_author_name_sort">Ordinamento dei nomi degli autori</string>
-    <string name="pv_bob_author_name_family_first">es. «Alighieri, Dante»</string>
-    <string name="pv_bob_author_name_given_first">es. «Dante Alighieri»</string>
+    <string name="pt_show_author_name_given_first">Formattazione del nome dell\'autore</string>
+    <string name="pt_sort_author_name_given_first">Ordinamento dei nomi degli autori</string>
+    <string name="pv_author_name_family_first">es. «Alighieri, Dante»</string>
+    <string name="pv_author_name_given_first">es. «Dante Alighieri»</string>
 
     <string name="pt_bob_header">Riassunto dettagli nel titolo</string>
     <string name="pt_bob_list_rebuild_state">Stato di avvio dell\'elenco libri</string>
@@ -449,8 +449,8 @@
     <string name="pt_bob_thumbnails_show">Mostra miniature</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="pt_bob_thumbnails_scale">Dimensione miniature in elenchi</string>
-    <string name="pt_reformat_titles_summary_original">Il titolo</string>
-    <string name="pt_reformat_titles_summary_reformatted">titolo, Il</string>
+    <string name="pt_show_titles_reordered_off">Il titolo</string>
+    <string name="pt_show_titles_reordered_on">titolo, Il</string>
     <string name="pt_scanning_beep_on_invalid">Suona se il codice ISBN acquisito non è valido</string>
     <string name="pt_scanning_beep_on_valid">Suona se il codice ISBN acquisito è valido</string>
     <string name="pt_scanning_preferred_scanner">Programma Preferito</string>
@@ -595,7 +595,7 @@
     <string name="warning_scanner_failed_to_start">Lo scanner non si è avviato.</string>
     <string name="warning_scanner_retry_install">Ti consigliamo di riprovare prima, ma se il problema persiste, reinstallare lo scanner o installare un altro scanner.</string>
     <string name="error_import_invalid_archive">Il file selezionato non è riconosciuto.</string>
-    <string name="pt_bob_titles_display">Mostra titoli come</string>
+    <string name="pt_show_title_reordered">Mostra titoli come</string>
     <string name="lbl_author_type_artist">illustrazioni</string>
     <string name="lbl_author_type_cover_artist">copertina</string>
     <string name="lbl_author_type_cover_colorist">colori della copertina</string>

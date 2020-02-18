@@ -25,21 +25,44 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings.styles;
+package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
-import androidx.annotation.XmlRes;
+import android.content.Intent;
+import android.os.Bundle;
+
+import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-/**
- * Used/defined in xml/preferences_styles.xml
- */
-public class StyleExtraFragment
-        extends StyleBaseFragment {
+public class LibraryThingPreferencesFragment
+        extends BasePreferenceFragment {
 
     @Override
-    @XmlRes
-    protected int getLayoutId() {
-        return R.xml.preferences_styles_extras;
+    public void onCreatePreferences(final Bundle savedInstanceState,
+                                    final String rootKey) {
+
+        setPreferencesFromResource(R.xml.preferences_site_library_thing, rootKey);
+
+        initListeners();
+    }
+
+    /**
+     * Hook up specific listeners/preferences.
+     */
+    private void initListeners() {
+        Preference preference;
+
+        preference = findPreference(Prefs.PSK_CREDENTIALS);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                Intent intent = new Intent(getContext(), LibraryThingRegistrationActivity.class);
+                startActivity(intent);
+                return true;
+            });
+        }
+
     }
 }

@@ -766,14 +766,14 @@
     <string name="pt_show_goodreads">Show Goodreads menus</string>
 
     <!-- SwitchPreference - How to display titles. -->
-    <string name="pt_bob_titles_display">Show titles as</string>
+    <string name="pt_show_title_reordered">Show titles as</string>
     <!-- SwitchPreference - How to sort titles. -->
-    <string name="pt_bob_titles_sort">Sort titles by</string>
+    <string name="pt_sort_title_reordered">Sort titles by</string>
 
     <!-- example of 'original' title -->
-    <string name="pt_reformat_titles_summary_original">The title</string>
-    <!-- example of a reformatted title -->
-    <string name="pt_reformat_titles_summary_reformatted">title, The</string>
+    <string name="pt_show_titles_reordered_off">The title</string>
+    <!-- example of a reordered title -->
+    <string name="pt_show_titles_reordered_on">title, The</string>
     <!--
      Not a preference as such.
      These are the Locale specific title prefixes that will be moved to the end of a title,
@@ -933,12 +933,12 @@
 
     <!-- Preference Category: author -->
     <!-- SwitchPreference - Display Authors by family (default) or given name. -->
-    <string name="pt_bob_author_name_format">Author name formatting</string>
+    <string name="pt_show_author_name_given_first">Author name formatting</string>
     <!-- SwitchPreference - Sorting Authors by family (default) or given name. -->
-    <string name="pt_bob_author_name_sort">Author name sorting</string>
+    <string name="pt_sort_author_name_given_first">Author name sorting</string>
 
-    <string name="pv_bob_author_name_given_first">e.g. “Phillis Wheatley”</string>
-    <string name="pv_bob_author_name_family_first">e.g. “Wheatley, Phillis”</string>
+    <string name="pv_author_name_given_first">e.g. “Connie Willis”</string>
+    <string name="pv_author_name_family_first">e.g. “Willis, Connie”</string>
 
     <!-- SwitchPreference -->
     <string name="pt_bob_books_under_multiple_authors">Show books with multiple authors</string>
@@ -1641,5 +1641,9 @@
     <string name="lbl_condition_reading_copy">Reading copy</string>
     <string name="lbl_dust_cover_missing">Missing</string>
     <string name="lbl_dust_cover_none_or_unknown">None</string>
+    <string name="pt_goodreads_collect_genre">Collect genre from popular bookshelves</string>
+    <string name="lbl_sorting">Sorting</string>
+    <string name="lbl_formatting">Formatting</string>
+    <string name="pt_primary_author_type">Primary author type</string>
 
 </resources>

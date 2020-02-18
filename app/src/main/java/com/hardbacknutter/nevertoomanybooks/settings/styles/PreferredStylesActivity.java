@@ -181,7 +181,7 @@ public class PreferredStylesActivity
 
                         // check if the style was cloned from a builtin style.
                         long templateId =
-                                data.getLongExtra(StylePreferenceFragment.BKEY_TEMPLATE_ID, 0);
+                                data.getLongExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, 0);
                         if (templateId < 0) {
                             // We're assuming the user wanted to 'replace' the builtin style,
                             // so remove the builtin style from the preferred styles.
@@ -334,7 +334,7 @@ public class PreferredStylesActivity
         Intent intent = new Intent(this, SettingsActivity.class)
                 .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StylePreferenceFragment.TAG)
                 .putExtra(UniqueId.BKEY_STYLE, style)
-                .putExtra(StylePreferenceFragment.BKEY_TEMPLATE_ID, templateStyleId);
+                .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateStyleId);
 
         startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
     }

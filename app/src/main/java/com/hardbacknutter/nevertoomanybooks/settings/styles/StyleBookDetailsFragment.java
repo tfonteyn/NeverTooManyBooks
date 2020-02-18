@@ -25,20 +25,21 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings.sites;
+package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.os.Bundle;
+import androidx.annotation.XmlRes;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
-public class AmazonPreferencesFragment
-        extends BasePreferenceFragment {
+/**
+ * Used/defined in xml/preferences_styles.xml
+ */
+public class StyleBookDetailsFragment
+        extends StyleBaseFragment {
 
     @Override
-    public void onCreatePreferences(final Bundle savedInstanceState,
-                                    final String rootKey) {
-
-        setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
+    @XmlRes
+    protected int getLayoutId() {
+        return R.xml.preferences_style_extras;
     }
 }

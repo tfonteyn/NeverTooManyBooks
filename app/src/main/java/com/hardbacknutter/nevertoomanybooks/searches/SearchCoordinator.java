@@ -307,10 +307,10 @@ public class SearchCoordinator
                                              .getBoolean(Prefs.pk_search_isbn_prefer_10, false);
 
             if (args != null) {
-                boolean thumbs = App.isUsed(UniqueId.BKEY_THUMBNAIL);
+                boolean useThumbnails = App.isUsed(UniqueId.BKEY_THUMBNAIL);
                 mFetchThumbnail = new boolean[2];
-                mFetchThumbnail[0] = thumbs;
-                mFetchThumbnail[1] = thumbs;
+                mFetchThumbnail[0] = useThumbnails;
+                mFetchThumbnail[1] = useThumbnails;
 
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 

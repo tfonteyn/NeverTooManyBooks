@@ -49,15 +49,15 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
  * Settings editor for a Style.
  * <p>
  * Passing in a style with a valid UUID, settings are read/written to the style specific file.
- * If the uuid is {@code null}, then we're editing the global defaults.
+ * If the uuid is {@code ""}, then we're editing the global defaults.
  */
 public abstract class StyleBaseFragment
         extends BasePreferenceFragment {
 
-    /** Fragment manager tag. */
-    public static final String TAG = "StylePreferenceFragment";
-
-    static final String BKEY_TEMPLATE_ID = TAG + ":templateId";
+    /** Explicitly named to avoid any TAG override confusion. */
+    static final String BKEY_TEMPLATE_ID = "StyleBaseFragment:templateId";
+    /** Log tag. */
+    private static final String TAG = "StyleBaseFragment";
 
     /** Style we are editing. */
     BooklistStyle mStyle;
@@ -76,23 +76,17 @@ public abstract class StyleBaseFragment
         }
 
         if (mStyle == null) {
-            // we're doing the global preferences
+            // we're doing the global preferences, create a dummy style with an empty uuid
+            // and let it use the standard SharedPreferences
             mStyle = new BooklistStyle();
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "onCreatePreferences|we're doing the global preferences");
-            }
+        } else {
+            // a user-style, set the correct UUID SharedPreferences to use
+            getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
             Log.d(TAG, "onCreatePreferences|" + mStyle);
         }
-
-        // We use the style UUID as the filename for the prefs.
-        String uuid = mStyle.getUuid();
-        if (!uuid.isEmpty()) {
-            getPreferenceManager().setSharedPreferencesName(uuid);
-        }
-        // else if uuid.isEmpty(), use global SharedPreferences for editing global defaults
 
         setPreferencesFromResource(getLayoutId(), rootKey);
     }
@@ -104,7 +98,7 @@ public abstract class StyleBaseFragment
 
         // always pass the non-global style back; whether existing or new.
         // so even if the user makes no changes, we still send it back!
-        if (!mStyle.getUuid().isEmpty()) {
+        if (!mStyle.isGlobal()) {
             mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
         }
 

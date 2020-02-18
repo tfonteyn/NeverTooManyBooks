@@ -404,7 +404,7 @@
 
     <string name="pg_general">Algemeen</string>
     <string name="pg_style_groups">Groeperingen</string>
-    <string name="pt_bob_titles_sort">Sorteer titels op</string>
+    <string name="pt_sort_title_reordered">Sorteer titels op</string>
     <string name="pg_barcode_scanner">Barcode scanner</string>
     <string name="pg_thumbnails">Miniaturen</string>
     <string name="pg_ui">Gebruikersinterface</string>
@@ -442,8 +442,8 @@
     <string name="pv_bob_books_under_multiple_primary_author_only">Alleen onder primaire auteur</string>
     <string name="pv_bob_books_under_multiple_primary_series_only">Alleen onder primaire reeks</string>
 
-    <string name="pt_bob_author_name_format">Opmaak van auteursnamen</string>
-    <string name="pt_bob_author_name_sort">Sorteren op auteursnaam</string>
+    <string name="pt_show_author_name_given_first">Opmaak van auteursnamen</string>
+    <string name="pt_sort_author_name_given_first">Sorteren op auteursnaam</string>
 
     <string name="pt_bob_header">Details in de koptekst</string>
     <string name="pt_bob_list_rebuild_state">Boekenlijst opstart status</string>
@@ -452,8 +452,8 @@
     <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
     <string name="pt_collect_series_info_from_toc">Verzamel reeks-informatie van de inhouds tabel</string>
     <string name="pt_bob_thumbnails_scale">Miniaturen grootte in lijsten</string>
-    <string name="pt_reformat_titles_summary_original">De titel</string>
-    <string name="pt_reformat_titles_summary_reformatted">titel, De</string>
+    <string name="pt_show_titles_reordered_off">De titel</string>
+    <string name="pt_show_titles_reordered_on">titel, De</string>
     <string name="pt_scanning_beep_on_invalid">Beep als het gescande ISBN ongeldig is</string>
     <string name="pt_scanning_beep_on_valid">Beep als gescande ISBN geldig is</string>
     <string name="pt_scanning_preferred_scanner">Voorkeur Scanner</string>
@@ -602,7 +602,7 @@
     <string name="error_import_invalid_archive">Het geselecteerde bestand wordt niet herkend.</string>
     <string name="lbl_author_type_cover_artist">Omslag</string>
     <string name="lbl_author_type_cover_colorist">Omslag inkleuring</string>
-    <string name="pt_bob_titles_display">Toon titels als</string>
+    <string name="pt_show_title_reordered">Toon titels als</string>
     <string name="lbl_local_search_advanced">Gedetaileerd</string>
     <string name="lbl_local_search_standard">Standaard</string>
     <string name="pt_search_form">Lokaal zoekformulier</string>
@@ -663,7 +663,7 @@
     <string name="legacy_record">Verouderd record #%1$d</string>
     <string name="legacy_description">Dit record is verouderd en kan niet worden hersteld. Het is raadzaam om het te verwijderen.</string>
     <string name="book_format_dimensions">Afmetingen</string>
-    <string name="pv_bob_author_name_family_first">bvb. „Reve, Gerard”</string>
-    <string name="pv_bob_author_name_given_first">bvb. „Gerard Reve”</string>
+    <string name="pv_author_name_family_first">bvb. „Reve, Gerard”</string>
+    <string name="pv_author_name_given_first">bvb. „Gerard Reve”</string>
 
 </resources>

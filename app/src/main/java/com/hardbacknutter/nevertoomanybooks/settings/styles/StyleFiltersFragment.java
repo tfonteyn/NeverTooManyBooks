@@ -45,7 +45,7 @@ public class StyleFiltersFragment
     @Override
     @XmlRes
     protected int getLayoutId() {
-        return R.xml.preferences_styles_filters;
+        return R.xml.preferences_style_filters;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class StyleFiltersFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        BitmaskPreference preference = findPreference(Prefs.pk_bob_filter_editions);
+        BitmaskPreference preference = findPreference(Prefs.pk_style_filter_editions);
         if (preference != null) {
             preference.setNotSetSummary(R.string.bookshelf_all_books);
         }

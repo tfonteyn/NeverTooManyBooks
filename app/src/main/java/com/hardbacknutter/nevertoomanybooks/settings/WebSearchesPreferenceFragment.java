@@ -39,8 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -55,7 +53,7 @@ public class WebSearchesPreferenceFragment
     public void onCreatePreferences(final Bundle savedInstanceState,
                                     final String rootKey) {
 
-        setPreferencesFromResource(R.xml.preferences_web_searches, rootKey);
+        setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
 
         initListeners();
     }
@@ -66,29 +64,11 @@ public class WebSearchesPreferenceFragment
     private void initListeners() {
         Preference preference;
 
-        preference = findPreference(Prefs.psk_search_site_order);
+        preference = findPreference(Prefs.PSK_SEARCH_SITE_ORDER);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class);
                 startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
-                return true;
-            });
-        }
-
-        preference = findPreference(Prefs.psk_credentials_goodreads);
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), GoodreadsRegistrationActivity.class);
-                startActivity(intent);
-                return true;
-            });
-        }
-
-        preference = findPreference(Prefs.psk_credentials_library_thing);
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), LibraryThingRegistrationActivity.class);
-                startActivity(intent);
                 return true;
             });
         }

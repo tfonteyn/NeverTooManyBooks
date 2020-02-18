@@ -66,6 +66,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <strong>Note:</strong> "type" is a column of {@link DBDefinitions#TBL_BOOK_AUTHOR}
  * So this class does not strictly represent an Author, but a "BookAuthor"
  * When the type is disregarded, it is a real Author representation.
+ *
+ * ENHANCE: add a column 'real-name-id' with the id of another author entry
+ * i.e one entry typed 'pseudonym' with the 'real-name-id' column pointing to the real name entry.
  */
 public class Author
         implements Parcelable, ItemWithFixableId, Entity {
@@ -93,46 +96,52 @@ public class Author
     /** Generic Author; the default. A single person created the book. */
     public static final int TYPE_UNKNOWN = 0;
 
-    /** primary or only writer. i.e. in contrast to any of the below. */
+    /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
-    // not distinguished for now
+    /** WRITER: not distinguished for now, if we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1; */
     public static final int TYPE_ORIGINAL_SCRIPT_WRITER = TYPE_WRITER;
-
-    //    public static final int TYPE_ = 1 << 1;
+    /** WRITER: the foreword. */
     public static final int TYPE_FOREWORD = 1 << 2;
+    /** WRITER: the afterword. */
     public static final int TYPE_AFTERWORD = 1 << 3;
-
-    /** translator. */
+    /** WRITER: translator. */
     public static final int TYPE_TRANSLATOR = 1 << 4;
-    /** foreword/afterword/introduction etc. */
+    /** WRITER: introduction. (some sites makes a distinction with a foreword). */
     public static final int TYPE_INTRODUCTION = 1 << 5;
+
+
     /** editor (e.g. of an anthology). */
     public static final int TYPE_EDITOR = 1 << 6;
     /** generic collaborator. */
     public static final int TYPE_CONTRIBUTOR = 1 << 7;
 
 
-    /** cover artist. */
+    /** ARTIST: cover. */
     public static final int TYPE_COVER_ARTIST = 1 << 8;
-    /** cover artist. */
+    /** ARTIST: cover inking (if different from above). */
     public static final int TYPE_COVER_INKING = 1 << 9;
 
 //    public static final int TYPE_ = 1 << 10;
-    /** cover colorist. */
+    /** COLOR: cover. */
     public static final int TYPE_COVER_COLORIST = 1 << 11;
 
 
-    /** Internal art work; could be illustrations, or the pages of a comic. */
+    /** ARTIST: art work; could be illustrations, or the pages of a comic. */
     public static final int TYPE_ARTIST = 1 << 12;
-    /** Internal art work (if addition to artwork); comics. */
+    /** ARTIST: art work inking (if different from above). */
     public static final int TYPE_INKING = 1 << 13;
 
 //    public static final int TYPE_ = 1 << 14;
 
-    /** internal colorist. */
+    /** COLOR: internal colorist. */
     public static final int TYPE_COLORIST = 1 << 15;
 
+    /**
+     * Any: indicate that this name entry is a pseudonym.
+     * ENHANCE: pseudonym flag its own this is not much use; need to link it with the real name
+     */
     public static final int TYPE_PSEUDONYM = 1 << 16;
+
     //    14 more bits available in the higher word (minus the sign-bit)
 
 
@@ -259,8 +268,8 @@ public class Author
         mFamilyName = rowData.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
         mGivenNames = rowData.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
         mIsComplete = rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-        if (rowData.contains(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
-            mType = rowData.getInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK);
+        if (rowData.contains(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+            mType = rowData.getInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
         }
     }
 
@@ -372,9 +381,9 @@ public class Author
      *
      * @return {@code true} if we want "given-names last-name" formatted authors.
      */
-    public static boolean displayGivenNameFirst(@NonNull final Context context) {
+    private static boolean isShowGivenNameFirst(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(Prefs.pk_bob_format_author_name, false);
+                                .getBoolean(Prefs.pk_show_author_name_given_first, false);
     }
 
     public boolean isComplete() {
@@ -440,7 +449,7 @@ public class Author
     @NonNull
     public String getLabel(@NonNull final Context context) {
         if (!mGivenNames.isEmpty()) {
-            if (displayGivenNameFirst(context)) {
+            if (isShowGivenNameFirst(context)) {
                 return mGivenNames + ' ' + mFamilyName;
             } else {
                 return mFamilyName + ", " + mGivenNames;
@@ -462,7 +471,7 @@ public class Author
     @NonNull
     public String getExtLabel(@NonNull final Context context) {
         String authorLabel = getLabel(context);
-        if (App.isUsed(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
+        if (App.isUsed(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
             String type = getTypeLabels(context);
             if (!type.isEmpty()) {
                 authorLabel += " <small><i>" + type + "</i></small>";
@@ -532,7 +541,7 @@ public class Author
             data.put(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, true);
         }
         if (mType != Author.TYPE_UNKNOWN) {
-            data.put(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK, mType);
+            data.put(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, mType);
         }
     }
 
@@ -549,8 +558,8 @@ public class Author
             mIsComplete = data.optBoolean("complete");
         }
 
-        if (data.has(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK)) {
-            setType(data.optInt(DBDefinitions.KEY_AUTHOR_TYPE_BITMASK));
+        if (data.has(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+            setType(data.optInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK));
         } else if (data.has("type")) {
             setType(data.optInt("type"));
         }

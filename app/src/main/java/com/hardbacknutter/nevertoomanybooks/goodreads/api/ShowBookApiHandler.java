@@ -40,6 +40,7 @@ import java.util.regex.Matcher;
 
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -751,10 +752,12 @@ public abstract class ShowBookApiHandler
                               XmlTags.XML_AUTHOR, XmlTags.XML_ROLE)
                  .setEndAction(mHandleAuthorRole);
 
-        XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
-                              XmlTags.XML_POPULAR_SHELVES,
-                              XmlTags.XML_SHELF)
-                 .setStartAction(mHandlePopularShelf);
+        if (GoodreadsHandler.isCollectGenre(App.getAppContext())) {
+            XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
+                                  XmlTags.XML_POPULAR_SHELVES,
+                                  XmlTags.XML_SHELF)
+                     .setStartAction(mHandlePopularShelf);
+        }
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_MY_REVIEW,

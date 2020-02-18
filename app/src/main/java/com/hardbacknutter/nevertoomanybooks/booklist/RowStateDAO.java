@@ -38,6 +38,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -115,6 +116,8 @@ public class RowStateDAO {
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
+    private static final String PURGE_ALL_SQL =
+            "DELETE FROM " + DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
     /** This is a reference only. Cleanup is done by the owner of this object. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
@@ -123,8 +126,8 @@ public class RowStateDAO {
     /** The table represented by this class. */
     @NonNull
     private final TableDefinition mTable;
-    @NonNull
-    private final Bookshelf mBookshelf;
+
+    private final long mBookshelfId;
     @NonNull
     private final BooklistStyle mStyle;
     /** used by finalize so close does not get called twice. */
@@ -136,24 +139,32 @@ public class RowStateDAO {
      * <strong>Note:</strong> the style/bookshelf the booklist is displaying, determines
      * the list-table and hence the RowStateDAO.
      *
-     * @param syncedDb   database
-     * @param instanceId unique id to be used as suffix on the table name.
-     * @param bookshelf  to use
-     * @param style      Booklist style to use;
-     *                   this must be the resolved style as used by the passed bookshelf
+     * @param syncedDb    database
+     * @param instanceId  unique id to be used as suffix on the table name.
+     * @param style       Booklist style to use;
+     * @param bookshelf to use
      */
     RowStateDAO(@NonNull final SynchronizedDb syncedDb,
                 final int instanceId,
-                @NonNull final Bookshelf bookshelf,
-                @NonNull final BooklistStyle style) {
+                @NonNull final BooklistStyle style,
+                @NonNull final Bookshelf bookshelf) {
 
         mSyncedDb = syncedDb;
-        mBookshelf = bookshelf;
+        mBookshelfId = bookshelf.getId();
         mStyle = style;
 
         mTable = new TableDefinition(TMP_TBL_BOOK_LIST_ROW_STATE);
         mTable.setName(mTable.getName() + instanceId);
         mStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + instanceId);
+    }
+
+    /**
+     * Purge <strong>all</strong> Booklist node state data.
+     */
+    public static void clearAll() {
+        try (DAO db = new DAO(TAG)) {
+            db.getUnderlyingDatabase().execSQL(PURGE_ALL_SQL);
+        }
     }
 
     /**
@@ -298,7 +309,7 @@ public class RowStateDAO {
 
                 // Use already-defined SQL for preserve state.
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    stmt.bindLong(1, mBookshelf.getId());
+                    stmt.bindLong(1, mBookshelfId);
                     stmt.bindLong(2, mStyle.getId());
                     int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
@@ -671,7 +682,7 @@ public class RowStateDAO {
 
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                stmt.bindLong(1, mBookshelf.getId());
+                stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
 
                 int rowsDeleted = stmt.executeUpdateDelete();
@@ -690,7 +701,7 @@ public class RowStateDAO {
             // Read all visible nodes, and send them to the permanent table.
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                stmt.bindLong(1, mBookshelf.getId());
+                stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
 
                 int rowsUpdated = stmt.executeUpdateDelete();
@@ -703,6 +714,14 @@ public class RowStateDAO {
             if (txLock != null) {
                 mSyncedDb.setTransactionSuccessful();
             }
+//        } catch (@NonNull final SQLiteConstraintException e) {
+//            if (BuildConfig.DEBUG /* always */) {
+//                // DEBUG ONLY!
+//                // This protects the developer when changing the structure
+//                // somewhat irresponsibly...
+//                mSyncedDb.execSQL(PURGE_ALL_SQL);
+//                Logger.error(App.getAppContext(), TAG, e);
+//            }
         } finally {
             if (txLock != null) {
                 mSyncedDb.endTransaction(txLock);
@@ -997,7 +1016,7 @@ public class RowStateDAO {
             // for the current bookshelf/style
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                stmt.bindLong(1, mBookshelf.getId());
+                stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
 
                 stmt.bindLong(3, leafLevel);
@@ -1029,7 +1048,7 @@ public class RowStateDAO {
             // and send them to the permanent table.
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                stmt.bindLong(1, mBookshelf.getId());
+                stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
 
                 stmt.bindLong(3, leafRowId);

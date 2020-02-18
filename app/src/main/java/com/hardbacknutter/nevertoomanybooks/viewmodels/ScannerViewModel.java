@@ -260,7 +260,7 @@ public class ScannerViewModel
                 .setOnDismissListener(d -> {
                     final Intent intent = new Intent(fragment.getContext(), SettingsActivity.class)
                             .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                      Prefs.psk_barcode_scanner);
+                                      Prefs.PSK_BARCODE_SCANNER);
 
                     fragment.startActivityForResult(intent, UniqueId.REQ_SETTINGS);
                 })
@@ -287,7 +287,7 @@ public class ScannerViewModel
                 .setNeutralButton(R.string.lbl_settings, (dialog, which) -> {
                     final Intent intent = new Intent(fragment.getContext(), SettingsActivity.class)
                             .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
-                                      Prefs.psk_barcode_scanner);
+                                      Prefs.PSK_BARCODE_SCANNER);
 
                     fragment.startActivityForResult(intent, UniqueId.REQ_SETTINGS);
                 })

@@ -400,7 +400,7 @@
 
     <string name="pg_general">General</string>
     <string name="pg_style_groups">Grupos</string>
-    <string name="pt_bob_titles_sort">Ordenar títulos por</string>
+    <string name="pt_sort_title_reordered">Ordenar títulos por</string>
     <string name="pg_barcode_scanner">Escáner de código de barras</string>
     <string name="pg_thumbnails">Miniaturas</string>
     <string name="pg_ui">Interfaz de usuario</string>
@@ -438,8 +438,8 @@
     <string name="pv_bob_books_under_multiple_primary_author_only">Sólo bajo primer autor</string>
     <string name="pv_bob_books_under_multiple_primary_series_only">Sólo bajo primer serie</string>
 
-    <string name="pt_bob_author_name_format">Formato de nombre de autor</string>
-    <string name="pt_bob_author_name_sort">Clasificación del nombre del autor</string>
+    <string name="pt_show_author_name_given_first">Formato de nombre de autor</string>
+    <string name="pt_sort_author_name_given_first">Clasificación del nombre del autor</string>
 
     <string name="pt_bob_header">Resumen en la cabecera</string>
     <string name="pt_bob_list_rebuild_state">Estado de inicio de la lista de libros</string>
@@ -448,8 +448,8 @@
     <string name="pt_bob_thumbnails_show">Mostrar miniaturas</string>
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
     <string name="pt_bob_thumbnails_scale">Tamaño de la imagen en listas.</string>
-    <string name="pt_reformat_titles_summary_original">El título</string>
-    <string name="pt_reformat_titles_summary_reformatted">título, El</string>
+    <string name="pt_show_titles_reordered_off">El título</string>
+    <string name="pt_show_titles_reordered_on">título, El</string>
     <string name="pt_scanning_beep_on_invalid">Pitido si el ISBN escaneado no es válido</string>
     <string name="pt_scanning_beep_on_valid">Pitido si el ISBN escaneado es válido</string>
     <string name="pt_scanning_preferred_scanner">Escaner preferido</string>
@@ -594,7 +594,7 @@
     <string name="warning_scanner_failed_to_start">El escáner no pudo iniciarse.</string>
     <string name="warning_scanner_retry_install">Sugerimos que vuelva a intentarlo primero, pero si sigue fallando, reinstale el escáner o instale otro escáner.</string>
     <string name="error_import_invalid_archive">El archivo seleccionado no se reconoce.</string>
-    <string name="pt_bob_titles_display">Mostrar títulos como</string>
+    <string name="pt_show_title_reordered">Mostrar títulos como</string>
     <string name="lbl_author_type_artist">ilustraciones</string>
     <string name="lbl_author_type_cover_artist">diseño de portada</string>
     <string name="lbl_author_type_cover_colorist">colores de la portada</string>
@@ -657,7 +657,7 @@
     <string name="legacy_record">Registro obsoleto #%1$d</string>
     <string name="legacy_description">Este registro está obsoleto y no se puede recuperar. Es recomendable eliminarlo.</string>
     <string name="book_format_dimensions">Dimensiones</string>
-    <string name="pv_bob_author_name_family_first">por ejemplo «Pérez Galdós, Benito»</string>
-    <string name="pv_bob_author_name_given_first">por ejemplo «Benito Pérez Galdós»</string>
+    <string name="pv_author_name_family_first">por ejemplo «Pérez Galdós, Benito»</string>
+    <string name="pv_author_name_given_first">por ejemplo «Benito Pérez Galdós»</string>
 
 </resources>

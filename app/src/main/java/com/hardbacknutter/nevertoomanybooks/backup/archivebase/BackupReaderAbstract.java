@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.LegacyPreferences;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
@@ -243,21 +242,9 @@ public abstract class BackupReaderAbstract
                         // skip, already handled
                         break;
 
-                    case LegacyPreferences: {
-                        // BookCatalogue format
-                        if (incPrefs) {
-                            progressListener.onProgressStep(1, mProcessPreferences);
-                            // read them into the 'old' prefs. Migration is done at a later stage.
-                            SharedPreferences legacyPrefs = LegacyPreferences.getPrefs(context);
-                            try (XmlImporter importer = new XmlImporter(null)) {
-                                importer.doPreferences(entity, legacyPrefs, progressListener);
-                            }
-                            entitiesRead |= Options.PREFERENCES;
-                        }
-                        break;
-                    }
+                    case LegacyPreferences:
                     case LegacyBooklistStyles:
-                        // BookCatalogue format was a serialized binary. No longer supported.
+                        // BookCatalogue format. No longer supported.
                         break;
 
                     case Unknown:

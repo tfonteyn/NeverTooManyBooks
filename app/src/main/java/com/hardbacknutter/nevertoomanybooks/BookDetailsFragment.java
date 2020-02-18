@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -56,6 +57,7 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -169,6 +171,9 @@ public class BookDetailsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(inflater.getContext());
+
         final View view = inflater.inflate(R.layout.fragment_book_details, container, false);
 
         mTopScrollView = view.findViewById(R.id.topScroller);
@@ -181,7 +186,7 @@ public class BookDetailsFragment
         mTocLabelView = view.findViewById(R.id.lbl_toc);
         mTocView = view.findViewById(R.id.toc);
         mTocButton = view.findViewById(R.id.toc_button);
-        if (!App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+        if (!App.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
             mIsAnthologyLabelView.setVisibility(View.GONE);
             mIsAnthologyCbx.setVisibility(View.GONE);
             mTocLabelView.setVisibility(View.GONE);
@@ -192,13 +197,13 @@ public class BookDetailsFragment
         // Covers
         mCoverView[0] = view.findViewById(R.id.coverImage0);
         mCoverView[1] = view.findViewById(R.id.coverImage1);
-        if (!App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+        if (!App.isUsed(prefs, UniqueId.BKEY_THUMBNAIL)) {
             mCoverView[0].setVisibility(View.GONE);
             mCoverView[1].setVisibility(View.GONE);
         }
 
         mLoanedToView = view.findViewById(R.id.loaned_to);
-        if (!App.isUsed(DBDefinitions.KEY_LOANEE)) {
+        if (!App.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             mLoanedToView.setVisibility(View.GONE);
         }
 
@@ -408,7 +413,7 @@ public class BookDetailsFragment
         fields.add(R.id.print_run, new TextAccessor<String>(), DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        fields.add(R.id.price_listed, new TextAccessor<Money>(moneyFormatter),
+        fields.add(R.id.price_listed, new TextAccessor<>(moneyFormatter),
                    DBDefinitions.KEY_PRICE_LISTED)
               .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
@@ -465,12 +470,15 @@ public class BookDetailsFragment
     protected void onLoadFields(@NonNull final Book book) {
         super.onLoadFields(book);
 
+        //noinspection ConstantConditions
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
         // handle special fields
-        if (App.isUsed(DBDefinitions.KEY_LOANEE)) {
+        if (App.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             populateLoanedToField(mBookModel.getLoanee());
         }
 
-        if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
+        if (App.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
             final boolean isAnthology =
                     book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
             mIsAnthologyLabelView.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
@@ -480,7 +488,7 @@ public class BookDetailsFragment
             populateToc(book);
         }
 
-        if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+        if (App.isUsed(prefs, UniqueId.BKEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
                                                 book, mIsbnView, 0, mCoverView[0],
@@ -662,11 +670,9 @@ public class BookDetailsFragment
             .setVisible(GoodreadsHandler.isShowSyncMenus(getContext()));
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-        final boolean lendingIsUsed = App.isUsed(DBDefinitions.KEY_LOANEE);
-        menu.findItem(R.id.MENU_BOOK_LOAN_ADD)
-            .setVisible(lendingIsUsed && isSaved && isAvailable);
-        menu.findItem(R.id.MENU_BOOK_LOAN_DELETE)
-            .setVisible(lendingIsUsed && isSaved && !isAvailable);
+        final boolean useLending = App.isUsed(DBDefinitions.KEY_LOANEE);
+        menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
+        menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
         MenuHandler.prepareOptionalMenus(menu, book);
 

@@ -97,11 +97,13 @@
         <TextView
             android:id="@+id/series_num"
             style="@style/BooklistBook.BookInfo.SeriesNum"
+            android:visibility="gone"
             app:layout_constraintBaseline_toBaselineOf="@id/title"
             app:layout_constraintEnd_toStartOf="@id/title"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             tools:ignore="SelectableText"
             tools:text="###"
+            tools:visibility="visible"
             />
 
         <TextView

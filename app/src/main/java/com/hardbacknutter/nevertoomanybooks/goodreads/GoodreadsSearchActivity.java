@@ -226,7 +226,7 @@ public class GoodreadsSearchActivity
         Snackbar.make(mListView, msg, Snackbar.LENGTH_LONG).show();
     }
 
-    static class GrSearchViewModel
+    public static class GrSearchViewModel
             extends ViewModel {
 
         private final MutableLiveData<List<GoodreadsWork>> mWorks = new MutableLiveData<>();

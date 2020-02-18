@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -61,10 +62,13 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 public class StylePreferenceFragment
         extends StyleBaseFragment {
 
+    /** Fragment manager tag. */
+    public static final String TAG = "StylePreferenceFragment";
+
     @Override
     @XmlRes
     protected int getLayoutId() {
-        return R.xml.preferences_styles;
+        return R.xml.preferences_style;
     }
 
     @Override
@@ -72,9 +76,9 @@ public class StylePreferenceFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        Preference thumbScale = findPreference(Prefs.pk_bob_thumbnail_scale);
+        Preference thumbScale = findPreference(Prefs.pk_style_scale_thumbnail);
         if (thumbScale != null) {
-            thumbScale.setDependency(Prefs.pk_bob_show_thumbnails);
+            thumbScale.setDependency(Prefs.pk_style_book_show_thumbnails);
         }
 
         initListeners();
@@ -92,7 +96,7 @@ public class StylePreferenceFragment
         Preference preference;
 
         // the 'groups' in use.
-        preference = findPreference(Prefs.pk_bob_groups);
+        preference = findPreference(Prefs.pk_style_groups);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), StyleGroupsActivity.class);
@@ -108,15 +112,17 @@ public class StylePreferenceFragment
         PreferenceScreen screen = getPreferenceScreen();
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
-        for (BooklistGroup group : BooklistGroup.getAllGroups("", false)) {
-            group.setPreferencesVisible(screen, mStyle.hasGroup(group.getId()));
+        // Use a dummy style to get the groups.
+        BooklistStyle dummy = new BooklistStyle();
+        for (BooklistGroup group : BooklistGroup.getAllGroups(dummy)) {
+            group.setPreferencesVisible(screen, mStyle.containsGroup(group.getId()));
         }
 
         super.onResume();
 
         // These keys are never physically present in the SharedPreferences; so handle explicitly.
-        updateSummary(Prefs.psk_style_show_details);
-        updateSummary(Prefs.psk_style_filters);
+        updateSummary(Prefs.PSK_STYLE_SHOW_DETAILS);
+        updateSummary(Prefs.PSK_STYLE_FILTERS);
     }
 
     /**
@@ -127,7 +133,7 @@ public class StylePreferenceFragment
     @Override
     protected void updateSummary(@NonNull final String key) {
         switch (key) {
-            case Prefs.pk_bob_font_scale: {
+            case Prefs.pk_style_scale_font: {
                 SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     String summary = getResources()
@@ -136,7 +142,7 @@ public class StylePreferenceFragment
                 }
                 break;
             }
-            case Prefs.pk_bob_thumbnail_scale: {
+            case Prefs.pk_style_scale_thumbnail: {
                 SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     String summary = getResources()
@@ -147,16 +153,16 @@ public class StylePreferenceFragment
                 break;
             }
 
-            case Prefs.pk_bob_levels_default: {
+            case Prefs.pk_style_levels_expansion: {
                 SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
-                    preference.setMax(mStyle.getGroups().size());
+                    preference.setMax(mStyle.getGroupCount());
                     preference.setSummary(String.valueOf(mStyle.getTopLevel()));
                 }
                 break;
             }
 
-            case Prefs.pk_bob_groups: {
+            case Prefs.pk_style_groups: {
                 // the 'groups' in use.
                 Preference preference = findPreference(key);
                 if (preference != null) {
@@ -166,13 +172,13 @@ public class StylePreferenceFragment
                 break;
             }
 
-            case Prefs.pk_bob_show_thumbnails:
-            case Prefs.psk_style_show_details: {
+            case Prefs.pk_style_book_show_thumbnails:
+            case Prefs.PSK_STYLE_SHOW_DETAILS: {
                 // the 'extra' fields in use.
                 Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    List<String> labels = mStyle.getExtraFieldsLabels(getContext());
+                    List<String> labels = mStyle.getBookDetailsFieldLabels(getContext());
                     if (labels.isEmpty()) {
                         preference.setSummary(getString(R.string.none));
                     } else {
@@ -181,7 +187,7 @@ public class StylePreferenceFragment
                 }
                 break;
             }
-            case Prefs.psk_style_filters: {
+            case Prefs.PSK_STYLE_FILTERS: {
                 // the 'filters' in use
                 Preference preference = findPreference(key);
                 if (preference != null) {
@@ -216,8 +222,9 @@ public class StylePreferenceFragment
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     // replace the current style with the edited copy
-                    mStyle = Objects.requireNonNull(data.getParcelableExtra(UniqueId.BKEY_STYLE),
-                                                    ErrorMsg.ARGS_MISSING_STYLE);
+                    mStyle = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
+
                     mResultDataModel.putResultData(UniqueId.BKEY_STYLE_MODIFIED, true);
                     mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
                 }
