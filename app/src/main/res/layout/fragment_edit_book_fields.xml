@@ -76,22 +76,22 @@
             app:constraint_referenced_ids="coverImage0,coverImage1"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
-            style="@style/Label.Field"
-            android:labelFor="@id/author"
-            android:text="@string/lbl_author"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coversBarrier"
-            />
-
-        <Button
-            android:id="@+id/author"
-            style="@style/DataEntryButton"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_author"
-            />
+            app:layout_constraintTop_toBottomOf="@id/coversBarrier"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/author"
+                style="@style/EditText.Button"
+                android:layout_width="match_parent"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
@@ -99,7 +99,7 @@
             android:hint="@string/lbl_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/author"
+            app:layout_constraintTop_toBottomOf="@id/lbl_author"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -159,38 +159,39 @@
             app:layout_constraintEnd_toEndOf="parent"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
-            style="@style/Label.Field"
-            android:labelFor="@id/series"
-            android:text="@string/lbl_series"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_series"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-            />
+            >
 
-        <Button
-            android:id="@+id/series"
-            style="@style/DataEntryButton"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/series"
+                style="@style/EditText.Button"
+                android:layout_width="match_parent"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_bookshelves"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_bookshelves"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"
-            />
+            >
 
-        <TextView
-            android:id="@+id/lbl_bookshelves"
-            style="@style/Label.Field"
-            android:text="@string/lbl_bookshelves_long"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/series"
-            />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/bookshelves"
+                style="@style/EditText.Button"
+                android:layout_width="match_parent"
+                />
 
-        <Button
-            android:id="@+id/bookshelves"
-            style="@style/DataEntryButton"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
-            />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_genre"
@@ -198,15 +199,15 @@
             android:hint="@string/lbl_genre"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bookshelves"
+            app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             >
 
             <AutoCompleteTextView
                 android:id="@+id/genre"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
-                tools:ignore="LabelFor"
                 tools:text="Fiction"
+                tools:ignore="LabelFor"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

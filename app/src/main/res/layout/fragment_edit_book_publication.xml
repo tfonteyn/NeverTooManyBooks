@@ -137,54 +137,48 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_first_publication"
-            style="@style/Label.Field"
-            android:layout_width="0dp"
-            android:text="@string/lbl_first_publication"
-            app:layout_constraintStart_toStartOf="@id/first_publication"
-            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
-            />
-
-        <TextView
-            android:id="@+id/lbl_date_published"
-            style="@style/Label.Field"
-            android:layout_width="0dp"
-            android:text="@string/lbl_date_published"
-            app:layout_constraintStart_toStartOf="@id/date_published"
-            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_date_pub_labels"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="lbl_first_publication,lbl_date_published"
-            />
-
-        <Button
-            android:id="@+id/first_publication"
-            style="@style/DataEntryButton"
-            app:layout_constraintEnd_toStartOf="@id/date_published"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_first_publication"
+            app:layout_constraintEnd_toStartOf="@id/lbl_date_published"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_date_pub_labels"
-            />
+            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
+            >
 
-        <Button
-            android:id="@+id/date_published"
-            style="@style/DataEntryButton"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/first_publication"
+                style="@style/EditText.Button"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_date_published"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_date_published"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/first_publication"
-            app:layout_constraintTop_toBottomOf="@id/barrier_date_pub_labels"
-            />
+            app:layout_constraintStart_toEndOf="@id/lbl_first_publication"
+            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/date_published"
+                style="@style/EditText.Button"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier_pages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="first_publication,date_published"
+            app:constraint_referenced_ids="lbl_first_publication,lbl_date_published"
             />
 
         <com.google.android.material.textfield.TextInputLayout

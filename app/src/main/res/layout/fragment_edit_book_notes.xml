@@ -71,54 +71,48 @@
             tools:checked="true"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_start"
-            style="@style/Label.Field"
-            android:layout_width="0dp"
-            android:text="@string/lbl_read_start"
-            app:layout_constraintTop_toBottomOf="@id/cbx_read"
-            app:layout_constraintStart_toStartOf="@id/read_start"
-            />
-
-        <TextView
-            android:id="@+id/lbl_read_end"
-            style="@style/Label.Field"
-            android:layout_width="0dp"
-            android:text="@string/lbl_read_end"
-            app:layout_constraintTop_toBottomOf="@id/cbx_read"
-            app:layout_constraintStart_toStartOf="@id/read_end"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_read_labels"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="lbl_read_start,lbl_read_end"
-            />
-
-        <Button
-            android:id="@+id/read_start"
-            style="@style/DataEntryButton"
-            app:layout_constraintTop_toBottomOf="@id/barrier_read_labels"
-            app:layout_constraintEnd_toStartOf="@id/read_end"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_read_start"
+            app:layout_constraintEnd_toStartOf="@id/lbl_read_end"
             app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_constraintTop_toBottomOf="@id/cbx_read"
+            >
 
-        <Button
-            android:id="@+id/read_end"
-            style="@style/DataEntryButton"
-            app:layout_constraintTop_toBottomOf="@id/barrier_read_labels"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/read_start"
+                style="@style/EditText.Button"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_read_end"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_read_end"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/read_start"
-            />
+            app:layout_constraintStart_toEndOf="@id/lbl_read_start"
+            app:layout_constraintTop_toBottomOf="@id/cbx_read"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/read_end"
+                style="@style/EditText.Button"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrier_read_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="read_start,read_end"
+            app:constraint_referenced_ids="lbl_read_start,lbl_read_end"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -135,26 +129,27 @@
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
-                tools:text="Under the stairs"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_acquired"
-            style="@style/Label.Field"
-            android:text="@string/lbl_date_acquired"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_location"
-            />
-
-        <Button
-            android:id="@+id/date_acquired"
-            style="@style/DataEntryButton"
+            style="@style/Envelope.EditText"
+            android:hint="@string/lbl_date_acquired"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
-            />
+            app:layout_constraintTop_toBottomOf="@id/lbl_location"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/date_acquired"
+                style="@style/EditText.Button"
+                android:layout_width="match_parent"
+                tools:ignore="Autofill"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid_currency"
@@ -180,7 +175,7 @@
             android:hint="@string/lbl_price_paid"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
-            app:layout_constraintTop_toBottomOf="@id/date_acquired"
+            app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
             >
 
             <com.google.android.material.textfield.TextInputEditText
