@@ -58,7 +58,6 @@
     <string name="size_x_large">X-Μεγάλο</string>
     <string name="size_xx_large">2X-Μεγάλο</string>
     <string name="pv_scanner_zxing_compatible">Σαρωτής συμβατός με το Zxing</string>
-    <string name="X_about_help_tap_here">Παρακαλούμε πατήστε εδώ για να μπέιτε στις online σελίδες βοήθειας</string>
     <string name="X_anthology_titles">Τίτλοι Ανθολογιών</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
     <string name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
@@ -77,7 +76,6 @@
     <string name="lbl_about_translators">&APP_NAME; είναι προιόν προσπάθειας πολλών ανθρώπων και δεν θα είχε τέτοια ευρεία αποδοχή χωρίς την γενναιόδωρη βοήθεια των εθελοντών μεταφραστών (εαν ξεχνάμε κάποιον, παρακαλούμε ενημερώστε μας):</string>
     <string name="acra_resDialogCommentPrompt">Τα σχόλιά σας (ή αφήστε το κενό):</string>
     <string name="acra_resDialogText">Φαίνεται πως το &APP_NAME; σταμάτησε να λειτουργεί. Εαν είναι δυνατό περιγράψτε παρακάτω ό,τι πιστεύετε πως είναι σχετικό και πατήστε ΟΚ για μας στείλετε email με πληροφορίες για την βλάβη. Θα δείτε το e-mail πρωτού αποσταλεί.</string>
-    <string name="X_tap_for_details">Παρακαλούμε πατήστε εδώ για λεπτομέρειες</string>
     <string name="acra_resReportSendSuccessToast">Ευχαριστούμε!</string>
     <string name="acra_resToastText">Η λειτουργία του &APP_NAME; διακόπηκε. Παρακαλούμε βοηθήστε μας να βελτιώσουμε την εφαρμογή στέλνοντας την αναφορά της διακοπής.</string>
     <string name="and_others">κτλ.</string>
@@ -157,7 +155,6 @@
     <string name="gr_auth_blurb_part2">Όταν εγγραφείτε, ή αν είστε ήδη χρήστης του Goodreads, μπορείτε να δώσετε άδεια στο &APP_NAME; να έχει πρόσβαση στα δεδομένα του Goodreads σας πατώντας στο παρακάτω κουμπί. Θα σας μεταφέρει σε μια ιστοσελίδα όπου θα πρέπει να συνδεθείτε στο Goodreads και να δώσετε άδεια στην εφαρμογή. Εμείς ποτέ δεν βλέπουμε τον κωδικό πρόσβασής σας. Μπορείτε να απενεργοποιήσετε την πρόσβαση μέσω της ιστοσελίδας Goodreads. Εαν καταλήξετε σε μια κενή ιστοσελίδα, κάντε κλικ στο κουμπί επιστροφής για να επιστρέψετε εδώ!</string>
     <string name="gr_auth_blurb_part3">Ωστόσο, να θυμάστε… ότι δεν είναι απαραίτητο να γίνει κάτι από τα παραπάνω: Το &APP_NAME; δουλεύει μια χαρά και χώρις αυτό!</string>
     <string name="gr_auth_blurb_part4">Έχετε ήδη δώσει άδεια σε αυτή την εφαρμογή. Αν θέλετε να διαγράψετε τα διαπιστευτήρια από αυτό το συσκευή, μπορείτε να το κάνετε πατώντας το παρακάτω κουμπί. Αλλά είναι επίσης σημαντικό να διαγράψετε την εγγραφή της εφαρμογής και στην ιστοσελίδα Goodreads.</string>
-    <string name="X_gr_auth_check">Ελεγχος αδειοδότησης Goodreads</string>
     <string name="error_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
     <string name="info_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
     <string name="gr_menu_send_all">Αποστολή όλων</string>
@@ -210,7 +207,6 @@
     <string name="title_authorized">Έχει άδεια</string>
     <string name="info_cleanup_files_text">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί «%2$s».</string>
     <string name="info_displaying_n_books_in_m_entries">εμφανίζονται %1$d βιβλία, σε %2$d καταχωρήσεις</string>
-    <string name="X_info_install_scanner">Για να σαρώσετε τους γραμμικούς κώδικες ISBN, πατήστε παρακάτω για να εγκαταστήσετε μία από αυτές τις εφαρμογές σαρωτή γραμμωτού κώδικα.</string>
     <string name="info_manage_fields">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
     <string name="title_not_authorized">Χωρίς άδεια</string>
     <string name="info_registration_benefits">Αυτή η δυνατότητα επωφελείται από την εγγραφή με %1$s.\n Θα θέλατε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες σε μεταγενέστερη ημερομηνία κάτω από την ενότητα «%2$s» στις ρυθμίσεις.</string>
@@ -401,7 +397,6 @@
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
     <string name="progress_end_cancelled">Ακυρώθηκε</string>
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
-    <string name="X_progress_end_n_books_searched">%1$d Βιβλία αναζητήθηκαν</string>
     <string name="title_backing_up">Δημιουργείται Αντίγραφο Ασφαλείας…</string>
     <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
     <string name="progress_msg_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
@@ -506,14 +501,11 @@
     <string name="title_delete_series">Διαγραφή Σειράς</string>
     <string name="title_delete_toc_entry">Διαγράψτε τον τίτλο</string>
     <string name="title_duplicate_book">Διπλοεγγραφή Βιβλίου</string>
-    <string name="title_edit_book_authors">Επεξεργασία συγγραφέων βιβλίων</string>
-    <string name="title_edit_book_series">Επεξεργασία σειράς βιβλίων</string>
     <string name="title_edit_bookshelf">Επεξεργασία ραφιού</string>
     <string name="title_edit_bookshelves">Διαχείρηση Ραφιών</string>
     <string name="title_edit_style">Επεξεργασία στυλ</string>
     <string name="X_title_import">εισάγω</string>
     <string name="title_import_book_data">Εισαγωγή Βιβλιων</string>
-    <string name="X_title_install_scan">Εγκατάσταση σαρωτή barcode</string>
     <string name="title_registration">LibraryThing Εγγραφή</string>
     <string name="title_scope_of_change">Πεδίο εφαρμογής της αλλαγής</string>
     <string name="hint_system_search">Συγγραφέας, Τίτλος ή ISBN</string>
@@ -539,7 +531,6 @@
     <string name="info_install_scanner_recommendation">Προτείνουμε να εγκαταστήσετε την εφαρμογή Zxing barcode scanner, και αν είναι ήδη εγκατεστημένη, προτείνουμε να την απεγκαταστήσετε και να την ξαναεγκαταστήσετε.</string>
     <string name="warning_book_no_longer_exists">Το συγκεκριμένο βιβλίο δεν υπάρχει πλέον.</string>
     <string name="tip_book_not_found">Το βιβλίο που σαρώθηκε δεν βρέθηκε. Κάποιες φορές το σωστό barcode βρίσκεται στο εσωτερικό του εξωφύλλου. Αλλιώς εισάγετε τις λεπτομέρειες χειροκίνητα.</string>
-    <string name="X_warning_book_was_deleted_uc">ΑΥΤΟ ΤΟ ΒΙΒΛΙΟ ΕΧΕΙ ΔΙΑΓΡΑΦΕΙ</string>
     <string name="warning_cannot_delete_1st_bs">Δεν μπορεί να διαγραφεί το 1ο ράφι.</string>
     <string name="warning_cover_copy_failed">Δεν ήταν δυνατή η αντιγραφή εικόνας</string>
     <string name="warning_cover_not_found">Εικόνα δεν βρέθηκε</string>
@@ -570,10 +561,7 @@
     <string name="lbl_edition_slipcase">παντζούρια</string>
     <string name="tip_update_fields_from_internet">Οι εξωτερικοί σύνδεσμοι ιστότοπου υποβάλλονται σε επεξεργασία μόνο αν ο ιστότοπος επικοινωνεί πραγματικά. Ως εκ τούτου, το μενού «Προβολή στο…» θα δείξει και ό, τι είναι διαθέσιμο.</string>
     <string name="lbl_author_type">Τύπος συγγραφέα</string>
-    <string name="pt_bob_show_details_uses_task_off">αμέσως</string>
     <string name="progress_end_import_partially_complete">Έγινε μερική εισαγωγή</string>
-    <string name="pt_bob_show_details_uses_task">Λήψη επιπλέον στοιχείων βιβλίου</string>
-    <string name="pt_bob_show_details_uses_task_on">καθυστέρηση</string>
     <string name="lbl_author_type_writer">συγγραφέας</string>
     <string name="menu_search_local">Τοπική αναζήτηση</string>
     <string name="progress_msg_n_books_processed">%1$d βιβλία επεξεργασμένα</string>

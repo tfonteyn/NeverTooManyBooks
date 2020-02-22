@@ -54,6 +54,13 @@
     <!-- x and y are numbers; e.g.: 5 of 9 -->
     <string name="x_of_y">%1$d of %2$d</string>
 
+    <!-- Should internal formatting of price/currency fail, then this fallback format is used.
+    By default is displays "[currency][value]" with 2 decimal digits.
+    Currency: %1$s
+    Value: %2$.2f
+-->
+    <string name="fallback_currency_format">%1$s%2$.2f</string>
+
     <!-- ####################################################################################### -->
     <!-- Fatal/Crash/Debug messages -->
     <!-- ####################################################################################### -->
@@ -469,7 +476,6 @@
     <string name="progress_end_backup_success">Backup success</string>
 
     <string name="progress_end_cancelled">Cancelled</string>
-    <string name="X_progress_end_n_books_searched">%1$d books searched</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
@@ -906,9 +912,6 @@
 
     <!-- Preference Screen; The extra fields displayed on 'book-level' in the booklist -->
     <string name="pg_bob_show_details">Book Details</string>
-    <string name="pt_bob_show_details_uses_task">Fetching Book Details</string>
-    <string name="pt_bob_show_details_uses_task_on">delayed</string>
-    <string name="pt_bob_show_details_uses_task_off">immediately</string>
 
     <!-- MultiSelectListPreference - Determines what is show in booklist header -->
     <string name="pt_bob_header">Summary details in header</string>
@@ -966,10 +969,6 @@
     <string name="title_edit_style">Edit style</string>
     <!-- Screen title. -->
     <string name="title_clone_style">Clone style</string>
-    <!-- Screen title. -->
-    <string name="title_edit_book_authors">Edit Book Authors</string>
-    <!-- Screen title. -->
-    <string name="title_edit_book_series">Edit Book Series</string>
     <!-- Screen title. -->
     <string name="title_search_for_books">Search for Books</string>
 
@@ -1461,6 +1460,9 @@
 
     <string name="lbl_search_filtered_on_x">Filtered on: %1$s</string>
 
+    <string name="lbl_sorting">Sorting</string>
+    <string name="lbl_formatting">Formatting</string>
+
     <!-- grouping headings in the booklist -->
     <string name="lbl_read">Read</string>
     <string name="lbl_unread">Unread</string>
@@ -1563,7 +1565,6 @@
     </string>
 
     <string name="X_warning_cover_corrupt">Cover is corrupt</string>
-    <string name="X_warning_book_was_deleted_uc">THIS BOOK HAS BEEN DELETED</string>
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
 
     <string name="X_info_reset_tips">
@@ -1582,26 +1583,11 @@
     <string name="X_title_backup">Backup</string>
     <!-- Screen title. -->
     <string name="X_title_import">Import</string>
-    <!-- Dialog title. -->
-    <string name="X_title_install_scan">Install Barcode Scanner</string>
-    <!-- prompt to install a scanner. Shown above a menu of Scanners. -->
-    <string name="X_info_install_scanner">
-        To scan ISBN bar codes, please tap below to install one of these barcode scanner applications.
-    </string>
-
     <string name="X_btn_do_not_show_again">Do not show again</string>
-
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
-
-    <string name="X_tap_for_details">Please tap here for details</string>
-
     <string name="X_lbl_available">Available</string>
-
-    <string name="X_gr_auth_check">Goodreads authorization check</string>
-
     <string name="X_anthology_titles">Anthology Titles</string>
     <string name="X_use_default_setting">Use default values</string>
-    <string name="X_about_help_tap_here">Please tap here to access the online help pages</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still  ========== -->
@@ -1628,12 +1614,9 @@
         or tap “%1$s” to disregard all of them.
     </string>
 
-    <!-- Should internal formatting of price/currency fail, then this fallback format is used.
-        By default is displays "[currency][value]" with 2 decimal digits.
-        Currency: %1$s
-        Value: %2$.2f
-    -->
-    <string name="fallback_currency_format">%1$s%2$.2f</string>
+    <string name="pt_goodreads_collect_genre">Collect genre from popular bookshelves</string>
+
+
     <string name="lbl_condition_fine">Fine</string>
     <string name="lbl_condition_very_good">Very good</string>
     <string name="lbl_condition_good">Good</string>
@@ -1641,9 +1624,11 @@
     <string name="lbl_condition_reading_copy">Reading copy</string>
     <string name="lbl_dust_cover_missing">Missing</string>
     <string name="lbl_dust_cover_none_or_unknown">None</string>
-    <string name="pt_goodreads_collect_genre">Collect genre from popular bookshelves</string>
-    <string name="lbl_sorting">Sorting</string>
-    <string name="lbl_formatting">Formatting</string>
+
+
     <string name="pt_primary_author_type">Primary author type</string>
+
+    <string name="rebuild_index">Rebuild index</string>
+    <string name="info_rebuild_index">rebuild_index explanation TBD</string>
 
 </resources>

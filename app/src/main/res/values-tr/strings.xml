@@ -64,7 +64,6 @@
 
     <string name="pv_scanner_zxing_compatible">Zxing Uyumlu Tarayıcı</string>
 
-    <string name="X_about_help_tap_here">Çevrimiçi yardım sayfalarına erişmek için lütfen dokunun</string>
     <string name="X_anthology_titles">Seçmeler</string>
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
     <string name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
@@ -83,7 +82,6 @@
     <string name="lbl_about_translators">Kitap Kataloğu birçok kişinin emeğinin ürünü olan bir yazılım. Burada gönüllü çevirmenlerimizin katkılarını belirtmeden olmaz; onların çabaları olmadan bu kadar fazla kişiye ulaşamazdık. Bu güzel insanlar (eğer unuttuğumuz birisi var ise lütfen belirtin):</string>
     <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
     <string name="acra_resDialogText">Sanırız &APP_NAME; çöktü. Eğer bu çökme ile ilgili olabileceğini düşündüğünüz bir şeyler varsa lütfen “Tamam”a basarak bu çökme hakkında bir e-posta gönderin. Göndermeden önce e-postayı göreceksiniz.</string>
-    <string name="X_tap_for_details">Ayrıntılar için buraya basın</string>
     <string name="acra_resReportSendSuccessToast">Sağ olun!</string>
     <string name="acra_resToastText">&APP_NAME; bilinmeyen bir nedenle çöktü. Uygulamanın kalitesini iyileştirebilmemiz için lütfen bu çökmeyi rapor edin.</string>
     <string name="and_others">ve diğerleri</string>
@@ -162,7 +160,6 @@
     <string name="gr_auth_blurb_part2">Kayıt olduktan sonra veya kayıtlı bir kullanıcı iseniz Goodreads verilerinize ulaşmak için aşağıdaki düğmeye basın. Sizi Goodreads\'e giriş yapabileceğiniz bir ağ sayfasına yönlendirecektir. Açarsözünüzü (şifrenizi) biz kesinlikle görmeyeceğiz ve dilediğiniz zaman erişimi Goodreads ağ sayfasından iptal edebilirsiniz. Bazen boş bir bete düşerseniz geri düğmesine basıp buraya dönebilirsiniz!</string>
     <string name="gr_auth_blurb_part3">Ancak unutmayın… bunu yapmanız zorunlu değil, &APP_NAME; tek başına da gayet de çalışır!</string>
     <string name="gr_auth_blurb_part4">Bu uygulamayı zaten yetkilendirmiş görünüyorsunuz. Kimlik bilgilerini bu cihaz silmek istiyorsanız, aşağıdaki düğmeye basarak bunu yapabilirsiniz. Ancak, başvurunun Goodreads web sitesindeki kaydını silmek önemlidir.</string>
-    <string name="X_gr_auth_check">Goodreads yetkilendirme denetimi</string>
     <string name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu</string>
     <string name="info_authorization_successful">%1$s yetkilendirmesi başarılı</string>
     <string name="gr_menu_send_all">Tümünü gönder</string>
@@ -214,7 +211,6 @@
     <string name="title_authorized">Yetkilendirilmiş</string>
     <string name="info_cleanup_files_text">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “%2$s” düğmesini kullanmayı deneyin.</string>
     <string name="info_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
-    <string name="X_info_install_scanner">ISBN barkodlarını taramak için, lütfen bu barkod tarayıcı uygulamalarından birini kurmak için aşağıya dokunun.</string>
     <string name="info_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="title_not_authorized">Yetkilendirilmemiş</string>
     <string name="info_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır.\n Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
@@ -405,7 +401,6 @@
     <string name="progress_end_backup_success">Yedekleme başarılı!</string>
     <string name="progress_end_cancelled">İptal edildi</string>
     <string name="progress_end_import_complete">İçe aktarma başarılı</string>
-    <string name="X_progress_end_n_books_searched">%1$d kitap arandı</string>
     <string name="title_backing_up">Yedekleniyor…</string>
     <string name="progress_msg_connecting">Ağ sayfasına bağlanılıyor…</string>
     <string name="progress_msg_n_covers_processed_m_missing">%1$d kapak işlendi\n(%2$d/%3$d bulunamadı)</string>
@@ -506,14 +501,11 @@
     <string name="title_delete_series">Serileri sil</string>
     <string name="title_delete_toc_entry">Başlığı sil</string>
     <string name="title_duplicate_book">Kitabı kopyala</string>
-    <string name="title_edit_book_authors">Kitap Yazarlarını Düzenle</string>
-    <string name="title_edit_book_series">Kitap serisi düzenle</string>
     <string name="title_edit_bookshelf">Kitaplığı düzenle</string>
     <string name="title_edit_bookshelves">Kitaplıkları yönet</string>
     <string name="title_edit_style">Biçemi düzenle</string>
     <string name="X_title_import">Ithal etmek</string>
     <string name="title_import_book_data">Kitapları içe aktar</string>
-    <string name="X_title_install_scan">Barkod Tarayıcıyı yükleyin</string>
     <string name="title_registration">LibraryThing Kayıt</string>
     <string name="title_scope_of_change">Değişiklik kapsamı</string>
     <string name="hint_system_search">Yazar, Unvan veya ISBN</string>
@@ -540,7 +532,6 @@
     <string name="info_install_scanner_recommendation">Biz Zxing barkod tarayıcısını yüklemenizi öneriyoruz. Eğer zaten yüklüyse silip yeniden yüklemeniz yardımcı olabilir.</string>
     <string name="warning_book_no_longer_exists">Belirtilen kitap artık yok</string>
     <string name="tip_book_not_found">Aranan kitap bulunamadı. Bazen doğru barkodu kitap kapağının içinde bulabilirsiniz. Bulamazsanız, bilgileri elle giriniz.</string>
-    <string name="X_warning_book_was_deleted_uc">BU BETİK SİLİNDİ</string>
     <string name="warning_cannot_delete_1st_bs">Birinci kitaplık silinemiyor</string>
     <string name="warning_cover_copy_failed">Resim eşlemlenemedi</string>
     <string name="warning_cover_not_found">Görsel bulunamadı</string>
@@ -571,10 +562,7 @@
     <string name="lbl_author_type_colorist">Renk</string>
     <string name="tip_update_fields_from_internet">Dış site bağlantıları yalnızca siteyle gerçekten iletişime geçildiyse işlenir. Sonuç olarak, “Üzerinde görüntülemek…” menüsü de aynı şekilde neyin uygun olduğunu gösterecektir.</string>
     <string name="lbl_author_type">Yazar tipi</string>
-    <string name="pt_bob_show_details_uses_task_off">hemen</string>
     <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
-    <string name="pt_bob_show_details_uses_task">Ekstra Kitap Detaylarını Almak</string>
-    <string name="pt_bob_show_details_uses_task_on">gecikmiş</string>
     <string name="lbl_author_type_writer">yazar</string>
     <string name="menu_search_local">Bölgesel arama</string>
     <string name="progress_msg_n_books_processed">%1$d kitap işlendi</string>

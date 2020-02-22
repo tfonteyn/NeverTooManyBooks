@@ -66,7 +66,6 @@
 
     <string name="pv_scanner_zxing_compatible">Scanner compatible Zxing</string>
 
-    <string name="X_about_help_tap_here">Veuillez cliquer ici pour accéder à l\'aide en ligne.</string>
     <string name="X_anthology_titles">Titres de l\'anthologie</string>
     <string name="X_btn_do_not_show_again">Ne plus montrer</string>
     <string name="X_error_file_must_contain_column">Le fichier doit contenir une colonne nommée %1$s</string>
@@ -85,7 +84,6 @@
     <string name="lbl_about_translators">&APP_NAME; est le résultat de l\'effort de beaucoup de personnes, et n\'aurait pas une diffusion et une utilisation aussi large sans l\'aide de nos généreux traducteurs (si nous avons oublié quelqu\'un, merci de nous le dire):</string>
     <string name="acra_resDialogCommentPrompt">Votre commentaire (ou laisser vide) :</string>
     <string name="acra_resDialogText">&APP_NAME; a planté. Décrivez ci-dessous tout ce qui vous semble opportun et pressez «OK» pour nous envoyer un courriel à propos de ce plantage. Vous pourrez lire votre courriel avant son envoi.</string>
-    <string name="X_tap_for_details">Merci de cliquer ici pour obtenir des détails</string>
     <string name="acra_resReportSendSuccessToast">Merci !</string>
     <string name="acra_resToastText">&APP_NAME; a planté. Merci de nous aider en reportant ce crash.</string>
     <string name="and_others">et cie.</string>
@@ -168,7 +166,6 @@
     <string name="gr_auth_blurb_part3">Mais rappelez-vous… il n\'est pas nécessaire de faire tout cela : &APP_NAME;
         fonctionne très bien sans ça !</string>
     <string name="gr_auth_blurb_part4">Cette application est déjà autorisée auprès de Goodreads. Si vous souhaitez effacer vos données de connexion, vos pouvez cliquer sur le bouton ci-dessous. Mais, il est aussi important  d\'enlever cette autoristation sur le site de Goodreads également.</string>
-    <string name="X_gr_auth_check">Autorisation Goodreads en cours</string>
     <string name="error_site_authorization_failed">Autorisation %1$s en erreur.</string>
     <string name="info_authorization_successful">Autorisation %1$s accordée</string>
     <string name="gr_menu_send_all">Tout envoyer</string>
@@ -221,7 +218,6 @@
     <string name="title_authorized">Autorisé</string>
     <string name="info_cleanup_files_text">Les fichiers supprimables occupent actuellement %1$s sur la carte SD. Les fichiers journaux et d\'autres données sont sauvegardées sur la carte SD à chaque mise à jour, lorsque vous sauvegardez la base de données ou lorsque l\'application plante. Cliquez sur le bouton ci-dessous pour purger ces fichiers de votre carte SD. Si vous avez fait l\'expérience de plantages ou d\'autres erreurs, envisagez d\'abord d\'utiliser le bouton «%2$s»</string>
     <string name="info_displaying_n_books_in_m_entries">Affichage de %1$d livres, parmi %2$d entrées</string>
-    <string name="X_info_install_scanner">Pour scanner des codes à barres ISBN, veuillez cliquer ci-dessous pour installer l\'une de ces applications de numérisation de codes à barres.</string>
     <string name="info_manage_fields">Les champs sélectionnés sont visibles dans les écrans d\'ajout et d\'édition des livres. Les champs non sélectionnés sont cachés.</string>
     <string name="title_not_authorized">Non autorisé</string>
     <string name="info_registration_benefits">Cette fonctionnalité bénéficie d\'une inscription avec %1$s.\nSouhaitez-vous avoir plus d\'informations ou désactiver ce message?\nVous trouverez ces informations ultérieurement dans la section «%2$s» des paramètres.</string>
@@ -412,7 +408,6 @@
     <string name="progress_end_backup_success">Sauvegarde réussie</string>
     <string name="progress_end_cancelled">Annulé</string>
     <string name="progress_end_import_complete">Import terminé</string>
-    <string name="X_progress_end_n_books_searched">%1$d livres recherchés</string>
     <string name="title_backing_up">Sauvegarde de…</string>
     <string name="progress_msg_connecting">Connection au site…</string>
     <string name="progress_msg_n_covers_processed_m_missing">%1$d couvertures traitées\n(%2$d/%3$d manquante)</string>
@@ -522,14 +517,11 @@
     <string name="title_delete_series">Supprimer la série</string>
     <string name="title_delete_toc_entry">Supprimer le titre</string>
     <string name="title_duplicate_book">Livre en double</string>
-    <string name="title_edit_book_authors">Modifier les auteurs du livre</string>
-    <string name="title_edit_book_series">Modifier les séries</string>
     <string name="title_edit_bookshelf">modifier la bibliothèque</string>
     <string name="title_edit_bookshelves">gérer les biblothèques</string>
     <string name="title_edit_style">Modifier le style</string>
     <string name="X_title_import">Importer</string>
     <string name="title_import_book_data">Importer les livres</string>
-    <string name="X_title_install_scan">Installer le scanner de code barre</string>
     <string name="title_registration">Enregistrement LibraryThing</string>
     <string name="title_scope_of_change">Périmètre du changement</string>
     <string name="hint_system_search">Auteur, Titre ou ISBN</string>
@@ -555,7 +547,6 @@
     <string name="info_install_scanner_recommendation">Nous vous recommandons d\'installer le scanner de code barre de Zxing et, s\'il est déjà installé, de le désinstaller puis le réinstaller.</string>
     <string name="warning_book_no_longer_exists">Le livre demandé n\'existe plus</string>
     <string name="tip_book_not_found">Le livre n\'a pas été trouvé. Il est parfois possible de trouver le code barre à l\'intérieur de la première page de couverture. Sinon merci d\'entrer les détails manuellement.</string>
-    <string name="X_warning_book_was_deleted_uc">Ce livre a été supprimé</string>
     <string name="warning_cannot_delete_1st_bs">Impossible de supprimer la première bibliothèque</string>
     <string name="warning_cover_copy_failed">Impossible de copier l\'image</string>
     <string name="warning_cover_not_found">Image non trouvée</string>
@@ -585,10 +576,7 @@
     <string name="lbl_author_type_contributor">Collaborateur</string>
     <string name="tip_update_fields_from_internet">Les liens de sites externes ne sont traités que si le site est effectivement contacté. En conséquence, le menu «Voir sur…» ne montrera également que ce qui est disponible.</string>
     <string name="lbl_author_type">Type d\'auteur</string>
-    <string name="pt_bob_show_details_uses_task_off">immédiatement</string>
     <string name="progress_end_import_partially_complete">Importation partielle effectuée</string>
-    <string name="pt_bob_show_details_uses_task">Extraire les détails du livre</string>
-    <string name="pt_bob_show_details_uses_task_on">différé</string>
     <string name="lbl_author_type_writer">écrivain</string>
     <string name="lbl_author_type_artist">dessins</string>
     <string name="lbl_edition_slipcase">étui</string>

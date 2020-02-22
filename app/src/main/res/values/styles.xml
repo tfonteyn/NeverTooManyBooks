@@ -198,6 +198,16 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
+    <!-- A disabled edit text field, on which an onClickListener can be installed.
+        Without the latter, it behaves like a read-only EditText. -->
+    <style name="EditText.Button">
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+        <item name="android:inputType">none</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:longClickable">false</item>
+    </style>
+
     <!-- Base style for Localized field; not to be used directly in layouts. -->
     <style name="EditText.AutoComplete">
         <!-- default threshold is 1 which when used with Field formatters can get very tricky -->
@@ -254,14 +264,6 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">24dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- Button with 'data' displayed on it; a click leads to a screen/dialog to edit that data -->
-    <style name="DataEntryButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border1</item>
-        <item name="android:hint">@string/hint_empty_field</item>
     </style>
 
     <!-- ImageButton - a text-picker button next to an edit field -->

@@ -63,7 +63,6 @@
 
     <string name="pv_scanner_zxing_compatible">Zxing Compatibele Scanner</string>
 
-    <string name="X_about_help_tap_here">Tik hier voor online help</string>
     <string name="X_anthology_titles">Bloemlezing titels</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
     <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
@@ -82,7 +81,6 @@
     <string name="lbl_about_translators">&APP_NAME; is het resultaat van de inspanning van vele personen en zou niet zo\'n grote verspreiding kennen zonder de genereuse hulp van vrijwillige vertalers (als we iemand zijn vergeten, laat het ons aub weten):</string>
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
     <string name="acra_resDialogText">Het lijkt er op dat &APP_NAME; is gecrasht. Beschrijf indien mogelijk hieronder wat de oorzaak kan zijn en druk op „OK” om ons een e-mail te sturen over deze crash. Je kan het bericht inzien voordat het wordt verzonden.</string>
-    <string name="X_tap_for_details">Tik hier voor details</string>
     <string name="acra_resReportSendSuccessToast">Dank u!</string>
     <string name="acra_resToastText">&APP_NAME; is onverwacht gecrasht. Help ons aub de toepassing beter te maken door deze crash te melden.</string>
     <string name="and_others">et. al.</string>
@@ -167,7 +165,6 @@
     <string name="gr_auth_blurb_part3">Maar onthoud goed… er is geen noodzaak om dit te doen: &APP_NAME;
         werkt prima zonder Goodreads!</string>
     <string name="gr_auth_blurb_part4">Het lijkt er op dat je deze app al hebt geautoriseerd. als je de inloggegevens op dit apparaat wil wissen kan je dat doen door op de knop hieronder te drukken. Maar het is ook belangrijk de autorisatie van de applicatie op de website van Goodreads te verwijderen.</string>
-    <string name="X_gr_auth_check">Goodreads autorisatie controle</string>
     <string name="error_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
     <string name="info_authorization_successful">%1$s autorisatie gelukt</string>
     <string name="gr_menu_send_all">Zend alles</string>
@@ -221,7 +218,6 @@
     <string name="title_authorized">Geautoriseerd</string>
     <string name="info_cleanup_files_text">Permanent te verwijderen bestanden nemen %1$s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="info_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
-    <string name="X_info_install_scanner">Om barcodes te scannen, tik je hieronder om een van deze applicaties te installeren.</string>
     <string name="info_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="title_not_authorized">Niet geautoriseerd</string>
     <string name="info_registration_benefits">Deze functie profiteert van registratie bij %1$s.\nWil je meer informatie bekijken of dit bericht uitschakelen?\nJe vind deze informatie op een later tijdstip in de sectie „%2$s” in de instellingen.</string>
@@ -412,7 +408,6 @@
     <string name="progress_end_backup_success">Back-up gelukt</string>
     <string name="progress_end_cancelled">Geannuleerd</string>
     <string name="progress_end_import_complete">Import Compleet</string>
-    <string name="X_progress_end_n_books_searched">%1$d boeken gezocht</string>
     <string name="title_backing_up">Aan \'t Back-uppen…</string>
     <string name="progress_msg_connecting">Website contacteren…</string>
     <string name="progress_msg_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend)</string>
@@ -522,14 +517,11 @@
     <string name="title_delete_series">Verwijderen reeks</string>
     <string name="title_delete_toc_entry">Titel verwijderen</string>
     <string name="title_duplicate_book">Dupliceer Boek</string>
-    <string name="title_edit_book_authors">Bewerk boek auteurs</string>
-    <string name="title_edit_book_series">Reeks bewerken</string>
     <string name="title_edit_bookshelf">Boekenplank bewerken</string>
     <string name="title_edit_bookshelves">Boekenplank beheren</string>
     <string name="title_edit_style">Stijl bewerken</string>
     <string name="X_title_import">Importeren</string>
     <string name="title_import_book_data">Boeken Importeren</string>
-    <string name="X_title_install_scan">Barcode Scanner Installeren</string>
     <string name="title_registration">LibraryThing Registratie</string>
     <string name="title_scope_of_change">Omvang van de verandering</string>
     <string name="hint_system_search">auteur, titel of ISBN</string>
@@ -555,7 +547,6 @@
     <string name="info_install_scanner_recommendation">Wij kunnen de Zxing barcode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
     <string name="warning_book_no_longer_exists">Het gespecificeerde boek bestaat niet meer</string>
     <string name="tip_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste barcode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
-    <string name="X_warning_book_was_deleted_uc">DIT BOEK IS VERWIJDERD</string>
     <string name="warning_cannot_delete_1st_bs">De eerste boekenplank kan niet verwijderd worden</string>
     <string name="warning_cover_copy_failed">Afbeelding kon niet gekopiërt worden</string>
     <string name="warning_cover_not_found">Afbeelding niet gevonden</string>
@@ -586,11 +577,8 @@
     <string name="lbl_author_type_writer">schrijver</string>
     <string name="lbl_author_type">Auteur type</string>
     <string name="tip_update_fields_from_internet">Externe sitekoppelingen worden alleen verwerkt als er daadwerkelijk contact met de site wordt gemaakt. Als gevolg hiervan zal het menu „Bekijk op…” eveneens alleen weergeven wat beschikbaar is.</string>
-    <string name="pt_bob_show_details_uses_task_off">direct</string>
     <string name="lbl_author_type_artist">illustraties</string>
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
-    <string name="pt_bob_show_details_uses_task">Extra boekdetails ophalen</string>
-    <string name="pt_bob_show_details_uses_task_on">vertraagd</string>
     <string name="lbl_edition_slipcase">Cassette</string>
     <string name="menu_search_local">Lokaal zoeken</string>
     <string name="progress_msg_n_books_processed">%1$d boeken verwerkt</string>
@@ -665,5 +653,6 @@
     <string name="book_format_dimensions">Afmetingen</string>
     <string name="pv_author_name_family_first">bvb. „Reve, Gerard”</string>
     <string name="pv_author_name_given_first">bvb. „Gerard Reve”</string>
+    <string name="lbl_sorting">Sorteren</string>
 
 </resources>

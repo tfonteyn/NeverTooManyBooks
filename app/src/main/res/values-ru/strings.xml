@@ -65,7 +65,6 @@
 
     <string name="pv_scanner_zxing_compatible">Zxing совместимый сканер</string>
 
-    <string name="X_about_help_tap_here">Пожалуйста, нажмите здесь, чтобы получить справочную информацию в интернете</string>
     <string name="X_anthology_titles">Названия антологий</string>
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
@@ -84,7 +83,6 @@
     <string name="lbl_about_translators">&APP_NAME; это продукт усилий многих людей, и он мог бы и не иметь такого широкого распространения без помощи добровольных переводчиков (если кто-то забыт, пожалуйста, напомните):</string>
     <string name="acra_resDialogCommentPrompt">Ваши комментарии (или оставьте пустым):</string>
     <string name="acra_resDialogText">&APP_NAME; завершился с ошибкой. Пожалуйста, если хотите, опишите что-нибудь, что, по вашему мнению, могло быть связано с этим. Нажмите «ОК», чтобы отправить по почте. Вы увидите e-mail перед отправлением.</string>
-    <string name="X_tap_for_details">Пожайлуйста, нажмите сюда для подробностей</string>
     <string name="acra_resReportSendSuccessToast">Спасибо!</string>
     <string name="acra_resToastText">&APP_NAME;" завершилось с ошибкой. Пожалуйста, помогите нам сделать приложение лучше, отправив эту ошибку."</string>
     <string name="and_others">и др.</string>
@@ -162,7 +160,6 @@
     <string name="gr_auth_blurb_part1">Goodreads это сайт, чья основная миссия это «помогать людям находить и делиться книгами, которые они любят». У них есть обширная база данных с книгами и отзывами на них. И если Вы зарегистрированный пользователь Goodreads, наше приложение может экспортировать и импортировать ваши книги, полки и обзоры. Наше приложение полностью автономно и не требует Goodreads, но если Вам интересно, вы можете зарегистрироваться здесь:</string>
     <string name="gr_auth_blurb_part2">Как только Вы зарегистрируетесь или если уже зарегистрировались на Goodreads, Вы сможете авторизоваться через наше приложение для доступа к вашим данным на Goodreads. Для этого нажмите на кнопку Авторизация ниже. Вы перейдете на страницу, где сможете авторизоваться. Наше приложение не знает и не хранит Ваши пароли. Также Вы можете заблокировать доступ через сайт Goodreads. Из-за капризов интернет соединения Вы можете увидеть пустую страницу. В этом случае просто нажмите кнопку Назад, чтобы вернуться сюда!</string><string name="gr_auth_blurb_part3">Но помните…всё это делать не обязательно: наше приложение замечательно работает и без этого!</string>
     <string name="gr_auth_blurb_part4">Похоже, вы уже авторизовали это приложение. Если вы хотите удалить учетные данные с этого устройство, то вы можете сделать это, нажав кнопку ниже. В этом случае не забудьте деавторизировать приложение на сайте Goodreads.</string>
-    <string name="X_gr_auth_check">Проверка авторизации Goodreads</string>
     <string name="error_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
     <string name="info_authorization_successful">Авторизация %1$s прошла успешно</string>
     <string name="gr_menu_send_all">Отправить все</string>
@@ -215,7 +212,6 @@
     <string name="title_authorized">Авторизовано</string>
     <string name="info_cleanup_files_text">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой «%2$s».</string>
     <string name="info_displaying_n_books_in_m_entries">отображается %1$d книг, в %2$d элементах</string>
-    <string name="X_info_install_scanner">Для сканирования штрих-кодов ISBN нажмите ниже, чтобы установить одно из этих приложений для сканирования штрих-кодов.</string>
     <string name="info_manage_fields">Выбранные поля видны на экранах добавления/редактирования книги. Невыбранные поля скрыты.</string>
     <string name="title_not_authorized">Не авторизовано</string>
     <string name="info_registration_benefits">Эта функция имеет преимущества при регистрации в %1$s.\n Хотите увидеть больше информации или отключить это сообщение?\n Вы можете найти эту информацию позже в разделе «%2$s» в настройках.</string>
@@ -406,7 +402,6 @@
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
     <string name="progress_end_cancelled">Отменено</string>
     <string name="progress_end_import_complete">Импорт завершен</string>
-    <string name="X_progress_end_n_books_searched">%1$d книг искалось</string>
     <string name="title_backing_up">Делаю бэкап…</string>
     <string name="progress_msg_connecting">Соединение с сайтом…</string>
     <string name="progress_msg_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
@@ -508,14 +503,11 @@
     <string name="title_delete_series">Удаление серии</string>
     <string name="title_delete_toc_entry">Удалить заголовок</string>
     <string name="title_duplicate_book">Копия книги</string>
-    <string name="title_edit_book_authors">Редактировать книгу авторов</string>
-    <string name="title_edit_book_series">Редактировать серию книги</string>
     <string name="title_edit_bookshelf">редактирование книжной полки</string>
     <string name="title_edit_bookshelves">управление книжными полками</string>
     <string name="title_edit_style">Редактировать стиль</string>
     <string name="X_title_import">Импортировать</string>
     <string name="title_import_book_data">Импортировать книги</string>
-    <string name="X_title_install_scan">Установить сканер штрих-кодов</string>
     <string name="title_registration">Регистрация в LibraryThing</string>
     <string name="title_scope_of_change">Масштаб изменения</string>
     <string name="hint_system_search">Автор, Название или ISBN</string>
@@ -541,7 +533,6 @@
     <string name="info_install_scanner_recommendation">Мы рекомендуем установить Zxing сканер, или если он уже установлен, удалите его, затем снова установите.</string>
     <string name="warning_book_no_longer_exists">Указанная книга больше не существует</string>
     <string name="tip_book_not_found">Не найдена книга, соответствующая отсканированному штрих-коду. Возможно правильный штрих-код находится внутри книги. Иначе, пожалуйста, введите детализированную информацию о книге вручную.</string>
-    <string name="X_warning_book_was_deleted_uc">ЭТА КИНГА БЫЛА УДАЛЕНА</string>
     <string name="warning_cannot_delete_1st_bs">Невозможно удалить единственную книжную полку</string>
     <string name="warning_cover_copy_failed">Не возможно скопировать изображение</string>
     <string name="warning_cover_not_found">Изображение не найдено</string>
@@ -572,10 +563,7 @@
     <string name="lbl_author_type_colorist">колорист</string>
     <string name="tip_update_fields_from_internet">Ссылки на внешние сайты обрабатываются только в том случае, если сайт действительно связался. В результате меню «Смотреть на…» также будет показывать только то, что доступно.</string>
     <string name="lbl_author_type">Тип автора</string>
-    <string name="pt_bob_show_details_uses_task_off">немедленно</string>
     <string name="progress_end_import_partially_complete">Частичный импорт выполнен</string>
-    <string name="pt_bob_show_details_uses_task">Получение дополнительных сведений о книге</string>
-    <string name="pt_bob_show_details_uses_task_on">задерживается</string>
     <string name="lbl_author_type_writer">писатель</string>
     <string name="menu_search_local">Локальный поиск</string>
     <string name="progress_msg_n_books_processed">%1$d книг обработано</string>

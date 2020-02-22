@@ -64,7 +64,6 @@
 
     <string name="pv_scanner_zxing_compatible">Escáner compatible Zxing</string>
 
-    <string name="X_about_help_tap_here">Pulse aquí para acceder a la ayuda online</string>
     <string name="X_anthology_titles">Antologías</string>
     <string name="X_btn_do_not_show_again">No volver a mostrar</string>
     <string name="X_error_file_must_contain_column">El fichero debe tener una columna con el nombre %1$s</string>
@@ -83,7 +82,6 @@
     <string name="lbl_about_translators">&APP_NAME; es fruto del esfuerzo de muchas personas, y no tendría un uso tan extendido sin la generosa aportación de nuestros traductores (voluntarios) (si nos hemos olvidado de alguien, por favor, díganoslo):</string>
     <string name="acra_resDialogCommentPrompt">Sus comentarios (puede dejarlos en blanco):</string>
     <string name="acra_resDialogText">Parece que &APP_NAME; se ha detenido. Si es posible, indique cualquier detalle que usted considere relevante y pulse OK para enviarnos un correo electrónico sobre el problema. Podrá revisar el correo antes de que se envíe.</string>
-    <string name="X_tap_for_details">Pulse para ver más detalles</string>
     <string name="acra_resReportSendSuccessToast">¡Muchas gracias!</string>
     <string name="acra_resToastText">&APP_NAME; se ha detenido de forma inesperada. Por favor, ayúdenos a mejorar la aplicación reportando este problema.</string>
     <string name="and_others">et. al.</string>
@@ -164,7 +162,6 @@
     <string name="gr_auth_blurb_part2">Una vez se haya registrado, o si ya es usuario de Goodreads, puede autorizar el acceso de &APP_NAME; a sus datos de Goodreads pulsando sobre el botón siguiente. Le llevará a una página web en la que tendrá que acceder a Goodreads para autorizar esta aplicación. Nosotros nunca veremos su contraseña, y podrá desactivar el acceso desde el sitio web de Goodreads. Debido a la imprevisibilidad de la web, puede terminar en una página en blanco. En ese caso, pulse el botón Atrás de su navegador para volver aquí.</string>
     <string name="gr_auth_blurb_part3">Pero recuerde…que no es necesario hacer nada de esto: &APP_NAME; funciona perfectamente sin ello.</string>
     <string name="gr_auth_blurb_part4">Parece que ya ha autorizado esta aplicación. Si quiere eliminar los datos de acceso (credenciales) de este dispositivo, puede hacerlo pulsando el botón siguiente. También es importante que elimine la autorización para esta aplicación en el sitio web de Goodreads.</string>
-    <string name="X_gr_auth_check">Comprobación de autorización en Goodreads</string>
     <string name="error_site_authorization_failed">Error de autorización en %1$s.</string>
     <string name="info_authorization_successful">Autorización satisfactoria en %1$s</string>
     <string name="gr_menu_send_all">Enviar todo</string>
@@ -217,7 +214,6 @@
     <string name="title_authorized">Autorizado</string>
     <string name="info_cleanup_files_text">Los ficheros que se pueden eliminar ocupan %1$s en la tarjeta SD. Cada vez que se actualiza la versión de &APP_NAME;, al hacer una copia de seguridad o cuando falla la aplicación se crean ficheros de registro en la tarjeta SD. Pulse el botón siguiente para eliminarlos. Si ha detectado algún error, le agradeceremos que utilice primero la opción de «%2$s».</string>
     <string name="info_displaying_n_books_in_m_entries">Se muestran %1$d libros, en %2$d entradas</string>
-    <string name="X_info_install_scanner">Para escanear códigos de barras ISBN, toque a continuación para instalar una de estas aplicaciones de escáner de código de barras.</string>
     <string name="info_manage_fields">Los campos marcados serán visibles en las pantallas de Añadir y Editar libros. Los no marcados no se mostrarán.</string>
     <string name="title_not_authorized">No Autorizado</string>
     <string name="info_registration_benefits">Esta característica se beneficia del registro con %1$s.\n¿Desea ver más información o deshabilitar este mensaje?\nPuede encontrar esta información más adelante en la sección «%2$s» en la configuración.</string>
@@ -408,7 +404,6 @@
     <string name="progress_end_backup_success">Copia de seguridad correcta</string>
     <string name="progress_end_cancelled">Cancelado</string>
     <string name="progress_end_import_complete">Importación finalizada</string>
-    <string name="X_progress_end_n_books_searched">%1$d libros encontrados</string>
     <string name="title_backing_up">Copiando…</string>
     <string name="progress_msg_connecting">Conectando con el sitio web…</string>
     <string name="progress_msg_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
@@ -517,14 +512,11 @@
     <string name="title_delete_series">Eliminar serie</string>
     <string name="title_delete_toc_entry">Borrar el titulo</string>
     <string name="title_duplicate_book">Libro duplicado</string>
-    <string name="title_edit_book_authors">Editar autores de libros</string>
-    <string name="title_edit_book_series">Modificar serie</string>
     <string name="title_edit_bookshelf">Editar bibliotecas</string>
     <string name="title_edit_bookshelves">Gestionar bibliotecas</string>
     <string name="title_edit_style">Editar estilo</string>
     <string name="X_title_import">Importar</string>
     <string name="title_import_book_data">Importar libros</string>
-    <string name="X_title_install_scan">Instalar Escáner de código de barras</string>
     <string name="title_registration">Registro en LibraryThing</string>
     <string name="title_scope_of_change">Alcance del cambio</string>
     <string name="hint_system_search">Autor, Título o ISBN</string>
@@ -550,7 +542,6 @@
     <string name="info_install_scanner_recommendation">Recomendamos la instalción de Zxing barcode scanner, y si ya está instalada, pruebe a desinstalarla y volver a instalarla.</string>
     <string name="warning_book_no_longer_exists">El libro especificado no existe</string>
     <string name="tip_book_not_found">El libro escaneado no ha sido encontrado. El código de barras correcto se encuentra a veces en el interior de la portada. También puede introducir los datos de forma manual.</string>
-    <string name="X_warning_book_was_deleted_uc">ESTE LIBRO HA SIDO ELIMINADO</string>
     <string name="warning_cannot_delete_1st_bs">La biblioteca predefinida no se puede eliminar</string>
     <string name="warning_cover_copy_failed">No se pudo copiar la imagen</string>
     <string name="warning_cover_not_found">Imagen no encontrada</string>
@@ -580,10 +571,7 @@
     <string name="lbl_author_type_colorist">Colorista</string>
     <string name="tip_update_fields_from_internet">Los enlaces externos del sitio solo se procesan si se contacta realmente con el sitio. Como resultado, el menú «Ver en…» solo mostrará lo que está disponible.</string>
     <string name="lbl_author_type">Tipo de autor</string>
-    <string name="pt_bob_show_details_uses_task_off">inmediatamente</string>
     <string name="progress_end_import_partially_complete">Importación parcial realizada</string>
-    <string name="pt_bob_show_details_uses_task">Obteniendo detalles adicionales del libro</string>
-    <string name="pt_bob_show_details_uses_task_on">retrasado</string>
     <string name="lbl_author_type_writer">escritor</string>
     <string name="lbl_edition_slipcase">Funda</string>
     <string name="menu_search_local">Busqueda local</string>

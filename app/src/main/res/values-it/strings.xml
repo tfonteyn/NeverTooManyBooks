@@ -64,7 +64,6 @@
 
     <string name="pv_scanner_zxing_compatible">Programma Compatibile Zxing</string>
 
-    <string name="X_about_help_tap_here">Tocca qui per accedere all\'aiuto online</string>
     <string name="X_anthology_titles">Antologia titoli</string>
     <string name="X_btn_do_not_show_again">Non mostrare più</string>
     <string name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
@@ -83,7 +82,6 @@
     <string name="lbl_about_translators">&APP_NAME; è il prodotto degli sforzi di molte persone, e non sarebbe così largamente utilizzato senza il generoso aiuto dei nostri traduttori volontari (se abbiamo dimenticato qualcuno, grazie per comunicarcelo):</string>
     <string name="acra_resDialogCommentPrompt">I tuoi commenti (o lascia in bianco):</string>
     <string name="acra_resDialogText">&APP_NAME; sembra essersi bloccato. Se possibile, comunicaci qui sotto qualsiasi cosa ritieni pertinente e clicca «OK» per inviarci un\'email relativa al blocco. Potrai verificare l\'email prima dell\'invio.</string>
-    <string name="X_tap_for_details">Cliccare qui per i dettagli</string>
     <string name="acra_resReportSendSuccessToast">Grazie!</string>
     <string name="acra_resToastText">&APP_NAME; si è bloccato in modo anomalo. Aiutaci a migliorare il programma informandoci del problema.</string>
     <string name="and_others">e altri</string>
@@ -163,7 +161,6 @@
     <string name="gr_auth_blurb_part2">Una volta registrato, o se sei già utente di Goodreads, puoi autorizzare &APP_NAME; ad accedere ai tuoi dati di Goodreads premendo il bottone qui sotto. Verrà aperta una nuova pagina web in cui dovrai eseguire il login a Goodreads ed autorizzare questa applicazione. Non saremo a conoscenza della relativa password, e potrai revocare l\'accesso dal sito di Goodreads. A causa della volatilità di Internet, il link potrebbe non essere più corretto. Clicca sul bottone Indietro per tornare in questo punto!</string>
     <string name="gr_auth_blurb_part3">Ma ricorda… ciò non è affatto obbligatorio: &APP_NAME; funziona perfettamente anche senza!</string>
     <string name="gr_auth_blurb_part4">Questa applicazione sembra essere già stata autorizzata. Se desideri cancellare le credenziali da questo apparecchio, premi il pulsante qui sotto. Ricordati altresì che occorre anche rimuovere l\'autorizzazione all\'applicazione nel sito di Goodreads.</string>
-    <string name="X_gr_auth_check">Verifica autorizzazione Goodreads</string>
     <string name="error_site_authorization_failed">Errore durante l\'autorizzazione di %1$s.</string>
     <string name="info_authorization_successful">Autorizzazione %1$s concessa</string>
     <string name="gr_menu_send_all">Invia tutti</string>
@@ -216,7 +213,6 @@
     <string name="title_authorized">Autorizzato</string>
     <string name="info_cleanup_files_text">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l\'applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
     <string name="info_displaying_n_books_in_m_entries">Visualizzati %1$d libri, in %2$d voci</string>
-    <string name="X_info_install_scanner">Per scansionare i codici a barre ISBN, toccare di seguito per installare una di queste applicazioni per scanner di codici a barre.</string>
     <string name="info_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="title_not_authorized">Non autorizzato</string>
     <string name="info_registration_benefits">Questa funzione beneficia della registrazione con %1$s.\nDesideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «%2$s» nelle impostazioni.</string>
@@ -407,7 +403,6 @@
     <string name="progress_end_backup_success">Backup completato</string>
     <string name="progress_end_cancelled">Cancellato</string>
     <string name="progress_end_import_complete">Importazione Completata</string>
-    <string name="X_progress_end_n_books_searched">%1$d libri cercati</string>
     <string name="title_backing_up">Creazione backup in corso…</string>
     <string name="progress_msg_connecting">Collegamento al sito web…</string>
     <string name="progress_msg_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
@@ -518,14 +513,11 @@
     <string name="title_delete_series">Cancella serie</string>
     <string name="title_delete_toc_entry">Elimina il titolo</string>
     <string name="title_duplicate_book">Duplica titolo libro</string>
-    <string name="title_edit_book_authors">Modifica autori di libri</string>
-    <string name="title_edit_book_series">Modifica serie libri</string>
     <string name="title_edit_bookshelf">Modifica libreria</string>
     <string name="title_edit_bookshelves">Gestisci librerie</string>
     <string name="title_edit_style">Modifica stile</string>
     <string name="X_title_import">Importa</string>
     <string name="title_import_book_data">Importa libri</string>
-    <string name="X_title_install_scan">Installa app per la scansione</string>
     <string name="title_registration">Registrazione su LibraryThing </string>
     <string name="title_scope_of_change">Intervallo modifica</string>
     <string name="hint_system_search">Autore, titolo o codice ISBN</string>
@@ -551,7 +543,6 @@
     <string name="info_install_scanner_recommendation">Ti raccomandiamo di utilizzare l\'applicazione Zxing, e, se è già installata, ti raccomandiamo di disinstallarla e installarla di nuovo.</string>
     <string name="warning_book_no_longer_exists">Il libro indicato non esiste più</string>
     <string name="tip_book_not_found">Il libro scansionato non è stato trovato. A volte il codice a barre corretto si trova all\'interno della copertina. Altrimenti inserisci i dati manualmente.</string>
-    <string name="X_warning_book_was_deleted_uc">LIBRO CANCELLATO</string>
     <string name="warning_cannot_delete_1st_bs">Impossibile cancellare la prima libreria</string>
     <string name="warning_cover_copy_failed">Impossibile copiare l\'immagine</string>
     <string name="warning_cover_not_found">Immagine non trovata</string>
@@ -582,10 +573,7 @@
     <string name="lbl_edition_slipcase">Custodia</string>
     <string name="tip_update_fields_from_internet">I collegamenti a siti esterni vengono elaborati solo se il sito viene effettivamente contattato. Di conseguenza, anche il menu «Visualizza su…» mostrerà solo ciò che è disponibile.</string>
     <string name="lbl_author_type">Tipo di autore</string>
-    <string name="pt_bob_show_details_uses_task_off">immediatamente</string>
     <string name="progress_end_import_partially_complete">Importazione parziale eseguita</string>
-    <string name="pt_bob_show_details_uses_task">Recupero dei dettagli del libro extra</string>
-    <string name="pt_bob_show_details_uses_task_on">ritardato</string>
     <string name="lbl_author_type_writer">scrittore</string>
     <string name="menu_search_local">Ricerca locale</string>
     <string name="progress_msg_n_books_processed">%1$d libri elaborati</string>
