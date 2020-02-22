@@ -134,9 +134,10 @@ public class EditAuthorDialogFragment
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View root = layoutInflater.inflate(getLayoutId(), null);
 
-        Context context = getContext();
+        @SuppressWarnings("ConstantConditions")
+        @NonNull
+        final Context context = getContext();
 
-        //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));

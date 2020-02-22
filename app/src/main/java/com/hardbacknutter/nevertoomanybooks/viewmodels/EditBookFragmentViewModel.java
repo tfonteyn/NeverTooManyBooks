@@ -1,0 +1,176 @@
+/*
+ * @Copyright 2020 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * In August 2018, this project was forked from:
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
+ *
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.viewmodels;
+
+import androidx.annotation.NonNull;
+
+import java.util.List;
+
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+
+public class EditBookFragmentViewModel
+        extends BookBaseFragmentViewModel {
+
+    /**
+     * Field drop down lists.
+     * Lists in database so far, we cache them for performance but only load
+     * them when really needed.
+     */
+    private List<String> mGenres;
+    /** Field drop down list. */
+    private List<String> mLocations;
+    /** Field drop down list. */
+    private List<String> mPricePaidCurrencies;
+    /** Field drop down list. */
+    private List<String> mFormats;
+    /** Field drop down list. */
+    private List<String> mColors;
+    /** Field drop down list. */
+    private List<String> mLanguagesCodes;
+    /** Field drop down list. */
+    private List<String> mPublishers;
+    /** Field drop down list. */
+    private List<String> mListPriceCurrencies;
+    /** Field drop down list. */
+    private List<String> mAuthorNames;
+
+
+    @NonNull
+    public List<String> getAuthorNames() {
+        if (mAuthorNames == null) {
+            mAuthorNames = mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED);
+        }
+        return mAuthorNames;
+    }
+
+    /**
+     * Load a publisher list.
+     *
+     * @return List of publishers
+     */
+    @NonNull
+    public List<String> getPublishers() {
+        if (mPublishers == null) {
+            mPublishers = mDb.getPublisherNames();
+        }
+        return mPublishers;
+    }
+
+    /**
+     * Load a language list.
+     * <p>
+     * Returns a unique list of all languages in the database.
+     *
+     * @return The list of ISO 639-2 codes
+     */
+    @NonNull
+    public List<String> getLanguagesCodes() {
+        if (mLanguagesCodes == null) {
+            mLanguagesCodes = mDb.getLanguageCodes();
+        }
+        return mLanguagesCodes;
+    }
+
+    /**
+     * Load a format list.
+     *
+     * @return List of formats
+     */
+    @NonNull
+    public List<String> getFormats() {
+        if (mFormats == null) {
+            mFormats = mDb.getFormats();
+        }
+        return mFormats;
+    }
+
+    /**
+     * Load a color list.
+     *
+     * @return List of colors
+     */
+    @NonNull
+    public List<String> getColors() {
+        if (mColors == null) {
+            mColors = mDb.getColors();
+        }
+        return mColors;
+    }
+
+    /**
+     * Load a currency list.
+     *
+     * @return List of ISO currency codes
+     */
+    @NonNull
+    public List<String> getListPriceCurrencyCodes() {
+        if (mListPriceCurrencies == null) {
+            mListPriceCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+        }
+        return mListPriceCurrencies;
+    }
+
+    /**
+     * Load a genre list.
+     *
+     * @return List of genres
+     */
+    @NonNull
+    public List<String> getGenres() {
+        if (mGenres == null) {
+            mGenres = mDb.getGenres();
+        }
+        return mGenres;
+    }
+
+    /**
+     * Load a location list.
+     *
+     * @return List of locations
+     */
+    @NonNull
+    public List<String> getLocations() {
+        if (mLocations == null) {
+            mLocations = mDb.getLocations();
+        }
+        return mLocations;
+    }
+
+    /**
+     * Load a currency list.
+     *
+     * @return List of ISO currency codes
+     */
+    @NonNull
+    public List<String> getPricePaidCurrencyCodes() {
+        if (mPricePaidCurrencies == null) {
+            mPricePaidCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+        }
+        return mPricePaidCurrencies;
+    }
+}

@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.WildcardFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -245,7 +246,7 @@ public class BooklistBuilder
 
         // Get the database and create a statements collection
         mDb = new DAO(TAG);
-        mSyncedDb = mDb.getUnderlyingDatabase();
+        mSyncedDb = mDb.getSyncDb();
         mStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + mInstanceId);
     }
 
@@ -401,6 +402,7 @@ public class BooklistBuilder
 
         // Start building the table domains
         final BuildHelper helper = new BuildHelper(mListTable, mStyle, mBookshelf);
+
         // always sort by level first
         helper.addOrderBy(DOM_BL_NODE_LEVEL, false);
 
@@ -435,7 +437,7 @@ public class BooklistBuilder
         final long t01_domains_done = System.nanoTime();
 
         // Construct the initial insert statement components.
-        String initialInsertSql = helper.build(mSyncedDb.isCollationCaseSensitive());
+        String initialInsertSql = helper.build();
 
         final long t02_base_insert_prepared = System.nanoTime();
 
@@ -452,7 +454,7 @@ public class BooklistBuilder
                       .createIndices(mSyncedDb);
 
             //TEST: index on list table.
-            if (!mSyncedDb.isCollationCaseSensitive()) {
+            if (!DBHelper.isCollationCaseSensitive()) {
                 // can't do this, IndexDefinition class does not support DESC columns for now.
                 // mListTable.addIndex("SDI", false, helper.getSortedDomains());
                 mSyncedDb.execSQL("CREATE INDEX " + mListTable + "_SDI ON " + mListTable
@@ -1040,9 +1042,9 @@ public class BooklistBuilder
         /**
          * Constructor.
          *
-         * @param destinationTable the list table to build
-         * @param style            to use
-         * @param bookshelf        to use
+         * @param destinationTable       the list table to build
+         * @param style                  to use
+         * @param bookshelf              to use
          */
         private BuildHelper(@NonNull final TableDefinition destinationTable,
                             @NonNull final BooklistStyle style,
@@ -1329,7 +1331,7 @@ public class BooklistBuilder
          * @return initial insert statement
          */
         @NonNull
-        String build(final boolean collationIsCs) {
+        String build() {
 
             // List of column names for the INSERT INTO... clause
             StringBuilder destColumns = new StringBuilder();
@@ -1359,7 +1361,7 @@ public class BooklistBuilder
                          + " SELECT " + sourceColumns
                          + " FROM " + buildFrom()
                          + buildWhere()
-                         + " ORDER BY " + buildOrderBy(collationIsCs);
+                         + " ORDER BY " + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Log.d(TAG, "build|sql=" + sql);
@@ -1487,12 +1489,8 @@ public class BooklistBuilder
 
         /**
          * Process the 'sort-by' columns into a list suitable for an ORDER-BY statement.
-         * <p>
-         * If the {@link DAO#COLLATION} is case-sensitive, we wrap the columns in "lower()"
-         *
-         * @param collationIsCs if {@code true} then we'll adjust the case here
          */
-        private String buildOrderBy(final boolean collationIsCs) {
+        private String buildOrderBy() {
             // List of column names appropriate for 'ORDER BY' clause
             final StringBuilder orderBy = new StringBuilder();
             for (SortedDomain sd : mSortedDomains) {
@@ -1502,8 +1500,9 @@ public class BooklistBuilder
                         // always use a pre-prepared order-by column as-is
                         orderBy.append(sd.domain.getName());
 
-                    } else if (collationIsCs) {
-                        // *If* collations is case-sensitive, lowercase it.
+                    } else if (DBHelper.isCollationCaseSensitive()) {
+                        // If {@link DAO#COLLATION} is case-sensitive, lowercase it.
+                        // This should never happen, but see the DAO method docs.
                         orderBy.append("lower(").append(sd.domain.getName()).append(')');
 
                     } else {

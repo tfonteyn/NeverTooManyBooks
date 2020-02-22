@@ -163,7 +163,7 @@ public class RowStateDAO {
      */
     public static void clearAll() {
         try (DAO db = new DAO(TAG)) {
-            db.getUnderlyingDatabase().execSQL(PURGE_ALL_SQL);
+            db.getSyncDb().execSQL(PURGE_ALL_SQL);
         }
     }
 

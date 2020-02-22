@@ -70,7 +70,7 @@ public class Bookshelf
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
      */
-    public static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
+    private static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT_ID = 1;
 
@@ -202,9 +202,9 @@ public class Bookshelf
      * @return the bookshelf.
      */
     @NonNull
-    public static Bookshelf getBookshelf(@NonNull final Context context,
-                                         @NonNull final DAO db,
-                                         final boolean useAll) {
+    public static Bookshelf getPreferredBookshelf(@NonNull final Context context,
+                                                  @NonNull final DAO db,
+                                                  final boolean useAll) {
         String name = PreferenceManager.getDefaultSharedPreferences(context)
                                        .getString(PREF_BOOKSHELF_CURRENT, null);
         return getBookshelf(context, db, name, useAll);
@@ -375,6 +375,7 @@ public class Bookshelf
      *
      * @return {@code true} for ALL books.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isAllBooks() {
         return mId == ALL_BOOKS;
     }

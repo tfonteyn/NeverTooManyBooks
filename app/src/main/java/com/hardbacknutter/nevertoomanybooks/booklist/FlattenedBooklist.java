@@ -98,7 +98,7 @@ public class FlattenedBooklist
      */
     public FlattenedBooklist(@NonNull final DAO db,
                              @NonNull final String navTableName) {
-        mSyncedDb = db.getUnderlyingDatabase();
+        mSyncedDb = db.getSyncDb();
         mTable = new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST_NAVIGATOR);
         mTable.setName(navTableName);
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -184,8 +184,7 @@ final class CropUtil {
     }
 
     private static class BackgroundJob
-            extends
-            CropMonitoredActivity.LifeCycleAdapter
+            extends CropMonitoredActivity.LifeCycleAdapter
             implements Runnable {
 
         @NonNull

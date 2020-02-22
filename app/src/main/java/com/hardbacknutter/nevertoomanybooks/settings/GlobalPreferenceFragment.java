@@ -80,13 +80,13 @@ public class GlobalPreferenceFragment
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
                         .setNegativeButton(android.R.string.cancel, (d, w) ->
-                                StartupViewModel.setScheduleOrderByRebuild(getContext(), false))
+                                StartupViewModel.scheduleOrderByRebuild(getContext(), false))
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             SwitchPreference sp = findPreference(Prefs.pk_sort_title_reordered);
                             //noinspection ConstantConditions
                             sp.setChecked(!current);
 
-                            StartupViewModel.setScheduleOrderByRebuild(getContext(), true);
+                            StartupViewModel.scheduleOrderByRebuild(getContext(), true);
                         })
                         .create()
                         .show();

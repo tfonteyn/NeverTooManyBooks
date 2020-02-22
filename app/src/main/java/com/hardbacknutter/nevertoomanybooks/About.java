@@ -80,7 +80,7 @@ public class About
 
             case R.id.MENU_DEBUG_DUMP_TEMP_TABLES:
                 try (DAO db = new DAO(TAG)) {
-                    DBHelper.dumpTempTableNames(db.getUnderlyingDatabase());
+                    DBHelper.dumpTempTableNames(db.getSyncDb());
                 }
                 break;
 

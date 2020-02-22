@@ -147,8 +147,10 @@ public class EditBookshelfDialogFragment
 
         // are we adding a new Bookshelf but trying to use an existing name?
         if ((mBookshelf.getId() == 0) && (existingShelf != null)) {
-            Context context = getContext();
-            //noinspection ConstantConditions
+            @SuppressWarnings("ConstantConditions")
+            @NonNull
+            final Context context = getContext();
+
             String msg = context.getString(R.string.warning_x_already_exists,
                                            context.getString(R.string.lbl_bookshelf));
             Snackbar.make(mNameView, msg, Snackbar.LENGTH_LONG).show();

@@ -705,12 +705,12 @@ public class BooksOnBookshelfModel
     }
 
     public void restoreCurrentBookshelf(@NonNull final Context context) {
-        mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, true);
+        mCurrentBookshelf = Bookshelf.getPreferredBookshelf(context, mDb, true);
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public boolean reloadCurrentBookshelf(@NonNull final Context context) {
-        final Bookshelf newBookshelf = Bookshelf.getBookshelf(context, mDb, true);
+        final Bookshelf newBookshelf = Bookshelf.getPreferredBookshelf(context, mDb, true);
         if (!newBookshelf.equals(mCurrentBookshelf)) {
             // if it was.. switch to it.
             mCurrentBookshelf = newBookshelf;

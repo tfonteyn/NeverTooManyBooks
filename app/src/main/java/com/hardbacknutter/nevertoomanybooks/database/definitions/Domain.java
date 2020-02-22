@@ -74,6 +74,8 @@ public class Domain
     private final String mType;
     /** {@code null} values not allowed. */
     private final boolean mIsNotNull;
+    /** Blank ("", 0) values not allowed. */
+    private final boolean mIsNotBlank;
 
     /** Holds a 'DEFAULT' clause (if any). */
     @Nullable
@@ -87,7 +89,8 @@ public class Domain
      * i.e. the values are stripped of spaces etc.. before being stored.
      */
     private final boolean mIsPrePreparedOrderBy;
-    private final boolean mIsNotBlank;
+
+    private final boolean mIsCollationLocalized;
 
     /**
      * Full, private constructor.
@@ -107,6 +110,7 @@ public class Domain
                    final boolean isNotNull,
                    @Nullable final String defaultClause,
                    @Nullable final String references,
+                   final boolean isCollationLocalized,
                    final boolean prePreparedOrderBy) {
         mName = name;
         mIsPrimaryKey = isPrimaryKey;
@@ -114,6 +118,7 @@ public class Domain
         mIsNotNull = isNotNull;
         mDefaultClause = defaultClause;
         mReferences = references;
+        mIsCollationLocalized = isCollationLocalized;
         mIsPrePreparedOrderBy = prePreparedOrderBy;
 
         mIsNotBlank = mDefaultClause != null && !"''".equals(mDefaultClause);
@@ -131,6 +136,7 @@ public class Domain
         mIsNotNull = from.mIsNotNull;
         mDefaultClause = from.mDefaultClause;
         mReferences = from.mReferences;
+        mIsCollationLocalized = from.mIsCollationLocalized;
         mIsPrePreparedOrderBy = from.mIsPrePreparedOrderBy;
 
         mIsNotBlank = from.mIsNotBlank;
@@ -150,6 +156,7 @@ public class Domain
         mIsNotNull = in.readInt() == 1;
         mDefaultClause = in.readString();
         mReferences = in.readString();
+        mIsCollationLocalized = in.readInt() == 1;
         mIsPrePreparedOrderBy = in.readInt() == 1;
 
         mIsNotBlank = mDefaultClause != null && !"''".equals(mDefaultClause);
@@ -164,6 +171,7 @@ public class Domain
         dest.writeInt(mIsNotNull ? 1 : 0);
         dest.writeString(mDefaultClause);
         dest.writeString(mReferences);
+        dest.writeInt(mIsCollationLocalized ? 1 : 0);
         dest.writeInt(mIsPrePreparedOrderBy ? 1 : 0);
     }
 
@@ -205,6 +213,10 @@ public class Domain
      */
     public boolean isNotBlank() {
         return mIsNotBlank;
+    }
+
+    public boolean isCollationLocalized() {
+        return mIsCollationLocalized;
     }
 
     public boolean hasDefault() {
@@ -312,6 +324,7 @@ public class Domain
         @Nullable
         private String mReferences;
         private boolean mIsPrePreparedOrderBy;
+        private boolean mIsCollationLocalized;
 
         public Builder(@NonNull final String name,
                        @NonNull final String type) {
@@ -405,6 +418,12 @@ public class Domain
         }
 
         @NonNull
+        public Builder localized() {
+            mIsCollationLocalized = true;
+            return this;
+        }
+
+        @NonNull
         public Builder prePreparedOrderBy() {
             mIsPrePreparedOrderBy = true;
             return this;
@@ -437,6 +456,7 @@ public class Domain
         public Domain build() {
             return new Domain(mName, mIsPrimaryKey, mType,
                               mIsNotNull, mDefaultClause, mReferences,
+                              mIsCollationLocalized,
                               mIsPrePreparedOrderBy);
         }
     }

@@ -107,9 +107,10 @@ public class AuthorWorksFragment
         mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
         mModel.init(requireArguments());
 
+        @SuppressWarnings("ConstantConditions")
+        @NonNull
         final Context context = getContext();
 
-        //noinspection ConstantConditions
         getActivity().setTitle(mModel.getScreenTitle(context));
 
         //noinspection ConstantConditions

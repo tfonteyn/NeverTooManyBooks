@@ -101,7 +101,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
@@ -266,8 +266,8 @@ public class BooksOnBookshelf
                 final String navTableName = mModel.createFlattenedBooklist();
                 final Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                        .putExtra(BookDetailsFragmentModel.BKEY_NAV_TABLE, navTableName)
-                        .putExtra(BookDetailsFragmentModel.BKEY_NAV_ROW_ID, rowId);
+                        .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
+                        .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
                 startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
 
             } else {
@@ -486,7 +486,7 @@ public class BooksOnBookshelf
         mFabMenuItems[3] = findViewById(R.id.fab3);
         mFabMenuItems[3].setOnClickListener(v -> startAddManually());
 
-        if (EditBookFragment.showTabNativeId(this)) {
+        if (EditBookActivity.showTabNativeId(this)) {
             mFabMenuItems[4] = findViewById(R.id.fab4);
             mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
         }

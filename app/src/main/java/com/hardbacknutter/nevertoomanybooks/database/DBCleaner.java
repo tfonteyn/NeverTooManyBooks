@@ -83,7 +83,7 @@ public class DBCleaner {
      */
     public DBCleaner(@NonNull final DAO db) {
         mDb = db;
-        mSyncedDb = db.getUnderlyingDatabase();
+        mSyncedDb = db.getSyncDb();
     }
 
     /**

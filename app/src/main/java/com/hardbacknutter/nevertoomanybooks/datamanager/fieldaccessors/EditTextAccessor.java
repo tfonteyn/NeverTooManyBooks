@@ -55,30 +55,45 @@ public class EditTextAccessor<T>
     private static final String TAG = "EditTextAccessor";
 
     private TextWatcher mReformatTextWatcher;
+    /** Enable or disable the formatting text watcher. */
     private boolean mEnableReformat;
 
+    /**
+     * Constructor.
+     * <p>
+     * The reformatting text watcher is enabled.
+     */
     public EditTextAccessor() {
         mEnableReformat = true;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param enableReformat flag
+     */
+    EditTextAccessor(final boolean enableReformat) {
+        mEnableReformat = enableReformat;
+    }
+
+    /**
+     * Constructor.
+     * <p>
+     * The reformatting text watcher is enabled.
+     */
     public EditTextAccessor(@Nullable final FieldFormatter<T> formatter) {
         super(formatter);
         mEnableReformat = true;
     }
 
-    EditTextAccessor(@Nullable final FieldFormatter<T> formatter,
-                     final boolean enableReformat) {
-        super(formatter);
-        mEnableReformat = enableReformat;
-    }
-
     /**
-     * Enable or disable the formatting text watcher.
-     * The default is enabled.
+     * Constructor.
      *
      * @param enableReformat flag
      */
-    EditTextAccessor(final boolean enableReformat) {
+    public EditTextAccessor(@Nullable final FieldFormatter<T> formatter,
+                     final boolean enableReformat) {
+        super(formatter);
         mEnableReformat = enableReformat;
     }
 
@@ -122,11 +137,6 @@ public class EditTextAccessor<T>
 
         TextView view = (TextView) getView();
 
-        // Disable the ChangedTextWatcher. The decimal watcher can stay enabled.
-        if (mReformatTextWatcher != null) {
-            view.removeTextChangedListener(mReformatTextWatcher);
-        }
-
         // We need to do this in two steps. First format the value as normal.
         String text;
         if (mFormatter != null) {
@@ -146,6 +156,12 @@ public class EditTextAccessor<T>
         }
 
         // Second step set the view but ...
+
+        // Disable the ChangedTextWatcher. Any decimal watcher can stay enabled.
+        if (mReformatTextWatcher != null) {
+            view.removeTextChangedListener(mReformatTextWatcher);
+        }
+
         if (view instanceof AutoCompleteTextView) {
             // prevent auto-completion to kick in / stop the dropdown from opening.
             // this happened if the field had the focus when we'd be populating it.
@@ -158,7 +174,6 @@ public class EditTextAccessor<T>
         if (mReformatTextWatcher != null) {
             view.addTextChangedListener(mReformatTextWatcher);
         }
-
     }
 
     /**

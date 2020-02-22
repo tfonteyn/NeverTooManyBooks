@@ -35,6 +35,8 @@ public final class ErrorMsg {
 
     public static final String NULL_SCANNER_MODEL = "ScannerModel";
     public static final String NULL_INTENT_DATA = "Intent data";
+    public static final String NULL_FRAGMENT_TAG = "Fragment Tag";
+
     public static final String NULL_ROW_POS = "rowPos";
     public static final String NULL_URI = "uri";
     public static final String NULL_ISBN_STR = "IsbnStr";

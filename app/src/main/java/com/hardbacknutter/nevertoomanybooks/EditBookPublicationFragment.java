@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.DecimalEd
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DoubleNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -52,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
  */
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
-
 
     @Override
     @Nullable
@@ -72,72 +70,66 @@ public class EditBookPublicationFragment
     }
 
     @Override
-    protected void initFields() {
-        super.initFields();
-        final Fields fields = getFields();
+    protected void onInitFields() {
+        super.onInitFields();
+        final Fields fields = mFragmentVM.getFields();
 
-        // These FieldFormatter's can be shared between multiple fields.
-        final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
-        final FieldFormatter<String> languageFormatter = new LanguageFormatter();
-        final FieldFormatter<Number> doubleNumberFormatter = new DoubleNumberFormatter();
-
-        fields.add(R.id.pages, new EditTextAccessor<String>(), DBDefinitions.KEY_PAGES)
+        fields.add(R.id.pages, DBDefinitions.KEY_PAGES, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_pages);
 
-        fields.add(R.id.format, new EditTextAccessor<String>(), DBDefinitions.KEY_FORMAT)
+        fields.add(R.id.format, DBDefinitions.KEY_FORMAT, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_format);
 
-        fields.add(R.id.color, new EditTextAccessor<String>(), DBDefinitions.KEY_COLOR)
+        fields.add(R.id.color, DBDefinitions.KEY_COLOR, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_color);
 
-        fields.add(R.id.language, new EditTextAccessor<>(languageFormatter),
-                   DBDefinitions.KEY_LANGUAGE)
+        fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE,
+                   new EditTextAccessor<>(new LanguageFormatter()))
               .setRelatedFields(R.id.lbl_language);
 
-        fields.add(R.id.publisher, new EditTextAccessor<String>(),
-                   DBDefinitions.KEY_PUBLISHER)
+        fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_publisher);
 
-        fields.add(R.id.date_published, new EditTextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_PUBLISHED)
-              .setRelatedFields(R.id.lbl_date_published);
-
-        fields.add(R.id.print_run, new EditTextAccessor<String>(),
-                   DBDefinitions.KEY_PRINT_RUN)
+        fields.add(R.id.print_run, DBDefinitions.KEY_PRINT_RUN, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_print_run);
 
-        fields.add(R.id.first_publication, new EditTextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+        fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED,
+                   new EditTextAccessor<>(new DateFieldFormatter(), false))
+              .setRelatedFields(R.id.lbl_date_published);
+
+        fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                   new EditTextAccessor<>(new DateFieldFormatter(), false))
               .setRelatedFields(R.id.lbl_first_publication);
 
         // MUST be defined before the currency.
-        fields.add(R.id.price_listed, new DecimalEditTextAccessor<>(doubleNumberFormatter),
-                   DBDefinitions.KEY_PRICE_LISTED);
-        fields.add(R.id.price_listed_currency, new EditTextAccessor<String>(),
-                   DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
+        fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED,
+                   new DecimalEditTextAccessor(new DoubleNumberFormatter(), false));
+        fields.add(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                   new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_price_listed,
                                 R.id.lbl_price_listed_currency, R.id.price_listed_currency);
     }
 
     @Override
-    void onLoadFields(@NonNull final Book book) {
-        super.onLoadFields(book);
+    void onPopulateViews(@NonNull final Book book) {
+        super.onPopulateViews(book);
 
         // hide unwanted fields
         //noinspection ConstantConditions
-        getFields().resetVisibility(getView(), false, false);
+        mFragmentVM.getFields().resetVisibility(getView(), false, false);
     }
 
     @Override
     public void onResume() {
+        // the super will trigger the population of all defined Fields and their Views.
         super.onResume();
-        // The views will now have been restored to the fields. (re-)add the helpers
 
-        addAutocomplete(R.id.format, mBookModel.getFormats());
-        addAutocomplete(R.id.color, mBookModel.getColors());
-        addAutocomplete(R.id.language, mBookModel.getLanguagesCodes());
-        addAutocomplete(R.id.publisher, mBookModel.getPublishers());
-        addAutocomplete(R.id.price_listed_currency, mBookModel.getListPriceCurrencyCodes());
+        // With all Views populated, (re-)add the helpers
+        addAutocomplete(R.id.format, mFragmentVM.getFormats());
+        addAutocomplete(R.id.color, mFragmentVM.getColors());
+        addAutocomplete(R.id.language, mFragmentVM.getLanguagesCodes());
+        addAutocomplete(R.id.publisher, mFragmentVM.getPublishers());
+        addAutocomplete(R.id.price_listed_currency, mFragmentVM.getListPriceCurrencyCodes());
 
         addDatePicker(R.id.date_published, R.string.lbl_date_published, false);
         addDatePicker(R.id.first_publication, R.string.lbl_first_publication, false);

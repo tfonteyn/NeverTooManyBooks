@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextA
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DoubleNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -76,72 +75,68 @@ public class EditBookNotesFragment
     }
 
     @Override
-    protected void initFields() {
-        super.initFields();
-        final Fields fields = getFields();
+    protected void onInitFields() {
+        super.onInitFields();
+        final Fields fields = mFragmentVM.getFields();
 
-        // These FieldFormatter's can be shared between multiple fields.
-        final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
-        final FieldFormatter<Number> doubleNumberFormatter = new DoubleNumberFormatter();
+        fields.add(R.id.cbx_read, DBDefinitions.KEY_READ, new CompoundButtonAccessor());
+        fields.add(R.id.cbx_signed, DBDefinitions.KEY_SIGNED, new CompoundButtonAccessor());
 
-        fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
-        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED);
-
-        fields.add(R.id.rating, new RatingBarAccessor(), DBDefinitions.KEY_RATING)
+        fields.add(R.id.rating, DBDefinitions.KEY_RATING, new RatingBarAccessor())
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.add(R.id.notes, new EditTextAccessor<String>(), DBDefinitions.KEY_PRIVATE_NOTES)
+        fields.add(R.id.notes, DBDefinitions.KEY_PRIVATE_NOTES, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_notes);
 
         // MUST be defined before the currency.
-        fields.add(R.id.price_paid, new DecimalEditTextAccessor<>(doubleNumberFormatter),
-                   DBDefinitions.KEY_PRICE_PAID);
-        fields.add(R.id.price_paid_currency, new EditTextAccessor<String>(),
-                   DBDefinitions.KEY_PRICE_PAID_CURRENCY)
+        fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID,
+                   new DecimalEditTextAccessor(new DoubleNumberFormatter(), false));
+        fields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                   new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_price_paid,
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
-        fields.add(R.id.location, new EditTextAccessor<String>(),
-                   DBDefinitions.KEY_LOCATION)
+        fields.add(R.id.location, DBDefinitions.KEY_LOCATION, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
         //noinspection ConstantConditions
-        fields.add(R.id.edition,
-                   new BitmaskChipGroupAccessor(Book.Edition.getEditions(getContext()), true),
-                   DBDefinitions.KEY_EDITION_BITMASK)
+        fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK,
+                   new BitmaskChipGroupAccessor(Book.Edition.getEditions(getContext()), true))
               .setRelatedFields(R.id.lbl_edition);
 
-        fields.add(R.id.date_acquired, new EditTextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_ACQUIRED)
+        fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED,
+                   new EditTextAccessor<>(new DateFieldFormatter(), false))
               .setRelatedFields(R.id.lbl_date_acquired);
 
-        fields.add(R.id.read_start, new EditTextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_READ_START)
+        fields.add(R.id.read_start, DBDefinitions.KEY_READ_START,
+                   new EditTextAccessor<>(new DateFieldFormatter(), false))
               .setRelatedFields(R.id.lbl_read_start);
-        fields.add(R.id.read_end, new EditTextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_READ_END)
+        fields.add(R.id.read_end, DBDefinitions.KEY_READ_END,
+                   new EditTextAccessor<>(new DateFieldFormatter(), false))
               .setRelatedFields(R.id.lbl_read_end);
     }
 
     @Override
-    void onLoadFields(@NonNull final Book book) {
-        super.onLoadFields(book);
+    void onPopulateViews(@NonNull final Book book) {
+        super.onPopulateViews(book);
 
         // hide unwanted fields
         //noinspection ConstantConditions
-        getFields().resetVisibility(getView(), false, false);
+        mFragmentVM.getFields().resetVisibility(getView(), false, false);
     }
 
     @Override
     public void onResume() {
+        // the super will trigger the population of all defined Fields and their Views.
         super.onResume();
-        // The views will now have been restored to the fields. (re-)add the helpers
 
-        getFields().getField(R.id.cbx_read).getAccessor().getView().setOnClickListener(v -> {
-            // when user sets 'read', also set the read-end date to today (unless set before)
+        // With all Views populated, (re-)add the helpers
+        setOnClickListener(R.id.cbx_read, v -> {
+            // when user sets 'read',
+            // also set the read-end date to today (unless set before)
             Checkable cb = (Checkable) v;
             if (cb.isChecked()) {
-                Field<String> readEnd = getFields().getField(R.id.read_end);
+                Field<String> readEnd = mFragmentVM.getFields().getField(R.id.read_end);
                 if (readEnd.getAccessor().isEmpty()) {
                     String value = DateUtils.localSqlDateForToday();
                     // Update, display and notify
@@ -151,8 +146,8 @@ public class EditBookNotesFragment
             }
         });
 
-        addAutocomplete(R.id.price_paid_currency, mBookModel.getPricePaidCurrencyCodes());
-        addAutocomplete(R.id.location, mBookModel.getLocations());
+        addAutocomplete(R.id.price_paid_currency, mFragmentVM.getPricePaidCurrencyCodes());
+        addAutocomplete(R.id.location, mFragmentVM.getLocations());
 
         addDatePicker(R.id.date_acquired, R.string.lbl_date_acquired, true);
         addDatePicker(R.id.read_start, R.string.lbl_read_start, true);

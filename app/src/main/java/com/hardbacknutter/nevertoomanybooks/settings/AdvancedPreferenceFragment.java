@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -85,6 +86,24 @@ public class AdvancedPreferenceFragment
                 TipManager.reset(getContext());
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
+                return true;
+            });
+        }
+
+        preference = findPreference(Prefs.PSK_REBUILD_INDEX);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.rebuild_index)
+                        .setMessage(R.string.info_rebuild_index)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> StartupViewModel
+                                .scheduleIndexRebuild(getContext(), false))
+                        .setPositiveButton(android.R.string.ok, (d, w) -> StartupViewModel
+                                .scheduleIndexRebuild(getContext(), true))
+                        .create()
+                        .show();
                 return true;
             });
         }

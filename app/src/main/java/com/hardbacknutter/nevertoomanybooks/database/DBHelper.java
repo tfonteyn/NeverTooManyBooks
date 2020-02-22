@@ -38,6 +38,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
@@ -56,8 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
@@ -75,7 +75,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
@@ -109,22 +108,6 @@ public final class DBHelper
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
 
-    /**
-     * Indexes which have not been added to the TBL definitions yet.
-     * For now, there is no API to add an index with a collation suffix.
-     * <p>
-     * These (should) speed up SQL where we lookup the id by name/title.
-     */
-    private static final String[] DATABASE_CREATE_INDICES = {
-            "CREATE INDEX IF NOT EXISTS authors_family_name_ci ON " + TBL_AUTHORS.getName()
-            + " (" + KEY_AUTHOR_FAMILY_NAME + DAO.COLLATION + ')',
-            "CREATE INDEX IF NOT EXISTS authors_given_names_ci ON " + TBL_AUTHORS.getName()
-            + " (" + KEY_AUTHOR_GIVEN_NAMES + DAO.COLLATION + ')',
-
-            "CREATE INDEX IF NOT EXISTS books_title_ci ON " + TBL_BOOKS.getName()
-            + " (" + KEY_TITLE + DAO.COLLATION + ')',
-            };
-
     /** SQL to get the names of all indexes. */
     private static final String SQL_GET_INDEX_NAMES =
             "SELECT name FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL";
@@ -133,6 +116,9 @@ public final class DBHelper
     private static Synchronizer sSynchronizer;
     /** Singleton. */
     private static DBHelper sInstance;
+
+    @Nullable
+    private static Boolean sIsCollationCaseSensitive;
 
     /**
      * Singleton Constructor.
@@ -200,79 +186,48 @@ public final class DBHelper
         Log.d(TAG, TextUtils.join(", ", names));
     }
 
-    @Override
-    public void onConfigure(@NonNull final SQLiteDatabase db) {
-        // Turn ON foreign key support so that CASCADE etc. works.
-        //db.execSQL("PRAGMA foreign_keys = ON");
-        db.setForeignKeyConstraintsEnabled(true);
+    /**
+     * This method should only be called at the *END* of onCreate/onUpdate.
+     * <p>
+     * (re)Creates the indexes as defined on the tables.
+     *
+     * @param syncedDb the database
+     */
+    public static void recreateIndices(@NonNull final SynchronizedDb syncedDb) {
+        // Delete all indices.
+        // We read the index names from the database, so we can delete
+        // indexes which were removed from the TableDefinition objects.
+        try (Cursor current = syncedDb.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+            while (current.moveToNext()) {
+                String indexName = current.getString(0);
+                try {
+                    syncedDb.execSQL("DROP INDEX " + indexName);
+                } catch (@NonNull final SQLException e) {
+                    // bad sql is a developer issue... die!
+                    Logger.error(TAG, e);
+                    throw e;
+                } catch (@NonNull final RuntimeException e) {
+                    Logger.error(TAG, e, "Index deletion failed: " + indexName);
+                }
+            }
+        }
 
-        // Turn OFF recursive triggers;
-        db.execSQL("PRAGMA recursive_triggers = OFF");
+        // now recreate
+        for (TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
+            table.createIndices(syncedDb);
+        }
 
-        // for debug
-        //sSyncedDb.execSQL("PRAGMA temp_store = FILE");
+        syncedDb.analyze();
     }
 
-    @SuppressWarnings("unused")
-    @Override
-    public void onCreate(@NonNull final SQLiteDatabase db) {
-        Context localContext = App.getLocalizedAppContext();
-
-        // 'Upgrade' from not being installed. Run this first to avoid racing issues.
-        UpgradeMessageManager.setUpgradeAcknowledged(localContext);
-
-        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
-
-        TableDefinition.createTables(db,
-                                     // app tables
-                                     TBL_BOOKLIST_STYLES,
-                                     // basic user data tables
-                                     TBL_BOOKSHELF,
-                                     TBL_AUTHORS,
-                                     TBL_SERIES,
-                                     TBL_BOOKS,
-                                     TBL_TOC_ENTRIES,
-                                     // link tables
-                                     TBL_BOOK_TOC_ENTRIES,
-                                     TBL_BOOK_AUTHOR,
-                                     TBL_BOOK_BOOKSHELF,
-                                     TBL_BOOK_SERIES,
-                                     TBL_BOOK_LOANEE,
-                                     // permanent booklist management tables
-                                     TBL_BOOK_LIST_NODE_STATE);
-
-        // create the indexes not covered in the calls above.
-        createIndices(syncedDb, false);
-
-        // insert the builtin styles so foreign key rules are possible.
-        prepareStylesTable(db);
-
-        // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + KEY_PK_ID
-                   + ',' + KEY_BOOKSHELF
-                   + ',' + KEY_FK_STYLE
-                   + ") VALUES ("
-                   + Bookshelf.ALL_BOOKS
-                   + ",'" + localContext.getString(R.string.bookshelf_all_books)
-                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
-                   + ')');
-
-        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
-        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
-                   + '(' + KEY_PK_ID
-                   + ',' + KEY_BOOKSHELF
-                   + ',' + KEY_FK_STYLE
-                   + ") VALUES ("
-                   + Bookshelf.DEFAULT_ID
-                   + ",'" + localContext.getString(R.string.bookshelf_my_books)
-                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
-                   + ')');
-
-        //IMPORTANT: withConstraints MUST BE false (FTS columns don't use a type/constraints)
-        TBL_FTS_BOOKS.create(syncedDb, false);
-
-        createTriggers(syncedDb);
+    /**
+     * Check if the collation we use is case sensitive.
+     *
+     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
+     */
+    public static boolean isCollationCaseSensitive() {
+        //noinspection ConstantConditions
+        return sIsCollationCaseSensitive;
     }
 
     /**
@@ -303,59 +258,6 @@ public final class DBHelper
                 stmt.executeInsert();
             }
         }
-    }
-
-    /**
-     * This function is called each time the database is upgraded.
-     * It will run all upgrade scripts between the oldVersion and the newVersion.
-     * <p>
-     * REMINDER: do not use [column].ref() or [table].create/createAll.
-     * The 'current' definition might not match the upgraded definition!
-     *
-     * @param db         The SQLiteDatabase to be upgraded
-     * @param oldVersion The current version number of the SQLiteDatabase
-     * @param newVersion The new version number of the SQLiteDatabase
-     *
-     * @see #DATABASE_VERSION
-     */
-    @SuppressWarnings("unused")
-    @Override
-    public void onUpgrade(@NonNull final SQLiteDatabase db,
-                          final int oldVersion,
-                          final int newVersion) {
-
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "ENTER|onUpgrade"
-                       + "|Old database version: " + oldVersion
-                       + "|Upgrading database: " + db.getPath());
-        }
-
-        StartupActivity startup = StartupActivity.getActiveActivity();
-        if (startup != null) {
-            startup.onProgress(R.string.progress_msg_upgrading);
-        }
-
-        if (oldVersion != newVersion) {
-            StorageUtils.copyFileWithBackup(new File(db.getPath()),
-                                            new File(StorageUtils.getRootDir(App.getAppContext()),
-                                                     "DbUpgrade-" + oldVersion + '-' + newVersion));
-        }
-
-        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
-
-        int curVersion = oldVersion;
-
-        // db1 == app1 == 1.0.0;
-        if (curVersion < newVersion && curVersion == 1) {
-            //noinspection UnusedAssignment
-            curVersion = 2;
-            UpgradeDatabase.toDb2(syncedDb);
-        }
-
-        // Rebuild all indices
-        createIndices(syncedDb, true);
-        // Rebuild all triggers
-        createTriggers(syncedDb);
     }
 
     /**
@@ -594,61 +496,190 @@ public final class DBHelper
         syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
     }
 
-    /**
-     * This method should only be called at the *END* of onCreate/onUpdate.
-     * <p>
-     * (re)Creates the indexes as defined on the tables,
-     * followed by the {@link #DATABASE_CREATE_INDICES} set of indexes.
-     *
-     * @param syncedDb the database
-     * @param recreate if {@code true} will delete all indexes first, and recreate them.
-     */
-    private void createIndices(@NonNull final SynchronizedDb syncedDb,
-                               final boolean recreate) {
+    @Override
+    public void onConfigure(@NonNull final SQLiteDatabase db) {
+        // Turn ON foreign key support so that CASCADE etc. works.
+        //db.execSQL("PRAGMA foreign_keys = ON");
+        db.setForeignKeyConstraintsEnabled(true);
 
-        if (recreate) {
-            // clean slate
-            dropAllIndexes(syncedDb);
-            // recreate the ones that are defined with the TableDefinition's
-            for (TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
-                table.createIndices(syncedDb);
-            }
-        }
+        // Turn OFF recursive triggers;
+        db.execSQL("PRAGMA recursive_triggers = OFF");
 
-        // create/recreate the indexes with collation / which we have not added to
-        // the TableDefinition's yet
-        for (String createIndex : DATABASE_CREATE_INDICES) {
-            try {
-                syncedDb.execSQL(createIndex);
-            } catch (@NonNull final SQLException e) {
-                // bad sql is a developer issue... die!
-                Logger.error(TAG, e);
-                throw e;
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(TAG, e, "Index creation failed: " + createIndex);
-            }
-        }
-        syncedDb.analyze();
+        // for debug
+        //sSyncedDb.execSQL("PRAGMA temp_store = FILE");
+    }
+
+    @SuppressWarnings("unused")
+    @Override
+    public void onCreate(@NonNull final SQLiteDatabase db) {
+        Context localContext = App.getLocalizedAppContext();
+
+        // 'Upgrade' from not being installed. Run this first to avoid racing issues.
+        UpgradeMessageManager.setUpgradeAcknowledged(localContext);
+
+        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
+
+        TableDefinition.createTables(db,
+                                     // app tables
+                                     TBL_BOOKLIST_STYLES,
+                                     // basic user data tables
+                                     TBL_BOOKSHELF,
+                                     TBL_AUTHORS,
+                                     TBL_SERIES,
+                                     TBL_BOOKS,
+                                     TBL_TOC_ENTRIES,
+                                     // link tables
+                                     TBL_BOOK_TOC_ENTRIES,
+                                     TBL_BOOK_AUTHOR,
+                                     TBL_BOOK_BOOKSHELF,
+                                     TBL_BOOK_SERIES,
+                                     TBL_BOOK_LOANEE,
+                                     // permanent booklist management tables
+                                     TBL_BOOK_LIST_NODE_STATE);
+
+        // insert the builtin styles so foreign key rules are possible.
+        prepareStylesTable(db);
+
+        // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                   + '(' + KEY_PK_ID
+                   + ',' + KEY_BOOKSHELF
+                   + ',' + KEY_FK_STYLE
+                   + ") VALUES ("
+                   + Bookshelf.ALL_BOOKS
+                   + ",'" + localContext.getString(R.string.bookshelf_all_books)
+                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                   + ')');
+
+        // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
+        db.execSQL("INSERT INTO " + TBL_BOOKSHELF
+                   + '(' + KEY_PK_ID
+                   + ',' + KEY_BOOKSHELF
+                   + ',' + KEY_FK_STYLE
+                   + ") VALUES ("
+                   + Bookshelf.DEFAULT_ID
+                   + ",'" + localContext.getString(R.string.bookshelf_my_books)
+                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                   + ')');
+
+        //IMPORTANT: withConstraints MUST BE false (FTS columns don't use a type/constraints)
+        TBL_FTS_BOOKS.create(syncedDb, false);
+
+        createTriggers(syncedDb);
     }
 
     /**
-     * Find and delete all indexes on all tables.
+     * This function is called each time the database is upgraded.
+     * It will run all upgrade scripts between the oldVersion and the newVersion.
+     * <p>
+     * REMINDER: do not use [column].ref() or [table].create/createAll.
+     * The 'current' definition might not match the upgraded definition!
      *
-     * @param db Database Access.
+     * @param db         The SQLiteDatabase to be upgraded
+     * @param oldVersion The current version number of the SQLiteDatabase
+     * @param newVersion The new version number of the SQLiteDatabase
+     *
+     * @see #DATABASE_VERSION
      */
-    private void dropAllIndexes(@NonNull final SynchronizedDb db) {
-        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
-            while (current.moveToNext()) {
-                String indexName = current.getString(0);
-                try {
-                    db.execSQL("DROP INDEX " + indexName);
-                } catch (@NonNull final SQLException e) {
-                    // bad sql is a developer issue... die!
-                    Logger.error(TAG, e);
-                    throw e;
-                } catch (@NonNull final RuntimeException e) {
-                    Logger.error(TAG, e, "Index deletion failed: " + indexName);
+    @SuppressWarnings("unused")
+    @Override
+    public void onUpgrade(@NonNull final SQLiteDatabase db,
+                          final int oldVersion,
+                          final int newVersion) {
+
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(TAG, "ENTER|onUpgrade"
+                       + "|Old database version: " + oldVersion
+                       + "|Upgrading database: " + db.getPath());
+        }
+
+        StartupActivity startup = StartupActivity.getActiveActivity();
+        if (startup != null) {
+            startup.onProgress(R.string.progress_msg_upgrading);
+        }
+
+        if (oldVersion != newVersion) {
+            StorageUtils.copyFileWithBackup(new File(db.getPath()),
+                                            new File(StorageUtils.getRootDir(App.getAppContext()),
+                                                     "DbUpgrade-" + oldVersion + '-' + newVersion));
+        }
+
+        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
+
+        int curVersion = oldVersion;
+
+        // db1 == app1 == 1.0.0;
+        if (curVersion < newVersion && curVersion == 1) {
+            //noinspection UnusedAssignment
+            curVersion = 2;
+            UpgradeDatabase.toDb2(syncedDb);
+        }
+
+        // Rebuild all indices
+        recreateIndices(syncedDb);
+        // Rebuild all triggers
+        createTriggers(syncedDb);
+    }
+
+    @Override
+    public void onOpen(@NonNull final SQLiteDatabase db) {
+        if (sIsCollationCaseSensitive == null) {
+            sIsCollationCaseSensitive = collationIsCaseSensitive(db);
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
+                Log.d(TAG, "isCollationCaseSensitive=" + sIsCollationCaseSensitive);
+            }
+        }
+    }
+
+    /**
+     * Method to detect if collation implementations are case sensitive.
+     * This was built because ICS broke the UNICODE collation (making it case sensitive (CS))
+     * and we needed to check for collation case-sensitivity.
+     * <p>
+     * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
+     * <p>
+     * This method is supposed to return {@code false} in normal circumstances.
+     */
+    private boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
+        String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
+        // Drop and create table
+        db.execSQL(dropTable);
+        db.execSQL("CREATE TEMPORARY TABLE collation_cs_check (t text, i integer)");
+        try {
+            // Row that *should* be returned first assuming 'a' <=> 'A'
+            db.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");
+            // Row that *should* be returned second assuming 'a' <=> 'A';
+            // will be returned first if 'A' < 'a'.
+            db.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
+
+            String s;
+            try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
+                                        + " ORDER BY t " + DAO.COLLATION + ",i",
+                                        null)) {
+                c.moveToFirst();
+                s = c.getString(0);
+            }
+
+            boolean cs = !"a".equals(s);
+
+            if (BuildConfig.DEBUG /* always */) {
+                if (cs) {
+                    Log.d(TAG, "\n=============================================="
+                               + "\n========== CASE SENSITIVE COLLATION =========="
+                               + "\n==============================================");
                 }
+            }
+            return cs;
+
+        } catch (@NonNull final SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(TAG, e);
+            throw e;
+        } finally {
+            try {
+                db.execSQL(dropTable);
+            } catch (@NonNull final SQLException e) {
+                Logger.error(TAG, e);
             }
         }
     }

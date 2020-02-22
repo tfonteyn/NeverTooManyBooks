@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import android.util.Log;
 import android.view.View;
-import android.widget.Checkable;
 import android.widget.ImageView;
 
 import androidx.annotation.IdRes;
@@ -127,11 +126,16 @@ public class Field<T> {
     /**
      * Called from {@link BookBaseFragment} #loadFields() (from onResume())
      * to set the View for the field.
+     * <p>
+     * Unused fields will be hidden after this step.
      *
      * @param parentView of the field View
      */
     void setParentView(@NonNull final View parentView) {
         mFieldDataAccessor.setView(parentView.findViewById(mId));
+        if (!isUsed()) {
+            mFieldDataAccessor.getView().setVisibility(View.GONE);
+        }
     }
 
     void setAfterFieldChangeListener(@Nullable final Fields.AfterChangeListener listener) {
@@ -149,6 +153,7 @@ public class Field<T> {
      *
      * @return Field (for chaining)
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Field<T> setRelatedFields(@NonNull @IdRes final int... relatedFields) {
         mRelatedFields = relatedFields;
         return this;
@@ -157,60 +162,52 @@ public class Field<T> {
     /**
      * <strong>Conditionally</strong> set the visibility for the field and its related fields.
      *
-     * @param parent      parent view for all fields.
+     * @param parent      parent view; used to find the <strong>related fields only</strong>
      * @param hideIfEmpty hide the field if it's empty
      * @param keepHidden  keep a field hidden if it's already hidden
      */
+    @SuppressWarnings("StatementWithEmptyBody")
     void setVisibility(@NonNull final View parent,
                        final boolean hideIfEmpty,
                        final boolean keepHidden) {
 
-        View view = parent.findViewById(mId);
-        boolean isUsed = App.isUsed(mIsUsedKey);
+        View view = mFieldDataAccessor.getView();
 
-        int visibility = view.getVisibility();
+        if ((view instanceof ImageView)
+            || (view.getVisibility() == View.GONE && keepHidden)) {
+            // 2. An ImageView always keeps its current visibility
+            // 3. When 'keepHidden' is set, hidden fields stay hidden.
+            // do nothing.
 
-        // 1. An ImageView always keeps its current visibility, i.e. skips this step.
-        // 2. When 'keepHidden' is set, all hidden fields stay hidden.
-        // 3. Empty fields are optionally hidden.
-        if (!(view instanceof ImageView)
-            && (visibility != View.GONE || !keepHidden)) {
-            if (isUsed && hideIfEmpty) {
-                if (view instanceof Checkable) {
-                    // hide any unchecked Checkable.
-                    visibility = ((Checkable) view).isChecked() ? View.VISIBLE : View.GONE;
+        } else if (mFieldDataAccessor.isEmpty() && hideIfEmpty) {
+            // 4. When 'hideIfEmpty' is set, empty fields are hidden.
+            view.setVisibility(View.GONE);
 
-                } else {
-                    visibility = !mFieldDataAccessor.isEmpty() ? View.VISIBLE : View.GONE;
-                }
-            } else {
-                visibility = isUsed ? View.VISIBLE : View.GONE;
-            }
-            view.setVisibility(visibility);
+        } else if (isUsed()) {
+            // 5. anything else (in use) should be visible if it's not yet.
+            view.setVisibility(View.VISIBLE);
         }
 
-        // related fields follow main field visibility
-        setRelatedFieldsVisibility(parent, visibility);
+        setRelatedFieldsVisibility(parent, view.getVisibility());
     }
 
     /**
      * <strong>Unconditionally</strong> set the visibility for the field and its related fields.
      *
-     * @param parent     parent view for all fields.
+     * @param parent     parent view; used to find the <strong>related fields only</strong>
      * @param visibility to use
      */
     public void setVisibility(@NonNull final View parent,
                               final int visibility) {
 
-        parent.findViewById(mId).setVisibility(visibility);
-        // related fields follow main field visibility
+        mFieldDataAccessor.getView().setVisibility(visibility);
         setRelatedFieldsVisibility(parent, visibility);
     }
 
     /**
      * Set the visibility for the related fields.
      *
-     * @param parent     parent view for all fields.
+     * @param parent     parent view for all related fields.
      * @param visibility to use
      */
     private void setRelatedFieldsVisibility(@NonNull final View parent,
@@ -271,4 +268,5 @@ public class Field<T> {
                + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
                + '}';
     }
+
 }

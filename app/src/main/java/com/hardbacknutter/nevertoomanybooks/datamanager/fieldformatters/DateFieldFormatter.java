@@ -71,6 +71,12 @@ public class DateFieldFormatter
     @NonNull
     public String extract(@NonNull final TextView view) {
         String text = view.getText().toString().trim();
+        // extract a year-only string as-is
+        if (text.length() == 4) {
+            return text;
+        }
+
+        // URGENT: a partial date consisting of Month+Year, will automatically get a day==1 added.
         Date d = DateUtils.parseDate(text);
         if (d != null) {
             return DateUtils.utcSqlDate(d);

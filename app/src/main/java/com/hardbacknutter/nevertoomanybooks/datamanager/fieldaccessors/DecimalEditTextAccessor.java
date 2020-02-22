@@ -46,25 +46,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 /**
  * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
  * See class docs: {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils}.
- *
- * @param <T>
  */
-public class DecimalEditTextAccessor<T>
-        extends EditTextAccessor<T> {
+public class DecimalEditTextAccessor
+        extends EditTextAccessor<Number> {
 
-    public DecimalEditTextAccessor() {
-        super(false);
-    }
-
-    public DecimalEditTextAccessor(@Nullable final FieldFormatter<T> formatter) {
-        super(formatter, false);
+    public DecimalEditTextAccessor(@Nullable final FieldFormatter<Number> formatter,
+                                   final boolean enableReformat) {
+        super(formatter, enableReformat);
     }
 
     @Override
     public void setView(@NonNull final View view) {
         super.setView(view);
         TextView textView = (TextView) view;
-        // do not keep a reference to the watcher
+        // do not keep a strong reference to the watcher
         textView.addTextChangedListener(new DecimalTextWatcher(textView));
     }
 

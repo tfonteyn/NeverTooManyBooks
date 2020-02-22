@@ -28,14 +28,15 @@
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Class to store an index using a table name and a list of domain definitions.
@@ -129,7 +130,13 @@ class IndexDefinition {
         }
         sql.append(" INDEX ").append(mTable.getName()).append("_IDX_").append(mNameSuffix)
            .append(" ON ").append(mTable.getName())
-           .append('(').append(TextUtils.join(",", mDomains)).append(')');
+           .append('(').append(Csv.join(",", mDomains, element -> {
+            if (element.isCollationLocalized()) {
+                return element.getName() + DAO.COLLATION;
+            } else {
+                return element.getName();
+            }
+        })).append(')');
 
         return sql.toString();
     }

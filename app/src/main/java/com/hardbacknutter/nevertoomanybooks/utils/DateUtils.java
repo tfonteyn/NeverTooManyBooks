@@ -344,13 +344,13 @@ public final class DateUtils {
             return dateString;
 
         } else if (dateString.length() == 7) {
-            // shortcut for input: YYYY-MM
+            // input: YYYY-MM
             int month = Integer.parseInt(dateString.substring(5));
             // just swap: MMM YYYY
             return getMonthName(locale, month, true) + ' ' + dateString.substring(0, 4);
 
         } else {
-            // Try and parse
+            // Try to parse for length == 6 or > 7
             Date date = parseDate(dateString);
             if (date != null) {
                 return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);

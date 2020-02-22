@@ -39,8 +39,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
  * Hosting activity for showing a book.
@@ -53,7 +52,7 @@ public class BookDetailsActivity
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main_nav;
+        return R.layout.activity_book_details;
     }
 
     @Override
@@ -67,8 +66,7 @@ public class BookDetailsActivity
 
     @Override
     public void onBackPressed() {
-        final ActivityResultDataModel model = new ViewModelProvider(this)
-                .get(BookBaseFragmentModel.class);
+        final BookViewModel model = new ViewModelProvider(this).get(BookViewModel.class);
         // Set the current visible book id as the Activity result data.
         setResult(Activity.RESULT_OK, model.getResultData());
         super.onBackPressed();

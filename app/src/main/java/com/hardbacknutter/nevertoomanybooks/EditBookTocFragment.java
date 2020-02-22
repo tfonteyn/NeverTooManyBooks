@@ -113,7 +113,7 @@ public class EditBookTocFragment
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookModel.setDirty(true);
+                    mBookViewModel.setDirty(true);
                 }
             };
 
@@ -161,7 +161,7 @@ public class EditBookTocFragment
                 return;
             }
 
-            Book book = mBookModel.getBook();
+            Book book = mBookViewModel.getBook();
 
             // update the book with Series information that was gathered from the TOC
             List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -219,9 +219,8 @@ public class EditBookTocFragment
                 public void commitIsfdbData(@Book.TocBits final long tocBitMask,
                                             @NonNull final List<TocEntry> tocEntries) {
                     if (tocBitMask != 0) {
-                        Book book = mBookModel.getBook();
+                        Book book = mBookViewModel.getBook();
                         book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
-
                         populateTocBits(book);
                     }
 
@@ -317,7 +316,7 @@ public class EditBookTocFragment
             }
         }
 
-        // set up the list view. The adapter is setup in onLoadFields
+        // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
@@ -335,8 +334,8 @@ public class EditBookTocFragment
     }
 
     @Override
-    void onLoadFields(@NonNull final Book book) {
-        super.onLoadFields(book);
+    void onPopulateViews(@NonNull final Book book) {
+        super.onPopulateViews(book);
 
         // used to call Search sites to populate the TOC
         mIsbn = book.getString(DBDefinitions.KEY_ISBN);
@@ -368,7 +367,7 @@ public class EditBookTocFragment
 
         // hide unwanted fields
         //noinspection ConstantConditions
-        getFields().resetVisibility(getView(), false, false);
+        mFragmentVM.getFields().resetVisibility(getView(), false, false);
     }
 
     @Override
@@ -405,7 +404,7 @@ public class EditBookTocFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_POPULATE_TOC_FROM_ISFDB: {
-                long isfdbId = mBookModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
+                long isfdbId = mBookViewModel.getBook().getLong(DBDefinitions.KEY_EID_ISFDB);
                 if (isfdbId != 0) {
                     //noinspection ConstantConditions
                     Snackbar.make(getView(), R.string.progress_msg_connecting,
@@ -483,7 +482,7 @@ public class EditBookTocFragment
             case R.id.MENU_DELETE:
                 //noinspection ConstantConditions
                 StandardDialogs.deleteTocEntry(getContext(), tocEntry, () -> {
-                    if (mBookModel.getDb().deleteTocEntry(tocEntry.getId()) == 1) {
+                    if (mFragmentVM.getDb().deleteTocEntry(tocEntry.getId()) == 1) {
                         mList.remove(tocEntry);
                         mListAdapter.notifyItemRemoved(position);
                     }
@@ -509,7 +508,7 @@ public class EditBookTocFragment
                 //noinspection ConstantConditions
                 mAuthorAdapter = new DiacriticArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
-                        mBookModel.getDb().getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                        mFragmentVM.getAuthorNames());
                 mAuthorTextView.setAdapter(mAuthorAdapter);
             }
 

@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -36,12 +37,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 /**
@@ -53,9 +57,21 @@ public class EditBookActivity
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
 
+    public static boolean showTabNativeId(@NonNull final Context context) {
+        return PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(Prefs.pk_edit_book_tabs_native_id, false);
+    }
+
+    public static boolean showAuthSeriesOnTabs(@NonNull final Context context) {
+        return PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
+    }
+
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_main_nav_tabs;
+        return R.layout.activity_edit_book;
     }
 
     @Override
@@ -105,8 +121,7 @@ public class EditBookActivity
     @Override
     public void onBackPressed() {
 
-        final BookBaseFragmentModel model =
-                new ViewModelProvider(this).get(BookBaseFragmentModel.class);
+        final BookViewModel model = new ViewModelProvider(this).get(BookViewModel.class);
 
         final FragmentManager fm = getSupportFragmentManager();
         final int backStackEntryCount = fm.getBackStackEntryCount();
@@ -119,8 +134,7 @@ public class EditBookActivity
                 //noinspection unchecked
                 final DataEditor<Book> dataEditor = ((DataEditor<Book>) frag);
                 if (dataEditor.hasUnfinishedEdits()) {
-                    StandardDialogs.unsavedEdits(this, null,
-                                                 super::onBackPressed);
+                    StandardDialogs.unsavedEdits(this, null, super::onBackPressed);
                     return;
                 }
             }
@@ -142,7 +156,7 @@ public class EditBookActivity
         super.onBackPressed();
     }
 
-    void cleanupAndSetResults(@NonNull final BookBaseFragmentModel model,
+    void cleanupAndSetResults(@NonNull final ActivityResultDataModel model,
                               final boolean doFinish) {
         // we're really leaving, clean up
         CoverHandler.deleteOrphanedCoverFiles(this);

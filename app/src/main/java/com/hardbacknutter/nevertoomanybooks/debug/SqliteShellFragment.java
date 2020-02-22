@@ -104,7 +104,7 @@ public class SqliteShellFragment
         super.onActivityCreated(savedInstanceState);
 
         db = new DAO(TAG);
-        syncDb = db.getUnderlyingDatabase();
+        syncDb = db.getSyncDb();
     }
 
     @Override

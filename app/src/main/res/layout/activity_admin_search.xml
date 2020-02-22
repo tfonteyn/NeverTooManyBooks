@@ -27,28 +27,28 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<com.google.android.material.appbar.AppBarLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/app_bar_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:showIn="@layout/activity_edit_book"
+    android:layout_height="match_parent"
     >
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        style="@style/Toolbar"
-        app:layout_scrollFlags="scroll|enterAlways"
-        />
+    <include layout="@layout/inc_appbar_tabs" />
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_panel"
-        style="@style/TabBar"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/tab_fragment"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
-        app:tabMode="scrollable"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
 
-</com.google.android.material.appbar.AppBarLayout>
+    <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
+        android:id="@+id/fab"
+        style="@style/FAB"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

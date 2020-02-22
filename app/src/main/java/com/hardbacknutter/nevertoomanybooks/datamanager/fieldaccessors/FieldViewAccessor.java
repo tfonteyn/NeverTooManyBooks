@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors;
 
 import android.view.View;
+import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -118,6 +119,7 @@ public interface FieldViewAccessor<T> {
      * <li>Number == 0</li>
      * <li>Boolean == false</li>
      * <li>empty Collection</li>
+     * <li>checkable not checked</li>
      * <li>empty String</li>
      * </ul>
      * to be empty.
@@ -131,6 +133,7 @@ public interface FieldViewAccessor<T> {
         return value instanceof Number && ((Number) value).doubleValue() == 0.0d
                || value instanceof Boolean && !(Boolean) value
                || value instanceof Collection && ((Collection) value).isEmpty()
+               || value instanceof Checkable && !((Checkable) value).isChecked()
                || value.toString().isEmpty();
     }
 }

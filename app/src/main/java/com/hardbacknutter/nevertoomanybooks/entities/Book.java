@@ -820,6 +820,20 @@ public class Book
         }
     }
 
+    public boolean toggleRead(@NonNull final DAO db) {
+        return setRead(db, !getBoolean(DBDefinitions.KEY_READ));
+    }
+
+    public void deleteLoan(@NonNull final DAO db) {
+        remove(DBDefinitions.KEY_LOANEE);
+        db.deleteLoan(getId());
+    }
+
+    public boolean isAvailable(@NonNull final DAO db) {
+        final String loanee = getLoanee(db);
+        return loanee == null || loanee.isEmpty();
+    }
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS, TOC_MULTIPLE_AUTHORS})
     public @interface TocBits {
@@ -885,6 +899,7 @@ public class Book
         public static final int READING_COPY = 1;
         /** dust-cover. */
         public static final int DUST_COVER_MISSING = 1;
+
         /** book / dust-cover. */
         public static final int FAIR = 2;
         /** book / dust-cover. */

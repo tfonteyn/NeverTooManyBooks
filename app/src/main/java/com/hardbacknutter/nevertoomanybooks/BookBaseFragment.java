@@ -52,20 +52,18 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
  * Base class for {@link BookDetailsFragment} and {@link EditBookBaseFragment}.
  * <p>
- * This class supports the loading of a book. See {@link #loadFields}.
+ * This class supports the loading of a book. See {@link #populateViews}.
  */
 public abstract class BookBaseFragment
         extends Fragment
@@ -77,8 +75,15 @@ public abstract class BookBaseFragment
     /** simple indeterminate progress spinner to show while doing lengthy work. */
     ProgressBar mProgressBar;
 
-    /** The book. */
-    BookBaseFragmentModel mBookModel;
+    /** The book. Must be in the Activity scope. */
+    BookViewModel mBookViewModel;
+
+    @NonNull
+    BookViewModel getBookViewModel() {
+        return mBookViewModel;
+    }
+
+    abstract Fields getFields();
 
     @Override
     public void onRequestPermissionsResult(final int requestCode,
@@ -94,40 +99,16 @@ public abstract class BookBaseFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+        //noinspection ConstantConditions
+        mBookViewModel.init(getContext(), getArguments());
+
         mProgressBar = getActivity().findViewById(R.id.progressBar);
-
-        // Must be in the Activity scope.
-        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
-        mBookModel.init(getArguments());
-        mBookModel.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
-        mBookModel.getNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
-            if (needs != null && needs) {
-                Context context = getContext();
-                //noinspection ConstantConditions
-                RequestAuthTask.prompt(context, mBookModel.getGoodreadsTaskListener(context));
-            }
-        });
-
-        initFields();
     }
 
     /**
-     * Add any {@link Field} we need to {@link Fields}.
-     * <p>
-     * Called from {@link #onActivityCreated(Bundle)}.
-     */
-    abstract void initFields();
-
-    /**
-     * Get the fields collection.
+     * Hook up the Views, and populate them with the book data.
      *
-     * @return the fields
-     */
-    @NonNull
-    abstract Fields getFields();
-
-    /**
-     * Trigger the Fragment to load its Fields from the Book.
      * <p>
      * <br>{@inheritDoc}
      */
@@ -143,15 +124,12 @@ public abstract class BookBaseFragment
         // https://issuetracker.google.com/issues/144442240
         setHasOptionsMenu(isVisible());
 
-        // load the book data into the views
-        loadFields();
-
         // Set the activity title depending on View or Edit mode.
         // This is a good place to do this, as we use data from the book for the title.
         //noinspection ConstantConditions
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            Book book = mBookModel.getBook();
+            Book book = mBookViewModel.getBook();
             if (book.isNew()) {
                 // EDIT NEW book
                 actionBar.setTitle(R.string.title_add_book);
@@ -163,31 +141,30 @@ public abstract class BookBaseFragment
                 actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
             }
         }
+
+        // load the book data into the views
+        populateViews();
     }
 
     /**
-     * Load all Fields from the book.
+     * Load all Views from the book.
      * <p>
      * Loads the data while preserving the isDirty() status.
      * Normally called from the base {@link #onResume},
      * but can explicitly be called after {@link Book#reload}.
      * <p>
-     * This is 'final' because we want inheritors to implement {@link #onLoadFields}.
+     * This is final; Inheritors should implement {@link #onPopulateViews}.
      */
-    final void loadFields() {
-
-        // Prepare the fields for applying the value to the their View.
+    final void populateViews() {
         //noinspection ConstantConditions
-        getFields().prepareForOnLoadsFields(getView());
+        getFields().prepareViewsForPopulating(getView());
         // preserve the 'dirty' status.
-        final boolean wasDirty = mBookModel.isDirty();
-
+        final boolean wasDirty = getBookViewModel().isDirty();
         // make it so!
-        onLoadFields(mBookModel.getBook());
-
+        onPopulateViews(mBookViewModel.getBook());
         // restore the dirt-status and install the AfterChangeListener
-        mBookModel.setDirty(wasDirty);
-        getFields().setAfterChangeListener(fieldId -> mBookModel.setDirty(true));
+        getBookViewModel().setDirty(wasDirty);
+        getFields().setAfterChangeListener(fieldId -> getBookViewModel().setDirty(true));
     }
 
     /**
@@ -196,7 +173,7 @@ public abstract class BookBaseFragment
      * be handled in overrides, calling super as the first step.
      */
     @CallSuper
-    void onLoadFields(@NonNull final Book book) {
+    void onPopulateViews(@NonNull final Book book) {
         getFields().setAll(book);
     }
 
@@ -221,7 +198,7 @@ public abstract class BookBaseFragment
         @NonNull
         final Context context = getContext();
 
-        final Book book = mBookModel.getBook();
+        final Book book = mBookViewModel.getBook();
 
         switch (item.getItemId()) {
             case R.id.MENU_UPDATE_FROM_INTERNET: {
@@ -231,8 +208,7 @@ public abstract class BookBaseFragment
                         .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
                         .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
                         // pass the title for displaying to the user
-                        .putExtra(DBDefinitions.KEY_TITLE,
-                                  book.getString(DBDefinitions.KEY_TITLE))
+                        .putExtra(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE))
                         // pass the author for displaying to the user
                         .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
                                   book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
@@ -268,7 +244,7 @@ public abstract class BookBaseFragment
      *
      * @param message to display
      */
-    private void showUserMessage(@Nullable final String message) {
+    void showUserMessage(@Nullable final String message) {
         final View view = getView();
         if (view != null && message != null && !message.isEmpty()) {
             Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
@@ -292,7 +268,7 @@ public abstract class BookBaseFragment
                     if (newId != 0) {
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.
-                        mBookModel.setBook(newId);
+                        mBookViewModel.loadBook(newId);
                     }
                 }
                 break;
@@ -306,5 +282,11 @@ public abstract class BookBaseFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
+    }
+
+    public interface FieldsViewModel {
+
+        @NonNull
+        Fields getFields();
     }
 }

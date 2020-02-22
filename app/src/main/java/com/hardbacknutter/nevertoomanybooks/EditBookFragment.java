@@ -28,7 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -51,52 +52,41 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookBaseFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
  * Fragment that hosts child fragments to edit a book.
  * <p>
  * Does not have fields of its own, as it's merely the coordinator/container for the actual
  * editor fragments.
+ * <p>
+ * URGENT: eliminate... move functionality to the activity and ViewModel
  */
 public class EditBookFragment
         extends Fragment {
 
     public static final String TAG = "EditBookFragment";
-
-    /** Which tab to open in {@link #onResume()}. */
     private static final String BKEY_TAB = TAG + ":tab";
-    private final List<Class> mTabClasses = new ArrayList<>();
-    private final List<Integer> mTabTitles = new ArrayList<>();
+
+    private final List<TabInfo> mTabList = new ArrayList<>();
+
     private ViewPager2 mViewPager;
-    private TabAdapter mTabAdapter;
+    private TabAdapter mViewPagerAdapter;
     private TabLayoutMediator mTabLayoutMediator;
-
-    /** The book. Must be in the Activity scope. */
-    private BookBaseFragmentModel mBookModel;
-    private int mInitialTab = 0;
-
     private TabLayout mTabLayout;
 
-    static boolean showAuthSeriesOnTabs(@NonNull final Context context) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(Prefs.pk_edit_book_tabs_authSer, false);
-    }
+    /** The book. Must be in the Activity scope. */
+    private BookViewModel mBookViewModel;
 
-    static boolean showTabNativeId(@NonNull final Context context) {
-        return PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(Prefs.pk_edit_book_tabs_native_id, false);
-    }
+    private int mCurrentTab = 0;
 
     @Override
     @Nullable
@@ -112,19 +102,16 @@ public class EditBookFragment
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        //noinspection ConstantConditions
-        mBookModel = new ViewModelProvider(getActivity()).get(BookBaseFragmentModel.class);
-        mBookModel.init(getArguments());
-
-        // any specific tab desired as 'selected' ?
-        final Bundle currentArgs = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (currentArgs != null) {
-            mInitialTab = currentArgs.getInt(BKEY_TAB, 0);
+        if (savedInstanceState != null) {
+            mCurrentTab = savedInstanceState.getInt(BKEY_TAB);
         }
+        //noinspection ConstantConditions
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+        //noinspection ConstantConditions
+        mBookViewModel.init(getContext(), getArguments());
 
-        mTabAdapter = new TabAdapter(this, mTabClasses);
-        mViewPager.setAdapter(mTabAdapter);
+        mViewPagerAdapter = new TabAdapter(this, mTabList);
+        mViewPager.setAdapter(mViewPagerAdapter);
 
         // The tab bar lives in the activity layout inside the AppBarLayout!
         mTabLayout = getActivity().findViewById(R.id.tab_panel);
@@ -137,12 +124,19 @@ public class EditBookFragment
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(BKEY_TAB, mViewPager.getCurrentItem());
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
         // create the list depending on user preferences
         initTabList();
-        mTabAdapter.notifyDataSetChanged();
+        // refresh
+        mViewPagerAdapter.notifyDataSetChanged();
 
         // detach any existing mediator.
         if (mTabLayoutMediator != null) {
@@ -152,61 +146,49 @@ public class EditBookFragment
         // Creating a new mediator in onResume seems mandatory. Not doing this causes issues
         // if the settings (for showing tabs/popup screens) are changed.
         mTabLayoutMediator = new TabLayoutMediator(mTabLayout, mViewPager, (tab, position) ->
-                tab.setText(getString(mTabTitles.get(position))));
+                tab.setText(getString(mTabList.get(position).titleId)));
         mTabLayoutMediator.attach();
 
         //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
         // and its re-use strategy.
-        mViewPager.setOffscreenPageLimit(mTabClasses.size());
+        mViewPager.setOffscreenPageLimit(mTabList.size());
 
-        if (mInitialTab >= mTabClasses.size()) {
-            mInitialTab = 0;
+        if (mCurrentTab >= mTabList.size()) {
+            mCurrentTab = 0;
         }
-        mViewPager.setCurrentItem(mInitialTab);
-    }
-
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(BKEY_TAB, mViewPager.getCurrentItem());
+        mViewPager.setCurrentItem(mCurrentTab);
     }
 
     /**
      * Build the tab classes and title list arrays.
      */
     private void initTabList() {
-        mTabClasses.clear();
-        mTabTitles.clear();
-
-        mTabClasses.add(EditBookFieldsFragment.class);
-        mTabTitles.add(R.string.tab_lbl_details);
-
         //noinspection ConstantConditions
-        if (showAuthSeriesOnTabs(getContext())) {
-            mTabClasses.add(EditBookAuthorsFragment.class);
-            mTabTitles.add(R.string.lbl_authors);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-            if (App.isUsed(DBDefinitions.KEY_FK_SERIES)) {
-                mTabClasses.add(EditBookSeriesFragment.class);
-                mTabTitles.add(R.string.lbl_series_multiple);
+        mTabList.clear();
+
+        mTabList.add(new TabInfo(EditBookFieldsFragment.class, R.string.tab_lbl_details));
+
+        if (EditBookActivity.showAuthSeriesOnTabs(getContext())) {
+            mTabList.add(new TabInfo(EditBookAuthorsFragment.class, R.string.lbl_authors));
+
+            if (App.isUsed(prefs, DBDefinitions.KEY_FK_SERIES)) {
+                mTabList.add(new TabInfo(EditBookSeriesFragment.class,
+                                         R.string.lbl_series_multiple));
             }
         }
 
-        mTabClasses.add(EditBookPublicationFragment.class);
-        mTabTitles.add(R.string.tab_lbl_publication);
+        mTabList.add(new TabInfo(EditBookPublicationFragment.class, R.string.tab_lbl_publication));
 
-        mTabClasses.add(EditBookNotesFragment.class);
-        mTabTitles.add(R.string.tab_lbl_notes);
+        mTabList.add(new TabInfo(EditBookNotesFragment.class, R.string.tab_lbl_notes));
 
-        if (App.isUsed(DBDefinitions.KEY_TOC_BITMASK)) {
-            mTabClasses.add(EditBookTocFragment.class);
-            mTabTitles.add(R.string.tab_lbl_content);
+        if (App.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
+            mTabList.add(new TabInfo(EditBookTocFragment.class, R.string.tab_lbl_content));
         }
 
-        if (showTabNativeId(getContext())) {
-            mTabClasses.add(EditBookNativeIdFragment.class);
-            mTabTitles.add(R.string.tab_lbl_ext_id);
+        if (EditBookActivity.showTabNativeId(getContext())) {
+            mTabList.add(new TabInfo(EditBookNativeIdFragment.class, R.string.tab_lbl_ext_id));
         }
     }
 
@@ -227,12 +209,8 @@ public class EditBookFragment
      */
     private void prepareSave(final boolean checkUnfinishedEdits) {
 
-        final Book book = mBookModel.getBook();
-
-        //noinspection ConstantConditions
-        EditBookBaseFragment.UnfinishedEdits unfinishedEdits =
-                new ViewModelProvider(getActivity())
-                        .get(EditBookBaseFragment.UnfinishedEdits.class);
+        final Book book = mBookViewModel.getBook();
+        final Collection<String> unfinishedEdits = mBookViewModel.getUnfinishedEdits();
 
         // The ViewPager2 fragments are created as children.
         final List<Fragment> fragments = getChildFragmentManager().getFragments();
@@ -242,8 +220,7 @@ public class EditBookFragment
             // 1. Fragments which went through onPause (i.e. are NOT resumed)
             // These have saved their *confirmed* data to the book, but might have unfinished data
             // as indicated in EditBookBaseFragment.UnfinishedEdits
-            if (checkUnfinishedEdits
-                && unfinishedEdits.fragments.contains(frag.getTag())
+            if (checkUnfinishedEdits && unfinishedEdits.contains(frag.getTag())
                 && !frag.isResumed()) {
                 // bring it to the front; i.e. resume it; the user will see it below the dialog.
                 mViewPager.setCurrentItem(i);
@@ -252,7 +229,7 @@ public class EditBookFragment
                         getContext(),
                         () -> prepareSave(false),
                         () -> ((EditBookActivity) getActivity())
-                                .cleanupAndSetResults(mBookModel, true));
+                                .cleanupAndSetResults(mBookViewModel, true));
                 return;
             }
 
@@ -270,7 +247,7 @@ public class EditBookFragment
                             getContext(),
                             () -> prepareSave(false),
                             () -> ((EditBookActivity) getActivity())
-                                    .cleanupAndSetResults(mBookModel, true));
+                                    .cleanupAndSetResults(mBookViewModel, true));
                     return;
                 }
             }
@@ -278,7 +255,8 @@ public class EditBookFragment
 
         // if we're NOT running in tabbed mode for authors/series, send them a save command.
         //noinspection ConstantConditions
-        if (!showAuthSeriesOnTabs(getContext())) {
+        if (!EditBookActivity.showAuthSeriesOnTabs(getContext())) {
+            //noinspection ConstantConditions
             final FragmentManager fm = getActivity().getSupportFragmentManager();
             // Only resumed fragments (i.e. front/visible) can/will be asked to save their state.
             final String[] fragmentTags = {EditBookAuthorsFragment.TAG, EditBookSeriesFragment.TAG};
@@ -293,7 +271,7 @@ public class EditBookFragment
                                 getContext(),
                                 () -> prepareSave(false),
                                 () -> ((EditBookActivity) getActivity())
-                                        .cleanupAndSetResults(mBookModel, true));
+                                        .cleanupAndSetResults(mBookViewModel, true));
                         return;
                     }
                 }
@@ -317,7 +295,8 @@ public class EditBookFragment
             final String isbnStr = book.getString(DBDefinitions.KEY_ISBN);
             if (!isbnStr.isEmpty()) {
                 final ISBN isbn = ISBN.createISBN(isbnStr);
-                if (mBookModel.getDb().getBookIdFromIsbn(isbn) > 0) {
+                if (mBookViewModel.getDb().getBookIdFromIsbn(isbn) > 0) {
+                    //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
                             .setIconAttribute(android.R.attr.alertDialogIcon)
                             .setTitle(R.string.title_duplicate_book)
@@ -349,9 +328,9 @@ public class EditBookFragment
      */
     private void saveBook() {
         //noinspection ConstantConditions
-        if (mBookModel.saveBook(getContext())) {
+        if (mBookViewModel.saveBook(getContext())) {
             //noinspection ConstantConditions
-            getActivity().setResult(Activity.RESULT_OK, mBookModel.getResultData());
+            getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultData());
             getActivity().finish();
         } else {
             //noinspection ConstantConditions
@@ -360,34 +339,49 @@ public class EditBookFragment
         }
     }
 
+    public static class TabInfo {
+
+        @NonNull
+        final Class clazz;
+        @StringRes
+        final int titleId;
+
+        TabInfo(@NonNull final Class clazz,
+                final int titleId) {
+            this.clazz = clazz;
+            this.titleId = titleId;
+        }
+    }
+
     private static class TabAdapter
             extends FragmentStateAdapter {
 
         @NonNull
-        private final List<Class> mTabClasses;
+        private final List<TabInfo> mTabs;
 
         /**
          * Constructor.
          *
-         * @param container  hosting fragment
-         * @param tabClasses for the fragments
+         * @param container hosting fragment
+         * @param tabs      for the fragments
          */
         TabAdapter(@NonNull final Fragment container,
-                   @NonNull final List<Class> tabClasses) {
+                   @NonNull final List<TabInfo> tabs) {
             super(container);
-            mTabClasses = tabClasses;
+            mTabs = tabs;
         }
 
         @Override
         public int getItemCount() {
-            return mTabClasses.size();
+            return mTabs.size();
         }
 
         @NonNull
         @Override
         public Fragment createFragment(final int position) {
             try {
-                return (Fragment) mTabClasses.get(position).newInstance();
+                return (Fragment) mTabs.get(position).clazz.newInstance();
+
             } catch (@NonNull final IllegalAccessException
                     | java.lang.InstantiationException ignore) {
                 // ignore

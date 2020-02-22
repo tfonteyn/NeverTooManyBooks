@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
@@ -79,6 +80,10 @@ public class StartupViewModel
     /** Flag to indicate OrderBy columns must be rebuild at startup. */
     private static final String PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED =
             PREF_PREFIX + "rebuild.ob.title";
+    /** Flag to indicate all indexes must be rebuild at startup. */
+    private static final String PREF_STARTUP_INDEX_REBUILD_REQUIRED =
+            PREF_PREFIX + "rebuild.index";
+
     /** Number of app startup's between some periodic action. */
     private static final int MAINTENANCE_COUNTDOWN = 5;
     /** TaskId holder. Added when started. Removed when stopped. */
@@ -132,7 +137,7 @@ public class StartupViewModel
      * @param context Current context
      */
     @SuppressWarnings("unused")
-    public static void setScheduleFtsRebuild(@NonNull final Context context) {
+    public static void scheduleFtsRebuild(@NonNull final Context context) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
     }
@@ -142,8 +147,8 @@ public class StartupViewModel
      *
      * @param context Current context
      */
-    public static void setScheduleOrderByRebuild(@NonNull final Context context,
-                                                 final boolean flag) {
+    public static void scheduleOrderByRebuild(@NonNull final Context context,
+                                              final boolean flag) {
         final SharedPreferences.Editor ed = PreferenceManager
                 .getDefaultSharedPreferences(context).edit();
         if (flag) {
@@ -152,6 +157,19 @@ public class StartupViewModel
             ed.remove(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED);
         }
         ed.apply();
+    }
+
+    public static void scheduleIndexRebuild(@NonNull final Context context,
+                                            final boolean flag) {
+        final SharedPreferences.Editor ed = PreferenceManager
+                .getDefaultSharedPreferences(context).edit();
+        if (flag) {
+            ed.putBoolean(PREF_STARTUP_INDEX_REBUILD_REQUIRED, true);
+        } else {
+            ed.remove(PREF_STARTUP_INDEX_REBUILD_REQUIRED);
+        }
+        ed.apply();
+
     }
 
     /**
@@ -271,6 +289,13 @@ public class StartupViewModel
                                  .getBoolean(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED,
                                              false)) {
                 startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener), false);
+            }
+
+            // on demand only
+            if (PreferenceManager.getDefaultSharedPreferences(context)
+                                 .getBoolean(PREF_STARTUP_INDEX_REBUILD_REQUIRED,
+                                             false)) {
+                startTask(new RebuildIndexes(++taskId, mDb, mTaskListener), false);
             }
 
             // on demand only
@@ -454,6 +479,61 @@ public class StartupViewModel
     }
 
     /**
+     * Task to rebuild all index in background.
+     * Can take several seconds.
+     */
+    static class RebuildIndexes
+            extends TaskBase<Void, Boolean> {
+
+        /** Database Access. */
+        @NonNull
+        private final DAO mDb;
+
+        /**
+         * Constructor.
+         *
+         * @param taskId       a task identifier, will be returned in the task finished listener.
+         * @param db           Database Access
+         * @param taskListener for sending progress and finish messages to.
+         */
+        @UiThread
+        RebuildIndexes(final int taskId,
+                       @NonNull final DAO db,
+                       @NonNull final TaskListener<Boolean> taskListener) {
+            super(taskId, taskListener);
+            mDb = db;
+        }
+
+        @Override
+        @WorkerThread
+        protected Boolean doInBackground(final Void... params) {
+            Thread.currentThread().setName("RebuildIndexes");
+            final Context context = App.getLocalizedAppContext();
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
+                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
+            }
+            publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
+                    R.string.progress_msg_rebuilding_search_index)));
+            try {
+                DBHelper.recreateIndices(mDb.getSyncDb());
+
+                PreferenceManager.getDefaultSharedPreferences(context)
+                                 .edit()
+                                 .remove(PREF_STARTUP_INDEX_REBUILD_REQUIRED)
+                                 .apply();
+                return true;
+
+            } catch (@NonNull final RuntimeException e) {
+                Logger.error(context, TAG, e);
+                mException = e;
+                return false;
+            }
+
+        }
+    }
+
+    /**
      * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
      */
     static class RebuildFtsTask
@@ -491,6 +571,7 @@ public class StartupViewModel
                     R.string.progress_msg_rebuilding_search_index)));
             try {
                 mDb.rebuildFts();
+
                 PreferenceManager.getDefaultSharedPreferences(context)
                                  .edit()
                                  .remove(PREF_STARTUP_FTS_REBUILD_REQUIRED)
@@ -554,7 +635,7 @@ public class StartupViewModel
                 return false;
             } finally {
                 // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-                setScheduleOrderByRebuild(context, false);
+                scheduleOrderByRebuild(context, false);
             }
         }
     }

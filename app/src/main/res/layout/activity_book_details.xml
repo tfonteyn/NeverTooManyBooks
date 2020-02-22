@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@
         android:layout_height="match_parent"
         >
 
-        <include layout="@layout/inc_appbar_tabs" />
+        <include layout="@layout/inc_appbar" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/main_fragment"

@@ -82,7 +82,7 @@ public class SynchronizedStatement
     public SynchronizedStatement(@NonNull final SynchronizedDb db,
                                  @NonNull final String sql) {
         mSync = db.getSynchronizer();
-        mStatement = db.getUnderlyingDatabase().compileStatement(sql);
+        mStatement = db.getSQLiteDatabase().compileStatement(sql);
         // this is not a debug flag, but used to get a shared versus exclusive lock
         mIsReadOnly = sql.trim().toUpperCase(Locale.ENGLISH).startsWith("SELECT");
 

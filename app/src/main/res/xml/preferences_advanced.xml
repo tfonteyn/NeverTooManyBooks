@@ -66,6 +66,12 @@
             />
 
         <Preference
+            android:icon="@drawable/ic_manage"
+            android:key="psk_rebuild_index"
+            android:title="@string/rebuild_index"
+            />
+
+        <Preference
             android:icon="@drawable/ic_send"
             android:key="psk_send_debug_info"
             android:title="@string/lbl_send_debug_info"

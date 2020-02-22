@@ -29,9 +29,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -39,24 +36,16 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Locale;
-
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.LongNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 public class EditBookNativeIdFragment
         extends EditBookBaseFragment {
-
-    /** Show all sites, instead of just the enabled sites. */
-    private boolean mShowAllSites = true;
 
     @Override
     @Nullable
@@ -76,102 +65,79 @@ public class EditBookNativeIdFragment
     }
 
     @Override
-    protected void initFields() {
-        super.initFields();
-        final Fields fields = getFields();
+    protected void onInitFields() {
+        super.onInitFields();
+        final Fields fields = mFragmentVM.getFields();
 
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 
-        fields.add(R.id.site_goodreads, new EditTextAccessor<>(longNumberFormatter),
-                   DBDefinitions.KEY_EID_GOODREADS_BOOK)
+        fields.add(R.id.site_goodreads, DBDefinitions.KEY_EID_GOODREADS_BOOK,
+                   new EditTextAccessor<>(longNumberFormatter))
               .setRelatedFields(R.id.lbl_site_goodreads);
 
-        fields.add(R.id.site_isfdb, new EditTextAccessor<>(longNumberFormatter),
-                   DBDefinitions.KEY_EID_ISFDB)
+        fields.add(R.id.site_isfdb, DBDefinitions.KEY_EID_ISFDB,
+                   new EditTextAccessor<>(longNumberFormatter))
               .setRelatedFields(R.id.lbl_site_isfdb);
 
-        fields.add(R.id.site_library_thing, new EditTextAccessor<>(longNumberFormatter),
-                   DBDefinitions.KEY_EID_LIBRARY_THING)
+        fields.add(R.id.site_library_thing, DBDefinitions.KEY_EID_LIBRARY_THING,
+                   new EditTextAccessor<>(longNumberFormatter))
               .setRelatedFields(R.id.lbl_site_library_thing);
 
-        fields.add(R.id.site_strip_info_be, new EditTextAccessor<>(longNumberFormatter),
-                   DBDefinitions.KEY_EID_STRIP_INFO_BE)
+        fields.add(R.id.site_strip_info_be, DBDefinitions.KEY_EID_STRIP_INFO_BE,
+                   new EditTextAccessor<>(longNumberFormatter))
               .setRelatedFields(R.id.lbl_site_strip_info_be);
 
-        fields.add(R.id.site_open_library, new EditTextAccessor<String>(),
-                   DBDefinitions.KEY_EID_OPEN_LIBRARY)
+        fields.add(R.id.site_open_library, DBDefinitions.KEY_EID_OPEN_LIBRARY,
+                   new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_site_open_library);
-
-        setSiteVisibility(mShowAllSites);
     }
 
     @Override
-    void onLoadFields(@NonNull final Book book) {
-        super.onLoadFields(book);
+    void onPopulateViews(@NonNull final Book book) {
+        super.onPopulateViews(book);
 
         // hide unwanted fields
         //noinspection ConstantConditions
-        getFields().resetVisibility(getView(), false, true);
+        mFragmentVM.getFields().resetVisibility(getView(), false, true);
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_SHOW_ALL, 0, R.string.menu_show_all)
-            .setCheckable(true)
-            .setChecked(mShowAllSites)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_SHOW_ALL: {
-                mShowAllSites = !item.isChecked();
-                item.setChecked(mShowAllSites);
-                setSiteVisibility(mShowAllSites);
-                return true;
-            }
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void setSiteVisibility(final boolean showAllSites) {
-
-        @SearchSites.Id
-        final int sites;
-
-        if (showAllSites) {
-            sites = SearchSites.SEARCH_FLAG_MASK;
-        } else {
-            //noinspection ConstantConditions
-            Locale locale = LocaleUtils.getUserLocale(getContext());
-            sites = SiteList.getList(getContext(), locale, SiteList.Type.Data).getEnabledSites();
-        }
-
-        final Fields fields = getFields();
-        final View parent = getView();
-
-        //noinspection ConstantConditions
-        fields.getField(R.id.site_goodreads).setVisibility(
-                parent, (sites & SearchSites.GOODREADS) != 0 ? View.VISIBLE : View.GONE);
-
-        fields.getField(R.id.site_isfdb).setVisibility(
-                parent, (sites & SearchSites.ISFDB) != 0 ? View.VISIBLE : View.GONE);
-
-        fields.getField(R.id.site_library_thing).setVisibility(
-                parent, (sites & SearchSites.LIBRARY_THING) != 0 ? View.VISIBLE : View.GONE);
-
-        fields.getField(R.id.site_open_library).setVisibility(
-                parent, (sites & SearchSites.OPEN_LIBRARY) != 0 ? View.VISIBLE : View.GONE);
-
-        fields.getField(R.id.site_strip_info_be).setVisibility(
-                parent, (sites & SearchSites.STRIP_INFO_BE) != 0 ? View.VISIBLE : View.GONE);
-    }
+//    /**
+//     * Show all sites, or only the enabled sites.
+//     *
+//     * @param showAllSites flag
+//     */
+//    private void setSiteVisibility(final boolean showAllSites) {
+//
+//        @SearchSites.Id
+//        final int sites;
+//
+//        if (showAllSites) {
+//            sites = SearchSites.SEARCH_FLAG_MASK;
+//        } else {
+//            //noinspection ConstantConditions
+//            Locale locale = LocaleUtils.getUserLocale(getContext());
+//            sites = SiteList.getList(getContext(), locale, SiteList.Type.Data).getEnabledSites();
+//        }
+//
+//        final Fields fields = mFragmentVM.getFields();
+//        final View parent = getView();
+//
+//        //noinspection ConstantConditions
+//        fields.getField(R.id.site_goodreads).setVisibility(
+//                parent, (sites & SearchSites.GOODREADS) != 0 ? View.VISIBLE : View.GONE);
+//
+//        fields.getField(R.id.site_isfdb).setVisibility(
+//                parent, (sites & SearchSites.ISFDB) != 0 ? View.VISIBLE : View.GONE);
+//
+//        fields.getField(R.id.site_library_thing).setVisibility(
+//                parent, (sites & SearchSites.LIBRARY_THING) != 0 ? View.VISIBLE : View.GONE);
+//
+//        fields.getField(R.id.site_open_library).setVisibility(
+//                parent, (sites & SearchSites.OPEN_LIBRARY) != 0 ? View.VISIBLE : View.GONE);
+//
+//        fields.getField(R.id.site_strip_info_be).setVisibility(
+//                parent, (sites & SearchSites.STRIP_INFO_BE) != 0 ? View.VISIBLE : View.GONE);
+//    }
 }

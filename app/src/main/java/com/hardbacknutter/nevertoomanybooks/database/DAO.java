@@ -244,8 +244,8 @@ public class DAO
     private static final String STMT_GET_BOOK_TITLE = "GetBookTitle";
     private static final String STMT_GET_BOOK_UPDATE_DATE = "GetBookUpdateDate";
     private static final String STMT_GET_BOOK_UUID = "GetBookUuid";
-    private static final String STMT_GET_BOOK_ID_FROM_ISBN_2 = "GetIdFromIsbn2";
-    private static final String STMT_GET_BOOK_ID_FROM_ISBN_1 = "GetIdFromIsbn1";
+    private static final String STMT_GET_BOOK_ID_FROM_VALID_ISBN = "GetIdFromIsbn2";
+    private static final String STMT_GET_BOOK_ID_FROM_ISBN = "GetIdFromIsbn1";
     private static final String STMT_GET_BOOK_ID_FROM_UUID = "GetBookIdFromUuid";
     private static final String STMT_GET_BOOKSHELF_ID_BY_NAME = "GetBookshelfIdByName";
     private static final String STMT_GET_LOANEE_BY_BOOK_ID = "GetLoaneeByBookId";
@@ -554,7 +554,7 @@ public class DAO
      * @return Database connection
      */
     @NonNull
-    public SynchronizedDb getUnderlyingDatabase() {
+    public SynchronizedDb getSyncDb() {
         return sSyncedDb;
     }
 
@@ -1538,35 +1538,42 @@ public class DAO
     /**
      * Search for a book by the given ISBN.
      *
-     * @param isbn to search for; can be generic
+     * @param isbn to search for; can be generic/non-valid
      *
      * @return book id, or 0 if not found
      */
     public long getBookIdFromIsbn(@NonNull final ISBN isbn) {
-        SynchronizedStatement stmt;
-        // if the string is an ISBN-10 or ISBN-13, we search on both formats
+        // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,
+        // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
-            stmt = mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_ISBN_2);
+            SynchronizedStatement stmt =
+                    mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_VALID_ISBN);
             if (stmt == null) {
-                stmt = mSqlStatementManager
-                        .add(STMT_GET_BOOK_ID_FROM_ISBN_2, SqlGet.BOOK_ID_BY_ISBN2);
+                stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_VALID_ISBN,
+                                                SqlGet.BOOK_ID_BY_VALID_ISBN);
             }
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
+                // the asText for ISBN10/ISBN13 is always uppercase
+                // and their values in the database are also always uppercase.
                 stmt.bindString(1, isbn.asText(ISBN.Type.ISBN10));
                 stmt.bindString(2, isbn.asText(ISBN.Type.ISBN13));
                 return stmt.simpleQueryForLongOrZero();
             }
 
         } else {
-            // otherwise just on the string as-is; regardless of validity
-            stmt = mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_ISBN_1);
+            // otherwise just search on the string as-is; regardless of validity
+            // (this would actually include valid ISBN-13 in the 979 range).
+            SynchronizedStatement stmt =
+                    mSqlStatementManager.get(STMT_GET_BOOK_ID_FROM_ISBN);
             if (stmt == null) {
-                stmt = mSqlStatementManager
-                        .add(STMT_GET_BOOK_ID_FROM_ISBN_1, SqlGet.BOOK_ID_BY_ISBN);
+                stmt = mSqlStatementManager.add(STMT_GET_BOOK_ID_FROM_ISBN,
+                                                SqlGet.BOOK_ID_BY_ISBN);
             }
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
+                // The generic asText can contain mixed case characters!
+                // This is covered by the SQL, which is using 'upper()'.
                 stmt.bindString(1, isbn.asText());
                 return stmt.simpleQueryForLongOrZero();
             }
@@ -2440,7 +2447,7 @@ public class DAO
 
         String sql = SqlSelectFullTable.BOOKSHELVES
                      + " WHERE " + TBL_BOOKSHELF.dot(KEY_PK_ID) + ">0"
-                     + " ORDER BY lower(" + KEY_BOOKSHELF + ')' + COLLATION;
+                     + " ORDER BY " + KEY_BOOKSHELF + COLLATION;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
             final RowDataHolder rowData = new CursorRow(cursor);
@@ -2583,7 +2590,7 @@ public class DAO
      *
      * @param domainName for which to collect the used currency codes
      *
-     * @return The list
+     * @return The list; values are always in uppercase.
      */
     @NonNull
     public ArrayList<String> getCurrencyCodes(@NonNull final String domainName) {
@@ -2596,7 +2603,7 @@ public class DAO
         }
 
         String sql = "SELECT DISTINCT upper(" + column + ") FROM " + TBL_BOOKS.getName()
-                     + " ORDER BY upper(" + column + ") " + COLLATION;
+                     + " ORDER BY " + column + COLLATION;
 
         try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
             ArrayList<String> list = getFirstColumnAsList(cursor);
@@ -3801,7 +3808,7 @@ public class DAO
      * <li>{@link #withPrimaryAuthorAndSeries}: Books with a primary Author and<br>
      * (if they have one) primary Series</li>
      * </ol>
-     *
+     * <p>
      * We use ORDER BY position LIMIT 1, instead of "AND position=1",
      * to cover the case there is a gap in the sequence.
      */
@@ -3962,9 +3969,7 @@ public class DAO
                 + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
                 + ") s ON s." + KEY_FK_BOOK + "=b." + KEY_PK_ID
                 + " AND s." + KEY_FK_SERIES + "=b." + KEY_FK_SERIES
-                + " AND lower(s." + KEY_BOOK_NUM_IN_SERIES + ")"
-                + "=lower(b." + KEY_BOOK_NUM_IN_SERIES + ')'
-                + COLLATION;
+                + " AND s." + KEY_BOOK_NUM_IN_SERIES + "=b." + KEY_BOOK_NUM_IN_SERIES + COLLATION;
 
         /**
          * Construct the SQL for a list of books in the database based on the given where-clause.
@@ -4321,37 +4326,37 @@ public class DAO
         private static final String FORMATS =
                 "SELECT DISTINCT " + KEY_FORMAT
                 + " FROM " + TBL_BOOKS.getName()
-                + " ORDER BY lower(" + KEY_FORMAT + ')' + COLLATION;
+                + " ORDER BY " + KEY_FORMAT + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String COLORS =
                 "SELECT DISTINCT " + KEY_COLOR
                 + " FROM " + TBL_BOOKS.getName()
-                + " ORDER BY lower(" + KEY_COLOR + ')' + COLLATION;
+                + " ORDER BY " + KEY_COLOR + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String GENRES =
                 "SELECT DISTINCT " + KEY_GENRE
                 + " FROM " + TBL_BOOKS.getName()
-                + " ORDER BY lower(" + KEY_GENRE + ')' + COLLATION;
+                + " ORDER BY " + KEY_GENRE + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LANGUAGES =
                 "SELECT DISTINCT " + KEY_LANGUAGE
                 + " FROM " + TBL_BOOKS.getName()
-                + " ORDER BY lower(" + KEY_LANGUAGE + ')' + COLLATION;
+                + " ORDER BY " + KEY_LANGUAGE + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LOCATIONS =
                 "SELECT DISTINCT " + KEY_LOCATION
                 + " FROM " + TBL_BOOKS.getName()
-                + " ORDER BY lower(" + KEY_LOCATION + ')' + COLLATION;
+                + " ORDER BY " + KEY_LOCATION + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String PUBLISHERS =
                 "SELECT DISTINCT " + KEY_PUBLISHER
                 + " FROM " + TBL_BOOKS.getName()
-                + " ORDER BY lower(" + KEY_PUBLISHER + ')' + COLLATION;
+                + " ORDER BY " + KEY_PUBLISHER + COLLATION;
 
         /**
          * All Book titles for a rebuild of the {@link DBDefinitions#KEY_TITLE_OB} column.
@@ -4383,7 +4388,7 @@ public class DAO
         private static final String LOANEE =
                 "SELECT DISTINCT " + KEY_LOANEE
                 + " FROM " + TBL_BOOK_LOANEE.getName()
-                + " ORDER BY lower(" + KEY_LOANEE + ')' + COLLATION;
+                + " ORDER BY " + KEY_LOANEE + COLLATION;
     }
 
     /**
@@ -4405,7 +4410,7 @@ public class DAO
                 + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
                 + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES)
                 + " WHERE " + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK) + "=?"
-                + " ORDER BY lower(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ')' + COLLATION;
+                + " ORDER BY " + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + COLLATION;
 
         /**
          * All Authors for a Book; ordered by position, family, given.
@@ -4549,17 +4554,24 @@ public class DAO
     private static final class SqlGet {
 
         /**
-         * Find the Book id based on a search for the ISBN (10 OR 13).
+         * Find the Book id based on a search for the ISBN (both 10 & 13).
+         * The arguments MUST be bound in uppercase,
+         * as valid ISBN numbers are always stored in uppercase (the 'X').
+         */
+        static final String BOOK_ID_BY_VALID_ISBN =
+                "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
+                + " WHERE " + KEY_ISBN + ") IN (?,?)";
+
+        /**
+         * Find the Book id based on a search for the ISBN; the isbn need not be valid
+         * and can in fact be any code whatsoever with mixed case characters.
+         * Hence, we use 'upper()' on BOTH sides.
          */
         static final String BOOK_ID_BY_ISBN =
                 "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
-                + " WHERE lower(" + KEY_ISBN + ")=lower(?)";
-        /**
-         * Find the Book id based on a search for the ISBN (both 10 & 13).
-         */
-        static final String BOOK_ID_BY_ISBN2 =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
-                + " WHERE lower(" + KEY_ISBN + ") IN (lower(?),lower(?))";
+                + " WHERE upper(" + KEY_ISBN + ")=upper(?)";
+
+
 
         static final String BOOKLIST_STYLE_ID_BY_UUID =
                 "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKLIST_STYLES.getName()
@@ -4575,7 +4587,7 @@ public class DAO
 
         static final String BOOKSHELF_ID_BY_NAME =
                 "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKSHELF.getName()
-                + " WHERE lower(" + KEY_BOOKSHELF + ")=lower(?)" + COLLATION;
+                + " WHERE " + KEY_BOOKSHELF + "=?" + COLLATION;
 
         /**
          * Get the id of a {@link Series} by its Title.
@@ -4654,7 +4666,7 @@ public class DAO
          */
         static final String BOOKSHELF_BY_NAME =
                 SqlSelectFullTable.BOOKSHELVES
-                + " WHERE lower(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ")=lower(?)" + COLLATION;
+                + " WHERE " + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + "=?" + COLLATION;
 
         /**
          * Get an {@link Author} by its id.
@@ -4774,7 +4786,7 @@ public class DAO
                 + " LIKE ?"
 
                 + " ) AS zzz "
-                + " ORDER BY lower(" + SearchManager.SUGGEST_COLUMN_TEXT_1 + ')' + COLLATION;
+                + " ORDER BY " + SearchManager.SUGGEST_COLUMN_TEXT_1 + COLLATION;
     }
 
     /**

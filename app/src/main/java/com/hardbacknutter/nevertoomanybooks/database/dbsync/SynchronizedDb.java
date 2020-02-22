@@ -42,7 +42,6 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.SearchSuggestionProvider;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -57,7 +56,7 @@ public class SynchronizedDb {
 
     /** log error string. */
     private static final String ERROR_UPDATE_INSIDE_SHARED_TX = "Update inside shared TX";
-    private static Boolean sIsCollationCaseSensitive;
+
     /** Underlying database. */
     @NonNull
     private final SQLiteDatabase mSqlDb;
@@ -508,7 +507,7 @@ public class SynchronizedDb {
      * @return the underlying SQLiteDatabase object.
      */
     @NonNull
-    SQLiteDatabase getUnderlyingDatabase() {
+    public SQLiteDatabase getSQLiteDatabase() {
         return mSqlDb;
     }
 
@@ -610,71 +609,10 @@ public class SynchronizedDb {
     }
 
     /**
-     * Check if the collation we use is case sensitive.
-     * ; bug introduced in ICS was to make UNICODE not CI.
-     * Due to bugs in other language sorting, we are now forced to use a different
-     * collation anyway, but we still check if it is CI.
-     *
-     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
-     */
-    public boolean isCollationCaseSensitive() {
-        if (sIsCollationCaseSensitive == null) {
-            sIsCollationCaseSensitive = collationIsCaseSensitive();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-                Log.d(TAG, "isCollationCaseSensitive=" + sIsCollationCaseSensitive);
-            }
-        }
-        return sIsCollationCaseSensitive;
-    }
-
-    /**
      * @return the underlying Synchronizer object.
      */
     @NonNull
     Synchronizer getSynchronizer() {
         return mSynchronizer;
     }
-
-    /**
-     * Method to detect if collation implementations are case sensitive.
-     * This was built because ICS broke the UNICODE collation (making it case sensitive (CS))
-     * and we needed to check for collation case-sensitivity.
-     * <p>
-     * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
-     * <p>
-     * This method is supposed to return {@code false} in normal circumstances.
-     */
-    private boolean collationIsCaseSensitive() {
-        String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
-        // Drop and create table
-        mSqlDb.execSQL(dropTable);
-        mSqlDb.execSQL("CREATE TEMPORARY TABLE collation_cs_check (t text, i integer)");
-        try {
-            // Row that *should* be returned first assuming 'a' <=> 'A'
-            mSqlDb.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");
-            // Row that *should* be returned second assuming 'a' <=> 'A';
-            // will be returned first if 'A' < 'a'.
-            mSqlDb.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
-
-            String s;
-            try (Cursor c = mSqlDb.rawQuery("SELECT t,i FROM collation_cs_check"
-                                            + " ORDER BY t " + DAO.COLLATION + ",i",
-                                            null)) {
-                c.moveToFirst();
-                s = c.getString(0);
-            }
-            return !"a".equals(s);
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(TAG, e);
-            throw e;
-        } finally {
-            try {
-                mSqlDb.execSQL(dropTable);
-            } catch (@NonNull final SQLException e) {
-                Logger.error(TAG, e);
-            }
-        }
-    }
-
 }

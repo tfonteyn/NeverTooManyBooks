@@ -74,16 +74,14 @@ public class EditBookSeriesFragment
 
     /** Log tag. */
     public static final String TAG = "EditBookSeriesFragment";
-
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookModel.setDirty(true);
+                    mBookViewModel.setDirty(true);
                 }
             };
-
     /** Series name field. */
     private AutoCompleteTextView mSeriesNameView;
     /** Main screen Series Number field. */
@@ -114,17 +112,17 @@ public class EditBookSeriesFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        if (!EditBookFragment.showAuthSeriesOnTabs(getContext())) {
+        if (!EditBookActivity.showAuthSeriesOnTabs(getContext())) {
             //noinspection ConstantConditions
             getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
         }
 
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
-                mBookModel.getDb().getSeriesTitles());
+                mFragmentVM.getDb().getSeriesTitles());
         mSeriesNameView.setAdapter(nameAdapter);
 
-        // set up the list view. The adapter is setup in onLoadFields
+        // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         mListView.setLayoutManager(layoutManager);
         mListView.setHasFixedSize(true);
@@ -135,8 +133,8 @@ public class EditBookSeriesFragment
     }
 
     @Override
-    void onLoadFields(@NonNull final Book book) {
-        super.onLoadFields(book);
+    void onPopulateViews(@NonNull final Book book) {
+        super.onPopulateViews(book);
 
         mList = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
 
@@ -175,13 +173,13 @@ public class EditBookSeriesFragment
         }
 
         //noinspection ConstantConditions
-        final Locale bookLocale = mBookModel.getBook().getLocale(getContext());
+        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
 
         final Series newSeries = new Series(name);
         newSeries.setNumber(mSeriesNumberView.getText().toString().trim());
 
         // see if it already exists
-        newSeries.fixId(getContext(), mBookModel.getDb(), bookLocale);
+        newSeries.fixId(getContext(), mFragmentVM.getDb(), bookLocale);
         // and check it's not already in the list.
         if (mList.contains(newSeries)) {
             Snackbar.make(mSeriesNameView, R.string.warning_series_already_in_list,
@@ -209,7 +207,7 @@ public class EditBookSeriesFragment
                                 @NonNull final Series tmpData) {
 
         //noinspection ConstantConditions
-        final Locale bookLocale = mBookModel.getBook().getLocale(getContext());
+        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
 
         // name not changed ?
         if (series.getTitle().equals(tmpData.getTitle())) {
@@ -221,7 +219,7 @@ public class EditBookSeriesFragment
                 // so if the number is different, just update it
                 series.setNumber(tmpData.getNumber());
                 //noinspection ConstantConditions
-                Series.pruneList(mList, getContext(), mBookModel.getDb(), bookLocale, false);
+                Series.pruneList(mList, getContext(), mFragmentVM.getDb(), bookLocale, false);
                 mListAdapter.notifyDataSetChanged();
             }
             return;
@@ -229,13 +227,13 @@ public class EditBookSeriesFragment
 
         // The name of the Series was modified.
         // Check if it's used by any other books.
-        if (mBookModel.isSingleUsage(getContext(), series, bookLocale)) {
+        if (mBookViewModel.isSingleUsage(getContext(), series, bookLocale)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original Series object that the user was changing.
             series.copyFrom(tmpData, true);
             //noinspection ConstantConditions
-            Series.pruneList(mList, getContext(), mBookModel.getDb(), bookLocale, false);
+            Series.pruneList(mList, getContext(), mFragmentVM.getDb(), bookLocale, false);
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -257,10 +255,10 @@ public class EditBookSeriesFragment
                     // copy all new data
                     series.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
-                    if (mBookModel.getDb().updateSeries(getContext(), series, bookLocale)) {
-                        Series.pruneList(mList, getContext(), mBookModel.getDb(),
+                    if (mFragmentVM.getDb().updateSeries(getContext(), series, bookLocale)) {
+                        Series.pruneList(mList, getContext(), mFragmentVM.getDb(),
                                          bookLocale, false);
-                        mBookModel.getBook().refreshSeriesList(getContext(), mBookModel.getDb());
+                        mBookViewModel.refreshSeriesList(getContext());
                         mListAdapter.notifyDataSetChanged();
 
                     } else {
@@ -278,14 +276,16 @@ public class EditBookSeriesFragment
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Series. That's ok, it will get
                     // garbage collected from the database sooner or later.
-                    mBookModel.getDb().updateOrInsertSeries(getContext(), bookLocale, tmpData);
+                    mFragmentVM.getDb().updateOrInsertSeries(getContext(),
+                                                             bookLocale, tmpData);
                     // unlink the old one (and unmodified), and link with the new one
                     // book/series positions will be fixed up when saving.
                     // Note that the old one *might* be orphaned at this time.
                     // Same remark as above.
                     mList.remove(series);
                     mList.add(tmpData);
-                    Series.pruneList(mList, getContext(), mBookModel.getDb(), bookLocale, false);
+                    Series.pruneList(mList, getContext(), mFragmentVM.getDb(),
+                                     bookLocale, false);
                     mListAdapter.notifyDataSetChanged();
                 })
                 .create()

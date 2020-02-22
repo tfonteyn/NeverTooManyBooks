@@ -111,9 +111,9 @@ public class Fields {
      */
     @NonNull
     public <T> Field<T> add(@IdRes final int id,
-                            @NonNull final FieldViewAccessor<T> accessor,
-                            @NonNull final String key) {
-        return add(id, accessor, key, key);
+                            @NonNull final String key,
+                            @NonNull final FieldViewAccessor<T> accessor) {
+        return add(id, key, accessor, key);
     }
 
     /**
@@ -127,8 +127,8 @@ public class Fields {
      */
     @NonNull
     public <T> Field<T> add(@IdRes final int id,
-                            @NonNull final FieldViewAccessor<T> accessor,
                             @NonNull final String key,
+                            @NonNull final FieldViewAccessor<T> accessor,
                             @NonNull final String entityKey) {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -211,13 +211,15 @@ public class Fields {
     }
 
     /**
-     * Tell all fields to find/update their View from the passed parent View,
-     * and make sure the {@link AfterChangeListener} is disabled in preparation
-     * of setting the fields in bulk.
+     * Prepare all fields.
+     * <ol>
+     * <li>Find/update their View from the passed parent View</li>
+     * <li>Disable the {@link AfterChangeListener} in preparation of bulk loading the Views</li>
+     * </ol>
      *
      * @param parentView for the view of each field
      */
-    public void prepareForOnLoadsFields(@NonNull final View parentView) {
+    public void prepareViewsForPopulating(@NonNull final View parentView) {
         for (int f = 0; f < mAllFields.size(); f++) {
             Field field = mAllFields.valueAt(f);
             field.setParentView(parentView);
@@ -237,9 +239,7 @@ public class Fields {
         }
     }
 
-    /**
-     * added to the Fields collection with (2018-11-11) a simple call to setDirty(true).
-     */
+
     public interface AfterChangeListener {
 
         void afterFieldChange(@IdRes int fieldId);

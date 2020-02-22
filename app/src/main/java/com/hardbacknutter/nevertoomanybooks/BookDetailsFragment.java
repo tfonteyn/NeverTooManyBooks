@@ -65,42 +65,28 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.BitmaskChipGroupAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.CompoundButtonAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EntityListChipGroupAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.RatingBarAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.TextAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.AuthorListFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.HtmlFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.LanguageFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MoneyFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.PagesFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 
 /**
  * Class for representing read-only book details.
  * <p>
  * Keep in mind the fragment can be re-used.
  * Do NOT assume fields are empty by default when populating them manually.
+ * <p>
+ * Initializing the Fields is done in the ViewModel.
  */
 public class BookDetailsFragment
         extends BookBaseFragment
@@ -108,7 +94,6 @@ public class BookDetailsFragment
 
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
-    private static final String BKEY_M_CONTEXT_MENU_OPEN_INDEX = TAG + ":imgIndex";
 
     /** the covers. */
     private final ImageView[] mCoverView = new ImageView[2];
@@ -153,11 +138,12 @@ public class BookDetailsFragment
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
 
-    /** Contains the flattened booklist for next/previous paging and the Fields collection. */
-    private BookDetailsFragmentModel mBookDetailsFragmentModel;
+    private BookDetailsFragmentViewModel mFragmentVM;
 
-    /** Track on which cover view the context menu was used. */
-    private int mCurrentCoverHandlerIndex = -1;
+    @Override
+    Fields getFields() {
+        return mFragmentVM.getFields();
+    }
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
@@ -171,8 +157,9 @@ public class BookDetailsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        SharedPreferences prefs = PreferenceManager
-                .getDefaultSharedPreferences(inflater.getContext());
+
+        //noinspection ConstantConditions
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         final View view = inflater.inflate(R.layout.fragment_book_details, container, false);
 
@@ -214,18 +201,19 @@ public class BookDetailsFragment
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
-        mBookDetailsFragmentModel = new ViewModelProvider(this).get(BookDetailsFragmentModel.class);
-
-        // The book will get loaded and fields will be initialised
         super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            mCurrentCoverHandlerIndex =
-                    savedInstanceState.getInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, -1);
-        }
-
-        mBookDetailsFragmentModel.init(mBookModel.getDb(), getArguments(),
-                                       mBookModel.getBook().getId());
+        mFragmentVM = new ViewModelProvider(this)
+                .get(BookDetailsFragmentViewModel.class);
+        //noinspection ConstantConditions
+        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
+        mFragmentVM.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
+        mFragmentVM.getNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
+            if (needs != null && needs) {
+                final Context context = getContext();
+                RequestAuthTask.prompt(context, mFragmentVM.getGoodreadsTaskListener(context));
+            }
+        });
 
         //noinspection ConstantConditions
         final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
@@ -234,7 +222,6 @@ public class BookDetailsFragment
         fabButton.setOnClickListener(v -> startEditBook());
 
         // ENHANCE: should be replaced by a ViewPager2/FragmentStateAdapter
-        // enable the listener for flings
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
         mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
 
@@ -260,16 +247,10 @@ public class BookDetailsFragment
         }
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(BKEY_M_CONTEXT_MENU_OPEN_INDEX, mCurrentCoverHandlerIndex);
-    }
-
     @CallSuper
     @Override
     public void onResume() {
-        // The parent will kick of the process that triggers {@link #onLoadFields}.
+        // The parent will kick of the process that triggers {@link #onPopulateViews}.
         super.onResume();
         // No ViewPager2 involved, override the parent (see google bug comment there)
         setHasOptionsMenu(true);
@@ -283,6 +264,7 @@ public class BookDetailsFragment
     public void onPause() {
         //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).unregisterOnTouchListener(mOnTouchListener);
+
         super.onPause();
     }
 
@@ -300,10 +282,10 @@ public class BookDetailsFragment
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
                         // pass the data up
-                        mBookModel.putResultData(data);
+                        mBookViewModel.putResultData(data);
                     }
                     // onResume will display the changed book.
-                    mBookModel.reload();
+                    mBookViewModel.reload();
                 }
                 break;
 
@@ -311,15 +293,15 @@ public class BookDetailsFragment
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
                         // pass the data up
-                        mBookModel.putResultData(data);
+                        mBookViewModel.putResultData(data);
 
                         long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
                         if (id != 0) {
-                            mBookModel.setBook(id);
+                            mBookViewModel.loadBook(id);
                         }
                     }
                     // onResume will display the new book
-                    mBookModel.reload();
+                    mBookViewModel.reload();
                     //FIXME: swiping through the flattened booklist will not see
                     // the duplicated book until we go back to BoB.
                     // Easiest solution would be to remove the dup. option from this screen...
@@ -327,11 +309,12 @@ public class BookDetailsFragment
                 break;
 
             default: {
+                int cIdx = mFragmentVM.getCurrentCoverHandlerIndex();
                 // handle any cover image request codes
-                if (mCurrentCoverHandlerIndex >= 0) {
-                    boolean handled = mCoverHandler[mCurrentCoverHandlerIndex]
+                if (cIdx >= 0) {
+                    boolean handled = mCoverHandler[cIdx]
                             .onActivityResult(requestCode, resultCode, data);
-                    mCurrentCoverHandlerIndex = -1;
+                    mFragmentVM.setCurrentCoverHandlerIndex(-1);
                     if (handled) {
                         break;
                     }
@@ -346,116 +329,7 @@ public class BookDetailsFragment
     /** Called by the CoverHandler when a context menu is selected. */
     @Override
     public void setCurrentCoverIndex(final int cIdx) {
-        mCurrentCoverHandlerIndex = cIdx;
-    }
-
-    @NonNull
-    @Override
-    Fields getFields() {
-        return mBookDetailsFragmentModel.getFields();
-    }
-
-    @Override
-    protected void initFields() {
-        final Fields fields = mBookDetailsFragmentModel.getFields();
-        // already initialised ?
-        if (!fields.isEmpty()) {
-            return;
-        }
-
-        // These FieldFormatter's can be shared between multiple fields.
-        final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
-        final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true);
-        final FieldFormatter<Money> moneyFormatter = new MoneyFormatter();
-        final FieldFormatter<String> languageFormatter = new LanguageFormatter();
-
-        // book fields
-        fields.add(R.id.title, new TextAccessor<String>(), DBDefinitions.KEY_TITLE);
-
-        fields.add(R.id.author, new TextAccessor<>(
-                           new AuthorListFormatter(Author.Details.Full, true)),
-                   UniqueId.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
-              .setRelatedFields(R.id.lbl_author);
-
-        // The Series field is a single String with line-breaks between multiple Series.
-        // Each line will be prefixed with a "• "
-        fields.add(R.id.series, new TextAccessor<>(
-                           new SeriesListFormatter(Series.Details.Full, true)),
-                   UniqueId.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
-              .setRelatedFields(R.id.lbl_series);
-
-        fields.add(R.id.isbn, new TextAccessor<String>(), DBDefinitions.KEY_ISBN)
-              .setRelatedFields(R.id.lbl_isbn);
-
-        fields.add(R.id.description, new TextAccessor<>(htmlFormatter),
-                   DBDefinitions.KEY_DESCRIPTION)
-              .setRelatedFields(R.id.lbl_description);
-
-        fields.add(R.id.genre, new TextAccessor<String>(), DBDefinitions.KEY_GENRE)
-              .setRelatedFields(R.id.lbl_genre);
-
-        fields.add(R.id.language, new TextAccessor<>(languageFormatter), DBDefinitions.KEY_LANGUAGE)
-              .setRelatedFields(R.id.lbl_language);
-
-        fields.add(R.id.pages, new TextAccessor<>(new PagesFormatter()), DBDefinitions.KEY_PAGES);
-        fields.add(R.id.format, new TextAccessor<String>(), DBDefinitions.KEY_FORMAT);
-        fields.add(R.id.color, new TextAccessor<String>(), DBDefinitions.KEY_COLOR);
-        fields.add(R.id.publisher, new TextAccessor<String>(), DBDefinitions.KEY_PUBLISHER);
-
-        fields.add(R.id.date_published, new TextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_PUBLISHED)
-              .setRelatedFields(R.id.lbl_date_published);
-
-        fields.add(R.id.first_publication, new TextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-              .setRelatedFields(R.id.lbl_first_publication);
-
-        fields.add(R.id.print_run, new TextAccessor<String>(), DBDefinitions.KEY_PRINT_RUN)
-              .setRelatedFields(R.id.lbl_print_run);
-
-        fields.add(R.id.price_listed, new TextAccessor<>(moneyFormatter),
-                   DBDefinitions.KEY_PRICE_LISTED)
-              .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
-
-        // Personal fields
-        fields.add(R.id.bookshelves,
-                   new EntityListChipGroupAccessor(new ArrayList<>(
-                           mBookModel.getDb().getBookshelves()), false),
-                   UniqueId.BKEY_BOOKSHELF_ARRAY,
-                   DBDefinitions.KEY_BOOKSHELF)
-              .setRelatedFields(R.id.lbl_bookshelves);
-
-        fields.add(R.id.date_acquired, new TextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_ACQUIRED)
-              .setRelatedFields(R.id.lbl_date_acquired);
-
-        //noinspection ConstantConditions
-        fields.add(R.id.edition, new BitmaskChipGroupAccessor(
-                           Book.Edition.getEditions(getContext()), false),
-                   DBDefinitions.KEY_EDITION_BITMASK);
-
-        fields.add(R.id.location, new TextAccessor<String>(), DBDefinitions.KEY_LOCATION)
-              .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
-
-        fields.add(R.id.rating, new RatingBarAccessor(), DBDefinitions.KEY_RATING)
-              .setRelatedFields(R.id.lbl_rating);
-
-        fields.add(R.id.notes, new TextAccessor<>(htmlFormatter), DBDefinitions.KEY_PRIVATE_NOTES)
-              .setRelatedFields(R.id.lbl_notes);
-
-        fields.add(R.id.read_start, new TextAccessor<>(dateFormatter), DBDefinitions.KEY_READ_START)
-              .setRelatedFields(R.id.lbl_read_start);
-        fields.add(R.id.read_end, new TextAccessor<>(dateFormatter), DBDefinitions.KEY_READ_END)
-              .setRelatedFields(R.id.lbl_read_end);
-
-        fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
-
-        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED)
-              .setRelatedFields(R.id.lbl_signed);
-
-        fields.add(R.id.price_paid, new TextAccessor<>(moneyFormatter),
-                   DBDefinitions.KEY_PRICE_PAID)
-              .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
+        mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
     /**
@@ -467,24 +341,19 @@ public class BookDetailsFragment
      * @param book to load
      */
     @Override
-    protected void onLoadFields(@NonNull final Book book) {
-        super.onLoadFields(book);
+    protected void onPopulateViews(@NonNull final Book book) {
+        // do all the defined Field's
+        super.onPopulateViews(book);
 
         //noinspection ConstantConditions
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // handle special fields
         if (App.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
-            populateLoanedToField(mBookModel.getLoanee());
+            populateLoanedToField(mBookViewModel.getLoanee());
         }
 
         if (App.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
-            final boolean isAnthology =
-                    book.isBitSet(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
-            mIsAnthologyLabelView.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-            mIsAnthologyCbx.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-            mIsAnthologyCbx.setChecked(isAnthology);
-
             populateToc(book);
         }
 
@@ -501,7 +370,7 @@ public class BookDetailsFragment
 
         // hide unwanted and empty fields
         //noinspection ConstantConditions
-        getFields().resetVisibility(getView(), true, false);
+        mFragmentVM.getFields().resetVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
         setSectionLabelVisibility(R.id.lbl_publication_section,
@@ -558,6 +427,12 @@ public class BookDetailsFragment
      * Show or hide the Table Of Content section.
      */
     private void populateToc(@NonNull final Book book) {
+        final boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
+                                                  Book.TOC_MULTIPLE_WORKS);
+        mIsAnthologyLabelView.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
+        mIsAnthologyCbx.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
+        mIsAnthologyCbx.setChecked(isAnthology);
+
         // we can get called more than once (when user moves sideways to another book),
         // so clear and hide/disable the view before populating it.
         // Actual visibility is handled after building the list.
@@ -573,6 +448,7 @@ public class BookDetailsFragment
             @SuppressWarnings("ConstantConditions")
             @NonNull
             final Context context = getContext();
+
             for (TocEntry tocEntry : tocList) {
                 final View rowView = getLayoutInflater()
                         .inflate(R.layout.row_toc_entry_with_author, mTocView, false);
@@ -651,11 +527,11 @@ public class BookDetailsFragment
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        Book book = mBookModel.getBook();
+        Book book = mBookViewModel.getBook();
 
         final boolean isSaved = !book.isNew();
         final boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
-        final boolean isAvailable = mBookModel.isAvailable();
+        final boolean isAvailable = mBookViewModel.isAvailable();
 
         menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
@@ -683,7 +559,7 @@ public class BookDetailsFragment
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
-        final Book book = mBookModel.getBook();
+        final Book book = mBookViewModel.getBook();
 
         switch (item.getItemId()) {
             case R.id.MENU_BOOK_EDIT: {
@@ -696,10 +572,10 @@ public class BookDetailsFragment
                         book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBook(getContext(), title, authors, () -> {
-                    mBookModel.deleteBook(getContext());
+                    mBookViewModel.deleteBook(getContext());
 
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mBookModel.getResultData());
+                    getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultData());
                     getActivity().finish();
                 });
                 return true;
@@ -713,8 +589,9 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_READ:
             case R.id.MENU_BOOK_UNREAD: {
                 // toggle 'read' status of the book
-                final Field<Boolean> field = getFields().getField(R.id.cbx_read);
-                field.getAccessor().setValue(mBookModel.toggleRead());
+                boolean value = mBookViewModel.toggleRead();
+                mFragmentVM.getFields()
+                           .getField(R.id.cbx_read).getAccessor().setValue(value);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_ADD: {
@@ -724,7 +601,7 @@ public class BookDetailsFragment
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {
-                mBookModel.deleteLoan();
+                mBookViewModel.deleteLoan();
                 populateLoanedToField(null);
                 return true;
             }
@@ -739,7 +616,8 @@ public class BookDetailsFragment
                 Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG)
                         .show();
                 //noinspection ConstantConditions
-                new SendOneBookTask(book.getId(), mBookModel.getGoodreadsTaskListener(getContext()))
+                new SendOneBookTask(book.getId(), mFragmentVM
+                        .getGoodreadsTaskListener(getContext()))
                         .execute();
                 return true;
             }
@@ -751,7 +629,7 @@ public class BookDetailsFragment
 
     private void startEditBook() {
         final Intent editIntent = new Intent(getContext(), EditBookActivity.class)
-                .putExtra(DBDefinitions.KEY_PK_ID, mBookModel.getBook().getId());
+                .putExtra(DBDefinitions.KEY_PK_ID, mBookViewModel.getBook().getId());
         startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
     }
 
@@ -761,7 +639,7 @@ public class BookDetailsFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (menuItem.getItemId()) {
             case R.id.MENU_BOOK_LOAN_DELETE:
-                mBookModel.deleteLoan();
+                mBookViewModel.deleteLoan();
                 populateLoanedToField(null);
                 return true;
 
@@ -771,14 +649,12 @@ public class BookDetailsFragment
     }
 
     /**
-     * Listener to handle 'fling' events; we could handle others but need to be
-     * careful about possible clicks and scrolling.
-     *
-     * <a href="https://developer.android.com/training/gestures/detector.html#detect-a-subset-of-supported-gestures">
-     * detect-a-subset-of-supported-gestures</a>
+     * Listener to handle 'fling' events to move to the next/previous book.
      */
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {
+
+        private static final float sensitivity = 50;
 
         @Override
         public boolean onFling(@NonNull final MotionEvent e1,
@@ -786,29 +662,36 @@ public class BookDetailsFragment
                                final float velocityX,
                                final float velocityY) {
 
-            final FlattenedBooklist fbl = mBookDetailsFragmentModel.getFlattenedBooklist();
-            if (fbl == null) {
-                return false;
+            if ((e1.getX() - e2.getX()) > sensitivity) {
+                if (mFragmentVM.move(mBookViewModel.getBook(), true)) {
+                    populateViews();
+                    return true;
+                }
+
+            } else if ((e2.getX() - e1.getX()) > sensitivity) {
+                if (mFragmentVM.move(mBookViewModel.getBook(), false)) {
+                    populateViews();
+                    return true;
+                }
             }
 
-            // Make sure we have considerably more X-velocity than Y-velocity;
-            // otherwise it might be a scroll.
-            if (Math.abs(velocityX / velocityY) > 2) {
-                // Work out which way to move, and do it.
-                if (fbl.move(velocityX <= 0)) {
-                    final long bookId = fbl.getBookId();
-                    // only reload if it's a different book
-                    if (bookId != mBookModel.getBook().getId()) {
-                        mBookModel.moveTo(bookId);
-                        loadFields();
-                    }
-                }
-                return true;
-            } else {
-                return false;
-            }
+            return false;
         }
 
+        /**
+         * <a href="https://developer.android.com/training/gestures/detector.html#detect-a-subset-of-supported-gestures">
+         * detect-a-subset-of-supported-gestures</a>
+         * <p>
+         * ... implement an onDown() method that returns true. This is because all gestures
+         * begin with an onDown() message. If you return false from onDown(),
+         * as GestureDetector.SimpleOnGestureListener does by default, the system assumes that
+         * you want to ignore the rest of the gesture, and the other methods of
+         * GestureDetector.OnGestureListener never get called...
+         *
+         * @param e The down motion event.
+         *
+         * @return {@code true}
+         */
         @Override
         public boolean onDown(@NonNull final MotionEvent e) {
             return true;

@@ -192,6 +192,8 @@ public class SearchOrderFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             super.onBindViewHolder(holder, position);
+
+            @NonNull
             final Context context = getContext();
 
             Site site = getItem(position);

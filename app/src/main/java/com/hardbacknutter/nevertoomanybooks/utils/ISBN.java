@@ -351,6 +351,12 @@ public class ISBN {
         return mType == type;
     }
 
+    /**
+     * Check if the ISBN code is either an ISBN-10,
+     * or an ISBN-13 which can be converted to an ISBN-10.
+     *
+     * @return {@code true} if compatible
+     */
     public boolean isIsbn10Compat() {
         return mType == Type.ISBN10 || (mType == Type.ISBN13 && mAsText.startsWith("978"));
     }
@@ -675,6 +681,8 @@ public class ISBN {
     }
 
     /**
+     * Get the concatenated digits. Digit 10 is always returned as <strong>uppercase</strong> 'X'.
+     *
      * @param digits the list of digits
      *
      * @return the code as a string.

@@ -166,6 +166,9 @@ public final class Prefs {
     static final String PSK_PURGE_FILES = "psk_purge_files";
     /** Global - Reset tips. */
     static final String PSK_TIP_RESET_ALL = "psk_tip_reset_all";
+    /** Global - Reset tips. */
+    static final String PSK_REBUILD_INDEX = "psk_rebuild_index";
+
     /** Global - Send debug info. */
     static final String PSK_SEND_DEBUG_INFO = "psk_send_debug_info";
     /** Global - Purge action. */

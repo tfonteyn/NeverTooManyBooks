@@ -591,10 +591,16 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_TITLE =
-                new Domain.Builder(KEY_TITLE, ColumnInfo.TYPE_TEXT).notNull().build();
+                new Domain.Builder(KEY_TITLE, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .localized()
+                        .build();
         DOM_TITLE_OB =
                 new Domain.Builder(KEY_TITLE_OB, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().prePreparedOrderBy().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .prePreparedOrderBy()
+                        .build();
 
         DOM_DATE_PUBLISHED =
                 new Domain.Builder(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE)
@@ -613,54 +619,85 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOKSHELF =
-                new Domain.Builder(KEY_BOOKSHELF, ColumnInfo.TYPE_TEXT).notNull().build();
+                new Domain.Builder(KEY_BOOKSHELF, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
         DOM_BOOKSHELF_CSV =
-                new Domain.Builder(KEY_BOOKSHELF_CSV, ColumnInfo.TYPE_TEXT).notNull().build();
+                new Domain.Builder(KEY_BOOKSHELF_CSV, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
 
         /* ======================================================================================
          *  Author domains
          * ====================================================================================== */
 
         DOM_AUTHOR_FAMILY_NAME =
-                new Domain.Builder(KEY_AUTHOR_FAMILY_NAME, ColumnInfo.TYPE_TEXT).notNull().build();
+                new Domain.Builder(KEY_AUTHOR_FAMILY_NAME, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .localized()
+                        .build();
 
         DOM_AUTHOR_FAMILY_NAME_OB =
                 new Domain.Builder(KEY_AUTHOR_FAMILY_NAME_OB, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().prePreparedOrderBy().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .prePreparedOrderBy()
+                        .build();
 
         DOM_AUTHOR_GIVEN_NAMES =
                 new Domain.Builder(KEY_AUTHOR_GIVEN_NAMES, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
 
         DOM_AUTHOR_GIVEN_NAMES_OB =
                 new Domain.Builder(KEY_AUTHOR_GIVEN_NAMES_OB, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().prePreparedOrderBy().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .prePreparedOrderBy()
+                        .build();
 
         DOM_AUTHOR_IS_COMPLETE =
                 new Domain.Builder(KEY_AUTHOR_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
-                        .notNull().withDefault(0).build();
+                        .notNull()
+                        .withDefault(0)
+                        .build();
 
         DOM_AUTHOR_FORMATTED =
-                new Domain.Builder(KEY_AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT).notNull().build();
+                new Domain.Builder(KEY_AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
 
         DOM_AUTHOR_FORMATTED_GIVEN_FIRST =
                 new Domain.Builder(KEY_AUTHOR_FORMATTED_GIVEN_FIRST, ColumnInfo.TYPE_TEXT)
-                        .notNull().build();
+                        .notNull()
+                        .build();
 
         /* ======================================================================================
          *  Series domains
          * ====================================================================================== */
 
         DOM_SERIES_TITLE =
-                new Domain.Builder(KEY_SERIES_TITLE, ColumnInfo.TYPE_TEXT).notNull().build();
+                new Domain.Builder(KEY_SERIES_TITLE, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .localized()
+                        .build();
         DOM_SERIES_TITLE_OB =
                 new Domain.Builder(KEY_SERIES_TITLE_OB, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().prePreparedOrderBy().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .prePreparedOrderBy()
+                        .build();
         DOM_SERIES_IS_COMPLETE =
                 new Domain.Builder(KEY_SERIES_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
-                        .notNull().withDefault(0).build();
+                        .notNull()
+                        .withDefault(0)
+                        .build();
         DOM_SERIES_FORMATTED =
-                new Domain.Builder(KEY_SERIES_FORMATTED, ColumnInfo.TYPE_TEXT).notNull().build();
+                new Domain.Builder(KEY_SERIES_FORMATTED, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
 
         /* ======================================================================================
          *  Book domains
@@ -668,45 +705,78 @@ public final class DBDefinitions {
 
         DOM_BOOK_ISBN =
                 new Domain.Builder(KEY_ISBN, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_BOOK_PUBLISHER =
                 new Domain.Builder(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull().withDefaultEmptyString()
+                        .localized()
+                        .build();
 
         DOM_BOOK_PRINT_RUN =
                 new Domain.Builder(KEY_PRINT_RUN, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_BOOK_PRICE_LISTED =
                 new Domain.Builder(KEY_PRICE_LISTED, ColumnInfo.TYPE_REAL)
-                        .notNull().withDefault(0d).build();
+                        .notNull()
+                        .withDefault(0d)
+                        .build();
 
         DOM_BOOK_PRICE_LISTED_CURRENCY =
                 new Domain.Builder(KEY_PRICE_LISTED_CURRENCY, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
+
         DOM_BOOK_PAGES =
                 new Domain.Builder(KEY_PAGES, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
+
         DOM_BOOK_FORMAT =
                 new Domain.Builder(KEY_FORMAT, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
         DOM_BOOK_COLOR =
                 new Domain.Builder(KEY_COLOR, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
         DOM_BOOK_LANGUAGE =
                 new Domain.Builder(KEY_LANGUAGE, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
         DOM_BOOK_GENRE =
                 new Domain.Builder(KEY_GENRE, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
         DOM_BOOK_DESCRIPTION =
                 new Domain.Builder(KEY_DESCRIPTION, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_BOOK_TOC_BITMASK =
                 new Domain.Builder(KEY_TOC_BITMASK, ColumnInfo.TYPE_INTEGER)
-                        .notNull().withDefault(Book.TOC_SINGLE_AUTHOR_SINGLE_WORK).build();
+                        .notNull().withDefault(Book.TOC_SINGLE_AUTHOR_SINGLE_WORK)
+                        .build();
 
         /* ======================================================================================
          *  Book personal data domains
@@ -738,7 +808,11 @@ public final class DBDefinitions {
 
         DOM_BOOK_LOCATION =
                 new Domain.Builder(KEY_LOCATION, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
         DOM_BOOK_READ =
                 new Domain.Builder(KEY_READ, ColumnInfo.TYPE_BOOLEAN)
                         .notNull().withDefault(0).build();
@@ -790,9 +864,14 @@ public final class DBDefinitions {
          *  Loanee domains
          * ====================================================================================== */
 
-        DOM_LOANEE = new Domain.Builder(KEY_LOANEE, ColumnInfo.TYPE_TEXT).notNull().build();
+        DOM_LOANEE = new Domain.Builder(KEY_LOANEE, ColumnInfo.TYPE_TEXT)
+                .notNull()
+                .localized()
+                .build();
+
         DOM_BL_LOANEE_AS_BOOL = new Domain.Builder(KEY_LOANEE_AS_BOOLEAN, ColumnInfo.TYPE_INTEGER)
-                .notNull().build();
+                .notNull()
+                .build();
 
         /* ======================================================================================
          *  Link table domains
@@ -809,7 +888,9 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_BOOK_SERIES_POSITION, ColumnInfo.TYPE_INTEGER)
                         .notNull().build();
         DOM_BOOK_NUM_IN_SERIES =
-                new Domain.Builder(KEY_BOOK_NUM_IN_SERIES, ColumnInfo.TYPE_TEXT).build();
+                new Domain.Builder(KEY_BOOK_NUM_IN_SERIES, ColumnInfo.TYPE_TEXT)
+                        .localized()
+                        .build();
 
         DOM_BOOK_TOC_ENTRY_POSITION =
                 new Domain.Builder(KEY_BOOK_TOC_ENTRY_POSITION, ColumnInfo.TYPE_INTEGER)
@@ -940,6 +1021,7 @@ public final class DBDefinitions {
 
                  .setPrimaryKey(DOM_PK_ID)
                  .addIndex(KEY_TITLE_OB, false, DOM_TITLE_OB)
+                 .addIndex(KEY_TITLE, false, DOM_TITLE)
                  .addIndex(KEY_ISBN, false, DOM_BOOK_ISBN)
                  .addIndex(KEY_PUBLISHER, false, DOM_BOOK_PUBLISHER)
                  .addIndex(KEY_BOOK_UUID, true, DOM_BOOK_UUID)
