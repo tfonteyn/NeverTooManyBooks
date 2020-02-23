@@ -41,7 +41,7 @@ public class AltIsbnTextWatcher
         implements TextWatcher {
 
     @NonNull
-    private final TextView mIsbnView;
+    private final TextView mTextView;
     @NonNull
     private final Button mAltIsbnButton;
 
@@ -56,11 +56,14 @@ public class AltIsbnTextWatcher
      */
     public AltIsbnTextWatcher(@NonNull final TextView isbnView,
                               @NonNull final Button altIsbnButton) {
-        mIsbnView = isbnView;
+        mTextView = isbnView;
         mAltIsbnButton = altIsbnButton;
 
         // a click will swap numbers
-        mAltIsbnButton.setOnClickListener(view -> mIsbnView.setText(mAltIsbn));
+        mAltIsbnButton.setOnClickListener(view -> mTextView.setText(mAltIsbn));
+
+        // validate text which is already present at this point
+        validate(mTextView.getText().toString().trim());
     }
 
     @Override
@@ -81,7 +84,10 @@ public class AltIsbnTextWatcher
 
     @Override
     public void afterTextChanged(@NonNull final Editable s) {
-        final String isbnStr = s.toString();
+        validate(s.toString());
+    }
+
+    private void validate(@NonNull final String isbnStr) {
         switch (isbnStr.length()) {
             case 13: {
                 final ISBN isbn = ISBN.createISBN(isbnStr);
