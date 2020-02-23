@@ -126,8 +126,8 @@ public class EditBookFieldsFragment
 
         //noinspection ConstantConditions
         if (EditBookActivity.showAuthSeriesOnTabs(getContext())) {
-            view.findViewById(R.id.author).setVisibility(View.GONE);
-            view.findViewById(R.id.series).setVisibility(View.GONE);
+            view.findViewById(R.id.lbl_author).setVisibility(View.GONE);
+            view.findViewById(R.id.lbl_series).setVisibility(View.GONE);
         }
 
         return view;
