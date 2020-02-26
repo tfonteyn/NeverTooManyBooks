@@ -870,7 +870,7 @@ public class XmlExporter
 
             // Active filters with their Preferences.
             writer.append('<' + XmlTags.XML_FILTER_LIST + '>');
-            for (Filter filter : style.getFilters()) {
+            for (Filter filter : style.getActiveFilters()) {
                 if (filter.isActive()) {
                     writer.append(tag(XmlTags.XML_FILTER, filter.getKey(), filter.get()));
                 }

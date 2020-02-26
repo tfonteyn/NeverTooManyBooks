@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import androidx.annotation.Nullable;
 public interface Filter<T> {
 
     /**
-     * A Filter must implement this method. All others are optional.
+     * A Filter must implement this method.
      *
      * @return filter SQL expression, or {@code null} if not active.
      */

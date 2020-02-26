@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -86,6 +87,11 @@ public class ListOfValuesFilter<T>
     @NonNull
     public String getExpression() {
         return '(' + mTable.dot(mDomain) + " IN (" + mCriteria + "))";
+    }
+
+    @Override
+    public boolean isActive() {
+        return App.isUsed(mDomain);
     }
 
     @Override

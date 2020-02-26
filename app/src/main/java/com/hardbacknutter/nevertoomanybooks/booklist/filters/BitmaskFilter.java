@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
@@ -105,7 +106,7 @@ public class BitmaskFilter
 
     @Override
     public boolean isActive() {
-        return getPrefs().getBoolean(getKey() + ACTIVE, false);
+        return getPrefs().getBoolean(getKey() + ACTIVE, false) && App.isUsed(mDomain);
     }
 
     @Override

@@ -258,7 +258,7 @@ public class BooklistStyle
      * <p>
      * <strong>IMPORTANT:</strong> The key in the Map is the actual preference key itself.
      */
-    private Map<String, Filter> mAllFilters;
+    private Map<String, Filter> mFilters;
 
     /**
      * Global defaults constructor.
@@ -309,6 +309,45 @@ public class BooklistStyle
         initPrefs(mNameResId == 0);
     }
 
+//    /**
+//     * Copy constructor.
+//     * The new style will have an id==0, and a new uuid.
+//     *
+//     * @param from object to copy
+//     */
+//    public BooklistStyle(@NonNull final Context context,
+//                         @NonNull final BooklistStyle from) {
+//        mId = 0;
+//        mNameResId = 0;
+//        mUuid = createUniqueName(context);
+//        initPrefs(mNameResId == 0);
+//        setName(from.getLabel(context));
+//
+//        mIsPreferred.set(from.mIsPreferred.get());
+//        mDefaultExpansionLevel.set(from.mDefaultExpansionLevel.get());
+//        mFontScale.set(from.mFontScale.get());
+//        mThumbnailScale.set(from.mThumbnailScale.get());
+//        mShowHeaderInfo.set(from.mShowHeaderInfo.get());
+//        mShowAuthorByGivenNameFirst.set(from.mShowAuthorByGivenNameFirst.get());
+//        mSortAuthorByGivenNameFirst.set(from.mSortAuthorByGivenNameFirst.get());
+//
+//        for (BooklistGroup group : from.getGroups()) {
+//            mStyleGroups.add(new BooklistGroup(group);
+//
+//        }
+//
+//        for (final Map.Entry<String, PBoolean> entry : from.mAllBookDetailFields.entrySet()) {
+//            //noinspection ConstantConditions
+//            mAllBookDetailFields.get(entry.getKey()).set(entry.getValue().get());
+//        }
+//
+//        //URGENT: copy filters
+////        for (final Map.Entry<String, Filter> entry : from.mFilters.entrySet()) {
+////            //noinspection ConstantConditions
+////            mFilters.get(entry.getKey()).
+////        }
+//    }
+
     /**
      * {@link Parcelable} Constructor.
      *
@@ -317,7 +356,6 @@ public class BooklistStyle
     private BooklistStyle(@NonNull final Parcel in) {
         this(false, null, in);
     }
-
 
     /**
      * Custom Parcelable constructor which allows cloning/new.
@@ -367,7 +405,7 @@ public class BooklistStyle
             bookDetailField.set(in);
         }
         // the collection is ordered, so we don't need the keys.
-        for (Filter filter : mAllFilters.values()) {
+        for (Filter filter : mFilters.values()) {
             filter.set(in);
         }
     }
@@ -427,6 +465,65 @@ public class BooklistStyle
         }
 
         return getDefaultStyle(context, db);
+    }
+
+    /**
+     * Get the specified style.
+     *
+     * @param db Database Access
+     * @param id of the style to get.
+     *
+     * @return style, <strong>or {@code null} if not found</strong>
+     */
+    @Nullable
+    public static BooklistStyle getStyle(@NonNull final DAO db,
+                                         final long id) {
+        if (id == 0) {
+            return null;
+        }
+
+        for (BooklistStyle style : Helper.getUserStyles(db).values()) {
+            if (style.getId() == id) {
+                return style;
+            }
+        }
+
+        // check builtin.
+        for (BooklistStyle style : Builtin.getStyles().values()) {
+            if (style.getId() == id) {
+                return style;
+            }
+        }
+
+        // not found...
+        return null;
+    }
+
+    /**
+     * Construct a clone of this object with id==0, and a new uuid.
+     *
+     * @param context Current context
+     */
+    @NonNull
+    public BooklistStyle clone(@NonNull final Context context) {
+        // sanity check
+        if (mUuid.isEmpty()) {
+            throw new IllegalStateException("mUuid.isEmpty()");
+        }
+
+        //TODO: revisit... is this to complicated/inefficient?
+        Parcel parcel = Parcel.obtain();
+        writeToParcel(parcel, 0);
+        byte[] bytes = parcel.marshall();
+        parcel.recycle();
+
+        parcel = Parcel.obtain();
+        parcel.unmarshall(bytes, 0, bytes.length);
+        parcel.setDataPosition(0);
+        BooklistStyle clone = new BooklistStyle(true, context, parcel);
+        parcel.recycle();
+
+        return clone;
     }
 
     /**
@@ -499,42 +596,42 @@ public class BooklistStyle
                                               mUuid, isUserDefined));
 
         // all filters
-        mAllFilters = new LinkedHashMap<>();
+        mFilters = new LinkedHashMap<>();
 
-        mAllFilters.put(Prefs.pk_style_filter_read,
-                        new BooleanFilter(R.string.lbl_read,
-                                          Prefs.pk_style_filter_read,
-                                          mUuid, isUserDefined,
-                                          DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.KEY_READ));
+        mFilters.put(Prefs.pk_style_filter_read,
+                     new BooleanFilter(R.string.lbl_read,
+                                       Prefs.pk_style_filter_read,
+                                       mUuid, isUserDefined,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_READ));
 
-        mAllFilters.put(Prefs.pk_style_filter_signed,
-                        new BooleanFilter(R.string.lbl_signed,
-                                          Prefs.pk_style_filter_signed,
-                                          mUuid, isUserDefined,
-                                          DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.KEY_SIGNED));
+        mFilters.put(Prefs.pk_style_filter_signed,
+                     new BooleanFilter(R.string.lbl_signed,
+                                       Prefs.pk_style_filter_signed,
+                                       mUuid, isUserDefined,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_SIGNED));
 
-        mAllFilters.put(Prefs.pk_style_filter_anthology,
-                        new BooleanFilter(R.string.lbl_anthology,
-                                          Prefs.pk_style_filter_anthology,
-                                          mUuid, isUserDefined,
-                                          DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.KEY_TOC_BITMASK));
+        mFilters.put(Prefs.pk_style_filter_anthology,
+                     new BooleanFilter(R.string.lbl_anthology,
+                                       Prefs.pk_style_filter_anthology,
+                                       mUuid, isUserDefined,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_TOC_BITMASK));
 
-        mAllFilters.put(Prefs.pk_style_filter_loaned,
-                        new BooleanFilter(R.string.lbl_loaned,
-                                          Prefs.pk_style_filter_loaned,
-                                          mUuid, isUserDefined,
-                                          DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.KEY_LOANEE));
+        mFilters.put(Prefs.pk_style_filter_loaned,
+                     new BooleanFilter(R.string.lbl_loaned,
+                                       Prefs.pk_style_filter_loaned,
+                                       mUuid, isUserDefined,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_LOANEE));
 
-        mAllFilters.put(Prefs.pk_style_filter_editions,
-                        new BitmaskFilter(R.string.lbl_edition,
-                                          Prefs.pk_style_filter_editions,
-                                          mUuid, isUserDefined,
-                                          DBDefinitions.TBL_BOOKS,
-                                          DBDefinitions.KEY_EDITION_BITMASK));
+        mFilters.put(Prefs.pk_style_filter_editions,
+                     new BitmaskFilter(R.string.lbl_edition,
+                                       Prefs.pk_style_filter_editions,
+                                       mUuid, isUserDefined,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_EDITION_BITMASK));
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -566,7 +663,7 @@ public class BooklistStyle
             bookDetailField.writeToParcel(dest);
         }
         // the collection is ordered, so we don't write the keys.
-        for (Filter filter : mAllFilters.values()) {
+        for (Filter filter : mFilters.values()) {
             filter.writeToParcel(dest);
         }
     }
@@ -711,7 +808,7 @@ public class BooklistStyle
 
         if (all) {
             // all filters (both active and non-active)
-            for (Filter filter : mAllFilters.values()) {
+            for (Filter filter : mFilters.values()) {
                 map.put(filter.getKey(), (PPref) filter);
             }
 
@@ -787,13 +884,23 @@ public class BooklistStyle
 
     /**
      * Get the text size in SP units to apply.
+     * <p>
+     * With the header set to two lines, the toolbar fully visible,
+     * on a full-HD (1920-1080 pixels) we get:
+     * <ul>
+     * <li>32sp: 10 lines; or 2 books</li>
+     * <li>28sp: 11 lines</li>
+     * <li>24sp: 12 lines</li>
+     * <li>18sp: 13 lines; or 5-6 books</li>
+     * <li>14sp: 19 lines; or 7 books</li>
+     * </ul>
      *
      * @return sp units
      */
     float getTextSpUnits() {
         switch (mFontScale.get()) {
             case FONT_SCALE_LARGE:
-                return 22;
+                return 32;
             case FONT_SCALE_SMALL:
                 return 14;
             case FONT_SCALE_MEDIUM:
@@ -929,17 +1036,23 @@ public class BooklistStyle
     private void setFilter(@NonNull final String key,
                            final boolean value) {
         //noinspection ConstantConditions
-        ((BooleanFilter) mAllFilters.get(key)).set(value);
+        ((BooleanFilter) mFilters.get(key)).set(value);
     }
 
     /**
-     * Get the list of Filters (active and non-active).
+     * Get the list of <strong>active</strong> Filters.
      *
      * @return list
      */
     @NonNull
-    public Collection<Filter> getFilters() {
-        return mAllFilters.values();
+    public Collection<Filter> getActiveFilters() {
+        Collection<Filter> activeFilters = new ArrayList<>();
+        for (Filter filter : mFilters.values()) {
+            if (filter.isActive()) {
+                activeFilters.add(filter);
+            }
+        }
+        return activeFilters;
     }
 
     /**
@@ -953,7 +1066,7 @@ public class BooklistStyle
     public List<String> getFilterLabels(@NonNull final Context context,
                                         final boolean all) {
         List<String> labels = new ArrayList<>();
-        for (Filter filter : mAllFilters.values()) {
+        for (Filter filter : mFilters.values()) {
             if (filter.isActive() || all) {
                 labels.add(filter.getLabel(context));
             }
@@ -1009,33 +1122,6 @@ public class BooklistStyle
 
         Collections.sort(labels);
         return labels;
-    }
-
-    /**
-     * Construct a clone of this object with id==0, and a new uuid.
-     *
-     * @param context Current context
-     */
-    @NonNull
-    public BooklistStyle clone(@NonNull final Context context) {
-        // sanity check
-        if (mUuid.isEmpty()) {
-            throw new IllegalStateException("mUuid.isEmpty()");
-        }
-
-        //TODO: revisit... is this to complicated/inefficient?
-        Parcel parcel = Parcel.obtain();
-        writeToParcel(parcel, 0);
-        byte[] bytes = parcel.marshall();
-        parcel.recycle();
-
-        parcel = Parcel.obtain();
-        parcel.unmarshall(bytes, 0, bytes.length);
-        parcel.setDataPosition(0);
-        BooklistStyle clone = new BooklistStyle(true, context, parcel);
-        parcel.recycle();
-
-        return clone;
     }
 
     /**
@@ -1155,7 +1241,7 @@ public class BooklistStyle
                + "\nmStyleGroups=" + mStyleGroups
 
                + "\nmAllBookDetailFields=" + mAllBookDetailFields
-               + "\nmAllFilters=\n" + mAllFilters
+               + "\nmFilters=\n" + mFilters
                + '}';
     }
 

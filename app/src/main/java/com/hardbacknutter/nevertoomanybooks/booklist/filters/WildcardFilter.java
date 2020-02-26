@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
@@ -65,6 +66,11 @@ public class WildcardFilter
     @NonNull
     public String getExpression() {
         return '(' + mTable.dot(mDomain) + " LIKE '%" + DAO.encodeString(mCriteria) + "%'" + ')';
+    }
+
+    @Override
+    public boolean isActive() {
+        return App.isUsed(mDomain);
     }
 
     @Override

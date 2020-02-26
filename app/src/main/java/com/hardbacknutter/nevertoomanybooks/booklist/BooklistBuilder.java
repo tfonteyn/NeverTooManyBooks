@@ -746,7 +746,7 @@ public class BooklistBuilder
             ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
             if (cursor.moveToFirst()) {
                 do {
-                    long id = (long) cursor.getInt(0);
+                    long id = cursor.getInt(0);
                     rows.add(id);
                 } while (cursor.moveToNext());
                 return rows;
@@ -1054,7 +1054,7 @@ public class BooklistBuilder
             mFilteredOnBookshelf = !bookshelf.isAllBooks();
             // copy filter references, but not the actual style filter list
             // as we'll be adding to the local list
-            mFilters.addAll(mStyle.getFilters());
+            mFilters.addAll(mStyle.getActiveFilters());
         }
 
         /**
@@ -1466,12 +1466,13 @@ public class BooklistBuilder
         }
 
         /**
-         * Create the WHERE clause based on all filters.
+         * Create the WHERE clause based on all active filters (for in-use domains).
          */
         private String buildWhere() {
             StringBuilder where = new StringBuilder();
 
             for (Filter filter : mFilters) {
+                // Theoretically all filters should be active here, but paranoia...
                 if (filter.isActive()) {
                     if (where.length() != 0) {
                         where.append(" AND ");

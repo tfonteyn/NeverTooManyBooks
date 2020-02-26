@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
@@ -102,7 +103,7 @@ public class IntStringFilter
      */
     @Override
     public boolean isActive() {
-        return !P_NOT_USED.equals(get());
+        return !P_NOT_USED.equals(get()) && App.isUsed(mDomain);
     }
 
     @Override
