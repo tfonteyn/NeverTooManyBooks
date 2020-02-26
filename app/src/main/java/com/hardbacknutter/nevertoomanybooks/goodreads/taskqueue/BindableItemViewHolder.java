@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 public class BindableItemViewHolder {
 
+    /** Container View for this item. */
     @NonNull
     public final View itemView;
 

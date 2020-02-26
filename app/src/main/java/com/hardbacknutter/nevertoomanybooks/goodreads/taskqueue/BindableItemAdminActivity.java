@@ -70,7 +70,7 @@ public abstract class BindableItemAdminActivity
         mDb = new DAO(TAG);
         super.onCreate(savedInstanceState);
 
-        ListView listView = findViewById(android.R.id.list);
+        ListView listView = findViewById(R.id.item_list);
 
         mListAdapter = getListAdapter(mDb);
 

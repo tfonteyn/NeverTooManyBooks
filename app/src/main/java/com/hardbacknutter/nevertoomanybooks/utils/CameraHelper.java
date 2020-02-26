@@ -115,12 +115,11 @@ public class CameraHelper {
         mFragment = fragment;
         mRequestCode = requestCode;
 
-        @SuppressWarnings("ConstantConditions")
-        @NonNull
         Context context = fragment.getContext();
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (mUseFullSize) {
+            //noinspection ConstantConditions
             File file = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
             // delete any orphaned file.
             StorageUtils.deleteFile(file);
@@ -129,6 +128,7 @@ public class CameraHelper {
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
 
+        //noinspection ConstantConditions
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
             // GO!

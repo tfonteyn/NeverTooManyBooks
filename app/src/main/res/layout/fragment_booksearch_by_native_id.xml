@@ -92,7 +92,7 @@
                 android:text="@string/site_isfdb"
                 />
 
-            <!-- fully functional, but the data returned by LT (on its own!) is rather lacking
+            <!-- fully functional, but the data returned by LT (on its own) is rather lacking
                 hence disabling this one -->
             <RadioButton
                 android:id="@+id/site_library_thing"
@@ -127,7 +127,6 @@
             app:layout_constraintTop_toBottomOf="@id/sites_group"
             >
 
-            <!-- input type & drawable will be reset by code as needed -->
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/native_id"
                 style="@style/personalNameTextEntry"

@@ -35,7 +35,7 @@
     >
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_title"
+        android:id="@+id/lbl_series_title"
         style="@style/Envelope.AutoCompleteTextView"
         android:hint="@string/lbl_series"
         app:layout_constraintEnd_toEndOf="parent"
@@ -44,7 +44,7 @@
         >
 
         <AutoCompleteTextView
-            android:id="@+id/name"
+            android:id="@+id/series_title"
             style="@style/titleTextEntryAutoComplete"
             android:layout_width="match_parent"
             tools:ignore="LabelFor"
@@ -57,7 +57,7 @@
         style="@style/CheckboxEntry"
         android:text="@string/lbl_is_complete"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
+        app:layout_constraintTop_toBottomOf="@id/lbl_series_title"
         />
 
     <TextView

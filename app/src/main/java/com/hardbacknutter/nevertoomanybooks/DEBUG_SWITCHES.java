@@ -122,7 +122,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean DB_SYNC_EXECUTE = false;
     /** Dump SQL for {@link SynchronizedStatement#executeInsert()}. */
     public static final boolean DB_SYNC_EXECUTE_INSERT = false;
-    /** Dump SQL and rowsAffected for {@link SynchronizedStatement#executeUpdateDelete()} */
+    /** Dump SQL and rowsAffected for {@link SynchronizedStatement#executeUpdateDelete()}. */
     public static final boolean DB_SYNC_EXECUTE_UPDATE_DELETE = false;
     /** dump savedInstanceState/outState/extras/arguments. */
     public static final boolean DUMP_INSTANCE_STATE = false;

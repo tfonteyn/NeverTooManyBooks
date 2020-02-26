@@ -54,8 +54,8 @@ abstract class KbNlHandlerBase
     private boolean inText;
     private String mCurrentLabel;
 
-    protected abstract void processEntry(@NonNull final String currentLabel,
-                                         @NonNull final List<String> currentData);
+    protected abstract void processEntry(@NonNull String currentLabel,
+                                         @NonNull List<String> currentData);
 
     /**
      * Filter a string of all non-digits. Used to clean isbn strings, years... etc.

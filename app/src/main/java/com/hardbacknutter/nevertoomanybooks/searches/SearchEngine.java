@@ -124,7 +124,7 @@ public interface SearchEngine {
      * @return site locale
      */
     @NonNull
-    Locale getLocale(@NonNull final Context context);
+    Locale getLocale(@NonNull Context context);
 
     default int getConnectTimeoutMs() {
         return SOCKET_TIMEOUT_MS;

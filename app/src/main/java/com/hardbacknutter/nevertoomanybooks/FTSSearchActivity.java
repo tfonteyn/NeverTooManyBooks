@@ -153,7 +153,7 @@ public class FTSSearchActivity
 
         mAuthorView = findViewById(R.id.author);
         mTitleView = findViewById(R.id.title);
-        mSeriesTitleView = findViewById(R.id.series);
+        mSeriesTitleView = findViewById(R.id.series_title);
         mKeywordsView = findViewById(R.id.keywords);
 
         if (mAuthorSearchText != null) {

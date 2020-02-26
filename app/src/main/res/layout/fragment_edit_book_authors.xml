@@ -42,7 +42,7 @@
         android:id="@+id/lbl_author"
         style="@style/Envelope.AutoCompleteTextView"
         android:hint="@string/lbl_author"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
@@ -61,12 +61,14 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:text="@string/btn_confirm_add"
+        app:layout_constraintBottom_toBottomOf="@id/lbl_author"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lbl_author"
+        app:layout_constraintStart_toEndOf="@id/lbl_author"
+        app:layout_constraintTop_toTopOf="@id/lbl_author"
         />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@android:id/list"
+        android:id="@+id/author_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/border2"

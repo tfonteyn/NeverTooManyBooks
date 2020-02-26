@@ -39,7 +39,7 @@
     <include layout="@layout/inc_appbar" />
 
     <ListView
-        android:id="@android:id/list"
+        android:id="@+id/item_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"

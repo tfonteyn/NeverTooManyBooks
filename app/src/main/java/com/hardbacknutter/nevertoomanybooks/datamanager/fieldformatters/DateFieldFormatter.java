@@ -71,7 +71,8 @@ public class DateFieldFormatter
     @NonNull
     public String extract(@NonNull final TextView view) {
         String text = view.getText().toString().trim();
-        // extract a year-only string as-is
+        // extract a year-only string as-is. As we're using controlled input,
+        // this will always be a 4-digit valid year.
         if (text.length() == 4) {
             return text;
         }

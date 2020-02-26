@@ -44,7 +44,7 @@ import java.io.Serializable;
  * for later retrieval.
  * <p>
  * Client applications should consider subclassing this object.
- *
+ * <p>
  * An Event *MUST* be serializable.
  * This means that it can not contain any references to UI components or similar objects.
  */
@@ -55,10 +55,9 @@ public abstract class Event<
                    Serializable {
 
     private static final long serialVersionUID = 7879945038246273501L;
-    private long mId;
-
     @NonNull
     private final String mDescription;
+    private long mId;
 
     protected Event(@NonNull final String description) {
         mDescription = description;
@@ -81,9 +80,9 @@ public abstract class Event<
     @Override
     @NonNull
     public String toString() {
-        return "Event{" +
-               "mId=" + mId +
-               ", mDescription='" + mDescription + '\'' +
-               '}';
+        return "Event{"
+               + "mId=" + mId
+               + ", mDescription='" + mDescription + '\''
+               + '}';
     }
 }

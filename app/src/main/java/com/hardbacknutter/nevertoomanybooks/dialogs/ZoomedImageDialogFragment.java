@@ -121,7 +121,6 @@ public class ZoomedImageDialogFragment
         // - assume 10% of the screen used for Dialog padding
 
         //noinspection ConstantConditions
-        @NonNull
         final Window window = getDialog().getWindow();
         //noinspection ConstantConditions
         final Resources resources = getContext().getResources();
@@ -137,6 +136,7 @@ public class ZoomedImageDialogFragment
             case Configuration.ORIENTATION_PORTRAIT:
                 dx = w;
                 dy = h;
+                //noinspection ConstantConditions
                 window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT,
                                  ViewGroup.LayoutParams.WRAP_CONTENT);
                 break;
@@ -144,6 +144,7 @@ public class ZoomedImageDialogFragment
             case Configuration.ORIENTATION_LANDSCAPE:
                 dx = h;
                 dy = w;
+                //noinspection ConstantConditions
                 window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                                  ViewGroup.LayoutParams.MATCH_PARENT);
                 break;
@@ -153,6 +154,7 @@ public class ZoomedImageDialogFragment
                 // x/y as for portrait, but window layout on the safe side.
                 dx = w;
                 dy = h;
+                //noinspection ConstantConditions
                 window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,
                                  ViewGroup.LayoutParams.WRAP_CONTENT);
                 break;

@@ -186,6 +186,8 @@ public final class Site
     /**
      * Get the {@link SearchEngine} instance for this site.
      *
+     * @param context Current context
+     *
      * @return (cached) instance
      */
     public SearchEngine getSearchEngine(@NonNull final Context context) {
@@ -198,7 +200,7 @@ public final class Site
     }
 
     @VisibleForTesting
-    public SearchEngine getSearchEngine(@NonNull final SettingsHelper settingsHelper) {
+    SearchEngine getSearchEngine(@NonNull final SettingsHelper settingsHelper) {
         if (mSearchEngine == null) {
             mSearchEngine = SearchSites.getSearchEngine(settingsHelper, id);
         }

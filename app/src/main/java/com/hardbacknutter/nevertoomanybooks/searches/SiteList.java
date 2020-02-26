@@ -90,12 +90,12 @@ public class SiteList
     /**
      * Copy constructor.
      *
-     * @param list to copy
+     * @param from object to copy
      */
-    private SiteList(@NonNull final SiteList list) {
-        mType = list.mType;
+    private SiteList(@NonNull final SiteList from) {
+        mType = from.mType;
         mList = new ArrayList<>();
-        for (Site site : list.mList) {
+        for (Site site : from.mList) {
             mList.add(new Site(site));
         }
     }

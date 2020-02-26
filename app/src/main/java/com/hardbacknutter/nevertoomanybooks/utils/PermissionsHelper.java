@@ -32,6 +32,8 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 
 /**
+ * Handle permissions from outside of Fragment/Activities.
+ * <p>
  * Usage:
  *
  * <pre>

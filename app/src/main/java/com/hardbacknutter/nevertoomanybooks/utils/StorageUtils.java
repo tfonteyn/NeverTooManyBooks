@@ -184,6 +184,8 @@ public final class StorageUtils {
     /**
      * Get the cache directory.
      *
+     * @param context Current context
+     *
      * @return File
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
@@ -200,6 +202,8 @@ public final class StorageUtils {
     /**
      * Root external storage aka Shared Storage.
      *
+     * @param context Current context
+     *
      * @return the Shared Storage <strong>root</strong> Directory object
      *
      * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
@@ -215,6 +219,8 @@ public final class StorageUtils {
 
     /**
      * Covers storage location.
+     *
+     * @param context Current context
      *
      * @return the Shared Storage <strong>covers</strong> Directory object
      *
@@ -234,7 +240,7 @@ public final class StorageUtils {
      * If no file found, a jpg place holder is returned.
      * Keep in mind that internally we always use PNG compression (except for the cache).
      * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
-     *
+     * <p>
      * The index only gets appended to the name if it's > 0.
      *
      * @param context Current context

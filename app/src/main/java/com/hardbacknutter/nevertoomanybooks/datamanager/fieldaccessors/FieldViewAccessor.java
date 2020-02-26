@@ -57,7 +57,7 @@ public interface FieldViewAccessor<T> {
 
     View getView();
 
-    void setField(@NonNull final Field<T> field);
+    void setField(@NonNull Field<T> field);
 
     @Nullable
     default FieldFormatter<T> getFormatter() {

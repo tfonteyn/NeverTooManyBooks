@@ -50,6 +50,8 @@ public class LegacyEvent
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
     LegacyEvent(@NonNull final Context context) {
         super(context.getString(R.string.legacy_record));

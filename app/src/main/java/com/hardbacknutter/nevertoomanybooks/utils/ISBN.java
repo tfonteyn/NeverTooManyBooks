@@ -355,7 +355,7 @@ public class ISBN {
      * Check if the ISBN code is either an ISBN-10,
      * or an ISBN-13 which can be converted to an ISBN-10.
      *
-     * @return {@code true} if compatible
+     * @return {@code true} if compatible; {@code false} if not compatible or not a valid ISBN
      */
     public boolean isIsbn10Compat() {
         return mType == Type.ISBN10 || (mType == Type.ISBN13 && mAsText.startsWith("978"));

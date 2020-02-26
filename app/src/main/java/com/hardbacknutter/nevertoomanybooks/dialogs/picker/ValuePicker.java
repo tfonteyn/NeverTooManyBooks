@@ -79,7 +79,7 @@ public class ValuePicker {
         mMessageView = root.findViewById(R.id.message);
 
         // list of options
-        mListView = root.findViewById(R.id.itemList);
+        mListView = root.findViewById(R.id.item_list);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         mListView.setLayoutManager(linearLayoutManager);
 

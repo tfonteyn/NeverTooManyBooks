@@ -67,6 +67,7 @@ public class ReviewEditApiHandler
     /**
      * Constructor.
      *
+     * @param context Current context
      * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
@@ -94,7 +95,7 @@ public class ReviewEditApiHandler
      * @param review          (optional) Text for the review, PUBLIC
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     public void update(final long reviewId,

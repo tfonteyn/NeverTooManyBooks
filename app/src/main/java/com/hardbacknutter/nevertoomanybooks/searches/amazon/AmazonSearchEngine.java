@@ -60,6 +60,7 @@ public final class AmazonSearchEngine
                    SearchEngine.ByNativeId,
                    SearchEngine.ByIsbn {
 
+    /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
 
     private static final String UTF_8 = "UTF-8";
@@ -70,6 +71,8 @@ public final class AmazonSearchEngine
     public static final String PREFS_HOST_URL = PREF_PREFIX + "host.url";
 
     /**
+     * The search url.
+     *
      * <ul>Fields that can be added to the /gp URL
      * <li>&field-isbn</li>
      * <li>&field-author</li>

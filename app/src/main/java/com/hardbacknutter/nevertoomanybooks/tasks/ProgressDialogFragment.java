@@ -133,8 +133,8 @@ public class ProgressDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.dialog_task_progress, null);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View root = inflater.inflate(R.layout.dialog_task_progress, null);
 
         mMessageView = root.findViewById(R.id.progressMessage);
         mProgressBar = root.findViewById(R.id.progressBar);

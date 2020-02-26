@@ -403,6 +403,8 @@ public final class LanguageUtils {
 
     /**
      * Convenience method to get the language SharedPreferences file.
+     *
+     * @param context Current context
      */
     private static SharedPreferences getLanguageCache(@NonNull final Context context) {
         return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
@@ -421,7 +423,6 @@ public final class LanguageUtils {
                + "\ndefLocale(user)    : " + defLocale.getDisplayName(userLocale)
 
                + "\nuserLocale         : " + userLocale.getDisplayName()
-               + "\nuserLocale(user)   : " + userLocale.getDisplayName(userLocale)
-                ;
+               + "\nuserLocale(user)   : " + userLocale.getDisplayName(userLocale);
     }
 }

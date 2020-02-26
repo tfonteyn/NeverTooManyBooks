@@ -63,6 +63,7 @@ public class IsbnValidationTextWatcher
                                      final boolean strictIsbn) {
         mTextView = textView;
         mStrictIsbn = strictIsbn;
+
         // validate text which is already present at this point
         validate(mTextView.getText().toString().trim());
     }
@@ -94,12 +95,11 @@ public class IsbnValidationTextWatcher
         validate(s.toString());
     }
 
-    private void validate(@NonNull final String codeStr) {
-        final int len = codeStr.length();
+    private void validate(@NonNull final String isbnStr) {
+        final int len = isbnStr.length();
         boolean valid = false;
-        if (len == 10 || len == 13
-            || (len == 12 && !mStrictIsbn)) {
-            final ISBN code = new ISBN(codeStr, mStrictIsbn);
+        if (len == 10 || len == 13 || (len == 12 && !mStrictIsbn)) {
+            final ISBN code = new ISBN(isbnStr, mStrictIsbn);
             valid = code.isValid(mStrictIsbn);
         }
 

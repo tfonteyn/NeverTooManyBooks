@@ -334,7 +334,7 @@ class AmazonHtmlHandler
 
             String imageUrl;
             try {
-                // data-a-dynamic-image = {"https://...":[327,499]	,"https://...":[227,346]}
+                // data-a-dynamic-image = {"https://...":[327,499],"https://...":[227,346]}
                 String tmp = coverElement.attr("data-a-dynamic-image");
                 JSONObject json = new JSONObject(tmp);
                 // just grab the first key

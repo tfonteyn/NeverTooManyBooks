@@ -57,6 +57,7 @@ class OwnedBookCreateApiHandler
     /**
      * Constructor.
      *
+     * @param context Current context
      * @param grAuth  Authentication handler
      *
      * @throws CredentialsException with GoodReads
@@ -72,13 +73,14 @@ class OwnedBookCreateApiHandler
 
 
     /**
+     * @param context      Current context
      * @param isbn         ISBN to use, must be valid
      * @param dateAcquired (optional)
      *
      * @return the Goodreads book ID
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     public long create(@NonNull final Context context,
@@ -109,7 +111,7 @@ class OwnedBookCreateApiHandler
      * @param dateAcquired (optional)
      *
      * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
+     * @throws Http404Exception     the requested item was not found
      * @throws IOException          on other failures
      */
     public void create(final long grBookId,

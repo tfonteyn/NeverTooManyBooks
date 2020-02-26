@@ -39,16 +39,16 @@
     >
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/lbl_title"
+        android:id="@+id/lbl_series"
         style="@style/Envelope.AutoCompleteTextView"
         android:hint="@string/lbl_series"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_add"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         >
 
         <AutoCompleteTextView
-            android:id="@+id/series"
+            android:id="@+id/series_title"
             style="@style/titleTextEntryAutoComplete"
             android:layout_width="match_parent"
             tools:ignore="LabelFor"
@@ -56,11 +56,22 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="@string/btn_confirm_add"
+        app:layout_constraintBottom_toBottomOf="@id/lbl_series"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/lbl_series"
+        app:layout_constraintTop_toTopOf="@id/lbl_series"
+        />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_series_num"
         style="@style/Envelope.EditText.SeriesNum"
         android:hint="@string/lbl_series_num"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
+        app:layout_constraintTop_toBottomOf="@id/lbl_series"
         app:layout_constraintStart_toStartOf="parent"
         >
 
@@ -73,24 +84,15 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/btn_add"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:text="@string/btn_confirm_add"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_series_num"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@android:id/list"
+        android:id="@+id/series_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="@dimen/border2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_add"
+        app:layout_constraintTop_toBottomOf="@id/lbl_series_num"
         tools:listitem="@layout/row_edit_series_list"
         />
 

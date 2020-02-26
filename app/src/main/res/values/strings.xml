@@ -1630,5 +1630,6 @@
 
     <string name="rebuild_index">Rebuild index</string>
     <string name="info_rebuild_index">rebuild_index explanation TBD</string>
+    <string name="lbl_csv">CSV (without covers)</string>
 
 </resources>

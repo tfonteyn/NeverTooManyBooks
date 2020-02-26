@@ -94,7 +94,8 @@ class IsfdbBookHandler
     private static final String CSS_Q_DIV_CONTENTBOX = "div.contentbox";
 
     /*
-     * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">Publication_Type</a>
+     * <a href="http://www.isfdb.org/wiki/index.php/Help:Screen:NewPub#Publication_Type">
+     Publication_Type</a>
      *
      * ANTHOLOGY. A publication containing fiction by more than one author,
      * not written in collaboration
@@ -191,6 +192,7 @@ class IsfdbBookHandler
     /**
      * Fetch a book.
      *
+     * @param context          Current context
      * @param isfdbId          ISFDB native book ID (as a String)
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
@@ -216,6 +218,7 @@ class IsfdbBookHandler
     /**
      * Fetch a book.
      *
+     * @param context          Current context
      * @param path             A fully qualified ISFDB search url
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
@@ -246,6 +249,7 @@ class IsfdbBookHandler
     /**
      * Fetch a book.
      *
+     * @param context          Current context
      * @param editions         List of ISFDB Editions with native book ID
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
@@ -895,6 +899,7 @@ class IsfdbBookHandler
      * }
      * </pre>
      *
+     * @param context          Current context
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      *
      * @return the TOC

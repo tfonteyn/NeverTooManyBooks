@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  */
 public class XmlFilter {
 
+    private static final String NO_FILTERS = "no filters";
     /** The tag for this specific filter. */
     @NonNull
     private final String mTagName;
@@ -92,7 +93,7 @@ public class XmlFilter {
     public static XmlFilter buildFilter(@NonNull final XmlFilter root,
                                         @NonNull final String... filters) {
         if (filters.length <= 0) {
-            throw new IllegalArgumentException("no filters");
+            throw new IllegalArgumentException(NO_FILTERS);
         }
         return buildFilter(root, 0, Arrays.asList(filters).iterator());
     }
@@ -109,7 +110,7 @@ public class XmlFilter {
     static XmlFilter buildFilter(@NonNull final XmlFilter root,
                                  @NonNull final Collection<String> filters) {
         if (filters.isEmpty()) {
-            throw new IllegalArgumentException("no filters");
+            throw new IllegalArgumentException(NO_FILTERS);
         }
         return buildFilter(root, 0, filters.iterator());
     }

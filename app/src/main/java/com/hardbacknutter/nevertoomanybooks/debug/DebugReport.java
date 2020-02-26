@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,6 +73,8 @@ public final class DebugReport {
     /**
      * Return the MD5 hash of the public key that signed this app, or a useful
      * text message if an error or other problem occurred.
+     *
+     * @param context Current context
      */
     @SuppressLint("PackageManagerGetSignatures")
     public static String signedBy(@NonNull final Context context) {
@@ -134,6 +136,8 @@ public final class DebugReport {
      * Collect and send debug info to a support email address.
      * <p>
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
+     *
+     * @param context Current context
      */
     public static boolean sendDebugInfo(@NonNull final Context context) {
 

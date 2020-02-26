@@ -97,7 +97,7 @@
 
             <!-- no style used on purpose -->
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/series"
+                android:id="@+id/series_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"

@@ -287,7 +287,8 @@ public final class SearchSites {
      * @throws UnexpectedValueException if the resId is unknown
      */
     @Id
-    public static int getSiteIdFromResId(@IdRes final int resId) {
+    public static int getSiteIdFromResId(@IdRes final int resId)
+            throws UnexpectedValueException {
         //NEWTHINGS: add new site specific ID: not all sites have/need a resource/menu id.
         switch (resId) {
             case R.id.MENU_VIEW_BOOK_AT_AMAZON:
@@ -329,7 +330,8 @@ public final class SearchSites {
      * @throws UnexpectedValueException if the key is unknown
      */
     @Id
-    public static int getSiteIdFromDBDefinitions(@NonNull final String key) {
+    public static int getSiteIdFromDBDefinitions(@NonNull final String key)
+            throws UnexpectedValueException {
         //NEWTHINGS: add new site specific ID: all native keys should be listed
         switch (key) {
             case DBDefinitions.KEY_EID_GOODREADS_BOOK:

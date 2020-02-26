@@ -481,7 +481,7 @@ public class Series
         }
 
         // now repeat but taking the id into account.
-        // (the order in the || is important...
+        // (the order in the || is important...)
         return ItemWithFixableId.pruneList(list, context, db, bookLocale, isBatchMode)
                || modified;
     }

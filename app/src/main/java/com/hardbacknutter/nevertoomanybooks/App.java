@@ -468,7 +468,7 @@ public class App
                 return packageInfo.getLongVersionCode();
             } else {
                 //noinspection deprecation
-                return (long) packageInfo.versionCode;
+                return packageInfo.versionCode;
             }
         }
         return 0;

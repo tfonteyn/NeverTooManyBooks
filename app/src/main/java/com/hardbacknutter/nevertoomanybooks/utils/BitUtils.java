@@ -43,7 +43,9 @@ import java.util.Set;
 /**
  * Bitmask converter routines.
  */
-public class BitUtils {
+public final class BitUtils {
+
+    public static final String BITMASK = "bitmask=";
 
     /**
      * Convert a set where each element represents one bit to a bitmask.
@@ -79,6 +81,9 @@ public class BitUtils {
         return tmp;
     }
 
+    private BitUtils() {
+    }
+
     /**
      * Convert a bitmask.
      *
@@ -90,7 +95,7 @@ public class BitUtils {
     public static Set<String> toStringSet(@IntRange(from = 0, to = 0xFFFF)
                                           @NonNull final Integer bitmask) {
         if (bitmask < 0) {
-            throw new IllegalArgumentException("bitmask=" + bitmask);
+            throw new IllegalArgumentException(BITMASK + bitmask);
         }
 
         Set<String> set = new HashSet<>();
@@ -99,34 +104,6 @@ public class BitUtils {
         while (tmp != 0) {
             if ((tmp & 1) == 1) {
                 set.add(String.valueOf(bit));
-            }
-            bit *= 2;
-            // unsigned shift
-            tmp = tmp >>> 1;
-        }
-        return set;
-    }
-
-    /**
-     * Convert a bitmask to a list where each element represents one bit.
-     *
-     * @param bitmask the value
-     *
-     * @return the list
-     */
-    @NonNull
-    public static List<Integer> toListOfIntegers(@IntRange(from = 0, to = 0xFFFF)
-                                                 @NonNull final Integer bitmask) {
-        if (bitmask < 0) {
-            throw new IllegalArgumentException("bitmask=" + bitmask);
-        }
-
-        List<Integer> set = new LinkedList<>();
-        int tmp = bitmask;
-        int bit = 1;
-        while (tmp != 0) {
-            if ((tmp & 1) == 1) {
-                set.add(bit);
             }
             bit *= 2;
             // unsigned shift
@@ -212,5 +189,33 @@ public class BitUtils {
             }
         }
         return list;
+    }
+
+    /**
+     * Convert a bitmask to a list where each element represents one bit.
+     *
+     * @param bitmask the value
+     *
+     * @return the list
+     */
+    @NonNull
+    public static List<Integer> toListOfIntegers(@IntRange(from = 0, to = 0xFFFF)
+                                                 @NonNull final Integer bitmask) {
+        if (bitmask < 0) {
+            throw new IllegalArgumentException(BITMASK + bitmask);
+        }
+
+        List<Integer> set = new LinkedList<>();
+        int tmp = bitmask;
+        int bit = 1;
+        while (tmp != 0) {
+            if ((tmp & 1) == 1) {
+                set.add(bit);
+            }
+            bit *= 2;
+            // unsigned shift
+            tmp = tmp >>> 1;
+        }
+        return set;
     }
 }

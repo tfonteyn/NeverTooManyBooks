@@ -57,7 +57,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_WRITER;
  * Not based on MapperBase, as the value is a real integer
  * and not a resource id.
  */
-public class AuthorTypeMapper {
+public final class AuthorTypeMapper {
 
     /** Log tag. */
     private static final String TAG = "AuthorTypeMapper";

@@ -67,6 +67,7 @@
             style="@style/CheckboxEntry"
             android:text="@string/lbl_is_read"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:checked="true"
             />
@@ -196,20 +197,11 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
             />
 
-        <!--        <Button-->
-        <!--            android:id="@+id/edition"-->
-        <!--            style="@style/DataEntryButton"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@id/lbl_edition"-->
-        <!--            />-->
-
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/edition"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
             />
@@ -218,6 +210,7 @@
             android:id="@+id/cbx_signed"
             style="@style/CheckboxEntry"
             android:text="@string/lbl_is_signed"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edition"
             tools:checked="true"

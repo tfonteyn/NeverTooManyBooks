@@ -113,9 +113,8 @@ public abstract class EditBookBaseFragment
         mFragmentVM.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
         mFragmentVM.getNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
             if (needs != null && needs) {
-                @SuppressWarnings("ConstantConditions")
-                @NonNull
                 final Context context = getContext();
+                //noinspection ConstantConditions
                 RequestAuthTask.prompt(context, mFragmentVM.getGoodreadsTaskListener(context));
             }
         });
@@ -133,6 +132,9 @@ public abstract class EditBookBaseFragment
      * Init all Fields, and add them the {@link #getFields()} collection.
      * <p>
      * Note that Views are <strong>NOT AVAILABLE</strong>.
+     *
+     * Book data is available from {@link #mBookViewModel} but {@link #onResume()} is
+     * were the fields/Views are normally loaded with that data.
      */
     @CallSuper
     void onInitFields() {

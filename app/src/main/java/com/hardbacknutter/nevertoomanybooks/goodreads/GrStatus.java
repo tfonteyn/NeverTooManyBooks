@@ -57,12 +57,14 @@ public enum GrStatus {
     /** A generic action to find 'something' failed. */
     NotFound,
 
-
+    /** The user cancelled the action. */
     Cancelled,
+    /** There is no connectivity. */
     NoInternet,
+    /** There is connectivity but something went wrong. */
     IOError,
-    UnexpectedError,
-    ;
+    /** Not a clue. */
+    UnexpectedError;
 
     @NonNull
     public String getString(@NonNull final Context context) {

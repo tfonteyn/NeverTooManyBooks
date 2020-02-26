@@ -188,7 +188,7 @@ public class OpenLibrarySearchEngine
     }
 
     /**
-     * <a href="https://openlibrary.org/dev/docs/api/books">API books</a>
+     * <a href="https://openlibrary.org/dev/docs/api/books">API books</a>.
      * <br>
      * {@inheritDoc}
      */
@@ -243,7 +243,7 @@ public class OpenLibrarySearchEngine
     }
 
     /**
-     * <a href="https://openlibrary.org/dev/docs/api/covers">API covers</a>
+     * <a href="https://openlibrary.org/dev/docs/api/covers">API covers</a>.
      * <p>
      * {@code
      * http://covers.openlibrary.org/b/isbn/0385472579-S.jpg?default=false

@@ -177,7 +177,7 @@ public class SearchOrderFragment
             super(context, items, dragStartListener);
 
             // only show the info for Data lists. Irrelevant for others.
-            mShowInfo = (type == SiteList.Type.Data);
+            mShowInfo = type == SiteList.Type.Data;
         }
 
         @NonNull

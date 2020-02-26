@@ -29,8 +29,12 @@ package com.hardbacknutter.nevertoomanybooks.datamanager;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+
 /**
  * Interface supported by an editor object.
+ *
+ * @param <T> type of DataManager; normally a {@link Book}
  */
 public interface DataEditor<T extends DataManager> {
 

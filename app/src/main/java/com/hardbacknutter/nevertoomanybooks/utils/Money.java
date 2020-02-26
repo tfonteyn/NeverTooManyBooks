@@ -149,7 +149,7 @@ public class Money
 
                 // the British pound was made up of 20 shillings, each of which was
                 // made up of 12 pence, a total of 240 pence. Madness...
-                mValue = ((shillings * 12) + pence) / 240;
+                mValue = ((shillings * 12) + pence) / 240f;
                 mCurrency = "GBP";
 
             } catch (@NonNull final NumberFormatException ignore) {
@@ -214,7 +214,7 @@ public class Money
         if (mValue >= 0) {
             return (int) (mValue + 0.5);
         } else {
-            return (int) (mValue);
+            return (int) mValue;
         }
     }
 
@@ -223,7 +223,7 @@ public class Money
         if (mValue >= 0) {
             return (int) (mValue + 0.5);
         } else {
-            return (int) (mValue);
+            return (int) mValue;
         }
     }
 

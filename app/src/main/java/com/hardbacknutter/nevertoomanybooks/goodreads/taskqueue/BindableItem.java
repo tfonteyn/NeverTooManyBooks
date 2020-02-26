@@ -57,7 +57,7 @@ public interface BindableItem<
      * @return a new BindableItemViewHolder
      */
     @NonNull
-    BIViewHolder onCreateViewHolder(@NonNull final LayoutInflater layoutInflater,
+    BIViewHolder onCreateViewHolder(@NonNull LayoutInflater layoutInflater,
                                     @NonNull ViewGroup parent);
 
     /**

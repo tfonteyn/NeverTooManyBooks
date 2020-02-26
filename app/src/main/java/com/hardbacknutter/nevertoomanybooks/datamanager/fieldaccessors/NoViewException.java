@@ -34,7 +34,7 @@ class NoViewException
 
     private static final long serialVersionUID = -7501110352359786502L;
 
-    public NoViewException(@NonNull final String message) {
+    NoViewException(@NonNull final String message) {
         super(message);
     }
 }

@@ -89,6 +89,7 @@
                 android:id="@+id/author"
                 style="@style/EditText.Button"
                 android:layout_width="match_parent"
+                tools:text="@string/lbl_authors"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -107,23 +108,19 @@
                 style="@style/titleTextEntry"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
+                tools:text="@string/lbl_title"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/btn_altIsbn"
-            android:layout_width="@dimen/icon_button_width"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/indent1"
-            android:layout_marginEnd="@dimen/indent1"
-            android:enabled="false"
+            style="@style/Envelope.Button"
             app:icon="@drawable/ic_autorenew"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_isbn"
+            android:enabled="false"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
             app:layout_constraintStart_toStartOf="parent"
-            tools:enabled="true"
+            app:layout_constraintTop_toTopOf="@id/lbl_isbn"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -147,16 +144,12 @@
 
         <Button
             android:id="@+id/btn_scan"
-            android:layout_width="@dimen/icon_button_width"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/indent1"
-            android:layout_marginEnd="@dimen/indent1"
+            style="@style/Envelope.Button"
             android:enabled="true"
             app:icon="@drawable/ic_barcode"
-            app:iconGravity="textStart"
-            app:iconPadding="0dp"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_isbn"
+            app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/lbl_isbn"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -169,9 +162,10 @@
             >
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/series"
+                android:id="@+id/series_title"
                 style="@style/EditText.Button"
                 android:layout_width="match_parent"
+                tools:text="@string/lbl_series_multiple"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -189,6 +183,7 @@
                 android:id="@+id/bookshelves"
                 style="@style/EditText.Button"
                 android:layout_width="match_parent"
+                tools:text="@string/lbl_bookshelves_long"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -206,8 +201,8 @@
                 android:id="@+id/genre"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
-                tools:text="Fiction"
                 tools:ignore="LabelFor"
+                tools:text="Fiction"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

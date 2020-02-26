@@ -43,7 +43,7 @@ import androidx.annotation.Nullable;
 public interface FieldFormatter<T> {
 
     /**
-     * <strong>DO NOT CHANGE ANY CLASS VARIABLE HERE</strong>
+     * <strong>DO NOT CHANGE ANY CLASS VARIABLE HERE</strong>.
      *
      * @param context  Current context
      * @param rawValue Input value

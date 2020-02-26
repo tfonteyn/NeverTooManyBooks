@@ -113,8 +113,8 @@ public class EditPublisherDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.dialog_edit_publisher, null);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View root = inflater.inflate(R.layout.dialog_edit_publisher, null);
 
         //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(

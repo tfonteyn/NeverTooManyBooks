@@ -78,11 +78,6 @@ public abstract class BookBaseFragment
     /** The book. Must be in the Activity scope. */
     BookViewModel mBookViewModel;
 
-    @NonNull
-    BookViewModel getBookViewModel() {
-        return mBookViewModel;
-    }
-
     abstract Fields getFields();
 
     @Override
@@ -159,12 +154,12 @@ public abstract class BookBaseFragment
         //noinspection ConstantConditions
         getFields().prepareViewsForPopulating(getView());
         // preserve the 'dirty' status.
-        final boolean wasDirty = getBookViewModel().isDirty();
+        final boolean wasDirty = mBookViewModel.isDirty();
         // make it so!
         onPopulateViews(mBookViewModel.getBook());
         // restore the dirt-status and install the AfterChangeListener
-        getBookViewModel().setDirty(wasDirty);
-        getFields().setAfterChangeListener(fieldId -> getBookViewModel().setDirty(true));
+        mBookViewModel.setDirty(wasDirty);
+        getFields().setAfterChangeListener(fieldId -> mBookViewModel.setDirty(true));
     }
 
     /**
@@ -194,8 +189,6 @@ public abstract class BookBaseFragment
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
-        @SuppressWarnings("ConstantConditions")
-        @NonNull
         final Context context = getContext();
 
         final Book book = mBookViewModel.getBook();
@@ -216,14 +209,17 @@ public abstract class BookBaseFragment
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
+                //noinspection ConstantConditions
                 AmazonSearchEngine.openWebsite(context, book.getPrimaryAuthor(context), null);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
+                //noinspection ConstantConditions
                 AmazonSearchEngine.openWebsite(context, null, book.getPrimarySeriesTitle());
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
+                //noinspection ConstantConditions
                 AmazonSearchEngine.openWebsite(context,
                                                book.getPrimaryAuthor(context),
                                                book.getPrimarySeriesTitle());
@@ -231,6 +227,7 @@ public abstract class BookBaseFragment
             }
 
             default: {
+                //noinspection ConstantConditions
                 if (MenuHandler.handleOpenOnWebsiteMenus(context, item, book)) {
                     return true;
                 }

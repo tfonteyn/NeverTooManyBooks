@@ -58,4 +58,5 @@ public final class ErrorMsg {
     public static final String ARGS_MISSING_BOOKSHELF = "Bookshelf";
     public static final String ARGS_MISSING_PUBLISHER = "Publisher";
     public static final String ARGS_MISSING_EXTRAS = "Extras";
+    public static final String NULL_DRAWABLE = "Drawable";
 }

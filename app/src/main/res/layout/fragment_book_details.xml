@@ -131,7 +131,7 @@
             style="@style/Label.Field.Inline"
             android:layout_marginTop="@dimen/border1"
             android:text="@string/lbl_isbn"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/author"
             />
 
@@ -216,7 +216,7 @@
             />
 
         <TextView
-            android:id="@+id/series"
+            android:id="@+id/series_title"
             style="@style/Text.Small"
             app:layout_constraintEnd_toStartOf="@id/coverImage1"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
@@ -239,7 +239,7 @@
             android:id="@+id/cbx_anthology"
             style="@style/Flag.Generic"
             app:layout_constraintStart_toEndOf="@id/lbl_anthology"
-            app:layout_constraintTop_toBottomOf="@id/series"
+            app:layout_constraintTop_toBottomOf="@id/series_title"
             tools:checked="true"
             />
 
@@ -266,7 +266,7 @@
             android:visibility="gone"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
             app:layout_constraintStart_toEndOf="@id/lbl_toc"
-            app:layout_constraintTop_toBottomOf="@id/series"
+            app:layout_constraintTop_toBottomOf="@id/series_title"
             tools:checked="true"
             tools:visibility="visible"
             />
@@ -437,12 +437,12 @@
 
         <TextView
             android:id="@+id/notes"
-            style="@style/Text"
-            android:textIsSelectable="true"
+            style="@style/Text.Notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
             tools:text="The best book of all times."
+            tools:ignore="SelectableText"
             />
 
         <!-- note that the views used to set constraints are the data views.
@@ -573,12 +573,12 @@
 
         <TextView
             android:id="@+id/description"
-            style="@style/Text"
-            android:textIsSelectable="true"
+            style="@style/Text.Notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_description"
             tools:text="@tools:sample/lorem/random"
+            tools:ignore="SelectableText"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

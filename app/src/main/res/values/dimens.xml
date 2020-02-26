@@ -74,7 +74,7 @@
     <dimen name="inlineFieldStartMargin">16dp</dimen>
 
     <!-- Guideline layout_constraintGuide_begin for indenting a group of fields. -->
-    <dimen name="fieldGuidelineIndent">16dp</dimen>
+    <dimen name="fieldGuidelineIndent">8dp</dimen>
 
 
     <!-- Spacing for read-only chips in a ChipGroup -->
@@ -84,7 +84,7 @@
     <dimen name="cover_base_size">30dp</dimen>
 
     <!-- the width for a Button displaying an icon (24dp) and no text. -->
-    <dimen name="icon_button_width">36dp</dimen>
+    <dimen name="icon_button_width">48dp</dimen>
 
     <!-- indent an element so it matches up with the text part of a standard size text field
         which has a drawable at the start/end. -->
@@ -104,6 +104,12 @@
          Used to make other elements the same height.
          48dp is also == "?attr/minTouchTargetSize" -->
     <dimen name="edit_text_height">48dp</dimen>
+
+    <!-- The width of an on-screen menu button.
+          Intended to be 'almost' as wide as a phone screen in portrait mode.
+          Should be overridden in bigger-screen dimen.xml files.
+    -->
+    <dimen name="largeMenuButton">320dp</dimen>
 
     <!-- fast scroller. -->
     <dimen name="cfs_default_thickness">8dp</dimen>

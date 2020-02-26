@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * FieldFormatter for 'Number' fields with the value being a 'long'
+ * FieldFormatter for 'Number' fields with the value being a 'long'.
  *
  * <ul>
  * <li>Multiple fields: <strong>yes</strong></li>

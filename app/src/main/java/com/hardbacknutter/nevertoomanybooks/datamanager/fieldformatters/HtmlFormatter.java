@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 public class HtmlFormatter<T>
         implements FieldFormatter<T> {
 
+    /** Whether to make links clickable. */
     private final boolean mEnableLinks;
 
     /**

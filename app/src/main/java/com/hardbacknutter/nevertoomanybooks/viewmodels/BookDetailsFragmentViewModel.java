@@ -142,7 +142,7 @@ public class BookDetailsFragmentViewModel
 
         // The Series field is a single String with line-breaks between multiple Series.
         // Each line will be prefixed with a "• "
-        fields.add(R.id.series, UniqueId.BKEY_SERIES_ARRAY,
+        fields.add(R.id.series_title, UniqueId.BKEY_SERIES_ARRAY,
                    new TextAccessor<>(new SeriesListFormatter(Series.Details.Full, true)),
                    DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);

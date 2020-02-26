@@ -132,7 +132,7 @@ public class EditBookActivity
             final Fragment frag = fm.findFragmentByTag(tag);
             if (frag instanceof DataEditor && frag.isResumed()) {
                 //noinspection unchecked
-                final DataEditor<Book> dataEditor = ((DataEditor<Book>) frag);
+                final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
                 if (dataEditor.hasUnfinishedEdits()) {
                     StandardDialogs.unsavedEdits(this, null, super::onBackPressed);
                     return;

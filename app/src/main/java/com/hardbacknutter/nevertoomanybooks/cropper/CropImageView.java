@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
-class CropImageView
+public class CropImageView
         extends CropImageViewTouchBase {
 
     /** Log tag. */

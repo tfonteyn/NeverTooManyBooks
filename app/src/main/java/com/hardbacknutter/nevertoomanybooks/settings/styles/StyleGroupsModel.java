@@ -103,6 +103,8 @@ public class StyleGroupsModel
 
     /**
      * Collect the data from the list, and update the style.
+     *
+     * @param context Current context
      */
     void updateStyle(@NonNull final Context context) {
         Map<String, PPref> allPreferences = mStyle.getPreferences(true);

@@ -64,7 +64,7 @@ import java.util.regex.Pattern;
  * <p>
  * Some modifications done, do not blindly overwrite from a newer version of the above.
  *
- * @param <T>
+ * @param <T> type of objects in the list
  */
 public class DiacriticArrayAdapter<T>
         extends BaseAdapter
@@ -125,15 +125,15 @@ public class DiacriticArrayAdapter<T>
     private LayoutInflater mDropDownInflater;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param context  The current context.
      * @param resource The resource ID for a layout file containing a TextView to use when
      *                 instantiating views.
      */
     @SuppressWarnings("unused")
-    public DiacriticArrayAdapter(@NonNull Context context,
-                                 @LayoutRes int resource) {
+    public DiacriticArrayAdapter(@NonNull final Context context,
+                                 @LayoutRes final int resource) {
         this(context, resource, 0, new ArrayList<>());
     }
 
@@ -146,9 +146,9 @@ public class DiacriticArrayAdapter<T>
      * @param textViewResourceId The id of the TextView within the layout resource to be populated
      */
     @SuppressWarnings("unused")
-    public DiacriticArrayAdapter(@NonNull Context context,
-                                 @LayoutRes int resource,
-                                 @IdRes int textViewResourceId) {
+    public DiacriticArrayAdapter(@NonNull final Context context,
+                                 @LayoutRes final int resource,
+                                 @IdRes final int textViewResourceId) {
         this(context, resource, textViewResourceId, new ArrayList<>());
     }
 
@@ -162,9 +162,9 @@ public class DiacriticArrayAdapter<T>
      * @param objects  The objects to represent in the ListView.
      */
     @SuppressWarnings("unused")
-    public DiacriticArrayAdapter(@NonNull Context context,
-                                 @LayoutRes int resource,
-                                 @NonNull T[] objects) {
+    public DiacriticArrayAdapter(@NonNull final Context context,
+                                 @LayoutRes final int resource,
+                                 @NonNull final T[] objects) {
         this(context, resource, 0, Arrays.asList(objects));
     }
 
@@ -179,10 +179,10 @@ public class DiacriticArrayAdapter<T>
      * @param objects            The objects to represent in the ListView.
      */
     @SuppressWarnings("unused")
-    public DiacriticArrayAdapter(@NonNull Context context,
-                                 @LayoutRes int resource,
-                                 @IdRes int textViewResourceId,
-                                 @NonNull T[] objects) {
+    public DiacriticArrayAdapter(@NonNull final Context context,
+                                 @LayoutRes final int resource,
+                                 @IdRes final int textViewResourceId,
+                                 @NonNull final T[] objects) {
         this(context, resource, textViewResourceId, Arrays.asList(objects));
     }
 
@@ -194,9 +194,9 @@ public class DiacriticArrayAdapter<T>
      *                 instantiating views.
      * @param objects  The objects to represent in the ListView.
      */
-    public DiacriticArrayAdapter(@NonNull Context context,
-                                 @LayoutRes int resource,
-                                 @NonNull List<T> objects) {
+    public DiacriticArrayAdapter(@NonNull final Context context,
+                                 @LayoutRes final int resource,
+                                 @NonNull final List<T> objects) {
         this(context, resource, 0, objects);
     }
 
@@ -209,18 +209,18 @@ public class DiacriticArrayAdapter<T>
      * @param textViewResourceId The id of the TextView within the layout resource to be populated
      * @param objects            The objects to represent in the ListView.
      */
-    protected DiacriticArrayAdapter(@NonNull Context context,
-                                    @LayoutRes int resource,
-                                    @IdRes int textViewResourceId,
-                                    @NonNull List<T> objects) {
+    protected DiacriticArrayAdapter(@NonNull final Context context,
+                                    @LayoutRes final int resource,
+                                    @IdRes final int textViewResourceId,
+                                    @NonNull final List<T> objects) {
         this(context, resource, textViewResourceId, objects, false);
     }
 
-    private DiacriticArrayAdapter(@NonNull Context context,
-                                  @LayoutRes int resource,
-                                  @IdRes int textViewResourceId,
-                                  @NonNull List<T> objects,
-                                  boolean objectsFromResources) {
+    private DiacriticArrayAdapter(@NonNull final Context context,
+                                  @LayoutRes final int resource,
+                                  @IdRes final int textViewResourceId,
+                                  @NonNull final List<T> objects,
+                                  final boolean objectsFromResources) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mResource = mDropDownResource = resource;
@@ -242,9 +242,9 @@ public class DiacriticArrayAdapter<T>
     @SuppressWarnings({"WeakerAccess", "unused"})
     @NonNull
     public static DiacriticArrayAdapter<CharSequence> createFromResource(
-            @NonNull Context context,
-            @ArrayRes int textArrayResId,
-            @LayoutRes int textViewResId) {
+            @NonNull final Context context,
+            @ArrayRes final int textArrayResId,
+            @LayoutRes final int textViewResId) {
         final CharSequence[] strings = context.getResources().getTextArray(textArrayResId);
         return new DiacriticArrayAdapter<>(context, textViewResId, 0, Arrays.asList(strings), true);
     }
@@ -256,7 +256,7 @@ public class DiacriticArrayAdapter<T>
      *
      * @throws UnsupportedOperationException if the underlying data collection is immutable
      */
-    public void add(@Nullable T object) {
+    public void add(@Nullable final T object) {
         synchronized (mLock) {
             if (mOriginalValues != null) {
                 mOriginalValues.add(object);
@@ -287,7 +287,7 @@ public class DiacriticArrayAdapter<T>
      *                                       specified collection prevents it from being added to
      *                                       this list
      */
-    public void addAll(@NonNull Collection<? extends T> collection) {
+    public void addAll(@NonNull final Collection<? extends T> collection) {
         synchronized (mLock) {
             if (mOriginalValues != null) {
                 mOriginalValues.addAll(collection);
@@ -309,7 +309,7 @@ public class DiacriticArrayAdapter<T>
      * @throws UnsupportedOperationException if the underlying data collection is immutable
      */
     @SuppressWarnings("unchecked")
-    public void addAll(T... items) {
+    public void addAll(@NonNull final T... items) {
         synchronized (mLock) {
             if (mOriginalValues != null) {
                 Collections.addAll(mOriginalValues, items);
@@ -331,8 +331,8 @@ public class DiacriticArrayAdapter<T>
      *
      * @throws UnsupportedOperationException if the underlying data collection is immutable
      */
-    public void insert(@Nullable T object,
-                       int index) {
+    public void insert(@Nullable final T object,
+                       final int index) {
         synchronized (mLock) {
             if (mOriginalValues != null) {
                 mOriginalValues.add(index, object);
@@ -353,7 +353,7 @@ public class DiacriticArrayAdapter<T>
      *
      * @throws UnsupportedOperationException if the underlying data collection is immutable
      */
-    public void remove(@Nullable T object) {
+    public void remove(@Nullable final T object) {
         synchronized (mLock) {
             if (mOriginalValues != null) {
                 mOriginalValues.remove(object);
@@ -392,7 +392,7 @@ public class DiacriticArrayAdapter<T>
      * @param comparator The comparator used to sort the objects contained
      *                   in this adapter.
      */
-    public void sort(@NonNull Comparator<? super T> comparator) {
+    public void sort(@NonNull final Comparator<? super T> comparator) {
         synchronized (mLock) {
             if (mOriginalValues != null) {
                 Collections.sort(mOriginalValues, comparator);
@@ -426,7 +426,7 @@ public class DiacriticArrayAdapter<T>
      *                       #notifyDataSetChanged}
      */
     @SuppressWarnings("unused")
-    public void setNotifyOnChange(boolean notifyOnChange) {
+    public void setNotifyOnChange(final boolean notifyOnChange) {
         mNotifyOnChange = notifyOnChange;
     }
 
@@ -448,7 +448,7 @@ public class DiacriticArrayAdapter<T>
 
     @Nullable
     @Override
-    public T getItem(int position) {
+    public T getItem(final int position) {
         return mObjects.get(position);
     }
 
@@ -460,29 +460,29 @@ public class DiacriticArrayAdapter<T>
      * @return The position of the specified item.
      */
     @SuppressWarnings("unused")
-    public int getPosition(@Nullable T item) {
+    public int getPosition(@Nullable final T item) {
         return mObjects.indexOf(item);
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return position;
     }
 
     @NonNull
     @Override
-    public View getView(int position,
-                        @Nullable View convertView,
-                        @NonNull ViewGroup parent) {
+    public View getView(final int position,
+                        @Nullable final View convertView,
+                        @NonNull final ViewGroup parent) {
         return createViewFromResource(mInflater, position, convertView, parent, mResource);
     }
 
     @NonNull
-    private View createViewFromResource(@NonNull LayoutInflater inflater,
-                                        int position,
-                                        @Nullable View convertView,
-                                        @NonNull ViewGroup parent,
-                                        int resource) {
+    private View createViewFromResource(@NonNull final LayoutInflater inflater,
+                                        final int position,
+                                        @Nullable final View convertView,
+                                        @NonNull final ViewGroup parent,
+                                        final int resource) {
         final View view;
         final TextView text;
 
@@ -532,7 +532,7 @@ public class DiacriticArrayAdapter<T>
      * @see #getDropDownView(int, android.view.View, android.view.ViewGroup)
      */
     @SuppressWarnings("unused")
-    public void setDropDownViewResource(@LayoutRes int resource) {
+    public void setDropDownViewResource(@LayoutRes final int resource) {
         this.mDropDownResource = resource;
     }
 
@@ -555,7 +555,7 @@ public class DiacriticArrayAdapter<T>
      * @see #getDropDownView(int, View, ViewGroup)
      */
     @Override
-    public void setDropDownViewTheme(@Nullable Resources.Theme theme) {
+    public void setDropDownViewTheme(@Nullable final Resources.Theme theme) {
         if (theme == null) {
             mDropDownInflater = null;
         } else if (theme == mInflater.getContext().getTheme()) {
@@ -567,9 +567,9 @@ public class DiacriticArrayAdapter<T>
     }
 
     @Override
-    public View getDropDownView(int position,
-                                @Nullable View convertView,
-                                @NonNull ViewGroup parent) {
+    public View getDropDownView(final int position,
+                                @Nullable final View convertView,
+                                @NonNull final ViewGroup parent) {
         final LayoutInflater inflater = mDropDownInflater == null ? mInflater : mDropDownInflater;
         return createViewFromResource(inflater, position, convertView, parent, mDropDownResource);
     }
@@ -618,7 +618,7 @@ public class DiacriticArrayAdapter<T>
         private final Pattern DIACRITICS_REGEX = Pattern.compile("[^\\p{ASCII}]");
 
         @Override
-        protected FilterResults performFiltering(CharSequence prefix) {
+        protected FilterResults performFiltering(@Nullable final CharSequence prefix) {
             final FilterResults results = new FilterResults();
 
             if (mOriginalValues == null) {
@@ -692,8 +692,8 @@ public class DiacriticArrayAdapter<T>
         }
 
         @Override
-        protected void publishResults(CharSequence constraint,
-                                      FilterResults results) {
+        protected void publishResults(final CharSequence constraint,
+                                      @NonNull final FilterResults results) {
             //noinspection unchecked
             mObjects = (List<T>) results.values;
             if (results.count > 0) {

@@ -98,7 +98,7 @@ public class Author
 
     /** WRITER: primary or only writer. i.e. in contrast to any of the below. */
     public static final int TYPE_WRITER = 1;
-    /** WRITER: not distinguished for now, if we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1; */
+    /** WRITER: not distinguished for now. If we do, use TYPE_ORIGINAL_SCRIPT_WRITER = 1 << 1; */
     public static final int TYPE_ORIGINAL_SCRIPT_WRITER = TYPE_WRITER;
     /** WRITER: the foreword. */
     public static final int TYPE_FOREWORD = 1 << 2;

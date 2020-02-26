@@ -57,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -362,11 +361,16 @@ public abstract class BaseActivity
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
             }
-            case R.id.nav_manage_list_styles: {
-                Intent intent = new Intent(this, PreferredStylesActivity.class);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
-                return true;
-            }
+//            case R.id.nav_manage_list_styles: {
+//                // not reachable right now as we don't show the menu option unless
+//                // we're on the main BooksOnBookshelf activity.
+//                // Enabling it elsewhere means we'd need to get a DAO to pass in.
+//                Intent intent = new Intent(this, PreferredStylesActivity.class)
+//                        .putExtra(UniqueId.BKEY_STYLE_ID,
+//                                  BooklistStyle.getDefaultStyle(this, mDb));
+//                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+//                return true;
+//            }
             case R.id.nav_import_export: {
                 Intent intent = new Intent(this, AdminActivity.class)
                         .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportExportFragment.TAG);

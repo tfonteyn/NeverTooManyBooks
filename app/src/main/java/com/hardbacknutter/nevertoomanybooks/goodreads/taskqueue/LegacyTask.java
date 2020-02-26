@@ -49,6 +49,8 @@ public class LegacyTask
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
     public LegacyTask(@NonNull final Context context) {
         super(context.getString(R.string.legacy_record));

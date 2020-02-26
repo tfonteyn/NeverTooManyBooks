@@ -55,8 +55,6 @@
         app:layout_constraintGuide_begin="@dimen/fieldGuidelineIndent"
         />
 
-    <!-- DATA IMPORT/EXPORT -->
-
     <TextView
         android:id="@+id/lbl_import_export"
         style="@style/Label.Header.Small"
@@ -85,6 +83,14 @@
         app:layout_constraintTop_toBottomOf="@id/lbl_backup"
         />
 
+    <TextView
+        android:id="@+id/lbl_csv"
+        style="@style/Label.Header.Small"
+        android:text="@string/lbl_csv"
+        app:layout_constraintStart_toEndOf="@id/indents"
+        app:layout_constraintTop_toBottomOf="@id/lbl_import_from_archive"
+        />
+
     <Button
         android:id="@+id/lbl_export"
         style="@style/MenuButton"
@@ -92,7 +98,7 @@
         app:icon="@drawable/ic_sd_storage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/indents"
-        app:layout_constraintTop_toBottomOf="@id/lbl_import_from_archive"
+        app:layout_constraintTop_toBottomOf="@id/lbl_csv"
         />
 
     <Button
@@ -104,8 +110,6 @@
         app:layout_constraintStart_toEndOf="@id/indents"
         app:layout_constraintTop_toBottomOf="@id/lbl_export"
         />
-
-    <!-- ADVANCED OPTIONS Header -->
 
     <TextView
         android:id="@+id/lbl_advanced"

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -82,7 +82,7 @@ public interface ReaderEntity {
      *
      * @throws IOException on failure
      */
-    void save(@NonNull final Context context)
+    void save(@NonNull Context context)
             throws IOException;
 
     /** Supported entity types. */
