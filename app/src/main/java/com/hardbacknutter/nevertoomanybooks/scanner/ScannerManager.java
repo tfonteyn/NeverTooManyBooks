@@ -33,6 +33,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.SparseArray;
@@ -45,6 +46,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -307,6 +310,57 @@ public final class ScannerManager {
     public static boolean isBeepOnInvalid(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true);
+    }
+
+    /**
+     * Collect information on scanners for the debug report.
+     *
+     * @param context Current context
+     *
+     * @return report
+     */
+    public static String collectDebugInfo(@NonNull final Context context) {
+
+        StringBuilder message = new StringBuilder();
+
+        // Scanners installed
+        try {
+            message.append("Preferred Scanner: ")
+                   .append(PIntString.getListPreference(Prefs.pk_scanner_preferred, -1))
+                   .append('\n');
+
+            for (String scannerAction : ALL_ACTIONS) {
+                message.append("Scanner [").append(scannerAction).append("]:\n");
+                Intent scannerIntent = new Intent(scannerAction, null);
+                List<ResolveInfo> resolved =
+                        context.getPackageManager().queryIntentActivities(scannerIntent, 0);
+
+                if (!resolved.isEmpty()) {
+                    for (ResolveInfo r : resolved) {
+                        message.append("    ");
+                        // Could be activity or service...
+                        if (r.activityInfo != null) {
+                            message.append(r.activityInfo.packageName);
+                        } else if (r.serviceInfo != null) {
+                            message.append(r.serviceInfo.packageName);
+                        } else {
+                            message.append("UNKNOWN");
+                        }
+                        message.append(" (priority ").append(r.priority)
+                               .append(", preference ").append(r.preferredOrder)
+                               .append(", match ").append(r.match)
+                               .append(", default=").append(r.isDefault)
+                               .append(")\n");
+                    }
+                } else {
+                    message.append("    No packages found\n");
+                }
+            }
+        } catch (@NonNull final RuntimeException e) {
+            message.append("Scanner info failure: ").append(e.getLocalizedMessage()).append('\n');
+        }
+
+        return message.toString();
     }
 
     public interface OnResultListener {

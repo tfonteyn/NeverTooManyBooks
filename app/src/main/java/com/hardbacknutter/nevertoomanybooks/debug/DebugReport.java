@@ -32,7 +32,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
@@ -50,11 +49,9 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
@@ -71,8 +68,18 @@ public final class DebugReport {
     }
 
     /**
-     * Return the MD5 hash of the public key that signed this app, or a useful
+     * Return the SHA256 hash of the public key that signed this app, or a useful
      * text message if an error or other problem occurred.
+     *
+     * <pre>
+     *     {@code
+     *     keytool -list -keystore myKeyStore.jks -storepass myPassword -v
+     *      ...
+     *      Certificate fingerprints:
+     *          ...
+     *          SHA256: D4:98:1C:F7:...    <= this one
+     *     }
+     * </pre>
      *
      * @param context Current context
      */
@@ -93,13 +100,12 @@ public final class DebugReport {
                                                  PackageManager.GET_SIGNATURES);
             }
 
-            // Each sig is a PK of the signer:
-            //  https://groups.google.com/forum/?fromgroups=#!topic/android-developers/fPtdt6zDzns
+            // concat the signature chain.
             for (Signature sig : appInfo.signatures) {
                 if (sig != null) {
-                    final MessageDigest sha1 = MessageDigest.getInstance("MD5");
-                    final byte[] publicKey = sha1.digest(sig.toByteArray());
-                    // Turn the hex bytes into a more traditional MD5 string representation.
+                    final MessageDigest md = MessageDigest.getInstance("SHA256");
+                    final byte[] publicKey = md.digest(sig.toByteArray());
+                    // Turn the hex bytes into a more traditional string representation.
                     final StringBuilder hexString = new StringBuilder();
                     boolean first = true;
                     for (byte aPublicKey : publicKey) {
@@ -116,7 +122,6 @@ public final class DebugReport {
                     }
                     String fingerprint = hexString.toString();
 
-                    // Append as needed (theoretically could have more than one sig */
                     if (signedBy.length() == 0) {
                         signedBy.append(fingerprint);
                     } else {
@@ -141,10 +146,8 @@ public final class DebugReport {
      */
     public static boolean sendDebugInfo(@NonNull final Context context) {
 
-        // Collect all info
         StringBuilder message = new StringBuilder();
 
-        // Get app info
         PackageInfo packageInfo = App.getPackageInfo(0);
         if (packageInfo != null) {
             message.append("App: ").append(packageInfo.packageName).append('\n')
@@ -172,52 +175,13 @@ public final class DebugReport {
                .append("ID: ").append(Build.ID).append('\n')
 
                .append("Signed-By: ").append(signedBy(context)).append('\n')
-
-               .append("Search sites URL:\n")
-               .append(SearchSites.getSiteUrls(context));
-
-        // Scanners installed
-        try {
-            message.append("Pref. Scanner: ")
-                   .append(PIntString.getListPreference(Prefs.pk_scanner_preferred, -1))
-                   .append('\n');
-
-            for (String scannerAction : ScannerManager.ALL_ACTIONS) {
-                message.append("Scanner [").append(scannerAction).append("]:\n");
-                Intent scannerIntent = new Intent(scannerAction, null);
-                List<ResolveInfo> resolved =
-                        context.getPackageManager().queryIntentActivities(scannerIntent, 0);
-
-                if (!resolved.isEmpty()) {
-                    for (ResolveInfo r : resolved) {
-                        message.append("    ");
-                        // Could be activity or service...
-                        if (r.activityInfo != null) {
-                            message.append(r.activityInfo.packageName);
-                        } else if (r.serviceInfo != null) {
-                            message.append(r.serviceInfo.packageName);
-                        } else {
-                            message.append("UNKNOWN");
-                        }
-                        message.append(" (priority ").append(r.priority)
-                               .append(", preference ").append(r.preferredOrder)
-                               .append(", match ").append(r.match)
-                               .append(", default=").append(r.isDefault)
-                               .append(")\n");
-                    }
-                } else {
-                    message.append("    No packages found\n");
-                }
-            }
-        } catch (@NonNull final RuntimeException e) {
-            // Don't lose the other debug info if collecting scanner data dies for some reason
-            message.append("Scanner failure: ").append(e.getLocalizedMessage()).append('\n');
-        }
-        message.append('\n');
-
-        // User input
-        message.append("Details:\n\n")
-               .append(context.getString(R.string.debug_body)).append("\n\n");
+               .append("\nSearch sites URL:\n")
+               .append(SearchSites.getSiteUrls(context))
+               .append("\nScanner info:\n")
+               .append(ScannerManager.collectDebugInfo(context))
+               .append("\nDetails:\n\n")
+               .append(context.getString(R.string.debug_body))
+               .append("\n\n");
 
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "sendDebugInfo|" + message);
