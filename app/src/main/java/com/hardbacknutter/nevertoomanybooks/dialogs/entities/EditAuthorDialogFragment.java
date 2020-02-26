@@ -32,9 +32,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -71,10 +69,6 @@ public class EditAuthorDialogFragment
 
     private WeakReference<BookChangedListener> mBookChangedListener;
 
-    private AutoCompleteTextView mFamilyNameView;
-    private AutoCompleteTextView mGivenNamesView;
-    private Checkable mIsCompleteView;
-
     /** The Author we're editing. */
     private Author mAuthor;
     /** Current edit. */
@@ -83,6 +77,7 @@ public class EditAuthorDialogFragment
     private String mGivenNames;
     /** Current edit. */
     private boolean mIsComplete;
+    private DialogEditAuthorBinding mVb;
 
     /**
      * Constructor.
@@ -98,12 +93,6 @@ public class EditAuthorDialogFragment
         frag.setArguments(args);
         return frag;
     }
-
-    @SuppressWarnings("SameReturnValue")
-    protected int getLayoutId() {
-        return R.layout.dialog_edit_author;
-    }
-
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -131,13 +120,12 @@ public class EditAuthorDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(getLayoutId(), null);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        mVb = DialogEditAuthorBinding.inflate(inflater);
 
-        @SuppressWarnings("ConstantConditions")
-        @NonNull
         final Context context = getContext();
 
+        //noinspection ConstantConditions
         DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
@@ -146,32 +134,29 @@ public class EditAuthorDialogFragment
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
         // the dialog fields != screen fields.
-        mFamilyNameView = root.findViewById(R.id.family_name);
-        mFamilyNameView.setText(mFamilyName);
-        mFamilyNameView.setAdapter(mFamilyNameAdapter);
+        mVb.familyName.setText(mFamilyName);
+        mVb.familyName.setAdapter(mFamilyNameAdapter);
 
-        mGivenNamesView = root.findViewById(R.id.given_names);
-        mGivenNamesView.setText(mGivenNames);
-        mGivenNamesView.setAdapter(mGivenNameAdapter);
+        mVb.givenNames.setText(mGivenNames);
+        mVb.givenNames.setAdapter(mGivenNameAdapter);
 
-        mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
-        mIsCompleteView.setChecked(mIsComplete);
+        mVb.cbxIsComplete.setChecked(mIsComplete);
 
         return new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_edit)
-                .setView(root)
+                .setView(mVb.getRoot())
                 .setTitle(R.string.title_edit_author)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
-                    mFamilyName = mFamilyNameView.getText().toString().trim();
+                    mFamilyName = mVb.familyName.getText().toString().trim();
                     if (mFamilyName.isEmpty()) {
-                        Snackbar.make(mFamilyNameView, R.string.warning_missing_name,
+                        Snackbar.make(mVb.familyName, R.string.warning_missing_name,
                                       Snackbar.LENGTH_LONG).show();
                         return;
                     }
 
-                    mGivenNames = mGivenNamesView.getText().toString().trim();
-                    mIsComplete = mIsCompleteView.isChecked();
+                    mGivenNames = mVb.givenNames.getText().toString().trim();
+                    mIsComplete = mVb.cbxIsComplete.isChecked();
 
                     // anything actually changed ?
                     if (mAuthor.getFamilyName().equals(mFamilyName)
@@ -221,9 +206,9 @@ public class EditAuthorDialogFragment
 
     @Override
     public void onPause() {
-        mFamilyName = mFamilyNameView.getText().toString().trim();
-        mGivenNames = mGivenNamesView.getText().toString().trim();
-        mIsComplete = mIsCompleteView.isChecked();
+        mFamilyName = mVb.familyName.getText().toString().trim();
+        mGivenNames = mVb.givenNames.getText().toString().trim();
+        mIsComplete = mVb.cbxIsComplete.isChecked();
         super.onPause();
     }
 

@@ -37,15 +37,11 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -63,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -85,7 +82,6 @@ public class LendBookDialogFragment
     private DAO mDb;
 
     private long mBookId;
-    private AutoCompleteTextView mLoaneeView;
     private String mAuthorName;
     private String mTitle;
     private String mLoanee;
@@ -157,20 +153,20 @@ public class LendBookDialogFragment
         }
     }
 
+    private DialogEditLoanBinding mVb;
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.dialog_edit_loan, null);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        mVb = DialogEditLoanBinding.inflate(inflater);
 
-        TextView authorView = root.findViewById(R.id.author);
-        authorView.setText(getString(R.string.lbl_by_author_s, mAuthorName));
+        mVb.author.setText(getString(R.string.lbl_by_author_s, mAuthorName));
 
-        mLoaneeView = root.findViewById(R.id.loaned_to);
         if (mLoanee != null) {
-            mLoaneeView.setText(mLoanee);
+            mVb.loanedTo.setText(mLoanee);
         }
 
         ArrayList<String> contacts = getPhoneContacts();
@@ -180,7 +176,7 @@ public class LendBookDialogFragment
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
+                .setView(mVb.getRoot())
                 .setTitle(mTitle)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setNeutralButton(R.string.btn_loan_returned, (dialog, which) -> {
@@ -199,9 +195,9 @@ public class LendBookDialogFragment
                     }
                 })
                 .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    String newName = mLoaneeView.getText().toString().trim();
+                    String newName = mVb.loanedTo.getText().toString().trim();
                     if (newName.isEmpty()) {
-                        Snackbar.make(mLoaneeView, R.string.warning_missing_name,
+                        Snackbar.make(mVb.loanedTo, R.string.warning_missing_name,
                                       Snackbar.LENGTH_LONG).show();
                         return;
                     }
@@ -264,7 +260,7 @@ public class LendBookDialogFragment
         //noinspection ConstantConditions
         DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, people);
-        mLoaneeView.setAdapter(adapter);
+        mVb.loanedTo.setAdapter(adapter);
     }
 
     /**
@@ -299,7 +295,6 @@ public class LendBookDialogFragment
         }
     }
 
-    @PermissionChecker.PermissionResult
     public void onRequestPermissionsResult(final int requestCode,
                                            @NonNull final String[] permissions,
                                            @NonNull final int[] grantResults) {
@@ -314,7 +309,7 @@ public class LendBookDialogFragment
 
     @Override
     public void onPause() {
-        mLoanee = mLoaneeView.getText().toString().trim();
+        mLoanee = mVb.loanedTo.getText().toString().trim();
         super.onPause();
     }
 }

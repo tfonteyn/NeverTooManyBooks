@@ -37,7 +37,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -50,6 +49,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn;
 import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 
 /**
@@ -73,18 +72,13 @@ public class BookSearchByIsbnFragment
 
     static final String BKEY_SCAN_MODE = TAG + ":scanMode";
 
-    /** User input field. */
-    @Nullable
-    private EditIsbn mIsbnView;
-
-    @Nullable
-    private Button mAltIsbnButton;
-
     private boolean mScanMode;
 
     /** The scanner. */
     @Nullable
     private ScannerViewModel mScannerModel;
+
+    private FragmentBooksearchByIsbnBinding mVb;
 
     /** manage the validation check next to the field. */
     private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
@@ -108,11 +102,8 @@ public class BookSearchByIsbnFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-
-        final View view = inflater.inflate(R.layout.fragment_booksearch_by_isbn, container, false);
-        mIsbnView = view.findViewById(R.id.isbn);
-        mAltIsbnButton = view.findViewById(R.id.btn_altIsbn);
-        return view;
+        mVb = FragmentBooksearchByIsbnBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -128,42 +119,34 @@ public class BookSearchByIsbnFragment
 
         getActivity().setTitle(R.string.title_search_isbn);
 
-        final View view = getView();
-        // stop lint being very annoying...
-        Objects.requireNonNull(mIsbnView, "mIsbnView");
-        Objects.requireNonNull(mAltIsbnButton, "mAltIsbnButton");
-
         // copyModel2View();
-        mIsbnView.setText(mSearchCoordinator.getIsbnSearchText());
+        mVb.isbn.setText(mSearchCoordinator.getIsbnSearchText());
 
-        //noinspection ConstantConditions
-        view.findViewById(R.id.key_0).setOnClickListener(v -> mIsbnView.onKey("0"));
-        view.findViewById(R.id.key_1).setOnClickListener(v -> mIsbnView.onKey("1"));
-        view.findViewById(R.id.key_2).setOnClickListener(v -> mIsbnView.onKey("2"));
-        view.findViewById(R.id.key_3).setOnClickListener(v -> mIsbnView.onKey("3"));
-        view.findViewById(R.id.key_4).setOnClickListener(v -> mIsbnView.onKey("4"));
-        view.findViewById(R.id.key_5).setOnClickListener(v -> mIsbnView.onKey("5"));
-        view.findViewById(R.id.key_6).setOnClickListener(v -> mIsbnView.onKey("6"));
-        view.findViewById(R.id.key_7).setOnClickListener(v -> mIsbnView.onKey("7"));
-        view.findViewById(R.id.key_8).setOnClickListener(v -> mIsbnView.onKey("8"));
-        view.findViewById(R.id.key_9).setOnClickListener(v -> mIsbnView.onKey("9"));
-        view.findViewById(R.id.key_X).setOnClickListener(v -> mIsbnView.onKey("X"));
+        mVb.key0.setOnClickListener(v -> mVb.isbn.onKey("0"));
+        mVb.key1.setOnClickListener(v -> mVb.isbn.onKey("1"));
+        mVb.key2.setOnClickListener(v -> mVb.isbn.onKey("2"));
+        mVb.key3.setOnClickListener(v -> mVb.isbn.onKey("3"));
+        mVb.key4.setOnClickListener(v -> mVb.isbn.onKey("4"));
+        mVb.key5.setOnClickListener(v -> mVb.isbn.onKey("5"));
+        mVb.key6.setOnClickListener(v -> mVb.isbn.onKey("6"));
+        mVb.key7.setOnClickListener(v -> mVb.isbn.onKey("7"));
+        mVb.key8.setOnClickListener(v -> mVb.isbn.onKey("8"));
+        mVb.key9.setOnClickListener(v -> mVb.isbn.onKey("9"));
+        mVb.keyX.setOnClickListener(v -> mVb.isbn.onKey("X"));
 
-        final Button delBtn = view.findViewById(R.id.isbn_del);
-        delBtn.setOnClickListener(v -> mIsbnView.onKey(KeyEvent.KEYCODE_DEL));
-        delBtn.setOnLongClickListener(v -> {
-            mIsbnView.setText("");
+        mVb.isbnDel.setOnClickListener(v -> mVb.isbn.onKey(KeyEvent.KEYCODE_DEL));
+        mVb.isbnDel.setOnLongClickListener(v -> {
+            mVb.isbn.setText("");
             return true;
         });
 
         mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(
-                mIsbnView, mSearchCoordinator.isStrictIsbn());
-        mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
-        mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
+                mVb.isbn, mSearchCoordinator.isStrictIsbn());
+        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
+        mVb.isbn.addTextChangedListener(new AltIsbnTextWatcher(mVb.isbn, mVb.btnAltIsbn));
 
         //noinspection ConstantConditions
-        view.findViewById(R.id.btn_search)
-            .setOnClickListener(v -> prepareSearch(mIsbnView.getText().toString().trim()));
+        mVb.btnSearch.setOnClickListener(v -> prepareSearch(mVb.isbn.getText().toString().trim()));
 
         // auto-start scanner first time.
         if (mScanMode && mScannerModel.isFirstStart()) {
@@ -219,7 +202,7 @@ public class BookSearchByIsbnFragment
     public void onPause() {
         super.onPause();
         //noinspection ConstantConditions
-        mSearchCoordinator.setIsbnSearchText(mIsbnView.getText().toString().trim());
+        mSearchCoordinator.setIsbnSearchText(mVb.isbn.getText().toString().trim());
     }
 
     @Override
@@ -271,8 +254,7 @@ public class BookSearchByIsbnFragment
                     final String barCode = mScannerModel.getScanner()
                                                         .getBarcode(getContext(), data);
                     if (barCode != null) {
-                        //noinspection ConstantConditions
-                        mIsbnView.setText(barCode);
+                        mVb.isbn.setText(barCode);
                         prepareSearch(barCode);
                         return;
                     }
@@ -328,8 +310,7 @@ public class BookSearchByIsbnFragment
     @Override
     void clearPreviousSearchCriteria() {
         super.clearPreviousSearchCriteria();
-        //noinspection ConstantConditions
-        mIsbnView.setText("");
+        mVb.isbn.setText("");
     }
 
     /**
@@ -352,8 +333,7 @@ public class BookSearchByIsbnFragment
                 mScannerModel.onInvalidBeep(getContext());
             }
 
-            //noinspection ConstantConditions
-            Snackbar.make(mIsbnView,
+            Snackbar.make(mVb.isbn,
                           getString(R.string.warning_x_is_not_a_valid_code, userEntry),
                           Snackbar.LENGTH_LONG).show();
 
@@ -419,8 +399,7 @@ public class BookSearchByIsbnFragment
             startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
             clearPreviousSearchCriteria();
         } else {
-            //noinspection ConstantConditions
-            Snackbar.make(mIsbnView, R.string.warning_no_matching_book_found,
+            Snackbar.make(mVb.isbn, R.string.warning_no_matching_book_found,
                           Snackbar.LENGTH_LONG).show();
         }
     }

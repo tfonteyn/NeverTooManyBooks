@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -40,9 +39,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -56,7 +52,6 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -67,6 +62,8 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
@@ -117,6 +114,9 @@ public class EditBookTocFragment
                 }
             };
 
+    /** View Binding. */
+    private FragmentEditBookTocBinding mVb;
+
     /** The book. */
     @Nullable
     private String mIsbn;
@@ -126,22 +126,8 @@ public class EditBookTocFragment
     private ArrayList<TocEntry> mList;
     /** The adapter for the list. */
     private TocListEditAdapter mListAdapter;
-    /** The View for the list. */
-    private RecyclerView mListView;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-    /** checkbox to indicate this is an anthology. */
-    private CompoundButton mIsAnthologyCbx;
-    /** checkbox to hide/show the author edit field. */
-    private CompoundButton mMultiAuthorsView;
-    /** Envelope layout for Author. */
-    private View mAuthorInputLayout;
-    /** User input for a new entry. */
-    private AutoCompleteTextView mAuthorTextView;
-    /** User input for a new entry. */
-    private EditText mTitleTextView;
-    /** User input for a new entry. */
-    private EditText mPubDateTextView;
 
     /**
      * ISFDB editions of a book(isbn).
@@ -290,15 +276,8 @@ public class EditBookTocFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_edit_book_toc, container, false);
-        mListView = view.findViewById(R.id.tocList);
-        mIsAnthologyCbx = view.findViewById(R.id.cbx_is_anthology);
-        mMultiAuthorsView = view.findViewById(R.id.cbx_multiple_authors);
-        mAuthorInputLayout = view.findViewById(R.id.lbl_author);
-        mAuthorTextView = view.findViewById(R.id.author);
-        mTitleTextView = view.findViewById(R.id.title);
-        mPubDateTextView = view.findViewById(R.id.first_publication);
-        return view;
+        mVb = FragmentEditBookTocBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -318,18 +297,18 @@ public class EditBookTocFragment
 
         // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mListView.setLayoutManager(linearLayoutManager);
+        mVb.tocList.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
-        mListView.addItemDecoration(
+        mVb.tocList.addItemDecoration(
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
-        mListView.setHasFixedSize(true);
+        mVb.tocList.setHasFixedSize(true);
 
-        mMultiAuthorsView.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> updateMultiAuthor(isChecked));
+        mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
+                (v, isChecked) -> updateMultiAuthor(isChecked));
         // adding a new entry
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.btn_add).setOnClickListener(v -> onAdd());
+        mVb.btnAdd.setOnClickListener(v -> onAdd());
 
+        //noinspection ConstantConditions
         ViewFocusOrder.fix(getView());
     }
 
@@ -340,7 +319,7 @@ public class EditBookTocFragment
         // used to call Search sites to populate the TOC
         mIsbn = book.getString(DBDefinitions.KEY_ISBN);
 
-        // Author to use if mMultiAuthorsView is set to false
+        // Author to use if mVb.cbxMultipleAuthors is set to false
         final List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         if (!authorList.isEmpty()) {
             mBookAuthor = authorList.get(0);
@@ -356,12 +335,12 @@ public class EditBookTocFragment
         mListAdapter = new TocListEditAdapter(getContext(), mList,
                                               vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
-        mListView.setAdapter(mListAdapter);
+        mVb.tocList.setAdapter(mListAdapter);
 
         SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mListView);
+        mItemTouchHelper.attachToRecyclerView(mVb.tocList);
 
         populateTocBits(book);
 
@@ -375,9 +354,9 @@ public class EditBookTocFragment
         super.onSaveFields(book);
 
         book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS,
-                    mIsAnthologyCbx.isChecked());
+                    mVb.cbxIsAnthology.isChecked());
         book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_AUTHORS,
-                    mMultiAuthorsView.isChecked());
+                    mVb.cbxMultipleAuthors.isChecked());
 
         // The toc list is not a 'real' field. Hence the need to store it manually here.
         book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
@@ -386,7 +365,8 @@ public class EditBookTocFragment
     @Override
     public boolean hasUnfinishedEdits() {
         // We only check the title field; disregarding the author and first-publication fields.
-        return !mTitleTextView.getText().toString().isEmpty();
+        //noinspection ConstantConditions
+        return !mVb.title.getText().toString().isEmpty();
     }
 
     @Override
@@ -495,31 +475,31 @@ public class EditBookTocFragment
     }
 
     private void populateTocBits(@NonNull final Book book) {
-        mIsAnthologyCbx.setChecked(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
-                                                 Book.TOC_MULTIPLE_WORKS));
+        mVb.cbxIsAnthology.setChecked(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
+                                                    Book.TOC_MULTIPLE_WORKS));
         updateMultiAuthor(book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
                                         Book.TOC_MULTIPLE_AUTHORS));
     }
 
     private void updateMultiAuthor(final boolean isChecked) {
-        mMultiAuthorsView.setChecked(isChecked);
+        mVb.cbxMultipleAuthors.setChecked(isChecked);
         if (isChecked) {
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions
                 mAuthorAdapter = new DiacriticArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
                         mFragmentVM.getAuthorNames());
-                mAuthorTextView.setAdapter(mAuthorAdapter);
+                mVb.author.setAdapter(mAuthorAdapter);
             }
 
             //noinspection ConstantConditions
-            mAuthorTextView.setText(mBookAuthor.getLabel(getContext()));
-            mAuthorTextView.selectAll();
-            mAuthorInputLayout.setVisibility(View.VISIBLE);
-            mAuthorTextView.setVisibility(View.VISIBLE);
+            mVb.author.setText(mBookAuthor.getLabel(getContext()));
+            mVb.author.selectAll();
+            mVb.lblAuthor.setVisibility(View.VISIBLE);
+            mVb.author.setVisibility(View.VISIBLE);
         } else {
-            mAuthorInputLayout.setVisibility(View.GONE);
-            mAuthorTextView.setVisibility(View.GONE);
+            mVb.lblAuthor.setVisibility(View.GONE);
+            mVb.author.setVisibility(View.GONE);
         }
     }
 
@@ -528,23 +508,24 @@ public class EditBookTocFragment
      */
     private void onAdd() {
         final Author author;
-        if (mMultiAuthorsView.isChecked()) {
-            author = Author.fromString(mAuthorTextView.getText().toString().trim());
+        if (mVb.cbxMultipleAuthors.isChecked()) {
+            author = Author.fromString(mVb.author.getText().toString().trim());
         } else {
             author = mBookAuthor;
         }
+        //noinspection ConstantConditions
         final TocEntry tocEntry = new TocEntry(author,
-                                               mTitleTextView.getText().toString().trim(),
-                                               mPubDateTextView.getText().toString().trim());
+                                               mVb.title.getText().toString().trim(),
+                                               mVb.firstPublication.getText().toString().trim());
         mList.add(tocEntry);
 
-        if (mMultiAuthorsView.isChecked()) {
+        if (mVb.cbxMultipleAuthors.isChecked()) {
             //noinspection ConstantConditions
-            mAuthorTextView.setText(mBookAuthor.getLabel(getContext()));
-            mAuthorTextView.selectAll();
+            mVb.author.setText(mBookAuthor.getLabel(getContext()));
+            mVb.author.selectAll();
         }
-        mTitleTextView.setText("");
-        mPubDateTextView.setText("");
+        mVb.title.setText("");
+        mVb.firstPublication.setText("");
     }
 
     /**
@@ -557,7 +538,7 @@ public class EditBookTocFragment
                            @Nullable final Integer position) {
         mEditPosition = position;
 
-        EditTocEntryDialogFragment.newInstance(tocEntry, mMultiAuthorsView.isChecked())
+        EditTocEntryDialogFragment.newInstance(tocEntry, mVb.cbxMultipleAuthors.isChecked())
                                   .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
 
     }
@@ -631,15 +612,11 @@ public class EditBookTocFragment
         public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
             // Reminder: *always* use the activity inflater here.
             //noinspection ConstantConditions
-            final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+            final LayoutInflater inflater = getActivity().getLayoutInflater();
+            // custom payout, as we want the text to be smaller.
+            final DialogTocConfirmBinding vb = DialogTocConfirmBinding.inflate(inflater);
 
             final boolean hasToc = mTocEntries != null && !mTocEntries.isEmpty();
-
-            // custom payout, as we want the text to be smaller.
-            @SuppressLint("InflateParams")
-            final View root = layoutInflater.inflate(R.layout.dialog_toc_confirm, null);
-
-            final TextView textView = root.findViewById(R.id.content);
             if (hasToc) {
                 //noinspection ConstantConditions
                 final StringBuilder message =
@@ -647,17 +624,17 @@ public class EditBookTocFragment
                                 .append("\n\n")
                                 .append(Csv.join(", ", mTocEntries,
                                                  tocEntry -> tocEntry.getLabel(getContext())));
-                textView.setText(message);
+                vb.content.setText(message);
 
             } else {
-                textView.setText(getString(R.string.error_auto_toc_population_failed));
+                vb.content.setText(getString(R.string.error_auto_toc_population_failed));
             }
 
             //noinspection ConstantConditions
             final AlertDialog dialog =
                     new MaterialAlertDialogBuilder(getContext())
                             .setIconAttribute(android.R.attr.alertDialogIcon)
-                            .setView(root)
+                            .setView(vb.getRoot())
                             .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                             .create();
 

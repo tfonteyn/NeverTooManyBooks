@@ -33,8 +33,6 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -45,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByNativeIdBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
@@ -59,28 +58,20 @@ public class BookSearchByNativeIdFragment
     private static final String BKEY_SITE_RES_ID = TAG + ":siteResId";
     private static final String BKEY_NATIVE_ID = TAG + ":nativeId";
 
-    /** User input field. */
-    private EditText mNativeIdView;
-    private Button mSearchBtn;
-
-    private RadioGroup mRadioGroup;
     /** The currently selected radio button for onPause/onSaveInstanceState. */
     private int mCheckedSiteResId = View.NO_ID;
     /** The current native id text for onPause/onSaveInstanceState. */
     private String mNativeId;
+
+    private FragmentBooksearchByNativeIdBinding mVb;
 
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-
-        final View view = inflater
-                .inflate(R.layout.fragment_booksearch_by_native_id, container, false);
-        mNativeIdView = view.findViewById(R.id.native_id);
-        mSearchBtn = view.findViewById(R.id.btn_search);
-        mRadioGroup = view.findViewById(R.id.sites_group);
-        return view;
+        mVb = FragmentBooksearchByNativeIdBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -90,56 +81,27 @@ public class BookSearchByNativeIdFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_native_id);
 
-//       final View root = getView();
-//
-//       int visibleSites = 0;
-//        RadioButton singleVisibleBtn = null;
-//        final Locale locale = LocaleUtils.getUserLocale(getContext());
-//        final SiteList siteList = SiteList.getList(getContext(), locale, SiteList.Type.Data);
-//        for (Site site : siteList.getSites(true)) {
-//            int resId = site.getResId();
-//            if (resId != View.NO_ID) {
-//                final RadioButton btn = root.findViewById(resId);
-//                if (btn != null) {
-//                    btn.setVisibility(site.isEnabled() ? View.VISIBLE : View.GONE);
-//                    if (site.isEnabled()) {
-//                        visibleSites++;
-//                        singleVisibleBtn = btn;
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (visibleSites == 0) {
-//            Snackbar.make(mNativeIdView, "Please enable at least one site blah blah...",
-//                          Snackbar.LENGTH_LONG).show();
-//            getActivity().finish();
-//
-//        } else if (visibleSites == 1) {
-//            singleVisibleBtn.setChecked(true);
-//            mNativeIdView.setEnabled(true);
-//        }
-
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
             final int checkedId = args.getInt(BKEY_SITE_RES_ID, View.NO_ID);
             if (checkedId != View.NO_ID) {
-                final RadioButton btn = mRadioGroup.findViewById(checkedId);
+                final RadioButton btn = mVb.sitesGroup.findViewById(checkedId);
                 if (btn.getVisibility() == View.VISIBLE) {
                     btn.setChecked(true);
-                    mNativeIdView.setEnabled(true);
-                    mNativeIdView.setText(args.getString(BKEY_NATIVE_ID, ""));
+                    mVb.nativeId.setEnabled(true);
+                    mVb.nativeId.setText(args.getString(BKEY_NATIVE_ID, ""));
                 }
             }
         }
 
-        mRadioGroup.setOnCheckedChangeListener(this::onSiteSelect);
+        mVb.sitesGroup.setOnCheckedChangeListener(this::onSiteSelect);
 
-        mSearchBtn.setOnClickListener(v -> {
+        mVb.btnSearch.setOnClickListener(v -> {
             //sanity check
-            if (mNativeIdView.getText().toString().trim().isEmpty()
-                || mRadioGroup.getCheckedRadioButtonId() == View.NO_ID) {
-                Snackbar.make(mNativeIdView, R.string.warning_requires_site_and_id,
+            //noinspection ConstantConditions
+            if (mVb.nativeId.getText().toString().trim().isEmpty()
+                || mVb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
+                Snackbar.make(mVb.nativeId, R.string.warning_requires_site_and_id,
                               Snackbar.LENGTH_LONG).show();
                 return;
             }
@@ -150,8 +112,9 @@ public class BookSearchByNativeIdFragment
 
     @Override
     boolean onSearch() {
-        final int siteId = SearchSites.getSiteIdFromResId(mRadioGroup.getCheckedRadioButtonId());
-        final String nativeId = mNativeIdView.getText().toString().trim();
+        final int siteId = SearchSites.getSiteIdFromResId(mVb.sitesGroup.getCheckedRadioButtonId());
+        //noinspection ConstantConditions
+        final String nativeId = mVb.nativeId.getText().toString().trim();
         //noinspection ConstantConditions
         return mSearchCoordinator.searchByNativeId(getContext(),
                                                    Site.createDataSite(siteId), nativeId);
@@ -168,14 +131,15 @@ public class BookSearchByNativeIdFragment
     @Override
     void clearPreviousSearchCriteria() {
         super.clearPreviousSearchCriteria();
-        mNativeIdView.setText("");
+        mVb.nativeId.setText("");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mCheckedSiteResId = mRadioGroup.getCheckedRadioButtonId();
-        mNativeId = mNativeIdView.getText().toString().trim();
+        mCheckedSiteResId = mVb.sitesGroup.getCheckedRadioButtonId();
+        //noinspection ConstantConditions
+        mNativeId = mVb.nativeId.getText().toString().trim();
     }
 
     @Override
@@ -196,7 +160,7 @@ public class BookSearchByNativeIdFragment
         if (!searchEngine.isAvailable(getContext())) {
             // If the selected site needs registration, prompt the user.
             searchEngine.promptToRegister(getContext(), true, "native_id");
-            mRadioGroup.clearCheck();
+            mVb.sitesGroup.clearCheck();
             return;
         }
 
@@ -208,25 +172,26 @@ public class BookSearchByNativeIdFragment
             case R.id.site_library_thing:
             case R.id.site_strip_info_be:
                 // if the user switched from a text input, clean the input
-                if ((mNativeIdView.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
-                    String text = mNativeIdView.getText().toString().trim();
+                if ((mVb.nativeId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
+                    //noinspection ConstantConditions
+                    String text = mVb.nativeId.getText().toString().trim();
                     if (!DIGITS_PATTERN.matcher(text).matches()) {
-                        mNativeIdView.setText("");
+                        mVb.nativeId.setText("");
                     }
                 }
                 // display a (sort of) numeric keyboard icon
-                mNativeIdView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                mNativeIdView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                mVb.nativeId.setInputType(InputType.TYPE_CLASS_NUMBER);
+                mVb.nativeId.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         R.drawable.ic_apps, 0, 0, 0);
                 break;
 
             // 'String' id
             case R.id.site_amazon:
             case R.id.site_open_library:
-                mNativeIdView.setInputType(InputType.TYPE_CLASS_TEXT
-                                           | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+                mVb.nativeId.setInputType(InputType.TYPE_CLASS_TEXT
+                                          | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
                 // display an alphanumeric keyboard icon
-                mNativeIdView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                mVb.nativeId.setCompoundDrawablesRelativeWithIntrinsicBounds(
                         R.drawable.ic_keyboard, 0, 0, 0);
                 break;
 
@@ -234,6 +199,6 @@ public class BookSearchByNativeIdFragment
                 throw new UnexpectedValueException(checkedId);
         }
 
-        mNativeIdView.setEnabled(true);
+        mVb.nativeId.setEnabled(true);
     }
 }

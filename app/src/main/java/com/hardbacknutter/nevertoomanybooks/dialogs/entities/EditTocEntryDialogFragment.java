@@ -33,9 +33,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -77,20 +75,13 @@ public class EditTocEntryDialogFragment
     /** Database Access. */
     private DAO mDb;
 
-    /** checkbox to hide/show the author edit field. */
-    private CompoundButton mMultiAuthorsView;
-
-    private AutoCompleteTextView mAuthorTextView;
-    private EditText mTitleTextView;
-    private EditText mPubDateTextView;
-
     private boolean mHasMultipleAuthors;
 
     private DiacriticArrayAdapter<String> mAuthorAdapter;
 
     /** The TocEntry we're editing. */
     private TocEntry mTocEntry;
-
+    private DialogEditBookTocBinding mVb;
 
     /**
      * Constructor.
@@ -137,25 +128,20 @@ public class EditTocEntryDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        final View root = layoutInflater.inflate(R.layout.dialog_edit_book_toc, null);
-
-        mAuthorTextView = root.findViewById(R.id.author);
-        mTitleTextView = root.findViewById(R.id.title);
-        mPubDateTextView = root.findViewById(R.id.first_publication);
-        mMultiAuthorsView = root.findViewById(R.id.cbx_multiple_authors);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        mVb = DialogEditBookTocBinding.inflate(inflater);
 
         updateMultiAuthor(mHasMultipleAuthors);
-        mMultiAuthorsView.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> updateMultiAuthor(isChecked));
+        mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
+                (v, isChecked) -> updateMultiAuthor(isChecked));
 
-        mTitleTextView.setText(mTocEntry.getTitle());
-        mPubDateTextView.setText(mTocEntry.getFirstPublication());
+        mVb.title.setText(mTocEntry.getTitle());
+        mVb.firstPublication.setText(mTocEntry.getFirstPublication());
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setView(root)
+                .setView(mVb.getRoot())
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, this::onConfirm)
                 .create();
@@ -163,22 +149,22 @@ public class EditTocEntryDialogFragment
 
     private void updateMultiAuthor(final boolean isChecked) {
         mHasMultipleAuthors = isChecked;
-        mMultiAuthorsView.setChecked(mHasMultipleAuthors);
+        mVb.cbxMultipleAuthors.setChecked(mHasMultipleAuthors);
         if (mHasMultipleAuthors) {
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions
                 mAuthorAdapter = new DiacriticArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
                         mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
-                mAuthorTextView.setAdapter(mAuthorAdapter);
+                mVb.author.setAdapter(mAuthorAdapter);
             }
 
             //noinspection ConstantConditions
-            mAuthorTextView.setText(mTocEntry.getAuthor().getLabel(getContext()));
-            mAuthorTextView.selectAll();
-            mAuthorTextView.setVisibility(View.VISIBLE);
+            mVb.author.setText(mTocEntry.getAuthor().getLabel(getContext()));
+            mVb.author.selectAll();
+            mVb.author.setVisibility(View.VISIBLE);
         } else {
-            mAuthorTextView.setVisibility(View.GONE);
+            mVb.author.setVisibility(View.GONE);
         }
     }
 
@@ -204,10 +190,12 @@ public class EditTocEntryDialogFragment
     }
 
     private void getFields() {
-        mTocEntry.setTitle(mTitleTextView.getText().toString().trim());
-        mTocEntry.setFirstPublication(mPubDateTextView.getText().toString().trim());
+        //noinspection ConstantConditions
+        mTocEntry.setTitle(mVb.title.getText().toString().trim());
+        //noinspection ConstantConditions
+        mTocEntry.setFirstPublication(mVb.firstPublication.getText().toString().trim());
         if (mHasMultipleAuthors) {
-            mTocEntry.setAuthor(Author.fromString(mAuthorTextView.getText().toString().trim()));
+            mTocEntry.setAuthor(Author.fromString(mVb.author.getText().toString().trim()));
         }
     }
 

@@ -31,9 +31,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.AutoCompleteTextView;
-import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -51,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -71,15 +69,14 @@ public class EditSeriesDialogFragment
 
     private WeakReference<BookChangedListener> mBookChangedListener;
 
-    private AutoCompleteTextView mNameView;
-    private Checkable mIsCompleteView;
-
     /** The Series we're editing. */
     private Series mSeries;
     /** Current edit. */
     private String mTitle;
     /** Current edit. */
     private boolean mIsComplete;
+    /** View binding. */
+    private DialogEditSeriesBinding mVb;
 
     /**
      * Constructor.
@@ -120,34 +117,32 @@ public class EditSeriesDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.dialog_edit_series, null);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        mVb = DialogEditSeriesBinding.inflate(inflater);
 
         //noinspection ConstantConditions
-        DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
+        final DiacriticArrayAdapter<String> mAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, mDb.getSeriesTitles());
 
         // the dialog fields != screen fields.
-        mNameView = root.findViewById(R.id.name);
-        mNameView.setText(mTitle);
-        mNameView.setAdapter(mAdapter);
+        mVb.seriesTitle.setText(mTitle);
+        mVb.seriesTitle.setAdapter(mAdapter);
 
-        mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
-        mIsCompleteView.setChecked(mIsComplete);
+        mVb.cbxIsComplete.setChecked(mIsComplete);
 
         return new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_edit)
-                .setView(root)
+                .setView(mVb.getRoot())
                 .setTitle(R.string.title_edit_series)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
-                    mTitle = mNameView.getText().toString().trim();
+                    mTitle = mVb.seriesTitle.getText().toString().trim();
                     if (mTitle.isEmpty()) {
-                        Snackbar.make(mNameView, R.string.warning_missing_name,
+                        Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,
                                       Snackbar.LENGTH_LONG).show();
                         return;
                     }
-                    mIsComplete = mIsCompleteView.isChecked();
+                    mIsComplete = mVb.cbxIsComplete.isChecked();
 
                     // anything actually changed ?
                     if (mSeries.getTitle().equals(mTitle)
@@ -196,8 +191,8 @@ public class EditSeriesDialogFragment
 
     @Override
     public void onPause() {
-        mTitle = mNameView.getText().toString().trim();
-        mIsComplete = mIsCompleteView.isChecked();
+        mTitle = mVb.seriesTitle.getText().toString().trim();
+        mIsComplete = mVb.cbxIsComplete.isChecked();
         super.onPause();
     }
 

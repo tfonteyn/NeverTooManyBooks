@@ -36,9 +36,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -48,10 +45,10 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.TextAccessor;
@@ -63,8 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -82,15 +77,8 @@ public class EditBookFieldsFragment
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
 
-    /** the covers. */
-    private final ImageView[] mCoverView = new ImageView[2];
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-
-    /** The ISBN views. */
-    private EditText mIsbnView;
-    private Button mAltIsbnButton;
-    private Button mScanIsbnButton;
 
     /** manage the validation check next to the ISBN field. */
     private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
@@ -106,31 +94,27 @@ public class EditBookFieldsFragment
     @Nullable
     private ScannerViewModel mScannerModel;
 
+    private FragmentEditBookFieldsBinding mVb;
+
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_edit_book_fields, container, false);
+        mVb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
 
-        mIsbnView = view.findViewById(R.id.isbn);
-        mAltIsbnButton = view.findViewById(R.id.btn_altIsbn);
-        mScanIsbnButton = view.findViewById(R.id.btn_scan);
-
-        mCoverView[0] = view.findViewById(R.id.coverImage0);
-        mCoverView[1] = view.findViewById(R.id.coverImage1);
         if (!App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
-            mCoverView[0].setVisibility(View.GONE);
-            mCoverView[1].setVisibility(View.GONE);
+            mVb.coverImage0.setVisibility(View.GONE);
+            mVb.coverImage1.setVisibility(View.GONE);
         }
 
         //noinspection ConstantConditions
         if (EditBookActivity.showAuthSeriesOnTabs(getContext())) {
-            view.findViewById(R.id.lbl_author).setVisibility(View.GONE);
-            view.findViewById(R.id.lbl_series).setVisibility(View.GONE);
+            mVb.lblAuthor.setVisibility(View.GONE);
+            mVb.lblSeries.setVisibility(View.GONE);
         }
 
-        return view;
+        return mVb.getRoot();
     }
 
     @CallSuper
@@ -161,7 +145,7 @@ public class EditBookFieldsFragment
                        DBDefinitions.KEY_FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author);
 
-            fields.add(R.id.series, UniqueId.BKEY_SERIES_ARRAY,
+            fields.add(R.id.series_title, UniqueId.BKEY_SERIES_ARRAY,
                        new TextAccessor<>(new SeriesListFormatter(Series.Details.Short, false)),
                        DBDefinitions.KEY_SERIES_TITLE)
                   .setRelatedFields(R.id.lbl_series);
@@ -181,7 +165,7 @@ public class EditBookFieldsFragment
 
         // Personal fields
 
-        // The button to bring up the dialog to edit Bookshelves.
+        // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
         fields.add(R.id.bookshelves, UniqueId.BKEY_BOOKSHELF_ARRAY,
                    new EditTextAccessor<>(new CsvFormatter()),
@@ -197,11 +181,11 @@ public class EditBookFieldsFragment
         if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
-                                                book, mIsbnView, 0, mCoverView[0],
+                                                book, mVb.isbn, 0, mVb.coverImage0,
                                                 ImageUtils.SCALE_MEDIUM);
 
             mCoverHandler[1] = new CoverHandler(this, mProgressBar,
-                                                book, mIsbnView, 1, mCoverView[1],
+                                                book, mVb.isbn, 1, mVb.coverImage1,
                                                 ImageUtils.SCALE_MEDIUM);
         }
 
@@ -227,39 +211,32 @@ public class EditBookFieldsFragment
         addAutocomplete(R.id.genre, mFragmentVM.getGenres());
 
         /// visual aids for ISBN and other codes.
-        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mIsbnView, true);
-        mIsbnView.addTextChangedListener(mIsbnValidationTextWatcher);
-        mIsbnView.addTextChangedListener(new AltIsbnTextWatcher(mIsbnView, mAltIsbnButton));
+        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mVb.isbn, true);
+        mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
+        mVb.isbn.addTextChangedListener(new AltIsbnTextWatcher(mVb.isbn, mVb.btnAltIsbn));
 
-        mScanIsbnButton.setOnClickListener(v -> {
+        mVb.btnScan.setOnClickListener(v -> {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
             mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
         });
+
+        setOnClickListener(R.id.bookshelves, v -> CheckListDialogFragment
+                .newInstance(R.string.lbl_bookshelves_long, R.id.bookshelves,
+                             new ArrayList<>(mFragmentVM.getDb().getBookshelves()),
+                             new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
+                                     UniqueId.BKEY_BOOKSHELF_ARRAY)))
+                .show(getChildFragmentManager(), CheckListDialogFragment.TAG));
+
 
         if (!showAuthSeriesOnTabs) {
             setOnClickListener(R.id.author, v ->
                     showEditListFragment(new EditBookAuthorsFragment(),
                                          EditBookAuthorsFragment.TAG));
 
-            setOnClickListener(R.id.series, v ->
+            setOnClickListener(R.id.series_title, v ->
                     showEditListFragment(new EditBookSeriesFragment(),
                                          EditBookSeriesFragment.TAG));
         }
-
-        setOnClickListener(R.id.bookshelves, v -> {
-            // get the list of all shelves the book is currently on.
-            final List<Bookshelf> current =
-                    mBookViewModel.getBook().getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
-
-            // Loop through all bookshelves in the database and build the list for this book
-            final ArrayList<SelectableEntity> items = new ArrayList<>();
-            for (Bookshelf bookshelf : mFragmentVM.getDb().getBookshelves()) {
-                items.add(new SelectableEntity(bookshelf, current.contains(bookshelf)));
-            }
-            CheckListDialogFragment
-                    .newInstance(R.id.bookshelves, R.string.lbl_bookshelves_long, items)
-                    .show(getChildFragmentManager(), CheckListDialogFragment.TAG);
-        });
     }
 
     /** Called by the CoverHandler when a context menu is selected. */

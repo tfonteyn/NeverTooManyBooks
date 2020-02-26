@@ -73,6 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.ImportCSVTask;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ExportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -116,12 +117,16 @@ public class ImportExportFragment
     private final OptionsDialogBase.OptionsListener<ImportHelper> mImportOptionsListener =
             this::onImportOptionsSet;
 
+    /** View Binding. */
+    private FragmentImportExportBinding mVb;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_import_export, container, false);
+        mVb = FragmentImportExportBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -167,28 +172,20 @@ public class ImportExportFragment
             mProgressDialog.setCancellable(mTaskModel.getTask());
         }
 
-        final View root = getView();
-
         // Export (backup) to Archive
-        //noinspection ConstantConditions
-        root.findViewById(R.id.lbl_backup)
-            .setOnClickListener(v -> startBackup());
+        mVb.lblBackup.setOnClickListener(v -> startBackup());
 
         // Import from Archive
-        root.findViewById(R.id.lbl_import_from_archive)
-            .setOnClickListener(v -> startImportFromArchive());
+        mVb.lblImportFromArchive.setOnClickListener(v -> startImportFromArchive());
 
         // Export to CSV
-        root.findViewById(R.id.lbl_export)
-            .setOnClickListener(v -> startExportToCsv());
+        mVb.lblExport.setOnClickListener(v -> startExportToCsv());
 
         // Import From CSV
-        root.findViewById(R.id.lbl_import)
-            .setOnClickListener(v -> startImportFromCsv());
+        mVb.lblImport.setOnClickListener(v -> startImportFromCsv());
 
         // Export database
-        root.findViewById(R.id.lbl_copy_database)
-            .setOnClickListener(v -> {
+        mVb.lblCopyDatabase.setOnClickListener(v -> {
                 final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                 startActivityForResult(intent, REQ_EXPORT_DATABASE);
             });

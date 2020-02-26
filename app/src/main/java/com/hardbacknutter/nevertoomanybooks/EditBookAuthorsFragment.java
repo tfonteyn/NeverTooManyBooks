@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -36,18 +35,14 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
-import android.widget.Checkable;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -58,6 +53,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookAuthorsBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -94,10 +91,8 @@ public class EditBookAuthorsFragment
                 }
             };
 
-    /** Author name field. */
-    private AutoCompleteTextView mAuthorNameView;
-    /** The View for the list. */
-    private RecyclerView mListView;
+    /** View Binding. */
+    private FragmentEditBookAuthorsBinding mVb;
     /** the rows. */
     private ArrayList<Author> mList;
     /** The adapter for the list itself. */
@@ -110,10 +105,8 @@ public class EditBookAuthorsFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_edit_book_authors, container, false);
-        mListView = view.findViewById(android.R.id.list);
-        mAuthorNameView = view.findViewById(R.id.author);
-        return view;
+        mVb = FragmentEditBookAuthorsBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -129,16 +122,15 @@ public class EditBookAuthorsFragment
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 mFragmentVM.getAuthorNames());
-        mAuthorNameView.setAdapter(nameAdapter);
+        mVb.author.setAdapter(nameAdapter);
 
         // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mListView.setLayoutManager(layoutManager);
-        mListView.setHasFixedSize(true);
+        mVb.authorList.setLayoutManager(layoutManager);
+        mVb.authorList.setHasFixedSize(true);
 
         // adding a new entry
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.btn_add).setOnClickListener(v -> onAdd());
+        mVb.btnAdd.setOnClickListener(v -> onAdd());
     }
 
     @Override
@@ -150,13 +142,13 @@ public class EditBookAuthorsFragment
         //noinspection ConstantConditions
         mListAdapter = new AuthorListAdapter(getContext(), mList,
                                              vh -> mItemTouchHelper.startDrag(vh));
-        mListView.setAdapter(mListAdapter);
+        mVb.authorList.setAdapter(mListAdapter);
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mListView);
+        mItemTouchHelper.attachToRecyclerView(mVb.authorList);
     }
 
     @Override
@@ -169,13 +161,13 @@ public class EditBookAuthorsFragment
 
     @Override
     public boolean hasUnfinishedEdits() {
-        return !mAuthorNameView.getText().toString().isEmpty();
+        return !mVb.author.getText().toString().isEmpty();
     }
 
     private void onAdd() {
-        final String name = mAuthorNameView.getText().toString().trim();
+        final String name = mVb.author.getText().toString().trim();
         if (name.isEmpty()) {
-            Snackbar.make(mAuthorNameView, R.string.warning_missing_name,
+            Snackbar.make(mVb.author, R.string.warning_missing_name,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -184,11 +176,10 @@ public class EditBookAuthorsFragment
 
         // see if it already exists
         //noinspection ConstantConditions
-        newAuthor.fixId(getContext(), mFragmentVM.getDb(),
-                        LocaleUtils.getUserLocale(getContext()));
+        newAuthor.fixId(getContext(), mFragmentVM.getDb(), LocaleUtils.getUserLocale(getContext()));
         // and check it's not already in the list.
         if (mList.contains(newAuthor)) {
-            Snackbar.make(mAuthorNameView, R.string.warning_author_already_in_list,
+            Snackbar.make(mVb.author, R.string.warning_author_already_in_list,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -197,7 +188,7 @@ public class EditBookAuthorsFragment
         mListAdapter.notifyDataSetChanged();
 
         // and clear the form for next entry.
-        mAuthorNameView.setText("");
+        mVb.author.setText("");
     }
 
     /**
@@ -354,11 +345,6 @@ public class EditBookAuthorsFragment
         /** Key: type. */
         private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
 
-        private AutoCompleteTextView mFamilyNameView;
-        private AutoCompleteTextView mGivenNamesView;
-        private Checkable mIsCompleteView;
-        /** Enable or disable the type buttons. */
-        private CompoundButton mUseTypeBtn;
         /** The Author we're editing. */
         private Author mAuthor;
         /** Current edit. */
@@ -373,6 +359,8 @@ public class EditBookAuthorsFragment
 
         /** Database Access. */
         private DAO mDb;
+        /** View Binding. */
+        private DialogEditBookAuthorBinding mVb;
 
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -413,9 +401,8 @@ public class EditBookAuthorsFragment
 
             // Reminder: *always* use the activity inflater here.
             //noinspection ConstantConditions
-            final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-            @SuppressLint("InflateParams")
-            final View root = layoutInflater.inflate(R.layout.dialog_edit_book_author, null);
+            final LayoutInflater inflater = getActivity().getLayoutInflater();
+            mVb = DialogEditBookAuthorBinding.inflate(inflater);
 
             //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> mFamilyNameAdapter = new DiacriticArrayAdapter<>(
@@ -426,103 +413,74 @@ public class EditBookAuthorsFragment
                     mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
             // the dialog fields != screen fields.
-            mFamilyNameView = root.findViewById(R.id.family_name);
-            mFamilyNameView.setText(mFamilyName);
-            mFamilyNameView.setAdapter(mFamilyNameAdapter);
+            mVb.familyName.setText(mFamilyName);
+            mVb.familyName.setAdapter(mFamilyNameAdapter);
 
-            mGivenNamesView = root.findViewById(R.id.given_names);
-            mGivenNamesView.setText(mGivenNames);
-            mGivenNamesView.setAdapter(mGivenNameAdapter);
+            mVb.givenNames.setText(mGivenNames);
+            mVb.givenNames.setAdapter(mGivenNameAdapter);
 
-            mIsCompleteView = root.findViewById(R.id.cbx_is_complete);
-            if (mIsCompleteView != null) {
-                mIsCompleteView.setChecked(mIsComplete);
-            }
+            mVb.cbxIsComplete.setChecked(mIsComplete);
 
-            mUseTypeBtn = root.findViewById(R.id.use_author_type_button);
-            if (mUseTypeBtn != null) {
-                final boolean useAuthorType =
-                        App.isUsed(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
-                final Group authorTypeGroup = root.findViewById(R.id.author_type_group);
-                authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
-                if (useAuthorType) {
+            final boolean useAuthorType = App.isUsed(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+            mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
+            if (useAuthorType) {
 
-                    mUseTypeBtn.setOnCheckedChangeListener(
-                            (v, isChecked) -> setTypeEnabled(isChecked));
+                mVb.useAuthorTypeButton.setOnCheckedChangeListener(
+                        (v, isChecked) -> setTypeEnabled(isChecked));
 
-                    mTypeButtons.put(Author.TYPE_WRITER,
-                                     root.findViewById(R.id.cbx_author_type_writer));
-                    mTypeButtons.put(Author.TYPE_CONTRIBUTOR,
-                                     root.findViewById(R.id.cbx_author_type_contributor));
-                    mTypeButtons.put(Author.TYPE_INTRODUCTION,
-                                     root.findViewById(R.id.cbx_author_type_intro));
-                    mTypeButtons.put(Author.TYPE_TRANSLATOR,
-                                     root.findViewById(R.id.cbx_author_type_translator));
-                    mTypeButtons.put(Author.TYPE_EDITOR,
-                                     root.findViewById(R.id.cbx_author_type_editor));
-                    mTypeButtons.put(Author.TYPE_ARTIST,
-                                     root.findViewById(R.id.cbx_author_type_artist));
-                    mTypeButtons.put(Author.TYPE_INKING,
-                                     root.findViewById(R.id.cbx_author_type_inking));
-                    mTypeButtons.put(Author.TYPE_COLORIST,
-                                     root.findViewById(R.id.cbx_author_type_colorist));
-                    mTypeButtons.put(Author.TYPE_COVER_ARTIST,
-                                     root.findViewById(R.id.cbx_author_type_cover_artist));
-                    mTypeButtons.put(Author.TYPE_COVER_INKING,
-                                     root.findViewById(R.id.cbx_author_type_cover_inking));
-                    mTypeButtons.put(Author.TYPE_COVER_COLORIST,
-                                     root.findViewById(R.id.cbx_author_type_cover_colorist));
+                mTypeButtons.put(Author.TYPE_WRITER, mVb.cbxAuthorTypeWriter);
+                mTypeButtons.put(Author.TYPE_CONTRIBUTOR, mVb.cbxAuthorTypeContributor);
+                mTypeButtons.put(Author.TYPE_INTRODUCTION, mVb.cbxAuthorTypeIntro);
+                mTypeButtons.put(Author.TYPE_TRANSLATOR, mVb.cbxAuthorTypeTranslator);
+                mTypeButtons.put(Author.TYPE_EDITOR, mVb.cbxAuthorTypeEditor);
 
-                    if (mType != Author.TYPE_UNKNOWN) {
-                        setTypeEnabled(true);
-                        for (int i = 0; i < mTypeButtons.size(); i++) {
-                            mTypeButtons.valueAt(i)
-                                        .setChecked((mType & mTypeButtons.keyAt(i)) != 0);
-                        }
-                    } else {
-                        setTypeEnabled(false);
+                mTypeButtons.put(Author.TYPE_ARTIST, mVb.cbxAuthorTypeArtist);
+                mTypeButtons.put(Author.TYPE_INKING, mVb.cbxAuthorTypeInking);
+                mTypeButtons.put(Author.TYPE_COLORIST, mVb.cbxAuthorTypeColorist);
+
+                mTypeButtons.put(Author.TYPE_COVER_ARTIST, mVb.cbxAuthorTypeCoverArtist);
+                mTypeButtons.put(Author.TYPE_COVER_INKING, mVb.cbxAuthorTypeCoverInking);
+                mTypeButtons.put(Author.TYPE_COVER_COLORIST, mVb.cbxAuthorTypeCoverColorist);
+
+                if (mType != Author.TYPE_UNKNOWN) {
+                    setTypeEnabled(true);
+                    for (int i = 0; i < mTypeButtons.size(); i++) {
+                        mTypeButtons.valueAt(i)
+                                    .setChecked((mType & mTypeButtons.keyAt(i)) != 0);
                     }
+                } else {
+                    setTypeEnabled(false);
                 }
             }
 
             return new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_edit)
-                    .setView(root)
+                    .setView(mVb.getRoot())
                     .setTitle(R.string.title_edit_author)
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                     .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
                         // don't check on anything else here,
                         // we're doing more extensive checks later on.
-                        mFamilyName = mFamilyNameView.getText().toString().trim();
+                        mFamilyName = mVb.familyName.getText().toString().trim();
                         if (mFamilyName.isEmpty()) {
-                            Snackbar.make(mFamilyNameView, R.string.warning_missing_name,
+                            Snackbar.make(mVb.familyName, R.string.warning_missing_name,
                                           Snackbar.LENGTH_LONG).show();
                             return;
                         }
 
-                        mGivenNames = mGivenNamesView.getText().toString().trim();
+                        mGivenNames = mVb.givenNames.getText().toString().trim();
 
                         // Create a new Author as a holder for all changes.
                         final Author tmpAuthor = new Author(mFamilyName, mGivenNames);
 
-                        // allow for future layout(s) not displaying the isComplete checkbox
-                        if (mIsCompleteView != null) {
-                            mIsComplete = mIsCompleteView.isChecked();
-                            tmpAuthor.setComplete(mIsComplete);
-                        } else {
-                            tmpAuthor.setComplete(mAuthor.isComplete());
-                        }
+                        mIsComplete = mVb.cbxIsComplete.isChecked();
+                        tmpAuthor.setComplete(mIsComplete);
 
-                        // allow for future layout(s) not displaying the type fields
-                        if (mUseTypeBtn != null) {
-                            mType = getTypeFromViews();
-                            if (mUseTypeBtn.isChecked()) {
-                                tmpAuthor.setType(mType);
-                            } else {
-                                tmpAuthor.setType(Author.TYPE_UNKNOWN);
-                            }
+                        mType = getTypeFromViews();
+                        if (mVb.useAuthorTypeButton.isChecked()) {
+                            tmpAuthor.setType(mType);
                         } else {
-                            tmpAuthor.setType(mAuthor.getType());
+                            tmpAuthor.setType(Author.TYPE_UNKNOWN);
                         }
 
                         ((EditBookAuthorsFragment) getTargetFragment())
@@ -559,14 +517,10 @@ public class EditBookAuthorsFragment
 
         @Override
         public void onPause() {
-            mFamilyName = mFamilyNameView.getText().toString().trim();
-            mGivenNames = mGivenNamesView.getText().toString().trim();
-            if (mIsCompleteView != null) {
-                mIsComplete = mIsCompleteView.isChecked();
-            }
-            if (mUseTypeBtn != null) {
-                mType = getTypeFromViews();
-            }
+            mFamilyName = mVb.familyName.getText().toString().trim();
+            mGivenNames = mVb.givenNames.getText().toString().trim();
+            mIsComplete = mVb.cbxIsComplete.isChecked();
+            mType = getTypeFromViews();
             super.onPause();
         }
 
@@ -578,7 +532,7 @@ public class EditBookAuthorsFragment
         private void setTypeEnabled(final boolean enable) {
             // don't bother changing the 'checked' status, we'll ignore them anyhow.
             // and this is more user friendly if they flip the switch more than once.
-            mUseTypeBtn.setChecked(enable);
+            mVb.useAuthorTypeButton.setChecked(enable);
             for (int i = 0; i < mTypeButtons.size(); i++) {
                 final CompoundButton typeBtn = mTypeButtons.valueAt(i);
                 typeBtn.setEnabled(enable);

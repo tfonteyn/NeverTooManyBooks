@@ -50,6 +50,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
@@ -63,8 +64,6 @@ public class EditBookshelvesFragment
         extends Fragment {
 
     static final String TAG = "EditBookshelvesFragment";
-
-    private RecyclerView mListView;
 
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
@@ -85,14 +84,15 @@ public class EditBookshelvesFragment
         setHasOptionsMenu(true);
     }
 
+    private FragmentEditBookshelvesBinding mVb;
+
     @Override
     @Nullable
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_edit_bookshelves, container, false);
-        mListView = view.findViewById(R.id.bookshelfList);
-        return view;
+        mVb = FragmentEditBookshelvesBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -123,12 +123,12 @@ public class EditBookshelvesFragment
                 new Bookshelf("", BooklistStyle.getDefaultStyle(getContext(), mModel.getDb()))));
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
-        mListView.setLayoutManager(linearLayoutManager);
+        mVb.bookshelfList.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
-        mListView.addItemDecoration(
+        mVb.bookshelfList.addItemDecoration(
                 new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
-        mListView.setHasFixedSize(true);
-        mListView.setAdapter(mAdapter);
+        mVb.bookshelfList.setHasFixedSize(true);
+        mVb.bookshelfList.setAdapter(mAdapter);
     }
 
     @Override
@@ -217,7 +217,7 @@ public class EditBookshelvesFragment
                 } else {
                     //TODO: why not ? as long as we make sure there is another one left..
                     // e.g. count > 2, then you can delete '1'
-                    Snackbar.make(mListView, R.string.warning_cannot_delete_1st_bs,
+                    Snackbar.make(mVb.bookshelfList, R.string.warning_cannot_delete_1st_bs,
                                   Snackbar.LENGTH_LONG).show();
                 }
                 return true;

@@ -45,16 +45,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -66,6 +62,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -95,26 +92,16 @@ public class BookDetailsFragment
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
 
-    /** the covers. */
-    private final ImageView[] mCoverView = new ImageView[2];
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-
-    private TextView mIsbnView;
-
-    /** Label for anthologies. */
-    private TextView mIsAnthologyLabelView;
-    /** Checkbox for anthologies. Set manually. */
-    private CompoundButton mIsAnthologyCbx;
-    /** Switch the user can flick to display/hide the TOC (if present). */
-    private CompoundButton mTocButton;
-    /** We display/hide the TOC header label as needed. */
-    private View mTocLabelView;
-    /** The TOC list. */
-    private LinearLayout mTocView;
-    /** The loanee banner. */
-    private TextView mLoanedToView;
-
+    /** Registered with the Activity to deliver us gestures. */
+    private View.OnTouchListener mOnTouchListener;
+    /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
+    private GestureDetector mGestureDetector;
+    /** View model. */
+    private BookDetailsFragmentViewModel mFragmentVM;
+    /** View Binding. */
+    private FragmentBookDetailsBinding mVb;
     /** Listen for changes. */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
@@ -128,17 +115,6 @@ public class BookDetailsFragment
             }
         }
     };
-
-    /** The scroll view encompassing the entire fragment page. */
-    private NestedScrollView mTopScrollView;
-
-    /** Registered with the Activity to deliver us gestures. */
-    private View.OnTouchListener mOnTouchListener;
-
-    /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
-    private GestureDetector mGestureDetector;
-
-    private BookDetailsFragmentViewModel mFragmentVM;
 
     @Override
     Fields getFields() {
@@ -161,40 +137,28 @@ public class BookDetailsFragment
         //noinspection ConstantConditions
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        final View view = inflater.inflate(R.layout.fragment_book_details, container, false);
-
-        mTopScrollView = view.findViewById(R.id.topScroller);
-
-        mIsbnView = view.findViewById(R.id.isbn);
+        mVb = FragmentBookDetailsBinding.inflate(inflater, container, false);
 
         // Anthology/TOC fields
-        mIsAnthologyLabelView = view.findViewById(R.id.lbl_anthology);
-        mIsAnthologyCbx = view.findViewById(R.id.cbx_anthology);
-        mTocLabelView = view.findViewById(R.id.lbl_toc);
-        mTocView = view.findViewById(R.id.toc);
-        mTocButton = view.findViewById(R.id.toc_button);
         if (!App.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
-            mIsAnthologyLabelView.setVisibility(View.GONE);
-            mIsAnthologyCbx.setVisibility(View.GONE);
-            mTocLabelView.setVisibility(View.GONE);
-            mTocView.setVisibility(View.GONE);
-            mTocButton.setVisibility(View.GONE);
+            mVb.lblAnthology.setVisibility(View.GONE);
+            mVb.cbxAnthology.setVisibility(View.GONE);
+            mVb.lblToc.setVisibility(View.GONE);
+            mVb.toc.setVisibility(View.GONE);
+            mVb.tocButton.setVisibility(View.GONE);
         }
 
         // Covers
-        mCoverView[0] = view.findViewById(R.id.coverImage0);
-        mCoverView[1] = view.findViewById(R.id.coverImage1);
         if (!App.isUsed(prefs, UniqueId.BKEY_THUMBNAIL)) {
-            mCoverView[0].setVisibility(View.GONE);
-            mCoverView[1].setVisibility(View.GONE);
+            mVb.coverImage0.setVisibility(View.GONE);
+            mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        mLoanedToView = view.findViewById(R.id.loaned_to);
         if (!App.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
-            mLoanedToView.setVisibility(View.GONE);
+            mVb.loanedTo.setVisibility(View.GONE);
         }
 
-        return view;
+        return mVb.getRoot();
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -226,18 +190,18 @@ public class BookDetailsFragment
         mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
 
         // show/hide the TOC as the user flips the switch.
-        mTocButton.setOnClickListener(v -> {
+        mVb.tocButton.setOnClickListener(v -> {
             // note that the button is explicitly (re)set.
             // If user clicks to fast it seems to get out of sync.
-            if (mTocView.getVisibility() == View.VISIBLE) {
+            if (mVb.toc.getVisibility() == View.VISIBLE) {
                 // force a scroll; a manual scroll is no longer possible after the TOC closes.
-                mTopScrollView.fullScroll(View.FOCUS_UP);
-                mTocView.setVisibility(View.GONE);
-                mTocButton.setChecked(false);
+                mVb.topScroller.fullScroll(View.FOCUS_UP);
+                mVb.toc.setVisibility(View.GONE);
+                mVb.tocButton.setChecked(false);
 
             } else {
-                mTocView.setVisibility(View.VISIBLE);
-                mTocButton.setChecked(true);
+                mVb.toc.setVisibility(View.VISIBLE);
+                mVb.tocButton.setChecked(true);
             }
         });
 
@@ -360,11 +324,11 @@ public class BookDetailsFragment
         if (App.isUsed(prefs, UniqueId.BKEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
-                                                book, mIsbnView, 0, mCoverView[0],
+                                                book, mVb.isbn, 0, mVb.coverImage0,
                                                 ImageUtils.SCALE_LARGE);
 
             mCoverHandler[1] = new CoverHandler(this, mProgressBar,
-                                                book, mIsbnView, 1, mCoverView[1],
+                                                book, mVb.isbn, 1, mVb.coverImage1,
                                                 ImageUtils.SCALE_SMALL);
         }
 
@@ -401,9 +365,9 @@ public class BookDetailsFragment
      */
     private void populateLoanedToField(@Nullable final String loanee) {
         if (loanee != null && !loanee.isEmpty()) {
-            mLoanedToView.setText(getString(R.string.lbl_loaned_to_name, loanee));
-            mLoanedToView.setVisibility(View.VISIBLE);
-            mLoanedToView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            mVb.loanedTo.setText(getString(R.string.lbl_loaned_to_name, loanee));
+            mVb.loanedTo.setVisibility(View.VISIBLE);
+            mVb.loanedTo.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 /** TODO: convert to MenuPicker context menu.... if I can be bothered. */
                 @Override
                 @CallSuper
@@ -418,8 +382,8 @@ public class BookDetailsFragment
                 }
             });
         } else {
-            mLoanedToView.setVisibility(View.GONE);
-            mLoanedToView.setText("");
+            mVb.loanedTo.setVisibility(View.GONE);
+            mVb.loanedTo.setText("");
         }
     }
 
@@ -429,35 +393,34 @@ public class BookDetailsFragment
     private void populateToc(@NonNull final Book book) {
         final boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
                                                   Book.TOC_MULTIPLE_WORKS);
-        mIsAnthologyLabelView.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-        mIsAnthologyCbx.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-        mIsAnthologyCbx.setChecked(isAnthology);
+        mVb.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
+        mVb.cbxAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
+        mVb.cbxAnthology.setChecked(isAnthology);
 
         // we can get called more than once (when user moves sideways to another book),
         // so clear and hide/disable the view before populating it.
         // Actual visibility is handled after building the list.
-        mTocView.removeAllViews();
-        mTocView.setVisibility(View.GONE);
-        mTocButton.setChecked(false);
+        mVb.toc.removeAllViews();
+        mVb.toc.setVisibility(View.GONE);
+        mVb.tocButton.setChecked(false);
 
         final ArrayList<TocEntry> tocList =
                 book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
 
         if (!tocList.isEmpty()) {
 
-            @SuppressWarnings("ConstantConditions")
-            @NonNull
             final Context context = getContext();
 
             for (TocEntry tocEntry : tocList) {
                 final View rowView = getLayoutInflater()
-                        .inflate(R.layout.row_toc_entry_with_author, mTocView, false);
+                        .inflate(R.layout.row_toc_entry_with_author, mVb.toc, false);
 
                 final TextView titleView = rowView.findViewById(R.id.title);
                 final TextView authorView = rowView.findViewById(R.id.author);
                 final TextView firstPubView = rowView.findViewById(R.id.year);
                 final CheckBox multipleBooksView = rowView.findViewById(R.id.cbx_multiple_books);
 
+                //noinspection ConstantConditions
                 titleView.setText(tocEntry.getLabel(context));
 
                 if (multipleBooksView != null) {
@@ -479,15 +442,15 @@ public class BookDetailsFragment
                         firstPubView.setText(context.getString(R.string.brackets, date));
                     }
                 }
-                mTocView.addView(rowView);
+                mVb.toc.addView(rowView);
             }
 
-            mTocLabelView.setVisibility(View.VISIBLE);
-            mTocButton.setVisibility(View.VISIBLE);
+            mVb.lblToc.setVisibility(View.VISIBLE);
+            mVb.tocButton.setVisibility(View.VISIBLE);
 
         } else {
-            mTocLabelView.setVisibility(View.GONE);
-            mTocButton.setVisibility(View.GONE);
+            mVb.lblToc.setVisibility(View.GONE);
+            mVb.tocButton.setVisibility(View.GONE);
         }
     }
 
@@ -654,7 +617,7 @@ public class BookDetailsFragment
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {
 
-        private static final float sensitivity = 50;
+        private static final float SENSITIVITY = 50;
 
         @Override
         public boolean onFling(@NonNull final MotionEvent e1,
@@ -662,13 +625,13 @@ public class BookDetailsFragment
                                final float velocityX,
                                final float velocityY) {
 
-            if ((e1.getX() - e2.getX()) > sensitivity) {
+            if ((e1.getX() - e2.getX()) > SENSITIVITY) {
                 if (mFragmentVM.move(mBookViewModel.getBook(), true)) {
                     populateViews();
                     return true;
                 }
 
-            } else if ((e2.getX() - e1.getX()) > sensitivity) {
+            } else if ((e2.getX() - e1.getX()) > SENSITIVITY) {
                 if (mFragmentVM.move(mBookViewModel.getBook(), false)) {
                     populateViews();
                     return true;

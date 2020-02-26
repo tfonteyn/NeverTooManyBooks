@@ -32,13 +32,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.Group;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -48,6 +45,7 @@ import java.util.HashSet;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByTextBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -55,6 +53,9 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
+/**
+ * ENHANCE: add auto-completion for publishers?
+ */
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {
 
@@ -67,15 +68,8 @@ public class BookSearchByTextFragment
     /** adapter for the AutoCompleteTextView. */
     private DiacriticArrayAdapter<String> mAuthorAdapter;
 
-    /** User input field. */
-    private AutoCompleteTextView mAuthorView;
-    /** User input field. */
-    private EditText mTitleView;
-
-    /** User input field. ENHANCE: add auto-completion for publishers? */
-    private EditText mPublisherView;
-    /** Used to set visibility on a group of widgets all related to the Publisher. */
-    private Group mPublisherGroup;
+    /** View Binding. */
+    private FragmentBooksearchByTextBinding mVb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -88,12 +82,8 @@ public class BookSearchByTextFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_booksearch_by_text, container, false);
-        mAuthorView = view.findViewById(R.id.author);
-        mTitleView = view.findViewById(R.id.title);
-        mPublisherView = view.findViewById(R.id.publisher);
-        mPublisherGroup = view.findViewById(R.id.publisher_group);
-        return view;
+        mVb = FragmentBooksearchByTextBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -102,7 +92,7 @@ public class BookSearchByTextFragment
 
         //noinspection ConstantConditions
         final boolean usePublisher = SearchSites.usePublisher(getContext());
-        mPublisherGroup.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
+        mVb.publisherGroup.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.title_search_for_books);
@@ -110,8 +100,7 @@ public class BookSearchByTextFragment
         copyModel2View();
         populateAuthorList();
 
-        //noinspection ConstantConditions
-        getView().findViewById(R.id.btn_search).setOnClickListener(v -> {
+        mVb.btnSearch.setOnClickListener(v -> {
             copyView2Model();
 
             final String authorSearchText = mSearchCoordinator.getAuthorSearchText();
@@ -138,6 +127,7 @@ public class BookSearchByTextFragment
 
             //sanity check
             if (authorSearchText.isEmpty() && titleSearchText.isEmpty()) {
+                //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.warning_requires_at_least_one_field,
                               Snackbar.LENGTH_LONG).show();
                 return;
@@ -165,7 +155,7 @@ public class BookSearchByTextFragment
         //noinspection ConstantConditions
         mAuthorAdapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, authors);
-        mAuthorView.setAdapter(mAuthorAdapter);
+        mVb.author.setAdapter(mAuthorAdapter);
     }
 
     @NonNull
@@ -230,21 +220,23 @@ public class BookSearchByTextFragment
     @Override
     void clearPreviousSearchCriteria() {
         super.clearPreviousSearchCriteria();
-        mAuthorView.setText("");
-        mTitleView.setText("");
-        mPublisherView.setText("");
+        mVb.author.setText("");
+        mVb.title.setText("");
+        mVb.publisher.setText("");
     }
 
     private void copyModel2View() {
-        mAuthorView.setText(mSearchCoordinator.getAuthorSearchText());
-        mTitleView.setText(mSearchCoordinator.getTitleSearchText());
-        mPublisherView.setText(mSearchCoordinator.getPublisherSearchText());
+        mVb.author.setText(mSearchCoordinator.getAuthorSearchText());
+        mVb.title.setText(mSearchCoordinator.getTitleSearchText());
+        mVb.publisher.setText(mSearchCoordinator.getPublisherSearchText());
     }
 
     private void copyView2Model() {
-        mSearchCoordinator.setAuthorSearchText(mAuthorView.getText().toString().trim());
-        mSearchCoordinator.setTitleSearchText(mTitleView.getText().toString().trim());
-        mSearchCoordinator.setPublisherSearchText(mPublisherView.getText().toString().trim());
+        mSearchCoordinator.setAuthorSearchText(mVb.author.getText().toString().trim());
+        //noinspection ConstantConditions
+        mSearchCoordinator.setTitleSearchText(mVb.title.getText().toString().trim());
+        //noinspection ConstantConditions
+        mSearchCoordinator.setPublisherSearchText(mVb.publisher.getText().toString().trim());
     }
 
     @Override

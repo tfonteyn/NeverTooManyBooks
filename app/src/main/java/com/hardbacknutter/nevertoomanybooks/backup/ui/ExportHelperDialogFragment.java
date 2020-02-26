@@ -30,9 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.ui;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Checkable;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +40,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 public class ExportHelperDialogFragment
@@ -52,10 +50,6 @@ public class ExportHelperDialogFragment
     private static final String BKEY_OPTIONS = TAG + ":options";
 
     private ExportHelper mExportHelper;
-
-    private Checkable mRadioSinceLastBackup;
-    private Checkable mRadioSinceDate;
-    private EditText mDateSinceView;
 
     /**
      * Constructor.
@@ -81,23 +75,21 @@ public class ExportHelperDialogFragment
         mExportHelper = currentArgs.getParcelable(BKEY_OPTIONS);
     }
 
+    private DialogExportOptionsBinding mVb;
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.dialog_export_options, null);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        mVb = DialogExportOptionsBinding.inflate(inflater);
 
-        initCommonCbx(mExportHelper, root);
-
-        mRadioSinceLastBackup = root.findViewById(R.id.radioSinceLastBackup);
-        mRadioSinceDate = root.findViewById(R.id.radioSinceDate);
-        mDateSinceView = root.findViewById(R.id.date_since);
+        initCommonCbx(mExportHelper, mVb.getRoot());
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
+                .setView(mVb.getRoot())
                 .setTitle(R.string.export_options_dialog_title)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
@@ -117,7 +109,7 @@ public class ExportHelperDialogFragment
     protected void updateOptions() {
         updateOptions(mExportHelper);
 
-        if (mRadioSinceLastBackup.isChecked()) {
+        if (mVb.radioSinceLastBackup.isChecked()) {
             mExportHelper.options |= ExportHelper.EXPORT_SINCE;
             // it's up to the Exporter to determine/set the last backup date.
             mExportHelper.setDateFrom(null);
@@ -125,13 +117,13 @@ public class ExportHelperDialogFragment
             mExportHelper.options &= ~ExportHelper.EXPORT_SINCE;
         }
 
-        if (mRadioSinceDate.isChecked()) {
+        if (mVb.radioSinceDate.isChecked()) {
             try {
                 mExportHelper.options |= ExportHelper.EXPORT_SINCE;
-                String date = mDateSinceView.getText().toString().trim();
+                String date = mVb.radioSinceDate.getText().toString().trim();
                 mExportHelper.setDateFrom(DateUtils.parseDate(date));
             } catch (@NonNull final RuntimeException e) {
-                Snackbar.make(mDateSinceView, R.string.warning_requires_date,
+                Snackbar.make(mVb.radioSinceDate, R.string.warning_requires_date,
                               Snackbar.LENGTH_LONG).show();
                 mExportHelper.options = Options.NOTHING;
             }

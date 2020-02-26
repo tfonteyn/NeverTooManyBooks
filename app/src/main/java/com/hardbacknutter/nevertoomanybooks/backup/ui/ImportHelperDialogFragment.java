@@ -31,8 +31,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Checkable;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,6 +40,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
 
 public class ImportHelperDialogFragment
         extends OptionsDialogBase<ImportHelper> {
@@ -54,8 +53,7 @@ public class ImportHelperDialogFragment
     private ImportHelper mImportHelper;
 
     private boolean mArchiveHasValidDates;
-
-    private Checkable cbxUpdatedBooks;
+    private DialogImportOptionsBinding mVb;
 
     /**
      * Constructor.
@@ -92,29 +90,27 @@ public class ImportHelperDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.dialog_import_options, null);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        mVb = DialogImportOptionsBinding.inflate(inflater);
 
-        initCommonCbx(mImportHelper, root);
+        initCommonCbx(mImportHelper, mVb.getRoot());
 
-        boolean allBooks = (mImportHelper.options & ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED) == 0;
+        final boolean allBooks =
+                (mImportHelper.options & ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED) == 0;
 
-        Checkable cbxAllBooks = root.findViewById(R.id.radioAllBooks);
-        cbxAllBooks.setChecked(allBooks);
-        cbxUpdatedBooks = root.findViewById(R.id.radioNewAndUpdatedBooks);
-        cbxUpdatedBooks.setChecked(!allBooks);
+        mVb.radioAllBooks.setChecked(allBooks);
+        mVb.radioNewAndUpdatedBooks.setChecked(!allBooks);
 
         if (!mArchiveHasValidDates) {
-            cbxAllBooks.setChecked(true);
-            cbxUpdatedBooks.setChecked(false);
-            ((View) cbxUpdatedBooks).setEnabled(false);
-            TextView blurb = root.findViewById(R.id.radioNewAndUpdatedBooksInfo);
-            blurb.setText(R.string.import_warning_old_archive);
+            mVb.radioAllBooks.setChecked(true);
+            mVb.radioNewAndUpdatedBooks.setChecked(false);
+            ((View) mVb.radioNewAndUpdatedBooks).setEnabled(false);
+            mVb.radioNewAndUpdatedBooksInfo.setText(R.string.import_warning_old_archive);
         }
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
+                .setView(mVb.getRoot())
                 .setTitle(R.string.import_options_dialog_title)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
@@ -134,7 +130,7 @@ public class ImportHelperDialogFragment
     protected void updateOptions() {
         updateOptions(mImportHelper);
 
-        if (cbxUpdatedBooks.isChecked()) {
+        if (mVb.radioNewAndUpdatedBooks.isChecked()) {
             mImportHelper.options |= ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED;
         } else {
             mImportHelper.options &= ~ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED;

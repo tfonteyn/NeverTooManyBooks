@@ -41,7 +41,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -62,6 +61,7 @@ import java.util.Objects;
 import java.util.concurrent.RejectedExecutionException;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
@@ -90,16 +90,13 @@ public class CoverBrowserFragment
     private GalleryAdapter mGalleryAdapter;
     /** Indicates dismiss() has been requested. */
     private boolean mDismissing;
-    /** The switcher will be used to display larger versions. */
-    private ImageSwitcher mImageSwitcherView;
 
-    /** Prior to showing a preview, the switcher can show text updates. */
-    private TextView mStatusTextView;
     /** The ViewModel. */
     private CoverBrowserViewModel mModel;
     /** Absolute file path of the selected image. */
     @Nullable
     private String mSelectedFileSpec;
+    private DialogCoverBrowserBinding mVb;
 
     /**
      * Constructor.
@@ -145,25 +142,20 @@ public class CoverBrowserFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        final View root = layoutInflater.inflate(R.layout.dialog_cover_browser, null);
-
-        // keep the user informed.
-        mStatusTextView = root.findViewById(R.id.statusMessage);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        mVb = DialogCoverBrowserBinding.inflate(inflater);
 
         // The gallery displays a list of images, one for each edition.
-        final RecyclerView listView = root.findViewById(R.id.gallery);
         final LinearLayoutManager galleryLayoutManager = new LinearLayoutManager(getContext());
         galleryLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        listView.setLayoutManager(galleryLayoutManager);
+        mVb.gallery.setLayoutManager(galleryLayoutManager);
         //noinspection ConstantConditions
-        listView.addItemDecoration(
+        mVb.gallery.addItemDecoration(
                 new DividerItemDecoration(getContext(), galleryLayoutManager.getOrientation()));
-        listView.setAdapter(mGalleryAdapter);
+        mVb.gallery.setAdapter(mGalleryAdapter);
 
         // setup the switcher.
-        mImageSwitcherView = root.findViewById(R.id.switcher);
-        mImageSwitcherView.setFactory(() -> {
+        mVb.switcher.setFactory(() -> {
             ImageView imageView = new ImageView(getContext());
             imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             imageView.setAdjustViewBounds(true);
@@ -176,7 +168,7 @@ public class CoverBrowserFragment
             return imageView;
         });
         // When the switcher image is clicked, send the fileSpec back to the caller and terminate.
-        mImageSwitcherView.setOnClickListener(v -> {
+        mVb.switcher.setOnClickListener(v -> {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                 Log.d(TAG, "mImageSwitcherView.onClick|fileSpec=" + mSelectedFileSpec);
             }
@@ -194,7 +186,7 @@ public class CoverBrowserFragment
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
-                .setView(root)
+                .setView(mVb.getRoot())
                 .create();
     }
 
@@ -209,7 +201,7 @@ public class CoverBrowserFragment
     public void onResume() {
         super.onResume();
         if (mAlternativeEditions.isEmpty()) {
-            mStatusTextView.setText(R.string.progress_msg_finding_editions);
+            mVb.statusMessage.setText(R.string.progress_msg_finding_editions);
             mModel.fetchEditions();
         }
     }
@@ -227,7 +219,7 @@ public class CoverBrowserFragment
         }
 
         if (mAlternativeEditions.isEmpty()) {
-            Snackbar.make(mStatusTextView, R.string.warning_no_editions, Snackbar.LENGTH_LONG)
+            Snackbar.make(mVb.statusMessage, R.string.warning_no_editions, Snackbar.LENGTH_LONG)
                     .show();
             dismiss();
             return;
@@ -237,7 +229,7 @@ public class CoverBrowserFragment
         mGalleryAdapter.notifyDataSetChanged();
 
         // Show help message
-        mStatusTextView.setText(R.string.info_tap_on_thumb);
+        mVb.statusMessage.setText(R.string.info_tap_on_thumb);
     }
 
     /**
@@ -275,7 +267,7 @@ public class CoverBrowserFragment
 
         // and if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
-            Snackbar.make(mStatusTextView, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
+            Snackbar.make(mVb.statusMessage, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
                     .show();
             dismiss();
         }
@@ -304,19 +296,19 @@ public class CoverBrowserFragment
                 final Bitmap bm = ImageUtils.createScaledBitmap(getContext(), file,
                                                                 ImageUtils.SCALE_X_LARGE);
                 if (bm != null) {
-                    mImageSwitcherView.setImageDrawable(new BitmapDrawable(getResources(), bm));
-                    mImageSwitcherView.setVisibility(View.VISIBLE);
-                    mStatusTextView.setText(R.string.info_tap_on_image_to_select);
+                    mVb.switcher.setImageDrawable(new BitmapDrawable(getResources(), bm));
+                    mVb.switcher.setVisibility(View.VISIBLE);
+                    mVb.statusMessage.setText(R.string.info_tap_on_image_to_select);
                     return;
                 }
             }
         }
 
         // Reset the switcher and info the user.
-        mImageSwitcherView.setVisibility(View.GONE);
-        Snackbar.make(mImageSwitcherView, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
+        mVb.switcher.setVisibility(View.GONE);
+        Snackbar.make(mVb.switcher, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
                 .show();
-        mStatusTextView.setText(R.string.info_tap_on_thumb);
+        mVb.statusMessage.setText(R.string.info_tap_on_thumb);
     }
 
     /** Stores and recycles views as they are scrolled off screen. */
@@ -429,9 +421,9 @@ public class CoverBrowserFragment
                         // check for a larger image.
 
                         // set & show the placeholder.
-                        mImageSwitcherView.setImageResource(R.drawable.ic_image);
-                        mImageSwitcherView.setVisibility(View.VISIBLE);
-                        mStatusTextView.setText(R.string.progress_msg_loading);
+                        mVb.switcher.setImageResource(R.drawable.ic_image);
+                        mVb.switcher.setVisibility(View.VISIBLE);
+                        mVb.statusMessage.setText(R.string.progress_msg_loading);
                         // start a task to fetch the image
                         mModel.fetchSelectedImage(holder.fileInfo);
                     }
