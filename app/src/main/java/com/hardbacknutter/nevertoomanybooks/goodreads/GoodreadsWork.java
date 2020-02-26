@@ -115,9 +115,7 @@ public class GoodreadsWork {
         synchronized (this) {
             if (mImageBytes == null) {
                 // Image not retrieved yet, so clear any existing image
-                ImageUtils.setPlaceholder(imageView, R.drawable.ic_image,
-                                          ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
-                                          maxWidth, maxHeight);
+                ImageUtils.setPlaceholder(imageView, R.drawable.ic_image, 0, maxHeight);
                 // Save the view so we know where the image is going to be displayed
                 mImageView = new WeakReference<>(imageView);
                 // run task to get the image. Use parallel executor.
@@ -134,9 +132,8 @@ public class GoodreadsWork {
                                                                   new BitmapFactory.Options());
                     ImageUtils.setImageView(imageView, bitmap, maxWidth, maxHeight, true);
                 } else {
-                    ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image,
-                                              ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
-                                              maxWidth, maxHeight);
+                    ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
+                                              maxHeight);
                 }
 
                 // Clear the work in the View, in case some other job was running
@@ -175,9 +172,8 @@ public class GoodreadsWork {
                                                                       new BitmapFactory.Options());
                         ImageUtils.setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, true);
                     } else {
-                        ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image,
-                                                  ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
-                                                  mMaxWidth, mMaxHeight);
+                        ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
+                                                  mMaxHeight);
                     }
                 }
             }

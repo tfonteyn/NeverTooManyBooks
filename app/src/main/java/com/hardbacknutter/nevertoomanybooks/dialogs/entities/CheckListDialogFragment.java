@@ -35,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.Checkable;
 import android.widget.CompoundButton;
 
 import androidx.annotation.CallSuper;
@@ -44,6 +45,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
@@ -56,10 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 
 /**
- * DialogFragment to edit a list of {@link Entity}'s wrapped in {@link SelectableEntity}.
+ * DialogFragment to edit a list of {@link Entity}.
  * <p>
  * Replacement for the AlertDialog with multipleChoice setup.
  */
@@ -70,36 +71,54 @@ public class CheckListDialogFragment
     public static final String TAG = "CheckListDialogFragment";
 
     /** Argument. */
-    private static final String BKEY_LIST = TAG + ":list";
+    private static final String BKEY_ALL = TAG + ":all";
+    /** Argument. */
+    private static final String BKEY_SELECTED = TAG + ":selected";
 
     /** The list of items to display. */
-    private ArrayList<SelectableEntity> mList;
+    private ArrayList<Entity> mAllItems;
+    /** The list of items to display. */
+    private ArrayList<Entity> mSelectedItems;
+    private final View.OnClickListener filterChipListener = v -> {
+        Entity current = (Entity) v.getTag();
+        if (((Checkable) v).isChecked()) {
+            mSelectedItems.add(current);
+        } else {
+            mSelectedItems.remove(current);
+        }
+    };
     /** Where to send the result. */
     private WeakReference<CheckListResultsListener> mListener;
-
     /** identifier of the field this dialog is bound to. */
     @IdRes
     private int mFieldId;
+    @StringRes
+    private int mDialogTitleId = 0;
 
     /**
      * Constructor.
      *
-     * @param fieldId       the field whose content we want to edit
      * @param dialogTitleId resource id for the dialog title
-     * @param items         list of items
+     * @param fieldId       the field whose content we want to edit
+     * @param allItems      list of all possible items
+     * @param selectedItems list of item which are currently selected
      *
      * @return the new instance
      */
     public static CheckListDialogFragment newInstance(
-            @IdRes final int fieldId,
             @StringRes final int dialogTitleId,
-            @NonNull final ArrayList<SelectableEntity> items) {
+            @IdRes final int fieldId,
+            final ArrayList<Entity> allItems,
+            @NonNull final ArrayList<Entity> selectedItems) {
 
         CheckListDialogFragment frag = new CheckListDialogFragment();
-        Bundle args = new Bundle(3);
+        Bundle args = new Bundle();
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
-        args.putParcelableArrayList(BKEY_LIST, items);
+
+        args.putParcelableArrayList(BKEY_ALL, allItems);
+        args.putParcelableArrayList(BKEY_SELECTED, selectedItems);
+
         frag.setArguments(args);
         return frag;
     }
@@ -109,59 +128,87 @@ public class CheckListDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
+        mDialogTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
         mFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
         args = savedInstanceState != null ? savedInstanceState : args;
-        mList = args.getParcelableArrayList(BKEY_LIST);
-        Objects.requireNonNull(mList, ErrorMsg.ARGS_MISSING_CHECKLIST);
+
+        mAllItems = args.getParcelableArrayList(BKEY_ALL);
+        Objects.requireNonNull(mAllItems, ErrorMsg.ARGS_MISSING_CHECKLIST);
+
+        mSelectedItems = args.getParcelableArrayList(BKEY_SELECTED);
+        Objects.requireNonNull(mSelectedItems, ErrorMsg.ARGS_MISSING_CHECKLIST);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
-        // Reminder: *always* use the activity inflater here.
-        //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        @SuppressLint("InflateParams")
-        View root = layoutInflater.inflate(R.layout.dialog_edit_checklist, null);
-        ViewGroup body = root.findViewById(android.R.id.list);
 
-        // Takes the list of items and create a list of checkboxes in the display.
-        for (SelectableEntity item : mList) {
-            CompoundButton buttonView = new CheckBox(getContext());
-            buttonView.setChecked(item.isSelected());
-            //noinspection ConstantConditions
-            buttonView.setText(item.getEntity().getLabel(getContext()));
-            buttonView.setOnCheckedChangeListener((v, isChecked) -> item.setSelected(isChecked));
-            body.addView(buttonView);
-        }
-
-        Bundle args = getArguments();
-        @StringRes
-        int titleId = 0;
-        if (args != null) {
-            titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE);
-        }
+        View root = createCheckBoxes();
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(root)
-                .setTitle(titleId != 0 ? titleId : R.string.edit)
+                .setTitle(mDialogTitleId)
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> sendResults())
                 .create();
     }
 
+    private View createCheckBoxes() {
+        // Reminder: *always* use the activity inflater here.
+        //noinspection ConstantConditions
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        @SuppressLint("InflateParams")
+        final View root = inflater.inflate(R.layout.dialog_edit_checklist, null);
+        final ViewGroup body = root.findViewById(R.id.item_list);
+
+        // Takes the list of items and create a list of checkboxes in the display.
+        for (Entity item : mAllItems) {
+            CompoundButton itemView = new CheckBox(getContext());
+
+            //noinspection ConstantConditions
+            itemView.setText(item.getLabel(getContext()));
+            itemView.setChecked(mSelectedItems.contains(item));
+
+            itemView.setOnCheckedChangeListener((v, isChecked) -> {
+                if (isChecked) {
+                    mSelectedItems.add(item);
+                } else {
+                    mSelectedItems.remove(item);
+                }
+            });
+            body.addView(itemView);
+        }
+        return root;
+    }
+
+    /** this was a try... but it's not very pleasing on the eye. */
+    private View createChips() {
+
+        //noinspection ConstantConditions
+        ViewGroup root = new com.google.android.material.chip.ChipGroup(getContext());
+        for (Entity item : mAllItems) {
+            Chip chip = new Chip(getContext(), null, R.style.Widget_MaterialComponents_Chip_Filter);
+            // RTL-friendly Chip Layout
+            chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+
+            chip.setTag(item);
+            chip.setText(item.getLabel(getContext()));
+            // reminder: the Filter style has checkable=true, but unless we explicitly set it
+            // here in code, it won't take effect.
+            chip.setCheckable(true);
+            chip.setChecked(mSelectedItems.contains(item));
+            chip.setOnClickListener(filterChipListener);
+            root.addView(chip);
+        }
+
+        return root;
+    }
+
     private void sendResults() {
         if (mListener.get() != null) {
-            // Transfer the selected items to a new list
-            final ArrayList<Entity> result = new ArrayList<>();
-            for (SelectableEntity entry : mList) {
-                if (entry.isSelected()) {
-                    result.add(entry.getEntity());
-                }
-            }
-            mListener.get().onCheckListEditorSave(mFieldId, result);
+            mListener.get().onCheckListEditorSave(mFieldId, mSelectedItems);
 
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
@@ -174,7 +221,7 @@ public class CheckListDialogFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(BKEY_LIST, mList);
+        outState.putParcelableArrayList(BKEY_SELECTED, mAllItems);
     }
 
     /**

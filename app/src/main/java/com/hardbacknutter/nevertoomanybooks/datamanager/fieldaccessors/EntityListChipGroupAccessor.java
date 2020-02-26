@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 
@@ -49,9 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * <li>Multiple fields: <strong>no</strong></li>
  * <li>Extract: <strong>local variable</strong></li>
  * </ul>
- * <p>
- * The Entity values are set as the tags on the Chip objects.
- * The Chip objects get no ids.
  */
 public class EntityListChipGroupAccessor
         extends BaseDataAccessor<ArrayList<Entity>> {
@@ -59,10 +57,27 @@ public class EntityListChipGroupAccessor
     @NonNull
     private final List<Entity> mAll;
 
+    private final View.OnClickListener filterChipListener;
+
     public EntityListChipGroupAccessor(@NonNull final List<Entity> allValues,
                                        final boolean isEditable) {
         mAll = allValues;
         mIsEditable = isEditable;
+
+        if (mIsEditable) {
+            filterChipListener = v -> {
+                Entity current = (Entity) v.getTag();
+                if (((Checkable) v).isChecked()) {
+                    //noinspection ConstantConditions
+                    mRawValue.add(current);
+                } else {
+                    //noinspection ConstantConditions
+                    mRawValue.remove(current);
+                }
+            };
+        } else {
+            filterChipListener = null;
+        }
     }
 
     @Override
@@ -91,25 +106,7 @@ public class EntityListChipGroupAccessor
             boolean isSet = mRawValue.contains(entity);
             // if editable, all values; if not editable only the set values.
             if (isSet || mIsEditable) {
-                Chip chip = new Chip(context, null,
-                                     R.style.Widget_MaterialComponents_Chip_Choice);
-                chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-                chip.setTag(entity);
-                chip.setText(entity.getLabel(context));
-                chip.setSelected(isSet);
-                chip.setClickable(mIsEditable);
-                if (mIsEditable) {
-                    chip.setOnClickListener(v -> {
-                        Entity current = (Entity) v.getTag();
-                        if (v.isSelected()) {
-                            mRawValue.remove(current);
-                        } else {
-                            mRawValue.add(current);
-                        }
-                        v.setSelected(!v.isSelected());
-                    });
-                }
-                chipGroup.addView(chip);
+                chipGroup.addView(createChip(context, entity, entity.getLabel(context), isSet));
             }
         }
     }
@@ -117,6 +114,32 @@ public class EntityListChipGroupAccessor
     @Override
     public void setValue(@NonNull final DataManager source) {
         setValue(new ArrayList<>(source.getParcelableArrayList(mField.getKey())));
+    }
+
+    private Chip createChip(@NonNull final Context context,
+                            @NonNull final Object tag,
+                            @NonNull final CharSequence label,
+                            final boolean initialState) {
+        Chip chip;
+        if (mIsEditable) {
+            chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Filter);
+        } else {
+            chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Entry);
+        }
+        // RTL-friendly Chip Layout
+        chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+
+        chip.setTag(tag);
+        chip.setText(label);
+
+        if (mIsEditable) {
+            // reminder: the Filter style has checkable=true, but unless we explicitly set it
+            // here in code, it won't take effect.
+            chip.setCheckable(true);
+            chip.setChecked(initialState);
+            chip.setOnClickListener(filterChipListener);
+        }
+        return chip;
     }
 
     @Override

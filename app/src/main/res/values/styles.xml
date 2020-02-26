@@ -112,6 +112,12 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <!-- Description and personal notes. -->
+    <style name="Text.Notes">
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:background">@drawable/outline</item>
+    </style>
+
     <!-- 'minor' detail text field; for example format, isbn,... -->
     <style name="Text.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
@@ -171,12 +177,23 @@
     <!-- EditText fields -->
     <!-- *************************************************************************************** -->
 
+    <!-- slight misnomer as this is not an Envelope, but this way the naming
+         is in line with "Envelope.EditText";
+          i.e. a (secondary) Button next to an EditText. -->
+    <style name="Envelope.Button"
+        parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">@dimen/icon_button_width</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="iconTint">?attr/editTextColor</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconPadding">0dp</item>
+    </style>
+
     <style name="Envelope.EditText"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent1</item>
+        <item name="android:layout_margin">@dimen/border0</item>
     </style>
 
     <style name="Envelope.EditText.SeriesNum">
@@ -187,8 +204,7 @@
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/indent1</item>
-        <item name="android:layout_marginEnd">@dimen/indent1</item>
+        <item name="android:layout_margin">@dimen/border0</item>
     </style>
 
     <!-- Base style for all EditText and AutoComplete; not to be used directly in layouts. -->
@@ -615,7 +631,7 @@
 
     <!-- A button as wide as the screen. -->
     <style name="MenuButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_width">320dp</item>
+        <item name="android:layout_width">@dimen/largeMenuButton</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border2</item>
     </style>

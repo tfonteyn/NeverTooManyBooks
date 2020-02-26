@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
 
@@ -41,16 +42,40 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
+/**
+ * FieldFormatter for a bitmask field.
+ * <ul>
+ * <li>Multiple fields: <strong>no</strong></li>
+ * <li>Extract: <strong>local variable</strong></li>
+ * </ul>
+ */
 public class BitmaskChipGroupAccessor
         extends BaseDataAccessor<Integer> {
 
     @NonNull
     private final Map<Integer, String> mAll;
 
+    private final View.OnClickListener filterChipListener;
+
     public BitmaskChipGroupAccessor(@NonNull final Map<Integer, String> allValues,
                                     final boolean isEditable) {
         mAll = allValues;
         mIsEditable = isEditable;
+
+        if (mIsEditable) {
+            filterChipListener = v -> {
+                Integer current = (Integer) v.getTag();
+                if (((Checkable) v).isChecked()) {
+                    // add
+                    mRawValue |= current;
+                } else {
+                    // remove
+                    mRawValue &= ~current;
+                }
+            };
+        } else {
+            filterChipListener = null;
+        }
     }
 
     @Override
@@ -79,27 +104,7 @@ public class BitmaskChipGroupAccessor
             boolean isSet = (entry.getKey() & mRawValue) != 0;
             // if editable, all values; if not editable only the set values.
             if (isSet || mIsEditable) {
-                Chip chip = new Chip(context, null,
-                                     R.style.Widget_MaterialComponents_Chip_Choice);
-                chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-                chip.setId(entry.getKey());
-                chip.setText(entry.getValue());
-                chip.setSelected(isSet);
-                chip.setClickable(mIsEditable);
-                if (mIsEditable) {
-                    chip.setOnClickListener(v -> {
-                        int current = v.getId();
-                        if (v.isSelected()) {
-                            // remove
-                            mRawValue &= ~current;
-                        } else {
-                            // add
-                            mRawValue |= current;
-                        }
-                        v.setSelected(!v.isSelected());
-                    });
-                }
-                chipGroup.addView(chip);
+                chipGroup.addView(createChip(context, entry.getKey(), entry.getValue(), isSet));
             }
         }
     }
@@ -107,6 +112,32 @@ public class BitmaskChipGroupAccessor
     @Override
     public void setValue(@NonNull final DataManager source) {
         setValue(source.getInt(mField.getKey()));
+    }
+
+    private Chip createChip(@NonNull final Context context,
+                            @NonNull final Object tag,
+                            @NonNull final CharSequence label,
+                            final boolean initialState) {
+        Chip chip;
+        if (mIsEditable) {
+            chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Filter);
+        } else {
+            chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Entry);
+        }
+        // RTL-friendly Chip Layout
+        chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+
+        chip.setTag(tag);
+        chip.setText(label);
+
+        if (mIsEditable) {
+            // reminder: the Filter style has checkable=true, but unless we explicitly set it
+            // here in code, it won't take effect.
+            chip.setCheckable(true);
+            chip.setChecked(initialState);
+            chip.setOnClickListener(filterChipListener);
+        }
+        return chip;
     }
 
     @Override

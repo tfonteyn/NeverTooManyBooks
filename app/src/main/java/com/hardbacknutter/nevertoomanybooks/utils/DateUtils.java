@@ -162,7 +162,7 @@ public final class DateUtils {
      * @param formats list of formats to add
      * @param locales to use
      */
-    private static void create(Collection<SimpleDateFormat> group,
+    private static void create(@NonNull final Collection<SimpleDateFormat> group,
                                @NonNull final String[][] formats,
                                @NonNull final Locale... locales) {
         // allow re-creating.
@@ -273,7 +273,7 @@ public final class DateUtils {
      * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
-    private static Date parseDate(@NonNull Iterable<SimpleDateFormat> formats,
+    private static Date parseDate(@NonNull final Iterable<SimpleDateFormat> formats,
                                   @Nullable final String dateString) {
         if (dateString == null || dateString.isEmpty()) {
             return null;
@@ -307,7 +307,7 @@ public final class DateUtils {
      * @return Resulting date if successfully parsed, otherwise {@code null}
      */
     @Nullable
-    private static Date parseDate(@NonNull Iterable<SimpleDateFormat> formats,
+    private static Date parseDate(@NonNull final Iterable<SimpleDateFormat> formats,
                                   @NonNull final String dateString,
                                   final boolean lenient) {
         for (DateFormat df : formats) {
@@ -423,6 +423,8 @@ public final class DateUtils {
     }
 
     /**
+     * Get the name of the month for the given month number.
+     *
      * @param locale    to use
      * @param month     1-12 based month number
      * @param shortName {@code true} to get the abbreviated name instead of the full name.
