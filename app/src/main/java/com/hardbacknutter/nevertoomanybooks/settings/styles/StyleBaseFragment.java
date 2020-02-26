@@ -55,12 +55,14 @@ public abstract class StyleBaseFragment
         extends BasePreferenceFragment {
 
     /** Explicitly named to avoid any TAG override confusion. */
-    static final String BKEY_TEMPLATE_ID = "StyleBaseFragment:templateId";
+    public static final String BKEY_TEMPLATE_ID = "StyleBaseFragment:templateId";
     /** Log tag. */
     private static final String TAG = "StyleBaseFragment";
 
     /** Style we are editing. */
     BooklistStyle mStyle;
+
+    private long mTemplateId;
 
     @XmlRes
     protected abstract int getLayoutId();
@@ -73,15 +75,16 @@ public abstract class StyleBaseFragment
         Bundle args = getArguments();
         if (args != null) {
             mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+            mTemplateId = args.getLong(BKEY_TEMPLATE_ID);
         }
 
-        if (mStyle == null) {
+        if (mStyle != null) {
+            // a user-style, set the correct UUID SharedPreferences to use
+            getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
+        } else {
             // we're doing the global preferences, create a dummy style with an empty uuid
             // and let it use the standard SharedPreferences
             mStyle = new BooklistStyle();
-        } else {
-            // a user-style, set the correct UUID SharedPreferences to use
-            getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {
@@ -91,6 +94,69 @@ public abstract class StyleBaseFragment
         setPreferencesFromResource(getLayoutId(), rootKey);
     }
 
+    // experimental, not tested at all!
+//    @Override
+//    @CallSuper
+//    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+//                                    @Nullable final String rootKey) {
+//        long incomingId = 0;
+//
+//        Bundle args = getArguments();
+//        // get all possible sources for the style
+//        if (args != null) {
+//            mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+//            incomingId = args.getLong(UniqueId.BKEY_STYLE_ID);
+//            mTemplateId = args.getLong(BKEY_TEMPLATE_ID);
+//        }
+//
+//        // did we get a parcelled style ?
+//        if (mStyle != null) {
+//            // set the correct UUID SharedPreferences to use
+//            getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
+//            setPreferencesFromResource(getLayoutId(), rootKey);
+//            return;
+//        }
+//
+//        // did we get an existing style id ?
+//        if (incomingId != 0) {
+//            // load it.
+//            try (DAO db = new DAO(TAG)) {
+//                mStyle = BooklistStyle.getStyle(db, incomingId);
+//            }
+//            // if we managed to load it,
+//            if (mStyle != null) {
+//                // set the correct UUID SharedPreferences to use
+//                getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
+//                setPreferencesFromResource(getLayoutId(), rootKey);
+//                return;
+//            }
+//        }
+//
+//        // do we have a template id to clone a new style from ?
+//        if (mTemplateId != 0) {
+//            BooklistStyle templateStyle;
+//            // load it.
+//            try (DAO db = new DAO(TAG)) {
+//                templateStyle = BooklistStyle.getStyle(db, mTemplateId);
+//            }
+//            // if we managed to load it, clone it first
+//            if (templateStyle != null) {
+//                //noinspection ConstantConditions
+//                mStyle = templateStyle.clone(getContext());
+//                // set the correct UUID SharedPreferences to use
+//                getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
+//                setPreferencesFromResource(getLayoutId(), rootKey);
+//                return;
+//            }
+//        }
+//
+//        // If we get here, we're doing the global preferences,
+//        // create a dummy style with an empty uuid
+//        // and let it use the standard SharedPreferences
+//        mStyle = new BooklistStyle();
+//        setPreferencesFromResource(getLayoutId(), rootKey);
+//    }
+
     @Override
     @CallSuper
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
@@ -98,15 +164,17 @@ public abstract class StyleBaseFragment
 
         // always pass the non-global style back; whether existing or new.
         // so even if the user makes no changes, we still send it back!
+        // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
         if (!mStyle.isGlobal()) {
             mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
         }
 
-        // always pass the template id back; not currently used here.
-        Bundle args = getArguments();
-        if (args != null) {
-            mResultDataModel.putResultData(BKEY_TEMPLATE_ID, args.getLong(BKEY_TEMPLATE_ID));
+        // always pass the template id back if we had one.
+        if (mTemplateId != 0) {
+            mResultDataModel.putResultData(BKEY_TEMPLATE_ID, mTemplateId);
         }
+        // and the actual/current id.
+        //mResultDataModel.putResultData(UniqueId.BKEY_STYLE_ID, mStyle.getId());
 
         //noinspection ConstantConditions
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -131,5 +199,4 @@ public abstract class StyleBaseFragment
         mResultDataModel.putResultData(UniqueId.BKEY_STYLE_MODIFIED, true);
         mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
     }
-
 }

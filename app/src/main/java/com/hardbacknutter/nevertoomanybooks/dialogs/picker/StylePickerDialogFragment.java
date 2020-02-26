@@ -62,7 +62,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBaseFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StylePreferenceFragment;
 
 public class StylePickerDialogFragment
         extends DialogFragment {
@@ -123,12 +125,12 @@ public class StylePickerDialogFragment
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View root = layoutInflater.inflate(R.layout.dialog_styles_menu, null);
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View root = inflater.inflate(R.layout.dialog_styles_menu, null);
 
-        RecyclerView listView = root.findViewById(R.id.styles);
+        final RecyclerView listView = root.findViewById(R.id.styles);
         listView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         listView.setLayoutManager(linearLayoutManager);
         //noinspection ConstantConditions
         mAdapter = new RadioGroupRecyclerAdapter<>(getContext(), mBooklistStyles,
@@ -138,17 +140,29 @@ public class StylePickerDialogFragment
         return new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.title_select_style)
                 .setView(root)
-                .setNeutralButton(R.string.btn_customize, (dialog, which) -> {
-                    // use the activity so we get the results there.
-                    Activity activity = getActivity();
-                    Intent intent = new Intent(activity, PreferredStylesActivity.class)
-                            .putExtra(UniqueId.BKEY_STYLE_ID,
-                                      mCurrentStyle.getId());
-                    activity.startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
-                })
+                .setNeutralButton(R.string.btn_customize, (dialog, which) -> customizeStyle())
                 // see onResume for setting the listener.
                 .setPositiveButton(posBtnTxtId(), null)
                 .create();
+    }
+
+    private void customizeStyle() {
+        // use the activity so we get the results there.
+        Activity activity = getActivity();
+        Intent intent = new Intent(activity, SettingsActivity.class)
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StylePreferenceFragment.TAG);
+
+        if (mCurrentStyle.isUserDefined()) {
+            intent.putExtra(UniqueId.BKEY_STYLE, mCurrentStyle);
+        } else {
+            // clone builtin style first
+            //noinspection ConstantConditions
+            intent.putExtra(UniqueId.BKEY_STYLE, mCurrentStyle.clone(getContext()));
+        }
+
+        intent.putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, mCurrentStyle.getId());
+        //noinspection ConstantConditions
+        activity.startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
     }
 
     @StringRes
