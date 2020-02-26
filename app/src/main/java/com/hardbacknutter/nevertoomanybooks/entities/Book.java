@@ -309,8 +309,8 @@ public class Book
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    public boolean setRead(@NonNull final DAO db,
-                           final boolean isRead) {
+    private boolean setRead(@NonNull final DAO db,
+                            final boolean isRead) {
         boolean old = getBoolean(DBDefinitions.KEY_READ);
 
         if (db.setBookRead(getId(), isRead)) {
@@ -740,14 +740,15 @@ public class Book
                     case ColumnInfo.TYPE_INTEGER: {
                         Object o = get(key);
                         try {
+                            // null and empty strings become zero
                             long v = getLong(key);
 
                             if (isNew && (o == null || v < 1)) {
-                                // remove zero values, null and empty strings
+                                // for new books, remove zero values altogether
                                 remove(key);
 
                             } else if (o != null && v < 1) {
-                                // replace zero values and empty string with a null
+                                // existing books, replace zero values with a null
                                 putNull(key);
                             }
 
@@ -763,12 +764,15 @@ public class Book
                     }
                     case ColumnInfo.TYPE_TEXT: {
                         Object o = get(key);
-                        if (isNew && (o == null || o.toString().isEmpty())) {
-                            // remove null and empty strings
+                        if (isNew && (o == null
+                                      || o.toString().isEmpty()
+                                      || "0".equals(o.toString()))) {
+                            // for new books, remove null, "0" and empty strings altogether
                             remove(key);
 
-                        } else if (o != null && o.toString().isEmpty()) {
-                            // replace empty strings with a null
+                        } else if (o != null
+                                   && (o.toString().isEmpty() || "0".equals(o.toString()))) {
+                            // existing books, replace "0" and empty strings with a null
                             putNull(key);
                         }
 
