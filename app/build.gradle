@@ -28,10 +28,50 @@ apply plugin: 'com.android.application'
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-//if (project.hasProperty("NeverTooManyBooks.signing")
-//        && new File(project.property("NeverTooManyBooks.signing")).exists()) {
-//    apply from: project.property("NeverTooManyBooks.signing")
-//}
+/*
+    $HOME/.gradle/gradle.properties:
+    NeverTooManyBooks.signing=$HOME/blah/blah/NeverTooManyBooks.signing
+
+    $HOME/blah/blah/NeverTooManyBooks.signing:
+    android {
+        signingConfigs {
+            debug {
+                storeFile file('/path/to/keystore.jks')
+                storePassword 'myPassword'
+                keyAlias = 'myDebugKey'
+                keyPassword 'myPassword'
+            }
+            beta {
+                storeFile file('/path/to/keystore.jks')
+                storePassword 'myPassword'
+                keyAlias = 'myBetaKey'
+                keyPassword 'myPassword'
+            }
+            release {
+                storeFile file('/path/to/keystore.jks')
+                storePassword 'myPassword'
+                keyAlias = 'myReleaseKey'
+                keyPassword 'myPassword'
+            }
+        }
+
+        buildTypes {
+            debug {
+                signingConfig signingConfigs.debug
+            }
+            beta {
+                signingConfig signingConfigs.beta
+            }
+            release {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+ */
+if (project.hasProperty("NeverTooManyBooks.signing")
+        && new File(project.property("NeverTooManyBooks.signing")).exists()) {
+    apply from: project.property("NeverTooManyBooks.signing")
+}
 
 android {
     compileSdkVersion 29
@@ -40,11 +80,11 @@ android {
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
     // 2019-12-31 world wide:
     // 10.0
-    // 9.0		41.90
-    // 8.1		55.43
-    // 8.0		63.9
-    // 7.0		71.27
-    // 6.0		82.45
+    // 9.0      41.90
+    // 8.1      55.43
+    // 8.0      63.9
+    // 7.0      71.27
+    // 6.0      82.45
 
     //  May 7, 2019.: https://developer.android.com/about/dashboards/
     //  A       API     %
@@ -92,9 +132,9 @@ android {
     }
 
     // Studio 3.6:
-//    viewBinding {
-//        enabled = true
-//    }
+    viewBinding {
+        enabled = true
+    }
     testOptions {
         unitTests.includeAndroidResources = true
         // Can be enabled to make Log.x work. OR, use Logger.x
@@ -138,7 +178,10 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
-    implementation 'com.google.android.material:material:1.2.0-alpha05'
+    // anything above alpha02 fails to render in Studio
+    //RELEASE: TEST: set to latest
+    implementation 'com.google.android.material:material:1.2.0-alpha02'
+
     // barcode decoder using https://developers.google.com/android/guides/setup
     implementation 'com.google.android.gms:play-services-vision:19.0.0'
 
@@ -166,7 +209,7 @@ dependencies {
     // supporting API 24+
     //implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
 
-    testImplementation 'org.mockito:mockito-core:3.2.4'
+    testImplementation 'org.mockito:mockito-core:3.3.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
     testImplementation 'org.json:json:20190722'
 }
