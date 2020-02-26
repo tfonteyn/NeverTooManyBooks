@@ -362,8 +362,9 @@ public class DAO
     public static String encodeOrderByColumn(@NonNull final CharSequence value,
                                              @NonNull final Locale locale) {
 
+        String s = toAscii(value);
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
-        return ENCODE_ORDERBY_PATTERN.matcher(value).replaceAll("").toLowerCase(locale);
+        return ENCODE_ORDERBY_PATTERN.matcher(s).replaceAll("").toLowerCase(locale);
     }
 
     /**
@@ -2573,16 +2574,15 @@ public class DAO
     }
 
     /**
-     * Return a {@link Cursor} for the given query string.
+     * Normalize a given string to contain only ASCII characters so we can easily text searches.
      *
-     * @param query string
+     * @param text to normalize
      *
-     * @return {@link Cursor} containing all records, if any
+     * @return ascii text
      */
-    @NonNull
-    Cursor fetchSearchSuggestions(@NonNull final String query) {
-        String q = '%' + query + '%';
-        return sSyncedDb.rawQuery(SqlSelect.SEARCH_SUGGESTIONS, new String[]{q, q, q, q});
+    private static String toAscii(@NonNull final CharSequence text) {
+        return ASCII_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
+                          .replaceAll("");
     }
 
     /**
@@ -3550,15 +3550,16 @@ public class DAO
     }
 
     /**
-     * Normalize a given string to contain only ASCII characters so we can easily text searches.
+     * Return a {@link Cursor}, suited for a local-search, for the given query string.
      *
-     * @param text to normalize
+     * @param query string
      *
-     * @return ascii text
+     * @return {@link Cursor} containing all records, if any
      */
-    private String toAscii(@NonNull final CharSequence text) {
-        return ASCII_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
-                          .replaceAll("");
+    @NonNull
+    Cursor fetchSearchSuggestions(@NonNull final CharSequence query) {
+        String q = '%' + toAscii(query) + '%';
+        return sSyncedDb.rawQuery(SqlSelect.SEARCH_SUGGESTIONS, new String[]{q, q, q, q, q, q, q});
     }
 
     /**
@@ -4560,7 +4561,7 @@ public class DAO
          */
         static final String BOOK_ID_BY_VALID_ISBN =
                 "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_ISBN + ") IN (?,?)";
+                + " WHERE " + KEY_ISBN + " IN (?,?)";
 
         /**
          * Find the Book id based on a search for the ISBN; the isbn need not be valid
@@ -4740,6 +4741,11 @@ public class DAO
         static final String GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID =
                 SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND + " WHERE " + KEY_PK_ID + "=?";
 
+        /**
+         * Local search using the system search (as opposed to FTS)
+         * <p>
+         * 7 parameters.
+         */
         static final String SEARCH_SUGGESTIONS =
                 "SELECT * FROM ("
                 // Book Title
@@ -4748,6 +4754,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(KEY_TITLE, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
                 + " FROM " + TBL_BOOKS.ref()
                 + " WHERE " + TBL_BOOKS.dot(KEY_TITLE) + " LIKE ?"
+                + " OR " + TBL_BOOKS.dot(KEY_TITLE_OB) + " LIKE ?"
 
                 + " UNION "
 
@@ -4758,8 +4765,8 @@ public class DAO
                 + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_FAMILY_NAME,
                                           SearchManager.SUGGEST_COLUMN_INTENT_DATA)
                 + " FROM " + TBL_AUTHORS.ref()
-                + " WHERE " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME)
-                + " LIKE ?"
+                + " WHERE " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME) + " LIKE ?"
+                + " OR " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB) + " LIKE ?"
 
                 + " UNION "
 
@@ -4770,20 +4777,17 @@ public class DAO
                 + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_GIVEN_NAMES,
                                           SearchManager.SUGGEST_COLUMN_INTENT_DATA)
                 + " FROM " + TBL_AUTHORS.ref()
-                + " WHERE " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES)
-                + " LIKE ?"
+                + " WHERE " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES) + " LIKE ?"
+                + " OR " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + " LIKE ?"
 
                 + " UNION "
 
                 // Book ISBN
                 + " SELECT \"BK\" || " + TBL_BOOKS.dotAs(KEY_PK_ID)
-                + ',' + TBL_BOOKS.dotAs(KEY_ISBN,
-                                        SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_BOOKS.dotAs(KEY_ISBN,
-                                        SearchManager.SUGGEST_COLUMN_INTENT_DATA)
+                + ',' + TBL_BOOKS.dotAs(KEY_ISBN, SearchManager.SUGGEST_COLUMN_TEXT_1)
+                + ',' + TBL_BOOKS.dotAs(KEY_ISBN, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
                 + " FROM " + TBL_BOOKS.ref()
-                + " WHERE " + TBL_BOOKS.dot(KEY_ISBN)
-                + " LIKE ?"
+                + " WHERE " + TBL_BOOKS.dot(KEY_ISBN) + " LIKE ?"
 
                 + " ) AS zzz "
                 + " ORDER BY " + SearchManager.SUGGEST_COLUMN_TEXT_1 + COLLATION;
