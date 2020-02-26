@@ -57,9 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
  * Original code from <a href="https://github.com/zhanghai/AndroidFastScroll">
- * https://github.com/zhanghai/AndroidFastScroll</a>
+ * https://github.com/zhanghai/AndroidFastScroll</a>.
  */
-class PopupStyles {
+final class PopupStyles {
 
     static final Consumer<TextView> DEFAULT = popupView -> {
         final Resources resources = popupView.getResources();
@@ -75,9 +75,7 @@ class PopupStyles {
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
-        //noinspection ConstantConditions
-        popupView.setBackground(new AutoMirrorDrawable(
-                context.getDrawable(R.drawable.fastscroll_overlay_default)));
+        popupView.setBackground(context.getDrawable(R.drawable.fastscroll_overlay_default));
         popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         popupView.setGravity(Gravity.CENTER);
         popupView.setIncludeFontPadding(false);
@@ -129,9 +127,7 @@ class PopupStyles {
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
-        //noinspection ConstantConditions
-        popupView.setBackground(new AutoMirrorDrawable(
-                context.getDrawable(R.drawable.fastscroll_overlay_classic)));
+        popupView.setBackground(context.getDrawable(R.drawable.fastscroll_overlay_classic));
 
         popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         popupView.setGravity(Gravity.START);

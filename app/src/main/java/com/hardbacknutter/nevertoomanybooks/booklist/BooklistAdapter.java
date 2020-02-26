@@ -213,7 +213,6 @@ public class BooklistAdapter
         @LayoutRes
         final int layoutId;
 
-        // A Book occurs always at the lowest level regardless of the groups in the style.
         if (rowGroupId == BooklistGroup.BOOK) {
             @ImageUtils.Scale
             final int scale = mStyle.getThumbnailScale();
@@ -262,7 +261,7 @@ public class BooklistAdapter
         final View view = mInflater.inflate(layoutId, parent, false);
         view.setPaddingRelative(indent * mLevelIndent, 0, 0, 0);
 
-        // Scale text if required
+        // Scale text/padding if required
         if (mStyle.getTextScale() != BooklistStyle.FONT_SCALE_MEDIUM) {
             scaleTextViews(view, mStyle.getTextSpUnits(), mStyle.getTextPaddingFactor());
         }
@@ -298,6 +297,13 @@ public class BooklistAdapter
         holder.onBindViewHolder(mRowData, mStyle);
     }
 
+    /**
+     * Returns a {@link BooklistGroup.Id} as the view type.
+     *
+     * @param position position to query
+     *
+     * @return integer value identifying the type of the view
+     */
     @Override
     @BooklistGroup.Id
     public int getItemViewType(final int position) {
@@ -324,6 +330,19 @@ public class BooklistAdapter
     }
 
     /**
+     * Get the level for the given position.
+     *
+     * @return the level, or {@code 0} if unknown
+     */
+    int getLevel(final int position) {
+        if (mCursor.moveToPosition(position)) {
+            return mRowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+        } else {
+            return 0;
+        }
+    }
+
+    /**
      * Scale text in a View (and children) as per user preferences.
      * <p>
      * Note that ImageView experiments from the original code never worked.
@@ -334,7 +353,7 @@ public class BooklistAdapter
      * <br>So this method only deals with TextView instances.
      *
      * @param root              the view (and its children) we'll scale
-     * @param textSizeInSpUnits the text size in SP units (e.g. 14,18,22)
+     * @param textSizeInSpUnits the text size in SP units (e.g. 14,18,32)
      * @param scaleFactor       to apply to the element padding
      */
     private void scaleTextViews(@NonNull final View root,
@@ -360,56 +379,27 @@ public class BooklistAdapter
     }
 
     /**
-     * Get the text to display for the row at the <strong>passed</strong> cursor position.
-     * i.e. NOT for the current position.
+     * Get the full set of 'level' texts for the given position.
      * <p>
      * <br>{@inheritDoc}
      */
     @Nullable
     @Override
-    public String[] getPopupText(@NonNull final Context context,
-                                 final int position) {
-        // make sure it's still in range.
-        final int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
-
-        final String[] section;
-        // temporary move the cursor to the requested position, restore after we got the text.
-        synchronized (this) {
-            final int savedPos = mCursor.getPosition();
-            if (mCursor.moveToPosition(clampedPosition)) {
-                section = getLevelText(context);
-                mCursor.moveToPosition(savedPos);
-            } else {
-                section = null;
-            }
-        }
-
-        return section;
+    public String[] getPopupText(final int position) {
+        return new String[]{getLevelText(position, 1),
+                            getLevelText(position, 2)};
     }
 
     /**
-     * Get the full set of 'level' texts for the <strong>current</strong> row.
+     * Get the text associated with the matching level group for the given position.
      *
-     * @param context Current context
-     *
-     * @return level-text array
-     */
-    @NonNull
-    public String[] getLevelText(@NonNull final Context context) {
-        return new String[]{getLevelText(context, 1),
-                            getLevelText(context, 2)};
-    }
-
-    /**
-     * Get the text associated with the matching level group for the <strong>current</strong> row.
-     *
-     * @param context Current context
-     * @param level   to get
+     * @param position to use
+     * @param level    to get
      *
      * @return the text for that level, or {@code null} if none present.
      */
     @Nullable
-    public String getLevelText(@NonNull final Context context,
+    public String getLevelText(final int position,
                                @IntRange(from = 1) final int level) {
 
         // sanity check.
@@ -418,6 +408,12 @@ public class BooklistAdapter
                 throw new IllegalArgumentException(
                         "level=" + level + "> (getGroupCount+1)=" + mStyle.getGroupCount() + 1);
             }
+        }
+
+        // make sure it's still in range.
+        final int clampedPosition = MathUtils.clamp(position, 0, getItemCount() - 1);
+        if (!mCursor.moveToPosition(clampedPosition)) {
+            return null;
         }
 
         try {
@@ -429,7 +425,7 @@ public class BooklistAdapter
                 // it's a group.
                 final BooklistGroup group = mStyle.getGroupForLevel(level);
                 final String value = mRowData.getString(group.getDisplayDomain().getName());
-                return group.format(context, value);
+                return group.format(mInflater.getContext(), value);
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             // Seen a number of times. No longer reproducible, but paranoia...
@@ -1103,12 +1099,14 @@ public class BooklistAdapter
             final Drawable lock;
             if (rowData.getBoolean(mCheckableColumnKey)) {
                 lock = mTextView.getContext().getDrawable(R.drawable.ic_lock);
+                //noinspection ConstantConditions
+                lock.setBounds(0, 0, lock.getIntrinsicWidth(), lock.getIntrinsicHeight());
             } else {
                 lock = null;
             }
 
-            mTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    null, null, lock, null);
+            final Drawable[] drawables = mTextView.getCompoundDrawablesRelative();
+            mTextView.setCompoundDrawablesRelative(drawables[0], drawables[1], lock, drawables[3]);
         }
     }
 

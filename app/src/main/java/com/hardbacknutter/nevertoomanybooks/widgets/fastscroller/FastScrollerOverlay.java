@@ -114,16 +114,20 @@ public class FastScrollerOverlay
         }
 
         final String[] popupLines = ((FastScroller.PopupTextProvider) adapter)
-                .getPopupText(mView.getContext(), position);
+                .getPopupText(position);
 
+        // Do we have at least one line of text ?
         final boolean hasPopup = popupLines != null
                                  && popupLines.length > 0
                                  && popupLines[0] != null;
+
         mPopupView.setVisibility(hasPopup ? View.VISIBLE : View.INVISIBLE);
         if (hasPopup) {
-            String popupText = popupLines[0];
+            StringBuilder popupText = new StringBuilder(popupLines[0]);
             if (popupLines.length > 1) {
-                popupText += '\n' + popupLines[1];
+                for (int line = 1; line < popupLines.length; line++) {
+                    popupText.append('\n').append(popupLines[line]);
+                }
             }
 
             final int layoutDirection = mView.getLayoutDirection();
@@ -140,8 +144,8 @@ public class FastScrollerOverlay
                     mPopupView.getLayoutParams();
 
             // Only need to (re)measure if the text is different.
-            if (!Objects.equals(mPopupView.getText(), popupText)) {
-                mPopupView.setText(popupText);
+            if (!Objects.equals(mPopupView.getText(), popupText.toString())) {
+                mPopupView.setText(popupText.toString());
 
                 final int widthMeasureSpec = ViewGroup.getChildMeasureSpec(
                         View.MeasureSpec.makeMeasureSpec(viewWidth, View.MeasureSpec.EXACTLY),
@@ -175,21 +179,21 @@ public class FastScrollerOverlay
                     break;
 
                 case Gravity.RIGHT:
-                    // RIGHT!
+                    // RIGHT! not end!
                     popupAnchorY = popupHeight;
                     break;
 
                 case Gravity.LEFT:
-                    // LEFT!
+                    // LEFT! not start!
                 default:
                     popupAnchorY = 0;
                     break;
             }
 
             final int popupTop = MathUtils.clamp(thumbCenter - popupAnchorY,
-                                           padding.top + popupLPs.topMargin,
-                                           viewHeight - padding.bottom
-                                           - popupLPs.bottomMargin - popupHeight);
+                                                 padding.top + popupLPs.topMargin,
+                                                 viewHeight - padding.bottom
+                                                 - popupLPs.bottomMargin - popupHeight);
 
             layout(mView, mPopupView, popupWidth, popupHeight, popupLeft, popupTop);
         }

@@ -168,6 +168,7 @@ class CoverHandler {
         mIsbnView = isbnView;
         mCIdx = cIdx;
         mCoverView = coverView;
+        //noinspection ConstantConditions
         final int maxSize = ImageUtils.getMaxImageSize(mContext, scale);
         mMaxHeight = maxSize;
         mMaxWidth = maxSize;
@@ -395,13 +396,11 @@ class CoverHandler {
         }
 
         if (fileLen == 0) {
-            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
-                                      ImageUtils.PLACE_HOLDER_RESIZE_NO,
-                                      mMaxWidth, mMaxHeight);
+            mCoverView.setImageResource(R.drawable.ic_add_a_photo);
+            mCoverView.setBackgroundResource(R.drawable.outline);
         } else {
-            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image,
-                                      ImageUtils.PLACE_HOLDER_RESIZE_NO,
-                                      mMaxWidth, mMaxHeight);
+            mCoverView.setImageResource(R.drawable.ic_broken_image);
+            mCoverView.setBackgroundResource(R.drawable.outline);
         }
         mBook.remove(UniqueId.BKEY_FILE_SPEC[mCIdx]);
     }
@@ -442,9 +441,8 @@ class CoverHandler {
             CoversDAO.delete(context, uuid);
         }
         // replace the old image with a placeholder.
-        ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
-                                  ImageUtils.PLACE_HOLDER_RESIZE_NO,
-                                  mMaxWidth, mMaxHeight);
+        mCoverView.setImageResource(R.drawable.ic_add_a_photo);
+        mCoverView.setBackgroundResource(R.drawable.outline);
     }
 
     private void startCamera() {

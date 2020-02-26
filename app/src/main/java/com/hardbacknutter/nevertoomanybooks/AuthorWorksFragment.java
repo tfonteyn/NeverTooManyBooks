@@ -42,7 +42,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.math.MathUtils;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -107,10 +106,9 @@ public class AuthorWorksFragment
         mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
         mModel.init(requireArguments());
 
-        @SuppressWarnings("ConstantConditions")
-        @NonNull
         final Context context = getContext();
 
+        //noinspection ConstantConditions
         getActivity().setTitle(mModel.getScreenTitle(context));
 
         //noinspection ConstantConditions
@@ -352,10 +350,9 @@ public class AuthorWorksFragment
 
             final TocEntry tocEntry = mModel.getTocEntries().get(position);
 
-            @SuppressWarnings("ConstantConditions")
-            @NonNull
             final Context context = getContext();
 
+            //noinspection ConstantConditions
             holder.titleView.setText(tocEntry.getLabel(context));
 
             // optional
@@ -405,13 +402,9 @@ public class AuthorWorksFragment
 
         @NonNull
         @Override
-        public String[] getPopupText(@NonNull final Context context,
-                                     final int position) {
-            // make sure it's still in range.
-            final int clampedPosition =
-                    MathUtils.clamp(position, 0, mModel.getTocEntries().size() - 1);
-
-            final String title = mModel.getTocEntries().get(clampedPosition).getLabel(context);
+        public String[] getPopupText(final int position) {
+            final String title = mModel.getTocEntries().get(position)
+                                       .getLabel(mInflater.getContext());
             return new String[]{title};
         }
     }

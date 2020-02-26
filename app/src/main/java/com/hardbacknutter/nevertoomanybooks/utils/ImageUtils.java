@@ -120,10 +120,6 @@ public final class ImageUtils {
     /** Thumbnail Scaling. */
     public static final int SCALE_2X_LARGE = 6;
 
-    public static final float PLACE_HOLDER_RESIZE_NO = -1;
-    public static final float PLACE_HOLDER_RESIZE_YES = 0;
-    public static final float PLACE_HOLDER_RESIZE_PORTRAIT = 0.75f;
-
     /** scaling factor for each SCALE_* option. */
     private static final int[] SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12};
     /** Log tag. */
@@ -167,29 +163,25 @@ public final class ImageUtils {
     /**
      * Set a placeholder drawable in the view.
      *
-     * @param imageView   The ImageView to load with the placeholder
-     * @param placeholder drawable to use
-     * @param resize      == 0: the View size will be set to maxHeight x maxWidth
-     *                    > 0: the View size will be set to maxHeight x (maxHeight * resize)
-     *                    < 0: no resizing done
-     * @param maxWidth    Maximum width of the image
-     * @param maxHeight   Maximum height of the image
+     * @param imageView  The ImageView to load with the placeholder
+     * @param drawable   drawable to use
+     * @param background drawable to use for a placeholder background (0 for none)
+     * @param maxHeight  Maximum height of the image
      */
     @UiThread
     public static void setPlaceholder(@NonNull final ImageView imageView,
-                                      @DrawableRes final int placeholder,
-                                      final float resize,
-                                      final int maxWidth,
+                                      @DrawableRes final int drawable,
+                                      @DrawableRes final int background,
                                       final int maxHeight) {
-        //TODO: This needs a rethink....
-        if (resize >= 0) {
-            ViewGroup.LayoutParams lp = imageView.getLayoutParams();
-            lp.height = maxHeight;
-            lp.width = resize == 0 ? maxWidth : (int) (maxHeight * resize);
-            imageView.setLayoutParams(lp);
-        }
+        ViewGroup.LayoutParams lp = imageView.getLayoutParams();
+        lp.height = maxHeight;
+        lp.width = (int) (maxHeight * 0.75f);
+        imageView.setLayoutParams(lp);
 
-        imageView.setImageResource(placeholder);
+        imageView.setImageResource(drawable);
+        if (background != 0) {
+            imageView.setBackgroundResource(background);
+        }
     }
 
     /**
@@ -269,9 +261,7 @@ public final class ImageUtils {
         // Check if the file exists; if it does not, set the placeholder icon and exit.
         File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
         if (file.length() < MIN_IMAGE_FILE_SIZE) {
-            setPlaceholder(imageView, R.drawable.ic_image,
-                           ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
-                           maxWidth, maxHeight);
+            setPlaceholder(imageView, R.drawable.ic_image, 0, maxHeight);
             return false;
         }
 
@@ -347,7 +337,7 @@ public final class ImageUtils {
             // Next line from original method: using this still causes distortion,
             // matrix.setScale(sx, sy);
             // instead work out the ratio so that it fits exactly
-            float ratio = (sx < sy) ? sx : sy;
+            float ratio = Math.min(sx, sy);
             matrix.setScale(ratio, ratio);
         }
         Bitmap scaledBitmap = Bitmap.createBitmap(source, 0, 0, width, height, matrix, true);
@@ -401,7 +391,7 @@ public final class ImageUtils {
         float heightRatio = (float) maxHeight / opt.outHeight;
 
         // Work out SCALE so that it fits exactly
-        float ratio = (widthRatio < heightRatio) ? widthRatio : heightRatio;
+        float ratio = Math.min(widthRatio, heightRatio);
 
         // Note that inSampleSize seems to ALWAYS be forced to a power of 2, no matter what we
         // specify, so we just work with powers of 2.
@@ -793,9 +783,7 @@ public final class ImageUtils {
                     // upscaling, if applicable, was done in the background task.
                     setImageView(imageView, bitmap, mMaxWidth, mMaxHeight, false);
                 } else {
-                    setPlaceholder(imageView, R.drawable.ic_broken_image,
-                                   ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
-                                   mMaxWidth, mMaxHeight);
+                    setPlaceholder(imageView, R.drawable.ic_broken_image, 0, mMaxHeight);
                 }
             }
         }
@@ -862,9 +850,7 @@ public final class ImageUtils {
                     new CoversDAO.ImageCacheWriterTask(mUuid, mCIdx, mMaxWidth, mMaxHeight, bitmap)
                             .execute();
                 } else {
-                    setPlaceholder(imageView, R.drawable.ic_broken_image,
-                                   ImageUtils.PLACE_HOLDER_RESIZE_PORTRAIT,
-                                   mMaxWidth, mMaxHeight);
+                    setPlaceholder(imageView, R.drawable.ic_broken_image, 0, mMaxHeight);
                 }
             }
         }

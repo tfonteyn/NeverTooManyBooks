@@ -43,7 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * Fast scroll drag bar height too short when there are lots of items in the recyclerview
+ * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
  * <a href="https://issuetracker.google.com/issues/64729576">64729576</a>
  * <a href="https://github.com/caarmen/RecyclerViewBug/">HackFastScroller.java</a>
  *
@@ -139,22 +139,20 @@ public class FastScroller {
 
     /**
      * The adapter should implement this interface.
-     * The OverlayProvider can then call the method to get the text to display.
+     * The OverlayProvider will call the method to get the text to display.
      */
     public interface PopupTextProvider {
 
         /**
          * Get the popup text lines for the given position.
          *
-         * @param context  Current context
          * @param position to use
          *
          * @return an array with the lines. The length of the array is variable.
          * <strong>CAN RETURN {@code null}</strong>
          */
         @Nullable
-        String[] getPopupText(@NonNull Context context,
-                              int position);
+        String[] getPopupText(int position);
     }
 
     public interface OverlayProvider {

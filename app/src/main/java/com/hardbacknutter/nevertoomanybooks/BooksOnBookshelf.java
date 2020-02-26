@@ -51,7 +51,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -72,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO.ListRowDetails;
+import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -319,7 +319,8 @@ public class BooksOnBookshelf
             if (onCreateContextMenu(menu, rowData)) {
                 // we have a menu to show, set the title according to the level.
                 final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
-                final String title = mAdapter.getLevelText(BooksOnBookshelf.this, level);
+                final String title = mAdapter.getLevelText(position, level);
+
                 // bring up the context menu
                 new MenuPicker<>(BooksOnBookshelf.this, title, menu, position,
                                  BooksOnBookshelf.this::onContextItemSelected)
@@ -420,7 +421,6 @@ public class BooksOnBookshelf
         setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsHandler.isShowSyncMenus(this));
         // Setup the list view.
         initListView();
-
         // details for the header.
         initHeader();
         // Setup the FAB button and the linked menu.
@@ -442,9 +442,9 @@ public class BooksOnBookshelf
         mListView.setLayoutManager(mLayoutManager);
         mListView.addOnScrollListener(mUpdateHeaderScrollListener);
         mListView.addOnScrollListener(mUpdateFABVisibility);
-        mListView.addItemDecoration(
-                new DividerItemDecoration(this, mLayoutManager.getOrientation()));
-
+        // mListView.addItemDecoration(new DividerItemDecoration(this,
+        //     mLayoutManager.getOrientation()));
+        mListView.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.init(mListView);
     }
 
@@ -734,7 +734,9 @@ public class BooksOnBookshelf
                 break;
             }
             // from BaseActivity Nav Panel or from sort menu dialog
-            case UniqueId.REQ_NAV_PANEL_EDIT_STYLES: {
+            case UniqueId.REQ_NAV_PANEL_EDIT_STYLES:
+                // or directly from the style edit screen
+            case UniqueId.REQ_EDIT_STYLE: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
 
@@ -1600,6 +1602,35 @@ public class BooksOnBookshelf
     }
 
     /**
+     * Prepare visibility for the header lines and set the fixed header fields.
+     *
+     * @return {@code true} if level-texts are used.
+     */
+    private boolean initHeaders() {
+        setHeaderStyleName();
+        setHeaderFilterText();
+        setHeaderBookCount();
+
+        final BooklistStyle style = mModel.getCurrentStyle(this);
+
+        boolean atLeastOne = false;
+
+        // for each level, set the visibility of the views.
+        for (int i = 0; i < mHeaderTextView.length; i++) {
+            if (i < style.getGroupCount() && style.showHeader(BooklistStyle.HEADER_LEVELS[i])) {
+                // the actual text will be filled in as/when the user scrolls
+                mHeaderTextView[i].setText("");
+                mHeaderTextView[i].setVisibility(View.VISIBLE);
+                atLeastOne = true;
+            } else {
+                mHeaderTextView[i].setVisibility(View.GONE);
+            }
+        }
+
+        return atLeastOne;
+    }
+
+    /**
      * Display or hide the style name field in the header.
      */
     private void setHeaderStyleName() {
@@ -1619,11 +1650,9 @@ public class BooksOnBookshelf
             final Collection<String> filterText = new ArrayList<>();
             final Collection<Filter> filters = mModel.getCurrentBookshelf()
                                                      .getStyle(this, mModel.getDb())
-                                                     .getFilters();
+                                                     .getActiveFilters();
             for (Filter f : filters) {
-                if (f.isActive()) {
-                    filterText.add(f.getLabel(this));
-                }
+                filterText.add(f.getLabel(this));
             }
 
             final String ftsSearchText = mModel.getSearchCriteria().getFtsSearchText();
@@ -1665,35 +1694,6 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Prepare visibility for the header lines and set the fixed header fields.
-     *
-     * @return {@code true} if level-texts are used.
-     */
-    private boolean initHeaders() {
-        setHeaderStyleName();
-        setHeaderFilterText();
-        setHeaderBookCount();
-
-        final BooklistStyle style = mModel.getCurrentStyle(this);
-
-        boolean atLeastOne = false;
-
-        // for each level, set the visibility of the views.
-        for (int i = 0; i < mHeaderTextView.length; i++) {
-            if (i < style.getGroupCount() && style.showHeader(BooklistStyle.HEADER_LEVELS[i])) {
-                // the actual text will be filled in as/when the user scrolls
-                mHeaderTextView[i].setText("");
-                mHeaderTextView[i].setVisibility(View.VISIBLE);
-                atLeastOne = true;
-            } else {
-                mHeaderTextView[i].setVisibility(View.GONE);
-            }
-        }
-
-        return atLeastOne;
-    }
-
-    /**
      * Update the list header to match the current top item.
      */
     private void setHeaderLevelText() {
@@ -1706,10 +1706,8 @@ public class BooksOnBookshelf
         // use visibility which was set in {@link #initHeaders}
         if (mHeaderTextView[0].getVisibility() == View.VISIBLE
             || mHeaderTextView[1].getVisibility() == View.VISIBLE) {
-
-            final Cursor cursor = mModel.getListCursor();
-            if (cursor != null && cursor.moveToPosition(position)) {
-                final String[] lines = mAdapter.getLevelText(this);
+            final String[] lines = mAdapter.getPopupText(position);
+            if (lines != null) {
                 for (int i = 0; i < lines.length; i++) {
                     if (mHeaderTextView[i].getVisibility() == View.VISIBLE) {
                         mHeaderTextView[i].setText(lines[i]);
@@ -1718,5 +1716,4 @@ public class BooksOnBookshelf
             }
         }
     }
-
 }
