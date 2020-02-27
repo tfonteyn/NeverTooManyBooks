@@ -35,7 +35,6 @@ import android.net.Uri;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
@@ -58,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AuthUserApiHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -70,12 +68,7 @@ public class GoodreadsAuth {
     /** Can only send requests at a throttled speed. */
     @NonNull
     public static final Throttler THROTTLER = new Throttler();
-    /** meta data key in manifest. */
-    @VisibleForTesting
-    public static final String GOODREADS_DEV_KEY = "goodreads.dev_key";
-    /** meta data key in manifest. */
-    @VisibleForTesting
-    public static final String GOODREADS_DEV_SECRET = "goodreads.dev_secret";
+
     private static final String BASE_URL = "https://www.goodreads.com";
     /** Log tag. */
     private static final String TAG = "GoodreadsAuth";
@@ -150,32 +143,34 @@ public class GoodreadsAuth {
     /** Local copy of user id retrieved when the credentials were verified. */
     private static long sUserId;
     /** OAuth helpers. */
+    @NonNull
     private final OAuthConsumer mConsumer;
     /** OAuth helpers. */
+    @NonNull
     private final OAuthProvider mProvider;
 
     /**
      * Constructor.
      *
-     * @param settingsHelper the helper is injected for testing.
+     * @param context Current context
      */
-    public GoodreadsAuth(@NonNull final SettingsHelper settingsHelper) {
-        String key = settingsHelper.getManifestString(GOODREADS_DEV_KEY);
-        String secret = settingsHelper.getManifestString(GOODREADS_DEV_SECRET);
+    public GoodreadsAuth(@NonNull final Context context) {
+
+        String[] keys = getKeys(context);
 
         // Native
-        mConsumer = new DefaultOAuthConsumer(key, secret);
+        mConsumer = new DefaultOAuthConsumer(keys[0], keys[1]);
         mProvider = new DefaultOAuthProvider(REQUEST_TOKEN_ENDPOINT_URL,
                                              ACCESS_TOKEN_ENDPOINT_URL,
                                              AUTHORIZATION_WEBSITE_URL);
         // Apache Commons HTTP
-//        mConsumer = new DefaultOAuthConsumer(key, secret);
+//        mConsumer = new DefaultOAuthConsumer(keys[0], keys[1]);
 //        mProvider = new DefaultOAuthProvider(REQUEST_TOKEN_ENDPOINT_URL,
 //                                             ACCESS_TOKEN_ENDPOINT_URL,
 //                                             AUTHORIZATION_WEBSITE_URL);
 
         // load the credentials
-        hasCredentials(settingsHelper.getContext());
+        hasCredentials(context);
     }
 
     public static void invalidateCredentials() {
@@ -199,6 +194,34 @@ public class GoodreadsAuth {
     }
 
     /**
+     * Read the key/secret pair.
+     *
+     * @return array, [0]==key, [1]==secret
+     */
+    private String[] getKeys(@NonNull final Context context) {
+        String[] keys = new String[2];
+        ClassLoader classLoader = getClass().getClassLoader();
+        if (classLoader != null) {
+            try {
+                Class c = classLoader.loadClass(getClass().getCanonicalName() + "Keys");
+                keys[0] = (String) c.getField("GOODREADS_DEV").get(null);
+                keys[1] = (String) c.getField("GOODREADS_SEC").get(null);
+            } catch (@NonNull final ClassNotFoundException
+                    | NoSuchFieldException
+                    | IllegalAccessException ignore) {
+                Logger.warn(context, TAG, "no keys");
+            }
+        }
+        // if any of the above failed.
+        if (keys[0] == null || keys[1] == null) {
+            // empty string will trigger hasCredentials sanity check whilst not crashing elsewhere
+            keys[0] = "";
+            keys[1] = "";
+        }
+        return keys;
+    }
+
+    /**
      * Get the stored token values from prefs.
      * This is token availability only, we don't check if they are valid here.
      * <p>
@@ -214,7 +237,7 @@ public class GoodreadsAuth {
     public boolean hasCredentials(@NonNull final Context context)
             throws IllegalStateException {
 
-        // sanity check only.
+        // sanity check; see #getKeys
         if (mConsumer.getConsumerKey().isEmpty() || mConsumer.getConsumerSecret().isEmpty()) {
             // This should only happen if the developer forgot to add the Goodreads keys... (me)
             Logger.warn(context, TAG, "hasCredentials|" + DEV_KEY_NOT_AVAILABLE);

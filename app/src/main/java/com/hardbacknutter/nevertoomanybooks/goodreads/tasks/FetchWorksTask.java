@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBooksApiHandler;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -71,7 +70,7 @@ public class FetchWorksTask
     protected List<GoodreadsWork> doInBackground(final Void... voids) {
         Thread.currentThread().setName("GR.FetchWorksTask");
         Context context = App.getAppContext();
-        GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+        GoodreadsAuth grAuth = new GoodreadsAuth(context);
         try {
             SearchBooksApiHandler searcher = new SearchBooksApiHandler(context, grAuth);
             return searcher.search(mSearchText);

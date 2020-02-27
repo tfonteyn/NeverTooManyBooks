@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
@@ -105,7 +104,7 @@ public class GoodreadsRegistrationActivity
         // Forget credentials
         View blurb = findViewById(R.id.forget_blurb);
         View removeButton = findViewById(R.id.btn_delete_credentials);
-        GoodreadsAuth auth = new GoodreadsAuth(new SettingsHelper(this));
+        GoodreadsAuth auth = new GoodreadsAuth(this);
         if (auth.hasCredentials(this)) {
             blurb.setVisibility(View.VISIBLE);
             removeButton.setVisibility(View.VISIBLE);

@@ -200,7 +200,7 @@ public class SearchOrderFragment
             holder.nameView.setText(site.getName());
 
             if (mShowInfo) {
-                SearchEngine searchEngine = site.getSearchEngine(context);
+                SearchEngine searchEngine = site.getSearchEngine();
                 // do not list SearchEngine.CoverByIsbn, it's irrelevant to the user.
                 Collection<String> info = new ArrayList<>();
                 if (searchEngine instanceof SearchEngine.ByIsbn) {

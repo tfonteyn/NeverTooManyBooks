@@ -155,8 +155,8 @@ public class BookSearchByNativeIdFragment
                               final int checkedId) {
 
         final Site site = Site.createDataSite(SearchSites.getSiteIdFromResId(checkedId));
+        final SearchEngine searchEngine = site.getSearchEngine();
         //noinspection ConstantConditions
-        final SearchEngine searchEngine = site.getSearchEngine(getContext());
         if (!searchEngine.isAvailable(getContext())) {
             // If the selected site needs registration, prompt the user.
             searchEngine.promptToRegister(getContext(), true, "native_id");

@@ -89,7 +89,7 @@ public class SearchEditionsTask
                                    .getSites(true);
         for (Site site : sites) {
             try {
-                SearchEngine searchEngine = site.getSearchEngine(context);
+                SearchEngine searchEngine = site.getSearchEngine();
                 if (searchEngine instanceof SearchEngine.AlternativeEditions) {
                     editions.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                             .getAlternativeEditions(context, mIsbn));

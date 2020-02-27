@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -49,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsWork;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -71,8 +71,8 @@ public class GoodreadsSearchEngine
     /**
      * Constructor.
      */
-    public GoodreadsSearchEngine(@NonNull final SettingsHelper settingsHelper) {
-        mGoodreadsAuth = new GoodreadsAuth(settingsHelper);
+    public GoodreadsSearchEngine() {
+        mGoodreadsAuth = new GoodreadsAuth(App.getAppContext());
         mApiHandler = new GoodreadsHandler(mGoodreadsAuth);
     }
 
@@ -197,7 +197,7 @@ public class GoodreadsSearchEngine
     @Override
     public boolean isAvailable(@NonNull final Context context) {
         // makes sure we *have* credentials, but does not check them.
-        return mGoodreadsAuth.hasCredentials(context);
+        return !mGoodreadsAuth.getDevKey().isEmpty() && mGoodreadsAuth.hasCredentials(context);
     }
 
     @NonNull

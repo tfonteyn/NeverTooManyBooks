@@ -234,7 +234,7 @@ public class SiteList
         boolean showingAlert = false;
         for (Site site : mList) {
             if (site.isEnabled()) {
-                showingAlert |= site.getSearchEngine(context)
+                showingAlert |= site.getSearchEngine()
                                     .promptToRegister(context, required, prefSuffix);
             }
         }

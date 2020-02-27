@@ -768,7 +768,7 @@ public class SearchCoordinator
             return false;
         }
 
-        SearchEngine searchEngine = site.getSearchEngine(context);
+        SearchEngine searchEngine = site.getSearchEngine();
         if (!searchEngine.isAvailable(context)) {
             return false;
         }

@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
@@ -174,15 +173,14 @@ public final class SearchSites {
      *
      * @return instance
      */
-    static SearchEngine getSearchEngine(@NonNull final SettingsHelper settingsHelper,
-                                        @Id final int id) {
+    static SearchEngine getSearchEngine(@Id final int id) {
         switch (id) {
             case GOOGLE_BOOKS:
                 return new GoogleBooksSearchEngine();
             case AMAZON:
                 return new AmazonSearchEngine();
             case GOODREADS:
-                return new GoodreadsSearchEngine(settingsHelper);
+                return new GoodreadsSearchEngine();
             case ISFDB:
                 return new IsfdbSearchEngine();
             case LIBRARY_THING:

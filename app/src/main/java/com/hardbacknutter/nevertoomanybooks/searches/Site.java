@@ -33,11 +33,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
@@ -186,23 +184,11 @@ public final class Site
     /**
      * Get the {@link SearchEngine} instance for this site.
      *
-     * @param context Current context
-     *
      * @return (cached) instance
      */
-    public SearchEngine getSearchEngine(@NonNull final Context context) {
+    public SearchEngine getSearchEngine() {
         if (mSearchEngine == null) {
-            SettingsHelper settingsHelper = new SettingsHelper(context);
-            mSearchEngine = SearchSites.getSearchEngine(settingsHelper, id);
-        }
-
-        return mSearchEngine;
-    }
-
-    @VisibleForTesting
-    SearchEngine getSearchEngine(@NonNull final SettingsHelper settingsHelper) {
-        if (mSearchEngine == null) {
-            mSearchEngine = SearchSites.getSearchEngine(settingsHelper, id);
+            mSearchEngine = SearchSites.getSearchEngine(id);
         }
 
         return mSearchEngine;
@@ -217,7 +203,7 @@ public final class Site
      */
     @NonNull
     public Locale getLocale(@NonNull final Context context) {
-        return getSearchEngine(context).getLocale(context);
+        return getSearchEngine().getLocale(context);
     }
 
     void loadFromPrefs(@NonNull final SharedPreferences preferences,

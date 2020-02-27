@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -224,7 +223,7 @@ class ImportLegacyTask
                                    @NonNull final QueueManager queueManager)
             throws CredentialsException {
 
-        GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+        GoodreadsAuth grAuth = new GoodreadsAuth(context);
         ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
 
         int currPage = mPosition / BOOKS_PER_PAGE;

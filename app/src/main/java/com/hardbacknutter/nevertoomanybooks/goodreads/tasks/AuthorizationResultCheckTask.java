@@ -39,7 +39,6 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 /**
@@ -60,7 +59,7 @@ public class AuthorizationResultCheckTask
     protected Boolean doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.AuthorizationResultCheckTask");
         Context context = App.getAppContext();
-        GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+        GoodreadsAuth grAuth = new GoodreadsAuth(context);
         try {
             return grAuth.handleAuthenticationAfterAuthorization(context);
 

@@ -13,3 +13,4 @@
 /build
 /captures
 .externalNativeBuild
+/app/src/main/java/com/hardbacknutter/nevertoomanybooks/goodreads/GoodreadsAuthKeys.java

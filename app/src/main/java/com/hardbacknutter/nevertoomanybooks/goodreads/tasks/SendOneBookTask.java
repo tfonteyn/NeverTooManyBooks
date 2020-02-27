@@ -45,7 +45,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -91,7 +90,7 @@ public class SendOneBookTask
             if (!NetworkUtils.isNetworkAvailable(context)) {
                 return GrStatus.NoInternet;
             }
-            GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+            GoodreadsAuth grAuth = new GoodreadsAuth(context);
             GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
             if (!grAuth.hasValidCredentials(context)) {
                 return GrStatus.CredentialsMissing;

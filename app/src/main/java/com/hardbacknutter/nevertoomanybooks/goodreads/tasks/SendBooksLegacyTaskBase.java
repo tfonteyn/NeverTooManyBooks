@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events.GrNoIsbnEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.events.GrNoMatchEvent;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -89,7 +88,7 @@ public abstract class SendBooksLegacyTaskBase
                               GoodreadsHandler.BASE_URL,
                               GoodreadsSearchEngine.SOCKET_TIMEOUT_MS);
 
-            GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+            GoodreadsAuth grAuth = new GoodreadsAuth(context);
             GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
             if (grAuth.hasValidCredentials(context)) {
                 return send(queueManager, context, apiHandler);

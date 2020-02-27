@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
@@ -102,7 +101,7 @@ public class RequestAuthTask
             return GrStatus.NoInternet;
         }
 
-        GoodreadsAuth grAuth = new GoodreadsAuth(new SettingsHelper(context));
+        GoodreadsAuth grAuth = new GoodreadsAuth(context);
         if (grAuth.hasValidCredentials(context)) {
             return GrStatus.AuthorizationAlreadyGranted;
         }

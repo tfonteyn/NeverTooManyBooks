@@ -34,9 +34,6 @@
     android:installLocation="auto"
     android:versionCode="1"
     android:versionName="1.0.0">
-    <!-- BookCatalogue -->
-    <!-- android:versionCode="179"   android:versionName="5.2.2" -->
-    <!-- android:versionCode="186"   android:versionName="5.2.4" -->
     <!--
  Not needed any longer, as we only use getExternalFilesDir(String)
          and getExternalCacheDir(). Leaving this in comment as a reminder.
@@ -57,14 +54,6 @@
         android:label="@string/app_name"
         android:supportsRtl="false"
         android:theme="@style/AppTheme.DayNight">
-
-        <!-- Application developer keys - stripped out in a git pre-commit script. -->
-        <meta-data
-            android:name="goodreads.dev_key"
-            android:value="" />
-        <meta-data
-            android:name="goodreads.dev_secret"
-            android:value="" />
 
         <!--
             The authorities value must match:

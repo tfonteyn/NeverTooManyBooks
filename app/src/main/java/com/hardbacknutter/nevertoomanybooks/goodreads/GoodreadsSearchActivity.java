@@ -64,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -114,7 +113,7 @@ public class GoodreadsSearchActivity
      */
     public static void open(@NonNull final Context context,
                             final long bookId) {
-        GoodreadsAuth auth = new GoodreadsAuth(new SettingsHelper(context));
+        GoodreadsAuth auth = new GoodreadsAuth(context);
         if (!auth.hasCredentials(context)) {
             context.startActivity(new Intent(context, GoodreadsRegistrationActivity.class));
         }

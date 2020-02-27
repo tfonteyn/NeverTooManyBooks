@@ -425,7 +425,7 @@ public class CoverBrowserViewModel
                 for (Site site : mSiteList.getSites(true)) {
                     // Should we search this site ?
                     if ((currentSearchSites & site.id) != 0) {
-                        SearchEngine engine = site.getSearchEngine(context);
+                        SearchEngine engine = site.getSearchEngine();
 
                         final boolean isAvailable = engine instanceof SearchEngine.CoverByIsbn
                                                     && engine.isAvailable(context);

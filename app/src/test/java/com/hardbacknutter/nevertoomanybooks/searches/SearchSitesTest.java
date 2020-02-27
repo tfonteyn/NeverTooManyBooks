@@ -32,37 +32,20 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHelper;
 
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SearchSitesTest
         extends CommonSetup {
 
-    @Mock
-    SettingsHelper mSettingsHelper;
 
     @BeforeEach
     @Override
     public void setUp() {
         super.setUp();
-
-        mSettingsHelper = mock(SettingsHelper.class);
-
-        when(mSettingsHelper.getContext()).thenReturn(mContext);
-
-        when(mSettingsHelper.getManifestString(eq(GoodreadsAuth.GOODREADS_DEV_KEY)))
-                .thenReturn("GOODREADS_DEV_KEY");
-
-        when(mSettingsHelper.getManifestString(eq(GoodreadsAuth.GOODREADS_DEV_SECRET)))
-                .thenReturn("GOODREADS_DEV_SECRET");
 
         when(mSharedPreferences.getBoolean(eq("search.site.goodreads.enabled"),
                                            anyBoolean())).thenReturn(true);
@@ -117,7 +100,7 @@ class SearchSitesTest
             System.out.println("type=" + type);
 
             for (Site site : sites) {
-                SearchEngine searchEngine = site.getSearchEngine(mSettingsHelper);
+                SearchEngine searchEngine = site.getSearchEngine();
                 System.out.println(site + ", locale=" + searchEngine.getLocale(mContext));
             }
         }
