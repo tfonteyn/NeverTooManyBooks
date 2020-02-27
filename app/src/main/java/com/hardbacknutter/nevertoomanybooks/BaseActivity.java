@@ -46,7 +46,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -116,6 +115,7 @@ public abstract class BaseActivity
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView mNavigationView;
+    private boolean mHomeIsRootMenu;
 
     protected void setIsRecreating() {
         sActivityRecreateStatus = ActivityStatus.isRecreating;
@@ -168,26 +168,32 @@ public abstract class BaseActivity
             setContentView(layoutId);
         }
 
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        if (mDrawerLayout != null) {
+            mNavigationView = findViewById(R.id.nav_view);
+            mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+        }
+
         final Toolbar toolbar = findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
         // Normal setup of the action bar now
+        updateActionBar(isTaskRoot());
+    }
+
+    public void updateActionBar(final boolean isRoot) {
+        mHomeIsRootMenu = isRoot;
         final ActionBar bar = getSupportActionBar();
         if (bar != null) {
             // default on all activities is to show the "up" (back) button
             bar.setDisplayHomeAsUpEnabled(true);
-            // but if we are at the top activity
-            if (isTaskRoot()) {
-                // then we want the hamburger menu.
-                bar.setHomeAsUpIndicator(R.drawable.ic_menu);
-            }
-        }
 
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        if (mDrawerLayout != null) {
-            mNavigationView = findViewById(R.id.nav_view);
-            mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+            if (mHomeIsRootMenu) {
+                bar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            } else {
+                bar.setHomeAsUpIndicator(null);
+            }
         }
     }
 
@@ -345,10 +351,7 @@ public abstract class BaseActivity
 
         switch (item.getItemId()) {
             case R.id.nav_search: {
-                boolean advanced = PreferenceManager.getDefaultSharedPreferences(this)
-                                                    .getBoolean(Prefs.pk_search_form_advanced,
-                                                                false);
-                if (advanced) {
+                if (Prefs.isAdvancedSearch(this)) {
                     return onAdvancedSearchRequested();
                 } else {
                     // standard system call.
@@ -415,6 +418,15 @@ public abstract class BaseActivity
     }
 
     /**
+     * Is the home button/icon representing the root menu (or is it the 'up' action)
+     *
+     * @return {@code true} if it's the real home (hamburger) menu
+     */
+    public boolean homeIsRootMenu() {
+        return isTaskRoot() && mHomeIsRootMenu;
+    }
+
+    /**
      * TODO:  https://developer.android.com/training/appbar/up-action
      */
     @Override
@@ -424,8 +436,7 @@ public abstract class BaseActivity
         switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home: {
-                // the home icon is only == hamburger menu, at the top level
-                if (isTaskRoot()) {
+                if (homeIsRootMenu()) {
                     if (mDrawerLayout != null) {
                         mDrawerLayout.openDrawer(GravityCompat.START);
                         return true;

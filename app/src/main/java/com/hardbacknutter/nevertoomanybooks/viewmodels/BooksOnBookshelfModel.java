@@ -447,8 +447,6 @@ public class BooksOnBookshelfModel
                                  final int position,
                                  final long rowId,
                                  final int topViewOffset) {
-
-
         if (mListHasBeenLoaded) {
             mItemPosition = position;
             mTopRowRowId = rowId;
@@ -543,6 +541,10 @@ public class BooksOnBookshelfModel
             blb.addDomain(new BooklistBuilder.BookDomain(
                     DBDefinitions.DOM_BOOK_LOCATION,
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Log.d(TAG, "mSearchCriteria=" + mSearchCriteria);
         }
 
         // if we have a list of ID's, ignore other criteria.
@@ -704,6 +706,15 @@ public class BooksOnBookshelfModel
         return mSearchCriteria;
     }
 
+    public boolean setSearchCriteria(@Nullable final Bundle bundle,
+                                     final boolean clearFirst) {
+        if (bundle != null) {
+            return mSearchCriteria.from(bundle, clearFirst);
+        } else {
+            return false;
+        }
+    }
+
     public void restoreCurrentBookshelf(@NonNull final Context context) {
         mCurrentBookshelf = Bookshelf.getPreferredBookshelf(context, mDb, true);
     }
@@ -814,7 +825,7 @@ public class BooksOnBookshelfModel
     public static class SearchCriteria {
 
         /**
-         * List of desiredCentralBookId's to display.
+         * List of book ids to display.
          * The RESULT of a search with {@link FTSSearchActivity}
          * which can be re-used for the builder.
          */
@@ -975,6 +986,19 @@ public class BooksOnBookshelfModel
 
         boolean hasIdList() {
             return bookList != null && !bookList.isEmpty();
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "SearchCriteria{"
+                   + "ftsAuthor=`" + ftsAuthor + '`'
+                   + ", ftsTitle=`" + ftsTitle + '`'
+                   + ", ftsSeries=`" + ftsSeries + '`'
+                   + ", loanee=`" + loanee + '`'
+                   + ", ftsKeywords=`" + ftsKeywords + '`'
+                   + ", bookList=" + bookList
+                   + '}';
         }
     }
 

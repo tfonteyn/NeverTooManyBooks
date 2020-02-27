@@ -100,6 +100,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -108,6 +109,26 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
  * Activity that displays a flattened book hierarchy based on the Booklist* classes.
+ * <p>
+ * Notes on the local-search standard versus advanced (FTS):
+ * <ol>Advanced:
+ *     <li>nav drawer search starts FTSSearch Activity</li>
+ *     <li>FTS activity returns an id-list and the fts search terms</li>
+ *     <li>#onActivityResult sets the incoming fts criteria and builds the list</li>
+ *     <li>during display of the list, the action bar home icon is set to 'up'</li>
+ *     <li>Allows the user to re-open the nav drawer and refine the search.</li>
+ *     <li>any 'up/back' action will trigger #onBackPressed</li>
+ *     <li>#onBackPressed checks if there are search criteria, if so, clears and
+ *     rebuild and suppresses the 'back' action</li>
+ *     <li>All of the above is using <strong>ONE</strong> BooksOnBookshelf/BooksOnBookshelfModel
+ *     instance</li>
+ * </ol>
+ *
+ * <ol>Standard:
+ * <li>system search starts a <strong>SECOND</strong> BooksOnBookshelf/BooksOnBookshelfModel
+ * instance</li>
+ * <li>no special fixes needed</li>
+ * </ol>
  */
 public class BooksOnBookshelf
         extends BaseActivity {
@@ -406,11 +427,15 @@ public class BooksOnBookshelf
         // listen for the booklist being ready to display.
         mModel.getBooklist().observe(this, this::onDisplayList);
 
-        // set the search capability to local (application) search, see:
-        // https://developer.android.com/guide/topics/search/search-dialog#InvokingTheSearchDialog
-        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-        // check & get search text coming from a system search intent
-        handleStandardSearchIntent();
+        // for standard (system) local search only
+        if (!Prefs.isAdvancedSearch(this)) {
+            // starting to type makes the search dialog to popup
+            // https://developer.android.com/guide/topics/search/search-dialog
+            // #InvokingTheSearchDialog
+            setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+            // check & get search text coming from a system search intent
+            handleStandardSearchIntent();
+        }
 
         mProgressBar = findViewById(R.id.progressBar);
 
@@ -592,8 +617,6 @@ public class BooksOnBookshelf
         final boolean showECPreferred = mModel.getCurrentStyle(this).getTopLevel() > 1;
         menu.findItem(R.id.MENU_LEVEL_PREFERRED_COLLAPSE).setVisible(showECPreferred);
 
-        menu.findItem(R.id.MENU_CLEAR_FILTERS).setEnabled(!mModel.getSearchCriteria().isEmpty());
-
         hideFABMenu();
 
         return super.onPrepareOptionsMenu(menu);
@@ -619,11 +642,6 @@ public class BooksOnBookshelf
             }
             case R.id.MENU_LEVEL_COLLAPSE: {
                 expandAllNodes(1, false);
-                return true;
-            }
-            case R.id.MENU_CLEAR_FILTERS: {
-                mModel.getSearchCriteria().clear();
-                initBookList();
                 return true;
             }
             case R.id.MENU_UPDATE_FROM_INTERNET: {
@@ -682,12 +700,19 @@ public class BooksOnBookshelf
         }
 
         switch (requestCode) {
+            case UniqueId.REQ_ADVANCED_LOCAL_SEARCH:
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (mModel.setSearchCriteria(data.getExtras(), true)) {
+                        mModel.setForceRebuildInOnResume(true);
+                    }
+                }
+                break;
+
             case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
             case UniqueId.REQ_BOOK_VIEW:
             case UniqueId.REQ_BOOK_EDIT:
             case UniqueId.REQ_BOOK_DUPLICATE:
             case UniqueId.REQ_BOOK_SEARCH:
-            case UniqueId.REQ_ADVANCED_LOCAL_SEARCH:
             case UniqueId.REQ_AUTHOR_WORKS: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     final Bundle extras = data.getExtras();
@@ -699,11 +724,6 @@ public class BooksOnBookshelf
                         if (extras.getBoolean(UniqueId.BKEY_BOOK_DELETED, false)) {
                             mModel.setForceRebuildInOnResume(true);
                         }
-
-                        if (mModel.getSearchCriteria().from(extras, true)) {
-                            mModel.setForceRebuildInOnResume(true);
-                        }
-
                         if (extras.containsKey(BooksOnBookshelfModel.BKEY_LIST_STATE)) {
                             int state = extras.getInt(BooksOnBookshelfModel.BKEY_LIST_STATE,
                                                       BooklistBuilder.PREF_REBUILD_SAVED_STATE);
@@ -784,29 +804,22 @@ public class BooksOnBookshelf
         }
     }
 
-    /**
-     * If the FAB menu is showing, hide it.
-     * If the current list is has any search criteria enabled, clear them and rebuild the list.
-     * <p>
-     * Otherwise handle the back-key as normal.
-     */
     @Override
     public void onBackPressed() {
+        // If the FAB menu is showing, hide it.
         if (mFabMenuItems[0].isShown()) {
             showFABMenu(false);
             return;
         }
 
-        // This Activity can be the (as normal) the real root activity,
-        // but it can also have been started to show a filtered list.
-        // Only clear and re-init if we are indeed the root.
-        // Otherwise drop-through to onBackPressed.
+        // If the current list is has any search criteria enabled, clear them and rebuild the list.
         if (isTaskRoot() && !mModel.getSearchCriteria().isEmpty()) {
             mModel.getSearchCriteria().clear();
             initBookList();
             return;
         }
 
+        // Otherwise handle the back-key as normal.
         super.onBackPressed();
     }
 
@@ -1084,6 +1097,10 @@ public class BooksOnBookshelf
         if (count > 0 && mShowLevelHeaders) {
             setHeaderLevelText();
         }
+
+        // If we have search criteria enabled (i.e. we're filtering the current list)
+        // then we should display the 'up' indicator. See #onBackPressed.
+        updateActionBar(mModel.getSearchCriteria().isEmpty());
 
         // all set, we can close the old list
         if (oldCursor != null) {

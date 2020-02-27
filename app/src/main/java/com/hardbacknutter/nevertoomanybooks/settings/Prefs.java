@@ -68,7 +68,7 @@ public final class Prefs {
     public static final String pk_edit_book_tabs_authSer = "edit.book.tab.authSer";
 
     public static final String pk_network_allow_metered = "network.allow.metered";
-    public static final String pk_search_form_advanced = "search.form.advanced";
+    private static final String pk_search_form_advanced = "search.form.advanced";
 
     public static final String pk_scanner_preferred = "scanner.preferred";
     public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
@@ -252,4 +252,8 @@ public final class Prefs {
         Log.d(TAG, "dumpPreferences|" + sb);
     }
 
+    public static boolean isAdvancedSearch(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(Prefs.pk_search_form_advanced, false);
+    }
 }

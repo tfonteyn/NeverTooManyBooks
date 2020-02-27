@@ -63,10 +63,4 @@
         android:orderInCategory="@integer/MENU_ORDER_UPDATE_FIELDS"
         android:title="@string/menu_update_fields"
         android:visible="false" />
-
-    <item
-        android:id="@id/MENU_CLEAR_FILTERS"
-        android:icon="@drawable/ic_undo"
-        android:title="@string/menu_clear_search_filters" />
-
 </menu>
