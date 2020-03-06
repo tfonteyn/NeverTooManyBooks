@@ -59,7 +59,7 @@
         app:layout_constraintTop_toTopOf="parent"
         >
 
-        <com.hardbacknutter.nevertoomanybooks.utils.ISBN.IsbnTextInputEditText
+        <com.hardbacknutter.nevertoomanybooks.widgets.IsbnTextInputEditText
             android:id="@+id/isbn"
             style="@style/EditText.Isbn"
             android:layout_width="match_parent"
