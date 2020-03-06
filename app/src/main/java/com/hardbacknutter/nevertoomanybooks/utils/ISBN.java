@@ -790,7 +790,7 @@ public class ISBN {
         INVALID
     }
 
-    public static class IsbnCleanupTextWatcher
+    public static class CleanupTextWatcher
             implements TextWatcher {
 
         @NonNull
@@ -801,7 +801,7 @@ public class ISBN {
          *
          * @param editText the view to watch
          */
-        public IsbnCleanupTextWatcher(@NonNull final TextInputEditText editText) {
+        public CleanupTextWatcher(@NonNull final TextInputEditText editText) {
             mEditText = editText;
 
             // handle text which is already present at this point
@@ -862,7 +862,7 @@ public class ISBN {
         }
     }
 
-    public static class IsbnValidationTextWatcher
+    public static class ValidationTextWatcher
             implements TextWatcher {
 
         @NonNull
@@ -881,9 +881,9 @@ public class ISBN {
          * @param editText   the view to watch
          * @param strictIsbn allow only ISBN code, or also allow others (UPC)
          */
-        public IsbnValidationTextWatcher(@NonNull final TextInputLayout layoutView,
-                                         @NonNull final TextInputEditText editText,
-                                         final boolean strictIsbn) {
+        public ValidationTextWatcher(@NonNull final TextInputLayout layoutView,
+                                     @NonNull final TextInputEditText editText,
+                                     final boolean strictIsbn) {
             mLayout = layoutView;
             mEditText = editText;
             mStrictIsbn = strictIsbn;

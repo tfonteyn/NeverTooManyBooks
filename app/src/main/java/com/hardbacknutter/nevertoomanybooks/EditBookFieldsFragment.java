@@ -80,14 +80,17 @@ public class EditBookFieldsFragment
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
     /** manage the validation check next to the ISBN field. */
-    private ISBN.IsbnValidationTextWatcher mIsbnValidationTextWatcher;
+    private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
+    private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
 
     /**
      * Set to {@code true} limits to using ISBN-10/13.
      * Otherwise we also allow UPC/EAN codes.
-     * This is used for validation only, and not enforced.
+     * False by default, as we don't want to mess with external codes unless the user really
+     * wants to.
+     * TODO: perhaps make this a preference?
      */
-    private boolean mStrictIsbn = true;
+    private boolean mStrictIsbn = false;
 
     /** The scanner. */
     @Nullable
@@ -210,11 +213,14 @@ public class EditBookFieldsFragment
         // With all Views populated, (re-)add the helpers
         addAutocomplete(R.id.genre, mFragmentVM.getGenres());
 
-        /// visual aids for ISBN and other codes.
-        mIsbnValidationTextWatcher = new ISBN.IsbnValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
-                                                                        true);
+        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
+                                                                    mStrictIsbn);
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
-        mVb.isbn.addTextChangedListener(new ISBN.IsbnCleanupTextWatcher(mVb.isbn));
+
+        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn);
+        if (mStrictIsbn) {
+            mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
+        }
 
         mVb.btnScan.setOnClickListener(v -> {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
@@ -262,9 +268,17 @@ public class EditBookFieldsFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             case R.id.MENU_STRICT_ISBN: {
-                mStrictIsbn = !item.isChecked();
-                item.setChecked(mStrictIsbn);
-                mIsbnValidationTextWatcher.setStrictIsbn(mStrictIsbn);
+                final boolean checked = !item.isChecked();
+                item.setChecked(checked);
+                mIsbnValidationTextWatcher.setStrictIsbn(checked);
+                if (checked) {
+                    // don't add twice
+                    mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
+                    mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
+                } else {
+                    mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
+                }
+                mStrictIsbn = checked;
                 return true;
             }
 

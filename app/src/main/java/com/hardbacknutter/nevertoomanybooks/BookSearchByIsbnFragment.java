@@ -79,7 +79,8 @@ public class BookSearchByIsbnFragment
     private FragmentBooksearchByIsbnBinding mVb;
 
     /** manage the validation check next to the field. */
-    private ISBN.IsbnValidationTextWatcher mIsbnValidationTextWatcher;
+    private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
+    private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
 
     @Override
     public void onRequestPermissionsResult(final int requestCode,
@@ -138,10 +139,14 @@ public class BookSearchByIsbnFragment
             return true;
         });
 
-        mIsbnValidationTextWatcher = new ISBN.IsbnValidationTextWatcher(
+        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
                 mVb.lblIsbn, mVb.isbn, mSearchCoordinator.isStrictIsbn());
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
-        mVb.isbn.addTextChangedListener(new ISBN.IsbnCleanupTextWatcher(mVb.isbn));
+
+        mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn);
+        if (mSearchCoordinator.isStrictIsbn()) {
+            mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
+        }
 
         //noinspection ConstantConditions
         mVb.btnSearch.setOnClickListener(v -> prepareSearch(mVb.isbn.getText().toString().trim()));
@@ -187,6 +192,13 @@ public class BookSearchByIsbnFragment
                 final boolean checked = !item.isChecked();
                 item.setChecked(checked);
                 mIsbnValidationTextWatcher.setStrictIsbn(checked);
+                if (checked) {
+                    // don't add twice
+                    mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
+                    mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
+                } else {
+                    mVb.isbn.removeTextChangedListener(mIsbnCleanupTextWatcher);
+                }
                 mSearchCoordinator.setStrictIsbn(checked);
                 return true;
             }
