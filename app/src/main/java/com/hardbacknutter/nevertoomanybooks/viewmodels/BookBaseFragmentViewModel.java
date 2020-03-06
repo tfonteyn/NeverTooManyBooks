@@ -100,13 +100,13 @@ public abstract class BookBaseFragmentViewModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<String> getUserMessage() {
+    public MutableLiveData<String> onUserMessage() {
         return mUserMessage;
     }
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<Boolean> getNeedsGoodreads() {
+    public MutableLiveData<Boolean> onNeedsGoodreads() {
         return mNeedsGoodreads;
     }
 

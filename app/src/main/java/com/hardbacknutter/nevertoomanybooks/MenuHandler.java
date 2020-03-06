@@ -27,11 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.ComponentName;
 import android.content.Context;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 
@@ -182,6 +187,20 @@ final class MenuHandler {
               .setVisible(hasAuthor && hasSeries);
             sm.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
               .setVisible(hasSeries);
+        }
+    }
+
+    static void setupSearch(@NonNull final Activity activity,
+                            @NonNull final Menu menu) {
+        MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
+        if (searchItem != null) {
+            SearchView searchView = (SearchView) searchItem.getActionView();
+            SearchManager searchManager = (SearchManager)
+                    activity.getSystemService(Context.SEARCH_SERVICE);
+            //noinspection ConstantConditions
+            SearchableInfo si = searchManager.getSearchableInfo(
+                    new ComponentName(activity, BooksOnBookshelf.class.getName()));
+            searchView.setSearchableInfo(si);
         }
     }
 }

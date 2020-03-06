@@ -31,7 +31,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,9 +58,11 @@ public class DecimalEditTextAccessor
     @Override
     public void setView(@NonNull final View view) {
         super.setView(view);
-        TextView textView = (TextView) view;
-        // do not keep a strong reference to the watcher
-        textView.addTextChangedListener(new DecimalTextWatcher(textView));
+        if (view instanceof EditText) {
+            EditText editText = (EditText) view;
+            // do not keep a strong reference to the watcher
+            editText.addTextChangedListener(new DecimalTextWatcher(editText));
+        }
     }
 
     /**
@@ -71,20 +73,23 @@ public class DecimalEditTextAccessor
 
         private static final String DIGITS = "0123456789";
         private final String mDecimalSeparator;
+
         /**
          * Strong reference to View is fine.
          * This watcher will get destroyed when the View gets destroyed.
          * <strong>Note:</strong> do NOT keep a strong reference to the watcher itself!
          */
         @NonNull
-        private final TextView mView;
+        private final EditText mView;
 
-        DecimalTextWatcher(@NonNull final TextView view) {
+        DecimalTextWatcher(@NonNull final EditText view) {
             mView = view;
             Locale locale = LocaleUtils.getUserLocale(mView.getContext());
             DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
             DecimalFormatSymbols symbols = nf.getDecimalFormatSymbols();
             mDecimalSeparator = Character.toString(symbols.getDecimalSeparator());
+
+            enableListener(mView.getText());
         }
 
         @Override
@@ -105,13 +110,17 @@ public class DecimalEditTextAccessor
 
         @Override
         public void afterTextChanged(@NonNull final Editable editable) {
+            // we're not going to change the Editable, no need to toggle this listener
+            enableListener(editable);
+        }
+
+        private void enableListener(@Nullable final Editable editable) {
             // allow only one decimal separator
-            if (editable.toString().contains(mDecimalSeparator)) {
+            if (editable != null && editable.toString().contains(mDecimalSeparator)) {
                 mView.setKeyListener(DigitsKeyListener.getInstance(DIGITS));
             } else {
                 mView.setKeyListener(DigitsKeyListener.getInstance(DIGITS + mDecimalSeparator));
             }
-
         }
 
 //        public static class DecimalDigitsInputFilter

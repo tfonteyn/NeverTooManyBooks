@@ -98,7 +98,7 @@ class Queue
      * Main worker thread logic.
      */
     public void run() {
-        Context context = App.getAppContext();
+        Context context = App.getTaskContext();
         try (QueueDAO queueDAO = new QueueDAO(context)) {
             while (!mTerminate) {
                 ScheduledTask scheduledTask;

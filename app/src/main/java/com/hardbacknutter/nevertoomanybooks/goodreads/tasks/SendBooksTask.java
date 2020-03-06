@@ -75,7 +75,7 @@ public class SendBooksTask
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendBooksTask");
-        Context context = App.getAppContext();
+        Context context = App.getTaskContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {

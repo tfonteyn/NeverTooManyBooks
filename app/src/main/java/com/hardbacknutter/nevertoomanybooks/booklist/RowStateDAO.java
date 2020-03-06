@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -334,7 +335,7 @@ public class RowStateDAO {
                 }
 
                 // Now set the preferred expand/visibility status.
-                expandAllNodes(mStyle.getTopLevel(), false);
+                expandAllNodes(mStyle.getTopLevel(App.getAppContext()), false);
                 break;
             }
 

@@ -73,8 +73,8 @@ public class StyleGroupsActivity
     private StyleGroupsModel mModel;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_edit_style_groups;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_edit_style_groups);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class StyleGroupsActivity
 
             StyleGroupsModel.GroupWrapper groupWrapper = getItem(position);
 
-            holder.nameView.setText(groupWrapper.group.getName(getContext()));
+            holder.nameView.setText(groupWrapper.group.getLabel(getContext()));
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(groupWrapper.present);
             holder.mCheckableButton.setOnClickListener(v -> {

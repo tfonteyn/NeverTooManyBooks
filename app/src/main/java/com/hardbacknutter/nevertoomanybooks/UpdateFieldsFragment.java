@@ -113,11 +113,11 @@ public class UpdateFieldsFragment
         mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
         mUpdateFieldsModel.init(getContext(), getArguments());
-        mUpdateFieldsModel.getSearchCoordinatorProgressMessage()
+        mUpdateFieldsModel.onSearchCoordinatorProgressMessage()
                           .observe(getViewLifecycleOwner(), this::onTaskProgress);
 
         // INDIVIDUAL searches; i.e. for each book.
-        mUpdateFieldsModel.getSearchCoordinatorFinishedMessage()
+        mUpdateFieldsModel.onSearchCoordinatorFinishedMessage()
                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
         // The update task itself; i.e. the end result.
         mUpdateFieldsModel.getAllUpdatesFinishedMessage()

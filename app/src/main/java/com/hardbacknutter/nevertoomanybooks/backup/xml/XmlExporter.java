@@ -556,7 +556,7 @@ public class XmlExporter
             if (!progressListener.isCancelled() && incStyles) {
                 progressListener.onProgressStep(1, context.getString(R.string.lbl_styles) + xml);
                 doStyles(out);
-                doStyles2(out, progressListener);
+                doStyles2(context, out, progressListener);
             }
 
             if (!progressListener.isCancelled() && incPrefs) {
@@ -824,6 +824,8 @@ public class XmlExporter
     /**
      * Write out the user-defined styles using custom tags.
      *
+     *
+     * @param context           Current context
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
      *
@@ -832,7 +834,8 @@ public class XmlExporter
      * @throws IOException on failure
      */
     @SuppressWarnings("UnusedReturnValue")
-    private int doStyles2(@NonNull final Appendable writer,
+    private int doStyles2(@NonNull final Context context,
+                          @NonNull final Appendable writer,
                           @NonNull final ProgressListener progressListener)
             throws IOException {
         Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
@@ -852,7 +855,7 @@ public class XmlExporter
 
             // All 'flat' Preferences for this style.
             for (PPref p : style.getPreferences(false).values()) {
-                writer.append(typedTag(p.getKey(), p.get()));
+                writer.append(typedTag(p.getKey(), p.getValue(context)));
             }
 
             // Groups with their Preferences.
@@ -862,7 +865,7 @@ public class XmlExporter
                       .append(id(group.getId()))
                       .append(">\n");
                 for (PPref p : group.getPreferences().values()) {
-                    writer.append(typedTag(p.getKey(), p.get()));
+                    writer.append(typedTag(p.getKey(), p.getValue(context)));
                 }
                 writer.append("</" + XmlTags.XML_GROUP + ">\n");
             }
@@ -870,8 +873,8 @@ public class XmlExporter
 
             // Active filters with their Preferences.
             writer.append('<' + XmlTags.XML_FILTER_LIST + '>');
-            for (Filter filter : style.getActiveFilters()) {
-                if (filter.isActive()) {
+            for (Filter filter : style.getActiveFilters(context)) {
+                if (filter.isActive(context)) {
                     writer.append(tag(XmlTags.XML_FILTER, filter.getKey(), filter.get()));
                 }
             }
@@ -1294,7 +1297,8 @@ public class XmlExporter
         @NonNull
         @Override
         public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(currentStylePPrefs.get(key)).get();
+            return Objects.requireNonNull(currentStylePPrefs.get(key))
+                          .getValue(App.getAppContext());
         }
     }
 }

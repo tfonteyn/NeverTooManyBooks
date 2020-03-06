@@ -40,7 +40,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 
 /**
  * Global settings page.
@@ -69,9 +69,8 @@ public class GlobalPreferenceFragment
         preference = findPreference(Prefs.pk_sort_title_reordered);
         if (preference != null) {
             preference.setOnPreferenceChangeListener((pref, newValue) -> {
-                boolean current = getPreferenceManager().getSharedPreferences()
-                                                        .getBoolean(Prefs.pk_sort_title_reordered,
-                                                                    true);
+                boolean current = getPreferenceManager()
+                        .getSharedPreferences().getBoolean(Prefs.pk_sort_title_reordered, true);
 
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
@@ -80,13 +79,13 @@ public class GlobalPreferenceFragment
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
                         .setNegativeButton(android.R.string.cancel, (d, w) ->
-                                StartupViewModel.scheduleOrderByRebuild(getContext(), false))
+                                Scheduler.scheduleOrderByRebuild(getContext(), false))
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             SwitchPreference sp = findPreference(Prefs.pk_sort_title_reordered);
                             //noinspection ConstantConditions
                             sp.setChecked(!current);
 
-                            StartupViewModel.scheduleOrderByRebuild(getContext(), true);
+                            Scheduler.scheduleOrderByRebuild(getContext(), true);
                         })
                         .create()
                         .show();

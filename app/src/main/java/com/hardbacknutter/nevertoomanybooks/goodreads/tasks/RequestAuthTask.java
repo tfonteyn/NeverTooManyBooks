@@ -95,7 +95,7 @@ public class RequestAuthTask
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.RequestAuthTask");
-        Context context = App.getAppContext();
+        Context context = App.getTaskContext();
 
         if (!NetworkUtils.isNetworkAvailable(context)) {
             return GrStatus.NoInternet;

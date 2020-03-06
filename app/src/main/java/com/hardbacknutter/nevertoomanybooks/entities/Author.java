@@ -471,7 +471,7 @@ public class Author
     @NonNull
     public String getExtLabel(@NonNull final Context context) {
         String authorLabel = getLabel(context);
-        if (App.isUsed(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+        if (App.isUsed(context, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
             String type = getTypeLabels(context);
             if (!type.isEmpty()) {
                 authorLabel += " <small><i>" + type + "</i></small>";

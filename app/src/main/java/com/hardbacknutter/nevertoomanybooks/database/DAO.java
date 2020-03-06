@@ -128,6 +128,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_AUTHOR_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOKS_PK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_TOC_ENTRY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LANGUAGE;
@@ -368,6 +369,18 @@ public class DAO
     }
 
     /**
+     * Normalize a given string to contain only ASCII characters so we can easily text searches.
+     *
+     * @param text to normalize
+     *
+     * @return ascii text
+     */
+    private static String toAscii(@NonNull final CharSequence text) {
+        return ASCII_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
+                          .replaceAll("");
+    }
+
+    /**
      * DEBUG only. Return the instance name of this DAO.
      *
      * @return name
@@ -427,125 +440,6 @@ public class DAO
             stmt.bindLong(1, styleId);
             stmt.executeUpdateDelete();
         }
-    }
-
-    /**
-     * Cleanup a search string to remove all quotes etc.
-     * <p>
-     * Remove punctuation from the search string to TRY to match the tokenizer.
-     * The only punctuation we allow is a hyphen preceded by a space => negate the next word.
-     * Everything else is translated to a space.
-     *
-     * @param searchText Search criteria to clean
-     * @param domain     (optional) domain to prefix the searchText or {@code null} for none
-     *
-     * @return Clean string
-     */
-    @NonNull
-    private String cleanupFtsCriterion(@Nullable final String searchText,
-                                       @Nullable final String domain) {
-
-        if (searchText == null || searchText.isEmpty()) {
-            return "";
-        }
-
-        // Convert the text to pure ASCII. We'll use an array to loop over it.
-        final char[] chars = toAscii(searchText).toCharArray();
-        // Cached length
-        final int len = chars.length;
-        // Initial position
-        int pos = 0;
-        // Dummy 'previous' character
-        char prev = ' ';
-
-        // Output buffer
-        final StringBuilder parameter = new StringBuilder();
-
-        // Loop over array
-        while (pos < len) {
-            char current = chars[pos];
-            // If current is letter or ...use it.
-            if (Character.isLetterOrDigit(current)) {
-                parameter.append(current);
-            } else if (current == '-' && Character.isWhitespace(prev)) {
-                // Allow negation if preceded by space
-                parameter.append(current);
-            } else {
-                // Everything else is whitespace
-                current = ' ';
-                if (!Character.isWhitespace(prev)) {
-                    // If prev character was non-ws, and not negation, make wildcard
-                    if (prev != '-') {
-                        // Make every token a wildcard
-                        parameter.append('*');
-                    }
-                    // Append a whitespace only when last char was not a whitespace
-                    parameter.append(' ');
-                }
-            }
-            prev = current;
-            pos++;
-        }
-        if (!Character.isWhitespace(prev) && (prev != '-')) {
-            // Make every token a wildcard
-            parameter.append('*');
-        }
-
-        String cleanedText = parameter.toString().trim();
-
-        // finally create the actual parameter String optionally with the domain name.
-        if (domain == null) {
-            return cleanedText;
-
-        } else {
-            StringBuilder result = new StringBuilder();
-            for (String word : cleanedText.split(" ")) {
-                if (!word.isEmpty()) {
-                    result.append(' ').append(domain).append(':').append(word);
-                }
-            }
-            return result.toString();
-        }
-    }
-
-    /**
-     * @param author      Author related keywords to find
-     * @param title       Title related keywords to find
-     * @param seriesTitle Series title related keywords to find
-     * @param keywords    Keywords to find anywhere in book; this includes titles and authors
-     *
-     * @return an SQL query string suited to search FTS for the specified parameters,
-     * or {@code null} if all input was empty
-     */
-    @Nullable
-    public String getFtsSearchSQL(@Nullable final String author,
-                                  @Nullable final String title,
-                                  @Nullable final String seriesTitle,
-                                  @Nullable final String keywords) {
-
-        StringBuilder parameters = new StringBuilder()
-                .append(cleanupFtsCriterion(keywords, null))
-                .append(cleanupFtsCriterion(author, KEY_FTS_AUTHOR_NAME))
-                .append(cleanupFtsCriterion(title, KEY_TITLE))
-                .append(cleanupFtsCriterion(seriesTitle, KEY_SERIES_TITLE));
-
-        // do we have anything to search for?
-        if (parameters.length() == 0) {
-            return null;
-        }
-
-        return "SELECT " + KEY_FTS_BOOKS_PK
-               + " FROM " + TBL_FTS_BOOKS.getName()
-               + " WHERE " + TBL_FTS_BOOKS.getName()
-               + " MATCH '" + parameters.toString().trim() + '\'';
-    }
-
-    public void recreateTriggers() {
-        sDbHelper.createTriggers(sSyncedDb);
-    }
-
-    public void analyze() {
-        sSyncedDb.analyze();
     }
 
     /**
@@ -1100,7 +994,6 @@ public class DAO
         }
     }
 
-
     /**
      * Check that a book with the passed UUID exists and return the id of the book, or zero.
      *
@@ -1334,10 +1227,13 @@ public class DAO
                 cv.put(KEY_DATE_LAST_UPDATED, DateUtils.utcSqlDateTimeForToday());
             }
 
+            // the book itself
             long newBookId = sSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
             if (newBookId > 0) {
+                // the links to series, authors,...
                 insertBookDependents(context, newBookId, book);
-                insertFts(context, newBookId);
+                // and the search suggestions table
+                ftsInsert(context, newBookId);
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
                 }
@@ -1407,7 +1303,7 @@ public class DAO
                                                    new String[]{String.valueOf(bookId)});
             if (success) {
                 insertBookDependents(context, bookId, book);
-                updateFts(context, bookId);
+                ftsUpdate(context, bookId);
                 if (txLock != null) {
                     sSyncedDb.setTransactionSuccessful();
                 }
@@ -1991,31 +1887,6 @@ public class DAO
         }
     }
 
-    /**
-     * Get the list of TocEntry for this book.
-     *
-     * @param bookId of the book
-     *
-     * @return list
-     */
-    @NonNull
-    public ArrayList<TocEntry> getTocEntryByBook(final long bookId) {
-        ArrayList<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
-                                                new String[]{String.valueOf(bookId)})) {
-            final RowDataHolder rowData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
-                list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
-                                      new Author(rowData.getLong(KEY_FK_AUTHOR), rowData),
-                                      rowData.getString(KEY_TITLE),
-                                      rowData.getString(KEY_DATE_FIRST_PUBLICATION),
-                                      TocEntry.Type.TYPE_BOOK,
-                                      rowData.getInt(KEY_BOOK_COUNT)));
-            }
-        }
-        return list;
-    }
-
     /*
      * Bad idea. Instead use: Book book = Book.getBook(mDb, bookId);
      * So you never get a {@code null} Book!
@@ -2047,6 +1918,31 @@ public class DAO
 //        }
 //        return null;
 //    }
+
+    /**
+     * Get the list of TocEntry for this book.
+     *
+     * @param bookId of the book
+     *
+     * @return list
+     */
+    @NonNull
+    public ArrayList<TocEntry> getTocEntryByBook(final long bookId) {
+        ArrayList<TocEntry> list = new ArrayList<>();
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
+                                                new String[]{String.valueOf(bookId)})) {
+            final RowDataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
+                                      new Author(rowData.getLong(KEY_FK_AUTHOR), rowData),
+                                      rowData.getString(KEY_TITLE),
+                                      rowData.getString(KEY_DATE_FIRST_PUBLICATION),
+                                      TocEntry.Type.TYPE_BOOK,
+                                      rowData.getInt(KEY_BOOK_COUNT)));
+            }
+        }
+        return list;
+    }
 
     /**
      * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
@@ -2571,18 +2467,6 @@ public class DAO
         }
 
         return rowsAffected;
-    }
-
-    /**
-     * Normalize a given string to contain only ASCII characters so we can easily text searches.
-     *
-     * @param text to normalize
-     *
-     * @return ascii text
-     */
-    private static String toAscii(@NonNull final CharSequence text) {
-        return ASCII_REGEX.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
-                          .replaceAll("");
     }
 
     /**
@@ -3435,131 +3319,53 @@ public class DAO
     }
 
     /**
-     * Send the book details from the cursor to the passed fts query.
-     * <p>
-     * <strong>Note:</strong> This assumes a specific order for query parameters.
-     * If modified, then update {@link SqlFTS#INSERT_BODY}, {@link SqlFTS#UPDATE}
+     * Return a {@link Cursor}, suited for a local-search.
+     * This is used by the standard system search dialog.
      *
-     * @param cursor Cursor of books to update
-     * @param stmt   Statement to execute (insert or update)
+     * @param keywords Keywords to find anywhere in book; this includes titles and authors
+     *
+     * @return a cursor, or {@code null} if all input was empty
      */
-    private void ftsSendBooks(@NonNull final Cursor cursor,
-                              @NonNull final SynchronizedStatement stmt) {
+    @Nullable
+    Cursor fetchSearchSuggestions(@NonNull final String keywords) {
+        // non-FTS
+        // String q = '%' + toAscii(query) + '%';
+        // return sSyncedDb.rawQuery(SqlSelect.SEARCH_SUGGESTIONS,
+        //                           new String[]{q, q, q, q, q, q, q});
 
-        if (!sSyncedDb.inTransaction()) {
-            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
+        String query = SqlFTS.cleanupFtsCriterion(keywords, null);
+        // do we have anything to search for?
+        if (query.isEmpty()) {
+            return null;
         }
-
-        // Accumulator for author names for each book
-        StringBuilder authorText = new StringBuilder();
-        // Accumulator for series titles for each book
-        StringBuilder seriesText = new StringBuilder();
-        // Accumulator for titles for each anthology
-        StringBuilder titleText = new StringBuilder();
-
-        // Indexes of fields in the inner-loop cursors, -2 for 'not initialised yet'
-        int colGivenNames = -2;
-        int colFamilyName = -2;
-        int colSeriesInfo = -2;
-        int colTOCEntryAuthorInfo = -2;
-        int colTOCEntryInfo = -2;
-
-        final RowDataHolder rowData = new CursorRow(cursor);
-        // Process each book
-        while (cursor.moveToNext()) {
-            // Reset authors/series/title
-            authorText.setLength(0);
-            seriesText.setLength(0);
-            titleText.setLength(0);
-
-            titleText.append(rowData.getString(KEY_TITLE)).append(";");
-
-            // Get list of authors
-            try (Cursor authors = sSyncedDb.rawQuery(
-                    SqlFTS.GET_AUTHORS_BY_BOOK_ID,
-                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
-                // Get column indexes, if not already got
-                if (colGivenNames < 0) {
-                    colGivenNames = authors.getColumnIndex(KEY_AUTHOR_GIVEN_NAMES);
-                }
-                if (colFamilyName < 0) {
-                    colFamilyName = authors.getColumnIndex(KEY_AUTHOR_FAMILY_NAME);
-                }
-                // Append each author
-                while (authors.moveToNext()) {
-                    authorText.append(authors.getString(colGivenNames));
-                    authorText.append(' ');
-                    authorText.append(authors.getString(colFamilyName));
-                    authorText.append(';');
-                }
-            }
-
-            // Get list of series
-            try (Cursor series = sSyncedDb.rawQuery(
-                    SqlFTS.GET_SERIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
-                // Get column indexes, if not already got
-                if (colSeriesInfo < 0) {
-                    colSeriesInfo = series.getColumnIndexOrThrow(SqlFTS.KEY_SERIES_INFO);
-                }
-                // Append each series
-                while (series.moveToNext()) {
-                    seriesText.append(series.getString(colSeriesInfo));
-                    seriesText.append(';');
-                }
-            }
-
-            // Get list of anthology data (author and title)
-            try (Cursor tocEntries = sSyncedDb.rawQuery(
-                    SqlFTS.GET_TOC_ENTRIES_BY_BOOK_ID,
-                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
-                // Get column indexes, if not already got
-                if (colTOCEntryAuthorInfo < 0) {
-                    colTOCEntryAuthorInfo =
-                            tocEntries.getColumnIndexOrThrow(SqlFTS.KEY_TOC_ENTRY_AUTHOR_INFO);
-                }
-                if (colTOCEntryInfo < 0) {
-                    colTOCEntryInfo =
-                            tocEntries.getColumnIndexOrThrow(SqlFTS.KEY_TOC_ENTRY_TITLE);
-                }
-                while (tocEntries.moveToNext()) {
-                    authorText.append(tocEntries.getString(colTOCEntryAuthorInfo));
-                    authorText.append(';');
-                    titleText.append(tocEntries.getString(colTOCEntryInfo));
-                    titleText.append(';');
-                }
-            }
-
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
-                bindStringOrNull(stmt, 1, authorText.toString());
-                bindStringOrNull(stmt, 2, titleText.toString());
-                bindStringOrNull(stmt, 3, seriesText.toString());
-                bindStringOrNull(stmt, 4, rowData.getString(KEY_DESCRIPTION));
-                bindStringOrNull(stmt, 5, rowData.getString(KEY_PRIVATE_NOTES));
-                bindStringOrNull(stmt, 6, rowData.getString(KEY_PUBLISHER));
-                bindStringOrNull(stmt, 7, rowData.getString(KEY_GENRE));
-                bindStringOrNull(stmt, 8, rowData.getString(KEY_LOCATION));
-                bindStringOrNull(stmt, 9, rowData.getString(KEY_ISBN));
-                // DOM_FTS_BOOKS_PK
-                stmt.bindLong(10, rowData.getLong(KEY_PK_ID));
-
-                stmt.execute();
-            }
-        }
+        return sSyncedDb.rawQuery(SqlFTS.SEARCH_SUGGESTIONS, new String[]{query});
     }
 
     /**
-     * Return a {@link Cursor}, suited for a local-search, for the given query string.
+     * Return a {@link Cursor}, suited for a local-search.
+     * This is used by the advanced search activity.
      *
-     * @param query string
+     * @param author      Author related keywords to find
+     * @param title       Title related keywords to find
+     * @param seriesTitle Series title related keywords to find
+     * @param keywords    Keywords to find anywhere in book; this includes titles and authors
+     * @param limit       maximum number of rows to return
      *
-     * @return {@link Cursor} containing all records, if any
+     * @return a cursor, or {@code null} if all input was empty
      */
-    @NonNull
-    Cursor fetchSearchSuggestions(@NonNull final CharSequence query) {
-        String q = '%' + toAscii(query) + '%';
-        return sSyncedDb.rawQuery(SqlSelect.SEARCH_SUGGESTIONS, new String[]{q, q, q, q, q, q, q});
+    @Nullable
+    public Cursor fetchSearchSuggestionsAdv(@Nullable final String author,
+                                            @Nullable final String title,
+                                            @Nullable final String seriesTitle,
+                                            @Nullable final String keywords,
+                                            final int limit) {
+
+        String query = SqlFTS.createMatchString(author, title, seriesTitle, keywords);
+        // do we have anything to search for?
+        if (query.isEmpty()) {
+            return null;
+        }
+        return sSyncedDb.rawQuery(SqlFTS.SEARCH, new String[]{query, String.valueOf(limit)});
     }
 
     /**
@@ -3579,6 +3385,111 @@ public class DAO
     }
 
     /**
+     * Send the book details from the cursor to the passed fts query.
+     * <p>
+     * <strong>Note:</strong> This assumes a specific order for query parameters.
+     * If modified, then update {@link SqlFTS#INSERT_BODY}, {@link SqlFTS#UPDATE}
+     *
+     * @param cursor Cursor of books to update
+     * @param stmt   Statement to execute (insert or update)
+     */
+    private void ftsSendBooks(@NonNull final Cursor cursor,
+                              @NonNull final SynchronizedStatement stmt) {
+
+        if (!sSyncedDb.inTransaction()) {
+            throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
+        }
+
+        // Accumulator for author names for each book
+        StringBuilder authorText = new StringBuilder();
+        // Accumulator for series titles for each book
+        StringBuilder seriesText = new StringBuilder();
+        // Accumulator for TOCEntry titles for each book
+        StringBuilder tocTitles = new StringBuilder();
+
+        // Indexes of fields in the inner-loop cursors, -2 for 'not initialised yet'
+        int colGivenNames = -2;
+        int colFamilyName = -2;
+        int colSeriesInfo = -2;
+        int colTOCEntryInfo = -2;
+
+        final RowDataHolder rowData = new CursorRow(cursor);
+        // Process each book
+        while (cursor.moveToNext()) {
+            authorText.setLength(0);
+            seriesText.setLength(0);
+            tocTitles.setLength(0);
+
+            // Get list of authors
+            try (Cursor authors = sSyncedDb.rawQuery(
+                    SqlFTS.GET_AUTHORS_BY_BOOK_ID,
+                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
+                // Get column indexes, if not already got
+                if (colGivenNames < 0) {
+                    colGivenNames = authors.getColumnIndex(KEY_AUTHOR_GIVEN_NAMES);
+                }
+                if (colFamilyName < 0) {
+                    colFamilyName = authors.getColumnIndex(KEY_AUTHOR_FAMILY_NAME);
+                }
+                // Append each author
+                while (authors.moveToNext()) {
+                    authorText.append(authors.getString(colGivenNames)).append(' ');
+                    authorText.append(authors.getString(colFamilyName)).append(';');
+                }
+            }
+
+            // Get list of series
+            try (Cursor series = sSyncedDb.rawQuery(
+                    SqlFTS.GET_SERIES_BY_BOOK_ID,
+                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
+                // Get column indexes, if not already got
+                if (colSeriesInfo < 0) {
+                    colSeriesInfo = series.getColumnIndexOrThrow(KEY_SERIES_TITLE);
+                }
+                // Append each series
+                while (series.moveToNext()) {
+                    seriesText.append(series.getString(colSeriesInfo)).append(';');
+                }
+            }
+
+            // Get list of TOC titles
+            try (Cursor tocEntries = sSyncedDb.rawQuery(
+                    SqlFTS.GET_TOC_TITLES_BY_BOOK_ID,
+                    new String[]{String.valueOf(rowData.getLong(KEY_PK_ID))})) {
+                // Get column indexes, if not already got
+                if (colTOCEntryInfo < 0) {
+                    colTOCEntryInfo = tocEntries.getColumnIndexOrThrow(KEY_TITLE);
+                }
+                while (tocEntries.moveToNext()) {
+                    tocTitles.append(tocEntries.getString(colTOCEntryInfo)).append(';');
+                }
+            }
+
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (stmt) {
+                bindStringOrNull(stmt, 1, rowData.getString(KEY_TITLE));
+                // DOM_FTS_AUTHOR_NAME
+                bindStringOrNull(stmt, 2, authorText.toString());
+                // DOM_SERIES_TITLE
+                bindStringOrNull(stmt, 3, seriesText.toString());
+                bindStringOrNull(stmt, 4, rowData.getString(KEY_DESCRIPTION));
+                bindStringOrNull(stmt, 5, rowData.getString(KEY_PRIVATE_NOTES));
+                bindStringOrNull(stmt, 6, rowData.getString(KEY_PUBLISHER));
+                bindStringOrNull(stmt, 7, rowData.getString(KEY_GENRE));
+                bindStringOrNull(stmt, 8, rowData.getString(KEY_LOCATION));
+                bindStringOrNull(stmt, 9, rowData.getString(KEY_ISBN));
+                // DOM_FTS_TOC_ENTRY_TITLE
+                bindStringOrNull(stmt, 10, tocTitles.toString());
+
+                // DOM_FTS_BOOKS_PK; either as insert param, or as where clause param
+                stmt.bindLong(11, rowData.getLong(KEY_PK_ID));
+
+                stmt.execute();
+            }
+        }
+    }
+
+    /**
      * Insert a book into the FTS. Assumes book does not already exist in FTS.
      * <p>
      * <strong>Transaction:</strong> required
@@ -3586,7 +3497,7 @@ public class DAO
      * @param context Current context
      * @param bookId  the book to add to FTS
      */
-    private void insertFts(@NonNull final Context context,
+    private void ftsInsert(@NonNull final Context context,
                            final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
@@ -3617,7 +3528,7 @@ public class DAO
      * @param context Application context
      * @param bookId  the book id
      */
-    private void updateFts(@NonNull final Context context,
+    private void ftsUpdate(@NonNull final Context context,
                            final long bookId) {
 
         if (!sSyncedDb.inTransaction()) {
@@ -3640,33 +3551,10 @@ public class DAO
     }
 
     /**
-     * Search the FTS table and return a cursor.
-     *
-     * @param author      Author related keywords to find
-     * @param title       Title related keywords to find
-     * @param seriesTitle Series title related keywords to find
-     * @param keywords    Keywords to find anywhere in book; this includes titles and authors
-     *
-     * @return a cursor, or {@code null} if all input was empty
-     */
-    @Nullable
-    public Cursor searchFts(@Nullable final String author,
-                            @Nullable final String title,
-                            @Nullable final String seriesTitle,
-                            @Nullable final String keywords) {
-        String sql = getFtsSearchSQL(author, title, seriesTitle, keywords);
-        if (sql == null) {
-            return null;
-        }
-
-        return sSyncedDb.rawQuery(sql, null);
-    }
-
-    /**
      * Rebuild the entire FTS database.
      * This can take several seconds with many books or a slow device.
      */
-    public void rebuildFts() {
+    public void ftsRebuild() {
         if (sSyncedDb.inTransaction()) {
             throw new TransactionException();
         }
@@ -3772,6 +3660,11 @@ public class DAO
         }
     }
 
+    /**
+     * Process a single row from the cursor.
+     *
+     * @return {@code true} on success
+     */
     @SuppressWarnings("UnusedReturnValue")
     private boolean rebuildOrderByTitleColumns(@NonNull final Context context,
                                                @NonNull final Locale locale,
@@ -3786,7 +3679,7 @@ public class DAO
 
         String rebuildObTitle;
         if (reorder) {
-            rebuildObTitle = ItemWithTitle.reorderTitle(context, title, locale);
+            rebuildObTitle = ItemWithTitle.reorder(context, title, locale);
         } else {
             rebuildObTitle = currentObTitle;
         }
@@ -3800,6 +3693,18 @@ public class DAO
         }
 
         return true;
+    }
+
+    public void rebuildIndices() {
+        sDbHelper.recreateIndices(sSyncedDb);
+    }
+
+    public void rebuildTriggers() {
+        sDbHelper.createTriggers(sSyncedDb);
+    }
+
+    public void analyze() {
+        sSyncedDb.analyze();
     }
 
     /**
@@ -4105,12 +4010,20 @@ public class DAO
                 + " WHEN " + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + " IS NULL THEN ''"
                 + " ELSE " + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
                 + " END";
+
         /**
-         * Single column, with the Series number of a Book casted to a float
-         * to allow easy sorting.
+         * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_CSV}.
+         * <p>
+         * The order of the names is arbitrary.
+         * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
          */
-        public static final String EXP_SERIES_NUMBER_AS_FLOAT =
-                "CAST(" + TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES) + " AS REAL)";
+        public static final String EXP_BOOKSHELVES_CSV =
+                "("
+                + "SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')"
+                + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
+                + " WHERE " + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
+                + ")";
+
         /**
          * Single column, with the formatted name of the Series.
          * <p>
@@ -4573,7 +4486,6 @@ public class DAO
                 + " WHERE upper(" + KEY_ISBN + ")=upper(?)";
 
 
-
         static final String BOOKLIST_STYLE_ID_BY_UUID =
                 "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKLIST_STYLES.getName()
                 + " WHERE " + KEY_UUID + "=?";
@@ -4741,56 +4653,40 @@ public class DAO
         static final String GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID =
                 SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND + " WHERE " + KEY_PK_ID + "=?";
 
-        /**
-         * Local search using the system search (as opposed to FTS)
-         * <p>
-         * 7 parameters.
-         */
+        /** Local-search query suggestions. See {@link SqlFTS#SEARCH_SUGGESTIONS}. */
         static final String SEARCH_SUGGESTIONS =
                 "SELECT * FROM ("
-                // Book Title
+                // Book Title or ISBN: searches on both, but uses the title for the intent data
                 + "SELECT \"BK\" || " + TBL_BOOKS.dotAs(KEY_PK_ID)
                 + ',' + TBL_BOOKS.dotAs(KEY_TITLE, SearchManager.SUGGEST_COLUMN_TEXT_1)
+                + ',' + TBL_BOOKS.dotAs(KEY_ISBN, SearchManager.SUGGEST_COLUMN_TEXT_2)
                 + ',' + TBL_BOOKS.dotAs(KEY_TITLE, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
                 + " FROM " + TBL_BOOKS.ref()
                 + " WHERE " + TBL_BOOKS.dot(KEY_TITLE) + " LIKE ?"
                 + " OR " + TBL_BOOKS.dot(KEY_TITLE_OB) + " LIKE ?"
+                + " OR " + TBL_BOOKS.dot(KEY_ISBN) + " LIKE ?"
 
                 + " UNION "
 
-                // Author Family Name
+                // Author: searches both family and given names, but will use the family name
+                // for the intent data
                 + " SELECT \"AF\" || " + TBL_AUTHORS.dotAs(KEY_PK_ID)
                 + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_FAMILY_NAME,
                                           SearchManager.SUGGEST_COLUMN_TEXT_1)
+                + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_GIVEN_NAMES,
+                                          SearchManager.SUGGEST_COLUMN_TEXT_2)
                 + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_FAMILY_NAME,
                                           SearchManager.SUGGEST_COLUMN_INTENT_DATA)
                 + " FROM " + TBL_AUTHORS.ref()
                 + " WHERE " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME) + " LIKE ?"
                 + " OR " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB) + " LIKE ?"
-
-                + " UNION "
-
-                // Author Given Names
-                + " SELECT \"AG\" || " + TBL_AUTHORS.dotAs(KEY_PK_ID)
-                + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_GIVEN_NAMES,
-                                          SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_GIVEN_NAMES,
-                                          SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_AUTHORS.ref()
-                + " WHERE " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES) + " LIKE ?"
+                + " OR " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES) + " LIKE ?"
                 + " OR " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + " LIKE ?"
 
-                + " UNION "
-
-                // Book ISBN
-                + " SELECT \"BK\" || " + TBL_BOOKS.dotAs(KEY_PK_ID)
-                + ',' + TBL_BOOKS.dotAs(KEY_ISBN, SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_BOOKS.dotAs(KEY_ISBN, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_BOOKS.ref()
-                + " WHERE " + TBL_BOOKS.dot(KEY_ISBN) + " LIKE ?"
-
                 + " ) AS zzz "
-                + " ORDER BY " + SearchManager.SUGGEST_COLUMN_TEXT_1 + COLLATION;
+                + " ORDER BY " + SearchManager.SUGGEST_COLUMN_TEXT_1
+                + ',' + SearchManager.SUGGEST_COLUMN_TEXT_2
+                + COLLATION;
     }
 
     /**
@@ -5039,48 +4935,33 @@ public class DAO
     /**
      * Sql specific for FTS.
      */
-    private static final class SqlFTS {
+    public static final class SqlFTS {
 
+        /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_AUTHORS_BY_BOOK_ID =
-                "SELECT "
-                + TBL_AUTHORS.getAlias() + '.' + "*"
-                + " FROM "
-                + TBL_BOOK_AUTHOR.ref()
-                + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                + " WHERE "
-                + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + "=?";
-
-        static final String KEY_SERIES_INFO = "seriesInfo";
+                "SELECT " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME)
+                + ',' + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES)
+                + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + "=?"
+                + " ORDER BY " + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION);
+        /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_SERIES_BY_BOOK_ID =
-                "SELECT "
-                + TBL_SERIES.dot(KEY_SERIES_TITLE) + " || ' ' || "
+                "SELECT " + TBL_SERIES.dot(KEY_SERIES_TITLE) + "||' '||"
                 + " COALESCE(" + TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES) + ",'')"
-                + " AS " + KEY_SERIES_INFO
-                + " FROM "
-                + TBL_BOOK_SERIES.ref()
-                + TBL_BOOK_SERIES.join(TBL_SERIES)
-                + " WHERE "
-                + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + "=?";
+                + " AS " + KEY_SERIES_TITLE
+                + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
+                + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + "=?"
+                + " ORDER BY " + TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION);
+        /** Used during insert of a book. Minimal column list. Not ordered. */
+        static final String GET_TOC_TITLES_BY_BOOK_ID =
+                "SELECT " + TBL_TOC_ENTRIES.dot(KEY_TITLE)
+                + " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
 
-        static final String KEY_TOC_ENTRY_AUTHOR_INFO = "TOCEntryAuthor";
-        static final String KEY_TOC_ENTRY_TITLE = "TOCEntryTitle";
-
-        static final String GET_TOC_ENTRIES_BY_BOOK_ID =
-                "SELECT "
-                + (TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES) + " || ' ' || "
-                   + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME)) + " AS " + KEY_TOC_ENTRY_AUTHOR_INFO
-                + ',' + KEY_TITLE + " AS " + KEY_TOC_ENTRY_TITLE
-                + " FROM "
-                + TBL_TOC_ENTRIES.ref()
-                + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
-                + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
-                + " WHERE "
-                + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_BOOK) + "=?";
-
-        // the body of an INSERT INTO [table]. Used more than once.
+                + " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_BOOK) + "=?";
+        /** the body of an INSERT INTO [table]. Used more than once. */
         static final String INSERT_BODY =
-                " (" + KEY_FTS_AUTHOR_NAME
-                + ',' + KEY_TITLE
+                " (" + KEY_TITLE
+                + ',' + KEY_FTS_AUTHOR_NAME
                 + ',' + KEY_SERIES_TITLE
                 + ',' + KEY_DESCRIPTION
                 + ',' + KEY_PRIVATE_NOTES
@@ -5088,17 +4969,25 @@ public class DAO
                 + ',' + KEY_GENRE
                 + ',' + KEY_LOCATION
                 + ',' + KEY_ISBN
-                + ',' + KEY_FTS_BOOKS_PK
-                + ") VALUES (?,?,?,?,?,?,?,?,?,?)";
+                + ',' + KEY_FTS_TOC_ENTRY_TITLE
 
-        // The parameter order MUST match the order expected in UPDATE.
+                + ',' + KEY_FTS_BOOKS_PK
+                + ") VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+
+        /**
+         * The full INSERT statement.
+         * The parameter order MUST match the order expected in UPDATE.
+         */
         static final String INSERT = "INSERT INTO " + TBL_FTS_BOOKS.getName() + INSERT_BODY;
 
-        // The parameter order MUST match the order expected in INSERT.
+        /**
+         * The full UPDATE statement.
+         * The parameter order MUST match the order expected in INSERT.
+         */
         static final String UPDATE =
                 "UPDATE " + TBL_FTS_BOOKS.getName()
-                + " SET " + KEY_FTS_AUTHOR_NAME + "=?"
-                + ',' + KEY_TITLE + "=?"
+                + " SET " + KEY_TITLE + "=?"
+                + ',' + KEY_FTS_AUTHOR_NAME + "=?"
                 + ',' + KEY_SERIES_TITLE + "=?"
                 + ',' + KEY_DESCRIPTION + "=?"
                 + ',' + KEY_PRIVATE_NOTES + "=?"
@@ -5106,6 +4995,138 @@ public class DAO
                 + ',' + KEY_GENRE + "=?"
                 + ',' + KEY_LOCATION + "=?"
                 + ',' + KEY_ISBN + "=?"
+                + ',' + KEY_FTS_TOC_ENTRY_TITLE + "=?"
+
                 + " WHERE " + KEY_FTS_BOOKS_PK + "=?";
+
+        /** Standard Local-search. */
+        static final String SEARCH_SUGGESTIONS =
+                // KEY_FTS_BOOKS_PK is the _id into the books table.
+                "SELECT " + KEY_FTS_BOOKS_PK + " AS " + KEY_PK_ID
+                + ',' + TBL_FTS_BOOKS.dotAs(KEY_TITLE,
+                                            SearchManager.SUGGEST_COLUMN_TEXT_1)
+                + ',' + TBL_FTS_BOOKS.dotAs(KEY_FTS_AUTHOR_NAME,
+                                            SearchManager.SUGGEST_COLUMN_TEXT_2)
+                + ',' + TBL_FTS_BOOKS.dotAs(KEY_TITLE,
+                                            SearchManager.SUGGEST_COLUMN_INTENT_DATA)
+                + " FROM " + TBL_FTS_BOOKS.getName()
+                + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH ?";
+
+        /** Advanced Local-search. */
+        static final String SEARCH
+                = "SELECT "
+                  // KEY_FTS_BOOKS_PK is the _id into the books table.
+                  + KEY_FTS_BOOKS_PK + " AS " + KEY_PK_ID
+                  + " FROM " + TBL_FTS_BOOKS.getName()
+                  + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH ?"
+                  + " LIMIT ?";
+
+
+        /**
+         * Cleanup a search string as preparation for an FTS search.
+         * <p>
+         * All diacritic characters are converted to ASCII.
+         * Remove punctuation from the search string to TRY to match the tokenizer.
+         * The only punctuation we allow is a hyphen preceded by a space => negate the next word.
+         * Everything else is translated to a space.
+         *
+         * @param searchText Search criteria to clean
+         * @param domain     (optional) domain to prefix the searchText or {@code null} for none
+         *
+         * @return Clean string
+         */
+        @NonNull
+        private static String cleanupFtsCriterion(@Nullable final String searchText,
+                                                  @Nullable final String domain) {
+
+            if (searchText == null || searchText.isEmpty()) {
+                return "";
+            }
+
+            // Convert the text to pure ASCII. We'll use an array to loop over it.
+            final char[] chars = toAscii(searchText).toCharArray();
+            // Cached length
+            final int len = chars.length;
+            // Initial position
+            int pos = 0;
+            // Dummy 'previous' character
+            char prev = ' ';
+
+            // Output buffer
+            final StringBuilder parameter = new StringBuilder();
+
+            // Loop over array
+            while (pos < len) {
+                char current = chars[pos];
+                // If current is letter or digit, use it.
+                if (Character.isLetterOrDigit(current)) {
+                    parameter.append(current);
+
+                } else if (current == '-' && Character.isWhitespace(prev)) {
+                    // Allow negation if preceded by space
+                    parameter.append(current);
+
+                } else {
+                    // Turn everything else in whitespace
+                    current = ' ';
+
+                    if (!Character.isWhitespace(prev)) {
+                        // If prev character was non-ws, and not negation, make wildcard
+                        if (prev != '-') {
+                            parameter.append('*');
+                        }
+                        // Append a whitespace only when last char was not a whitespace
+                        parameter.append(' ');
+                    }
+                }
+                prev = current;
+                pos++;
+            }
+
+            // append a wildcard if prev character was non-ws, and not negation
+            if (!Character.isWhitespace(prev) && (prev != '-')) {
+                parameter.append('*');
+            }
+            // reminder to self: we do not need to prepend with a '*' for MATCH to work.
+            String cleanedText = parameter.toString().trim();
+
+            if (domain != null) {
+                // prepend each word with the FTS column name.
+                StringBuilder result = new StringBuilder();
+                for (String word : cleanedText.split(" ")) {
+                    if (!word.isEmpty()) {
+                        result.append(' ').append(domain).append(':').append(word);
+                    }
+                }
+                return result.toString();
+            } else {
+                // no domain, return as-is
+                return cleanedText;
+            }
+        }
+
+        /**
+         * Create a string suited to be used with MATCH.
+         *
+         * @param author      Author related keywords to find
+         * @param title       Title related keywords to find
+         * @param seriesTitle Series title related keywords to find
+         * @param keywords    Keywords to find anywhere in book; this includes titles and authors
+         *
+         * @return an query string suited to search FTS for the specified parameters,
+         * or {@code ""} if all input was empty
+         */
+        @NonNull
+        public static String createMatchString(@Nullable final String author,
+                                               @Nullable final String title,
+                                               @Nullable final String seriesTitle,
+                                               @Nullable final String keywords) {
+
+            return (cleanupFtsCriterion(keywords, null)
+                    + cleanupFtsCriterion(author, KEY_FTS_AUTHOR_NAME)
+                    + cleanupFtsCriterion(title, KEY_TITLE)
+                    + cleanupFtsCriterion(seriesTitle, KEY_SERIES_TITLE))
+                    .trim();
+        }
     }
 }

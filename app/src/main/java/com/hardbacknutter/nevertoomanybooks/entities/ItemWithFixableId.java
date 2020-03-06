@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.content.Context;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -39,8 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 /**
@@ -104,17 +101,11 @@ public interface ItemWithFixableId
                 // The base object(id) is unique, but other "list-significant" fields are not.
                 ids.add(itemId);
                 hashCodes.add(hashCode);
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.PRUNE_LIST) {
-                    Log.d(TAG, "pruneList|if-1|item=" + item);
-                }
 
             } else if (hashCodes.contains(hashCode) || (itemId != 0 && ids.contains(itemId))) {
                 // Fully unique item already in the list, so remove.
                 it.remove();
                 modified = true;
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.PRUNE_LIST) {
-                    Log.d(TAG, "pruneList|if-2|item=" + item);
-                }
 
             } else {
                 // Fully unique item and new to the list, add it.

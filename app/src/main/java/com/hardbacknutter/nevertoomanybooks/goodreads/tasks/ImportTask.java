@@ -75,7 +75,7 @@ public class ImportTask
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.ImportTask");
-        Context context = App.getAppContext();
+        Context context = App.getTaskContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {

@@ -175,18 +175,18 @@ public class StartupActivity
 
     private void startTasks() {
         if (mModel.isStartupTasksShouldBeStarted()) {
-            mModel.getTaskProgressMessage().observe(this, message ->
+            mModel.onTaskProgress().observe(this, message ->
                     mProgressMessageView.setText(message));
 
             // when tasks are done, move on to next startup-stage
-            mModel.getTaskFinished().observe(this, finished -> {
+            mModel.onTaskFinished().observe(this, finished -> {
                 if (finished) {
                     startNextStage();
                 }
             });
 
             // any error, notify user and die.
-            mModel.getTaskException().observe(this, e -> {
+            mModel.onTaskException().observe(this, e -> {
                 if (e != null) {
                     String eMsg = e.getLocalizedMessage();
                     if (eMsg == null) {

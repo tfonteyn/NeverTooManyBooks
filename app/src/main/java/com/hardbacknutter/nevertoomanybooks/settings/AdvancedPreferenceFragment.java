@@ -36,16 +36,18 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
  * Used/defined in xml/preferences.xml
  */
 public class AdvancedPreferenceFragment
         extends BasePreferenceFragment {
+
+    private static final String TAG = "AdvancedPreferenceFrag";
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
@@ -90,18 +92,42 @@ public class AdvancedPreferenceFragment
             });
         }
 
+        preference = findPreference(Prefs.PSK_REBUILD_FTS);
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIconAttribute(android.R.attr.alertDialogIcon)
+                        .setTitle(R.string.menu_rebuild_fts)
+                        .setMessage(R.string.menu_rebuild_fts_info)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            //TODO: run the rebuild task instead
+                            try (DAO db = new DAO(TAG)) {
+                                db.ftsRebuild();
+                            }
+                        })
+                        .create()
+                        .show();
+                return true;
+            });
+        }
+
         preference = findPreference(Prefs.PSK_REBUILD_INDEX);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .setTitle(R.string.rebuild_index)
-                        .setMessage(R.string.info_rebuild_index)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> StartupViewModel
-                                .scheduleIndexRebuild(getContext(), false))
-                        .setPositiveButton(android.R.string.ok, (d, w) -> StartupViewModel
-                                .scheduleIndexRebuild(getContext(), true))
+                        .setTitle(R.string.menu_rebuild_index)
+                        .setMessage(R.string.menu_rebuild_index_info)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
+                            //TODO: run the rebuild task instead
+                            try (DAO db = new DAO(TAG)) {
+                                db.rebuildIndices();
+                            }
+                        })
                         .create()
                         .show();
                 return true;

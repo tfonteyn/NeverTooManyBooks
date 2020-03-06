@@ -64,7 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <li>Google Play Services: near automatic install.<br>
  * But won't work on devices without Google.<br>
  * Decoding is done AFTER the picture was taken so might force the user to repeat.</li>
- * <li>ZXing scanner app: user must install manually.<br>
+ * <li>ZXing scanner: user must install manually.<br>
  * App is no longer updated (since early 2019)on the Google store,
  * and the ZXing github site docs state the project in is maintenance mode.
  * </li>

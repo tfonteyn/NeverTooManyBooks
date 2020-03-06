@@ -35,10 +35,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -50,6 +46,7 @@ import java.util.TimerTask;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdvancedSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -87,18 +84,12 @@ public class FTSSearchActivity
     private String mTitleSearchText;
     /** User entered search text. */
     private String mSeriesTitleSearchText;
-    /** search field. */
-    private EditText mAuthorView;
-    /** search field. */
-    private EditText mTitleView;
     /** User entered search text. */
     private String mKeywordsSearchText;
-    /** search field. */
-    private EditText mKeywordsView;
-    /** show the number of results. */
-    private TextView mBooksFound;
-    /** The results list. */
-    private ArrayList<Long> mBookIdsFound;
+
+    /** The results book id list. For sending back to the caller. */
+    private final ArrayList<Long> mBookIdsFound = new ArrayList<>();
+
     /** Indicates user has changed something since the last search. */
     private boolean mSearchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
@@ -123,16 +114,18 @@ public class FTSSearchActivity
         }
 
         @Override
-        public void afterTextChanged(@NonNull final Editable s) {
+        public void afterTextChanged(@NonNull final Editable editable) {
+            // we're not going to change the Editable, no need to toggle this listener
             userIsActive(true);
         }
     };
-    /** search field. */
-    private EditText mSeriesTitleView;
+
+    private ActivityAdvancedSearchBinding mVb;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_search_fts;
+    protected void onSetContentView() {
+        mVb = ActivityAdvancedSearchBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -151,41 +144,33 @@ public class FTSSearchActivity
             mKeywordsSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TEXT);
         }
 
-        mAuthorView = findViewById(R.id.author);
-        mTitleView = findViewById(R.id.title);
-        mSeriesTitleView = findViewById(R.id.series_title);
-        mKeywordsView = findViewById(R.id.keywords);
-
         if (mAuthorSearchText != null) {
-            mAuthorView.setText(mAuthorSearchText);
+            mVb.author.setText(mAuthorSearchText);
         }
         if (mTitleSearchText != null) {
-            mTitleView.setText(mTitleSearchText);
+            mVb.title.setText(mTitleSearchText);
         }
         if (mSeriesTitleSearchText != null) {
-            mSeriesTitleView.setText(mSeriesTitleSearchText);
+            mVb.seriesTitle.setText(mSeriesTitleSearchText);
         }
         if (mKeywordsSearchText != null) {
-            mKeywordsView.setText(mKeywordsSearchText);
+            mVb.keywords.setText(mKeywordsSearchText);
         }
 
-        mBooksFound = findViewById(R.id.books_found);
-
         // Detect when user touches something.
-        findViewById(R.id.root).setOnTouchListener((v, event) -> {
+        mVb.content.setOnTouchListener((v, event) -> {
             userIsActive(false);
             return false;
         });
 
         // Detect when user types something.
-        mAuthorView.addTextChangedListener(mTextWatcher);
-        mTitleView.addTextChangedListener(mTextWatcher);
-        mSeriesTitleView.addTextChangedListener(mTextWatcher);
-        mKeywordsView.addTextChangedListener(mTextWatcher);
+        mVb.author.addTextChangedListener(mTextWatcher);
+        mVb.title.addTextChangedListener(mTextWatcher);
+        mVb.seriesTitle.addTextChangedListener(mTextWatcher);
+        mVb.keywords.addTextChangedListener(mTextWatcher);
 
         // When the show results buttons is tapped, go show the resulting booklist.
-        findViewById(R.id.fab).setOnClickListener(v -> {
-            // POP THE STACK, returning! to the list activity.
+        mVb.fab.setOnClickListener(v -> {
             Intent data = new Intent()
                     // pass these for displaying to the user
                     .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
@@ -224,66 +209,20 @@ public class FTSSearchActivity
         super.onPause();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-
-        menu.add(Menu.NONE, R.id.MENU_REBUILD_FTS, 0, R.string.menu_rebuild_fts)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    @CallSuper
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_REBUILD_FTS: {
-                mDb.rebuildFts();
-                return true;
-            }
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * Called in the timer thread, this code will run the search and
-     * queue the UI updates to the main thread.
-     */
-    private void doSearch() {
-        getTextFromFields();
-
-        String tmpMsg = null;
-        try (Cursor cursor = mDb.searchFts(mAuthorSearchText,
-                                           mTitleSearchText,
-                                           mSeriesTitleSearchText,
-                                           mKeywordsSearchText)) {
-            // Null return means searchFts thought the parameters were effectively blank.
-            if (cursor != null) {
-                int count = cursor.getCount();
-                tmpMsg = getResources().getQuantityString(R.plurals.n_books_found, count, count);
-                mBookIdsFound = new ArrayList<>(cursor.getCount());
-                while (cursor.moveToNext()) {
-                    mBookIdsFound.add(cursor.getLong(0));
-                }
-            }
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(this, TAG, e);
-        }
-
-        final String message = tmpMsg != null ? tmpMsg : "";
-
-        // Update the UI in main thread.
-        mHandler.post(() -> mBooksFound.setText(message));
+    private void updateUi(final int count) {
+        String s = getResources().getQuantityString(R.plurals.n_books_found, count, count);
+        mVb.booksFound.setText(s);
     }
 
     private void getTextFromFields() {
-        mAuthorSearchText = mAuthorView.getText().toString().trim();
-        mTitleSearchText = mTitleView.getText().toString().trim();
-        mSeriesTitleSearchText = mSeriesTitleView.getText().toString().trim();
-        mKeywordsSearchText = mKeywordsView.getText().toString().trim();
+        //noinspection ConstantConditions
+        mAuthorSearchText = mVb.author.getText().toString().trim();
+        //noinspection ConstantConditions
+        mTitleSearchText = mVb.title.getText().toString().trim();
+        //noinspection ConstantConditions
+        mSeriesTitleSearchText = mVb.seriesTitle.getText().toString().trim();
+        //noinspection ConstantConditions
+        mKeywordsSearchText = mVb.keywords.getText().toString().trim();
     }
 
     /**
@@ -356,7 +295,7 @@ public class FTSSearchActivity
     }
 
     /**
-     * Implements a timer task and does a search when the user is idle.
+     * Implements a timer task (Runnable) and does a search when the user is idle.
      * <p>
      * If a search happens, we stop the idle timer.
      */
@@ -378,8 +317,33 @@ public class FTSSearchActivity
                     }
                 }
             }
+
             if (doSearch) {
-                doSearch();
+                // we CAN actually read the Views here ?!
+                getTextFromFields();
+
+                int count = 0;
+                try (Cursor cursor = mDb.fetchSearchSuggestionsAdv(mAuthorSearchText,
+                                                                   mTitleSearchText,
+                                                                   mSeriesTitleSearchText,
+                                                                   mKeywordsSearchText,
+                                                                   20)) {
+                    // Null return means searchFts thought the parameters were effectively blank.
+                    if (cursor != null) {
+                        count = cursor.getCount();
+
+                        mBookIdsFound.clear();
+                        while (cursor.moveToNext()) {
+                            mBookIdsFound.add(cursor.getLong(0));
+                        }
+                    }
+                } catch (@NonNull final RuntimeException e) {
+                    Logger.error(FTSSearchActivity.this, TAG, e);
+                }
+
+                // Update the UI in main thread.
+                final int bookCount = count;
+                mHandler.post(() -> updateUi(bookCount));
             }
         }
     }

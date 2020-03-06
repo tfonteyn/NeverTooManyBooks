@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -85,11 +86,11 @@ public class BitmaskFilter
      */
     @Override
     @Nullable
-    public String getExpression() {
-        if (isActive()) {
-            int value = get();
+    public String getExpression(@NonNull final Context context) {
+        if (isActive(context)) {
+            int value = getValue(context);
             if (value > 0) {
-                return "((" + mTable.dot(mDomain) + " & " + get() + ") <> 0)";
+                return "((" + mTable.dot(mDomain) + " & " + value + ") <> 0)";
             } else {
                 return "(" + mTable.dot(mDomain) + "=0)";
 
@@ -105,8 +106,10 @@ public class BitmaskFilter
     }
 
     @Override
-    public boolean isActive() {
-        return getPrefs().getBoolean(getKey() + ACTIVE, false) && App.isUsed(mDomain);
+    public boolean isActive(@NonNull final Context context) {
+        final SharedPreferences prefs = getPrefs(context);
+        return prefs.getBoolean(getKey() + ACTIVE, false)
+               && App.isUsed(prefs, mDomain);
     }
 
     @Override
@@ -116,7 +119,7 @@ public class BitmaskFilter
                + "table=" + mTable.getName()
                + ", domain=" + mDomain
                + ", mLabelId=" + mLabelId
-               + ", isActive=" + isActive()
+               + ", isActive=" + isActive(App.getAppContext())
                + ", " + super.toString()
                + "}\n";
     }

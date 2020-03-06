@@ -220,7 +220,7 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
                 Log.d(TAG, "simpleQueryForLong|" + mStatement + "|result=" + result);
             }
             return result;
@@ -242,7 +242,7 @@ public class SynchronizedStatement
         Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
             long result = mStatement.simpleQueryForLong();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
                 Log.d(TAG, "simpleQueryForLongOrZero|" + mStatement + "|result=" + result);
             }
             return result;
@@ -264,7 +264,7 @@ public class SynchronizedStatement
      * @return The result of the query.
      */
     public long count() {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
             if (!mIsCount) {
                 Log.d(TAG, "count|count statement not a count?", new Throwable());
             }
@@ -289,7 +289,7 @@ public class SynchronizedStatement
         try {
             String result = mStatement.simpleQueryForString();
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
                 Log.d(TAG, "simpleQueryForString|" + mStatement + "|result=" + result);
             }
             return result;
@@ -315,7 +315,7 @@ public class SynchronizedStatement
             return mStatement.simpleQueryForString();
 
         } catch (@NonNull final SQLiteDoneException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_SIMPLE_QUERY_FOR) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
                 Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|result=NULL");
             }
             return null;
@@ -338,7 +338,7 @@ public class SynchronizedStatement
             txLock = mSync.getExclusiveLock();
         }
         try {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
                 Log.d(TAG, "execute|" + mStatement);
             }
             mStatement.execute();
@@ -364,7 +364,7 @@ public class SynchronizedStatement
         Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
         try {
             int rowsAffected = mStatement.executeUpdateDelete();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_UPDATE_DELETE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
                 Log.d(TAG, "executeUpdateDelete|" + mStatement + "|rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
@@ -390,7 +390,7 @@ public class SynchronizedStatement
         try {
             long id = mStatement.executeInsert();
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_EXECUTE_INSERT) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_STMT_EXECUTE) {
                 Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {

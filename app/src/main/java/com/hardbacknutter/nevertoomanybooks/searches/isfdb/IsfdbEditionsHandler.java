@@ -41,8 +41,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
@@ -164,9 +162,6 @@ class IsfdbEditionsHandler
             Logger.warn(context, TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-            Logger.d(TAG, "EXIT|fetch|" + mEditions);
-        }
         return mEditions;
     }
 

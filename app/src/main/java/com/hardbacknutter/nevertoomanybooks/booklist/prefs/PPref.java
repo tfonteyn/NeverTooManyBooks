@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
@@ -45,13 +46,21 @@ public interface PPref<T> {
     String getKey();
 
     /**
-     * for single updates; user preferences only.
+     * For single updates. Not usable for globals.
+     * <ul>
+     *     <li>non-persistent preferences</li>
+     *     <li>user preferences: implementations should redirect
+     *     to {@link #set(SharedPreferences.Editor, Object)}</li>
+     * </ul>
      */
     void set(@Nullable T value);
 
     /**
-     * for batch updates.
-     * Can also be used for setting globals.
+     * for batch updates. Not usable for non-persistent.
+     * <ul>
+     *     <li>user preferences</li>
+     *     <li>global preferences</li>
+     * </ul>
      */
     void set(@NonNull SharedPreferences.Editor ed,
              @NonNull T value);
@@ -64,8 +73,24 @@ public interface PPref<T> {
      * <li>The default value as set at creation time of the preference Object.</li>
      * </ol>
      *
+     * @param context Current context
+     *
      * @return the value of the preference
      */
     @NonNull
-    T get();
+    T getValue(@NonNull final Context context);
+
+    /**
+     * Implementations should return in order below.
+     * <ol>
+     * <li>The global preference if set</li>
+     * <li>The default value as set at creation time of the preference Object.</li>
+     * </ol>
+     *
+     * @param context Current context
+     *
+     * @return the value of the preference
+     */
+    @NonNull
+    T getGlobalValue(@NonNull final Context context);
 }

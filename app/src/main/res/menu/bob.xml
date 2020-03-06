@@ -31,24 +31,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@id/MENU_SEARCH"
+        android:icon="@drawable/ic_search"
+        android:orderInCategory="@integer/MENU_ORDER_SEARCH"
+        android:title="@android:string/search_go"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@id/MENU_SORT"
         android:icon="@drawable/ic_sort_by_alpha"
+        android:orderInCategory="@integer/MENU_ORDER_SORT"
         android:title="@string/menu_sort_and_style_ellipsis"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@id/MENU_LEVEL_PREFERRED_COLLAPSE"
         android:icon="@drawable/ic_unfold_less"
+        android:orderInCategory="@integer/MENU_ORDER_LEVEL_PREFERRED_COLLAPSE"
         android:title="@string/menu_level_reset" />
 
     <item
         android:id="@id/MENU_LEVEL_EXPAND"
         android:icon="@drawable/ic_unfold_more"
+        android:orderInCategory="@integer/MENU_ORDER_LEVEL_EXPAND"
         android:title="@string/menu_level_expand" />
 
     <item
         android:id="@id/MENU_LEVEL_COLLAPSE"
         android:icon="@drawable/ic_unfold_less"
+        android:orderInCategory="@integer/MENU_ORDER_LEVEL_COLLAPSE"
         android:title="@string/menu_level_collapse" />
 
     <!--

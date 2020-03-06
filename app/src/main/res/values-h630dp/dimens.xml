@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -28,6 +28,6 @@
   -->
 
 <resources>
-    <!-- The ISBN keypad button height. -->
-    <dimen name="isbn_key_pad_button_height">45dp</dimen>
+    <!-- The ISBN keypad should not stretch beyond a reasonable height. -->
+    <dimen name="isbn_key_pad_height">400dp</dimen>
 </resources>

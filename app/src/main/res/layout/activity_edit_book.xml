@@ -57,7 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:elevation="@dimen/progressZ"
+            android:elevation="@dimen/progress_z"
             android:visibility="gone"
             tools:visibility="visible"
             />

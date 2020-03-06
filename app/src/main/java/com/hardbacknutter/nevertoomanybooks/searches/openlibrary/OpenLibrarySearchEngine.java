@@ -31,7 +31,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,8 +53,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -436,9 +433,7 @@ public class OpenLibrarySearchEngine
                           @NonNull final boolean[] fetchThumbnail,
                           @NonNull final Bundle bookData)
             throws JSONException {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
-            Log.d(TAG, "ENTER|handleResponse|" + jsonObject.toString(2));
-        }
+
         Iterator<String> it = jsonObject.keys();
         // we only handle the first result for now.
         if (it.hasNext()) {
@@ -629,9 +624,6 @@ public class OpenLibrarySearchEngine
             bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.OPEN_LIBRARY) {
-            Log.d(TAG, "EXIT|handleBook|" + bookData.toString());
-        }
         return bookData;
     }
 }

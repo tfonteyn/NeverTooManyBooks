@@ -111,7 +111,7 @@ public class StyleGroupsModel
 
         // Loop through all groups
         for (GroupWrapper wrapper : mList) {
-            // Remove its kind from style
+            // Remove it from the style
             mStyle.removeGroup(wrapper.group.getId());
             // If required, add the group back; this also takes care of the order.
             if (wrapper.present) {

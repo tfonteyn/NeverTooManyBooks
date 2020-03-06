@@ -46,7 +46,6 @@ import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
@@ -193,7 +192,7 @@ public final class DBHelper
      *
      * @param syncedDb the database
      */
-    public static void recreateIndices(@NonNull final SynchronizedDb syncedDb) {
+    public void recreateIndices(@NonNull final SynchronizedDb syncedDb) {
         // Delete all indices.
         // We read the index names from the database, so we can delete
         // indexes which were removed from the TableDefinition objects.
@@ -625,9 +624,6 @@ public final class DBHelper
     public void onOpen(@NonNull final SQLiteDatabase db) {
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive(db);
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC) {
-                Log.d(TAG, "isCollationCaseSensitive=" + sIsCollationCaseSensitive);
-            }
         }
     }
 
@@ -661,13 +657,10 @@ public final class DBHelper
             }
 
             boolean cs = !"a".equals(s);
-
-            if (BuildConfig.DEBUG /* always */) {
-                if (cs) {
-                    Log.d(TAG, "\n=============================================="
-                               + "\n========== CASE SENSITIVE COLLATION =========="
-                               + "\n==============================================");
-                }
+            if (cs) {
+                Log.e(TAG, "\n=============================================="
+                           + "\n========== CASE SENSITIVE COLLATION =========="
+                           + "\n==============================================");
             }
             return cs;
 

@@ -61,8 +61,8 @@ public class SearchAdminActivity
     private SearchAdminModel mModel;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_admin_search;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_admin_search);
     }
 
     @Override

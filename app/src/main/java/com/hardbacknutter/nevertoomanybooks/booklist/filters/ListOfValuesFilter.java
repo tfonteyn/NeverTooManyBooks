@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -85,13 +87,13 @@ public class ListOfValuesFilter<T>
 
     @Override
     @NonNull
-    public String getExpression() {
+    public String getExpression(@NonNull final Context context) {
         return '(' + mTable.dot(mDomain) + " IN (" + mCriteria + "))";
     }
 
     @Override
-    public boolean isActive() {
-        return App.isUsed(mDomain);
+    public boolean isActive(@NonNull final Context context) {
+        return App.isUsed(context, mDomain);
     }
 
     @Override

@@ -69,7 +69,7 @@ public class FetchWorksTask
     @Nullable
     protected List<GoodreadsWork> doInBackground(final Void... voids) {
         Thread.currentThread().setName("GR.FetchWorksTask");
-        Context context = App.getAppContext();
+        Context context = App.getTaskContext();
         GoodreadsAuth grAuth = new GoodreadsAuth(context);
         try {
             SearchBooksApiHandler searcher = new SearchBooksApiHandler(context, grAuth);

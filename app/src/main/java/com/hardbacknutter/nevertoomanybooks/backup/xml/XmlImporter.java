@@ -891,7 +891,7 @@ public class XmlImporter
      * See {@link XmlExporter} :
      * * Filters and Groups are flattened.
      * * - each filter has a tag
-     * * - actual groups are written as a set of ID's (kinds)
+     * * - actual groups are written as a set of ID's
      * * - each preference in a group has a tag.
      */
     static class StylesReader
@@ -975,7 +975,7 @@ public class XmlImporter
                 mStyle.updatePreferences(mContext, group.getPreferences());
             }
             // add to the menu of preferred styles if needed.
-            if (mStyle.isPreferred()) {
+            if (mStyle.isPreferred(mContext)) {
                 BooklistStyle.Helper.addPreferredStyle(mContext, mStyle);
             }
 

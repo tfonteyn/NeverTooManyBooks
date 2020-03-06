@@ -71,8 +71,8 @@ public class SettingsActivity
     private ResultDataModel mModel;
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_main_nav;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_main_nav);
     }
 
     @Override

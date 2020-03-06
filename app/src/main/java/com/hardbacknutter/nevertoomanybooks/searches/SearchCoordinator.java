@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.searches;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -263,14 +264,14 @@ public class SearchCoordinator
     /** Observable. */
     @NonNull
     public MutableLiveData<TaskListener.ProgressMessage>
-    getSearchCoordinatorProgressMessage() {
+    onSearchCoordinatorProgressMessage() {
         return mSearchCoordinatorProgressMessage;
     }
 
     /** Observable. */
     @NonNull
     public MutableLiveData<TaskListener.FinishMessage<Bundle>>
-    getSearchCoordinatorFinishedMessage() {
+    onSearchCoordinatorFinishedMessage() {
         return mSearchCoordinatorFinishedMessage;
     }
 
@@ -303,11 +304,11 @@ public class SearchCoordinator
                 mMappers.add(new ColorMapper());
             }
 
-            mPreferIsbn10 = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getBoolean(Prefs.pk_search_isbn_prefer_10, false);
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            mPreferIsbn10 = prefs.getBoolean(Prefs.pk_search_isbn_prefer_10, false);
 
             if (args != null) {
-                boolean useThumbnails = App.isUsed(UniqueId.BKEY_THUMBNAIL);
+                boolean useThumbnails = App.isUsed(prefs, UniqueId.BKEY_THUMBNAIL);
                 mFetchThumbnail = new boolean[2];
                 mFetchThumbnail[0] = useThumbnails;
                 mFetchThumbnail[1] = useThumbnails;

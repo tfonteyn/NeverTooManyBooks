@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -35,9 +35,10 @@
  -->
 <searchable
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:hint="@string/hint_system_search"
+    android:hint="@string/title_search_for_books"
     android:label="@string/title_search_for_books"
     android:searchSuggestAuthority="com.hardbacknutter.nevertoomanybooks.SearchSuggestionProvider"
     android:searchSuggestIntentAction="android.intent.action.VIEW"
+    android:searchSuggestThreshold="2"
     android:searchSuggestSelection=" ?"
     />

@@ -171,8 +171,8 @@ public class BookDetailsFragment
                 .get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions
         mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
-        mFragmentVM.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
-        mFragmentVM.getNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
+        mFragmentVM.onUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
+        mFragmentVM.onNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
             if (needs != null && needs) {
                 final Context context = getContext();
                 RequestAuthTask.prompt(context, mFragmentVM.getGoodreadsTaskListener(context));
@@ -509,7 +509,7 @@ public class BookDetailsFragment
             .setVisible(GoodreadsHandler.isShowSyncMenus(getContext()));
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-        final boolean useLending = App.isUsed(DBDefinitions.KEY_LOANEE);
+        final boolean useLending = App.isUsed(getContext(), DBDefinitions.KEY_LOANEE);
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
@@ -617,13 +617,20 @@ public class BookDetailsFragment
     private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {
 
-        private static final float SENSITIVITY = 50;
+        private static final float SENSITIVITY = 100;
 
         @Override
         public boolean onFling(@NonNull final MotionEvent e1,
                                @NonNull final MotionEvent e2,
                                final float velocityX,
                                final float velocityY) {
+
+            // make sure we're not getting a false-positive due to the user
+            // swiping to open the navigation drawer.
+            //noinspection ConstantConditions
+            if (((BaseActivity) getActivity()).isNavigationDrawerVisible()) {
+                return false;
+            }
 
             if ((e1.getX() - e2.getX()) > SENSITIVITY) {
                 if (mFragmentVM.move(mBookViewModel.getBook(), true)) {

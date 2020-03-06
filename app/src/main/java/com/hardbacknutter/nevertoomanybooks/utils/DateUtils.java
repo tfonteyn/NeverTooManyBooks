@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -335,9 +334,9 @@ public final class DateUtils {
                                       @NonNull final String dateString)
             throws NumberFormatException {
 
-        if (dateString.length() < 5) {
+        if (dateString.length() < 6) {
             // 0: empty
-            // 1,3: invalid, no need to parse
+            // 1,3,5: invalid, no need to parse
             // 2: we *could* parse and add either 1900 or 2000... but this is error prone
             // 4: shortcut for input: YYYY
             // Any of the above: just return the incoming string
@@ -356,7 +355,7 @@ public final class DateUtils {
                 return DateFormat.getDateInstance(DateFormat.MEDIUM, locale).format(date);
             }
             // failed to parse
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
+            if (BuildConfig.DEBUG /* always */) {
                 Logger.e(TAG, "toPrettyDate=" + dateString, new Throwable());
             }
             return dateString;
@@ -469,6 +468,8 @@ public final class DateUtils {
     /**
      * Passed date components build a (partial) SQL format date string.
      * Locale independent.
+     *
+     * @param month 1..12 based (or null for no month)
      *
      * @return Formatted date, e.g. '2011-11-01' or '2011-11'
      */

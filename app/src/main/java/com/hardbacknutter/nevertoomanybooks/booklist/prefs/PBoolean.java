@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,17 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 /**
- * A Boolean stored as a Boolean.
- * <p>
  * Used for {@link androidx.preference.SwitchPreference}
  */
 public class PBoolean
@@ -54,7 +50,7 @@ public class PBoolean
     public PBoolean(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent) {
-        super(key, uuid, isPersistent, getPrefBoolean(key, false));
+        super(key, uuid, isPersistent, false);
     }
 
     /**
@@ -70,79 +66,46 @@ public class PBoolean
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @NonNull final Boolean defValue) {
-        super(key, uuid, isPersistent, getPrefBoolean(key, defValue));
+        super(key, uuid, isPersistent, defValue);
     }
 
-    /**
-     * Get a global preference boolean.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return the preference value
-     */
-    private static boolean getPrefBoolean(@NonNull final String key,
-                                          final boolean defValue) {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getBoolean(key, defValue);
-    }
-
-    @Override
-    public void set(@Nullable final Boolean value) {
-        if (!mIsPersistent) {
-            mNonPersistedValue = value;
-        } else if (value == null) {
-            remove();
-        } else {
-            getPrefs().edit().putBoolean(getKey(), value).apply();
-        }
+    @NonNull
+    public Boolean getGlobalValue(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(getKey(), mDefaultValue);
     }
 
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
-                    @Nullable final Boolean value) {
-        if (value == null) {
-            ed.remove(getKey());
-        } else {
-            ed.putBoolean(getKey(), value);
-        }
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "PBoolean{" + super.toString()
-               + ", value=`" + get() + '`'
-               + '}';
+                    @NonNull final Boolean value) {
+        ed.putBoolean(getKey(), value);
     }
 
     @NonNull
     @Override
-    public Boolean get() {
+    public Boolean getValue(@NonNull final Context context) {
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            // value is a primitive, never null
-            if (getPrefs().contains(getKey())) {
-                return getPrefs().getBoolean(getKey(), mDefaultValue);
-            } else {
-                // not present, fallback to global.
-                return getGlobal().getBoolean(getKey(), mDefaultValue);
+            // reminder: it's a primitive so we must test on contains first
+            if (getPrefs(context).contains(getKey())) {
+                return getPrefs(context).getBoolean(getKey(), mDefaultValue);
             }
+            return getGlobalValue(context);
         }
     }
 
     /**
      * syntax sugar...
      */
-    public boolean isTrue() {
-        return get();
+    public boolean isTrue(@NonNull final Context context) {
+        return getValue(context);
     }
 
     /**
      * syntax sugar...
      */
-    public boolean isFalse() {
-        return !get();
+    public boolean isFalse(@NonNull final Context context) {
+        return !getValue(context);
     }
 }

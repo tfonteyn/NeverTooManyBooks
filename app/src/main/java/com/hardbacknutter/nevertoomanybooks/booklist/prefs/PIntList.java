@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,10 +27,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +64,16 @@ public class PIntList
         mNonPersistedValue = new ArrayList<>();
     }
 
+    @NonNull
+    public List<Integer> getGlobalValue(@NonNull final Context context) {
+        String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                        .getString(getKey(), null);
+        if (value == null || value.isEmpty()) {
+            return mDefaultValue;
+        }
+        return getAsList(value);
+    }
+
     /**
      * Set the <strong>value</strong> from the Parcel.
      *
@@ -69,37 +81,23 @@ public class PIntList
      */
     @Override
     public void set(@NonNull final Parcel in) {
-        List<Integer> tmp = new ArrayList<>();
-        in.readList(tmp, getClass().getClassLoader());
-        set(tmp);
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "PIntList{" + super.toString() + '}'
-               + ", value=`" + get() + '`';
+        List<Integer> list = new ArrayList<>();
+        in.readList(list, getClass().getClassLoader());
+        set(list);
     }
 
     @NonNull
     @Override
-    public List<Integer> get() {
+    public List<Integer> getValue(@NonNull final Context context) {
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
             // reminder: it's a CSV string
-            String values = getPrefs().getString(getKey(), null);
-            if (values == null) {
-                // not present, fallback to global/default
-                values = getGlobal().getString(getKey(), null);
-                if (values == null || values.isEmpty()) {
-                    return mDefaultValue;
-                }
-            } else if (values.isEmpty()) {
-                return new ArrayList<>();
+            String value = getPrefs(context).getString(getKey(), null);
+            if (value != null && !value.isEmpty()) {
+                return getAsList(value);
             }
-
-            return getAsList(values);
+            return getGlobalValue(context);
         }
     }
 

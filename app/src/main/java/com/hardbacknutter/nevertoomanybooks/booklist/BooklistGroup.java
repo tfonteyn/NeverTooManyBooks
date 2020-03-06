@@ -31,12 +31,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceManager;
@@ -45,17 +46,11 @@ import androidx.preference.PreferenceScreen;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
@@ -64,36 +59,50 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_READ_END;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LANGUAGE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_LOCATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_LAST_UPDATED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LANGUAGE;
@@ -103,12 +112,16 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ_END;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
 /**
@@ -116,15 +129,17 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * <p>
  * There is a one-to-one mapping with a {@link GroupKey},
  * the latter providing a lightweight (final) object without user preferences.
+ * The BooklistGroup encapsulates the {@link GroupKey}, adding user/temp stuff.
  * <p>
- * IMPORTANT: The {@link #mDomains} must be set at runtime each time but that is ok as
- * they are only needed at list build time. They are NOT stored.
  * <p>
- * <strong>Note:</strong> the way preferences are implemented means that all groups will add their
- * properties to the persisted state of a style. Not just the groups which are active/present
- * for that state. This is fine, as they won't get used unless activated.
- * <p>
- * Parcelable: needed by {@link  BooklistStyle}
+ * How to add a new Group:
+ * <ol>
+ * <li>add it to {@link GroupKey} and update {@link #GROUP_KEY_MAX}</li>
+ * <li>if necessary add new domain to {@link DBDefinitions}</li>
+ * <li>modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains</li>
+ * <li>modify {@link BooklistAdapter#onCreateViewHolder} ; If it is just a string field it can
+ * use a {@link BooklistAdapter.GenericStringHolder} otherwise add a new holder</li>
+ * </ol>
  */
 public class BooklistGroup
         implements Parcelable {
@@ -144,7 +159,8 @@ public class BooklistGroup
             };
 
     /**
-     * The ids for the groups. <strong>Never change these ids</strong>
+     * The ids for the groups. <strong>Never change these ids</strong>,
+     * they get stored in prefs and styles
      * <p>
      * Also: the code relies on BOOK being == 0
      */
@@ -181,208 +197,29 @@ public class BooklistGroup
     public static final int SERIES_TITLE_LETTER = 30;
 
     /**
-     * NEWTHINGS: ROW_KIND_x
-     * The highest valid index of kinds - ALWAYS to be updated after adding a row kind.
+     * NEWTHINGS: GROUP_KEY_x
+     * The highest valid index of GroupKey - ALWAYS to be updated after adding a group key.
      */
-    private static final int ROW_KIND_MAX = 30;
+    @VisibleForTesting
+    static final int GROUP_KEY_MAX = 30;
 
-    /** Log tag. */
-    private static final String TAG = "BooklistGroup";
-
-    /** We create all GroupKey instances at startup and keep them cached. */
-    private static final Map<Integer, GroupKey> GROUPS = new UniqueMap<>();
-
-    static {
-        GROUPS.put(BOOK, new GroupKey(R.string.lbl_book, "b",
-                                      DOM_TITLE, TBL_BOOKS.dot(KEY_TITLE)));
-
-        GROUPS.put(AUTHOR, new GroupKey(R.string.lbl_author, "a",
-                                        DOM_FK_AUTHOR, TBL_AUTHORS.dot(KEY_PK_ID)));
-
-        GROUPS.put(SERIES, new GroupKey(R.string.lbl_series, "s",
-                                        DOM_FK_SERIES, TBL_SERIES.dot(KEY_PK_ID)));
-
-        GROUPS.put(PUBLISHER, new GroupKey(R.string.lbl_publisher, "p",
-                                           DOM_BOOK_PUBLISHER, TBL_BOOKS.dot(KEY_PUBLISHER)));
-
-        GROUPS.put(BOOKSHELF, new GroupKey(R.string.lbl_bookshelf, "shelf",
-                                           DOM_BOOKSHELF, TBL_BOOKSHELF.dot(KEY_BOOKSHELF)));
-
-        GROUPS.put(LOANED, new GroupKey(R.string.lbl_loaned, "l",
-                                        DOM_LOANEE, DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY));
-
-        GROUPS.put(GENRE, new GroupKey(R.string.lbl_genre, "g",
-                                       DOM_BOOK_GENRE, TBL_BOOKS.dot(KEY_GENRE)));
-
-        GROUPS.put(LOCATION, new GroupKey(R.string.lbl_location, "loc",
-                                          DOM_BOOK_LOCATION, TBL_BOOKS.dot(KEY_LOCATION)));
-
-        GROUPS.put(FORMAT, new GroupKey(R.string.lbl_format, "fmt",
-                                        DOM_BOOK_FORMAT, TBL_BOOKS.dot(KEY_FORMAT)));
-
-        GROUPS.put(COLOR, new GroupKey(R.string.lbl_color, "col",
-                                       DOM_BOOK_COLOR, TBL_BOOKS.dot(KEY_COLOR)));
-
-
-        // Formatting is done after fetching.
-        GROUPS.put(LANGUAGE, new GroupKey(R.string.lbl_language, "lng",
-                                          DOM_BOOK_LANGUAGE, TBL_BOOKS.dot(KEY_LANGUAGE)));
-
-        // Formatting is done after fetching.
-        GROUPS.put(RATING, new GroupKey(R.string.lbl_rating, "rt",
-                                        DOM_BOOK_RATING,
-                                        "CAST(" + TBL_BOOKS.dot(KEY_RATING) + " AS INTEGER)"));
-
-        // Formatting is done after fetching.
-        GROUPS.put(READ_STATUS,
-                   new GroupKey(R.string.lbl_read_and_unread, "r",
-                                new Domain.Builder("blg_rd_sts", ColumnInfo.TYPE_TEXT)
-                                        .notNull()
-                                        .build(),
-                                TBL_BOOKS.dot(KEY_READ)));
-
-        // Uses the OrderBy column so we get the re-ordered version if applicable.
-        // Formatting is done in the sql expression.
-        GROUPS.put(BOOK_TITLE_LETTER,
-                   new GroupKey(R.string.style_builtin_first_letter_book_title, "t",
-                                new Domain.Builder("blg_tit_let", ColumnInfo.TYPE_TEXT)
-                                        .notNull()
-                                        .build(),
-                                "upper(SUBSTR(" + TBL_BOOKS.dot(KEY_TITLE_OB)
-                                + ",1,1))"));
-
-        // Uses the OrderBy column so we get the re-ordered version if applicable.
-        // Formatting is done in the sql expression.
-        GROUPS.put(SERIES_TITLE_LETTER,
-                   new GroupKey(R.string.style_builtin_first_letter_series_title, "st",
-                                new Domain.Builder("blg_ser_tit_let", ColumnInfo.TYPE_TEXT)
-                                        .notNull()
-                                        .build(),
-                                "upper(SUBSTR(" + TBL_SERIES.dot(KEY_SERIES_TITLE_OB)
-                                + ",1,1))"));
-
-        // UTC. Formatting is done in the sql expression.
-        GROUPS.put(DATE_PUBLISHED_YEAR,
-                   new GroupKey(R.string.lbl_publication_year, "yrp",
-                                new Domain.Builder("blg_pub_y", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false)));
-        // UTC. Formatting is done after fetching.
-        GROUPS.put(DATE_PUBLISHED_MONTH,
-                   new GroupKey(R.string.lbl_publication_month, "mp",
-                                new Domain.Builder("blg_pub_m", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false)));
-
-        // UTC. Formatting is done in the sql expression.
-        GROUPS.put(DATE_FIRST_PUBLICATION_YEAR,
-                   new GroupKey(R.string.lbl_first_pub_year, "yfp",
-                                new Domain.Builder("blg_1pub_y", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
-                                                    false)));
-        // UTC. Formatting is done after fetching.
-        GROUPS.put(DATE_FIRST_PUBLICATION_MONTH,
-                   new GroupKey(R.string.lbl_first_pub_month, "mfp",
-                                new Domain.Builder("blg_1pub_m", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
-                                                     false)));
-
-        // Local for the user. Formatting is done in the sql expression.
-        GROUPS.put(DATE_ADDED_YEAR,
-                   new GroupKey(R.string.lbl_added_year, "ya",
-                                new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_ADDED), true)));
-        // Local for the user. Formatting is done after fetching.
-        GROUPS.put(DATE_ADDED_MONTH,
-                   new GroupKey(R.string.lbl_added_month, "ma",
-                                new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_ADDED), true)));
-        // Local for the user. Formatting is done in the sql expression.
-        GROUPS.put(DATE_ADDED_DAY,
-                   new GroupKey(R.string.lbl_added_day, "da",
-                                new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_ADDED), true)));
-
-        // Local for the user. Formatting is done in the sql expression.
-        GROUPS.put(DATE_READ_YEAR,
-                   new GroupKey(R.string.lbl_read_year, "yr",
-                                new Domain.Builder("blg_rd_y", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_READ_END), true)));
-        // Local for the user. Formatting is done after fetching.
-        GROUPS.put(DATE_READ_MONTH,
-                   new GroupKey(R.string.lbl_read_month, "mr",
-                                new Domain.Builder("blg_rd_m", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_READ_END), true)));
-        // Local for the user. Formatting is done in the sql expression.
-        GROUPS.put(DATE_READ_DAY,
-                   new GroupKey(R.string.lbl_read_day, "dr",
-                                new Domain.Builder("blg_rd_d", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_READ_END), true)));
-
-        // Local for the user. Formatting is done in the sql expression.
-        GROUPS.put(DATE_LAST_UPDATE_YEAR,
-                   new GroupKey(R.string.lbl_update_year, "yu",
-                                new Domain.Builder("blg_upd_y", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true)));
-        // Local for the user. Formatting is done after fetching.
-        GROUPS.put(DATE_LAST_UPDATE_MONTH,
-                   new GroupKey(R.string.lbl_update_month, "mu",
-                                new Domain.Builder("blg_upd_m", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true)));
-        // Local for the user. Formatting is done in the sql expression.
-        GROUPS.put(DATE_LAST_UPDATE_DAY,
-                   new GroupKey(R.string.lbl_update_day, "du",
-                                new Domain.Builder("blg_upd_d", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true)));
-
-        // Local for the user. Formatting is done in the sql expression.
-        GROUPS.put(DATE_ACQUIRED_YEAR,
-                   new GroupKey(R.string.lbl_date_acquired_year, "yac",
-                                new Domain.Builder("blg_acq_y", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true)));
-        // Local for the user. Formatting is done after fetching.
-        GROUPS.put(DATE_ACQUIRED_MONTH,
-                   new GroupKey(R.string.lbl_date_acquired_month, "mac",
-                                new Domain.Builder("blg_acq_m", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true)));
-        // Local for the user. Formatting is done in the sql expression.
-        GROUPS.put(DATE_ACQUIRED_DAY,
-                   new GroupKey(R.string.lbl_date_acquired_day, "dac",
-                                new Domain.Builder("blg_acq_d", ColumnInfo.TYPE_INTEGER).build(),
-                                DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true)));
-
-        // NEWTHINGS: ROW_KIND_x
-
-        if (BuildConfig.DEBUG /* always */) {
-            // Developer sanity check (for() loop starting at 1)
-            if (BOOK != 0) {
-                throw new UnexpectedValueException(BOOK);
-            }
-
-            // Developer sanity check
-            Collection<String> prefixes = new HashSet<>();
-            for (int id = 0; id <= ROW_KIND_MAX; id++) {
-                GroupKey cKey = GROUPS.get(id);
-                Objects.requireNonNull(cKey, "Missing id: " + id);
-
-                String prefix = cKey.getKeyPrefix();
-                if (!prefixes.add(prefix)) {
-                    throw new IllegalStateException("Duplicate keyPrefix: " + prefix);
-                }
-            }
-        }
-    }
-
+    /** The UUID for the style. */
     @NonNull
     final String mUuid;
+    /** Flag: is the style user-defined. */
     final boolean mIsUserDefinedStyle;
-    /** The kind of row/group we represent, see {@link GroupKey}. */
+    /** The type of row/group we represent, see {@link GroupKey}. */
     @Id
     private final int mId;
+    /** The underlying group key object. */
+    @NonNull
+    private final GroupKey mGroupKey;
     /**
      * The domains represented by this group.
-     * Set at runtime by builder based on current group and outer groups
+     * Set at runtime by builder based on current group <strong>and its outer groups</strong>
      */
     @Nullable
-    private ArrayList<Domain> mDomains;
+    private ArrayList<Domain> mAccumulatedDomains;
 
     /**
      * Constructor.
@@ -395,6 +232,7 @@ public class BooklistGroup
     private BooklistGroup(@Id final int id,
                           @NonNull final BooklistStyle style) {
         mId = id;
+        mGroupKey = GroupKey.getGroupKey(mId);
         mUuid = style.getUuid();
         mIsUserDefinedStyle = style.isUserDefined();
         initPrefs();
@@ -407,23 +245,24 @@ public class BooklistGroup
      */
     private BooklistGroup(@NonNull final Parcel in) {
         mId = in.readInt();
+        mGroupKey = GroupKey.getGroupKey(mId);
         //noinspection ConstantConditions
         mUuid = in.readString();
         mIsUserDefinedStyle = in.readInt() != 0;
-        mDomains = new ArrayList<>();
-        in.readList(mDomains, getClass().getClassLoader());
+        mAccumulatedDomains = new ArrayList<>();
+        in.readList(mAccumulatedDomains, getClass().getClassLoader());
         // now the prefs
         initPrefs();
     }
 
     /**
-     * Create a new BooklistGroup of the specified kind, creating any specific
+     * Create a new BooklistGroup of the specified id, creating any specific
      * subclasses as necessary.
      *
      * @param id    of group to create
      * @param style the style
      *
-     * @return a group based on the passed in kind
+     * @return instance
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
@@ -447,25 +286,37 @@ public class BooklistGroup
      *
      * @return the list
      */
+    @SuppressLint("WrongConstant")
     @NonNull
     public static List<BooklistGroup> getAllGroups(@NonNull final BooklistStyle style) {
         List<BooklistGroup> list = new ArrayList<>();
         // Get the set of all valid <strong>Group</strong> values.
         // In other words: all valid groups, <strong>except</strong> the BOOK.
-        Set<Integer> set = GROUPS.keySet();
-        set.remove(BOOK);
-        for (@Id int id : set) {
+        for (int id = 1; id < GROUP_KEY_MAX; id++) {
             list.add(newInstance(id, style));
         }
         return list;
     }
 
     /**
+     * Set the visibility of the list of the passed preferences.
      * When one preference is visible, make the category visible.
      *
      * @param category to set
+     * @param keys     to set visibility on
+     * @param visible  to set
      */
-    private static void setCategoryVisibility(@NonNull final PreferenceCategory category) {
+    void setPreferenceVisibility(@NonNull final PreferenceCategory category,
+                                 @NonNull final String[] keys,
+                                 final boolean visible) {
+
+        for (String key : keys) {
+            Preference preference = category.findPreference(key);
+            if (preference != null) {
+                preference.setVisible(visible);
+            }
+        }
+
         int i = 0;
         while (i < category.getPreferenceCount()) {
             if (category.getPreference(i).isVisible()) {
@@ -476,183 +327,94 @@ public class BooklistGroup
         }
     }
 
-    @NonNull
-    static GroupKey getCompoundKey(@Id final int id) {
-        return Objects.requireNonNull(GROUPS.get(id));
-    }
-
     /**
-     * Format the source string according to the kind.
+     * Get the {@link GroupKey} id.
      *
-     * <strong>Developer note::</strong> this is not (yet) complete,
-     * CHECK if the desired kind is covered.
-     * Also see {@link BooklistAdapter.GenericStringHolder#setText(String, int)}
-     * TODO: come up with a clean solution to merge these.
-     *
-     * @param context  Current context
-     * @param valueStr value (as a String) to reformat
-     *
-     * @return Formatted string, or original string when no special format
-     * was needed or on any failure
+     * @return id
      */
-    @NonNull
-    public String format(@NonNull final Context context,
-                         @NonNull final String valueStr) {
-        switch (mId) {
-            case READ_STATUS: {
-                switch (valueStr) {
-                    case "0":
-                        return context.getString(R.string.lbl_unread);
-                    case "1":
-                        return context.getString(R.string.lbl_read);
-                    default:
-                        return context.getString(R.string.hint_empty_read_status);
-                }
-            }
-            case LANGUAGE: {
-                if (valueStr.isEmpty()) {
-                    return context.getString(R.string.hint_empty_language);
-                } else {
-                    return LanguageUtils.getDisplayName(context, valueStr);
-                }
-            }
-            case RATING: {
-                if (valueStr.isEmpty()) {
-                    return context.getString(R.string.hint_empty_rating);
-                }
-                try {
-                    int i = Integer.parseInt(valueStr);
-                    // If valid, get the name
-                    if (i >= 0 && i <= Book.RATING_STARS) {
-                        return context.getResources()
-                                      .getQuantityString(R.plurals.n_stars, i, i);
-                    }
-                } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(context, TAG, e);
-                }
-                return valueStr;
-            }
-
-            case DATE_ACQUIRED_MONTH:
-            case DATE_ADDED_MONTH:
-            case DATE_LAST_UPDATE_MONTH:
-            case DATE_PUBLISHED_MONTH:
-            case DATE_READ_MONTH: {
-                if (valueStr.isEmpty()) {
-                    return context.getString(R.string.hint_empty_month);
-                }
-                try {
-                    int i = Integer.parseInt(valueStr);
-                    // If valid, get the short name
-                    if (i > 0 && i <= 12) {
-                        Locale locale = LocaleUtils.getUserLocale(context);
-                        return DateUtils.getMonthName(locale, i, false);
-                    }
-                } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(context, TAG, e);
-                }
-                return valueStr;
-            }
-
-            case AUTHOR:
-            case BOOKSHELF:
-            case BOOK:
-            case DATE_ACQUIRED_DAY:
-            case DATE_ACQUIRED_YEAR:
-            case DATE_ADDED_DAY:
-            case DATE_ADDED_YEAR:
-            case DATE_FIRST_PUBLICATION_MONTH:
-            case DATE_FIRST_PUBLICATION_YEAR:
-            case DATE_LAST_UPDATE_DAY:
-            case DATE_LAST_UPDATE_YEAR:
-            case DATE_PUBLISHED_YEAR:
-            case DATE_READ_DAY:
-            case DATE_READ_YEAR:
-            case FORMAT:
-            case COLOR:
-            case GENRE:
-            case LOANED:
-            case LOCATION:
-            case PUBLISHER:
-            case SERIES:
-            case BOOK_TITLE_LETTER:
-            case SERIES_TITLE_LETTER:
-                // no specific formatting done.
-                return valueStr;
-
-            default:
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "format"
-                               + "|source=" + valueStr
-                               + "|id=" + mId);
-                }
-                throw new UnexpectedValueException(mId);
-        }
-    }
-
     @Id
     public int getId() {
         return mId;
     }
 
-    public String getName(@NonNull final Context context) {
-        return Objects.requireNonNull(GROUPS.get(mId)).getName(context);
+    /**
+     * Get the {@link GroupKey} displayable name.
+     *
+     * @return name
+     */
+    @NonNull
+    public String getLabel(@NonNull final Context context) {
+        return mGroupKey.getLabel(context);
     }
 
     /**
-     * Compound key of this Group.
-     * <p>
-     * The name will be of the form 'keyPrefix/id' where 'keyPrefix' is the keyPrefix specific
-     * to the Group, and 'id' the id of the row, e.g. 's/18' for Series with id=18
+     * Create the expression for the key column: "/key=value"
+     * A {@code null} value is reformatted as an empty string
      *
-     * @return the key
+     * @return column expression
      */
     @NonNull
-    GroupKey getCompoundKey() {
-        return Objects.requireNonNull(GROUPS.get(mId));
+    String getNodeKeyExpression() {
+        return mGroupKey.getNodeKeyExpression();
     }
 
     /**
      * Get the domain that contains the displayable data.
+     * This is used to build the list table.
      * <p>
-     * By default, this is the key domain. Override if needed.
+     * By default, this is the key domain.
+     * Override as needed in subclasses.
      *
      * @return domain to display
      */
     @NonNull
-    Domain getDisplayDomain() {
-        return Objects.requireNonNull(GROUPS.get(mId)).getDomain();
-    }
-
-    /**
-     * Get the domain expression that contains the displayable data.
-     * <p>
-     * By default, this is the key domain. Override if needed.
-     *
-     * @return domain expression
-     */
-    @NonNull
-    String getDisplayDomainExpression() {
-        return Objects.requireNonNull(GROUPS.get(mId)).getExpression();
+    VirtualDomain getDisplayDomain() {
+        return mGroupKey.getKeyDomain();
     }
 
     /**
      * Get the domains represented by this group.
+     * This is used to build the list table.
+     * <p>
+     * Override as needed.
      *
-     * @return the domains for this group and its outer groups.
+     * @return list
      */
-    @Nullable
-    ArrayList<Domain> getDomains() {
-        return mDomains;
+    @NonNull
+    ArrayList<VirtualDomain> getGroupDomains() {
+        return mGroupKey.getGroupDomains();
     }
 
     /**
-     * Set the domains represented by this group.
+     * Get the domains that this group adds to the lowest level (book).
+     * This is used to build the list table.
+     * <p>
+     * Override as needed.
      *
-     * @param domains list of domains.
+     * @return list
      */
-    void setDomains(@Nullable final ArrayList<Domain> domains) {
-        mDomains = domains;
+    ArrayList<VirtualDomain> getBaseDomains() {
+        return mGroupKey.getBaseDomains();
+    }
+
+    /**
+     * Get the domains for this group <strong>and its outer groups</strong>
+     * This is used to build the triggers.
+     *
+     * @return list
+     */
+    @Nullable
+    ArrayList<Domain> getAccumulatedDomains() {
+        return mAccumulatedDomains;
+    }
+
+    /**
+     * Set the accumulated domains represented by this group <strong>and its outer groups</strong>.
+     *
+     * @param accumulatedDomains list of domains.
+     */
+    void setAccumulatedDomains(@Nullable final ArrayList<Domain> accumulatedDomains) {
+        mAccumulatedDomains = accumulatedDomains;
     }
 
     /**
@@ -696,7 +458,7 @@ public class BooklistGroup
         dest.writeInt(mId);
         dest.writeString(mUuid);
         dest.writeInt(mIsUserDefinedStyle ? 1 : 0);
-        dest.writeList(mDomains);
+        dest.writeList(mAccumulatedDomains);
         // now the prefs for this class (none on this level for now)
     }
 
@@ -747,8 +509,11 @@ public class BooklistGroup
     }
 
     /**
-     * Specialized BooklistGroup representing a Series group. Includes extra attributes based
-     * on preferences.
+     * Specialized BooklistGroup representing a Series group.
+     * Includes extra attributes based on preferences.
+     * <p>
+     * {@link #getDisplayDomain()} returns a customized display domain
+     * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
      */
     public static class BooklistSeriesGroup
             extends BooklistGroup
@@ -769,6 +534,9 @@ public class BooklistGroup
                     }
                 };
 
+        /** Customized domain with display data. */
+        @NonNull
+        private final VirtualDomain mDisplayDomain;
         /** Show a book under each Series it appears in. */
         private PBoolean mAllSeries;
 
@@ -779,6 +547,7 @@ public class BooklistGroup
          */
         BooklistSeriesGroup(@NonNull final BooklistStyle style) {
             super(SERIES, style);
+            mDisplayDomain = createDisplayDomain();
         }
 
         /**
@@ -788,8 +557,9 @@ public class BooklistGroup
          */
         private BooklistSeriesGroup(@NonNull final Parcel in) {
             super(in);
-            initPrefs();
             mAllSeries.set(in);
+
+            mDisplayDomain = createDisplayDomain();
         }
 
         /**
@@ -806,15 +576,15 @@ public class BooklistGroup
         }
 
         @NonNull
-        @Override
-        Domain getDisplayDomain() {
-            return DBDefinitions.DOM_SERIES_TITLE;
+        private VirtualDomain createDisplayDomain() {
+            // Not sorted; we sort on the OB domain as defined in the GroupKey.
+            return new VirtualDomain(DOM_SERIES_TITLE, TBL_SERIES.dot(KEY_SERIES_TITLE));
         }
 
         @NonNull
         @Override
-        String getDisplayDomainExpression() {
-            return DBDefinitions.TBL_SERIES.dot(DBDefinitions.KEY_SERIES_TITLE);
+        VirtualDomain getDisplayDomain() {
+            return mDisplayDomain;
         }
 
         @Override
@@ -846,13 +616,8 @@ public class BooklistGroup
 
             PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_SERIES);
             if (category != null) {
-                Preference preference = category
-                        .findPreference(Prefs.pk_style_group_series_show_books_under_each_series);
-                if (preference != null) {
-                    preference.setVisible(visible);
-                }
-
-                setCategoryVisibility(category);
+                String[] keys = {Prefs.pk_style_group_series_show_books_under_each_series};
+                setPreferenceVisibility(category, keys, visible);
             }
         }
 
@@ -861,14 +626,17 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Series.
          */
-        boolean showBooksUnderEachSeries() {
-            return mAllSeries.isTrue();
+        boolean showBooksUnderEachSeries(@NonNull final Context context) {
+            return mAllSeries.isTrue(context);
         }
     }
 
     /**
-     * Specialized BooklistGroup representing an Author group. Includes extra attributes based
-     * on preferences.
+     * Specialized BooklistGroup representing an Author group.
+     * Includes extra attributes based on preferences.
+     * <p>
+     * {@link #getDisplayDomain()} returns a customized display domain
+     * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
      */
     public static class BooklistAuthorGroup
             extends BooklistGroup
@@ -888,10 +656,21 @@ public class BooklistGroup
                         return new BooklistAuthorGroup[size];
                     }
                 };
+
+        /** Customized domain with display data. */
+        @NonNull
+        private final VirtualDomain mDisplayDomain;
+        /** Customized domain with sorted data. */
+        @NonNull
+        private final VirtualDomain mSortedDomain;
+        /** We cannot parcel the style here, so keep a local copy of this preference. */
         private final boolean mShowAuthorByGivenNameFirst;
+        /** We cannot parcel the style here, so keep a local copy of this preference. */
+        private final boolean mSortAuthorByGivenNameFirst;
+
         /** Support for 'Show All Authors of Book' property. */
         private PBoolean mAllAuthors;
-
+        /** The primary author type the user prefers. */
         private PBitmask mPrimaryType;
 
         /**
@@ -901,7 +680,10 @@ public class BooklistGroup
          */
         BooklistAuthorGroup(@NonNull final BooklistStyle style) {
             super(AUTHOR, style);
-            mShowAuthorByGivenNameFirst = style.isShowAuthorByGivenNameFirst();
+            mShowAuthorByGivenNameFirst = style.isShowAuthorByGivenNameFirst(App.getAppContext());
+            mSortAuthorByGivenNameFirst = style.isSortAuthorByGivenNameFirst(App.getAppContext());
+            mDisplayDomain = createDisplayDomain();
+            mSortedDomain = createSortDomain();
         }
 
         /**
@@ -911,11 +693,12 @@ public class BooklistGroup
          */
         private BooklistAuthorGroup(@NonNull final Parcel in) {
             super(in);
-            // actual pref
             mAllAuthors.set(in);
 
-            // just a local copy of the style pref
             mShowAuthorByGivenNameFirst = in.readInt() != 0;
+            mSortAuthorByGivenNameFirst = in.readInt() != 0;
+            mDisplayDomain = createDisplayDomain();
+            mSortedDomain = createSortDomain();
         }
 
         /**
@@ -945,17 +728,38 @@ public class BooklistGroup
         }
 
         @NonNull
-        @Override
-        Domain getDisplayDomain() {
-            return DOM_AUTHOR_FORMATTED;
+        private VirtualDomain createDisplayDomain() {
+            // Not sorted; sort as defined in #createSortDomain
+            return new VirtualDomain(DOM_AUTHOR_FORMATTED,
+                                     mShowAuthorByGivenNameFirst
+                                     ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
+                                     : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN);
+        }
+
+        @NonNull
+        private VirtualDomain createSortDomain() {
+            // Sorting depends on user preference
+            return new VirtualDomain(DOM_BL_AUTHOR_SORT,
+                                     mSortAuthorByGivenNameFirst
+                                     ? DAO.SqlColumns.EXP_AUTHOR_SORT_FIRST_LAST
+                                     : DAO.SqlColumns.EXP_AUTHOR_SORT_LAST_FIRST,
+                                     VirtualDomain.Sorted.Asc);
         }
 
         @NonNull
         @Override
-        String getDisplayDomainExpression() {
-            return mShowAuthorByGivenNameFirst
-                   ? DAO.SqlColumns.EXP_AUTHOR_FORMATTED_GIVEN_SPACE_FAMILY
-                   : DAO.SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN;
+        VirtualDomain getDisplayDomain() {
+            return mDisplayDomain;
+        }
+
+        @NonNull
+        @Override
+        ArrayList<VirtualDomain> getGroupDomains() {
+            // We need to inject the mSortedDomain as first in the list.
+            ArrayList<VirtualDomain> list = new ArrayList<>();
+            list.add(0, mSortedDomain);
+            list.addAll(super.getGroupDomains());
+            return list;
         }
 
         @Override
@@ -965,6 +769,7 @@ public class BooklistGroup
             mAllAuthors.writeToParcel(dest);
 
             dest.writeInt(mShowAuthorByGivenNameFirst ? 1 : 0);
+            dest.writeInt(mSortAuthorByGivenNameFirst ? 1 : 0);
         }
 
         @Override
@@ -994,18 +799,10 @@ public class BooklistGroup
 
             PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
             if (category != null) {
-                Preference preference = category
-                        .findPreference(Prefs.pk_style_group_author_show_books_under_each_author);
-                if (preference != null) {
-                    preference.setVisible(visible);
-                }
+                String[] keys = {Prefs.pk_style_group_author_show_books_under_each_author,
+                                 Prefs.pk_style_group_author_primary_type};
 
-                preference = category.findPreference(Prefs.pk_style_group_author_primary_type);
-                if (preference != null) {
-                    preference.setVisible(visible);
-                }
-
-                setCategoryVisibility(category);
+                setPreferenceVisibility(category, keys, visible);
             }
         }
 
@@ -1014,50 +811,72 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Authors.
          */
-        boolean showBooksUnderEachAuthor() {
-            return mAllAuthors.isTrue();
+        boolean showBooksUnderEachAuthor(@NonNull final Context context) {
+            return mAllAuthors.isTrue(context);
         }
 
         /**
          * Get this preference.
          *
+         * @param context Current context
+         *
          * @return the type of author we consider the primary author
          */
         @Author.Type
-        int getPrimaryType() {
-            return mPrimaryType.get();
+        int getPrimaryType(@NonNull final Context context) {
+            return mPrimaryType.getValue(context);
         }
     }
 
-    static class GroupKey
-            implements Parcelable {
+    /**
+     * No need to make this Parcelable, it's encapsulated in the BooklistGroup,
+     * but always reconstructed based on the ID alone.
+     */
+    static class GroupKey {
 
-        /** {@link Parcelable}. */
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        public static final Creator<GroupKey> CREATOR =
-                new Creator<GroupKey>() {
-                    @Override
-                    public GroupKey createFromParcel(@NonNull final Parcel source) {
-                        return new GroupKey(source);
-                    }
+        // Date based groups have to sort on the full date for cases
+        // where we don't have all separate year,month,day fields.
+        private static final VirtualDomain datePublished =
+                new VirtualDomain(DOM_DATE_PUBLISHED, null, VirtualDomain.Sorted.Desc);
+        private static final VirtualDomain dateFirstPublication =
+                new VirtualDomain(DOM_DATE_FIRST_PUBLICATION, null, VirtualDomain.Sorted.Desc);
+        private static final VirtualDomain bookIsRead =
+                new VirtualDomain(DOM_BOOK_READ, null, VirtualDomain.Sorted.Desc);
+        private static final VirtualDomain dateReadEnd =
+                new VirtualDomain(DOM_BOOK_DATE_READ_END, null, VirtualDomain.Sorted.Desc);
+        private static final VirtualDomain dateAdded =
+                new VirtualDomain(DOM_BOOK_DATE_ADDED, null, VirtualDomain.Sorted.Desc);
+        private static final VirtualDomain dateLastUpdated =
+                new VirtualDomain(DOM_DATE_LAST_UPDATED, null, VirtualDomain.Sorted.Desc);
+        private static final VirtualDomain dateAcquired =
+                new VirtualDomain(DOM_BOOK_DATE_ACQUIRED, null, VirtualDomain.Sorted.Desc);
 
-                    @Override
-                    public GroupKey[] newArray(final int size) {
-                        return new GroupKey[size];
-                    }
-                };
+        /** Cache for the static GroupKey instances. */
+        private static final Map<Integer, GroupKey> ALL = new UniqueMap<>();
 
+        /** User displayable label resource id. */
+        @StringRes
         private final int mLabelId;
         /** Unique keyPrefix used to represent a key in the hierarchy. */
         @NonNull
         private final String mKeyPrefix;
 
-        /** Domain for this key. */
+        /** They key domain, which is by default also the display-domain. */
         @NonNull
-        private final Domain mDomain;
-        /** Expression for this key. */
+        private final VirtualDomain mKeyDomain;
+
+        /**
+         * Aside of the main display domain, a group can have extra domains that should
+         * be fetched/sorted.
+         */
         @NonNull
-        private final String mExpression;
+        private final ArrayList<VirtualDomain> mGroupDomains = new ArrayList<>();
+
+        /**
+         * A group can add domains to the lowest level (the book).
+         */
+        @NonNull
+        private final ArrayList<VirtualDomain> mBaseDomains = new ArrayList<>();
 
         /**
          * Constructor.
@@ -1066,35 +885,384 @@ public class BooklistGroup
          * @param keyPrefix  the key prefix (as short as possible) to use for the compound key
          * @param domain     the domain to get the actual data from the Cursor
          * @param expression sql column expression for constructing the Cursor
+         * @param sorted     optional sorting
          */
-        GroupKey(final int labelId,
-                 @NonNull final String keyPrefix,
-                 @NonNull final Domain domain,
-                 @NonNull final String expression) {
+        private GroupKey(@StringRes final int labelId,
+                         @NonNull final String keyPrefix,
+                         @NonNull final Domain domain,
+                         @NonNull final String expression,
+                         @NonNull final VirtualDomain.Sorted sorted) {
             mLabelId = labelId;
             mKeyPrefix = keyPrefix;
-            mDomain = domain;
-            mExpression = expression;
+            mKeyDomain = new VirtualDomain(domain, expression, sorted);
         }
 
         /**
-         * {@link Parcelable} Constructor.
+         * GroupKey factory constructor.
          *
-         * @param in Parcel to construct the object from
+         * @param id for the desired group key
+         *
+         * @return new GroupKey instance
          */
-        private GroupKey(@NonNull final Parcel in) {
-            mLabelId = in.readInt();
-            //noinspection ConstantConditions
-            mKeyPrefix = in.readString();
-            //noinspection ConstantConditions
-            mDomain = in.readParcelable(getClass().getClassLoader());
-            //noinspection ConstantConditions
-            mExpression = in.readString();
+        private static GroupKey createGroupKey(@Id final int id) {
+            // NEWTHINGS: GROUP_KEY_x
+            switch (id) {
+                // The key domain for a book is not used for now, but using the title makes sense.
+                case BOOK: {
+                    return new GroupKey(R.string.lbl_book, "b",
+                                        DOM_TITLE, TBL_BOOKS.dot(KEY_TITLE),
+                                        VirtualDomain.Sorted.No);
+                }
+
+                // Data with a linked table use the foreign key ID as the key domain.
+                case AUTHOR: {
+                    // We must use the foreign ID to create the key.
+                    // We override the display domain in the BooklistGroup.
+                    // We do not sort on the key domain but add the OB column in the BooklistGroup.
+                    return new GroupKey(
+                            R.string.lbl_author, "a",
+                            DOM_FK_AUTHOR, TBL_AUTHORS.dot(KEY_PK_ID), VirtualDomain.Sorted.No)
+                            .addGroupDomain(
+                                    // Group by id (we want the id available and there is
+                                    // a chance two Authors will have the same name)
+                                    new VirtualDomain(DOM_FK_AUTHOR,
+                                                      TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR)))
+                            .addGroupDomain(
+                                    // Group by complete-flag
+                                    new VirtualDomain(DOM_AUTHOR_IS_COMPLETE,
+                                                      TBL_AUTHORS.dot(KEY_AUTHOR_IS_COMPLETE)));
+                }
+                case SERIES: {
+                    // We must use the foreign ID to create the key.
+                    // We override the display domain in the BooklistGroup.
+                    // We do not sort on the key domain but add the OB column instead
+                    return new GroupKey(
+                            R.string.lbl_series, "s",
+                            DOM_FK_SERIES, TBL_SERIES.dot(KEY_PK_ID), VirtualDomain.Sorted.No)
+                            .addGroupDomain(
+                                    // Group and sort by the OB column
+                                    new VirtualDomain(DOM_BL_SERIES_SORT,
+                                                      TBL_SERIES.dot(KEY_SERIES_TITLE_OB),
+                                                      VirtualDomain.Sorted.Asc)
+                                           )
+                            .addGroupDomain(
+                                    // Group by id (we want the id available and there is
+                                    // a chance two Series will have the same name)
+                                    new VirtualDomain(DOM_FK_SERIES,
+                                                      TBL_BOOK_SERIES.dot(KEY_FK_SERIES)))
+                            .addGroupDomain(
+                                    // Group by complete-flag
+                                    new VirtualDomain(DOM_SERIES_IS_COMPLETE,
+                                                      TBL_SERIES.dot(KEY_SERIES_IS_COMPLETE)))
+                            .addBaseDomain(
+                                    // The series number in the base data in sorted order.
+                                    // This field is NOT displayed.
+                                    // Casting it as a float allows for the possibility of 3.1,
+                                    // or even 3.1|Omnibus 3-10" as a series number.
+                                    new VirtualDomain(DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT,
+                                                      "CAST(" + TBL_BOOK_SERIES
+                                                              .dot(KEY_BOOK_NUM_IN_SERIES)
+                                                      + " AS REAL)",
+                                                      VirtualDomain.Sorted.Asc))
+                            .addBaseDomain(
+                                    // The series number in the base data in sorted order.
+                                    // This field is displayed.
+                                    // Covers non-numeric data (where the above float would fail)
+                                    new VirtualDomain(DOM_BOOK_NUM_IN_SERIES,
+                                                      TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES),
+                                                      VirtualDomain.Sorted.Asc));
+
+                }
+                case BOOKSHELF: {
+                    // We must use the foreign ID to create the key.
+                    // The linked data can be used directly to display.
+                    return new GroupKey(R.string.lbl_bookshelf, "shelf",
+                                        DOM_BOOKSHELF, TBL_BOOKSHELF.dot(KEY_BOOKSHELF),
+                                        VirtualDomain.Sorted.Asc);
+                }
+
+                // Data without a linked table use the display name as the key domain.
+                case COLOR: {
+                    return new GroupKey(R.string.lbl_color, "col",
+                                        DOM_BOOK_COLOR, TBL_BOOKS.dot(KEY_COLOR),
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case FORMAT: {
+                    return new GroupKey(R.string.lbl_format, "fmt",
+                                        DOM_BOOK_FORMAT, TBL_BOOKS.dot(KEY_FORMAT),
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case GENRE: {
+                    return new GroupKey(R.string.lbl_genre, "g",
+                                        DOM_BOOK_GENRE, TBL_BOOKS.dot(KEY_GENRE),
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case LANGUAGE: {
+                    // Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_language, "lng",
+                                        DOM_BOOK_LANGUAGE, TBL_BOOKS.dot(KEY_LANGUAGE),
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case LOCATION: {
+                    return new GroupKey(R.string.lbl_location, "loc",
+                                        DOM_BOOK_LOCATION, TBL_BOOKS.dot(KEY_LOCATION),
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case PUBLISHER: {
+                    return new GroupKey(R.string.lbl_publisher, "p",
+                                        DOM_BOOK_PUBLISHER, TBL_BOOKS.dot(KEY_PUBLISHER),
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case RATING: {
+                    // Formatting is done after fetching
+                    // Sort with highest rated first
+                    // The data is cast to an integer as a precaution.
+                    return new GroupKey(R.string.lbl_rating, "rt",
+                                        DOM_BOOK_RATING,
+                                        "CAST(" + TBL_BOOKS.dot(KEY_RATING) + " AS INTEGER)",
+                                        VirtualDomain.Sorted.Desc);
+                }
+
+                // the others here below are custom key domains
+                case LOANED: {
+                    return new GroupKey(R.string.lbl_loaned, "l",
+                                        DOM_LOANEE, DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case READ_STATUS: {
+                    // Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_read_and_unread, "r",
+                                        new Domain.Builder("blg_rd_sts", ColumnInfo.TYPE_TEXT)
+                                                .notNull()
+                                                .build(),
+                                        TBL_BOOKS.dot(KEY_READ),
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case BOOK_TITLE_LETTER: {
+                    // Uses the OrderBy column so we get the re-ordered version if applicable.
+                    // Formatting is done in the sql expression.
+                    return new GroupKey(R.string.style_builtin_first_letter_book_title, "t",
+                                        new Domain.Builder("blg_tit_let", ColumnInfo.TYPE_TEXT)
+                                                .notNull()
+                                                .build(),
+                                        "upper(SUBSTR(" + TBL_BOOKS.dot(KEY_TITLE_OB) + ",1,1))",
+                                        VirtualDomain.Sorted.Asc);
+                }
+                case SERIES_TITLE_LETTER: {
+                    // Uses the OrderBy column so we get the re-ordered version if applicable.
+                    // Formatting is done in the sql expression.
+                    return new GroupKey(R.string.style_builtin_first_letter_series_title, "st",
+                                        new Domain.Builder("blg_ser_tit_let", ColumnInfo.TYPE_TEXT)
+                                                .notNull()
+                                                .build(),
+                                        "upper(SUBSTR(" + TBL_SERIES.dot(KEY_SERIES_TITLE_OB)
+                                        + ",1,1))",
+                                        VirtualDomain.Sorted.Asc);
+                }
+
+                case DATE_PUBLISHED_YEAR: {
+                    // UTC. Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_publication_year, "yrp",
+                                        new Domain.Builder("blg_pub_y", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns
+                                                .year(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(datePublished);
+                }
+                case DATE_PUBLISHED_MONTH: {
+                    // UTC. Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_publication_month, "mp",
+                                        new Domain.Builder("blg_pub_m", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns
+                                                .month(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(datePublished);
+                }
+
+                case DATE_FIRST_PUBLICATION_YEAR: {
+                    // UTC. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_first_pub_year, "yfp",
+                                        new Domain.Builder("blg_1pub_y", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns
+                                                .year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
+                                                      false),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateFirstPublication);
+                }
+                case DATE_FIRST_PUBLICATION_MONTH: {
+                    // Local for the user. Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_first_pub_month, "mfp",
+                                        new Domain.Builder("blg_1pub_m", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns
+                                                .month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
+                                                       false),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateFirstPublication);
+                }
+
+                case DATE_ACQUIRED_YEAR: {
+                    // Local for the user. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_date_acquired_year, "yac",
+                                        new Domain.Builder("blg_acq_y", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateAcquired);
+                }
+                case DATE_ACQUIRED_MONTH: {
+                    // Local for the user. Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_date_acquired_month, "mac",
+                                        new Domain.Builder("blg_acq_m", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns
+                                                .month(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateAcquired);
+                }
+                case DATE_ACQUIRED_DAY: {
+                    // Local for the user. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_date_acquired_day, "dac",
+                                        new Domain.Builder("blg_acq_d", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateAcquired);
+                }
+
+
+                case DATE_ADDED_YEAR: {
+                    // Local for the user. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_added_year, "ya",
+                                        new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateAdded);
+                }
+                case DATE_ADDED_MONTH: {
+                    // Local for the user. Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_added_month, "ma",
+                                        new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateAdded);
+                }
+                case DATE_ADDED_DAY: {
+                    // Local for the user. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_added_day, "da",
+                                        new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateAdded);
+                }
+
+                case DATE_LAST_UPDATE_YEAR: {
+                    // Local for the user. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_update_year, "yu",
+                                        new Domain.Builder("blg_upd_y", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns
+                                                .year(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateLastUpdated);
+                }
+                case DATE_LAST_UPDATE_MONTH: {
+                    // Local for the user. Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_update_month, "mu",
+                                        new Domain.Builder("blg_upd_m", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns
+                                                .month(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateLastUpdated);
+                }
+                case DATE_LAST_UPDATE_DAY: {
+                    // Local for the user. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_update_day, "du",
+                                        new Domain.Builder("blg_upd_d", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns
+                                                .day(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateLastUpdated);
+                }
+
+                case DATE_READ_YEAR: {
+                    // Local for the user. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_read_year, "yr",
+                                        new Domain.Builder("blg_rd_y", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateReadEnd)
+                            .addGroupDomain(bookIsRead);
+                }
+                case DATE_READ_MONTH: {
+                    // Local for the user. Formatting is done after fetching.
+                    return new GroupKey(R.string.lbl_read_month, "mr",
+                                        new Domain.Builder("blg_rd_m", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateReadEnd)
+                            .addGroupDomain(bookIsRead);
+                }
+                case DATE_READ_DAY: {
+                    // Local for the user. Formatting is done in the sql expression.
+                    return new GroupKey(R.string.lbl_read_day, "dr",
+                                        new Domain.Builder("blg_rd_d", ColumnInfo.TYPE_INTEGER)
+                                                .build(),
+                                        DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        VirtualDomain.Sorted.Desc)
+                            .addBaseDomain(dateReadEnd)
+                            .addGroupDomain(bookIsRead);
+                }
+
+                default:
+                    throw new UnexpectedValueException(id);
+            }
+        }
+
+        /**
+         * External entry point to create/get a GroupKey.
+         *
+         * @param id of group to get
+         *
+         * @return instance
+         */
+        @NonNull
+        static GroupKey getGroupKey(@Id final int id) {
+            GroupKey groupKey = ALL.get(id);
+            if (groupKey == null) {
+                groupKey = createGroupKey(id);
+                ALL.put(id, groupKey);
+            }
+            return groupKey;
         }
 
         @NonNull
-        String getName(@NonNull final Context context) {
+        String getLabel(@NonNull final Context context) {
             return context.getString(mLabelId);
+        }
+
+        @NonNull
+        private GroupKey addGroupDomain(@NonNull final VirtualDomain vDomain) {
+            // this is a static setup. We don't check on developer mistakenly adding duplicates!
+            mGroupDomains.add(vDomain);
+            return this;
+        }
+
+        @NonNull
+        private GroupKey addBaseDomain(@NonNull final VirtualDomain vDomain) {
+            // this is a static setup. We don't check on developer mistakenly adding duplicates!
+            mBaseDomains.add(vDomain);
+            return this;
         }
 
         /**
@@ -1102,34 +1270,57 @@ public class BooklistGroup
          *
          * @return keyPrefix, never {@code null} but will be empty for a BOOK.
          */
+        @VisibleForTesting
         @NonNull
         String getKeyPrefix() {
             return mKeyPrefix;
         }
 
+        /**
+         * Create the expression for the node key column: "/key=value"
+         * A {@code null} value is reformatted as an empty string
+         *
+         * @return column expression
+         */
         @NonNull
-        Domain getDomain() {
-            return mDomain;
+        String getNodeKeyExpression() {
+            return "'/" + mKeyPrefix + "='||COALESCE(" + mKeyDomain.getExpression() + ",'')";
         }
 
+        /**
+         * Get the key domain.
+         * <p>
+         * This is final as it should not be tampered with.
+         *
+         * @return the key domain
+         */
         @NonNull
-        String getExpression() {
-            return mExpression;
+        final VirtualDomain getKeyDomain() {
+            return mKeyDomain;
         }
 
-        @SuppressWarnings("SameReturnValue")
-        @Override
-        public int describeContents() {
-            return 0;
+        /**
+         * Get the list of secondary domains.
+         * <p>
+         * Override in the {@link BooklistGroup} as needed.
+         *
+         * @return the list, can be empty.
+         */
+        @NonNull
+        ArrayList<VirtualDomain> getGroupDomains() {
+            return mGroupDomains;
         }
 
-        @Override
-        public void writeToParcel(@NonNull final Parcel dest,
-                                  final int flags) {
-            dest.writeInt(mLabelId);
-            dest.writeString(mKeyPrefix);
-            dest.writeParcelable(mDomain, flags);
-            dest.writeString(mExpression);
+        /**
+         * Get the list of base (book) domains.
+         * <p>
+         * Override in the {@link BooklistGroup} as needed.
+         *
+         * @return the list, can be empty.
+         */
+        @NonNull
+        ArrayList<VirtualDomain> getBaseDomains() {
+            return mBaseDomains;
         }
 
         @NonNull
@@ -1138,8 +1329,9 @@ public class BooklistGroup
             return "GroupKey{"
                    + "mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
                    + ", mKeyPrefix='" + mKeyPrefix + '\''
-                   + ", mDomain=" + mDomain
-                   + ", mExpression=" + mExpression
+                   + ", mKeyDomain=" + mKeyDomain
+                   + ", mSecondaryDomains=" + mGroupDomains
+                   + ", mBookDomains=" + mBaseDomains
                    + '}';
         }
     }

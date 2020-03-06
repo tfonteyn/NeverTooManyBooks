@@ -418,7 +418,6 @@ public final class LocaleUtils {
         }
     }
 
-
     /**
      * Get a Locale for the given language.
      * This method accepts ISO codes (2 or 3 char), or a display-string (4+ characters).
@@ -431,11 +430,16 @@ public final class LocaleUtils {
      * @param context   Current context
      * @param inputLang to use for Locale
      *
-     * @return the Locale, or {@code null} if the inputLang was invalid.
+     * @return the Locale for the passed language OR the user locale if the inputLang was empty,
+     * OR {@code null} if the inputLang was invalid.
      */
     @Nullable
     public static Locale getLocale(@NonNull final Context context,
                                    @NonNull final String inputLang) {
+
+        if (inputLang.isEmpty()) {
+            return null;
+        }
 
         String lang = inputLang.trim().toLowerCase(LocaleUtils.getUserLocale(context));
         int len = lang.length();

@@ -29,12 +29,8 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <item
-        android:id="@+id/nav_search"
-        android:icon="@drawable/ic_search"
-        android:title="@string/menu_search_local" />
 
-    <!-- only made visible from the BoB screen. -->
+    <!-- visibility set from code. -->
     <item
         android:id="@+id/nav_manage_bookshelves"
         android:icon="@drawable/ic_library_books"
@@ -42,7 +38,7 @@
         android:visible="false"
         tools:visible="true" />
 
-    <!-- only made visible from the BoB screen. -->
+    <!-- visibility set from code. -->
     <item
         android:id="@+id/nav_manage_list_styles"
         android:icon="@drawable/ic_details"
@@ -50,7 +46,7 @@
         android:visible="false"
         tools:visible="true" />
 
-    <!-- only made visible from the BoB screen. -->
+    <!-- visibility set from code. -->
     <item
         android:id="@+id/nav_import_export"
         android:icon="@drawable/ic_sd_storage"
@@ -58,7 +54,7 @@
         android:visible="false"
         tools:visible="true" />
 
-    <!-- only made visible from the BoB screen. -->
+    <!-- visibility set from code. -->
     <item
         android:id="@+id/nav_goodreads"
         android:icon="@drawable/ic_goodreads"

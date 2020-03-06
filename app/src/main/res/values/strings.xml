@@ -1056,8 +1056,7 @@
 
     <!-- menu option -->
     <string name="menu_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
-    <!-- menu option -->
-    <string name="menu_rebuild_fts">Rebuild FTS</string>
+
 
     <!-- menu option -->
     <string name="menu_level_reset">Preferred level expansion</string>
@@ -1138,6 +1137,14 @@
     <string name="menu_amazon_books_by_author">Books by this author</string>
     <string name="menu_amazon_books_by_author_in_series">Books by author/series</string>
 
+
+    <!-- menu option on Advanced preferences -->
+    <string name="menu_rebuild_fts">Rebuild FTS</string>
+    <string name="menu_rebuild_fts_info">Rebuild FTS info TBD</string>
+    <!-- menu option on Advanced preferences -->
+    <string name="menu_rebuild_index">Rebuild index</string>
+    <string name="menu_rebuild_index_info">rebuild_index explanation TBD</string>
+
     <!-- ####################################################################################### -->
     <!-- == Button texts, must be short == -->
     <!-- ####################################################################################### -->
@@ -1189,14 +1196,15 @@
     <!-- Goodreads search specific -->
     <string name="hint_search_text">Text and/or ISBN</string>
 
+    <!-- generic place holder text for fields which are NOT SET.
+         The actual text is different from hint_empty_field in Translations.
+         Copy from androidx.preferences# not_set -->
+    <string name="hint_not_set">(Not Set)</string>
+
     <!-- generic place holder text for EMPTY fields.
-         Different from NOT SET in Translations.
+         The actual text is different from hint_not_set in Translations.
          Copy from android-29#keyguard_accessibility_widget_empty_slot -->
     <string name="hint_empty_field">(Not Set)</string>
-    <!-- generic place holder text for fields which are NOT SET.
-         Different from EMPTY in Translations.
-          Copy from androidx.preferences# not_set -->
-    <string name="hint_not_set">(Not Set)</string>
 
     <!-- specific place holder text for Rating rows. -->
     <string name="hint_empty_rating">(Not rated)</string>
@@ -1616,6 +1624,7 @@
 
     <string name="pt_goodreads_collect_genre">Collect genre from popular bookshelves</string>
 
+    <string name="lbl_csv">CSV (without covers)</string>
 
     <string name="lbl_condition_fine">Fine</string>
     <string name="lbl_condition_very_good">Very good</string>
@@ -1627,9 +1636,7 @@
 
 
     <string name="pt_primary_author_type">Primary author type</string>
+    <string name="lbl_maintenance">Maintenance</string>
 
-    <string name="rebuild_index">Rebuild index</string>
-    <string name="info_rebuild_index">rebuild_index explanation TBD</string>
-    <string name="lbl_csv">CSV (without covers)</string>
 
 </resources>

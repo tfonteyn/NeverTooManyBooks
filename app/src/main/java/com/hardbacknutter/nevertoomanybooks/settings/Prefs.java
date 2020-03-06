@@ -68,31 +68,23 @@ public final class Prefs {
     public static final String pk_edit_book_tabs_authSer = "edit.book.tab.authSer";
 
     public static final String pk_network_allow_metered = "network.allow.metered";
-    private static final String pk_search_form_advanced = "search.form.advanced";
-
     public static final String pk_scanner_preferred = "scanner.preferred";
     public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
     public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
     public static final String pk_sounds_scan_found_barcode = "sounds.scan.barcode.found";
-
     public static final String pk_search_reformat_format = "search.reformat.format";
     public static final String pk_search_reformat_color = "search.reformat.color";
     public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
-
     public static final String pk_camera_image_autorotate = "camera.image.autorotate";
     public static final String pk_camera_image_action = "camera.image.action";
-
     public static final String pk_image_cache_resized = "image.cache.resized";
     public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
     public static final String pk_image_cropper_layer_type = "compat.image.cropper.viewlayertype";
-
     public static final String pk_sort_title_reordered = "sort.title.reordered";
     public static final String pk_show_title_reordered = "show.title.reordered";
     public static final String pk_sort_author_name_given_first = "sort.author.name.given_first";
     public static final String pk_show_author_name_given_first = "show.author.name.given_first";
-
     public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
-
     /**
      * Style unique name. This is a stored in our preference file (with the same name)
      * and is used for backup/restore purposes as the 'ID'.
@@ -105,7 +97,6 @@ public final class Prefs {
     public static final String pk_style_levels_expansion = "style.booklist.levels.default";
     public static final String pk_style_scale_font = "style.booklist.scale.font";
     public static final String pk_style_scale_thumbnail = "style.booklist.scale.thumbnails";
-
     /** Style group preferences. */
     public static final String pk_style_groups = "style.booklist.groups";
     public static final String pk_style_group_series_show_books_under_each_series =
@@ -114,7 +105,6 @@ public final class Prefs {
             "style.booklist.group.authors.show.all";
     public static final String pk_style_group_author_primary_type =
             "style.booklist.group.authors.primary.type";
-
     /** Show the cover image for each book. */
     public static final String pk_style_book_show_thumbnails = "style.booklist.show.thumbnails";
     /** Show list of bookshelves for each book. */
@@ -131,7 +121,6 @@ public final class Prefs {
     public static final String pk_style_book_show_isbn = "style.booklist.show.isbn";
     /** Show format for each book. */
     public static final String pk_style_book_show_format = "style.booklist.show.format";
-
     /** Booklist Filter - ListPreference. */
     public static final String pk_style_filter_read = "style.booklist.filter.read";
     /** Booklist Filter - ListPreference. */
@@ -142,8 +131,6 @@ public final class Prefs {
     public static final String pk_style_filter_anthology = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     public static final String pk_style_filter_editions = "style.booklist.filter.editions";
-
-
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_AUTHOR = "psk_style_author";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
@@ -152,10 +139,8 @@ public final class Prefs {
     public static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_FILTERS = "psk_style_filters";
-
     /** Site - Credentials. */
     public static final String PSK_CREDENTIALS = "psk_credentials";
-
     /** Global - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
     /** Global - PreferenceScreen/PreferenceCategory Key. */
@@ -166,14 +151,15 @@ public final class Prefs {
     static final String PSK_PURGE_FILES = "psk_purge_files";
     /** Global - Reset tips. */
     static final String PSK_TIP_RESET_ALL = "psk_tip_reset_all";
-    /** Global - Reset tips. */
+    /** Global. */
     static final String PSK_REBUILD_INDEX = "psk_rebuild_index";
-
+    /** Global. */
+    static final String PSK_REBUILD_FTS = "psk_rebuild_fts";
     /** Global - Send debug info. */
     static final String PSK_SEND_DEBUG_INFO = "psk_send_debug_info";
     /** Global - Purge action. */
     static final String PSK_PURGE_BLNS = "psk_purge_blns";
-
+    private static final String pk_search_form_advanced = "search.form.advanced";
     /** Log tag. */
     private static final String TAG = "Prefs";
 
@@ -256,4 +242,5 @@ public final class Prefs {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_search_form_advanced, false);
     }
+
 }

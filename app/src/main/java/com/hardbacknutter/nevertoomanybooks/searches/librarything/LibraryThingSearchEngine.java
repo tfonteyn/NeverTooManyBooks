@@ -51,7 +51,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -239,7 +238,7 @@ public class LibraryThingSearchEngine
             SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException | IOException e) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.LIBRARY_THING) {
+            if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "getAlternativeEditions|e=" + e);
             }
         }

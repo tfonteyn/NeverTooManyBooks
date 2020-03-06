@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,7 +27,27 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <!-- The ISBN keypad button height. -->
-    <dimen name="isbn_key_pad_button_height">66dp</dimen>
-</resources>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/ROW_ONCLICK_TARGET"
+    style="@style/BooklistBook.Row.Level1"
+    >
+
+    <!-- Large text
+         Note that the 'drawableEnd' drawable itself is done from code.
+    -->
+    <TextView
+        android:id="@+id/name"
+        style="@style/BooklistBook.Section.Large"
+        android:drawableTint="?attr/completed_icon_tint"
+        android:textIsSelectable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:drawableEnd="@drawable/ic_lock"
+        tools:text="Top level"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

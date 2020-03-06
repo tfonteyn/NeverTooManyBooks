@@ -51,8 +51,8 @@ public class BookDetailsActivity
     private final Collection<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_book_details;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_book_details);
     }
 
     @Override

@@ -75,6 +75,12 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
+        <!-- enable the search dialog globally -->
+        <meta-data
+            android:name="android.app.default_searchable"
+            android:value=".BooksOnBookshelf" />
+
         <!--
             This is the activity that will appear in the app launcher
 
@@ -97,8 +103,12 @@
             </intent-filter>
         </activity>
 
-        <!-- The real main activity; it's also the one that accepts search requests -->
-        <activity android:name=".BooksOnBookshelf">
+        <!-- The real main activity; it's also the one that accepts search requests
+         android:launchMode="singleTop": standard system search using a single activity.
+         -->
+        <activity
+            android:name=".BooksOnBookshelf"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
 

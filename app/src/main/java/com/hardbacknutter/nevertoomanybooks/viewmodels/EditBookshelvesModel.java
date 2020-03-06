@@ -40,7 +40,6 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class EditBookshelvesModel
         extends ViewModel {
@@ -52,7 +51,7 @@ public class EditBookshelvesModel
 
     /** Database Access. */
     private DAO mDb;
-
+    /** Shelf as set by the caller. Can be {@code 0}. */
     private long mInitialBookshelfId;
     private Bookshelf mSelectedBookshelf;
 
@@ -80,9 +79,6 @@ public class EditBookshelvesModel
             mList = mDb.getBookshelves();
             if (args != null) {
                 mInitialBookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
-                if (mInitialBookshelfId == 0) {
-                    throw new UnexpectedValueException(mInitialBookshelfId);
-                }
             }
         }
     }
@@ -91,6 +87,12 @@ public class EditBookshelvesModel
         return mDb;
     }
 
+    /**
+     * The bookshelf we we're on when this activity was started from the main BoB screen.
+     * Will be {@code 0} if started from somewhere else.
+     *
+     * @return initial shelf id, or {@code 0} for none.
+     */
     public long getInitialBookshelfId() {
         return mInitialBookshelfId;
     }

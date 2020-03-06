@@ -104,8 +104,8 @@ public class PreferredStylesActivity
     };
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_edit_preferred_styles;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_edit_preferred_styles);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class PreferredStylesActivity
 
                     if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
                         if (style != null) {
-                            int position = mModel.handleStyleChange(style);
+                            int position = mModel.handleStyleChange(this, style);
                             mListAdapter.setSelectedPosition(position);
                         }
 
@@ -414,7 +414,7 @@ public class PreferredStylesActivity
 
             // handle the 'preferred style' checkable
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(style.isPreferred());
+            holder.mCheckableButton.setChecked(style.isPreferred(getContext()));
             holder.mCheckableButton.setOnClickListener(v -> setPreferred(holder));
 
             // select the original row if there was nothing selected (yet).
@@ -460,7 +460,7 @@ public class PreferredStylesActivity
             BooklistStyle style = getItem(position);
 
             // handle the 'preferred' state of the current row/style
-            boolean checked = !style.isPreferred();
+            boolean checked = !style.isPreferred(getContext());
             style.setPreferred(checked);
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(checked);
@@ -503,7 +503,7 @@ public class PreferredStylesActivity
                     return false;
                 }
 
-                if (getItem(newPosition).isPreferred()) {
+                if (getItem(newPosition).isPreferred(getContext())) {
                     mSelectedPosition = newPosition;
                     return true;
                 }

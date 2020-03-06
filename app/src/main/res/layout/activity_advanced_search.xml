@@ -39,7 +39,7 @@
     <include layout="@layout/inc_appbar" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/root"
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -131,13 +131,24 @@
             android:id="@+id/books_found"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textIsSelectable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_keywords"
             tools:text="# books found"
             />
+
+        <!--        <TextView-->
+        <!--            android:id="@+id/book_titles_found"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:textAppearance="?android:attr/textAppearanceSmall"-->
+        <!--            android:textIsSelectable="true"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@id/books_found"-->
+        <!--            />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

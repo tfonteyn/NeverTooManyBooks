@@ -233,7 +233,7 @@ public class Field<T> {
      * @return {@code true} if the field *can* be visible
      */
     public boolean isUsed() {
-        return App.isUsed(mIsUsedKey);
+        return App.isUsed(App.getAppContext(), mIsUsedKey);
     }
 
     /**

@@ -27,11 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.preference.MultiSelectListPreference;
 import androidx.preference.PreferenceManager;
 
 import java.util.Set;
@@ -61,25 +60,15 @@ public class PBitmask
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @NonNull final Integer defValue) {
-        super(key, uuid, isPersistent, getMultiSelectListPreference(key, defValue));
+        super(key, uuid, isPersistent, defValue);
     }
 
-    /**
-     * {@link MultiSelectListPreference} store the selected value as a StringSet.
-     * But they are really Integer values. Hence this transmogrification....
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return Integer (stored as StringSet) global preference
-     */
     @NonNull
-    private static Integer getMultiSelectListPreference(@NonNull final String key,
-                                                        @NonNull final Integer defValue) {
-        Set<String> value = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                             .getStringSet(key, null);
+    public Integer getGlobalValue(@NonNull final Context context) {
+        Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
+                                             .getStringSet(getKey(), null);
         if (value == null || value.isEmpty()) {
-            return defValue;
+            return mDefaultValue;
         }
         return BitUtils.from(value);
     }
@@ -88,35 +77,9 @@ public class PBitmask
      * converts the Integer bitmask and stores it as a {@code Set<String>}.
      */
     @Override
-    public void set(@Nullable final Integer value) {
-        if (!mIsPersistent) {
-            mNonPersistedValue = value;
-        } else if (value == null) {
-            remove();
-        } else {
-            getPrefs().edit().putStringSet(getKey(), BitUtils.toStringSet(value)).apply();
-        }
-    }
-
-    /**
-     * converts the Integer bitmask and stores it as a {@code Set<String>}.
-     */
-    @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
-                    @Nullable final Integer value) {
-        if (value == null) {
-            ed.remove(getKey());
-        } else {
-            ed.putStringSet(getKey(), BitUtils.toStringSet(value));
-        }
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "PBitmask{" + super.toString()
-               + ",value=`" + BitUtils.toStringSet(get()) + '`'
-               + '}';
+                    @NonNull final Integer value) {
+        ed.putStringSet(getKey(), BitUtils.toStringSet(value));
     }
 
     /**
@@ -126,19 +89,23 @@ public class PBitmask
      */
     @NonNull
     @Override
-    public Integer get() {
+    public Integer getValue(@NonNull final Context context) {
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            Set<String> value = getPrefs().getStringSet(getKey(), null);
-            if (value == null) {
-                // not present, fallback to global.
-                value = getGlobal().getStringSet(getKey(), null);
-                if (value == null || value.isEmpty()) {
-                    return mDefaultValue;
-                }
+            Set<String> value = getPrefs(context).getStringSet(getKey(), null);
+            if (value != null) {
+                return BitUtils.from(value);
             }
-            return BitUtils.from(value);
+            return getGlobalValue(context);
         }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PBitmask{" + super.toString()
+               + ", value bits=`" + Integer.toBinaryString(getValue(App.getAppContext())) + '`'
+               + '}';
     }
 }

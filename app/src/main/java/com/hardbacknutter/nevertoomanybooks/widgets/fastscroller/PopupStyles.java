@@ -62,16 +62,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 final class PopupStyles {
 
     static final Consumer<TextView> DEFAULT = popupView -> {
-        final Resources resources = popupView.getResources();
-        final int minimumSize = resources.getDimensionPixelSize(R.dimen.afs_popup_min_size);
+        final Resources res = popupView.getResources();
+        final int minimumSize = res.getDimensionPixelSize(R.dimen.afs_popup_min_size);
         popupView.setMinimumWidth(minimumSize);
         popupView.setMinimumHeight(minimumSize);
 
         final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
         layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
-        layoutParams.setMarginEnd(resources.getDimensionPixelOffset(
-                R.dimen.afs_popup_margin_end));
+        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.afs_popup_margin_end));
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
@@ -82,48 +81,44 @@ final class PopupStyles {
         popupView.setSingleLine(false);
         popupView.setTextColor(FastScroller.getColorInt(
                 context, android.R.attr.textColorPrimaryInverse));
-        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(
-                R.dimen.afs_popup_text_size));
+        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                              res.getDimensionPixelSize(R.dimen.afs_popup_text_size));
     };
 
     static final Consumer<TextView> MD2 = popupView -> {
-        final Resources resources = popupView.getResources();
-        popupView.setMinimumWidth(resources.getDimensionPixelSize(
-                R.dimen.afs_md2_popup_min_width));
-        popupView.setMinimumHeight(resources.getDimensionPixelSize(
-                R.dimen.afs_md2_popup_min_height));
+        final Resources res = popupView.getResources();
+        popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.afs_md2_popup_min_width));
+        popupView.setMinimumHeight(res.getDimensionPixelSize(R.dimen.afs_md2_popup_min_height));
 
         final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
-        layoutParams.setMarginEnd(resources.getDimensionPixelOffset(
-                R.dimen.afs_md2_popup_margin_end));
+        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.afs_md2_popup_margin_end));
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
         popupView.setBackground(new Md2PopupBackground(context));
-        popupView.setElevation(resources.getDimensionPixelOffset(R.dimen.afs_md2_popup_elevation));
+        popupView.setElevation(res.getDimensionPixelOffset(R.dimen.afs_md2_popup_elevation));
         popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         popupView.setGravity(Gravity.CENTER);
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
         popupView.setTextColor(FastScroller.getColorInt(
                 context, android.R.attr.textColorPrimaryInverse));
-        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(
-                R.dimen.afs_md2_popup_text_size));
+        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                              res.getDimensionPixelSize(R.dimen.afs_md2_popup_text_size));
     };
 
     static final Consumer<TextView> CLASSIC = popupView -> {
-        final Resources resources = popupView.getResources();
-        final int minimumSize = resources.getDimensionPixelSize(R.dimen.afs_popup_min_size);
+        final Resources res = popupView.getResources();
+        final int minimumSize = res.getDimensionPixelSize(R.dimen.afs_popup_min_size);
         popupView.setMinimumWidth(minimumSize);
         popupView.setMinimumHeight(minimumSize);
 
         final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
         layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
-        layoutParams.setMarginEnd(resources.getDimensionPixelOffset(
-                R.dimen.afs_popup_margin_end));
+        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.afs_popup_margin_end));
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
@@ -136,8 +131,8 @@ final class PopupStyles {
 
         popupView.setTextColor(FastScroller.getColorInt(
                 context, android.R.attr.textColorPrimary));
-        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(
-                R.dimen.afs_popup_text_size));
+        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                              res.getDimensionPixelSize(R.dimen.afs_popup_text_size));
     };
 
     private PopupStyles() {

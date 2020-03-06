@@ -27,8 +27,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
-import android.content.SearchRecentSuggestionsProvider;
+import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -37,18 +39,8 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 
-/**
- * <a href="https://developer.android.com/guide/topics/search/adding-custom-suggestions.html">
- *     adding-custom-suggestions.html</a>
- * <p>
- * This class is a bit of a hack as it override the SearchRecentSuggestionsProvider,
- * but then actually bypasses most of its functionality by overriding the query method.
- * <p>
- * A cleaner implementation would be to extend the {@link ContentProvider} class,
- * and move the FTS insert/update methods from the DAO here.
- */
 public class SearchSuggestionProvider
-        extends SearchRecentSuggestionsProvider {
+        extends ContentProvider {
 
     /**
      * The authorities value must match:
@@ -59,32 +51,96 @@ public class SearchSuggestionProvider
     private static final String AUTHORITY = App.getAppPackageName() + ".SearchSuggestionProvider";
 
     /** Log tag. */
-    private static final String TAG = "SearchSuggestionProv";
+    private static final String TAG = "SearchSuggestions";
+
+    private static final String sSuggestions = "suggestions";
+    /** Uri and query support. Arbitrary code to indicate a match. */
+    private static final int URI_MATCH_SUGGEST = 1;
+    /** Uri and query support. */
+    private UriMatcher mUriMatcher;
 
     /** Database Access. */
     @Nullable
     private DAO mDb;
 
-    /**
-     * Constructor.
-     */
-    public SearchSuggestionProvider() {
-        // DATABASE_MODE_QUERIES configures the suggestions database to record recent queries.
-        setupSuggestions(AUTHORITY, DATABASE_MODE_QUERIES);
+    @Override
+    public boolean onCreate() {
+        mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        mUriMatcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, URI_MATCH_SUGGEST);
+        return true;
     }
 
     @Override
-    public Cursor query(final Uri uri,
-                        final String[] projection,
-                        final String selection,
-                        @NonNull final String[] selectionArgs,
-                        final String sortOrder) {
-        if (selectionArgs[0].isEmpty()) {
-            return null;
+    @Nullable
+    public Cursor query(@NonNull final Uri uri,
+                        @Nullable final String[] projection,
+                        @Nullable final String selection,
+                        @Nullable final String[] selectionArgs,
+                        @Nullable final String sortOrder) {
+
+        if (mUriMatcher.match(uri) == URI_MATCH_SUGGEST) {
+
+            if (selectionArgs == null || selectionArgs[0] == null || selectionArgs[0].isEmpty()) {
+                return null;
+            }
+
+            if (mDb == null) {
+                // lazy init
+                mDb = new DAO(TAG);
+            }
+            Cursor cursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
+//            if (cursor != null) {
+//                //noinspection ConstantConditions
+//                cursor.setNotificationUri(getContext().getContentResolver(), uri);
+//            }
+            return cursor;
         }
-        if (mDb == null) {
-            mDb = new DAO(TAG);
+
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getType(@NonNull final Uri uri) {
+        if (mUriMatcher.match(uri) == URI_MATCH_SUGGEST) {
+            return SearchManager.SUGGEST_MIME_TYPE;
         }
-        return mDb.fetchSearchSuggestions(selectionArgs[0]);
+
+        // not sure this is actually useful.
+        int length = uri.getPathSegments().size();
+        if (length >= 1) {
+            String base = uri.getPathSegments().get(0);
+            if (base.equals(sSuggestions)) {
+                if (length == 1) {
+                    return "vnd.android.cursor.dir/suggestion";
+                } else if (length == 2) {
+                    return "vnd.android.cursor.item/suggestion";
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Unknown Uri");
+    }
+
+    @Nullable
+    @Override
+    public Uri insert(@NonNull final Uri uri,
+                      @Nullable final ContentValues values) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int delete(@NonNull final Uri uri,
+                      @Nullable final String selection,
+                      @Nullable final String[] selectionArgs) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int update(@NonNull final Uri uri,
+                      @Nullable final ContentValues values,
+                      @Nullable final String selection,
+                      @Nullable final String[] selectionArgs) {
+        throw new UnsupportedOperationException();
     }
 }

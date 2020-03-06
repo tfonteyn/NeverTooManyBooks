@@ -127,7 +127,8 @@ public class PreferredStylesViewModel
      *
      * @return position of the style in the list
      */
-    public int handleStyleChange(@NonNull final BooklistStyle style) {
+    public int handleStyleChange(@NonNull final Context context,
+                                 @NonNull final BooklistStyle style) {
         mIsDirty = true;
 
         // based on the uuid, find the style in the list.
@@ -155,7 +156,7 @@ public class PreferredStylesViewModel
                     mList.add(editedRow, style);
                 } else {
                     // Working on a clone of a builtin style
-                    if (origStyle.isPreferred()) {
+                    if (origStyle.isPreferred(context)) {
                         // Replace the original row with the new one
                         mList.set(editedRow, style);
                         // Make the new one preferred

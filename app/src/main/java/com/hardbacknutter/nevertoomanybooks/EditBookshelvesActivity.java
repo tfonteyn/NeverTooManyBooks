@@ -43,10 +43,9 @@ public class EditBookshelvesActivity
         extends BaseActivity {
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_main;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_main);
     }
-
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

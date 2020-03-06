@@ -194,6 +194,13 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border0</item>
+        <item name="endIconMode">clear_text</item>
+    </style>
+
+    <style name="Envelope.EditText.Isbn">
+        <item name="android:hint">@string/lbl_isbn</item>
+        <item name="startIconDrawable">@drawable/ic_check</item>
+        <item name="startIconTint">?attr/checked_icon_tint</item>
     </style>
 
     <style name="Envelope.EditText.SeriesNum">
@@ -239,7 +246,6 @@
     <style name="EditText.AutoComplete.Name" />
 
     <style name="EditText.SeriesNumber">
-        <item name="android:hint">@string/lbl_series_num</item>
         <item name="android:inputType">text</item>
         <item name="android:singleLine">true</item>
     </style>
@@ -255,18 +261,14 @@
         <item name="android:singleLine">true</item>
     </style>
 
+    <!-- The textAppearanceMedium here is suited for the smallest screen (both portrait/landscape)
+        For all bigger screens, we will use textAppearanceLarge: See the "w340dp-h330dp" styles.xml
+    -->
     <style name="EditText.Isbn">
-        <item name="android:hint">@string/lbl_isbn</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:digits">1234567890xX</item>
+        <!-- the inputType is IGNORED when the field is a {@link EditIsbn} -->
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
-        <item name="android:drawableStart">@drawable/ic_check</item>
-        <item name="android:drawableTint">?attr/checked_icon_tint</item>
-    </style>
-
-    <style name="EditText.Isbn.Large">
-        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
-        <item name="android:layout_marginStart">@dimen/border2</item>
-        <item name="android:layout_marginEnd">@dimen/border2</item>
     </style>
 
     <!-- An editable CheckBox. We basically want this to be the same height as EditText fields. -->
@@ -297,24 +299,25 @@
     <!-- *************************************************************************************** -->
 
     <!-- Base style for the isbn search keyboard; not to be used directly in layouts. -->
-    <style name="IsbnKeyPadButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_width">@dimen/isbn_key_pad_button_width</item>
-        <item name="android:layout_height">@dimen/isbn_key_pad_button_height</item>
+    <style name="IsbnKeyPad" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
         <item name="android:layout_marginStart">@dimen/indent1</item>
         <item name="android:layout_marginEnd">@dimen/indent1</item>
     </style>
 
     <!-- 0..9 and X -->
-    <style name="IsbnKeyPadButton.Number">
+    <style name="IsbnKeyPad.NumberButton">
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <style name="IsbnKeyPadButton.Del">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+    <style name="IsbnKeyPad.SearchButton">
     </style>
 
-    <style name="IsbnKeyPadButton.Search">
+    <style name="IsbnKeyPad.BackspaceButton">
+        <item name="android:paddingLeft">@dimen/isbn_key_pad_backspace_button_icon_padding_left</item>
+        <item name="android:layout_width">@dimen/isbn_key_pad_backspace_button_width</item>
+        <item name="icon">@drawable/ic_backspace</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -488,12 +491,12 @@
 
     <!-- Booklist; not to be used directly in layouts -->
     <style name="BooklistBook">
-        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
 
     <!-- Booklist; not to be used directly in layouts -->
     <style name="BooklistBook.Header">
+        <item name="android:layout_width">0dp</item>
         <item name="android:textIsSelectable">false</item>
     </style>
 
@@ -509,6 +512,23 @@
     <!-- the header on the booklist activity -->
     <style name="BooklistBook.Header.Text.Small">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <!-- Booklist; not to be used directly in layouts -->
+    <style name="BooklistBook.Bullet">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:backgroundTint">?android:attr/colorForeground</item>
+        <item name="android:src">@drawable/ic_lens</item>
+    </style>
+
+    <style name="BooklistBook.Bullet.Level2">
+        <item name="android:scaleX">0.3</item>
+        <item name="android:scaleY">0.3</item>
+    </style>
+
+    <style name="BooklistBook.Bullet.Level3">
+        <item name="android:scaleX">0.2</item>
+        <item name="android:scaleY">0.2</item>
     </style>
 
     <!-- level + book rows = The row itself. -->
@@ -535,6 +555,7 @@
 
     <!-- Text element in a 'level' header row -->
     <style name="BooklistBook.Section">
+        <item name="android:layout_width">0dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
@@ -552,7 +573,9 @@
     </style>
 
     <!-- Text element in a 'book' row -->
-    <style name="BooklistBook.BookInfo" />
+    <style name="BooklistBook.BookInfo">
+        <item name="android:layout_width">0dp</item>
+    </style>
 
     <style name="BooklistBook.BookInfo.Title">
         <!--        <item name="android:textIsSelectable">true</item>-->
@@ -651,6 +674,7 @@
         <item name="android:layout_gravity">bottom|end</item>
         <item name="android:visibility">invisible</item>
         <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="iconGravity">end</item>
     </style>
 
     <!-- An EditText where the user can enter a date manually (i.e. android system). -->

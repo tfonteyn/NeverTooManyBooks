@@ -31,6 +31,14 @@
 <resources>
     <integer name="MENU_ORDER_SEARCH_SITES">5</integer>
 
+    <integer name="MENU_ORDER_SEARCH">100</integer>
+
+    <integer name="MENU_ORDER_SORT">200</integer>
+
+    <integer name="MENU_ORDER_LEVEL_PREFERRED_COLLAPSE">210</integer>
+    <integer name="MENU_ORDER_LEVEL_EXPAND">211</integer>
+    <integer name="MENU_ORDER_LEVEL_COLLAPSE">212</integer>
+
     <integer name="MENU_ORDER_READ">400</integer>
     <integer name="MENU_ORDER_UNREAD">401</integer>
 
@@ -178,5 +186,6 @@
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
     <item name="MENU_GOODREADS_TASKS" type="id" />
+    <item name="MENU_SEARCH" type="id" />
 
 </resources>

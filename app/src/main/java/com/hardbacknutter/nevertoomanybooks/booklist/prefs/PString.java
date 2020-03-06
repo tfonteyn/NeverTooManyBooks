@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,14 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 /**
- * A String stored as a String.
- * <p>
  * Used for {@link androidx.preference.EditTextPreference}.
  */
 public class PString
@@ -51,43 +50,32 @@ public class PString
     public PString(@NonNull final String key,
                    @NonNull final String uuid,
                    final boolean isPersistent) {
-        super(key, uuid, isPersistent, getPrefString(key));
+        super(key, uuid, isPersistent, "");
     }
 
-    /**
-     * Get a global preference String. Null values results are returned as an empty string.
-     *
-     * @param key The name of the preference to retrieve.
-     *
-     * @return the preference value string, can be empty, but never {@code null}
-     */
     @NonNull
-    private static String getPrefString(@NonNull final String key) {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getString(key, "");
+    public String getGlobalValue(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(getKey(), mDefaultValue);
+    }
+
+    @Override
+    public void set(@NonNull final SharedPreferences.Editor ed,
+                    @NonNull final String value) {
+        ed.putString(getKey(), value);
     }
 
     @NonNull
     @Override
-    public String get() {
+    public String getValue(@NonNull final Context context) {
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            String value = getPrefs().getString(getKey(), null);
-            // empty is invalid.
-            if (value == null || value.isEmpty()) {
-                // not present, fallback to global/default
-                value = getGlobal().getString(getKey(), mDefaultValue);
+            String value = getPrefs(context).getString(getKey(), null);
+            if (value != null && !value.isEmpty()) {
+                return value;
             }
-            return value;
+            return getGlobalValue(context);
         }
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "PString{" + super.toString()
-               + ", value=`" + get() + '`'
-               + '}';
     }
 }

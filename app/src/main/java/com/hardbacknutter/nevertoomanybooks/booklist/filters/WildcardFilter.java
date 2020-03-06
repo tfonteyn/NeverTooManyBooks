@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -38,6 +40,16 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * Note that the LIKE usage means this is case insensitive.
  * <p>
  * TODO: bad stopgap... use PreparedStatements instead !
+ *
+ * <pre>
+ *  {@code
+ *      public void setFilterOnSeriesName(@Nullable final String filter){
+ *          if (filter!=null&&!filter.trim().isEmpty()){
+ *              mFilters.add(new WildcardFilter(TBL_SERIES,KEY_SERIES_TITLE,filter));
+ *          }
+ *      }
+ *  }
+ * </pre>
  */
 public class WildcardFilter
         implements Filter {
@@ -64,13 +76,13 @@ public class WildcardFilter
 
     @Override
     @NonNull
-    public String getExpression() {
+    public String getExpression(@NonNull final Context context) {
         return '(' + mTable.dot(mDomain) + " LIKE '%" + DAO.encodeString(mCriteria) + "%'" + ')';
     }
 
     @Override
-    public boolean isActive() {
-        return App.isUsed(mDomain);
+    public boolean isActive(@NonNull final Context context) {
+        return App.isUsed(context, mDomain);
     }
 
     @Override

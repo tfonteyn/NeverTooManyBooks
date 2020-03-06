@@ -32,9 +32,6 @@ import android.app.Activity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.TrackedCursor;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySearchEngine;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
@@ -63,6 +60,15 @@ public final class DEBUG_SWITCHES {
      * use standard tables instead of Temporary ones.
      */
     public static final boolean BOOK_LIST_USES_STANDARD_TABLES = false;
+    /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
+    public static final boolean BOB_THE_BUILDER = false;
+    /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
+    public static final boolean BOOK_LIST_NODE_STATE = false;
+    /** {@link BooklistCursor}. */
+    public static final boolean BOB_PSEUDO_CURSOR = false;
+    /** Dump SQL when executing  {@link SynchronizedStatement} */
+    public static final boolean DB_STMT_EXECUTE = false;
+
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = false;
     /** track the flow & values on startActivityForResult & onActivityResult. */
@@ -73,75 +79,43 @@ public final class DEBUG_SWITCHES {
     public static final boolean STARTUP_TASKS = false;
     /** Where listeners are held in a WeakReference, log dead references. */
     public static final boolean TRACE_WEAK_REFERENCES = false;
-    /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
-    public static final boolean BOB_THE_BUILDER = false;
-    /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
-    public static final boolean BOOK_LIST_NODE_STATE = false;
-    /** {@link BooklistCursor}. */
-    public static final boolean BOB_PSEUDO_CURSOR = false;
+
     /** {@link CoverBrowserFragment}. */
     public static final boolean COVER_BROWSER = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.utils.ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;
-    /** all things Dates/Timezone related. */
-    public static final boolean DATETIME = false;
     /** all things XML related. */
     public static final boolean XML = false;
     /** all things network related. */
     public static final boolean NETWORK = false;
-    /** all things ISBN related. */
-    public static final boolean ISBN = false;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.JsoupBase}. */
     public static final boolean JSOUP = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator}. */
     public static final boolean SEARCH_COORDINATOR = false;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.goodreads}. */
     public static final boolean GOODREADS = false;
-    /** {@link LibraryThingSearchEngine}. */
-    public static final boolean LIBRARY_THING = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.isfdb}. */
     public static final boolean ISFDB = false;
-    /** {@link OpenLibrarySearchEngine}. */
-    public static final boolean OPEN_LIBRARY = false;
-    /** {@link TrackedCursor}. */
-    public static final boolean TRACKED_CURSOR = false;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.database.dbsync}. */
     public static final boolean DB_SYNC = false;
     public static final boolean DB_SYNC_LOCKING = false;
     /** Dump SQL for {@link SynchronizedDb#execSQL(String)}. */
     public static final boolean DB_SYNC_EXEC_SQL = false;
-    /**
-     * Dump SQL and the result.
-     * {@link SynchronizedStatement#simpleQueryForLong()}
-     * {@link SynchronizedStatement#simpleQueryForLongOrZero()}
-     * {@link SynchronizedStatement#count()}
-     * {@link SynchronizedStatement#simpleQueryForString()}
-     */
-    public static final boolean DB_SYNC_SIMPLE_QUERY_FOR = false;
-    /** Dump SQL for {@link SynchronizedStatement#execute()}. */
-    public static final boolean DB_SYNC_EXECUTE = false;
-    /** Dump SQL for {@link SynchronizedStatement#executeInsert()}. */
-    public static final boolean DB_SYNC_EXECUTE_INSERT = false;
-    /** Dump SQL and rowsAffected for {@link SynchronizedStatement#executeUpdateDelete()}. */
-    public static final boolean DB_SYNC_EXECUTE_UPDATE_DELETE = false;
-    /** dump savedInstanceState/outState/extras/arguments. */
-    public static final boolean DUMP_INSTANCE_STATE = false;
+    /** {@link BooksOnBookshelfModel#buildBookList}. */
+    static final boolean BOB_INIT_BOOK_LIST = false;
+
     /** dump the style each time it is accessed. Medium length in the log. */
     public static final boolean DUMP_STYLE = false;
-    public static final boolean PRUNE_LIST = false;
-    public static final boolean FIELD_TEXT_WATCHER = false;
     public static final boolean BOOK_LOCALE = false;
 
     /** Log the full flow of {@link Activity#recreate()}. */
     static final boolean RECREATE_ACTIVITY = false;
-    /** {@link BooksOnBookshelfModel#initBookList}. */
-    static final boolean BOB_INIT_BOOK_LIST = false;
 
     /** Enable strict mode reporting on network,disc,... usage. */
     static final boolean STRICT_MODE = false;
-    /** {@link BooksOnBookshelf}#fixPositionWhenDrawn. */
-    static final boolean BOB_FIX_POSITION = false;
-    static final boolean TRACK = false;
 
     private DEBUG_SWITCHES() {
     }

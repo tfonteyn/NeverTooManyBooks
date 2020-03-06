@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,17 +27,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 /**
- * An Integer stored as an Integer.
- * <p>
  * Used for {@link androidx.preference.SeekBarPreference}
  */
 public class PInteger
@@ -55,7 +51,7 @@ public class PInteger
     public PInteger(@NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent) {
-        super(key, uuid, isPersistent, getPrefInteger(key, 0));
+        super(key, uuid, isPersistent, 0);
     }
 
     /**
@@ -71,65 +67,32 @@ public class PInteger
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @NonNull final Integer defValue) {
-        super(key, uuid, isPersistent, getPrefInteger(key, defValue));
+        super(key, uuid, isPersistent, defValue);
     }
 
-    /**
-     * Get a global preference int.
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return the preference value
-     */
-    private static int getPrefInteger(@NonNull final String key,
-                                      final int defValue) {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                .getInt(key, defValue);
-    }
-
-    @Override
-    public void set(@Nullable final Integer value) {
-        if (!mIsPersistent) {
-            mNonPersistedValue = value;
-        } else if (value == null) {
-            remove();
-        } else {
-            getPrefs().edit().putInt(getKey(), value).apply();
-        }
+    @NonNull
+    public Integer getGlobalValue(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getInt(getKey(), mDefaultValue);
     }
 
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
-                    @Nullable final Integer value) {
-        if (value == null) {
-            ed.remove(getKey());
-        } else {
-            ed.putInt(getKey(), value);
-        }
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "PBoolean{" + super.toString()
-               + ", value=`" + get() + '`'
-               + '}';
+                    @NonNull final Integer value) {
+        ed.putInt(getKey(), value);
     }
 
     @NonNull
     @Override
-    public Integer get() {
+    public Integer getValue(@NonNull final Context context) {
         if (!mIsPersistent) {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         } else {
-            // value is a primitive, never null
-            if (getPrefs().contains(getKey())) {
-                return getPrefs().getInt(getKey(), mDefaultValue);
-            } else {
-                // not present, fallback to global.
-                return getGlobal().getInt(getKey(), mDefaultValue);
+            // reminder: it's a primitive so we must test on contains first
+            if (getPrefs(context).contains(getKey())) {
+                return getPrefs(context).getInt(getKey(), mDefaultValue);
             }
+            return getGlobalValue(context);
         }
     }
 }

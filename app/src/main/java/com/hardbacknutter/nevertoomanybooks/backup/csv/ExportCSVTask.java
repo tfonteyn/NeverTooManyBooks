@@ -77,7 +77,7 @@ public class ExportCSVTask
     @Override
     @UiThread
     protected void onCancelled(@NonNull final ExportHelper result) {
-        cleanup(App.getAppContext());
+        cleanup(App.getTaskContext());
         super.onCancelled(result);
     }
 
@@ -94,7 +94,7 @@ public class ExportCSVTask
     @WorkerThread
     protected ExportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName("ExportCSVTask");
-        Context context = App.getAppContext();
+        Context context = App.getTaskContext();
 
         try (OutputStream os = new FileOutputStream(ExportHelper.getTempFile(context))) {
             mExportHelper.addResults(mExporter.doBooks(os, getProgressListener()));

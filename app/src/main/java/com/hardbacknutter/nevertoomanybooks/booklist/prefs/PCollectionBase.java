@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.text.TextUtils;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
@@ -70,24 +72,9 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     @Override
-    public void set(@Nullable final T value) {
-        if (!mIsPersistent) {
-            mNonPersistedValue = value;
-        } else if (value == null) {
-            remove();
-        } else {
-            getPrefs().edit().putString(getKey(), TextUtils.join(DELIM, value)).apply();
-        }
-    }
-
-    @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
-                    @Nullable final T value) {
-        if (value == null) {
-            ed.remove(getKey());
-        } else {
-            ed.putString(getKey(), TextUtils.join(DELIM, value));
-        }
+                    @NonNull final T value) {
+        ed.putString(getKey(), TextUtils.join(DELIM, value));
     }
 
     @Override
@@ -100,7 +87,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         } else {
             // write the actual value, this could be the default if we have no value, but that
             // is ok anyhow.
-            dest.writeList(new ArrayList<>(get()));
+            dest.writeList(new ArrayList<>(getValue(App.getAppContext())));
         }
     }
 
@@ -113,10 +100,11 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             throw new IllegalArgumentException("uuid was empty");
         }
 
+        Context context = App.getAppContext();
         if (values == null) {
-            remove();
+            getPrefs(context).edit().remove(getKey()).apply();
         } else {
-            getPrefs().edit().putString(getKey(), TextUtils.join(DELIM, values)).apply();
+            getPrefs(context).edit().putString(getKey(), TextUtils.join(DELIM, values)).apply();
         }
     }
 
@@ -125,7 +113,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.clear();
         } else {
-            remove();
+            getPrefs(App.getAppContext()).edit().remove(getKey()).apply();
         }
     }
 
@@ -139,8 +127,8 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.add(element);
         } else {
-            SharedPreferences.Editor ed = getPrefs().edit();
-            add(ed, getPrefs().getString(getKey(), null), element);
+            SharedPreferences.Editor ed = getPrefs(App.getAppContext()).edit();
+            add(ed, getPrefs(App.getAppContext()).getString(getKey(), null), element);
             ed.apply();
         }
     }
@@ -179,7 +167,8 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.remove(element);
         } else {
-            String list = getPrefs().getString(getKey(), null);
+            Context context = App.getAppContext();
+            String list = getPrefs(context).getString(getKey(), null);
             if (list != null && !list.isEmpty()) {
                 Collection<String> newList = new ArrayList<>();
                 for (String e : list.split(DELIM)) {
@@ -188,11 +177,10 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                     }
                 }
                 if (newList.isEmpty()) {
-                    remove();
+                    getPrefs(context).edit().remove(getKey()).apply();
                 } else {
-                    getPrefs().edit()
-                              .putString(getKey(), TextUtils.join(DELIM, newList))
-                              .apply();
+                    getPrefs(context)
+                            .edit().putString(getKey(), TextUtils.join(DELIM, newList)).apply();
                 }
             }
         }

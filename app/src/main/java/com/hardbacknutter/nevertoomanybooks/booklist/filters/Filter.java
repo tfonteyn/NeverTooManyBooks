@@ -38,10 +38,12 @@ public interface Filter<T> {
     /**
      * A Filter must implement this method.
      *
+     * @param context Current context
+     *
      * @return filter SQL expression, or {@code null} if not active.
      */
     @Nullable
-    String getExpression();
+    String getExpression(@NonNull final Context context);
 
     /**
      * Get a human readable label/name for this filter.
@@ -58,10 +60,12 @@ public interface Filter<T> {
     /**
      * Allow an implementation to override the definition of being active.
      *
+     * @param context Current context
+     *
      * @return {@code true} if this filter is active.
      */
-    default boolean isActive() {
-        return getExpression() != null;
+    default boolean isActive(@NonNull final Context context) {
+        return getExpression(context) != null;
     }
 
     default String getKey() {

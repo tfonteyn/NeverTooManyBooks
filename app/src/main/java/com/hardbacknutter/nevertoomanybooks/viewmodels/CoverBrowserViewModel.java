@@ -177,7 +177,7 @@ public class CoverBrowserViewModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<ArrayList<String>> getEditions() {
+    public MutableLiveData<ArrayList<String>> onEditionsloaded() {
         return mEditions;
     }
 
@@ -206,7 +206,7 @@ public class CoverBrowserViewModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<FileInfo> getGalleryImage() {
+    public MutableLiveData<FileInfo> onGalleryImage() {
         return mGalleryImage;
     }
 
@@ -228,7 +228,7 @@ public class CoverBrowserViewModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<FileInfo> getSelectedImage() {
+    public MutableLiveData<FileInfo> onGalleryImageSelected() {
         return mSwitcherImage;
     }
 
@@ -577,7 +577,7 @@ public class CoverBrowserViewModel
         @WorkerThread
         protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetGalleryImageTask " + mIsbn);
-            final Context context = App.getAppContext();
+            final Context context = App.getTaskContext();
             try {
                 return mFileManager.download(context, mIsbn, mCIdx,
                                              // try to get a picture in this order of size.
@@ -640,7 +640,7 @@ public class CoverBrowserViewModel
         @WorkerThread
         protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetSwitcherImageTask " + mFileInfo.isbn);
-            final Context context = App.getAppContext();
+            final Context context = App.getTaskContext();
             try {
                 return mFileManager.download(context, mFileInfo.isbn, mCIdx,
                                              // try to get a picture in this order of size.

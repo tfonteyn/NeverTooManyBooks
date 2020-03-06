@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -37,8 +36,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
@@ -187,17 +184,17 @@ public class EditTextAccessor<T>
         private final Field<T> mField;
 
         @NonNull
-        private final TextView mView;
+        private final TextView mTextView;
 
         private boolean mOnChangeCalled;
 
         private long lastChange;
 
         ChangedTextWatcher(@NonNull final Field<T> field,
-                           @NonNull final TextView view,
+                           @NonNull final TextView textView,
                            final boolean enableReformat) {
             mField = field;
-            mView = view;
+            mTextView = textView;
             mEnableReformat = enableReformat;
         }
 
@@ -216,7 +213,7 @@ public class EditTextAccessor<T>
         }
 
         @Override
-        public void afterTextChanged(@NonNull final Editable s) {
+        public void afterTextChanged(@NonNull final Editable editable) {
             long interval = System.currentTimeMillis() - lastChange;
             // react every 0.5 seconds is good enough and easier on the user.
             if (interval > 500) {
@@ -225,18 +222,15 @@ public class EditTextAccessor<T>
                     && mFormatter != null
                     && mFormatter instanceof EditFieldFormatter) {
 
-                    T value = ((EditFieldFormatter<T>) mFormatter).extract(mView);
-                    String formatted = mFormatter.format(mView.getContext(), value);
+                    T value = ((EditFieldFormatter<T>) mFormatter).extract(mTextView);
+                    String formatted = mFormatter.format(mTextView.getContext(), value);
 
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.FIELD_TEXT_WATCHER) {
-                        Log.d(TAG, "s.toString().trim()=`" + s.toString().trim() + '`'
-                                   + "|value=`" + value + '`'
-                                   + "|formatted=`" + formatted + '`');
-                    }
                     // if the new text *can* be formatted and is different
-                    if (!s.toString().trim().equalsIgnoreCase(formatted)) {
+                    if (!editable.toString().trim().equalsIgnoreCase(formatted)) {
+                        mTextView.removeTextChangedListener(this);
                         // replace the coded value with the formatted value.
-                        s.replace(0, s.length(), formatted);
+                        editable.replace(0, editable.length(), formatted);
+                        mTextView.addTextChangedListener(this);
                     }
                 }
 

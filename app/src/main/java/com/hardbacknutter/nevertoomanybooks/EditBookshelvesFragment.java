@@ -294,7 +294,7 @@ public class EditBookshelvesFragment
 
             holder.nameView.setText(bookshelf.getName());
 
-            // select the original row if there was nothing selected (yet).
+            // if there was nothing selected (yet), select the initial row if we have one.
             if (mSelectedPosition == RecyclerView.NO_POSITION
                 && bookshelf.getId() == mModel.getInitialBookshelfId()) {
                 mSelectedPosition = position;

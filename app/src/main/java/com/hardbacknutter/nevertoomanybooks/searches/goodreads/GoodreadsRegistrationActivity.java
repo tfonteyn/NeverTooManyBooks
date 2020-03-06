@@ -77,8 +77,8 @@ public class GoodreadsRegistrationActivity
     };
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_goodreads_register;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_goodreads_register);
     }
 
     @Override

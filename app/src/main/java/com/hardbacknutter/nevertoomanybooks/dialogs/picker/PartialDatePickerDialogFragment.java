@@ -39,7 +39,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,14 +49,11 @@ import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.lang.ref.WeakReference;
 import java.util.Calendar;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -71,44 +67,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * A final validity check is done when trying to accept the date.
  */
 public class PartialDatePickerDialogFragment
-        extends DialogFragment {
+        extends BaseDatePickerDialogFragment {
 
     public static final String TAG = "PartialDatePickerDialog";
 
-    /** a standard sql style date string, must be correct. */
-    private static final String BKEY_DATE = TAG + ":date";
-    /** or the date split into components, which can partial. */
-    private static final String BKEY_YEAR = TAG + ":year";
-    /** range: 1..12. */
-    private static final String BKEY_MONTH = TAG + ":month";
-    private static final String BKEY_DAY = TAG + ":day";
-
     private static final String UNKNOWN_MONTH = "---";
     private static final String UNKNOWN_DAY = "--";
-
-    /** All month names (abbreviated). */
-    private final String[] mMonthNames = new String[13];
-
-    /** Used for reading month names + calculating number of days in a month. */
-    private Calendar mCalendarForCalculations;
-    /** Cache the current year. */
-    private int mCurrentYear;
-
-    /** identifier of the field this dialog is bound to. */
-    @IdRes
-    private int mDestinationFieldId;
-    /**
-     * Currently displayed; {@code null} if empty/invalid.
-     * The value is automatically updated by the dialog after every change.
-     */
-    @Nullable
-    private Integer mYear;
-    /** IMPORTANT: 1..12. (the jdk internals expect 0..11). */
-    @Nullable
-    private Integer mMonth;
-    @Nullable
-    private Integer mDay;
-    private WeakReference<PartialDatePickerResultsListener> mListener;
 
     /**
      * Constructor.
@@ -120,25 +84,22 @@ public class PartialDatePickerDialogFragment
      *
      * @return the new instance
      */
-    public static PartialDatePickerDialogFragment newInstance(@IdRes final int fieldId,
-                                                              @StringRes final int dialogTitleId,
-                                                              @NonNull final String currentValue,
-                                                              final boolean todayIfNone) {
+    public static DialogFragment newInstance(@IdRes final int fieldId,
+                                             @StringRes final int dialogTitleId,
+                                             @NonNull final String currentValue,
+                                             final boolean todayIfNone) {
         String date;
         if (todayIfNone && currentValue.isEmpty()) {
             date = DateUtils.localSqlDateForToday();
         } else {
             date = currentValue;
         }
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DATETIME) {
-            Log.d(TAG, "newInstance|date.toString(): " + date);
-        }
 
         PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
         Bundle args = new Bundle(3);
         args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
         args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
-        args.putString(PartialDatePickerDialogFragment.BKEY_DATE, date);
+        args.putString(BKEY_DATE, date);
         frag.setArguments(args);
         return frag;
     }
@@ -147,66 +108,18 @@ public class PartialDatePickerDialogFragment
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
 
-        // Get a calendar for Locale related info (defaults to current date)
         //noinspection ConstantConditions
-        mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
+        Calendar calendar = Calendar.getInstance(LocaleUtils.getUserLocale(getContext()));
 
-        mCurrentYear = mCalendarForCalculations.get(Calendar.YEAR);
+        baseSetup(savedInstanceState);
 
-        // Set the day to 1 to avoid wrapping.
-        mCalendarForCalculations.set(Calendar.DAY_OF_MONTH, 1);
-        // First entry is 'unknown'
-        mMonthNames[0] = UNKNOWN_MONTH;
-        // Add all month names (abbreviated)
-        for (int i = 1; i <= 12; i++) {
-            mCalendarForCalculations.set(Calendar.MONTH, i - 1);
-            mMonthNames[i] = String.format("%tb", mCalendarForCalculations);
-        }
-
-        Bundle args = requireArguments();
-        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
-
-        args = savedInstanceState != null ? savedInstanceState : args;
-        if (args.containsKey(BKEY_DATE)) {
-            // BKEY_DATE is only present in the original args
-            setDate(args.getString(BKEY_DATE));
-        } else {
-            // These are only present in the savedInstanceState
-            mYear = args.getInt(BKEY_YEAR);
-            mMonth = args.getInt(BKEY_MONTH);
-            mDay = args.getInt(BKEY_DAY);
-        }
-
-        // can't have a null year. The user can/should use the "clear" button if needed.
+        // can't have a null year. (but month/day can be null)
+        // The user can/should use the "clear" button if they want no date at all.
         if (mYear == null) {
-            mYear = mCurrentYear;
+            mYear = calendar.get(Calendar.YEAR);
         }
 
-        AlertDialog dialog = new PartialDatePickerDialog(getContext());
-        args = getArguments();
-        if (args != null) {
-            @StringRes
-            int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
-            if (titleId != 0) {
-                dialog.setTitle(titleId);
-            }
-        }
-        return dialog;
-    }
-
-    @Override
-    @CallSuper
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mYear != null) {
-            outState.putInt(BKEY_YEAR, mYear);
-        }
-        if (mMonth != null) {
-            outState.putInt(BKEY_MONTH, mMonth);
-        }
-        if (mDay != null) {
-            outState.putInt(BKEY_DAY, mDay);
-        }
+        return new PartialDatePickerDialog(getContext(), getArguments());
     }
 
     /**
@@ -218,13 +131,10 @@ public class PartialDatePickerDialogFragment
         super.onResume();
         final AlertDialog dialog = (AlertDialog) getDialog();
         if (dialog != null) {
-            dialog.getButton(Dialog.BUTTON_NEGATIVE).setOnClickListener(v -> dismiss());
-            dialog.getButton(Dialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
-                mYear = null;
-                mMonth = null;
-                mDay = null;
-                send();
-            });
+            dialog.getButton(Dialog.BUTTON_NEGATIVE).setOnClickListener(
+                    v -> dismiss());
+            dialog.getButton(Dialog.BUTTON_NEUTRAL).setOnClickListener(
+                    v -> send(null, null, null));
             dialog.getButton(Dialog.BUTTON_POSITIVE).setOnClickListener(v -> {
                 if (mDay != null && mDay > 0 && (mMonth == null || mMonth == 0)) {
                     //noinspection ConstantConditions
@@ -239,85 +149,10 @@ public class PartialDatePickerDialogFragment
                                   Snackbar.LENGTH_LONG).show();
 
                 } else {
-                    send();
+                    send(mYear, mMonth, mDay);
                 }
             });
         }
-    }
-
-    /**
-     * Send the date back to the listener.
-     */
-    private void send() {
-        dismiss();
-
-        if (mListener.get() != null) {
-            String date = DateUtils.buildPartialDate(mYear, mMonth, mDay);
-            mListener.get().onPartialDatePickerSave(mDestinationFieldId, date);
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onPartialDatePickerSave|" + ErrorMsg.WEAK_REFERENCE);
-            }
-        }
-    }
-
-    /**
-     * Private helper, NOT a public accessor.
-     * <ul>Allows partial dates:
-     * <li>yyyy-mm-dd time</li>
-     * <li>yyyy-mm-dd</li>
-     * <li>yyyy-mm</li>
-     * <li>yyyy</li>
-     * </ul>
-     *
-     * @param dateString SQL formatted (partial) date, can be {@code null}.
-     */
-    private void setDate(@Nullable final String dateString) {
-        if (dateString == null || dateString.isEmpty()) {
-            mYear = mCurrentYear;
-            mMonth = null;
-            mDay = null;
-            return;
-        }
-
-        Integer yyyy = null;
-        Integer mm = null;
-        Integer dd = null;
-        try {
-            String[] dateAndTime = dateString.split(" ");
-            String[] date = dateAndTime[0].split("-");
-            yyyy = Integer.parseInt(date[0]);
-            if (date.length > 1) {
-                mm = Integer.parseInt(date[1]);
-            }
-            if (date.length > 2) {
-                dd = Integer.parseInt(date[2]);
-            }
-        } catch (@NonNull final NumberFormatException ignore) {
-            // ignore. Any values we did get, are used.
-        }
-
-        mYear = yyyy;
-        mMonth = mm;
-        mDay = dd;
-    }
-
-    /**
-     * Call this from {@link #onAttachFragment} in the parent.
-     *
-     * @param listener the object to send the result to.
-     */
-    public void setListener(@NonNull final PartialDatePickerResultsListener listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
-    /**
-     * Listener interface to receive notifications when dialog is closed by any means.
-     */
-    public interface PartialDatePickerResultsListener {
-
-        void onPartialDatePickerSave(@IdRes int destinationFieldId,
-                                     @NonNull String date);
     }
 
     /**
@@ -327,37 +162,35 @@ public class PartialDatePickerDialogFragment
             extends AlertDialog {
 
         private final NumberPicker mDayPicker;
-
-        /** Called after any change made to the pickers. */
+        /** Used for reading month names + calculating number of days in a month. */
+        Calendar mCalendarForCalculations;
+        /** This listener is called after <strong>any change</strong> made to the pickers. */
         @SuppressWarnings("FieldCanBeLocal")
         private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
-                new NumberPicker.OnValueChangeListener() {
-                    @Override
-                    public void onValueChange(@NonNull final NumberPicker picker,
-                                              final int oldVal,
-                                              final int newVal) {
-                        switch (picker.getId()) {
-                            case R.id.PICKER_YEAR:
-                                mYear = newVal;
-                                // Small optimization: only February needs this
-                                if (mMonth != null && mMonth == 2) {
-                                    setDaysOfMonth();
-                                }
-                                break;
-                            case R.id.PICKER_MONTH:
-                                mMonth = newVal;
+                (picker, oldVal, newVal) -> {
+                    switch (picker.getId()) {
+                        case R.id.PICKER_YEAR:
+                            mYear = newVal;
+                            // only February can be different number of days
+                            if (mMonth != null && mMonth == 2) {
                                 setDaysOfMonth();
-                                break;
-                            case R.id.PICKER_DAY:
-                                mDay = newVal;
-                                break;
+                            }
+                            break;
 
-                            default:
-                                if (BuildConfig.DEBUG /* always */) {
-                                    Log.d(TAG, "id=" + picker.getId());
-                                }
-                                break;
-                        }
+                        case R.id.PICKER_MONTH:
+                            mMonth = newVal;
+                            setDaysOfMonth();
+                            break;
+
+                        case R.id.PICKER_DAY:
+                            mDay = newVal;
+                            break;
+
+                        default:
+                            if (BuildConfig.DEBUG /* always */) {
+                                Log.d(TAG, "id=" + picker.getId());
+                            }
+                            break;
                     }
                 };
 
@@ -369,9 +202,14 @@ public class PartialDatePickerDialogFragment
          * Call it paranoia.
          *
          * @param context Current context
+         * @param args    optional arguments
          */
-        PartialDatePickerDialog(@NonNull final Context context) {
+        PartialDatePickerDialog(@NonNull final Context context,
+                                @Nullable final Bundle args) {
             super(context);
+
+            mCalendarForCalculations = Calendar.getInstance(LocaleUtils.getUserLocale(context));
+            int currentYear = mCalendarForCalculations.get(Calendar.YEAR);
 
             @SuppressLint("InflateParams")
             View root = LayoutInflater.from(context)
@@ -390,12 +228,22 @@ public class PartialDatePickerDialogFragment
             yearPicker.setMaxValue(2100);
             yearPicker.setOnValueChangedListener(mOnValueChangeListener);
 
+            // Generate the month names.
+            // Set the day to 1 to avoid wrapping.
+            mCalendarForCalculations.set(Calendar.DAY_OF_MONTH, 1);
+            // All month names (abbreviated). 13: first entry is 'unknown'
+            String[] monthNames = new String[13];
+            monthNames[0] = UNKNOWN_MONTH;
+            for (int i = 1; i <= 12; i++) {
+                mCalendarForCalculations.set(Calendar.MONTH, i - 1);
+                monthNames[i] = String.format("%tb", mCalendarForCalculations);
+            }
             NumberPicker monthPicker = root.findViewById(R.id.month);
             monthPicker.setId(R.id.PICKER_MONTH);
             monthPicker.setMinValue(0);
             // 12 months + the 'not set'
             monthPicker.setMaxValue(12);
-            monthPicker.setDisplayedValues(mMonthNames);
+            monthPicker.setDisplayedValues(monthNames);
             monthPicker.setOnValueChangedListener(mOnValueChangeListener);
 
             mDayPicker = root.findViewById(R.id.day);
@@ -409,7 +257,7 @@ public class PartialDatePickerDialogFragment
             mDayPicker.setOnValueChangedListener(mOnValueChangeListener);
 
             // initial date
-            yearPicker.setValue(mYear != null ? mYear : mCurrentYear);
+            yearPicker.setValue(mYear != null ? mYear : currentYear);
             monthPicker.setValue(mMonth != null ? mMonth : 0);
             mDayPicker.setValue(mDay != null ? mDay : 0);
             setDaysOfMonth();
@@ -421,6 +269,14 @@ public class PartialDatePickerDialogFragment
                       (DialogInterface.OnClickListener) null);
             setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
                       (DialogInterface.OnClickListener) null);
+
+            if (args != null) {
+                @StringRes
+                int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+                if (titleId != 0) {
+                    setTitle(titleId);
+                }
+            }
         }
 
         /**

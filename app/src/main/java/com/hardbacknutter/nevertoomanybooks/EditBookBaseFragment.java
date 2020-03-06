@@ -50,6 +50,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.DatePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.DatePickerResultsListener;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -73,8 +75,8 @@ public abstract class EditBookBaseFragment
         field.onChanged();
     };
 
-    private final PartialDatePickerDialogFragment.PartialDatePickerResultsListener
-            mPartialDatePickerResultsListener = (fieldId, value) -> {
+    private final DatePickerResultsListener
+            mDatePickerResultsListener = (fieldId, value) -> {
         Field<String> field = mFragmentVM.getFields().getField(fieldId);
         field.getAccessor().setValue(value);
         field.onChanged();
@@ -90,8 +92,10 @@ public abstract class EditBookBaseFragment
 
         if (PartialDatePickerDialogFragment.TAG.equals(childFragment.getTag())) {
             ((PartialDatePickerDialogFragment) childFragment)
-                    .setListener(mPartialDatePickerResultsListener);
-
+                    .setListener(mDatePickerResultsListener);
+        } else if (DatePickerDialogFragment.TAG.equals(childFragment.getTag())) {
+            ((DatePickerDialogFragment) childFragment)
+                    .setListener(mDatePickerResultsListener);
         } else if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
             ((CheckListDialogFragment) childFragment)
                     .setListener(mCheckListResultsListener);
@@ -110,8 +114,8 @@ public abstract class EditBookBaseFragment
                 .get(tag, EditBookFragmentViewModel.class);
 
         mFragmentVM.init(getArguments());
-        mFragmentVM.getUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
-        mFragmentVM.getNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
+        mFragmentVM.onUserMessage().observe(getViewLifecycleOwner(), this::showUserMessage);
+        mFragmentVM.onNeedsGoodreads().observe(getViewLifecycleOwner(), needs -> {
             if (needs != null && needs) {
                 final Context context = getContext();
                 //noinspection ConstantConditions
@@ -132,7 +136,7 @@ public abstract class EditBookBaseFragment
      * Init all Fields, and add them the {@link #getFields()} collection.
      * <p>
      * Note that Views are <strong>NOT AVAILABLE</strong>.
-     *
+     * <p>
      * Book data is available from {@link #mBookViewModel} but {@link #onResume()} is
      * were the fields/Views are normally loaded with that data.
      */
@@ -216,19 +220,28 @@ public abstract class EditBookBaseFragment
      * @param fieldId       view to connect
      * @param dialogTitleId title of the dialog box.
      * @param todayIfNone   if true, and if the field was empty,
-     *                      pre-populate with today's date
+     * @param isPartial     whether to popup the partial-date picker,
+     *                      or the system/full calendar picker.
      */
     void addDatePicker(@IdRes final int fieldId,
                        @StringRes final int dialogTitleId,
-                       final boolean todayIfNone) {
+                       final boolean todayIfNone,
+                       final boolean isPartial) {
         Field field = mFragmentVM.getFields().getField(fieldId);
         // only bother when it's in use
         if (field.isUsed()) {
             View view = field.getAccessor().getView();
-            view.setOnClickListener(v -> PartialDatePickerDialogFragment
-                    .newInstance(fieldId, dialogTitleId,
-                                 (String) field.getAccessor().getValue(), todayIfNone)
-                    .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG));
+            if (isPartial) {
+                view.setOnClickListener(v -> PartialDatePickerDialogFragment
+                        .newInstance(fieldId, dialogTitleId,
+                                     (String) field.getAccessor().getValue(), todayIfNone)
+                        .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG));
+            } else {
+                view.setOnClickListener(v -> DatePickerDialogFragment
+                        .newInstance(fieldId, dialogTitleId,
+                                     (String) field.getAccessor().getValue(), todayIfNone)
+                        .show(getChildFragmentManager(), DatePickerDialogFragment.TAG));
+            }
         }
     }
 

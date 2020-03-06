@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -77,13 +78,10 @@ public class IntStringFilter
         mDomain = domain;
     }
 
-    /**
-     * @return Filter expression, or {@code null} if not active
-     */
     @Override
     @Nullable
-    public String getExpression() {
-        Integer value = get();
+    public String getExpression(@NonNull final Context context) {
+        Integer value = getValue(context);
         if (!P_NOT_USED.equals(value)) {
             return mTable.dot(mDomain) + '=' + value;
         }
@@ -96,14 +94,10 @@ public class IntStringFilter
         return context.getString(mLabelId);
     }
 
-    /**
-     * syntax sugar.
-     *
-     * @return {@code true} if this filter is active
-     */
     @Override
-    public boolean isActive() {
-        return !P_NOT_USED.equals(get()) && App.isUsed(mDomain);
+    public boolean isActive(@NonNull final Context context) {
+        final SharedPreferences prefs = getPrefs(context);
+        return !P_NOT_USED.equals(getValue(context)) && App.isUsed(prefs, mDomain);
     }
 
     @Override

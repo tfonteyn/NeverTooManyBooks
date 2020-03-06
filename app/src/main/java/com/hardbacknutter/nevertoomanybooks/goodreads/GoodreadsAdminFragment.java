@@ -81,12 +81,12 @@ public class GoodreadsAdminFragment
         setHasOptionsMenu(true);
 
         mGoodreadsTaskModel = new ViewModelProvider(this).get(GoodreadsTaskModel.class);
-        mGoodreadsTaskModel.getTaskProgressMessage().observe(getViewLifecycleOwner(), message -> {
+        mGoodreadsTaskModel.onTaskProgress().observe(getViewLifecycleOwner(), message -> {
 //            if (mProgressDialog != null) {
 //                mProgressDialog.onProgress(message);
 //            }
         });
-        mGoodreadsTaskModel.getTaskFinishedMessage().observe(getViewLifecycleOwner(), message -> {
+        mGoodreadsTaskModel.onTaskFinished().observe(getViewLifecycleOwner(), message -> {
 //            if (mProgressDialog != null) {
 //                mProgressDialog.dismiss();
 //            }

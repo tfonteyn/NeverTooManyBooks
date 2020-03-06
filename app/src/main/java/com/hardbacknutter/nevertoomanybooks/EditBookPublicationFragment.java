@@ -131,7 +131,7 @@ public class EditBookPublicationFragment
         addAutocomplete(R.id.publisher, mFragmentVM.getPublishers());
         addAutocomplete(R.id.price_listed_currency, mFragmentVM.getListPriceCurrencyCodes());
 
-        addDatePicker(R.id.date_published, R.string.lbl_date_published, false);
-        addDatePicker(R.id.first_publication, R.string.lbl_first_publication, false);
+        addDatePicker(R.id.date_published, R.string.lbl_date_published, false, true);
+        addDatePicker(R.id.first_publication, R.string.lbl_first_publication, false, true);
     }
 }

@@ -29,7 +29,7 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/lbl_advanced_options">
+        android:title="@string/pg_ui">
 
         <SwitchPreference
             android:defaultValue="false"
@@ -48,10 +48,15 @@
             android:title="@string/pt_edit_book_authors_series" />
 
         <Preference
-            android:icon="@drawable/ic_close"
-            android:key="psk_purge_blns"
-            android:title="@string/lbl_purge_blns"
+            android:icon="@drawable/ic_undo"
+            android:key="psk_tip_reset_all"
+            android:title="@string/tip_reset_all"
             />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/lbl_maintenance">
 
         <Preference
             android:icon="@drawable/ic_close"
@@ -60,21 +65,32 @@
             />
 
         <Preference
-            android:icon="@drawable/ic_undo"
-            android:key="psk_tip_reset_all"
-            android:title="@string/tip_reset_all"
+            android:icon="@drawable/ic_close"
+            android:key="psk_purge_blns"
+            android:title="@string/lbl_purge_blns"
+            />
+
+        <Preference
+            android:icon="@drawable/ic_manage"
+            android:key="psk_rebuild_fts"
+            android:title="@string/menu_rebuild_fts"
             />
 
         <Preference
             android:icon="@drawable/ic_manage"
             android:key="psk_rebuild_index"
-            android:title="@string/rebuild_index"
+            android:title="@string/menu_rebuild_index"
             />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/debug">
 
         <Preference
             android:icon="@drawable/ic_send"
             android:key="psk_send_debug_info"
             android:title="@string/lbl_send_debug_info"
             />
+
     </PreferenceCategory>
 </PreferenceScreen>

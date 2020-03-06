@@ -83,7 +83,7 @@ public final class BackupManager {
 
         // We only support one backup format; so we use that.
         BackupContainer bkp = new TarBackupContainer(uri);
-        // Each format should provide a validator of some kind
+        // Each format should provide a validator of some sort
         bkp.validate(context);
 
         return bkp.newReader(context);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,13 +61,13 @@ public abstract class TaskListenerModel<Result>
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<TaskListener.ProgressMessage> getTaskProgressMessage() {
+    public MutableLiveData<TaskListener.ProgressMessage> onTaskProgress() {
         return mTaskProgressMessage;
     }
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<TaskListener.FinishMessage<Result>> getTaskFinishedMessage() {
+    public MutableLiveData<TaskListener.FinishMessage<Result>> onTaskFinished() {
         return mTaskFinishedMessage;
     }
 

@@ -421,7 +421,8 @@ public class EditBookAuthorsFragment
 
             mVb.cbxIsComplete.setChecked(mIsComplete);
 
-            final boolean useAuthorType = App.isUsed(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+            final boolean useAuthorType = App.isUsed(getContext(),
+                                                     DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
             if (useAuthorType) {
 

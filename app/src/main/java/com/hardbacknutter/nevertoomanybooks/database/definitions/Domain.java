@@ -104,14 +104,14 @@ public class Domain
      * @param prePreparedOrderBy {@code true} if this domain is in fact pre-prepared for sorting.
      *                           i.e. the values are stripped of spaces etc.. before being stored.
      */
-    private Domain(@NonNull final String name,
-                   final boolean isPrimaryKey,
-                   @NonNull final String type,
-                   final boolean isNotNull,
-                   @Nullable final String defaultClause,
-                   @Nullable final String references,
-                   final boolean isCollationLocalized,
-                   final boolean prePreparedOrderBy) {
+    protected Domain(@NonNull final String name,
+                     final boolean isPrimaryKey,
+                     @NonNull final String type,
+                     final boolean isNotNull,
+                     @Nullable final String defaultClause,
+                     @Nullable final String references,
+                     final boolean isCollationLocalized,
+                     final boolean prePreparedOrderBy) {
         mName = name;
         mIsPrimaryKey = isPrimaryKey;
         mType = type;

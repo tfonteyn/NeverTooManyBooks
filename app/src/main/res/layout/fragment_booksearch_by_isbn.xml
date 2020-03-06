@@ -37,66 +37,45 @@
 <!--    app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 <!--    tools:context=".BookSearchActivity"-->
 <!--    >-->
-
-<!-- The layout and button sizes in dimens.xml were tested with:
-    4WVGA - 240dpi - sw320dp
-    port: w320dp h509dp
-    land: w533dp h296dp
-
-    Pixel2 - 420dpi - sw411dp
-    port: w411dp h659dp
-    land: w683dp h387dp
-
-    Samsung A5 -  480dpi - sw360dp
-    port:  w360dp h616dp
-    land:  w640dp h336dp
--->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
+    android:maxWidth="@dimen/isbn_key_pad_width"
+    android:maxHeight="@dimen/isbn_key_pad_height"
     android:layout_gravity="center_horizontal"
-    android:maxWidth="@dimen/isbn_key_pad_max_width"
     tools:context=".BookSearchActivity"
     >
 
-    <Button
-        android:id="@+id/btn_altIsbn"
-        android:layout_width="@dimen/icon_button_width"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="0dp"
-        android:enabled="false"
-        app:icon="@drawable/ic_autorenew"
-        app:iconGravity="textStart"
-        app:iconPadding="0dp"
-        app:layout_constraintBaseline_toBaselineOf="@id/isbn"
-        app:layout_constraintStart_toStartOf="@id/key_1"
-        tools:enabled="true"
-        />
-
-    <com.hardbacknutter.nevertoomanybooks.widgets.EditIsbn
-        android:id="@+id/isbn"
-        style="@style/EditText.Isbn.Large"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_isbn"
+        style="@style/Envelope.EditText.Isbn"
+        android:paddingStart="@dimen/indent2"
         app:layout_constraintEnd_toStartOf="@id/isbn_del"
-        app:layout_constraintStart_toEndOf="@id/btn_altIsbn"
+        android:paddingEnd="@dimen/indent2"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill,LabelFor"
-        tools:text="123456789X123"
-        />
+        >
+
+        <com.hardbacknutter.nevertoomanybooks.utils.ISBN.IsbnTextInputEditText
+            android:id="@+id/isbn"
+            style="@style/EditText.Isbn"
+            android:layout_width="match_parent"
+            tools:ignore="Autofill,LabelFor"
+            tools:text="123456789X123"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/isbn_del"
-        android:layout_width="@dimen/icon_button_width"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
+        style="@style/IsbnKeyPad.BackspaceButton"
         android:contentDescription="@string/menu_delete"
-        app:icon="@drawable/ic_backspace"
-        app:iconGravity="textStart"
-        app:iconPadding="0dp"
-        app:layout_constraintBaseline_toBaselineOf="@id/isbn"
-        app:layout_constraintEnd_toEndOf="@id/key_3"
+        app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/lbl_isbn"
+        app:layout_constraintTop_toTopOf="@id/lbl_isbn"
         />
 
     <Space
@@ -105,12 +84,12 @@
         android:layout_height="@dimen/border2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/isbn"
+        app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
         />
 
     <Button
         android:id="@+id/key_1"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="1"
         app:layout_constraintBottom_toTopOf="@id/key_4"
         app:layout_constraintEnd_toStartOf="@id/key_2"
@@ -121,7 +100,7 @@
 
     <Button
         android:id="@+id/key_2"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="2"
         app:layout_constraintBottom_toTopOf="@id/key_5"
         app:layout_constraintEnd_toStartOf="@id/key_3"
@@ -132,7 +111,7 @@
 
     <Button
         android:id="@+id/key_3"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="3"
         app:layout_constraintBottom_toTopOf="@id/key_6"
         app:layout_constraintEnd_toEndOf="parent"
@@ -143,7 +122,7 @@
 
     <Button
         android:id="@+id/key_4"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="4"
         app:layout_constraintBottom_toTopOf="@id/key_7"
         app:layout_constraintEnd_toStartOf="@id/key_5"
@@ -154,7 +133,7 @@
 
     <Button
         android:id="@+id/key_5"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="5"
         app:layout_constraintBottom_toTopOf="@id/key_8"
         app:layout_constraintEnd_toStartOf="@id/key_6"
@@ -165,7 +144,7 @@
 
     <Button
         android:id="@+id/key_6"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="6"
         app:layout_constraintBottom_toTopOf="@id/key_9"
         app:layout_constraintEnd_toEndOf="parent"
@@ -176,7 +155,7 @@
 
     <Button
         android:id="@+id/key_7"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="7"
         app:layout_constraintBottom_toTopOf="@id/key_X"
         app:layout_constraintEnd_toStartOf="@id/key_8"
@@ -187,7 +166,7 @@
 
     <Button
         android:id="@+id/key_8"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="8"
         app:layout_constraintBottom_toTopOf="@id/key_0"
         app:layout_constraintEnd_toStartOf="@id/key_9"
@@ -198,7 +177,7 @@
 
     <Button
         android:id="@+id/key_9"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="9"
         app:layout_constraintBottom_toTopOf="@id/btn_search"
         app:layout_constraintEnd_toEndOf="parent"
@@ -209,31 +188,34 @@
 
     <Button
         android:id="@+id/key_X"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="X"
         app:layout_constraintEnd_toStartOf="@id/key_0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/key_7"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="HardcodedText"
         />
 
     <Button
         android:id="@+id/key_0"
-        style="@style/IsbnKeyPadButton.Number"
+        style="@style/IsbnKeyPad.NumberButton"
         android:text="0"
         app:layout_constraintEnd_toStartOf="@id/btn_search"
         app:layout_constraintStart_toEndOf="@id/key_X"
         app:layout_constraintTop_toBottomOf="@id/key_8"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="HardcodedText"
         />
 
     <Button
         android:id="@+id/btn_search"
-        style="@style/IsbnKeyPadButton.Search"
+        style="@style/IsbnKeyPad.SearchButton"
         android:text="@android:string/search_go"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/key_0"
         app:layout_constraintTop_toBottomOf="@id/key_9"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

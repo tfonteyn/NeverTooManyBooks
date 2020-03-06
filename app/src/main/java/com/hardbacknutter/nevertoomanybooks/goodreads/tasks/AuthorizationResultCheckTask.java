@@ -58,7 +58,7 @@ public class AuthorizationResultCheckTask
     @Override
     protected Boolean doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.AuthorizationResultCheckTask");
-        Context context = App.getAppContext();
+        Context context = App.getTaskContext();
         GoodreadsAuth grAuth = new GoodreadsAuth(context);
         try {
             return grAuth.handleAuthenticationAfterAuthorization(context);

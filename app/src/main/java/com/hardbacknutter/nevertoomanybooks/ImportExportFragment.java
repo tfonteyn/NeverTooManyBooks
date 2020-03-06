@@ -151,15 +151,15 @@ public class ImportExportFragment
         mTaskModel = new ViewModelProvider(this).get(TaskModel.class);
 
         mImportHelperModel = new ViewModelProvider(this).get(ImportHelperModel.class);
-        mImportHelperModel.getTaskProgressMessage()
+        mImportHelperModel.onTaskProgress()
                           .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
-        mImportHelperModel.getTaskFinishedMessage()
+        mImportHelperModel.onTaskFinished()
                           .observe(getViewLifecycleOwner(), this::onImportFinished);
 
         mExportHelperModel = new ViewModelProvider(this).get(ExportHelperModel.class);
-        mExportHelperModel.getTaskProgressMessage()
+        mExportHelperModel.onTaskProgress()
                           .observe(getViewLifecycleOwner(), this::onTaskProgressMessage);
-        mExportHelperModel.getTaskFinishedMessage()
+        mExportHelperModel.onTaskFinished()
                           .observe(getViewLifecycleOwner(), this::onExportFinished);
 
         //noinspection ConstantConditions

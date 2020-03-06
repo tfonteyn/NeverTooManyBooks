@@ -70,8 +70,8 @@ public class EditBookActivity
     }
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_edit_book;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_edit_book);
     }
 
     @Override

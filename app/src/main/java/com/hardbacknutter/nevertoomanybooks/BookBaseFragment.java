@@ -119,24 +119,6 @@ public abstract class BookBaseFragment
         // https://issuetracker.google.com/issues/144442240
         setHasOptionsMenu(isVisible());
 
-        // Set the activity title depending on View or Edit mode.
-        // This is a good place to do this, as we use data from the book for the title.
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            Book book = mBookViewModel.getBook();
-            if (book.isNew()) {
-                // EDIT NEW book
-                actionBar.setTitle(R.string.title_add_book);
-                actionBar.setSubtitle(null);
-            } else {
-                // VIEW or EDIT existing book
-                actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
-                //noinspection ConstantConditions
-                actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
-            }
-        }
-
         // load the book data into the views
         populateViews();
     }
@@ -160,6 +142,24 @@ public abstract class BookBaseFragment
         // restore the dirt-status and install the AfterChangeListener
         mBookViewModel.setDirty(wasDirty);
         getFields().setAfterChangeListener(fieldId -> mBookViewModel.setDirty(true));
+
+        // Set the activity title depending on View or Edit mode.
+        // This is a good place to do this, as we use data from the book for the title.
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            Book book = mBookViewModel.getBook();
+            if (book.isNew()) {
+                // EDIT NEW book
+                actionBar.setTitle(R.string.title_add_book);
+                actionBar.setSubtitle(null);
+            } else {
+                // VIEW or EDIT existing book
+                actionBar.setTitle(book.getString(DBDefinitions.KEY_TITLE));
+                //noinspection ConstantConditions
+                actionBar.setSubtitle(book.getAuthorTextShort(getContext()));
+            }
+        }
     }
 
     /**
@@ -175,6 +175,12 @@ public abstract class BookBaseFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
+
+        if (menu.findItem(R.id.MENU_SEARCH) == null) {
+            inflater.inflate(R.menu.sm_search, menu);
+            //noinspection ConstantConditions
+            MenuHandler.setupSearch(getActivity(), menu);
+        }
 
         if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
             inflater.inflate(R.menu.sm_open_on_site, menu);

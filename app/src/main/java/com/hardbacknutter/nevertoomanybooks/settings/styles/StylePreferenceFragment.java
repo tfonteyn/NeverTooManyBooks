@@ -112,9 +112,9 @@ public class StylePreferenceFragment
         PreferenceScreen screen = getPreferenceScreen();
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
-        // Use a dummy style to get the groups.
-        BooklistStyle dummy = new BooklistStyle();
-        for (BooklistGroup group : BooklistGroup.getAllGroups(dummy)) {
+        // Use the global style to get the groups.
+        BooklistStyle style = new BooklistStyle();
+        for (BooklistGroup group : BooklistGroup.getAllGroups(style)) {
             group.setPreferencesVisible(screen, mStyle.containsGroup(group.getId()));
         }
 
@@ -132,12 +132,15 @@ public class StylePreferenceFragment
      */
     @Override
     protected void updateSummary(@NonNull final String key) {
+
         switch (key) {
             case Prefs.pk_style_scale_font: {
                 SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
+                    //noinspection ConstantConditions
                     String summary = getResources()
-                            .getStringArray(R.array.pe_bob_text_scale)[mStyle.getTextScale()];
+                            .getStringArray(R.array.pe_bob_text_scale)
+                            [mStyle.getTextScale(getContext())];
                     preference.setSummary(summary);
                 }
                 break;
@@ -145,9 +148,10 @@ public class StylePreferenceFragment
             case Prefs.pk_style_scale_thumbnail: {
                 SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
+                    //noinspection ConstantConditions
                     String summary = getResources()
-                            .getStringArray(R.array.pe_bob_thumbnail_scale)[mStyle
-                            .getThumbnailScale()];
+                            .getStringArray(R.array.pe_bob_thumbnail_scale)
+                            [mStyle.getThumbnailScale(getContext())];
                     preference.setSummary(summary);
                 }
                 break;
@@ -157,7 +161,8 @@ public class StylePreferenceFragment
                 SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     preference.setMax(mStyle.getGroupCount());
-                    preference.setSummary(String.valueOf(mStyle.getTopLevel()));
+                    //noinspection ConstantConditions
+                    preference.setSummary(String.valueOf(mStyle.getTopLevel(getContext())));
                 }
                 break;
             }

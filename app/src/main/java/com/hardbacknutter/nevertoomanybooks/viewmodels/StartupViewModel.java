@@ -34,7 +34,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
-import androidx.annotation.WorkerThread;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
@@ -46,13 +45,14 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.AnalyzeDbTask;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildOrderByTitleColumnsTask;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -69,20 +69,12 @@ public class StartupViewModel
 
     /** Log tag. */
     private static final String TAG = "StartupViewModel";
-    private static final String PREF_PREFIX = "startup.";
+    public static final String PREF_PREFIX = "startup.";
 
     /** Number of times the app has been started. */
     private static final String PREF_STARTUP_COUNT = PREF_PREFIX + "startCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
     private static final String PREF_MAINTENANCE_COUNTDOWN = PREF_PREFIX + "startCountdown";
-    /** Flag to indicate FTS rebuild is required at startup. */
-    private static final String PREF_STARTUP_FTS_REBUILD_REQUIRED = PREF_PREFIX + "rebuild.fts";
-    /** Flag to indicate OrderBy columns must be rebuild at startup. */
-    private static final String PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED =
-            PREF_PREFIX + "rebuild.ob.title";
-    /** Flag to indicate all indexes must be rebuild at startup. */
-    private static final String PREF_STARTUP_INDEX_REBUILD_REQUIRED =
-            PREF_PREFIX + "rebuild.index";
 
     /** Number of app startup's between some periodic action. */
     private static final int MAINTENANCE_COUNTDOWN = 5;
@@ -132,53 +124,12 @@ public class StartupViewModel
     private boolean mDoMaintenance;
 
     /**
-     * Set the flag to indicate an FTS rebuild is required.
-     *
-     * @param context Current context
-     */
-    @SuppressWarnings("unused")
-    public static void scheduleFtsRebuild(@NonNull final Context context) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED, true).apply();
-    }
-
-    /**
-     * Set or remove the flag to indicate an OrderBy column rebuild is required.
-     *
-     * @param context Current context
-     */
-    public static void scheduleOrderByRebuild(@NonNull final Context context,
-                                              final boolean flag) {
-        final SharedPreferences.Editor ed = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
-        if (flag) {
-            ed.putBoolean(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED, true);
-        } else {
-            ed.remove(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED);
-        }
-        ed.apply();
-    }
-
-    public static void scheduleIndexRebuild(@NonNull final Context context,
-                                            final boolean flag) {
-        final SharedPreferences.Editor ed = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
-        if (flag) {
-            ed.putBoolean(PREF_STARTUP_INDEX_REBUILD_REQUIRED, true);
-        } else {
-            ed.remove(PREF_STARTUP_INDEX_REBUILD_REQUIRED);
-        }
-        ed.apply();
-
-    }
-
-    /**
      * Developer warning: this is not a UI update.
      *
      * @return {@code true} if all tasks are finished.
      */
     @NonNull
-    public MutableLiveData<Boolean> getTaskFinished() {
+    public MutableLiveData<Boolean> onTaskFinished() {
         return mTaskFinished;
     }
 
@@ -188,7 +139,7 @@ public class StartupViewModel
      * @return exception, or {@code null} for none.
      */
     @NonNull
-    public MutableLiveData<Exception> getTaskException() {
+    public MutableLiveData<Exception> onTaskException() {
         return mTaskException;
     }
 
@@ -198,7 +149,7 @@ public class StartupViewModel
      * @return message
      */
     @NonNull
-    public MutableLiveData<String> getTaskProgressMessage() {
+    public MutableLiveData<String> onTaskProgress() {
         return mTaskProgressMessage;
     }
 
@@ -273,6 +224,9 @@ public class StartupViewModel
         }
 
         if (mStartupTasksShouldBeStarted) {
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
             int taskId = 0;
             // start these unconditionally
             startTask(new BuildLanguageMappingsTask(++taskId, mTaskListener), false);
@@ -285,23 +239,17 @@ public class StartupViewModel
             }
 
             // on demand only
-            if (PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(PREF_STARTUP_ORDERBY_TITLE_REBUILD_REQUIRED,
-                                             false)) {
+            if (prefs.getBoolean(Scheduler.PREF_REBUILD_ORDERBY_COLUMNS, false)) {
                 startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener), false);
             }
 
             // on demand only
-            if (PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(PREF_STARTUP_INDEX_REBUILD_REQUIRED,
-                                             false)) {
-                startTask(new RebuildIndexes(++taskId, mDb, mTaskListener), false);
+            if (prefs.getBoolean(Scheduler.PREF_REBUILD_INDEXES, false)) {
+                startTask(new RebuildIndexesTask(++taskId, mDb, mTaskListener), false);
             }
 
             // on demand only
-            if (PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getBoolean(PREF_STARTUP_FTS_REBUILD_REQUIRED,
-                                             false)) {
+            if (prefs.getBoolean(Scheduler.PREF_REBUILD_FTS, false)) {
                 startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener), false);
             }
 
@@ -400,7 +348,7 @@ public class StartupViewModel
 
         @Override
         protected Boolean doInBackground(final Void... voids) {
-            final Context context = App.getAppContext();
+            final Context context = App.getTaskContext();
 
             ScannerFactory factory = new GoogleBarcodeScanner.GoogleBarcodeScannerFactory();
             if (factory.isAvailable(context)) {
@@ -411,291 +359,4 @@ public class StartupViewModel
         }
     }
 
-    /**
-     * Data cleaning. Done on each startup.
-     */
-    static class DBCleanerTask
-            extends TaskBase<Void, Boolean> {
-
-        /** Database Access. */
-        @NonNull
-        private final DAO mDb;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId       a task identifier, will be returned in the task finished listener.
-         * @param db           Database Access
-         * @param taskListener for sending progress and finish messages to.
-         */
-        @UiThread
-        DBCleanerTask(final int taskId,
-                      @NonNull final DAO db,
-                      @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-            mDb = db;
-        }
-
-        @WorkerThread
-        @Override
-        protected Boolean doInBackground(final Void... params) {
-            Thread.currentThread().setName("DBCleanerTask");
-            final Context context = App.getLocalizedAppContext();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
-            }
-            publishProgress(new TaskListener.ProgressMessage(
-                    getTaskId(), context.getString(R.string.progress_msg_optimizing)));
-            try {
-                final DBCleaner cleaner = new DBCleaner(mDb);
-
-                // do a mass update of any languages not yet converted to ISO 639-2 codes
-                cleaner.languages(context);
-
-                // validate booleans to have 0/1 content (could do just ALL_TABLES)
-                cleaner.booleanColumns(DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.TBL_AUTHORS,
-                                       DBDefinitions.TBL_SERIES);
-
-                // clean/correct style UUID's on Bookshelves for deleted styles.
-                cleaner.bookshelves(context);
-
-                // re-sort positional links
-                cleaner.bookAuthors(context);
-                cleaner.bookSeries(context);
-
-                //TEST: we only check & log for now, but don't update yet...
-                // we need to test with bad data
-                cleaner.maybeUpdate(context, true);
-                return true;
-
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return false;
-            }
-        }
-    }
-
-    /**
-     * Task to rebuild all index in background.
-     * Can take several seconds.
-     */
-    static class RebuildIndexes
-            extends TaskBase<Void, Boolean> {
-
-        /** Database Access. */
-        @NonNull
-        private final DAO mDb;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId       a task identifier, will be returned in the task finished listener.
-         * @param db           Database Access
-         * @param taskListener for sending progress and finish messages to.
-         */
-        @UiThread
-        RebuildIndexes(final int taskId,
-                       @NonNull final DAO db,
-                       @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-            mDb = db;
-        }
-
-        @Override
-        @WorkerThread
-        protected Boolean doInBackground(final Void... params) {
-            Thread.currentThread().setName("RebuildIndexes");
-            final Context context = App.getLocalizedAppContext();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
-            }
-            publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
-                    R.string.progress_msg_rebuilding_search_index)));
-            try {
-                DBHelper.recreateIndices(mDb.getSyncDb());
-
-                PreferenceManager.getDefaultSharedPreferences(context)
-                                 .edit()
-                                 .remove(PREF_STARTUP_INDEX_REBUILD_REQUIRED)
-                                 .apply();
-                return true;
-
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return false;
-            }
-
-        }
-    }
-
-    /**
-     * Task to rebuild FTS in background. Can take several seconds, so not done in onUpgrade().
-     */
-    static class RebuildFtsTask
-            extends TaskBase<Void, Boolean> {
-
-        /** Database Access. */
-        @NonNull
-        private final DAO mDb;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId       a task identifier, will be returned in the task finished listener.
-         * @param db           Database Access
-         * @param taskListener for sending progress and finish messages to.
-         */
-        @UiThread
-        RebuildFtsTask(final int taskId,
-                       @NonNull final DAO db,
-                       @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-            mDb = db;
-        }
-
-        @Override
-        @WorkerThread
-        protected Boolean doInBackground(final Void... params) {
-            Thread.currentThread().setName("RebuildFtsTask");
-            final Context context = App.getLocalizedAppContext();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
-            }
-            publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
-                    R.string.progress_msg_rebuilding_search_index)));
-            try {
-                mDb.rebuildFts();
-
-                PreferenceManager.getDefaultSharedPreferences(context)
-                                 .edit()
-                                 .remove(PREF_STARTUP_FTS_REBUILD_REQUIRED)
-                                 .apply();
-                return true;
-
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return false;
-            }
-
-        }
-    }
-
-    /**
-     * Task to rebuild all OrderBy columns in background.
-     */
-    static class RebuildOrderByTitleColumnsTask
-            extends TaskBase<Void, Boolean> {
-
-        /** Database Access. */
-        @NonNull
-        private final DAO mDb;
-
-        /**
-         * Constructor.
-         *
-         * @param taskId       a task identifier, will be returned in the task finished listener.
-         * @param db           Database Access
-         * @param taskListener for sending progress and finish messages to.
-         */
-        @UiThread
-        RebuildOrderByTitleColumnsTask(final int taskId,
-                                       @NonNull final DAO db,
-                                       @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-            mDb = db;
-        }
-
-        @Override
-        @WorkerThread
-        protected Boolean doInBackground(final Void... params) {
-            Thread.currentThread().setName("RebuildOrderByTitleColumnsTask");
-            final Context context = App.getLocalizedAppContext();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
-            }
-            // incorrect progress message, but it's half-true.
-            publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
-                    R.string.progress_msg_rebuilding_search_index)));
-            try {
-                final boolean reorder = ItemWithTitle.isReorderTitleForSorting(context);
-                mDb.rebuildOrderByTitleColumns(context, reorder);
-                return true;
-
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return false;
-            } finally {
-                // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
-                scheduleOrderByRebuild(context, false);
-            }
-        }
-    }
-
-    /**
-     * Run 'analyse' on our databases.
-     */
-    static class AnalyzeDbTask
-            extends TaskBase<Void, Boolean> {
-
-        /** Database Access. */
-        @NonNull
-        private final DAO mDb;
-
-        private final boolean mDoCoversDb;
-
-        /**
-         * @param taskId       a task identifier, will be returned in the task finished listener.
-         * @param db           Database Access
-         * @param taskListener for sending progress and finish messages to.
-         */
-        @UiThread
-        AnalyzeDbTask(final int taskId,
-                      @NonNull final DAO db,
-                      final boolean doCoversDb,
-                      @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-            mDb = db;
-            mDoCoversDb = doCoversDb;
-        }
-
-        @Override
-        protected Boolean doInBackground(final Void... params) {
-            Thread.currentThread().setName("AnalyzeDbTask");
-            final Context context = App.getLocalizedAppContext();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
-            }
-            publishProgress(new TaskListener.ProgressMessage(getTaskId(), context.getString(
-                    R.string.progress_msg_optimizing)));
-            try {
-                // small hack to make sure we always update the triggers.
-                // Makes creating/modifying triggers MUCH easier.
-                if (BuildConfig.DEBUG /* always */) {
-                    mDb.recreateTriggers();
-                }
-
-                mDb.analyze();
-                if (mDoCoversDb) {
-                    CoversDAO.analyze(context);
-                }
-                return true;
-
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return false;
-            }
-
-        }
-    }
 }

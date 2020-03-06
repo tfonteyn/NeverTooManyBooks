@@ -80,7 +80,7 @@ public class SearchEditionsTask
     @WorkerThread
     protected ArrayList<String> doInBackground(final Void... params) {
         Thread.currentThread().setName("SearchEditionsTask " + mIsbn);
-        Context context = App.getAppContext();
+        Context context = App.getTaskContext();
         Locale locale = LocaleUtils.getUserLocale(context);
 
         ArrayList<String> editions = new ArrayList<>();

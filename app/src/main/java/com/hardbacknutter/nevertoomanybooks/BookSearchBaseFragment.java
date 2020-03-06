@@ -95,9 +95,9 @@ public abstract class BookSearchBaseFragment
         mSearchCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
         //noinspection ConstantConditions
         mSearchCoordinator.init(getContext(), requireArguments());
-        mSearchCoordinator.getSearchCoordinatorProgressMessage()
+        mSearchCoordinator.onSearchCoordinatorProgressMessage()
                           .observe(getViewLifecycleOwner(), this::onSearchProgress);
-        mSearchCoordinator.getSearchCoordinatorFinishedMessage()
+        mSearchCoordinator.onSearchCoordinatorFinishedMessage()
                           .observe(getViewLifecycleOwner(), this::onSearchFinished);
 
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);

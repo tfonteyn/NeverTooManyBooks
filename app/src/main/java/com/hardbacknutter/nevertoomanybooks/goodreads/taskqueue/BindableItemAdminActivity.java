@@ -61,8 +61,8 @@ public abstract class BindableItemAdminActivity
     protected abstract BindableItemCursorAdapter getListAdapter(@NonNull DAO db);
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_message_queue_list;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_message_queue_list);
     }
 
     @Override

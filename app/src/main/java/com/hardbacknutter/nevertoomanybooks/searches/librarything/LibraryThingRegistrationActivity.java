@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,7 +39,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -48,6 +46,7 @@ import java.io.File;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
@@ -65,18 +64,18 @@ public class LibraryThingRegistrationActivity
     /** Log tag. */
     private static final String TAG = "LibraryThingReg";
 
-    private EditText mDevKeyView;
-
+    private ActivityLibrarythingRegisterBinding mVb;
     private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Integer> message) {
-            Snackbar.make(mDevKeyView, message.result, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mVb.devKey, message.result, Snackbar.LENGTH_LONG).show();
         }
     };
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_librarything_register;
+    protected void onSetContentView() {
+        mVb = ActivityLibrarythingRegisterBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
     }
 
     @Override
@@ -84,34 +83,31 @@ public class LibraryThingRegistrationActivity
         super.onCreate(savedInstanceState);
         setTitle(R.string.site_library_thing);
 
-        // LT Registration Link.
-        findViewById(R.id.register_url).setOnClickListener(
+        mVb.registerUrl.setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
                                               Uri.parse(LibraryThingSearchEngine.BASE_URL + '/'))));
 
-        // DevKey Link.
-        findViewById(R.id.dev_key_url).setOnClickListener(
+        mVb.devKeyUrl.setOnClickListener(
                 v -> startActivity(new Intent(Intent.ACTION_VIEW,
                                               Uri.parse(LibraryThingSearchEngine.BASE_URL
                                                         + "/services/keys.php"))));
 
-        mDevKeyView = findViewById(R.id.dev_key);
         String key = PreferenceManager.getDefaultSharedPreferences(this)
                                       .getString(LibraryThingSearchEngine.PREFS_DEV_KEY, "");
-        mDevKeyView.setText(key);
+        mVb.devKey.setText(key);
 
-        FloatingActionButton fabButton = findViewById(R.id.fab);
-        fabButton.setImageResource(R.drawable.ic_save);
-        fabButton.setVisibility(View.VISIBLE);
-        fabButton.setOnClickListener(v -> {
-            String devKey = mDevKeyView.getText().toString().trim();
+        mVb.fab.setImageResource(R.drawable.ic_save);
+        mVb.fab.setVisibility(View.VISIBLE);
+        mVb.fab.setOnClickListener(v -> {
+            //noinspection ConstantConditions
+            String devKey = mVb.devKey.getText().toString().trim();
             PreferenceManager.getDefaultSharedPreferences(this)
                              .edit()
                              .putString(LibraryThingSearchEngine.PREFS_DEV_KEY, devKey)
                              .apply();
 
             if (!devKey.isEmpty()) {
-                Snackbar.make(mDevKeyView, R.string.progress_msg_connecting,
+                Snackbar.make(mVb.devKey, R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
                 new ValidateKey(mListener).execute();
             }
@@ -139,7 +135,7 @@ public class LibraryThingRegistrationActivity
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
             Thread.currentThread().setName("LT.ValidateKey");
-            Context context = App.getAppContext();
+            Context context = App.getTaskContext();
             try {
                 SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine();
                 String fileSpec = ltm.getCoverImage(context, "0451451783",

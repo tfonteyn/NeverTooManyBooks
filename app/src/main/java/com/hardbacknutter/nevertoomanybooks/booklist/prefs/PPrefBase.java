@@ -92,59 +92,41 @@ public abstract class PPrefBase<T>
     /**
      * Get the style preferences, or if the UUID is not set, the global preferences.
      *
+     * @param context Current context
+     *
      * @return preferences
      */
     @NonNull
-    protected SharedPreferences getPrefs() {
+    protected SharedPreferences getPrefs(@NonNull final Context context) {
         if (!mUuid.isEmpty()) {
-            return App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
+            return context.getSharedPreferences(mUuid, Context.MODE_PRIVATE);
         } else {
-            return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+            return PreferenceManager.getDefaultSharedPreferences(context);
         }
     }
 
-    /**
-     * Get the global preferences to get the global default values.
-     *
-     * @return global preferences
-     */
     @NonNull
-    SharedPreferences getGlobal() {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+    @Override
+    public String getKey() {
+        return mKey;
     }
 
-    /**
-     * for single pref updated.
-     * <p>
-     * Stores the value as a String.
-     * {@code null} causes the value to be removed.
-     */
     @Override
     public void set(@Nullable final T value) {
         if (!mIsPersistent) {
             mNonPersistedValue = value;
-        } else if (value == null) {
-            getPrefs().edit().remove(getKey()).apply();
+
         } else {
-            getPrefs().edit().putString(getKey(), String.valueOf(value)).apply();
+            SharedPreferences.Editor ed = getPrefs(App.getAppContext()).edit();
+            if (value == null) {
+                ed.remove(getKey());
+            } else {
+                set(ed, value);
+            }
+            ed.apply();
         }
     }
 
-    /**
-     * for batch updates. Can also be used for setting globals.
-     * <p>
-     * Stores the value as a String by default. Override if you need another type.
-     * {@code null} causes the value to be removed.
-     */
-    @Override
-    public void set(@NonNull final SharedPreferences.Editor ed,
-                    @Nullable final T value) {
-        if (value == null) {
-            ed.remove(getKey());
-        } else {
-            ed.putString(getKey(), value.toString());
-        }
-    }
 
     /**
      * Set the <strong>value</strong> from the Parcel.
@@ -163,23 +145,11 @@ public abstract class PPrefBase<T>
         if (mIsPersistent) {
             // write the actual value, this could be the default if we have no value, but that
             // is what we want for user-defined styles anyhow.
-            dest.writeValue(get());
+            dest.writeValue(getValue(App.getAppContext()));
         } else {
             // builtin ? write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
             dest.writeValue(mNonPersistedValue);
-        }
-    }
-
-    @NonNull
-    @Override
-    public String getKey() {
-        return mKey;
-    }
-
-    void remove() {
-        if (mIsPersistent) {
-            getPrefs().edit().remove(getKey()).apply();
         }
     }
 
@@ -190,7 +160,8 @@ public abstract class PPrefBase<T>
                + ", mUuid=" + mUuid
                + ", type=" + mDefaultValue.getClass().getSimpleName()
                + ", defaultValue=`" + mDefaultValue + '`'
-               + ", mIsPersistent=" + mIsPersistent
-               + ", mNonPersistedValue=`" + mNonPersistedValue + '`';
+               + ", ssPersistent=" + mIsPersistent
+               + ", nonPersistedValue=`" + mNonPersistedValue + '`'
+               + ", value=`" + getValue(App.getAppContext()) + '`';
     }
 }

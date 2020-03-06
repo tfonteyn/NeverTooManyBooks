@@ -27,8 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.util.Log;
-
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -121,16 +118,8 @@ public class SqlStatementManager
         if (old != null) {
             old.close();
         }
-        final long t = System.nanoTime();
         SynchronizedStatement stmt = mSyncedDb.compileStatement(sql);
         mStatements.put(name, stmt);
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-            Log.d(TAG + "|" + mInstanceName, "compileStatement"
-                                             + "|" + name
-                                             + "|completed in " + (System.nanoTime() - t) + " ns");
-        }
-
         return stmt;
     }
 

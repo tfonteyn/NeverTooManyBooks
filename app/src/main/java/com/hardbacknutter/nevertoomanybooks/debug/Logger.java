@@ -293,6 +293,7 @@ public final class Logger {
     /**
      * DEBUG only.
      */
+    @SuppressWarnings("unused")
     private static void debugArguments(@NonNull final String tag,
                                        @NonNull final Object fragmentOrActivity,
                                        @SuppressWarnings("SameParameterValue")
@@ -367,22 +368,6 @@ public final class Logger {
     public static File getLogDir(@NonNull final Context context)
             throws ExternalStorageException {
         return new File(StorageUtils.getRootDir(context), LOG_SUB_DIR);
-    }
-
-    /**
-     * Dump all information from an onCreate method.
-     *
-     * @param fragmentOrActivity Activity or Fragment
-     * @param savedInstanceState Bundle
-     */
-    @SuppressWarnings("unused")
-    public static void enterOnCreate(@NonNull final String tag,
-                                     @NonNull final Object fragmentOrActivity,
-                                     @Nullable final Bundle savedInstanceState) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_INSTANCE_STATE) {
-            d(tag, "ENTER|onCreate|savedInstanceState=" + savedInstanceState);
-            debugArguments(tag, fragmentOrActivity, "onCreate");
-        }
     }
 
     /**

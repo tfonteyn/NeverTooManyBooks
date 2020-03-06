@@ -124,8 +124,8 @@ public class GoodreadsSearchActivity
     }
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_goodreads_search;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_goodreads_search);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class GoodreadsSearchActivity
         mModel.init(Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.ARGS_MISSING_EXTRAS),
                     savedInstanceState);
 
-        mModel.getWorks().observe(this, goodreadsWorks -> {
+        mModel.onWorksRetrieved().observe(this, goodreadsWorks -> {
             mWorks.clear();
             if (goodreadsWorks != null && !goodreadsWorks.isEmpty()) {
                 mWorks.addAll(goodreadsWorks);
@@ -149,7 +149,8 @@ public class GoodreadsSearchActivity
             }
             mWorksAdapter.notifyDataSetChanged();
         });
-        mModel.getBookNoLongerExists().observe(this, flag -> {
+
+        mModel.onBookNoLongerExists().observe(this, flag -> {
             if (flag) {
                 Snackbar.make(mSearchTextView, R.string.warning_book_no_longer_exists,
                               Snackbar.LENGTH_LONG).show();
@@ -244,13 +245,13 @@ public class GoodreadsSearchActivity
 
         /** Observable. */
         @NonNull
-        public MutableLiveData<List<GoodreadsWork>> getWorks() {
+        public MutableLiveData<List<GoodreadsWork>> onWorksRetrieved() {
             return mWorks;
         }
 
         /** Observable. */
         @NonNull
-        MutableLiveData<Boolean> getBookNoLongerExists() {
+        MutableLiveData<Boolean> onBookNoLongerExists() {
             return mBookNoLongerExists;
         }
 
@@ -344,7 +345,7 @@ public class GoodreadsSearchActivity
             super(itemView);
 
             coverView = itemView.findViewById(R.id.coverImage0);
-            if (!App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+            if (!App.isUsed(itemView.getContext(), UniqueId.BKEY_THUMBNAIL)) {
                 coverView.setVisibility(View.GONE);
             }
             authorView = itemView.findViewById(R.id.author);

@@ -149,8 +149,8 @@ public class EditBookNotesFragment
         addAutocomplete(R.id.price_paid_currency, mFragmentVM.getPricePaidCurrencyCodes());
         addAutocomplete(R.id.location, mFragmentVM.getLocations());
 
-        addDatePicker(R.id.date_acquired, R.string.lbl_date_acquired, true);
-        addDatePicker(R.id.read_start, R.string.lbl_read_start, true);
-        addDatePicker(R.id.read_end, R.string.lbl_read_end, true);
+        addDatePicker(R.id.date_acquired, R.string.lbl_date_acquired, true, false);
+        addDatePicker(R.id.read_start, R.string.lbl_read_start, true, false);
+        addDatePicker(R.id.read_end, R.string.lbl_read_end, true, false);
     }
 }

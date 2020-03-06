@@ -64,9 +64,9 @@ public interface ItemWithTitle {
      * @return reordered title, or the original if the pattern was not found
      */
     @NonNull
-    static String reorderTitle(@NonNull final Context context,
-                               @NonNull final String title,
-                               @NonNull final Locale titleLocale) {
+    static String reorder(@NonNull final Context context,
+                          @NonNull final String title,
+                          @NonNull final Locale titleLocale) {
 
         String[] titleWords = title.split(" ");
         // Single word titles (or empty titles).. just return.
@@ -113,12 +113,12 @@ public interface ItemWithTitle {
     }
 
     @NonNull
-    static String reorderTitle(@NonNull final Context context,
-                               @NonNull final String title,
-                               @NonNull final String language) {
+    static String reorder(@NonNull final Context context,
+                          @NonNull final String title,
+                          @NonNull final String language) {
         Locale locale = LocaleUtils.getLocale(context, language);
         if (locale != null) {
-            return reorderTitle(context, title, locale);
+            return reorder(context, title, locale);
         } else {
             return title;
         }
@@ -163,7 +163,7 @@ public interface ItemWithTitle {
                                              @NonNull final Locale titleLocale) {
 
         if (isReorderTitleForDisplaying(context)) {
-            return reorderTitle(context, getTitle(), titleLocale);
+            return reorder(context, getTitle(), titleLocale);
         } else {
             return getTitle();
         }
@@ -181,7 +181,7 @@ public interface ItemWithTitle {
                                           @NonNull final Locale titleLocale) {
 
         if (isReorderTitleForSorting(context)) {
-            return reorderTitle(context, getTitle(), titleLocale);
+            return reorder(context, getTitle(), titleLocale);
         } else {
             return getTitle();
         }

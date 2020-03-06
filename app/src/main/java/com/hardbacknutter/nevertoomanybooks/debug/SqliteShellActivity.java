@@ -38,8 +38,8 @@ public class SqliteShellActivity
         extends BaseActivity {
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_main;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_main);
     }
 
     @Override

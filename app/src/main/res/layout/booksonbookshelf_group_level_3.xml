@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,9 +27,33 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <!-- The ISBN keypad button width. -->
-    <dimen name="isbn_key_pad_button_width">108dp</dimen>
-    <!-- The ISBN keypad should not stretch beyond a reasonable width. -->
-    <dimen name="isbn_key_pad_max_width">360dp</dimen>
-</resources>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/ROW_ONCLICK_TARGET"
+    style="@style/BooklistBook.Row.Level3"
+    >
+
+    <ImageView
+        android:id="@+id/bullet"
+        style="@style/BooklistBook.Bullet.Level3"
+        app:layout_constraintBottom_toBottomOf="@id/name"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="ContentDescription"
+        />
+
+    <!--The 'drawableEnd' drawable itself is done from code. -->
+    <TextView
+        android:id="@+id/name"
+        style="@style/BooklistBook.Section"
+        android:drawableTint="?attr/completed_icon_tint"
+        android:textIsSelectable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/bullet"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:drawableEnd="@drawable/ic_lock"
+        tools:text="Level 3 row"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

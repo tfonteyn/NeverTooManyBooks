@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -28,8 +28,8 @@
   -->
 
 <resources>
-    <!-- The ISBN keypad button width. -->
-    <dimen name="isbn_key_pad_button_width">120dp</dimen>
-    <!-- The ISBN keypad should not stretch beyond a reasonable width. -->
-    <dimen name="isbn_key_pad_max_width">410dp</dimen>
+    <!-- on all but the smallest screens (portrait and landscape)... make the ISBN box bigger. -->
+    <style name="EditText.Isbn">
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
 </resources>

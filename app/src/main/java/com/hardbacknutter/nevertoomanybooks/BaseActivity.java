@@ -32,6 +32,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.CallSuper;
@@ -137,15 +138,6 @@ public abstract class BaseActivity
     }
 
     /**
-     * Override this and return the id you need.
-     *
-     * @return the layout id for this activity, or 0 for none (i.e. no UI View).
-     */
-    protected int getLayoutId() {
-        return 0;
-    }
-
-    /**
      * apply the user-preferred Locale before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
@@ -155,6 +147,13 @@ public abstract class BaseActivity
         mInitialLocaleSpec = LocaleUtils.getPersistedLocaleSpec(localizedContext);
     }
 
+    /**
+     * Wrapper for {@link #setContentView}. Called from onCreate after the theme was set.
+     */
+    protected void onSetContentView() {
+        // no UI by default.
+    }
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         // apply the user-preferred Theme before super.onCreate is called.
@@ -162,11 +161,7 @@ public abstract class BaseActivity
         mInitialThemeId = App.applyTheme(this);
 
         super.onCreate(savedInstanceState);
-
-        final int layoutId = getLayoutId();
-        if (layoutId != 0) {
-            setContentView(layoutId);
-        }
+        onSetContentView();
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
@@ -180,6 +175,14 @@ public abstract class BaseActivity
         }
         // Normal setup of the action bar now
         updateActionBar(isTaskRoot());
+
+        // for standard (system) local search only - URGENT: DON'T DO FOR ALL... its annoying on edit screens
+//        if (!Prefs.isAdvancedSearch(this)) {
+//            // Popup the search widget when the user starts to type.
+//            // https://developer.android.com/guide/topics/search/search-dialog
+//            // #InvokingTheSearchDialog
+//            setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+//        }
     }
 
     public void updateActionBar(final boolean isRoot) {
@@ -350,15 +353,6 @@ public abstract class BaseActivity
         closeNavigationDrawer();
 
         switch (item.getItemId()) {
-            case R.id.nav_search: {
-                if (Prefs.isAdvancedSearch(this)) {
-                    return onAdvancedSearchRequested();
-                } else {
-                    // standard system call.
-                    return onSearchRequested();
-                }
-            }
-
             case R.id.nav_manage_bookshelves: {
                 Intent intent = new Intent(this, EditBookshelvesActivity.class);
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
@@ -401,19 +395,38 @@ public abstract class BaseActivity
         }
     }
 
+    boolean isNavigationDrawerVisible() {
+        return (mDrawerLayout != null && mDrawerLayout.isDrawerVisible(GravityCompat.START));
+    }
+
     void closeNavigationDrawer() {
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
         }
     }
 
+    @Override
+    public boolean onSearchRequested() {
+        if (Prefs.isAdvancedSearch(this)) {
+            Intent searchIntent = new Intent(this, FTSSearchActivity.class);
+            if (onAdvancedSearchRequested(searchIntent)) {
+                startActivityForResult(searchIntent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            // standard system call.
+            return super.onSearchRequested();
+        }
+    }
+
     /**
-     * There was a search requested by the user; bring up the advanced form (activity).
+     * Override to set extra parameters on the passed intent.
+     *
+     * @return {@code true} if search can be launched, false if activity refuses (blocks)
      */
-    @SuppressWarnings("SameReturnValue")
-    boolean onAdvancedSearchRequested() {
-        Intent intent = new Intent(this, FTSSearchActivity.class);
-        startActivityForResult(intent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+    protected boolean onAdvancedSearchRequested(@NonNull final Intent searchIntent) {
         return true;
     }
 
@@ -426,13 +439,18 @@ public abstract class BaseActivity
         return isTaskRoot() && mHomeIsRootMenu;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        MenuHandler.setupSearch(this, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     /**
      * TODO:  https://developer.android.com/training/appbar/up-action
      */
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home: {
@@ -446,6 +464,13 @@ public abstract class BaseActivity
                 onBackPressed();
                 return true;
             }
+
+//            case R.id.MENU_SEARCH: {
+//                // Not using SearchView as an action view,
+//                // as there simply is not enough space in our toolbar.
+//                onSearchRequested();
+//                return true;
+//            }
 
             default:
                 return super.onOptionsItemSelected(item);

@@ -96,8 +96,8 @@ public class About
     };
 
     @Override
-    protected int getLayoutId() {
-        return R.layout.activity_admin_about;
+    protected void onSetContentView() {
+        setContentView(R.layout.activity_admin_about);
     }
 
     @Override

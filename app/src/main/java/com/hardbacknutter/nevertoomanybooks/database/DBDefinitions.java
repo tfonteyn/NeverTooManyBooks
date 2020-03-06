@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -293,8 +292,7 @@ public final class DBDefinitions {
      * specific formatted list; example: "stephen baxter;arthur c. clarke;"
      */
     public static final Domain DOM_FTS_AUTHOR_NAME;
-
-
+    public static final Domain DOM_FTS_TOC_ENTRY_TITLE;
 
     /* ======================================================================================
      *  {@link BooklistBuilder} domains.
@@ -312,7 +310,7 @@ public final class DBDefinitions {
      * Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
      * so we can sort it numerically regardless of content.
      */
-    public static final Domain DOM_BL_SERIES_NUM_FLOAT;
+    public static final Domain DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
     /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_PRIMARY_SERIES_COUNT;
 
@@ -466,8 +464,11 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final String KEY_STYLE_IS_BUILTIN = "builtin";
-    /** {@link #TBL_FTS_BOOKS}. */
+
+    /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
     public static final String KEY_FTS_AUTHOR_NAME = "author_name";
+    /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
+    public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
 
     public static final String KEY_BOOK_COUNT = "book_count";
 
@@ -920,7 +921,7 @@ public final class DBDefinitions {
         DOM_BL_SERIES_SORT =
                 new Domain.Builder(KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT).build();
 
-        DOM_BL_SERIES_NUM_FLOAT =
+        DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
                 new Domain.Builder(KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL).build();
 
         DOM_BL_PRIMARY_SERIES_COUNT =
@@ -1243,6 +1244,7 @@ public final class DBDefinitions {
 
         /* ======================================================================================
          *  FTS definitions
+         *  reminder: no need for a type nor constraints: https://sqlite.org/fts3.html
          * ====================================================================================== */
         TBL_FTS_BOOKS = new TableDefinition("books_fts").setType(TableType.FTS3);
 
@@ -1250,42 +1252,25 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_FTS_BOOKS_PK, ColumnInfo.TYPE_INTEGER).primaryKey().build();
 
         DOM_FTS_AUTHOR_NAME =
-                new Domain.Builder(KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT).notNull().build();
+                new Domain.Builder(KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT).build();
 
-        /*
-         * reminder: FTS columns don't need a type nor constraints.
-         * https://sqlite.org/fts3.html
-         *
-         * should NOT be added to {@link #ALL_TABLES}
-         */
-        TBL_FTS_BOOKS.addDomains(DOM_FTS_AUTHOR_NAME,
-                                 DOM_TITLE,
+        DOM_FTS_TOC_ENTRY_TITLE =
+                new Domain.Builder(KEY_FTS_TOC_ENTRY_TITLE, ColumnInfo.TYPE_TEXT).build();
+
+        // should NOT be added to {@link #ALL_TABLES}.
+        TBL_FTS_BOOKS.addDomains(DOM_TITLE,
+                                 DOM_FTS_AUTHOR_NAME,
                                  DOM_SERIES_TITLE,
-                                 DOM_BOOK_ISBN,
 
                                  DOM_BOOK_DESCRIPTION,
                                  DOM_BOOK_PRIVATE_NOTES,
-
                                  DOM_BOOK_PUBLISHER,
                                  DOM_BOOK_GENRE,
-                                 DOM_BOOK_LOCATION
-                                );
+                                 DOM_BOOK_LOCATION,
+                                 DOM_BOOK_ISBN,
 
-        /* ======================================================================================
-         * Developer sanity checks.
-         * ====================================================================================== */
-        if (BuildConfig.DEBUG /* always */) {
-            Collection<String> tNames = new HashSet<>();
-            Collection<String> tAliases = new HashSet<>();
-            for (TableDefinition table : ALL_TABLES.values()) {
-                if (!tNames.add(table.getName())) {
-                    throw new IllegalStateException("Duplicate table name: " + table.getName());
-                }
-                if (!tAliases.add(table.getAlias())) {
-                    throw new IllegalStateException("Duplicate table alias: " + table.getAlias());
-                }
-            }
-        }
+                                 DOM_FTS_TOC_ENTRY_TITLE
+                                );
     }
 
     private DBDefinitions() {
