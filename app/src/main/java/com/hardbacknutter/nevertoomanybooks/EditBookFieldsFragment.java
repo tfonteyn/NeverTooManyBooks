@@ -61,11 +61,10 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFrag
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 
 /**
  * This class is called by {@link EditBookFragment} and displays the main Books fields Tab.
@@ -81,7 +80,7 @@ public class EditBookFieldsFragment
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
     /** manage the validation check next to the ISBN field. */
-    private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
+    private ISBN.IsbnValidationTextWatcher mIsbnValidationTextWatcher;
 
     /**
      * Set to {@code true} limits to using ISBN-10/13.
@@ -103,12 +102,12 @@ public class EditBookFieldsFragment
                              @Nullable final Bundle savedInstanceState) {
         mVb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
 
-        if (!App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+        //noinspection ConstantConditions
+        if (!App.isUsed(getContext(), UniqueId.BKEY_THUMBNAIL)) {
             mVb.coverImage0.setVisibility(View.GONE);
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        //noinspection ConstantConditions
         if (EditBookActivity.showAuthSeriesOnTabs(getContext())) {
             mVb.lblAuthor.setVisibility(View.GONE);
             mVb.lblSeries.setVisibility(View.GONE);
@@ -178,7 +177,8 @@ public class EditBookFieldsFragment
         super.onPopulateViews(book);
 
         // handle special fields
-        if (App.isUsed(UniqueId.BKEY_THUMBNAIL)) {
+        //noinspection ConstantConditions
+        if (App.isUsed(getContext(), UniqueId.BKEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 0, mVb.coverImage0,
@@ -211,9 +211,10 @@ public class EditBookFieldsFragment
         addAutocomplete(R.id.genre, mFragmentVM.getGenres());
 
         /// visual aids for ISBN and other codes.
-        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(mVb.isbn, true);
+        mIsbnValidationTextWatcher = new ISBN.IsbnValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
+                                                                        true);
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
-        mVb.isbn.addTextChangedListener(new AltIsbnTextWatcher(mVb.isbn, mVb.btnAltIsbn));
+        mVb.isbn.addTextChangedListener(new ISBN.IsbnCleanupTextWatcher(mVb.isbn));
 
         mVb.btnScan.setOnClickListener(v -> {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);

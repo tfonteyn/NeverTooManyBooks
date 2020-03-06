@@ -27,11 +27,23 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.Context;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +53,6 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 
 /**
  * This class name is a bit of a misnomer by now.
@@ -199,7 +210,7 @@ public class ISBN {
                         }
                     }
                 } catch (@NonNull final NumberFormatException e) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISBN) {
+                    if (BuildConfig.DEBUG /* always */) {
                         Log.d(TAG, "str=" + str, e);
                     }
                 }

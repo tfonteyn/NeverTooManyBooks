@@ -57,8 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.AltIsbnTextWatcher;
-import com.hardbacknutter.nevertoomanybooks.widgets.IsbnValidationTextWatcher;
 
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
@@ -81,7 +79,7 @@ public class BookSearchByIsbnFragment
     private FragmentBooksearchByIsbnBinding mVb;
 
     /** manage the validation check next to the field. */
-    private IsbnValidationTextWatcher mIsbnValidationTextWatcher;
+    private ISBN.IsbnValidationTextWatcher mIsbnValidationTextWatcher;
 
     @Override
     public void onRequestPermissionsResult(final int requestCode,
@@ -122,17 +120,17 @@ public class BookSearchByIsbnFragment
         // copyModel2View();
         mVb.isbn.setText(mSearchCoordinator.getIsbnSearchText());
 
-        mVb.key0.setOnClickListener(v -> mVb.isbn.onKey("0"));
-        mVb.key1.setOnClickListener(v -> mVb.isbn.onKey("1"));
-        mVb.key2.setOnClickListener(v -> mVb.isbn.onKey("2"));
-        mVb.key3.setOnClickListener(v -> mVb.isbn.onKey("3"));
-        mVb.key4.setOnClickListener(v -> mVb.isbn.onKey("4"));
-        mVb.key5.setOnClickListener(v -> mVb.isbn.onKey("5"));
-        mVb.key6.setOnClickListener(v -> mVb.isbn.onKey("6"));
-        mVb.key7.setOnClickListener(v -> mVb.isbn.onKey("7"));
-        mVb.key8.setOnClickListener(v -> mVb.isbn.onKey("8"));
-        mVb.key9.setOnClickListener(v -> mVb.isbn.onKey("9"));
-        mVb.keyX.setOnClickListener(v -> mVb.isbn.onKey("X"));
+        mVb.key0.setOnClickListener(v -> mVb.isbn.onKey('0'));
+        mVb.key1.setOnClickListener(v -> mVb.isbn.onKey('1'));
+        mVb.key2.setOnClickListener(v -> mVb.isbn.onKey('2'));
+        mVb.key3.setOnClickListener(v -> mVb.isbn.onKey('3'));
+        mVb.key4.setOnClickListener(v -> mVb.isbn.onKey('4'));
+        mVb.key5.setOnClickListener(v -> mVb.isbn.onKey('5'));
+        mVb.key6.setOnClickListener(v -> mVb.isbn.onKey('6'));
+        mVb.key7.setOnClickListener(v -> mVb.isbn.onKey('7'));
+        mVb.key8.setOnClickListener(v -> mVb.isbn.onKey('8'));
+        mVb.key9.setOnClickListener(v -> mVb.isbn.onKey('9'));
+        mVb.keyX.setOnClickListener(v -> mVb.isbn.onKey('X'));
 
         mVb.isbnDel.setOnClickListener(v -> mVb.isbn.onKey(KeyEvent.KEYCODE_DEL));
         mVb.isbnDel.setOnLongClickListener(v -> {
@@ -140,10 +138,10 @@ public class BookSearchByIsbnFragment
             return true;
         });
 
-        mIsbnValidationTextWatcher = new IsbnValidationTextWatcher(
-                mVb.isbn, mSearchCoordinator.isStrictIsbn());
+        mIsbnValidationTextWatcher = new ISBN.IsbnValidationTextWatcher(
+                mVb.lblIsbn, mVb.isbn, mSearchCoordinator.isStrictIsbn());
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
-        mVb.isbn.addTextChangedListener(new AltIsbnTextWatcher(mVb.isbn, mVb.btnAltIsbn));
+        mVb.isbn.addTextChangedListener(new ISBN.IsbnCleanupTextWatcher(mVb.isbn));
 
         //noinspection ConstantConditions
         mVb.btnSearch.setOnClickListener(v -> prepareSearch(mVb.isbn.getText().toString().trim()));
