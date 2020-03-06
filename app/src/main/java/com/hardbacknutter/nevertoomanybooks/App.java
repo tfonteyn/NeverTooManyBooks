@@ -213,6 +213,11 @@ public class App
         return sInstance.getApplicationContext();
     }
 
+    @NonNull
+    public static Context getTaskContext() {
+        return sInstance.getApplicationContext();
+    }
+
     /**
      * Get the Application Context <strong>with the user Locale applied</strong>.
      *
@@ -298,8 +303,10 @@ public class App
      */
     public static int getAttrResId(@NonNull final Context context,
                                    @AttrRes final int attr) {
+        final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
-        context.getTheme().resolveAttribute(attr, tv, true);
+        theme.resolveAttribute(attr, tv, true);
+
         return tv.resourceId;
     }
 
@@ -318,6 +325,7 @@ public class App
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
+
         return context.getResources().getColor(tv.resourceId, theme);
     }
 
@@ -354,8 +362,9 @@ public class App
      *
      * @return {@code true} if the user wants to use this field.
      */
-    public static boolean isUsed(@NonNull final String fieldName) {
-        return PreferenceManager.getDefaultSharedPreferences(sInstance.getApplicationContext())
+    public static boolean isUsed(@NonNull final Context context,
+                                 @NonNull final String fieldName) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + fieldName, true);
     }
 
