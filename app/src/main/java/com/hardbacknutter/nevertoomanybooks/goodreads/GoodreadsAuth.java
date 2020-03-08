@@ -39,6 +39,7 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.util.Map;
 
@@ -53,6 +54,7 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 import oauth.signpost.exception.OAuthNotAuthorizedException;
 import oauth.signpost.http.HttpParameters;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AuthUserApiHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
@@ -203,13 +205,20 @@ public class GoodreadsAuth {
         ClassLoader classLoader = getClass().getClassLoader();
         if (classLoader != null) {
             try {
-                Class c = classLoader.loadClass(getClass().getCanonicalName() + "Keys");
-                keys[0] = (String) c.getField("GOODREADS_DEV").get(null);
-                keys[1] = (String) c.getField("GOODREADS_SEC").get(null);
+                Class c = classLoader
+                        .loadClass("com.hardbacknutter.nevertoomanybooks.goodreads.GAK");
+
+                //noinspection unchecked
+                keys[0] = (String) c.getDeclaredMethod("d", (Class<?>[]) null)
+                                    .invoke(null, (Object[]) null);
+                //noinspection unchecked
+                keys[1] = (String) c.getDeclaredMethod("s", (Class<?>[]) null)
+                                    .invoke(null, (Object[]) null);
             } catch (@NonNull final ClassNotFoundException
-                    | NoSuchFieldException
-                    | IllegalAccessException ignore) {
-                Logger.warn(context, TAG, "no keys");
+                    | NoSuchMethodException
+                    | IllegalAccessException
+                    | InvocationTargetException e) {
+                Logger.error(context, TAG, e, "no keys");
             }
         }
         // if any of the above failed.
@@ -241,7 +250,11 @@ public class GoodreadsAuth {
         if (mConsumer.getConsumerKey().isEmpty() || mConsumer.getConsumerSecret().isEmpty()) {
             // This should only happen if the developer forgot to add the Goodreads keys... (me)
             Logger.warn(context, TAG, "hasCredentials|" + DEV_KEY_NOT_AVAILABLE);
-            throw new IllegalStateException(DEV_KEY_NOT_AVAILABLE);
+            if (BuildConfig.DEBUG /* always */) {
+                throw new IllegalStateException(DEV_KEY_NOT_AVAILABLE);
+            } else {
+                return false;
+            }
         }
 
         if (sAccessToken != null && !sAccessToken.isEmpty()
