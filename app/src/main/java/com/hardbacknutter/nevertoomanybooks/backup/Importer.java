@@ -39,6 +39,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+
 /**
  * Interface definition for an importer.
  */

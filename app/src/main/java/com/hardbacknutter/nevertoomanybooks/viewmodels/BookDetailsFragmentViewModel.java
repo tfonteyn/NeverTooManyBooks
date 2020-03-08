@@ -136,14 +136,12 @@ public class BookDetailsFragmentViewModel
         fields.add(R.id.title, DBDefinitions.KEY_TITLE, new TextAccessor<String>());
 
         fields.add(R.id.author, UniqueId.BKEY_AUTHOR_ARRAY,
-                   new TextAccessor<>(new AuthorListFormatter(Author.Details.Full, true)),
+                   new TextAccessor<>(new AuthorListFormatter(Author.Details.Full, false, true)),
                    DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author);
 
-        // The Series field is a single String with line-breaks between multiple Series.
-        // Each line will be prefixed with a "• "
         fields.add(R.id.series_title, UniqueId.BKEY_SERIES_ARRAY,
-                   new TextAccessor<>(new SeriesListFormatter(Series.Details.Full, true)),
+                   new TextAccessor<>(new SeriesListFormatter(Series.Details.Full, false, true)),
                    DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 

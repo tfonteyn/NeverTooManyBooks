@@ -1345,7 +1345,7 @@ public class BooksOnBookshelf
             // the list is shorter than it used to be, just scroll to the end
             mLayoutManager.scrollToPosition(position);
 
-        } else {
+        } else if (position != RecyclerView.NO_POSITION) {
             // need to map the row id to the new adapter/cursor. Ideally they will be the same.
             final long actualRowId = mAdapter.getItemId(position);
 

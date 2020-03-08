@@ -686,5 +686,15 @@
         <item name="android:inputType">date</item>
     </style>
 
+    <!-- ImageButton -->
+    <style name="InfoButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/indent1</item>
+        <item name="android:padding">@dimen/border1</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:src">@drawable/ic_info_outline</item>
+    </style>
+
     <!-- *************************************************************************************** -->
 </resources>

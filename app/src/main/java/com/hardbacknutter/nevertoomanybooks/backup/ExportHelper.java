@@ -52,10 +52,9 @@ public class ExportHelper
      * fields should be exported.
      * <p>
      * 0: all books
-     * 1: books added/updated since {@link #mDateFrom}.
-     * If the latter is {@code null}, then since last backup.
+     * 1: books added/updated since last backup.
      */
-    public static final int EXPORT_SINCE = 1 << 16;
+    public static final int EXPORT_SINCE_LAST_BACKUP = 1 << 16;
 
     /** {@link Parcelable}. */
     public static final Creator<ExportHelper> CREATOR = new Creator<ExportHelper>() {
@@ -85,15 +84,24 @@ public class ExportHelper
                                     | BOOK_LIST_STYLES
                                     | COVERS
                                     | XML_TABLES
-                                    | EXPORT_SINCE;
+                                    | EXPORT_SINCE_LAST_BACKUP;
     private static final String TEMP_FILE_NAME = "tmpExport.tmp";
 
     @NonNull
     private final Exporter.Results mResults = new Exporter.Results();
 
-    /** EXPORT_SINCE. */
+    /** EXPORT_SINCE_LAST_BACKUP. */
     @Nullable
     private Date mDateFrom;
+
+    /**
+     * Constructor.
+     *
+     * @param options to export
+     */
+    public ExportHelper(final int options) {
+        super(options, null);
+    }
 
     /**
      * Constructor.
@@ -102,7 +110,7 @@ public class ExportHelper
      * @param uri     to write to
      */
     public ExportHelper(final int options,
-                        @Nullable final Uri uri) {
+                        @NonNull final Uri uri) {
         super(options, uri);
     }
 
@@ -161,17 +169,13 @@ public class ExportHelper
         return mDateFrom;
     }
 
-    public void setDateFrom(@Nullable final Date date) {
-        mDateFrom = date;
-    }
-
     /**
      * Convenience method to return the date-from as a time. Returns 0 if the date is not set.
      *
      * @return time
      */
     public long getTimeFrom() {
-        if (mDateFrom != null && (options & EXPORT_SINCE) != 0) {
+        if (mDateFrom != null && (options & EXPORT_SINCE_LAST_BACKUP) != 0) {
             return mDateFrom.getTime();
         } else {
             return 0;
@@ -190,15 +194,9 @@ public class ExportHelper
             throw new IllegalStateException("options not set");
         }
 
-        // when doing a backup 'since' check/set the date field.
-        if ((options & EXPORT_SINCE) != 0) {
-            // no date set, use "since last backup."
-            if (mDateFrom == null) {
-                mDateFrom = BackupManager.getLastFullBackupDate(context);
-
-            }
+        if ((options & EXPORT_SINCE_LAST_BACKUP) != 0) {
+            mDateFrom = BackupManager.getLastFullBackupDate(context);
         } else {
-            // cannot have a mDateFrom when not asking for a time limited export
             mDateFrom = null;
         }
     }

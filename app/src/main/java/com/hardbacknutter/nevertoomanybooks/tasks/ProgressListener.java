@@ -25,28 +25,18 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.tasks;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
  * Listener interface for progress messages.
+ * One of the onProgress should be implemented.
  */
-public interface ProgressListener<Progress> {
-
-    /**
-     * Send a Progress message.
-     *
-     * @param progress to send
-     */
-    void onProgress(@NonNull Progress progress);
+public interface ProgressListener {
 
     /**
      * Advance progress to absolute position.
-     * <p>
-     * A generic implementation could create a {@link Progress} message,
-     * and call {@link #onProgress(Progress)} to send it.
      *
      * @param pos     absolute position for the progress counter
      * @param message optional message to display
@@ -58,9 +48,6 @@ public interface ProgressListener<Progress> {
 
     /**
      * Advance progress by 'delta'.
-     * <p>
-     * A generic implementation could create a {@link Progress} message,
-     * and call {@link #onProgress(Progress)} to send it.
      *
      * @param delta   increment/decrement value for the progress counter
      * @param message optional message to display

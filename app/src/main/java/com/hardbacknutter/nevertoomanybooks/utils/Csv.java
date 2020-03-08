@@ -27,13 +27,19 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
+
 /**
- * CSV utilities.
+ * CSV & list formatting utilities.
  */
 public final class Csv {
 
@@ -63,8 +69,28 @@ public final class Csv {
 
     /**
      * Create a CSV list String from the passed collection.
+     * Uses ", " as delimiter.
      * A {@code null} element is morphed into "".
      * This can be avoided by providing a {@link Formatter}.
+     * Either way, empty elements <strong>are included</strong>.
+     *
+     * @param collection collection
+     * @param formatter  (optional) formatter to use on each element, or {@code null} for none.
+     * @param <E>        type of elements
+     *
+     * @return csv string, can be empty, but never {@code null}.
+     */
+    @NonNull
+    public static <E> String join(@NonNull final Iterable<E> collection,
+                                  @Nullable final Formatter<E> formatter) {
+        return join(", ", collection, false, null, formatter);
+    }
+
+    /**
+     * Create a CSV list String from the passed collection.
+     * A {@code null} element is morphed into "".
+     * This can be avoided by providing a {@link Formatter}.
+     * Either way, empty elements <strong>are included</strong>.
      *
      * @param delimiter  e.g. "," or ", " etc...
      * @param collection collection
@@ -87,56 +113,146 @@ public final class Csv {
      * (but no exceptions thrown).
      * This can be avoided by providing a {@link Formatter}.
      *
-     * @param delimiter        e.g. "," or ", " etc...
-     * @param collection       collection
-     * @param skipEmptyStrings Flag skip null/empty values.
-     * @param prefix           (optional) prefix that will be added to each element.
-     *                         Caller is responsible to add spaces if desired.
-     * @param formatter        (optional) formatter to use on each element,
-     *                         or {@code null} for none.
-     * @param <E>              type of elements
+     * @param delimiter         e.g. "," or ", ", "<br>", etc...
+     * @param collection        collection
+     * @param skipEmptyElements Flag skip null/empty values.
+     * @param lineFormat        (optional) format string like "abc %s xyz"
+     * @param valueFormatter    (optional) formatter to use on each element,
+     *                          or {@code null} for none.
+     * @param <E>               type of elements
      *
      * @return csv string, can be empty, but never {@code null}.
      */
     @NonNull
     public static <E> String join(@NonNull final CharSequence delimiter,
                                   @NonNull final Iterable<E> collection,
-                                  final boolean skipEmptyStrings,
-                                  @Nullable final String prefix,
-                                  @Nullable final Formatter<E> formatter) {
-//        if (collection.isEmpty()) {
-//            return "";
-//        }
+                                  final boolean skipEmptyElements,
+                                  @Nullable final String lineFormat,
+                                  @Nullable final Formatter<E> valueFormatter) {
 
         StringBuilder result = new StringBuilder();
         boolean first = true;
         for (E element : collection) {
             String value;
-            if (formatter == null) {
+            if (valueFormatter == null) {
                 if (element != null) {
                     value = String.valueOf(element).trim();
                 } else {
                     value = "";
                 }
             } else {
-                value = formatter.format(element);
+                value = valueFormatter.format(element);
             }
 
-            if ((value != null && !value.isEmpty()) || !skipEmptyStrings) {
+            if ((value != null && !value.isEmpty()) || !skipEmptyElements) {
                 if (first) {
                     first = false;
                 } else {
                     result.append(delimiter);
                 }
 
-                if (prefix == null) {
+                if (lineFormat == null) {
                     result.append(value);
                 } else {
-                    result.append(prefix).append(value);
+                    if (BuildConfig.DEBUG /* always */) {
+                        if (!lineFormat.contains("%s")) {
+                            throw new UnexpectedValueException("lineFormat without %s");
+                        }
+                    }
+                    result.append(String.format(lineFormat, value));
                 }
             }
         }
         return result.toString();
+    }
+
+    /**
+     * Construct a multi-line list using text (i.e. no html).
+     *
+     * @param context        Current context
+     * @param collection     collection
+     * @param valueFormatter (optional) formatter to use on each element,
+     *                       or {@code null} for none.
+     * @param <E>            type of elements
+     *
+     * @return formatted list, can be empty, but never {@code null}.
+     */
+    @NonNull
+    public static <E> String textList(@NonNull final Context context,
+                                      @NonNull final Iterable<E> collection,
+                                      @Nullable final Formatter<E> valueFormatter) {
+
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for (E element : collection) {
+            String value;
+            if (valueFormatter == null) {
+                if (element != null) {
+                    value = String.valueOf(element).trim();
+                } else {
+                    value = "";
+                }
+            } else {
+                value = valueFormatter.format(element);
+            }
+
+            if ((value != null && !value.isEmpty())) {
+                if (first) {
+                    first = false;
+                } else {
+                    result.append('\n');
+                }
+
+                result.append(context.getString(R.string.list_element, value));
+            }
+        }
+        return result.toString();
+    }
+
+    /**
+     * Construct a multi-line list using html.
+     * <p>
+     * Uses html list element on SDK 25 and up; uses br and bullet character on 23.
+     *
+     * @param context        Current context
+     * @param collection     collection
+     * @param valueFormatter (optional) formatter to use on each element,
+     *                       or {@code null} for none.
+     * @param <E>            type of elements
+     *
+     * @return formatted list, can be empty, but never {@code null}.
+     */
+    @NonNull
+    public static <E> String htmlList(@NonNull final Context context,
+                                      @NonNull final Iterable<E> collection,
+                                      @Nullable final Formatter<E> valueFormatter) {
+        if (Build.VERSION.SDK_INT < 24) {
+            return Csv.join("<br>", collection, true,
+                            context.getString(R.string.list_element), valueFormatter);
+        }
+
+        StringBuilder result = new StringBuilder();
+        for (E element : collection) {
+            String value;
+            if (valueFormatter == null) {
+                if (element != null) {
+                    value = String.valueOf(element).trim();
+                } else {
+                    value = "";
+                }
+            } else {
+                value = valueFormatter.format(element);
+            }
+
+            if ((value != null && !value.isEmpty())) {
+                result.append("<li>").append(value).append("</li>");
+            }
+        }
+        if (result.length() > 0) {
+            return "<ul>" + result + "</ul>";
+        } else {
+            return "";
+        }
     }
 
     public interface Formatter<E> {

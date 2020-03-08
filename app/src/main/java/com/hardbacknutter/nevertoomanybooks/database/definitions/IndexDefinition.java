@@ -130,7 +130,7 @@ class IndexDefinition {
         }
         sql.append(" INDEX ").append(mTable.getName()).append("_IDX_").append(mNameSuffix)
            .append(" ON ").append(mTable.getName())
-           .append('(').append(Csv.join(",", mDomains, element -> {
+           .append('(').append(Csv.join(mDomains, element -> {
             if (element.isCollationLocalized()) {
                 return element.getName() + DAO.COLLATION;
             } else {

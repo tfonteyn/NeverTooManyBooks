@@ -36,7 +36,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -50,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Original 'hints' renamed to 'tips' to avoid confusion with "android:hint".
@@ -58,9 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * Class to manage the display of 'tips' within the application. Each tip dialog has
  * a 'Do not show again' option, that results in an update to the preferences which
  * are checked by this code.
- * <p>
- * To add a new tip, create a string resource and add it to ALL.
- * To display the tip, simply call {@link #display}.
  * <p>
  * Note that tips are displayed as HTML spans. So any special formatting
  * should be done inside a CDATA and use HTML tags.
@@ -78,65 +75,88 @@ public final class TipManager {
     /** All tips managed by this class. */
     private static final SparseArray<Tip> ALL = new SparseArray<>();
 
-    static {
-        ALL.put(R.string.tip_booklist_style_menu,
-                new Tip("booklist_style_menu"));
-        ALL.put(R.string.tip_booklist_styles_editor,
-                new Tip("booklist_styles_editor"));
-        ALL.put(R.string.tip_booklist_style_groups,
-                new Tip("booklist_style_groups"));
-        ALL.put(R.string.tip_booklist_style_properties,
-                new Tip("booklist_style_properties"));
-        // keep, might need again if re-implemented
-        //ALL.put(R.string.tip_booklist_global_properties,
-        //         new Tip("booklist_global_properties"));
-
-        ALL.put(R.string.tip_authors_book_may_appear_more_than_once,
-                new Tip("authors_book_may_appear_more_than_once"));
-        ALL.put(R.string.tip_series_book_may_appear_more_than_once,
-                new Tip("series_book_may_appear_more_than_once"));
-
-        ALL.put(R.string.tip_background_tasks,
-                new Tip("background_tasks"));
-        ALL.put(R.string.tip_background_task_events,
-                new Tip("background_task_events"));
-
-        ALL.put(R.string.gr_info_no_isbn,
-                new Tip("gr_explain_no_isbn"));
-        ALL.put(R.string.gr_info_no_match,
-                new Tip("gr_explain_no_match"));
-
-        ALL.put(R.string.tip_autorotate_camera_images,
-                new Tip("autorotate_camera_images"));
-        ALL.put(R.string.tip_view_only_help,
-                new Tip("view_only_help"));
-        ALL.put(R.string.tip_book_list,
-                new Tip("book_list"));
-        ALL.put(R.string.tip_book_search_by_text,
-                new Tip("book_search_by_text"));
-        ALL.put(R.string.pt_thumbnail_cropper_layer_type_summary,
-                new Tip("thumbnail_cropper_layer_type_summary"));
-        ALL.put(R.string.tip_update_fields_from_internet,
-                new Tip("update_fields_from_internet"));
-        ALL.put(R.string.tip_authors_works,
-                new Tip("authors_works", R.layout.dialog_tip_author_works));
-    }
-
     private TipManager() {
     }
 
+    private static Tip getTip(@StringRes final int id) {
+        Tip tip = ALL.get(id);
+        if (tip == null) {
+            switch (id) {
+                case R.string.tip_booklist_style_menu:
+                    tip = new Tip(id, "booklist_style_menu");
+                    break;
+                case R.string.tip_booklist_styles_editor:
+                    tip = new Tip(id, "booklist_styles_editor");
+                    break;
+                case R.string.tip_booklist_style_groups:
+                    tip = new Tip(id, "booklist_style_groups");
+                    break;
+                case R.string.tip_booklist_style_properties:
+                    tip = new Tip(id, "booklist_style_properties");
+                    break;
+                case R.string.tip_authors_book_may_appear_more_than_once:
+                    tip = new Tip(id, "authors_book_may_appear_more_than_once");
+                    break;
+                case R.string.tip_series_book_may_appear_more_than_once:
+                    tip = new Tip(id, "series_book_may_appear_more_than_once");
+                    break;
+                case R.string.tip_background_tasks:
+                    tip = new Tip(id, "background_tasks");
+                    break;
+                case R.string.tip_background_task_events:
+                    tip = new Tip(id, "background_task_events");
+                    break;
+
+                case R.string.gr_info_no_isbn:
+                    tip = new Tip(id, "gr_explain_no_isbn");
+                    break;
+                case R.string.gr_info_no_match:
+                    tip = new Tip(id, "gr_explain_no_match");
+                    break;
+                case R.string.tip_autorotate_camera_images:
+                    tip = new Tip(id, "autorotate_camera_images");
+                    break;
+                case R.string.tip_view_only_help:
+                    tip = new Tip(id, "view_only_help");
+                    break;
+                case R.string.tip_book_list:
+                    tip = new Tip(id, "book_list");
+                    break;
+
+                case R.string.tip_book_search_by_text:
+                    tip = new Tip(id, "book_search_by_text");
+                    break;
+                case R.string.pt_thumbnail_cropper_layer_type_summary:
+                    tip = new Tip(id, "thumbnail_cropper_layer_type_summary");
+                    break;
+                case R.string.tip_update_fields_from_internet:
+                    tip = new Tip(id, "update_fields_from_internet");
+                    break;
+                case R.string.tip_authors_works:
+                    tip = new Tip(id, "authors_works")
+                            .setLayoutId(R.layout.dialog_tip_author_works);
+                    break;
+//                case R.string.tip_booklist_global_properties:
+//                    // keep, might need again if re-implemented
+//                    tip = new Tip("booklist_global_properties");
+//                    break;
+                default:
+                    throw new UnexpectedValueException(id);
+            }
+            ALL.put(id, tip);
+        }
+        return tip;
+    }
+
     /**
-     * Reset all tips to that they will be displayed again.
+     * Reset all tips so that they will be displayed again.
      *
      * @param context Current context
      */
     public static void reset(@NonNull final Context context) {
         // remove all. This has the benefit of removing any obsolete keys.
         reset(context, PREF_TIP);
-
-        for (int t = 0; t < ALL.size(); t++) {
-            ALL.valueAt(t).mHasBeenDisplayed = false;
-        }
+        ALL.clear();
     }
 
     /**
@@ -161,23 +181,20 @@ public final class TipManager {
     /**
      * Display the passed tip, if the user has not disabled it.
      *
-     * @param context  Current context
-     * @param stringId identifier for "from where" we want the tip to be displayed.
-     *                 This allows two different places in the code use the same tip,
-     *                 but one place being 'disable the tip' and another 'show'.
-     * @param postRun  Optional Runnable to run after the tip was dismissed
-     *                 (or not displayed at all).
-     * @param args     Optional arguments for the tip string
+     * @param context Current context
+     * @param tipId   the string res id for the tip
+     * @param postRun Optional Runnable to run after the tip was dismissed
+     *                (or not displayed at all).
+     * @param args    Optional arguments for the tip string
      */
     public static void display(@NonNull final Context context,
-                               @StringRes final int stringId,
+                               @StringRes final int tipId,
                                @Nullable final Runnable postRun,
                                @Nullable final Object... args) {
-        // Get the tip and return if it has been disabled.
-        final Tip tip = ALL.get(stringId);
+        final Tip tip = getTip(tipId);
         if (tip == null) {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "display|stringId=" + stringId);
+                Log.d(TAG, "display|tipId=" + tipId);
             }
             return;
         }
@@ -187,7 +204,40 @@ public final class TipManager {
             }
             return;
         }
-        tip.display(context, stringId, args, postRun);
+        tip.display(context, args, postRun);
+    }
+
+    /**
+     * Display the passed tip, if the user has not disabled it.
+     *
+     * @param context Current context
+     * @param tipId   the string res id for the tip
+     * @param tipKey  identifier for "from where" we want the tip to be displayed.
+     *                This allows two different places in the code use the same tip,
+     *                but one place being 'disable the tip' and another 'show'.
+     * @param postRun Optional Runnable to run after the tip was dismissed
+     *                (or not displayed at all).
+     * @param args    Optional arguments for the tip string
+     */
+    public static void display(@NonNull final Context context,
+                               @NonNull final String tipKey,
+                               @StringRes final int tipId,
+                               @Nullable final Runnable postRun,
+                               @Nullable final Object... args) {
+        final Tip tip = getTip(tipId);
+        if (tip == null) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "display|tipId=" + tipId + ", tipKey=" + tipKey);
+            }
+            return;
+        }
+        if (!tip.shouldBeShown(context, tipKey)) {
+            if (postRun != null) {
+                postRun.run();
+            }
+            return;
+        }
+        tip.display(context, tipKey, args, postRun);
     }
 
     public interface TipOwner {
@@ -201,11 +251,14 @@ public final class TipManager {
      */
     private static final class Tip {
 
+        @StringRes
+        private final int mDefaultStringId;
         /** Preferences key suffix specific to this tip. */
         @NonNull
-        private final String mKey;
+        private final String mDefaultKey;
+
         /** Layout for this Tip. */
-        private final int mLayoutId;
+        private int mLayoutId;
 
         /** Indicates that this tip was displayed already in this instance of the app. */
         private boolean mHasBeenDisplayed;
@@ -213,24 +266,23 @@ public final class TipManager {
         /**
          * Constructor.
          *
-         * @param key Preferences key suffix specific to this tip
+         * @param id string resource to display
          */
-        private Tip(@NonNull final String key) {
-            mKey = PREF_TIP + key;
+        private Tip(@StringRes final int id,
+                    @NonNull final String defaultKey) {
+            mDefaultStringId = id;
+            mDefaultKey = defaultKey;
             mLayoutId = R.layout.dialog_tip;
         }
 
         /**
-         * Constructor. Using the specified layout instead of a standard string.
+         * Using the specified layout instead of the default.
          *
-         * @param key      Preferences key suffix specific to this tip
          * @param layoutId to use
          */
-        @SuppressWarnings("SameParameterValue")
-        private Tip(@NonNull final String key,
-                    @LayoutRes final int layoutId) {
-            mKey = PREF_TIP + key;
+        Tip setLayoutId(@SuppressWarnings("SameParameterValue") final int layoutId) {
             mLayoutId = layoutId;
+            return this;
         }
 
         /**
@@ -241,20 +293,63 @@ public final class TipManager {
          * @return {@code true} if this Tip should be displayed
          */
         private boolean shouldBeShown(@NonNull final Context context) {
-            return !mHasBeenDisplayed && PreferenceManager
-                    .getDefaultSharedPreferences(context)
-                    .getBoolean(mKey, true);
+            return shouldBeShown(context, mDefaultKey);
         }
 
         /**
-         * display the tip.
+         * Check if this tip should be shown.
+         *
+         * @param context Current context
+         * @param key     Preferences key suffix specific to this tip
+         *
+         * @return {@code true} if this Tip should be displayed
+         */
+        private boolean shouldBeShown(@NonNull final Context context,
+                                      @NonNull final String key) {
+            return !mHasBeenDisplayed && PreferenceManager
+                    .getDefaultSharedPreferences(context)
+                    .getBoolean(PREF_TIP + key, true);
+        }
+
+        /**
+         * Display the tip.
+         *
+         * @param context Current context
+         * @param args    for the message
+         * @param postRun Runnable to start afterwards
+         */
+        void display(@NonNull final Context context,
+                     @Nullable final Object[] args,
+                     @Nullable final Runnable postRun) {
+            display(context, mDefaultKey, mDefaultStringId, args, postRun);
+        }
+
+        /**
+         * Display the tip.
+         *
+         * @param context Current context
+         * @param key     Preferences key suffix specific to this tip
+         * @param args    for the message
+         * @param postRun Runnable to start afterwards
+         */
+        void display(@NonNull final Context context,
+                     @NonNull final String key,
+                     @Nullable final Object[] args,
+                     @Nullable final Runnable postRun) {
+            display(context, key, mDefaultStringId, args, postRun);
+        }
+
+        /**
+         * Display the tip.
          *
          * @param context  Current context
+         * @param key      Preferences key suffix specific to this tip
          * @param stringId for the message
          * @param args     for the message
          * @param postRun  Runnable to start afterwards
          */
         void display(@NonNull final Context context,
+                     @NonNull final String key,
                      @StringRes final int stringId,
                      @Nullable final Object[] args,
                      @Nullable final Runnable postRun) {
@@ -262,7 +357,7 @@ public final class TipManager {
             // Build the tip dialog
             final View root = LayoutInflater.from(context).inflate(mLayoutId, null);
 
-            // Setup the message; this is optional
+            // Setup the message; this is an optional View but present in the default layout.
             final TextView messageView = root.findViewById(R.id.content);
             if (messageView != null) {
                 String tipText = context.getString(stringId, args);
@@ -276,7 +371,7 @@ public final class TipManager {
                     .setTitle(R.string.tip_dialog_title)
                     .setNeutralButton(R.string.btn_disable_message, (dialog, which) -> {
                         PreferenceManager.getDefaultSharedPreferences(context)
-                                         .edit().putBoolean(mKey, false).apply();
+                                         .edit().putBoolean(PREF_TIP + key, false).apply();
                         if (postRun != null) {
                             postRun.run();
                         }

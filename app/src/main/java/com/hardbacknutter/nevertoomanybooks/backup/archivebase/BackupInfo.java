@@ -144,6 +144,11 @@ public class BackupInfo {
         return mBundle;
     }
 
+    /**
+     * Get the date from the creation-date field.
+     *
+     * @return date, or {@code null} if none or invalid
+     */
     @Nullable
     public Date getCreationDate() {
         return DateUtils.parseSqlDateTime(mBundle.getString(INFO_CREATION_DATE));
@@ -289,13 +294,5 @@ public class BackupInfo {
         if (!mBundle.containsKey(INFO_ARCHIVER_VERSION)) {
             throw new InvalidArchiveException("info block lacks version field");
         }
-    }
-
-    /**
-     * Legacy BookCatalogue.
-     * RELEASE: if this app reaches version 152 we will need to remove support for old archives.
-     */
-    public boolean hasValidDates() {
-        return getAppVersionCode() >= 152;
     }
 }

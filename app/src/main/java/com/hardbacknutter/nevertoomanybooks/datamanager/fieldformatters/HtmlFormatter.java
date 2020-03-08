@@ -52,7 +52,7 @@ public class HtmlFormatter<T>
      * Constructor.
      *
      * @param enableLinks {@code true} to enable links.
-     *                    Do not enable if the View has an onClickListener
+     *                    Ignored if the View has an onClickListener
      */
     public HtmlFormatter(final boolean enableLinks) {
         mEnableLinks = enableLinks;
@@ -71,7 +71,7 @@ public class HtmlFormatter<T>
 
         view.setText(LinkifyUtils.fromHtml(format(view.getContext(), rawValue)));
 
-        if (mEnableLinks) {
+        if (mEnableLinks && !view.hasOnClickListeners()) {
             view.setMovementMethod(LinkMovementMethod.getInstance());
         }
     }

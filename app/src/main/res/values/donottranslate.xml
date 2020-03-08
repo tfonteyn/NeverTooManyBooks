@@ -47,7 +47,7 @@
     <string name="email_debug" translatable="false">debug@email</string>
 
     <!-- Credits in the 'about' dialog -->
-    <string name="original_creators" translatable="false">Evan Leybourn &amp; Philip Warner</string>
+    <string name="original_creators" translatable="false">"Evan Leybourn &amp; Philip Warner</string>
     <string name="translators" translatable="false">
         Eugenio Davolio, José M. Galdo, Imkal, Dimitris Klisiari, Gideon van Melle, Emir Sarı,
         Nick Silin, Robert Wetzlmayr.

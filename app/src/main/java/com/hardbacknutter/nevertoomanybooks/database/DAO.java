@@ -60,7 +60,6 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
@@ -2136,8 +2135,7 @@ public class DAO
             whereClause.append("='").append(encodeString(isbnList.get(0))).append('\'');
         } else {
             whereClause.append(" IN (")
-                       .append(Csv.join(",", isbnList,
-                                        element -> '\'' + encodeString(element) + '\''))
+                       .append(Csv.join(isbnList, element -> '\'' + encodeString(element) + '\''))
                        .append(')');
         }
 
@@ -3888,8 +3886,8 @@ public class DAO
          */
         @NonNull
         private static String withAllAuthorsAndSeries(@NonNull final String whereClause) {
-
-            String andOthersText = App.getLocalizedAppContext().getString(R.string.and_others);
+            //TODO: RTL
+            String andOthersText = " …";
 
             // "a." (TBL_AUTHOR), "b." (TBL_BOOKS), "s." (TBL_SERIES}
             // BUT... here they have double-use:

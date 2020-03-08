@@ -1195,6 +1195,7 @@ public class SearchCoordinator
             sb = new StringBuilder();
         }
 
+        Context context = App.getLocalizedAppContext();
         synchronized (mSearchProgressMessages) {
             if (!mSearchProgressMessages.isEmpty()) {
                 // if there was a baseMessage, add a linefeed to it.
@@ -1202,8 +1203,8 @@ public class SearchCoordinator
                     sb.append('\n');
                 }
                 // Append each task message
-                sb.append(Csv.join("\n", mSearchProgressMessages.values(), true,
-                                   "• ", element -> element.text));
+                sb.append(Csv.textList(context, mSearchProgressMessages.values(),
+                                       element -> element.text));
 
                 for (TaskListener.ProgressMessage progressMessage : mSearchProgressMessages
                         .values()) {

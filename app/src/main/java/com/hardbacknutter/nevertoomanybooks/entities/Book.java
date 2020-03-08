@@ -441,7 +441,7 @@ public class Book
     }
 
     /**
-     * Get the Authors. If there is more then one, we get the first Author + " et. al.".
+     * Get the Authors. If there is more then one, we get the first Author + an ellipsis.
      *
      * @param context Current context
      *
@@ -450,14 +450,15 @@ public class Book
     @NonNull
     public String getAuthorTextShort(@NonNull final Context context) {
         List<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        // could/should? use AuthorListFormatter
         if (list.isEmpty()) {
             return "";
         } else {
-            String newText = list.get(0).getLabel(context);
+            String text = list.get(0).getLabel(context);
             if (list.size() > 1) {
-                newText += ' ' + context.getString(R.string.and_others);
+                return context.getString(R.string.and_others, text);
             }
-            return newText;
+            return text;
         }
     }
 

@@ -985,7 +985,7 @@ public class BooklistStyle
      */
     @NonNull
     public String getGroupLabels(@NonNull final Context context) {
-        return Csv.join(", ", mStyleGroups.getGroups(), element -> element.getLabel(context));
+        return Csv.join(mStyleGroups.getGroups(), element -> element.getLabel(context));
     }
 
     /**

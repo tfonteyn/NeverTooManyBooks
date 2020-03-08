@@ -44,7 +44,7 @@ public class AuthorFormatter
      *
      * @param details     how much details to show
      * @param enableLinks {@code true} to enable links.
-     *                    Do not enable if the View has an onClickListener
+     *                    Ignored if the View has an onClickListener
      */
     public AuthorFormatter(@NonNull final Author.Details details,
                            final boolean enableLinks) {

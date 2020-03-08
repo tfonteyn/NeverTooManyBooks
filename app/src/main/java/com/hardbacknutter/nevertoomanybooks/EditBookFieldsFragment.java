@@ -143,12 +143,14 @@ public class EditBookFieldsFragment
         // Not shown if the user preferences are set to use an extra tab for this.
         if (!showAuthSeriesOnTabs) {
             fields.add(R.id.author, UniqueId.BKEY_AUTHOR_ARRAY,
-                       new TextAccessor<>(new AuthorListFormatter(Author.Details.Short, false)),
+                       new TextAccessor<>(new AuthorListFormatter(Author.Details.Short,
+                                                                  true, false)),
                        DBDefinitions.KEY_FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author);
 
             fields.add(R.id.series_title, UniqueId.BKEY_SERIES_ARRAY,
-                       new TextAccessor<>(new SeriesListFormatter(Series.Details.Short, false)),
+                       new TextAccessor<>(new SeriesListFormatter(Series.Details.Short,
+                                                                  true, false)),
                        DBDefinitions.KEY_SERIES_TITLE)
                   .setRelatedFields(R.id.lbl_series);
         }

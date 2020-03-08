@@ -32,16 +32,17 @@ import android.content.res.Configuration;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Checkable;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
@@ -51,75 +52,7 @@ public abstract class OptionsDialogBase<T extends Options>
     /** Log tag. */
     private static final String TAG = "OptionsDialogBase";
 
-    private Checkable cbxBooks;
-    private Checkable cbxCovers;
-    private Checkable cbxPrefs;
-    /** optional. */
-    private Checkable cbxXml;
-
     private WeakReference<OptionsListener<T>> mListener;
-
-    public void setListener(@NonNull final OptionsListener<T> listener) {
-        mListener = new WeakReference<>(listener);
-    }
-
-    void initCommonCbx(@NonNull final Options options,
-                       @NonNull final View root) {
-        cbxBooks = root.findViewById(R.id.cbx_books_csv);
-        cbxBooks.setChecked((options.options & Options.BOOK_CSV) != 0);
-        cbxCovers = root.findViewById(R.id.cbx_covers);
-        cbxCovers.setChecked((options.options & Options.COVERS) != 0);
-        cbxPrefs = root.findViewById(R.id.cbx_preferences);
-        cbxPrefs.setChecked(
-                (options.options & (Options.PREFERENCES | Options.BOOK_LIST_STYLES)) != 0);
-
-        cbxXml = root.findViewById(R.id.cbx_xml_tables);
-        if (cbxXml != null) {
-            cbxXml.setChecked((options.options & Options.XML_TABLES) != 0);
-        }
-    }
-
-    void updateAndSend(@NonNull final T options) {
-        updateOptions();
-
-        if (mListener.get() != null) {
-            mListener.get().onOptionsSet(options);
-        } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onOptionsSet|" + ErrorMsg.WEAK_REFERENCE);
-            }
-        }
-    }
-
-    void updateOptions(@NonNull final Options options) {
-        if (cbxBooks.isChecked()) {
-            options.options |= Options.BOOK_CSV;
-        } else {
-            options.options &= ~Options.BOOK_CSV;
-        }
-
-        if (cbxCovers.isChecked()) {
-            options.options |= Options.COVERS;
-        } else {
-            options.options &= ~Options.COVERS;
-        }
-
-        if (cbxPrefs.isChecked()) {
-            options.options |= Options.PREFERENCES | Options.BOOK_LIST_STYLES;
-        } else {
-            options.options &= ~(Options.PREFERENCES | Options.BOOK_LIST_STYLES);
-        }
-
-        if (cbxXml != null) {
-            if (cbxXml.isChecked()) {
-                options.options |= Options.XML_TABLES;
-            } else {
-                options.options &= ~Options.XML_TABLES;
-            }
-        }
-    }
-
-    protected abstract void updateOptions();
 
     @Override
     public void onStart() {
@@ -137,14 +70,47 @@ public abstract class OptionsDialogBase<T extends Options>
         }
     }
 
-    @Override
-    public void onPause() {
-        updateOptions();
-        super.onPause();
+    protected abstract void getOptions(@NonNull final T options);
+
+    /**
+     * Show a popup info text.
+     *
+     * @param textView   the view from which we'll take the text;
+     *                   Used for a title
+     * @param infoButton the View from which we'll take the content-description;
+     *                   Used for the message.
+     */
+    void infoPopup(@NonNull final TextView textView,
+                   @NonNull final View infoButton) {
+
+        //TODO: replace dialog with lightweight popup view.
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle(textView.getText())
+                .setMessage(infoButton.getContentDescription())
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+    public void setListener(@NonNull final OptionsListener<T> listener) {
+        mListener = new WeakReference<>(listener);
+    }
+
+    void onConfirmOptions(@NonNull final T options) {
+        getOptions(options);
+
+        if (mListener.get() != null) {
+            mListener.get().onOptionsSet(options);
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Log.d(TAG, "onConfirmOptions|" + ErrorMsg.WEAK_REFERENCE);
+            }
+        }
     }
 
     /**
-     * Listener interface to receive notifications when dialog is confirmed.
+     * Listener interface to receive notifications when dialog is confirmed or cancelled.
      */
     public interface OptionsListener<T extends Options> {
 

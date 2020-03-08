@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,6 +33,8 @@ import androidx.annotation.WorkerThread;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * TODO: fix inconsistencies introduced in the XmlExporter: OutputStream/BufferedWriter

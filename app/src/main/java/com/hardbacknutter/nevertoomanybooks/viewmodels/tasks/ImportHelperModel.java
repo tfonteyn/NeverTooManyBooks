@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,16 +27,30 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 
 /**
  * See parent class doc.
  *
- * <strong>Note:</strong> a ViewModel must be "public" despite Android Studio proposing
- * "package-private".
+ * <strong>Note:</strong> a ViewModel must be "public" despite Android Studio
+ * proposing "package-private".
  * The catch: it will work in the emulator, but fail on a real device.
  */
 public class ImportHelperModel
         extends TaskListenerModel<ImportHelper> {
 
+    @Nullable
+    private ImportHelper mHelper;
+
+    @Nullable
+    public ImportHelper getHelper() {
+        return mHelper;
+    }
+
+    public void setHelper(@NonNull final ImportHelper helper) {
+        mHelper = helper;
+    }
 }

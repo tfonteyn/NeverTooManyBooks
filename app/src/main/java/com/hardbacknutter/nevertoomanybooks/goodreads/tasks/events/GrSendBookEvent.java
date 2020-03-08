@@ -121,7 +121,7 @@ public class GrSendBookEvent
         if (!authors.isEmpty()) {
             authorName = authors.get(0).getLabel(context);
             if (authors.size() > 1) {
-                authorName = authorName + ' ' + context.getString(R.string.and_others);
+                authorName = context.getString(R.string.and_others, authorName);
             }
         } else {
             authorName = context.getString(R.string.unknown).toUpperCase(userLocale);

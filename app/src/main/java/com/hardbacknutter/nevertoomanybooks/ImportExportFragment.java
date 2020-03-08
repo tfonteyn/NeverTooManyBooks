@@ -111,11 +111,11 @@ public class ImportExportFragment
 
     private ExportHelperModel mExportHelperModel;
     private final OptionsDialogBase.OptionsListener<ExportHelper> mExportOptionsListener =
-            this::onBackupOptionsSet;
+            this::exportPickUri;
 
     private ImportHelperModel mImportHelperModel;
     private final OptionsDialogBase.OptionsListener<ImportHelper> mImportOptionsListener =
-            this::onImportOptionsSet;
+            this::importStart;
 
     /** View Binding. */
     private FragmentImportExportBinding mVb;
@@ -173,25 +173,25 @@ public class ImportExportFragment
         }
 
         // Export (backup) to Archive
-        mVb.lblBackup.setOnClickListener(v -> startBackup());
+        mVb.lblBackup.setOnClickListener(v -> exportShowOptions());
 
         // Import from Archive
-        mVb.lblImportFromArchive.setOnClickListener(v -> startImportFromArchive());
+        mVb.lblImportFromArchive.setOnClickListener(v -> importPickUri());
 
         // Export to CSV
-        mVb.lblExport.setOnClickListener(v -> startExportToCsv());
+        mVb.lblExport.setOnClickListener(v -> exportCsvPickUri());
 
         // Import From CSV
-        mVb.lblImport.setOnClickListener(v -> startImportFromCsv());
+        mVb.lblImport.setOnClickListener(v -> importCsvPickUri());
 
         // Export database
         mVb.lblCopyDatabase.setOnClickListener(v -> {
-                final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                startActivityForResult(intent, REQ_EXPORT_DATABASE);
-            });
+            final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, REQ_EXPORT_DATABASE);
+        });
 
         if (autoStartBackup) {
-            startBackup();
+            exportShowOptions();
         }
     }
 
@@ -216,7 +216,7 @@ public class ImportExportFragment
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        showBackupOptions(uri);
+                        exportStart(uri);
                     }
                 }
                 break;
@@ -228,7 +228,7 @@ public class ImportExportFragment
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        showImportOptions(uri);
+                        importShowOptions(uri);
                     }
                 }
                 break;
@@ -240,7 +240,7 @@ public class ImportExportFragment
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        exportToCSV(uri);
+                        exportCsvStart(uri);
                     }
                 }
                 break;
@@ -252,7 +252,7 @@ public class ImportExportFragment
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        showImportFromCSVOptions(uri);
+                        importCsvShowOptions(uri);
                     }
                 }
                 break;
@@ -264,23 +264,7 @@ public class ImportExportFragment
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        @StringRes
-                        int msgId;
-                        //noinspection ConstantConditions
-                        DocumentFile dir = DocumentFile.fromTreeUri(getContext(), uri);
-                        try {
-                            if (dir != null && dir.isDirectory()) {
-                                StorageUtils.exportDatabaseFiles(getContext(), dir);
-                                msgId = R.string.progress_end_backup_success;
-                            } else {
-                                msgId = R.string.warning_select_an_existing_folder;
-                            }
-                        } catch (@NonNull final IOException e) {
-                            Logger.error(getContext(), TAG, e);
-                            msgId = R.string.error_backup_failed;
-                        }
-                        //noinspection ConstantConditions
-                        Snackbar.make(getView(), msgId, Snackbar.LENGTH_LONG).show();
+                        exportDatabase(uri);
                     }
                 }
                 break;
@@ -305,7 +289,7 @@ public class ImportExportFragment
     /**
      * Step 1 in the archive import procedure: prompt the user for a uri to import.
      */
-    private void startImportFromArchive() {
+    private void importPickUri() {
         // or should we use Intent.ACTION_OPEN_DOCUMENT ?
         final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
@@ -316,25 +300,27 @@ public class ImportExportFragment
     /**
      * Step 2 in the archive import procedure: show the options to the user.
      *
-     * @param uri to read from
+     * @param uri file to read from
      */
-    private void showImportOptions(@NonNull final Uri uri) {
-        ImportHelper importHelper = new ImportHelper(ImportHelper.ALL, uri);
+    private void importShowOptions(@NonNull final Uri uri) {
+        mImportHelperModel.setHelper(new ImportHelper(ImportHelper.ALL, uri));
+
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_import_from_archive)
-                .setMessage(R.string.import_option_info_all_books)
+                .setMessage(R.string.info_import_option_all_books)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                 .setNeutralButton(R.string.btn_options, (dialog, which) -> {
                     // ask user what options they want
-                    final boolean validDated =
-                            BackupManager.archiveHasValidDates(getContext(), uri);
-                    ImportHelperDialogFragment.newInstance(importHelper, validDated)
-                                              .show(getChildFragmentManager(),
-                                                    ImportHelperDialogFragment.TAG);
+                    // We must pass the helper here, as it has a valid Uri set.
+                    // ImportHelperDialogFragment can read the info block to show the user.
+                    //noinspection ConstantConditions
+                    ImportHelperDialogFragment
+                            .newInstance(mImportHelperModel.getHelper())
+                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
                 })
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                        onImportOptionsSet(importHelper))
+                        importStart(mImportHelperModel.getHelper()))
                 .create()
                 .show();
     }
@@ -342,11 +328,10 @@ public class ImportExportFragment
     /**
      * Step 3 in the archive import procedure: kick of the task.
      *
-     * @param importHelper final options to use
+     * @param helper final options to use
      */
-    private void onImportOptionsSet(@NonNull final ImportHelper importHelper) {
-        final RestoreTask task =
-                new RestoreTask(importHelper, mImportHelperModel.getTaskListener());
+    private void importStart(@NonNull final ImportHelper helper) {
+        final RestoreTask task = new RestoreTask(helper, mImportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_importing, false, true, 0);
@@ -364,7 +349,7 @@ public class ImportExportFragment
     /**
      * Step 1 in the CSV import procedure: prompt the user for a uri to import.
      */
-    private void startImportFromCsv() {
+    private void importCsvPickUri() {
         // Verify - this can be a dangerous operation
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
@@ -388,15 +373,15 @@ public class ImportExportFragment
     /**
      * Step 2 in the CSV import procedure: show the options to the user.
      *
-     * @param uri to read
+     * @param uri file to read
      */
-    private void showImportFromCSVOptions(@NonNull final Uri uri) {
+    private void importCsvShowOptions(@NonNull final Uri uri) {
         final ImportHelper settings = new ImportHelper(Options.BOOK_CSV, uri);
 
         final View view = getLayoutInflater().inflate(R.layout.dialog_import_options, null);
         view.findViewById(R.id.cbx_group).setVisibility(View.GONE);
 
-        final Checkable radioNewAndUpdatedBooks = view.findViewById(R.id.radioNewAndUpdatedBooks);
+        final Checkable radioNewAndUpdatedBooks = view.findViewById(R.id.rb_books_sync);
         // propose the careful option.
         radioNewAndUpdatedBooks.setChecked(true);
 
@@ -409,7 +394,7 @@ public class ImportExportFragment
                     if (radioNewAndUpdatedBooks.isChecked()) {
                         settings.options |= ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED;
                     }
-                    importFromCSV(uri, settings);
+                    importCsvStart(uri, settings);
                 })
                 .create()
                 .show();
@@ -418,13 +403,13 @@ public class ImportExportFragment
     /**
      * Step 3 in the CSV import procedure: kick of the task.
      *
-     * @param uri          to read
-     * @param importHelper how to import
+     * @param uri    to read
+     * @param helper how to import
      */
-    private void importFromCSV(@NonNull final Uri uri,
-                               final ImportHelper importHelper) {
+    private void importCsvStart(@NonNull final Uri uri,
+                                final ImportHelper helper) {
         //noinspection ConstantConditions
-        final ImportCSVTask task = new ImportCSVTask(getContext(), uri, importHelper,
+        final ImportCSVTask task = new ImportCSVTask(getContext(), uri, helper,
                                                      mImportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
@@ -436,8 +421,12 @@ public class ImportExportFragment
         task.execute();
     }
 
+    /* ------------------------------------------------------------------------------------------ */
+    /* Import finished */
+    /* ------------------------------------------------------------------------------------------ */
+
     /**
-     * Step 4 in the Archive/CSV import procedure.
+     * Step 1 in the Archive/CSV import finished procedure. Process the result.
      *
      * @param message to process
      */
@@ -446,6 +435,8 @@ public class ImportExportFragment
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
+
+        mImportHelperModel.setHelper(message.result);
 
         switch (message.taskId) {
             case R.id.TASK_ID_READ_FROM_ARCHIVE:
@@ -456,13 +447,13 @@ public class ImportExportFragment
                                          message.result);
                         break;
                     }
-                    case Failed: {
-                        onImportFailed(message.exception);
-                        break;
-                    }
                     case Cancelled: {
                         onImportFinished(R.string.progress_end_import_partially_complete,
                                          message.result);
+                        break;
+                    }
+                    case Failed: {
+                        onImportFailed(message.exception);
                         break;
                     }
                 }
@@ -477,13 +468,20 @@ public class ImportExportFragment
         }
     }
 
+    /**
+     * Step 2 in the Archive/CSV import finished procedure. Inform the user.
+     *
+     * @param titleId for the dialog title; reports success or cancelled.
+     * @param helper  the helper as returned from the import task
+     */
     private void onImportFinished(@StringRes final int titleId,
-                                  @NonNull final ImportHelper importHelper) {
+                                  @NonNull final ImportHelper helper) {
 
         // Transform the result data into a user friendly report.
-        final Importer.Results results = importHelper.getResults();
+        final Importer.Results results = helper.getResults();
         final StringBuilder msg = new StringBuilder();
 
+        //TODO: LTR
         if (results.booksCreated > 0 || results.booksUpdated > 0) {
             msg.append("\n• ").append(getString(R.string.progress_msg_n_created_m_updated,
                                                 getString(R.string.lbl_books),
@@ -494,12 +492,12 @@ public class ImportExportFragment
                                                 getString(R.string.lbl_covers),
                                                 results.coversCreated, results.coversUpdated));
         }
-        if ((importHelper.options & Options.BOOK_LIST_STYLES) != 0) {
+        if ((helper.options & Options.BOOK_LIST_STYLES) != 0) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));
         }
-        if ((importHelper.options & Options.PREFERENCES) != 0) {
+        if ((helper.options & Options.PREFERENCES) != 0) {
             msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
 
@@ -515,8 +513,9 @@ public class ImportExportFragment
                 fs = R.string.warning_import_csv_failed_lines_some;
                 list = results.failedCsvLines;
             }
+            //noinspection ConstantConditions
             msg.append("\n").append(
-                    getString(fs, Csv.join("\n", list, true, "• ", element ->
+                    getString(fs, Csv.textList(getContext(), list, element ->
                             getString(R.string.a_bracket_b_bracket,
                                       String.valueOf(element.first), element.second))));
         }
@@ -527,7 +526,7 @@ public class ImportExportFragment
                 .setMessage(msg)
                 .setPositiveButton(R.string.done, (dialog, which) -> {
                     mResultDataModel.putResultData(UniqueId.BKEY_IMPORT_RESULT,
-                                                   importHelper.options);
+                                                   helper.options);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK,
                                             mResultDataModel.getResultData());
@@ -537,6 +536,11 @@ public class ImportExportFragment
                 .show();
     }
 
+    /**
+     * Step 2 in the Archive/CSV import finished procedure. Inform the user.
+     *
+     * @param e the Exception as returned from the import task
+     */
     private void onImportFailed(@Nullable final Exception e) {
         String msg = null;
 
@@ -574,9 +578,35 @@ public class ImportExportFragment
     /* ------------------------------------------------------------------------------------------ */
 
     /**
-     * Step 1 in the backup procedure: prompt the user for a uri to export to.
+     * Step 1 in the backup procedure: show the options to the user.
      */
-    private void startBackup() {
+    private void exportShowOptions() {
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle(R.string.lbl_backup_to_archive)
+                .setMessage(R.string.info_export_backup_all)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setNeutralButton(R.string.btn_options, (dialog, which) -> {
+                    // Ask user what options they want
+                    // We don't need to pass in an ExportHelper; the ExportHelperDialogFragment
+                    // will create a new one, and return it via the listener.
+                    ExportHelperDialogFragment
+                            .newInstance()
+                            .show(getChildFragmentManager(), ExportHelperDialogFragment.TAG);
+                })
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        exportPickUri(new ExportHelper(ExportHelper.ALL)))
+                .create()
+                .show();
+    }
+
+    /**
+     * Step 2 in the backup procedure: prompt the user for a uri to export to.
+     */
+    private void exportPickUri(@NonNull final ExportHelper helper) {
+        // save the configured helper
+        mExportHelperModel.setHelper(helper);
+
         //noinspection ConstantConditions
         final String fileName = BackupManager.getDefaultBackupFileName(getContext());
         final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
@@ -587,36 +617,16 @@ public class ImportExportFragment
     }
 
     /**
-     * Step 2 in the backup procedure: show the options to the user.
-     *
-     * @param uri to write to
-     */
-    private void showBackupOptions(@NonNull final Uri uri) {
-        final ExportHelper exportHelper = new ExportHelper(ExportHelper.ALL, uri);
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.lbl_backup_to_archive)
-                .setMessage(R.string.export_info_backup_all)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setNeutralButton(R.string.btn_options, (dialog, which) -> {
-                    // ask user what options they want
-                    ExportHelperDialogFragment.newInstance(exportHelper)
-                                              .show(getChildFragmentManager(),
-                                                    ExportHelperDialogFragment.TAG);
-                })
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                        onBackupOptionsSet(exportHelper))
-                .create()
-                .show();
-    }
-
-    /**
      * Step 3 in the backup procedure: kick of the backup task.
      *
-     * @param exportHelper final options to use
+     * @param uri file to write to
      */
-    private void onBackupOptionsSet(@NonNull final ExportHelper exportHelper) {
-        final BackupTask task = new BackupTask(exportHelper, mExportHelperModel.getTaskListener());
+    private void exportStart(@NonNull final Uri uri) {
+        ExportHelper helper = mExportHelperModel.getHelper();
+        Objects.requireNonNull(helper);
+        helper.setUri(uri);
+
+        final BackupTask task = new BackupTask(helper, mExportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_backing_up, false, true, 0);
@@ -634,7 +644,7 @@ public class ImportExportFragment
     /**
      * Step 1 in the CSV export procedure: prompt the user for a uri to export to.
      */
-    private void startExportToCsv() {
+    private void exportCsvPickUri() {
         final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("text/csv")
@@ -645,9 +655,9 @@ public class ImportExportFragment
     /**
      * Step 2 in the CSV export procedure: Start the CSV export task.
      *
-     * @param uri to write to
+     * @param uri file to write to
      */
-    private void exportToCSV(@NonNull final Uri uri) {
+    private void exportCsvStart(@NonNull final Uri uri) {
         //noinspection ConstantConditions
         final ExportCSVTask task = new ExportCSVTask(getContext(),
                                                      new ExportHelper(Options.BOOK_CSV, uri),
@@ -662,8 +672,12 @@ public class ImportExportFragment
         task.execute();
     }
 
+    /* ------------------------------------------------------------------------------------------ */
+    /* Export finished */
+    /* ------------------------------------------------------------------------------------------ */
+
     /**
-     * Step 4 in the Archive/CSV export procedure.
+     * Step 1 in the Archive/CSV export procedure. Process the result.
      *
      * @param message to process
      */
@@ -677,9 +691,7 @@ public class ImportExportFragment
             case R.id.TASK_ID_WRITE_TO_ARCHIVE: {
                 switch (message.status) {
                     case Success: {
-                        if (isResumed()) {
-                            onExportFinished(message.result, false);
-                        }
+                        onExportFinished(message.result, false);
                         break;
                     }
                     case Failed: {
@@ -698,9 +710,7 @@ public class ImportExportFragment
             case R.id.TASK_ID_CSV_EXPORT: {
                 switch (message.status) {
                     case Success: {
-                        if (isResumed()) {
-                            onExportFinished(message.result, true);
-                        }
+                        onExportFinished(message.result, true);
                         break;
                     }
                     case Failed: {
@@ -725,12 +735,18 @@ public class ImportExportFragment
         }
     }
 
-    private void onExportFinished(@NonNull final ExportHelper exportHelper,
+    /**
+     * Step 2 in the Archive/CSV export procedure. Inform the user.
+     *
+     * @param helper the helper as returned from the export task
+     */
+    private void onExportFinished(@NonNull final ExportHelper helper,
                                   final boolean offerEmail) {
         // Transform the result data into a user friendly report.
-        final Exporter.Results results = exportHelper.getResults();
+        final Exporter.Results results = helper.getResults();
         final StringBuilder msg = new StringBuilder();
 
+        //TODO: LTR
         // slightly misleading. The text currently says "processed" but it's really "exported".
         if (results.booksExported > 0) {
             msg.append("\n• ")
@@ -746,12 +762,12 @@ public class ImportExportFragment
                                  results.coversMissing[1]));
         }
 
-        if ((exportHelper.options & Options.BOOK_LIST_STYLES) != 0) {
+        if ((helper.options & Options.BOOK_LIST_STYLES) != 0) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));
         }
-        if ((exportHelper.options & Options.PREFERENCES) != 0) {
+        if ((helper.options & Options.PREFERENCES) != 0) {
             msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
 
@@ -765,7 +781,7 @@ public class ImportExportFragment
                 .setMessage(msg)
                 .setPositiveButton(R.string.done, (d, which) -> {
                     mResultDataModel.putResultData(UniqueId.BKEY_EXPORT_RESULT,
-                                                   exportHelper.options);
+                                                   helper.options);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mResultDataModel.getResultData());
                     getActivity().finish();
@@ -774,12 +790,17 @@ public class ImportExportFragment
 
         if (offerEmail) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.btn_email),
-                             (d, which) -> emailExportFile(exportHelper));
+                             (d, which) -> emailExportFile(helper));
         }
 
         dialog.show();
     }
 
+    /**
+     * Step 2 in the Archive/CSV export procedure. Inform the user.
+     *
+     * @param e the Exception as returned from the export task
+     */
     private void onExportFailed(@Nullable final Exception e) {
         String msg = null;
 
@@ -825,15 +846,15 @@ public class ImportExportFragment
     /**
      * Create and send an email with the export file.
      *
-     * @param exportHelper export data
+     * @param helper export data
      */
-    private void emailExportFile(@NonNull final ExportHelper exportHelper) {
+    private void emailExportFile(@NonNull final ExportHelper helper) {
 
         final String subject = '[' + getString(R.string.app_name) + "] "
                                + getString(R.string.lbl_export_to_csv);
 
         ArrayList<Uri> uris = new ArrayList<>();
-        uris.add(exportHelper.uri);
+        uris.add(helper.uri);
         try {
             final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
                     .setType("plain/text")
@@ -846,5 +867,30 @@ public class ImportExportFragment
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.error_email_failed, Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Export the actual database file(s). Mainly meant for debug or external processing.
+     *
+     * @param uri folder to write to
+     */
+    private void exportDatabase(@NonNull final Uri uri) {
+        @StringRes
+        int msgId;
+        //noinspection ConstantConditions
+        DocumentFile dir = DocumentFile.fromTreeUri(getContext(), uri);
+        try {
+            if (dir != null && dir.isDirectory()) {
+                StorageUtils.exportDatabaseFiles(getContext(), dir);
+                msgId = R.string.progress_end_backup_success;
+            } else {
+                msgId = R.string.warning_select_an_existing_folder;
+            }
+        } catch (@NonNull final IOException e) {
+            Logger.error(getContext(), TAG, e);
+            msgId = R.string.error_backup_failed;
+        }
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), msgId, Snackbar.LENGTH_LONG).show();
     }
 }

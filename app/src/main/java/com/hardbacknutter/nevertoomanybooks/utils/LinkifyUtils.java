@@ -73,8 +73,8 @@ public final class LinkifyUtils {
         // Get the spannable HTML
         Spanned text;
         if (Build.VERSION.SDK_INT >= 24) {
-            // FROM_HTML_MODE_LEGACY is the behaviour that was used for versions below android N
-            text = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+            // single linefeed between things like LI elements.
+            text = Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT);
         } else {
             text = Html.fromHtml(html);
         }

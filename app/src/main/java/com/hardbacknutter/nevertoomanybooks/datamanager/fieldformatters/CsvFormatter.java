@@ -40,27 +40,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 /**
  * FieldFormatter for a list field. Formats the Entity's as a CSV String.
  * <ul>
- * <li>Multiple fields: <strong>no</strong></li>
+ * <li>Multiple fields: <strong>yes</strong></li>
  * </ul>
  */
 public class CsvFormatter
         implements FieldFormatter<List<Entity>> {
-
-    @NonNull
-    private final CharSequence mDelimiter;
-    @Nullable
-    private final String mPrefix;
-
-    public CsvFormatter() {
-        mDelimiter = ", ";
-        mPrefix = null;
-    }
-
-    public CsvFormatter(@NonNull final CharSequence delimiter,
-                        @Nullable final String prefix) {
-        mDelimiter = delimiter;
-        mPrefix = prefix;
-    }
 
     @NonNull
     @Override
@@ -69,7 +53,7 @@ public class CsvFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return Csv.join(mDelimiter, rawValue, true, mPrefix,
+            return Csv.join(", ", rawValue, true, null,
                             element -> element.getLabel(context));
         }
     }

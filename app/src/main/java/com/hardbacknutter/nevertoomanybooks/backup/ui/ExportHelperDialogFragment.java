@@ -35,13 +35,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 public class ExportHelperDialogFragment
         extends OptionsDialogBase<ExportHelper> {
@@ -51,31 +49,27 @@ public class ExportHelperDialogFragment
 
     private ExportHelper mExportHelper;
 
+    private DialogExportOptionsBinding mVb;
+
     /**
      * Constructor.
-     *
-     * @param options export configuration
      *
      * @return Created fragment
      */
     @NonNull
-    public static ExportHelperDialogFragment newInstance(@NonNull final Options options) {
-        ExportHelperDialogFragment frag = new ExportHelperDialogFragment();
-        Bundle args = new Bundle(1);
-        args.putParcelable(BKEY_OPTIONS, options);
-        frag.setArguments(args);
-        return frag;
+    public static ExportHelperDialogFragment newInstance() {
+        return new ExportHelperDialogFragment();
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Bundle currentArgs = savedInstanceState != null ? savedInstanceState : requireArguments();
-        mExportHelper = currentArgs.getParcelable(BKEY_OPTIONS);
+        if (savedInstanceState == null) {
+            mExportHelper = new ExportHelper(ExportHelper.ALL);
+        } else {
+            mExportHelper = savedInstanceState.getParcelable(BKEY_OPTIONS);
+        }
     }
-
-    private DialogExportOptionsBinding mVb;
 
     @NonNull
     @Override
@@ -85,15 +79,15 @@ public class ExportHelperDialogFragment
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         mVb = DialogExportOptionsBinding.inflate(inflater);
 
-        initCommonCbx(mExportHelper, mVb.getRoot());
+        setOptions();
 
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(mVb.getRoot())
-                .setTitle(R.string.export_options_dialog_title)
+                .setTitle(R.string.title_export_options)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                        updateAndSend(mExportHelper))
+                        onConfirmOptions(mExportHelper))
                 .create();
     }
 
@@ -104,31 +98,45 @@ public class ExportHelperDialogFragment
     }
 
     /**
-     * Read the checkboxes, and set the options accordingly.
+     * Set the checkboxes/radio-buttons from the options.
      */
-    protected void updateOptions() {
-        updateOptions(mExportHelper);
+    private void setOptions() {
+        mVb.cbxBooksCsv.setChecked((mExportHelper.options & Options.BOOK_CSV) != 0);
+        mVb.cbxCovers.setChecked((mExportHelper.options & Options.COVERS) != 0);
+        mVb.cbxPreferences.setChecked(
+                (mExportHelper.options & (Options.PREFERENCES | Options.BOOK_LIST_STYLES)) != 0);
+        mVb.cbxXmlTables.setChecked((mExportHelper.options & Options.XML_TABLES) != 0);
 
-        if (mVb.radioSinceLastBackup.isChecked()) {
-            mExportHelper.options |= ExportHelper.EXPORT_SINCE;
-            // it's up to the Exporter to determine/set the last backup date.
-            mExportHelper.setDateFrom(null);
-        } else {
-            mExportHelper.options &= ~ExportHelper.EXPORT_SINCE;
-        }
+        // Radio group
+        final boolean allBooks =
+                (mExportHelper.options & ExportHelper.EXPORT_SINCE_LAST_BACKUP) == 0;
+        mVb.rbBooksAll.setChecked(allBooks);
+//        mVb.infoBtnRbBooksAll.setOnClickListener(v -> infoPopup(v, mVb.rbBooksAll));
+        mVb.rbBooksSinceLastBackup.setChecked(!allBooks);
+//        mVb.infoBtnRbBooksSync.setOnClickListener(v -> infoPopup(v, mVb.rbBooksSinceLastBackup));
+    }
 
-        if (mVb.radioSinceDate.isChecked()) {
-            try {
-                mExportHelper.options |= ExportHelper.EXPORT_SINCE;
-                String date = mVb.radioSinceDate.getText().toString().trim();
-                mExportHelper.setDateFrom(DateUtils.parseDate(date));
-            } catch (@NonNull final RuntimeException e) {
-                Snackbar.make(mVb.radioSinceDate, R.string.warning_requires_date,
-                              Snackbar.LENGTH_LONG).show();
-                mExportHelper.options = Options.NOTHING;
-            }
-        } else {
-            mExportHelper.options &= ~ExportHelper.EXPORT_SINCE;
-        }
+    @Override
+    public void onPause() {
+        getOptions(mExportHelper);
+        super.onPause();
+    }
+
+    /**
+     * Read the checkboxes/radio-buttons, and set the options accordingly.
+     *
+     * @param options to populate
+     */
+    protected void getOptions(@NonNull final ExportHelper options) {
+
+        options.setOption(Options.BOOK_CSV, mVb.cbxBooksCsv.isChecked());
+        options.setOption(Options.COVERS, mVb.cbxCovers.isChecked());
+        options.setOption(Options.PREFERENCES | Options.BOOK_LIST_STYLES,
+                          mVb.cbxPreferences.isChecked());
+        options.setOption(Options.XML_TABLES, mVb.cbxXmlTables.isChecked());
+
+        // radio group
+        options.setOption(ExportHelper.EXPORT_SINCE_LAST_BACKUP,
+                          mVb.rbBooksSinceLastBackup.isChecked());
     }
 }

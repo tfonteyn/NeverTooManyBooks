@@ -56,7 +56,7 @@ public abstract class Options
     //public static final int IMPORT_7 = 1 << 7;
     //public static final int DATABASE = 1 << 8;
     @Nullable
-    public final Uri uri;
+    public Uri uri;
     /**
      * Bitmask.
      * Contains the user selected options before doing the import/export.
@@ -75,6 +75,19 @@ public abstract class Options
             @Nullable final Uri uri) {
         this.options = options;
         this.uri = uri;
+    }
+
+    public void setUri(@Nullable final Uri uri) {
+        this.uri = uri;
+    }
+
+    public void setOption(final int optionBit,
+                          final boolean isSet) {
+        if (isSet) {
+            options |= optionBit;
+        } else {
+            options &= ~optionBit;
+        }
     }
 
     /**

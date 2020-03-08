@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,15 +33,66 @@
     style="@style/DialogFrame"
     >
 
+    <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+        android:id="@+id/rb_books_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="rb_books_all,rb_books_since_last_backup"
+        tools:ignore="MissingConstraints"
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_books_csv"
+        style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
+        android:checked="true"
+        android:text="@string/lbl_import_export_option_csv"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <RadioButton
+        android:id="@+id/rb_books_all"
+        style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/indent_radio_button"
+        android:checked="true"
+        android:text="@string/bookshelf_all_books"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="@id/cbx_books_csv"
+        app:layout_constraintTop_toBottomOf="@id/cbx_books_csv"
+        />
+
+    <RadioButton
+        android:id="@+id/rb_books_since_last_backup"
+        style="@style/OptionRow.Checkable"
+        android:layout_width="0dp"
+        android:layout_marginStart="@dimen/indent_radio_button"
+        android:text="@string/lbl_export_option_books_since_last_full_backup"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintStart_toStartOf="@id/cbx_books_csv"
+        app:layout_constraintTop_toBottomOf="@id/rb_books_all"
+        />
+
     <CheckBox
         android:id="@+id/cbx_covers"
         style="@style/OptionRow.Checkable"
         android:layout_width="0dp"
         android:checked="true"
         android:text="@string/lbl_cover_images"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_books_csv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <CheckBox
@@ -50,8 +101,8 @@
         android:layout_width="0dp"
         android:checked="true"
         android:text="@string/lbl_settings"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/cbx_covers"
         />
 
@@ -60,91 +111,22 @@
         style="@style/OptionRow.Checkable"
         android:layout_width="0dp"
         android:checked="false"
-        android:text="@string/import_export_option_xml"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/lbl_import_export_option_xml"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
         />
 
-    <CheckBox
-        android:id="@+id/cbx_books_csv"
-        style="@style/OptionRow.Checkable"
-        android:layout_width="0dp"
-        android:checked="true"
-        android:text="@string/import_export_option_csv"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
     <TextView
-        android:id="@+id/cbx_xml_tables_info"
+        android:id="@+id/lbl_xml_tables_info"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_compound_button"
-        android:text="@string/import_export_option_xml_info"
+        android:text="@string/info_import_export_option_xml"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables"
-        />
-
-    <RadioGroup
-        android:id="@+id/radio_buttons"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toTopOf="parent"
-        >
-
-        <TextView
-            style="@style/RadioGroupHeader"
-            android:text="@string/lbl_books"
-            />
-
-        <RadioButton
-            android:id="@+id/radioAllBooks"
-            style="@style/OptionRow.Checkable"
-            android:checked="true"
-            android:text="@string/bookshelf_all_books"
-            />
-
-        <RadioButton
-            android:id="@+id/radioSinceLastBackup"
-            style="@style/OptionRow.Checkable"
-            android:text="@string/export_option_books_since_last_full_backup"
-            />
-
-        <!-- This option and the related date/button below are disabled to reduce complexity
-         of the UI and app; may enable one day. Deemed to be too rarely of use. -->
-        <RadioButton
-            android:id="@+id/radioSinceDate"
-            style="@style/OptionRow.Checkable"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/export_option_books_since_date"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:visibility="gone"
-            tools:visibility="visible"
-            />
-
-        <EditText
-            android:id="@+id/date_since"
-            android:visibility="gone"
-            tools:ignore="Autofill,LabelFor"
-            tools:visibility="visible"
-            style="@style/ManualDateEntry"
-            />
-
-    </RadioGroup>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.4"
+        app:layout_constraintTop_toBottomOf="@id/cbx_xml_tables"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -133,13 +133,35 @@ public final class BackupManager {
         try (BackupReader reader = getReader(context, uri)) {
             BackupInfo info = reader.getInfo();
             reader.close();
-            hasValidDates = info.hasValidDates();
+            hasValidDates = (info.getCreationDate() != null);
         } catch (@NonNull final IOException | InvalidArchiveException e) {
             // InvalidArchiveException is irrelevant here, as we would not have gotten this far
             Logger.error(context, TAG, e);
             hasValidDates = false;
         }
         return hasValidDates;
+    }
+
+    /**
+     * Get the info bundle for the passed Uri.
+     *
+     * @param context Current context
+     * @param uri     to read from
+     *
+     * @return the info bundle, or {@code null} on failure
+     */
+    @Nullable
+    public static BackupInfo getInfo(@NonNull final Context context,
+                                     @NonNull final Uri uri) {
+        try (BackupReader reader = getReader(context, uri)) {
+            BackupInfo info = reader.getInfo();
+            reader.close();
+            return info;
+        } catch (@NonNull final IOException | InvalidArchiveException e) {
+            // InvalidArchiveException is irrelevant here, as we would not have gotten this far
+            Logger.error(context, TAG, e);
+        }
+        return null;
     }
 
     /**
@@ -167,7 +189,7 @@ public final class BackupManager {
     @Nullable
     static Date getLastFullBackupDate(@NonNull final Context context) {
         String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(PREF_LAST_FULL_BACKUP_DATE, null);
+                                             .getString(PREF_LAST_FULL_BACKUP_DATE, null);
 
         if (lastBackup != null && !lastBackup.isEmpty()) {
             return DateUtils.parseSqlDateTime(lastBackup);

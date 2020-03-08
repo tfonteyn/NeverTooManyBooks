@@ -371,8 +371,7 @@ public class RowStateDAO {
 
         // Build the SQL, adding an alias for TMP_TBL_BOOK_LIST_ROW_STATE#KEY_PK_ID
         String sql = "SELECT "
-                     + Csv.join(",", listTable.getDomains(),
-                                domain -> listTable.dot(domain.getName()))
+                     + Csv.join(listTable.getDomains(), domain -> listTable.dot(domain.getName()))
                      + ',' + mTable.dotAs(KEY_PK_ID, KEY_BL_LIST_VIEW_ROW_ID)
                      + " FROM " + listTable.ref() + listTable.join(mTable)
                      + " WHERE " + mTable.dot(KEY_BL_NODE_VISIBLE) + "=1"

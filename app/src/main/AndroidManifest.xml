@@ -32,7 +32,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.hardbacknutter.nevertoomanybooks"
     android:installLocation="auto"
-    android:versionCode="1"
+    android:versionCode="2"
     android:versionName="1.0.0">
     <!--
  Not needed any longer, as we only use getExternalFilesDir(String)

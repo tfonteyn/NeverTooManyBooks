@@ -56,7 +56,7 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:title="@string/lbl_maintenance">
+        android:title="@string/pt_maintenance">
 
         <Preference
             android:icon="@drawable/ic_close"

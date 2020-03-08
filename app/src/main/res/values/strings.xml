@@ -47,19 +47,30 @@
 <resources>
 
     <!-- ####################################################################################### -->
-    <!-- == order formatter (mainly for RTL which we don't support yet) == -->
+    <!-- == order formatters == -->
     <!-- ####################################################################################### -->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="name_colon_value">%1$s: %2$s</string>
     <!-- x and y are numbers; e.g.: 5 of 9 -->
     <string name="x_of_y">%1$d of %2$d</string>
+    <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern. -->
+    <string name="list_element">• %s</string>
+
+    <!-- abbreviation to indicate there are more of something.
+         e.g. a list of Series: "Foundation …" indicates a book belongs to the
+         "Foundation" Series, but is also present in others.
+    -->
+    <string name="and_others">%s …</string>
 
     <!-- Should internal formatting of price/currency fail, then this fallback format is used.
-    By default is displays "[currency][value]" with 2 decimal digits.
-    Currency: %1$s
-    Value: %2$.2f
--->
-    <string name="fallback_currency_format">%1$s%2$.2f</string>
+
+         Currency: %1$s
+         Value: %2$.2f
+
+        English: "[currency] [value]" with 2 decimal digits.
+        Most other languages: "[value] [currency]" with 2 decimal digits.
+    -->
+    <string name="fallback_currency_format">%1$s %2$.2f</string>
 
     <!-- ####################################################################################### -->
     <!-- Fatal/Crash/Debug messages -->
@@ -167,16 +178,15 @@
 
     <!-- Importing a CSV book list partially failed with more then 10 lines failing.
      Only 10 line numbers will be listed -->
-    <string name="warning_import_csv_failed_lines_lots">
-        CSV parsing failed for lines %1$s and others.
-    </string>
     <!-- Importing a CSV book list partially failed with less then 10 lines failing -->
-    <string name="warning_import_csv_failed_lines_some">
-        CSV parsing failed for lines %1$s.
-    </string>
+    <string name="warning_import_csv_failed_lines_some">CSV parsing failed for lines %1$s.</string>
 
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position. -->
     <string name="warning_import_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
+
+    <!-- Explanatory note associated with import options not available with older archives -->
+    <string name="warning_import_old_archive">This option is not supported for older archive versions.</string>
+
 
     <string name="warning_book_not_found">Unable to find the specified book.</string>
 
@@ -254,6 +264,7 @@
         Are you sure you want to continue ?
     </string>
 
+
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -305,6 +316,20 @@
         Would you like to see more information, or disable this message?\n
         You can find this information at a later date under the “%2$s” section in the settings.
     </string>
+
+    <!-- Explanatory note of the 'import from archive' "all books" option -->
+    <string name="info_import_option_all_books">New books will be added. Existing books will be updated.</string>
+    <!-- Explanatory note of the 'import new & changed' option -->
+    <string name="info_import_option_new_and_changed_books">
+        Only import books that are new, or which have been updated more recently in the archive.
+        This is useful when synchronizing two devices.
+    </string>
+    <!-- Explanatory note for 'export to archive' initial 'simple' dialog -->
+    <string name="info_export_backup_all">
+        All books, covers, preferences and custom styles will be exported to the archive.
+    </string>
+    <!-- Explanatory note for 'All data in XML format' -->
+    <string name="info_import_export_option_xml">XML is export only, no import.</string>
 
     <string name="legacy_record">Obsolete record #%1$d</string>
     <string name="legacy_description">This record is obsolete and can not be recovered. It is advisable to delete it.</string>
@@ -701,53 +726,6 @@
     <string name="gr_tq_events_recorded">(%1$d events recorded)</string>
 
     <!-- ####################################################################################### -->
-    <!-- === Import/Export specific strings == -->
-    <!-- ####################################################################################### -->
-    <!-- Explanatory note for 'import to archive' OPTIONS dialog -->
-    <string name="import_options_dialog_title">Select what will be imported.</string>
-    <!-- Explanatory note of the 'import from archive' "all books" option -->
-    <string name="import_option_info_all_books">
-        New books will be added.\nExisting books will be updated.
-    </string>
-    <!-- Text for the 'export to archive' option -->
-    <string name="import_option_new_and_changed_books">New and updated books</string>
-    <!-- Description of the 'import new & changed' option -->
-    <string name="import_option_info_new_and_changed_books">
-        Only import books that are new, or which have been updated more recently in the archive.
-        This is useful when synchronizing two devices.
-    </string>
-    <!-- Descriptive text associated with import options not available with older archives -->
-    <string name="import_warning_old_archive">
-        This option is not supported for older archive versions.
-    </string>
-
-    <!-- Explanatory note for 'export to archive' initial 'simple' dialog -->
-    <string name="export_info_backup_all">
-        All books, covers, preferences and custom styles will be exported to the archive.
-    </string>
-    <!-- Explanatory note for 'export to archive' OPTIONS dialog -->
-    <string name="export_options_dialog_title">
-        Select what will be exported to the archive.
-    </string>
-    <!-- Explanatory note for export data since last backup -->
-    <string name="export_option_books_since_last_full_backup">
-        All books added or updated since last full backup.
-    </string>
-    <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
-    <string name="export_option_books_since_date">All books added or updated since:</string>
-    <!-- Explanatory note for 'export from archive' since-date (not yet implemented) -->
-    <string name="export_option_info_books_since_date">
-        Optionally specify a date to use in selecting books and/or covers to export:
-    </string>
-
-    <!-- Options for what will be exported/imported with archives. -->
-    <string name="import_export_option_xml">All data in XML format</string>
-    <!-- Displayed as a reminder to the user -->
-    <string name="import_export_option_xml_info">XML is export only, no import.</string>
-    <string name="import_export_option_csv">Books (*.csv)</string>
-
-
-    <!-- ####################################################################################### -->
     <!-- == Global preference settings == -->
     <!-- ####################################################################################### -->
 
@@ -888,6 +866,8 @@
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_edit_native_id">Allow editing native website book id</string>
 
+    <string name="pt_primary_author_type">Primary author type</string>
+    <string name="pt_maintenance">Maintenance</string>
 
     <!-- ####################################################################################### -->
     <!-- == Style preference settings == -->
@@ -1000,13 +980,17 @@
     <!-- Dialog title. -->
     <string name="title_edit_series">Edit Series</string>
     <!-- Dialog title. -->
+    <string name="title_details_have_changed">Details have changed</string>
+    <!-- Dialog title. -->
     <string name="title_importing">Importing…</string>
     <!-- Dialog title. -->
     <string name="title_backing_up">Backing up…</string>
     <!-- Dialog title. -->
-    <string name="title_details_have_changed">Details have changed</string>
-    <!-- Dialog title. -->
     <string name="title_search_failed">Searching for the book failed.</string>
+    <!-- Dialog title for 'import to archive' OPTIONS dialog -->
+    <string name="title_import_options">Select what will be imported.</string>
+    <!-- Dialog title for 'export to archive' OPTIONS dialog -->
+    <string name="title_export_options">Select what will be exported to the archive.</string>
     <!-- Chooser title. -->
     <string name="title_send_mail">Send email…</string>
     <!-- Chooser title. -->
@@ -1143,7 +1127,7 @@
     <string name="menu_rebuild_fts_info">Rebuild FTS info TBD</string>
     <!-- menu option on Advanced preferences -->
     <string name="menu_rebuild_index">Rebuild index</string>
-    <string name="menu_rebuild_index_info">rebuild_index explanation TBD</string>
+    <string name="menu_rebuild_index_info">Rebuild index info TBD</string>
 
     <!-- ####################################################################################### -->
     <!-- == Button texts, must be short == -->
@@ -1341,11 +1325,7 @@
     <!-- e.g. clearing a form. -->
     <string name="clear">Clear</string>
 
-    <!-- abbreviation to indicate there are more of something.
-        e.g. a list of Series: "Foundation et.al" indicates a book belongs to the
-        "Foundation" Series, but is also present in others.
-    -->
-    <string name="and_others">et. al.</string>
+
 
     <!-- 'try again' -->
     <string name="retry">Retry</string>
@@ -1460,6 +1440,15 @@
     <string name="lbl_edition_slipcase">Slipcase</string>
     <string name="lbl_edition_book_club">Bookclub edition</string>
 
+    <!-- Book / Dust cover condition -->
+    <string name="lbl_condition_fine">As new</string>
+    <string name="lbl_condition_very_good">Very good</string>
+    <string name="lbl_condition_good">Good</string>
+    <string name="lbl_condition_fair">"Acceptable "</string>
+    <string name="lbl_condition_reading_copy">Reading copy</string>
+    <string name="lbl_dust_cover_missing">Missing</string>
+    <string name="lbl_dust_cover_none_or_unknown">None</string>
+
     <string name="lbl_select_fields">Select Fields</string>
     <string name="lbl_field_usage_copy_if_blank">Copy if blank</string>
     <string name="lbl_field_usage_append">Appends extra data</string>
@@ -1516,6 +1505,19 @@
     <!-- Individual fields for "original publication date" -->
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
+
+    <!-- 'export/import to archive' option -->
+    <string name="lbl_import_export_option_csv">Books (*.csv)</string>
+    <!-- 'export/import to archive' option -->
+    <string name="lbl_import_export_csv">CSV (without images)</string>
+    <!-- 'import to archive' option -->
+    <string name="lbl_import_option_new_and_changed_books">New and updated books</string>
+    <!-- 'export to archive' option -->
+    <string name="lbl_import_export_option_xml">All data in XML format</string>
+    <!-- 'export to archive' option. Should be Two (or one) short lines maximum. -->
+    <string name="lbl_export_option_books_since_last_full_backup">
+        Books added or updated\nsince last full backup.
+    </string>
 
     <!-- heading/titles for settings/preference screens -->
     <string name="lbl_settings">Settings</string>
@@ -1623,20 +1625,6 @@
     </string>
 
     <string name="pt_goodreads_collect_genre">Collect genre from popular bookshelves</string>
-
-    <string name="lbl_csv">CSV (without covers)</string>
-
-    <string name="lbl_condition_fine">Fine</string>
-    <string name="lbl_condition_very_good">Very good</string>
-    <string name="lbl_condition_good">Good</string>
-    <string name="lbl_condition_fair">Fair</string>
-    <string name="lbl_condition_reading_copy">Reading copy</string>
-    <string name="lbl_dust_cover_missing">Missing</string>
-    <string name="lbl_dust_cover_none_or_unknown">None</string>
-
-
-    <string name="pt_primary_author_type">Primary author type</string>
-    <string name="lbl_maintenance">Maintenance</string>
-
+    <string name="warning_import_csv_failed_lines_lots">CSV parsing failed for lines %1$s and others.</string>
 
 </resources>

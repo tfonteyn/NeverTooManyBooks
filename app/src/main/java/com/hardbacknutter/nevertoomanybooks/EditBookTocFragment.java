@@ -622,7 +622,7 @@ public class EditBookTocFragment
                 final StringBuilder message =
                         new StringBuilder(getString(R.string.warning_toc_confirm))
                                 .append("\n\n")
-                                .append(Csv.join(", ", mTocEntries,
+                                .append(Csv.join(mTocEntries,
                                                  tocEntry -> tocEntry.getLabel(getContext())));
                 vb.content.setText(message);
 

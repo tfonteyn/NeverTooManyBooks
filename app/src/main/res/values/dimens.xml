@@ -67,6 +67,8 @@
     <dimen name="indent2">8dp</dimen>
     <dimen name="indent3">16dp</dimen>
 
+    <!-- indent a radio button as a sub-list (e.g. radio buttons under a checkbox). -->
+    <dimen name="indent_radio_button">16dp</dimen>
 
     <!-- start margin applied to the 2nd, 3rd.. field on a line of fields. -->
     <dimen name="inlineFieldStartMargin">16dp</dimen>

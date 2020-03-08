@@ -55,7 +55,7 @@ public interface TaskListener<Result> {
     /**
      * Progress messages.
      */
-    default void onProgress(@NonNull ProgressMessage message) {
+    default void onProgress(@NonNull final ProgressMessage message) {
         // ignore by default
     }
 
@@ -111,7 +111,7 @@ public interface TaskListener<Result> {
     }
 
     /**
-     * Value class holding progress value.
+     * Value class holding progress data.
      */
     class ProgressMessage {
 
@@ -119,7 +119,7 @@ public interface TaskListener<Result> {
 
         /** No-op if {@code null} otherwise change mode to the requested one. */
         @Nullable
-        public final Boolean indeterminate;
+        final Boolean indeterminate;
 
         /**
          * The maximum position for the progressbar,

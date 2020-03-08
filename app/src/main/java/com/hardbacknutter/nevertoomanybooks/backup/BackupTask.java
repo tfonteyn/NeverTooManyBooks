@@ -104,7 +104,7 @@ public class BackupTask
                                         mExportHelper.uri);
 
                 // if the backup was a full one (not a 'since') remember that.
-                if ((mExportHelper.options & ExportHelper.EXPORT_SINCE) == 0) {
+                if ((mExportHelper.options & ExportHelper.EXPORT_SINCE_LAST_BACKUP) == 0) {
                     BackupManager.setLastFullBackupDate(context);
                 }
 

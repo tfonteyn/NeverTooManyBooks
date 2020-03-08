@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 
 /**
@@ -39,4 +42,15 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 public class ExportHelperModel
         extends TaskListenerModel<ExportHelper> {
 
+    @Nullable
+    private ExportHelper mHelper;
+
+    @Nullable
+    public ExportHelper getHelper() {
+        return mHelper;
+    }
+
+    public void setHelper(@NonNull final ExportHelper helper) {
+        mHelper = helper;
+    }
 }

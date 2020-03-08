@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -37,8 +37,9 @@ This is used by the adapter for the Bookshelf name spinner in the BooksOnBookshe
     style="?android:attr/spinnerItemStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:ellipsize="marquee"
+    android:ellipsize="end"
     android:singleLine="true"
+    android:scrollHorizontally="false"
     android:textAlignment="inherit"
     android:textAppearance="?android:attr/textAppearanceLarge"
     android:textIsSelectable="false"

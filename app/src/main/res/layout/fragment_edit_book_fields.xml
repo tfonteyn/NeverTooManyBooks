@@ -79,8 +79,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
             style="@style/Envelope.EditText"
-            app:endIconMode="none"
             android:hint="@string/lbl_author"
+            app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/coversBarrier"
@@ -117,8 +117,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
             style="@style/Envelope.EditText.Isbn"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_scan"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
 
@@ -135,9 +135,9 @@
         <Button
             android:id="@+id/btn_scan"
             style="@style/Envelope.Button"
-            android:enabled="true"
             android:layout_marginStart="@dimen/indent2"
             android:layout_marginTop="@dimen/border1"
+            android:enabled="true"
             app:icon="@drawable/ic_barcode"
             app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
             app:layout_constraintEnd_toEndOf="parent"
@@ -148,8 +148,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
             style="@style/Envelope.EditText"
-            app:endIconMode="none"
             android:hint="@string/lbl_series"
+            app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
@@ -167,8 +167,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelves"
             style="@style/Envelope.EditText"
-            app:endIconMode="none"
             android:hint="@string/lbl_bookshelves"
+            app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_series"

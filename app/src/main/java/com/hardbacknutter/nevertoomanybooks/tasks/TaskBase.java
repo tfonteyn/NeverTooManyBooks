@@ -39,7 +39,6 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
 
@@ -62,18 +61,12 @@ public abstract class TaskBase<Params, Result>
     private final int mTaskId;
 
     /** A listener that will forward incoming messages to {@link AsyncTask#publishProgress}. */
-    private final ProgressListener<TaskListener.ProgressMessage> mProgressListener
-            = new ProgressListener<TaskListener.ProgressMessage>() {
+    private final ProgressListener mProgressListener = new ProgressListener() {
 
         private int mPos;
         private int mMaxPosition;
         @Nullable
         private Boolean mIndeterminate;
-
-        @Override
-        public void onProgress(@NonNull final TaskListener.ProgressMessage progress) {
-            publishProgress(progress);
-        }
 
         @Override
         public void onProgress(final int pos,
@@ -160,7 +153,7 @@ public abstract class TaskBase<Params, Result>
      *
      * @return ProgressListener
      */
-    protected ProgressListener<TaskListener.ProgressMessage> getProgressListener() {
+    protected ProgressListener getProgressListener() {
         return mProgressListener;
     }
 

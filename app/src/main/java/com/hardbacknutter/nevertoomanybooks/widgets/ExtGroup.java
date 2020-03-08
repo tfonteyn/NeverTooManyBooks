@@ -58,6 +58,11 @@ public class ExtGroup
     private Object mTag;
     private SparseArray<Object> mKeyedTags;
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
     public ExtGroup(@NonNull final Context context) {
         super(context);
     }

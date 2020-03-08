@@ -47,11 +47,11 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -138,7 +138,7 @@ public class CsvExporter
      * Constructor.
      *
      * @param context      Current context
-     * @param exportHelper {@link ExportHelper#EXPORT_SINCE} and
+     * @param exportHelper {@link ExportHelper#EXPORT_SINCE_LAST_BACKUP} and
      *                     {@link ExportHelper#getDateFrom} are respected.
      *                     Other flags are ignored, as this method only
      *                     handles {@link ExportHelper#BOOK_CSV} anyhow.
