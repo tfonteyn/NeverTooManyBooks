@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 public class AuthorFormatter
         extends HtmlFormatter<Author> {
 
+    /** how much details to show. */
     private final Author.Details mDetails;
 
     /**

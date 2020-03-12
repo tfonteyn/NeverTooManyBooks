@@ -70,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class CoverBrowserViewModel
@@ -177,7 +177,7 @@ public class CoverBrowserViewModel
 
     /** Observable. */
     @NonNull
-    public MutableLiveData<ArrayList<String>> onEditionsloaded() {
+    public MutableLiveData<ArrayList<String>> onEditionsLoaded() {
         return mEditions;
     }
 
@@ -363,13 +363,13 @@ public class CoverBrowserViewModel
                 } catch (@NonNull final RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;
-                    Logger.error(TAG, e, "Unable to decode file");
+                    Logger.error(App.getAppContext(), TAG, e, "Unable to decode file");
                 }
             }
 
             // cleanup bad files.
             if (!ok) {
-                StorageUtils.deleteFile(file);
+                FileUtils.delete(file);
             }
             return ok;
         }
@@ -525,7 +525,7 @@ public class CoverBrowserViewModel
                 if (fileInfo != null
                     && fileInfo.fileSpec != null
                     && !fileInfo.fileSpec.isEmpty()) {
-                    StorageUtils.deleteFile(new File(fileInfo.fileSpec));
+                    FileUtils.delete(new File(fileInfo.fileSpec));
                 }
             }
             mFiles.clear();
@@ -564,7 +564,7 @@ public class CoverBrowserViewModel
             // sanity check
             if (BuildConfig.DEBUG /* always */) {
                 if (!ISBN.isValidIsbn(isbnStr)) {
-                    throw new IllegalStateException("isbn must be valid");
+                    throw new IllegalStateException(ErrorMsg.ISBN_MUST_BE_VALID);
                 }
             }
 
@@ -578,6 +578,7 @@ public class CoverBrowserViewModel
         protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetGalleryImageTask " + mIsbn);
             final Context context = App.getTaskContext();
+
             try {
                 return mFileManager.download(context, mIsbn, mCIdx,
                                              // try to get a picture in this order of size.
@@ -627,7 +628,7 @@ public class CoverBrowserViewModel
             // sanity check
             if (BuildConfig.DEBUG /* always */) {
                 if (!ISBN.isValidIsbn(fileInfo.isbn)) {
-                    throw new IllegalStateException("isbn must be valid");
+                    throw new IllegalStateException(ErrorMsg.ISBN_MUST_BE_VALID);
                 }
             }
 
@@ -641,6 +642,7 @@ public class CoverBrowserViewModel
         protected FileInfo doInBackground(final Void... params) {
             Thread.currentThread().setName("GetSwitcherImageTask " + mFileInfo.isbn);
             final Context context = App.getTaskContext();
+
             try {
                 return mFileManager.download(context, mFileInfo.isbn, mCIdx,
                                              // try to get a picture in this order of size.

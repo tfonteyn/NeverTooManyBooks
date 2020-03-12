@@ -52,7 +52,7 @@ public class LanguageFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return LanguageUtils.getDisplayName(context, rawValue);
+            return LanguageUtils.getDisplayNameFromISO3(context, rawValue);
         }
     }
 

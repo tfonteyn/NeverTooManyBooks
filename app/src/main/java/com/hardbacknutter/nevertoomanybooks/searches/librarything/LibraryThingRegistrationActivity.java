@@ -51,8 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * Contains details about LibraryThing links and how to register for a developer key.
@@ -135,15 +135,16 @@ public class LibraryThingRegistrationActivity
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
             Thread.currentThread().setName("LT.ValidateKey");
-            Context context = App.getTaskContext();
+            final Context context = App.getTaskContext();
+
             try {
-                SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine();
-                String fileSpec = ltm.getCoverImage(context, "0451451783",
-                                                    0, SearchEngine.CoverByIsbn.ImageSize.Small);
+                final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine();
+                final String fileSpec = ltm.getCoverImage(context, "0451451783", 0,
+                                                          SearchEngine.CoverByIsbn.ImageSize.Small);
                 if (fileSpec != null) {
-                    File file = new File(fileSpec);
-                    long fileLen = file.length();
-                    StorageUtils.deleteFile(file);
+                    final File file = new File(fileSpec);
+                    final long fileLen = file.length();
+                    FileUtils.delete(file);
 
                     if (fileLen > ImageUtils.MIN_IMAGE_FILE_SIZE) {
                         return R.string.lt_key_is_correct;

@@ -83,8 +83,9 @@ public final class ScannerManager {
     /**
      * All actions for the supported scanner variants.
      * <strong>Only used by the debug report</strong> to report on installed scanners.
+     * See {@link #collectDebugInfo}.
      */
-    public static final String[] ALL_ACTIONS = new String[]{
+    private static final String[] ALL_ACTIONS = new String[]{
             MediaStore.ACTION_IMAGE_CAPTURE,
             com.google.zxing.client.android.Intents.Scan.ACTION,
             Pic2ShopScanner.Free.ACTION,
@@ -127,8 +128,8 @@ public final class ScannerManager {
     public static Scanner getScanner(@NonNull final Context context) {
         try {
             // Preferred scanner available?
-            ScannerFactory psf = (ScannerFactory) SCANNER_FACTORIES.get(getPreferredScanner())
-                                                                   .newInstance();
+            ScannerFactory psf = (ScannerFactory)
+                    SCANNER_FACTORIES.get(getPreferredScanner(context)).newInstance();
             if (psf.isAvailable(context)) {
                 return psf.getScanner(context);
             }
@@ -158,8 +159,8 @@ public final class ScannerManager {
                                       @NonNull final OnResultListener resultListener) {
         ScannerFactory sf = null;
         try {
-            sf = (ScannerFactory) SCANNER_FACTORIES.get(getPreferredScanner())
-                                                   .newInstance();
+            sf = (ScannerFactory)
+                    SCANNER_FACTORIES.get(getPreferredScanner(activity)).newInstance();
         } catch (@NonNull final IllegalAccessException | InstantiationException ignore) {
             // ignore
         }
@@ -198,6 +199,7 @@ public final class ScannerManager {
                         resultListener.onResult(true);
                         return;
                     } catch (@NonNull final ActivityNotFoundException ignore) {
+                        // ignore
                     }
                     googlePlayStoreMissing(activity, resultListener);
                 }
@@ -247,7 +249,6 @@ public final class ScannerManager {
      *
      * @return {@code true} if installed.
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean isGooglePlayStoreInstalled(@NonNull final Context context) {
         try {
             context.getPackageManager()
@@ -293,8 +294,8 @@ public final class ScannerManager {
                          .apply();
     }
 
-    private static int getPreferredScanner() {
-        return PIntString.getListPreference(Prefs.pk_scanner_preferred, DEFAULT);
+    private static int getPreferredScanner(@NonNull final Context context) {
+        return PIntString.getListPreference(context, Prefs.pk_scanner_preferred, DEFAULT);
     }
 
     static boolean isBeepOnBarcodeFound(@NonNull final Context context) {
@@ -326,7 +327,7 @@ public final class ScannerManager {
         // Scanners installed
         try {
             message.append("Preferred Scanner: ")
-                   .append(PIntString.getListPreference(Prefs.pk_scanner_preferred, -1))
+                   .append(PIntString.getListPreference(context, Prefs.pk_scanner_preferred, -1))
                    .append('\n');
 
             for (String scannerAction : ALL_ACTIONS) {

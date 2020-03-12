@@ -33,6 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * * String id and args are stored for later retrieval.
@@ -59,7 +60,7 @@ public abstract class FormattedMessageException
      */
     @NonNull
     public String getLocalizedMessage() {
-        return getLocalizedMessage(App.getLocalizedAppContext());
+        return getLocalizedMessage(LocaleUtils.applyLocale(App.getAppContext()));
     }
 
     @NonNull

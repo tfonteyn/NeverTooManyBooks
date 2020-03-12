@@ -36,6 +36,7 @@ import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 public class BitmaskFilter
@@ -48,8 +49,10 @@ public class BitmaskFilter
     @StringRes
     private final int mLabelId;
 
+    @NonNull
     private final TableDefinition mTable;
-    private final String mDomain;
+    @NonNull
+    private final String mDomainKey;
 
     /**
      * Constructor.
@@ -61,19 +64,19 @@ public class BitmaskFilter
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
      * @param table        to use by the expression
-     * @param domain       to use by the expression
+     * @param domainKey       to use by the expression
      */
     public BitmaskFilter(@StringRes final int labelId,
                          @NonNull final String key,
                          @NonNull final String uuid,
                          final boolean isPersistent,
-                         @SuppressWarnings("SameParameterValue") @NonNull
-                         final TableDefinition table,
-                         @NonNull final String domain) {
+                         @SuppressWarnings("SameParameterValue")
+                         @NonNull final TableDefinition table,
+                         @NonNull final String domainKey) {
         super(key, uuid, isPersistent, 0);
         mLabelId = labelId;
         mTable = table;
-        mDomain = domain;
+        mDomainKey = domainKey;
     }
 
     /**
@@ -90,9 +93,9 @@ public class BitmaskFilter
         if (isActive(context)) {
             int value = getValue(context);
             if (value > 0) {
-                return "((" + mTable.dot(mDomain) + " & " + value + ") <> 0)";
+                return "((" + mTable.dot(mDomainKey) + " & " + value + ") <> 0)";
             } else {
-                return "(" + mTable.dot(mDomain) + "=0)";
+                return "(" + mTable.dot(mDomainKey) + "=0)";
 
             }
         }
@@ -109,7 +112,7 @@ public class BitmaskFilter
     public boolean isActive(@NonNull final Context context) {
         final SharedPreferences prefs = getPrefs(context);
         return prefs.getBoolean(getKey() + ACTIVE, false)
-               && App.isUsed(prefs, mDomain);
+               && DBDefinitions.isUsed(prefs, mDomainKey);
     }
 
     @Override
@@ -117,7 +120,7 @@ public class BitmaskFilter
     public String toString() {
         return "BitmaskFilter{"
                + "table=" + mTable.getName()
-               + ", domain=" + mDomain
+               + ", mDomainKey=" + mDomainKey
                + ", mLabelId=" + mLabelId
                + ", isActive=" + isActive(App.getAppContext())
                + ", " + super.toString()

@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -215,8 +216,9 @@ public class GoodreadsWork {
         @WorkerThread
         protected byte[] doInBackground(final Void... params) {
             Thread.currentThread().setName("GR.GetImageTask");
+            final Context context = App.getTaskContext();
 
-            return ImageUtils.getBytes(App.getAppContext(), mUrl);
+            return ImageUtils.getBytes(context, mUrl);
         }
 
         /**

@@ -44,14 +44,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
@@ -66,8 +65,6 @@ public class StartupActivity
     /** Log tag. */
     private static final String TAG = "StartupActivity";
 
-    /** Indicates the upgrade message has been shown. */
-    private static boolean sUpgradeMessageShown;
     /** Self reference for use by tasks and during upgrades. */
     private static WeakReference<StartupActivity> sStartupActivity;
 
@@ -90,13 +87,25 @@ public class StartupActivity
     }
 
     /**
-     * apply the user-preferred Locale before onCreate is called.
+     * Apply the user-preferred Locale before onCreate is called.
+     * Start the QueueManager.
      */
     protected void attachBaseContext(@NonNull final Context base) {
 
+        // https://developer.android.com/reference/android/os/StrictMode
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STRICT_MODE) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                                               .detectAll()
+                                               .penaltyLog()
+                                               .build());
+        }
+
         super.attachBaseContext(LocaleUtils.applyLocale(base));
 
-        // create the singleton QueueManager
+        // create self-reference for DBHelper callbacks.
+        sStartupActivity = new WeakReference<>(this);
+
+        // create the singleton QueueManager. This (re)starts stored tasks.
         QueueManager.create(base);
     }
 
@@ -112,38 +121,29 @@ public class StartupActivity
 
         // Version Number
         final TextView view = findViewById(R.id.version);
-        final PackageInfo packageInfo = App.getPackageInfo(0);
-        if (packageInfo != null) {
-            view.setText(packageInfo.versionName);
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            view.setText(info.versionName);
+        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
+            // ignore
         }
 
-        // create self-reference for DBHelper callbacks.
-        sStartupActivity = new WeakReference<>(this);
-
-        // https://developer.android.com/reference/android/os/StrictMode
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.STRICT_MODE) {
-            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                                               .detectAll()
-                                               .penaltyLog()
-                                               .build());
-        }
-
-        // get our ViewModel; we init in mStartupStage == 1.
         mModel = new ViewModelProvider(this).get(StartupViewModel.class);
+        mModel.onFatalMsgId().observe(this, msgId -> {
+            Notifier.show(this, Notifier.CHANNEL_ERROR,
+                          getString(R.string.error_unknown), getString(msgId));
+            finish();
+        });
+
         mModel.init(this);
 
-        if (!initStorage()) {
-            // we asked for permissions. TBC in onRequestPermissionsResult
-            return;
-        }
-
-        startNextStage();
+        nextStage();
     }
 
     /**
      * Startup stages.
      */
-    private void startNextStage() {
+    private void nextStage() {
         // onCreate being stage 0
         mStartupStage++;
 
@@ -174,14 +174,14 @@ public class StartupActivity
     }
 
     private void startTasks() {
-        if (mModel.isStartupTasksShouldBeStarted()) {
+        if (mModel.isStartTasks()) {
             mModel.onTaskProgress().observe(this, message ->
                     mProgressMessageView.setText(message));
 
             // when tasks are done, move on to next startup-stage
             mModel.onTaskFinished().observe(this, finished -> {
                 if (finished) {
-                    startNextStage();
+                    nextStage();
                 }
             });
 
@@ -192,7 +192,8 @@ public class StartupActivity
                     if (eMsg == null) {
                         eMsg = "";
                     }
-                    App.showNotification(this, getString(R.string.error_unknown), eMsg);
+                    Notifier.show(this, Notifier.CHANNEL_ERROR,
+                                  getString(R.string.error_unknown), eMsg);
                     finish();
                 }
             });
@@ -200,7 +201,7 @@ public class StartupActivity
             mModel.startTasks(this);
 
         } else {
-            startNextStage();
+            nextStage();
         }
     }
 
@@ -208,30 +209,22 @@ public class StartupActivity
      * Called in UI thread after last startup task completes, or if there are no tasks to queue.
      */
     private void checkForUpgrades() {
-        // If upgrade message already shown, go on to next stage
-        if (sUpgradeMessageShown) {
-            startNextStage();
-            return;
-        }
         // Display upgrade message if necessary, otherwise go on to next stage
-        final String upgradeMessage = UpgradeMessageManager.getUpgradeMessage(this);
-        if (upgradeMessage.isEmpty()) {
-            startNextStage();
-            return;
+        final String upgradeMessage = mModel.getUpgradeMessage(this);
+        if (upgradeMessage != null) {
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.lbl_about_upgrade)
+                    .setIcon(R.drawable.ic_info_outline)
+                    .setMessage(Html.fromHtml(upgradeMessage))
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        UpgradeMessageManager.setUpgradeAcknowledged(this);
+                        nextStage();
+                    })
+                    .create()
+                    .show();
+        } else {
+            nextStage();
         }
-
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.lbl_about_upgrade)
-                .setIcon(R.drawable.ic_info_outline)
-                .setMessage(Html.fromHtml(upgradeMessage))
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    UpgradeMessageManager.setUpgradeAcknowledged(this);
-                    startNextStage();
-                })
-                .create()
-                .show();
-
-        sUpgradeMessageShown = true;
     }
 
     /**
@@ -240,7 +233,6 @@ public class StartupActivity
      * Note the backup is not done here; we just set a flag if requested.
      */
     private void backupRequired() {
-        mModel.setBackupRequired(false);
         if (mModel.isProposeBackup()) {
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_help_outline)
@@ -248,12 +240,12 @@ public class StartupActivity
                     .setMessage(R.string.warning_backup_request)
                     .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                     .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                            mModel.setBackupRequired(true))
-                    .setOnDismissListener(d -> startNextStage())
+                            mModel.setBackupRequired())
+                    .setOnDismissListener(d -> nextStage())
                     .create()
                     .show();
         } else {
-            startNextStage();
+            nextStage();
         }
     }
 
@@ -271,69 +263,13 @@ public class StartupActivity
             startActivity(backupIntent);
         }
 
-        // We are done here.
-        // Remove the weak self-reference and finish.
+        // We are done here. Remove the weak self-reference and finish.
         sStartupActivity.clear();
         finish();
     }
 
     /**
-     * Checks if we have the needed permissions.
-     * If we do, initialises storage.
-     *
-     * @return {@code true} if we had permission and storage is initialized.
-     */
-    private boolean initStorage() {
-        // Not needed any longer, as we only use getExternalFilesDir(String)
-        // and getExternalCacheDir(). Leaving this in comment as a reminder.
-//        int p = checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//        if (p != PackageManager.PERMISSION_GRANTED) {
-//            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-//                               UniqueId.REQ_ANDROID_PERMISSIONS);
-//            return false;
-//        }
-
-        final int msgId = StorageUtils.initSharedDirectories(this);
-        if (msgId != 0) {
-            Snackbar.make(mProgressMessageView, msgId, Snackbar.LENGTH_LONG).show();
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(final int requestCode,
-                                           @NonNull final String[] permissions,
-                                           @NonNull final int[] grantResults) {
-        // when/if we request more permissions, then permissions[] and grantResults[]
-        // must be checked in parallel obviously.
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case UniqueId.REQ_ANDROID_PERMISSIONS:
-                if (grantResults.length > 0
-                    && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    if (initStorage()) {
-                        startNextStage();
-                    }
-                } else {
-                    // we can't work without Shared Storage, so die;
-                    // and can't use Logger as we don't have a log file!
-                    Log.e("StartupActivity", "No Shared Storage permissions granted, quiting");
-                    finishAndRemoveTask();
-                }
-                break;
-
-            default:
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "requestCode=" + requestCode);
-                }
-                break;
-        }
-    }
-
-    /**
-     * Use by the DB upgrade procedure.
+     * Used by the DB upgrade procedure.
      *
      * @param messageId to display
      */

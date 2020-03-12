@@ -261,6 +261,7 @@ public final class TerminatorConnection
             try {
                 inputStream.close();
             } catch (@NonNull final IOException ignore) {
+                // ignore
             }
         }
         mCon.disconnect();
@@ -323,6 +324,7 @@ public final class TerminatorConnection
                     mConnection.close();
                 }
             } catch (@NonNull final InterruptedException ignore) {
+                // ignore
             }
         }
     }

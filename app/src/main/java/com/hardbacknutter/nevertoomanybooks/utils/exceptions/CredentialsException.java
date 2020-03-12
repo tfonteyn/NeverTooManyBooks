@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Thrown when for some reason a website rejects our requests.
@@ -44,6 +45,7 @@ public class CredentialsException
         extends Exception {
 
     private static final long serialVersionUID = 4232206649906882515L;
+    /** The site that caused the issue. */
     @SearchSites.Id
     private final int mSite;
 
@@ -60,7 +62,7 @@ public class CredentialsException
     @Nullable
     @Override
     public String getLocalizedMessage() {
-        Context context = App.getLocalizedAppContext();
+        Context context = LocaleUtils.applyLocale(App.getAppContext());
         return context.getString(R.string.error_site_authentication_failed,
                                  SearchSites.getName(mSite));
     }

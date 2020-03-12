@@ -33,7 +33,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
@@ -41,10 +41,8 @@ import androidx.preference.PreferenceManager;
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.AnalyzeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
@@ -54,12 +52,14 @@ import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildOrderByTitleCo
 import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
-import com.hardbacknutter.nevertoomanybooks.scanner.ScannerFactory;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
+import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
@@ -67,10 +67,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 public class StartupViewModel
         extends ViewModel {
 
+    public static final String PREF_PREFIX = "startup.";
     /** Log tag. */
     private static final String TAG = "StartupViewModel";
-    public static final String PREF_PREFIX = "startup.";
-
     /** Number of times the app has been started. */
     private static final String PREF_STARTUP_COUNT = PREF_PREFIX + "startCount";
     /** Triggers some actions when the countdown reaches 0; then gets reset. */
@@ -81,6 +80,8 @@ public class StartupViewModel
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
     private final Collection<Integer> mAllTasks = new HashSet<>(6);
+
+    private final MutableLiveData<Integer> mFatalMsgId = new MutableLiveData<>();
 
     private final MutableLiveData<Boolean> mTaskFinished = new MutableLiveData<>(false);
     private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
@@ -113,7 +114,7 @@ public class StartupViewModel
     /** Database Access. */
     private DAO mDb;
     /** Flag to ensure tasks are only ever started once. */
-    private boolean mStartupTasksShouldBeStarted = true;
+    private boolean mStartTasks = true;
 
     /** Flag we need to prompt the user to make a backup after startup. */
     private boolean mProposeBackup;
@@ -122,6 +123,19 @@ public class StartupViewModel
 
     /** Triggers periodic maintenance tasks. */
     private boolean mDoMaintenance;
+
+    /** Indicates the upgrade message has been shown. */
+    private boolean mUpgradeMessageShown;
+
+    /**
+     * Updated after a (any) task finishes with an exception.
+     *
+     * @return exception, or {@code null} for none.
+     */
+    @NonNull
+    public MutableLiveData<Integer> onFatalMsgId() {
+        return mFatalMsgId;
+    }
 
     /**
      * Developer warning: this is not a UI update.
@@ -167,6 +181,16 @@ public class StartupViewModel
      */
     public void init(@NonNull final Context context) {
 
+        Notifier.init(context);
+
+        final int msgId = AppDir.init(context);
+        if (msgId != 0) {
+            mFatalMsgId.setValue(msgId);
+            return;
+        }
+
+        Logger.cycleLogs(context);
+
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         final int maintenanceCountdown = prefs
@@ -188,8 +212,8 @@ public class StartupViewModel
         mProposeBackup = backupCountdown == 0;
     }
 
-    public boolean isStartupTasksShouldBeStarted() {
-        return mStartupTasksShouldBeStarted;
+    public boolean isStartTasks() {
+        return mStartTasks;
     }
 
     public boolean isProposeBackup() {
@@ -200,8 +224,28 @@ public class StartupViewModel
         return mBackupRequired;
     }
 
-    public void setBackupRequired(final boolean backupRequired) {
-        mBackupRequired = backupRequired;
+    public void setBackupRequired() {
+        mBackupRequired = true;
+    }
+
+    /**
+     * Get a potential upgrade-message.
+     *
+     * @param context Current context
+     *
+     * @return message or {@code null} if none
+     */
+    @Nullable
+    public String getUpgradeMessage(@NonNull final Context context) {
+        // only show the message once for each run (until user confirmed reading it)
+        if (!mUpgradeMessageShown) {
+            mUpgradeMessageShown = true;
+            final String msg = UpgradeMessageManager.getUpgradeMessage(context);
+            if (!msg.isEmpty()) {
+                return msg;
+            }
+        }
+        return null;
     }
 
     /**
@@ -211,64 +255,57 @@ public class StartupViewModel
      */
     public void startTasks(@NonNull final Context context) {
 
-        Logger.cycleLogs(context);
+        // Clear the flag
+        mStartTasks = false;
 
         try {
             mDb = new DAO(TAG);
 
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e, "startTasks");
-            // report back via the observable.
             mTaskException.setValue(e);
             return;
         }
 
-        if (mStartupTasksShouldBeStarted) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int taskId = 0;
+        // start these unconditionally
+        startTask(new LanguageUtils.BuildLanguageMappingsTask(++taskId, mTaskListener), false);
+        // perhaps delay this until the user selects the google scanner?
+        startTask(new GoogleBarcodeScanner.PreloadGoogleScanner(++taskId, mTaskListener), true);
 
-            int taskId = 0;
-            // start these unconditionally
-            startTask(new BuildLanguageMappingsTask(++taskId, mTaskListener), false);
-            startTask(new PreloadGoogleScanner(++taskId, mTaskListener), true);
+        // this is not critical, once every so often is fine
+        if (mDoMaintenance) {
+            // cleaner must be started after the language mapper task.
+            startTask(new DBCleanerTask(++taskId, mDb, mTaskListener), false);
+        }
 
-            // this is not critical, once every so often is fine
-            if (mDoMaintenance) {
-                // cleaner must be started after the language mapper task.
-                startTask(new DBCleanerTask(++taskId, mDb, mTaskListener), false);
-            }
+        // on demand only
+        if (prefs.getBoolean(Scheduler.PREF_REBUILD_ORDERBY_COLUMNS, false)) {
+            startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener), false);
+        }
 
-            // on demand only
-            if (prefs.getBoolean(Scheduler.PREF_REBUILD_ORDERBY_COLUMNS, false)) {
-                startTask(new RebuildOrderByTitleColumnsTask(++taskId, mDb, mTaskListener), false);
-            }
+        // on demand only
+        if (prefs.getBoolean(Scheduler.PREF_REBUILD_INDEXES, false)) {
+            startTask(new RebuildIndexesTask(++taskId, mDb, mTaskListener), false);
+        }
 
-            // on demand only
-            if (prefs.getBoolean(Scheduler.PREF_REBUILD_INDEXES, false)) {
-                startTask(new RebuildIndexesTask(++taskId, mDb, mTaskListener), false);
-            }
+        // on demand only
+        if (prefs.getBoolean(Scheduler.PREF_REBUILD_FTS, false)) {
+            startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener), false);
+        }
 
-            // on demand only
-            if (prefs.getBoolean(Scheduler.PREF_REBUILD_FTS, false)) {
-                startTask(new RebuildFtsTask(++taskId, mDb, mTaskListener), false);
-            }
+        // shouldn't be needed every single time.
+        if (mDoMaintenance) {
+            // analyse db should always be started as the last task.
+            startTask(new AnalyzeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(context),
+                                        mTaskListener), false);
+        }
 
-            // shouldn't be needed every single time.
-            if (mDoMaintenance) {
-                // analyse db should always be started as the last task.
-                startTask(new AnalyzeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(context),
-                                            mTaskListener), false);
-            }
-
-            // Clear the flag
-            mStartupTasksShouldBeStarted = false;
-
-            // If no tasks were queued, then move on to next stage. Otherwise, the completed
-            // tasks will cause the next stage to start.
-            synchronized (mAllTasks) {
-                if (mAllTasks.isEmpty()) {
-                    mTaskFinished.setValue(true);
-                }
+        synchronized (mAllTasks) {
+            if (mAllTasks.isEmpty()) {
+                mTaskFinished.setValue(true);
             }
         }
     }
@@ -284,79 +321,4 @@ public class StartupViewModel
             }
         }
     }
-
-    /**
-     * Build the dedicated SharedPreferences file with the language mappings.
-     * Only build once per Locale.
-     */
-    static class BuildLanguageMappingsTask
-            extends TaskBase<Void, Boolean> {
-
-        /**
-         * Constructor.
-         *
-         * @param taskId       a task identifier, will be returned in the task listener.
-         * @param taskListener for sending progress and finish messages to.
-         */
-        @UiThread
-        BuildLanguageMappingsTask(final int taskId,
-                                  @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-        }
-
-        @Override
-        protected Boolean doInBackground(final Void... params) {
-            Thread.currentThread().setName("BuildLanguageMappingsTask");
-            final Context context = App.getLocalizedAppContext();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
-                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
-            }
-            publishProgress(new TaskListener.ProgressMessage(
-                    getTaskId(), context.getString(R.string.progress_msg_optimizing)));
-            try {
-                LanguageUtils.createLanguageMappingCache(context);
-                return true;
-
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
-                mException = e;
-                return false;
-            }
-        }
-    }
-
-    /**
-     * If the Google barcode scanner can be loaded, create a dummy instance to
-     * force it to download the native library if not done already.
-     * <p>
-     * This can be seen in the device logs as:
-     * <p>
-     * I/Vision: Loading library libbarhopper.so
-     * I/Vision: Library not found: /data/user/0/com.google.android.gms/app_vision/barcode/
-     * libs/x86/libbarhopper.so
-     * I/Vision: libbarhopper.so library load status: false
-     * Request download for engine barcode
-     */
-    static class PreloadGoogleScanner
-            extends TaskBase<Void, Boolean> {
-
-        PreloadGoogleScanner(final int taskId,
-                             @NonNull final TaskListener<Boolean> taskListener) {
-            super(taskId, taskListener);
-        }
-
-        @Override
-        protected Boolean doInBackground(final Void... voids) {
-            final Context context = App.getTaskContext();
-
-            ScannerFactory factory = new GoogleBarcodeScanner.GoogleBarcodeScannerFactory();
-            if (factory.isAvailable(context)) {
-                // trigger the download if needed.
-                factory.getScanner(context);
-            }
-            return true;
-        }
-    }
-
 }

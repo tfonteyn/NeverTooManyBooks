@@ -29,31 +29,20 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
-import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -76,6 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Application implementation.
+ * <p>
+ * Mainly handles the app Theme and system locale changes.
  */
 @AcraMailSender(
         mailTo = "",
@@ -139,23 +130,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class App
         extends Application {
 
-    /**
-     * Users can select which fields they use / don't want to use.
-     * Each field has an entry in the Preferences.
-     * The key is suffixed with the name of the field.
-     */
-    private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
-
     private static final String TAG = "App";
     /** don't assume / allow the day-night theme to have a different integer ID. */
     private static final int THEME_INVALID = -1;
     private static final int THEME_DAY_NIGHT = 0;
     private static final int THEME_DARK = 1;
     private static final int THEME_LIGHT = 2;
-
-    /** we really only use the one. */
-    private static final int NOTIFICATION_ID = 0;
-
     /**
      * NEWTHINGS: APP THEME: adding
      * <ol>
@@ -184,15 +164,11 @@ public class App
             R.style.AppTheme_Dark,
             R.style.AppTheme_Light,
             };
-
     /**
      * Give static methods access to our singleton.
      * <strong>Note:</strong> never store a context in a static, use the instance instead
      */
     private static App sInstance;
-
-    /** Used to sent notifications regarding tasks. */
-    private static NotificationManager sNotifier;
     /** Cache the User-specified theme currently in use. '-1' to force an update at App startup. */
     @ThemeId
     private static int sCurrentThemeId = THEME_INVALID;
@@ -213,188 +189,44 @@ public class App
         return sInstance.getApplicationContext();
     }
 
+    /**
+     * Get the Application Context <strong>using the device Locale</strong>.
+     * This is purely for readability / debug.
+     * <p>
+     * If a {@link android.os.AsyncTask}#doInBackground needs a context, it should call this one.
+     *
+     * @return app context
+     */
     @NonNull
     public static Context getTaskContext() {
         return sInstance.getApplicationContext();
     }
 
     /**
-     * Get the Application Context <strong>with the user Locale applied</strong>.
+     * Load a Resources set for the specified Locale.
+     * This is an expensive lookup; we do not cache the Resources here,
+     * but it's advisable to cache the strings (map of Locale/String for example) being looked up.
      *
-     * @return localised app context
+     * @param context       Current context
+     * @param desiredLocale the desired Locale, e.g. the Locale of a Book,Series,TOC,...
+     *
+     * @return the Resources
      */
     @NonNull
-    public static Context getLocalizedAppContext() {
-        return LocaleUtils.applyLocale(sInstance.getApplicationContext());
-    }
-
-    /**
-     * Get the name of this application's package.
-     *
-     * @return package name
-     */
-    public static String getAppPackageName() {
-        return sInstance.getPackageName();
-    }
-
-    /**
-     * Get the PackageInfo object containing information about the package.
-     *
-     * @param flags option flags for {@link PackageManager#getPackageInfo(String, int)}
-     *
-     * @return PackageInfo
-     */
-    @Nullable
-    public static PackageInfo getPackageInfo(final int flags) {
-        PackageInfo packageInfo = null;
-        try {
-            final Context context = sInstance.getApplicationContext();
-            // Get app info from the manifest
-            final PackageManager manager = context.getPackageManager();
-            packageInfo = manager.getPackageInfo(context.getPackageName(), flags);
-        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
-        }
-        return packageInfo;
-    }
-
-    /**
-     * Show a notification while this app is running.
-     *
-     * @param context Current context
-     * @param title   the title to display
-     * @param message the message to display
-     */
-    public static void showNotification(@NonNull final Context context,
-                                        @NonNull final CharSequence title,
-                                        @NonNull final CharSequence message) {
-
-        // Create the notifier if not done yet.
-        if (sNotifier == null) {
-            sNotifier = (NotificationManager) sInstance.getApplicationContext()
-                                                       .getSystemService(NOTIFICATION_SERVICE);
+    public static Resources getLocalizedResources(@NonNull final Context context,
+                                                  @NonNull final Locale desiredLocale) {
+        final Configuration current = context.getResources().getConfiguration();
+        final Configuration configuration = new Configuration(current);
+        final String lang = desiredLocale.getLanguage();
+        if (lang.length() == 2) {
+            configuration.setLocale(desiredLocale);
+        } else {
+            // any 3-char code might need to be converted to 2-char be able to find the resource.
+            configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromISO3(context, lang)));
         }
 
-        final Intent intent = new Intent(context, StartupActivity.class)
-                .setAction(Intent.ACTION_MAIN)
-                .addCategory(Intent.CATEGORY_LAUNCHER);
-
-        // The PendingIntent to launch our activity if the user selects this notification
-        final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-        final Notification notification = new Notification.Builder(context)
-                .setSmallIcon(R.drawable.ic_info_outline)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build();
-
-        sNotifier.notify(NOTIFICATION_ID, notification);
-    }
-
-    /**
-     * Get the resource id for the given attribute.
-     *
-     * @param context Current context
-     * @param attr    attribute id to resolve
-     *
-     * @return resource ID
-     */
-    public static int getAttrResId(@NonNull final Context context,
-                                   @AttrRes final int attr) {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        return tv.resourceId;
-    }
-
-    /**
-     * Get a color int value for the given attribute.
-     *
-     * @param context Current context
-     * @param attr    attribute id to resolve
-     *
-     * @return A single color value in the form 0xAARRGGBB.
-     */
-    @SuppressWarnings("unused")
-    @ColorInt
-    public static int getColorInt(@NonNull final Context context,
-                                  @AttrRes final int attr) {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        return context.getResources().getColor(tv.resourceId, theme);
-    }
-
-    /**
-     * Get the Attribute dimension value multiplied by the appropriate
-     * metric and truncated to integer pixels.
-     *
-     * @param context Current context
-     * @param attr    attribute id to resolve
-     *                Must be a type that has a {@code android.R.attr.textSize} value.
-     *
-     * @return size in integer pixels, or {@code -1} if not defined.
-     */
-    @SuppressWarnings("unused")
-    public static int getTextSize(@NonNull final Context context,
-                                  @AttrRes final int attr) {
-        final Resources.Theme theme = context.getTheme();
-        final TypedValue tv = new TypedValue();
-        theme.resolveAttribute(attr, tv, true);
-
-        final int[] textSizeAttr = new int[]{android.R.attr.textSize};
-        final int indexOfAttrTextSize = 0;
-        final TypedArray ta = context.obtainStyledAttributes(tv.data, textSizeAttr);
-        final int textSize = ta.getDimensionPixelSize(indexOfAttrTextSize, -1);
-        ta.recycle();
-
-        return textSize;
-    }
-
-    /**
-     * Is the field in use; i.e. is it enabled in the user-preferences.
-     *
-     * @param fieldName to lookup
-     *
-     * @return {@code true} if the user wants to use this field.
-     */
-    public static boolean isUsed(@NonNull final Context context,
-                                 @NonNull final String fieldName) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + fieldName, true);
-    }
-
-    public static boolean isUsed(@NonNull final SharedPreferences sharedPreferences,
-                                 @NonNull final String fieldName) {
-        return sharedPreferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + fieldName, true);
-    }
-    /**
-     * Hide the keyboard.
-     */
-    @SuppressWarnings("unused")
-    public static void hideKeyboard(@NonNull final View view) {
-        final InputMethodManager imm = (InputMethodManager)
-                view.getContext().getSystemService(INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
-
-    /**
-     * Test if the Theme has changed.
-     *
-     * @param themeId to check
-     *
-     * @return {@code true} if the theme was changed
-     */
-    public static boolean isThemeChanged(@ThemeId final int themeId) {
-        // always reload from prefs.
-        sCurrentThemeId = PIntString.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
-        return themeId != sCurrentThemeId;
+        final Context localizedContext = context.createConfigurationContext(configuration);
+        return localizedContext.getResources();
     }
 
     /**
@@ -419,7 +251,7 @@ public class App
     @ThemeId
     public static int applyTheme(@NonNull final Activity activity) {
         // Always read from prefs.
-        sCurrentThemeId = PIntString.getListPreference(Prefs.pk_ui_theme, DEFAULT_THEME);
+        sCurrentThemeId = PIntString.getListPreference(activity, Prefs.pk_ui_theme, DEFAULT_THEME);
 
         // Reminder: ***ALWAYS*** set the mode.
         if (sCurrentThemeId == THEME_DAY_NIGHT) {
@@ -439,48 +271,54 @@ public class App
     }
 
     /**
-     * Load a Resources set for the specified Locale.
-     * This is an expensive lookup; we do not cache the Resources here,
-     * but it's advisable to cache the strings (map of Locale/String for example) being looked up.
+     * Test if the Theme has changed.
      *
-     * @param context       Current context
-     * @param desiredLocale the desired Locale, e.g. the Locale of a Book,Series,TOC,...
+     * @param context Current context
+     * @param themeId to check
      *
-     * @return the Resources
+     * @return {@code true} if the theme was changed
      */
-    @NonNull
-    public static Resources getLocalizedResources(@NonNull final Context context,
-                                                  @NonNull final Locale desiredLocale) {
-        final Configuration current = context.getResources().getConfiguration();
-        final Configuration configuration = new Configuration(current);
-        final String lang = desiredLocale.getLanguage();
-        if (lang.length() == 2) {
-            configuration.setLocale(desiredLocale);
-        } else {
-            // any 3-char code might need to be converted to 2-char be able to find the resource.
-            configuration.setLocale(new Locale(LanguageUtils.getLocaleIsoFromIso3(context, lang)));
-        }
-
-        final Context localizedContext = context.createConfigurationContext(configuration);
-        return localizedContext.getResources();
+    public static boolean isThemeChanged(@NonNull final Context context,
+                                         @ThemeId final int themeId) {
+        // always reload from prefs.
+        sCurrentThemeId = PIntString.getListPreference(context, Prefs.pk_ui_theme, DEFAULT_THEME);
+        return themeId != sCurrentThemeId;
     }
 
     /**
      * Reads the application version from the manifest.
      *
+     * @param context Current context
+     *
      * @return the version
      */
-    public static long getVersion() {
-        final PackageInfo packageInfo = getPackageInfo(0);
-        if (packageInfo != null) {
+    public static long getVersion(@NonNull final Context context) {
+        try {
+            PackageInfo info =
+                    context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             if (Build.VERSION.SDK_INT >= 28) {
-                return packageInfo.getLongVersionCode();
+                return info.getLongVersionCode();
             } else {
                 //noinspection deprecation
-                return packageInfo.versionCode;
+                return info.versionCode;
             }
+        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
+            // ignore
         }
+        // ouch
         return 0;
+    }
+
+    /**
+     * Hide the keyboard.
+     */
+    @SuppressWarnings("unused")
+    public static void hideKeyboard(@NonNull final View view) {
+        final InputMethodManager imm = (InputMethodManager)
+                view.getContext().getSystemService(INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 
     /**

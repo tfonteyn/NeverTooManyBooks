@@ -58,6 +58,8 @@ public interface ProgressListener {
     }
 
     /**
+     * Check if the user wants to cancel the operation.
+     *
      * @return {@code true} if operation was cancelled.
      */
     boolean isCancelled();

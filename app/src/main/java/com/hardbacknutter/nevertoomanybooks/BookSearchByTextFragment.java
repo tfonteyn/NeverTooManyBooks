@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
- * ENHANCE: add auto-completion for publishers?
+ * ENHANCE: perhaps add auto-completion for publishers.
  */
 public class BookSearchByTextFragment
         extends BookSearchBaseFragment {

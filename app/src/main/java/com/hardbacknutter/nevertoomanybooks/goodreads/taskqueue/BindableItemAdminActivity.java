@@ -76,8 +76,8 @@ public abstract class BindableItemAdminActivity
 
         listView.setAdapter(mListAdapter);
         listView.setOnItemClickListener(
-                (parent, v, position, id) -> onItemClick(mListAdapter.getItem(position)
-                                                                     .getBindableItem()));
+                (parent, v, position, id) ->
+                        onItemClick(mListAdapter.getItem(position).getBindableItem(this)));
     }
 
     /**

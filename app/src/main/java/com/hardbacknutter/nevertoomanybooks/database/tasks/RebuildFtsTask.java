@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Rebuild FTS. Can take several seconds.
@@ -75,7 +76,7 @@ public class RebuildFtsTask
     @WorkerThread
     protected Boolean doInBackground(@Nullable final Void... params) {
         Thread.currentThread().setName("RebuildFtsTask");
-        final Context context = App.getLocalizedAppContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
             Log.d(TAG, "doInBackground|taskId=" + getTaskId());

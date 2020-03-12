@@ -63,6 +63,7 @@ public final class AmazonSearchEngine
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
 
+    /** Website character encoding. */
     private static final String UTF_8 = "UTF-8";
     /** Preferences prefix. */
     private static final String PREF_PREFIX = "amazon.";

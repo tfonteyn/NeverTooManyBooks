@@ -345,7 +345,7 @@
     <string name="menu_amazon_books_in_series">Книги в этой серии</string>
     <string name="menu_author_details">Все работы этого автора</string>
     <string name="menu_author_works_all">Показать все</string>
-    <string name="menu_show_all">Показать все</string>
+    <string name="X_menu_show_all">Показать все</string>
     <string name="menu_author_works_book">Только книги</string>
     <string name="menu_author_works_toc">Только заголовки контента</string>
     <string name="menu_booklist_styles">Cтили списка книг</string>
@@ -367,7 +367,7 @@
     <string name="menu_level_expand">Развернуть всё</string>
     <string name="menu_loan_lend_book">Одолжить книгу…</string>
     <string name="menu_loan_return_book">Заимствованная книга возвращается</string>
-    <string name="menu_populate_toc">Автоматически заполнить названия (ЭКСПЕРИМЕНТАЛЬНО)</string>
+    <string name="isfdb_menu_populate_toc">Автоматически заполнить названия (ЭКСПЕРИМЕНТАЛЬНО)</string>
     <string name="fab_add_book_by_internet_search">Поиск в Интернете</string>
     <string name="menu_set_complete">Отметка завершена</string>
     <string name="menu_set_incomplete">Отметить не полностью</string>
@@ -417,7 +417,7 @@
     <string name="progress_msg_searching">Поиск…</string>
     <string name="progress_msg_searching_site">Поиск в %1$s</string>
     <string name="progress_msg_sending">Отправка, пожалуйста подождите…</string>
-    <string name="progress_msg_skip_title">Пропустить - %1$s</string>
+    <string name="progress_msg_skip_s">Пропустить - %1$s</string>
     <string name="progress_msg_starting_up">Запуск…</string>
     <string name="progress_msg_upgrading">Обновление…</string>
     <string name="pt_allow_mobile_data">Разрешить использование мобильных данных</string>
@@ -538,7 +538,7 @@
     <string name="warning_if_month_set_year_must_be">Если указан месяц, также необходимо указать год.</string>
     <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно</string>
     <string name="warning_import_be_cautious">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
-    <string name="warning_isfdb_only">(поддерживается только веб-сайтом ISFDB)</string>
+    <string name="isfdb_warning_limited_to">(поддерживается только веб-сайтом ISFDB)</string>
     <string name="warning_missing_name">Имя не может быть пустым</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
     <string name="warning_no_isbn_stored_for_book">Нет ISBN хранящегося для книги</string>
@@ -548,8 +548,8 @@
     <string name="warning_series_already_in_list">Серия уже есть в списке</string>
     <string name="warning_toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны</string>
     <string name="warning_book_not_found">Поиск указанной книги не удался</string>
-    <string name="warning_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
-    <string name="warning_unsaved_edits2">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
+    <string name="confirm_unsaved_edits">Если вы выйдете сейчас, не сохраненные изменения будут потеряны.</string>
+    <string name="confirm_unsaved_edits2">У Вас есть несохранённые изменения. Вы уверены что хотите продолжить?</string>
     <string name="warning_x_already_exists">%1$s уже существует.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» не является допустимым кодом</string>
     <string name="x_of_y">%1$d из %2$d</string>
@@ -641,8 +641,8 @@
     <string name="pt_maintenance">обслуживание</string>
     <string name="lbl_import_export_csv">CSV (без изображений)</string>
     <string name="pt_primary_author_type">Основной тип автора</string>
-    <string name="lbl_dust_cover_none_or_unknown">Никто</string>
-    <string name="lbl_dust_cover_missing">Отсутствует</string>
+    <string name="lbl_condition_dust_cover_none_or_unknown">Никто</string>
+    <string name="lbl_condition_dust_cover_missing">Отсутствует</string>
     <string name="menu_rebuild_index">Перестроить индекс</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="lbl_condition_reading_copy">Чтение копии</string>
@@ -654,5 +654,10 @@
     <string name="warning_import_csv_failed_lines_some">Сбой разбора CSV для строк %1$s.</string>
     <string name="warning_import_csv_failed_lines_lots">Сбой разбора CSV для строк %1$s и других.</string>
     <string name="warning_import_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
+    <string name="notification_channel_info">Информация</string>
+    <string name="notification_channel_error">ошибка</string>
+    <string name="gr_pt_collect_genre">Используйте популярные названия книжных полок в качестве книжных жанров</string>
+    <string name="lbl_condition">Условие</string>
+    <string name="book_format_softcover">Мягкое покрытие</string>
 
 </resources>

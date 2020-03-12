@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 public class ExportHelperModel
         extends TaskListenerModel<ExportHelper> {
 
+    /**  export configuration. */
     @Nullable
     private ExportHelper mHelper;
 

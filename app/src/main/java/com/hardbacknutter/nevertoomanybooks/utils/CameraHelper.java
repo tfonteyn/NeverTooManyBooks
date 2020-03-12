@@ -63,7 +63,11 @@ public class CameraHelper {
      * We just make sure an orphaned file is deleted before taking a new picture.
      * But as it's in the cache directory, Android can clean it when it wants.
      */
-    private static final String CAMERA_FILENAME = "Camera";
+    private static final String CAMERA_FILENAME = TAG + ".jpg";
+    /** System intent extras key. Do not change. */
+    private static final String BKEY_DATA = "data";
+    /** we don't actually compress, the preview file is presumably already small. */
+    private static final int QUALITY = 100;
 
     /** rotation angle to apply after a picture was taken. */
     private int mRotationAngle;
@@ -84,11 +88,11 @@ public class CameraHelper {
      * @return the default camera file.
      */
     public static File getCameraFile(@NonNull final Context context) {
-        return StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
+        return AppDir.Cache.getFile(context, CAMERA_FILENAME);
     }
 
-    public static void deleteTempFile(@NonNull final Context context) {
-        StorageUtils.deleteFile(StorageUtils.getTempCoverFile(context, CAMERA_FILENAME));
+    public static void deleteCameraFile(@NonNull final Context context) {
+        FileUtils.delete(AppDir.Cache.getFile(context, CAMERA_FILENAME));
     }
 
     /**
@@ -120,9 +124,9 @@ public class CameraHelper {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (mUseFullSize) {
             //noinspection ConstantConditions
-            File file = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
+            File file = AppDir.Cache.getFile(context, CAMERA_FILENAME);
             // delete any orphaned file.
-            StorageUtils.deleteFile(file);
+            FileUtils.delete(file);
 
             Uri uri = GenericFileProvider.getUriForFile(context, file);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
@@ -162,12 +166,11 @@ public class CameraHelper {
                             @Nullable final Intent data) {
         Bitmap bm;
         if (mUseFullSize) {
-            String fileSpec = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME)
-                                          .getAbsolutePath();
+            String fileSpec = AppDir.Cache.getFile(context, CAMERA_FILENAME).getAbsolutePath();
             bm = BitmapFactory.decodeFile(fileSpec);
         } else {
             Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-            bm = data.getParcelableExtra("data");
+            bm = data.getParcelableExtra(BKEY_DATA);
         }
 
         if (bm != null && mRotationAngle != 0) {
@@ -191,7 +194,7 @@ public class CameraHelper {
 
         File file;
         if (mUseFullSize) {
-            file = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
+            file = AppDir.Cache.getFile(context, CAMERA_FILENAME);
             if (file.exists()) {
                 if (mRotationAngle != 0) {
                     ImageUtils.rotate(context, file, mRotationAngle);
@@ -201,16 +204,15 @@ public class CameraHelper {
 
         } else {
             Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-            Bitmap bm = data.getParcelableExtra("data");
+            Bitmap bm = data.getParcelableExtra(BKEY_DATA);
             if (bm != null) {
                 if (mRotationAngle != 0) {
                     bm = ImageUtils.rotate(bm, mRotationAngle);
                 }
 
-                file = StorageUtils.getTempCoverFile(context, CAMERA_FILENAME);
+                file = AppDir.Cache.getFile(context, CAMERA_FILENAME);
                 try (OutputStream os = new FileOutputStream(file.getAbsoluteFile())) {
-                    // we don't actually compress, the preview file is presumably already small.
-                    bm.compress(Bitmap.CompressFormat.PNG, 100, os);
+                    bm.compress(Bitmap.CompressFormat.PNG, QUALITY, os);
                     return file;
 
                 } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {

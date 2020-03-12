@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 
@@ -36,7 +37,6 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -174,10 +174,12 @@ public class RowStateDAO {
      * <strong>Note:</strong> called once at creation time, hence the statements used
      * here are not cached.
      *
+     * @param context Current context
      * @param listTable the list-table to be referenced
      * @param listState to use
      */
-    void build(@NonNull final TableDefinition listTable,
+    void build(@NonNull final Context context,
+               @NonNull final TableDefinition listTable,
                @ListRebuildMode final int listState) {
 
         // we drop the newly defined table just in case there is a leftover physical table
@@ -335,7 +337,7 @@ public class RowStateDAO {
                 }
 
                 // Now set the preferred expand/visibility status.
-                expandAllNodes(mStyle.getTopLevel(App.getAppContext()), false);
+                expandAllNodes(mStyle.getTopLevel(context), false);
                 break;
             }
 

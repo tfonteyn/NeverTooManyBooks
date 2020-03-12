@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Rebuild all indexes. Can take several seconds.
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class RebuildIndexesTask
         extends TaskBase<Void, Boolean> {
 
+    /** Log tag. */
     private static final String TAG = "RebuildIndexesTask";
 
     /** Database Access. */
@@ -75,7 +77,7 @@ public class RebuildIndexesTask
     @WorkerThread
     protected Boolean doInBackground(@Nullable final Void... params) {
         Thread.currentThread().setName("RebuildIndexes");
-        final Context context = App.getLocalizedAppContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
             Log.d(TAG, "doInBackground|taskId=" + getTaskId());

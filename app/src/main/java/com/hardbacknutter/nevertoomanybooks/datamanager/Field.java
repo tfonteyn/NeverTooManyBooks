@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -38,10 +39,10 @@ import androidx.annotation.Nullable;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.FieldViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
@@ -133,7 +134,7 @@ public class Field<T> {
      */
     void setParentView(@NonNull final View parentView) {
         mFieldDataAccessor.setView(parentView.findViewById(mId));
-        if (!isUsed()) {
+        if (!isUsed(parentView.getContext())) {
             mFieldDataAccessor.getView().setVisibility(View.GONE);
         }
     }
@@ -183,7 +184,7 @@ public class Field<T> {
             // 4. When 'hideIfEmpty' is set, empty fields are hidden.
             view.setVisibility(View.GONE);
 
-        } else if (isUsed()) {
+        } else if (isUsed(view.getContext())) {
             // 5. anything else (in use) should be visible if it's not yet.
             view.setVisibility(View.VISIBLE);
         }
@@ -230,10 +231,12 @@ public class Field<T> {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
+     * @param context Current context
+     *
      * @return {@code true} if the field *can* be visible
      */
-    public boolean isUsed() {
-        return App.isUsed(App.getAppContext(), mIsUsedKey);
+    public boolean isUsed(@NonNull final Context context) {
+        return DBDefinitions.isUsed(context, mIsUsedKey);
     }
 
     /**

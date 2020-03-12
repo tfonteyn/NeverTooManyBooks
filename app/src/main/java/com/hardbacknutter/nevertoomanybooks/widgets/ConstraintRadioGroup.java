@@ -25,7 +25,6 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertoomanybooks.widgets;
 
 import android.content.Context;
@@ -44,7 +43,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 /**
  * Replacement for {@link android.widget.RadioGroup} which allows Radio buttons to be held
- * in a ConstraintLayout.
+ * in a ConstraintLayout. Not all functionality is implemented yet.
+ * <p>
  * Usage:
  * <pre>{@code
  *   <android.support.constraint.ConstraintLayout
@@ -144,6 +144,13 @@ public final class ConstraintRadioGroup
         params.height = 0;
 
         super.updatePostLayout(container);
+    }
+
+    @Override
+    public void setEnabled(final boolean enabled) {
+        for (int i = 0; i < mRadioButtons.size(); i++) {
+            mRadioButtons.valueAt(i).setEnabled(enabled);
+        }
     }
 
     /**

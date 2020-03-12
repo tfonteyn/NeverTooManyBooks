@@ -39,8 +39,8 @@ public class BindableItemViewHolder {
     @NonNull
     public final View itemView;
 
-    protected BindableItemViewHolder(@NonNull final View itemView) {
-        this.itemView = itemView;
+    protected BindableItemViewHolder(@NonNull final View view) {
+        itemView = view;
         itemView.setTag(R.id.TAG_VIEW_HOLDER, this);
     }
 }

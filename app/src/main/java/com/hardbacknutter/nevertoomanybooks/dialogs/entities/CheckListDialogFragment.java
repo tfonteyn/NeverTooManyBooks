@@ -93,7 +93,7 @@ public class CheckListDialogFragment
     @IdRes
     private int mFieldId;
     @StringRes
-    private int mDialogTitleId = 0;
+    private int mDialogTitleId;
 
     /**
      * Constructor.
@@ -184,6 +184,7 @@ public class CheckListDialogFragment
     }
 
     /** this was a try... but it's not very pleasing on the eye. */
+    @SuppressWarnings("unused")
     private View createChips() {
 
         //noinspection ConstantConditions

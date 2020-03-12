@@ -25,9 +25,11 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
+package com.hardbacknutter.nevertoomanybooks.backup.archive;
 
+import android.content.Context;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,7 +39,6 @@ import androidx.annotation.Nullable;
 
 import java.util.Date;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -46,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 /**
  * Class to encapsulate the INFO block from an archive.
  */
-public class BackupInfo {
+public class ArchiveInfo {
 
     private static final String TAG = "BackupInfo";
 
@@ -80,32 +81,35 @@ public class BackupInfo {
     /**
      * Constructor.
      */
-    public BackupInfo() {
+    public ArchiveInfo() {
         mBundle = new Bundle();
     }
 
     /**
      * Constructor.
      */
-    private BackupInfo(@NonNull final Bundle bundle) {
+    private ArchiveInfo(@NonNull final Bundle bundle) {
         mBundle = bundle;
     }
 
     /**
      * Static method to create an INFO block based on the current environment.
      *
-     * @param container The container being used (we want the version)
+     *
+     * @param context Current context
+     * @param version of the archive structure
      *
      * @return a new BackupInfo object
      */
     @NonNull
-    static BackupInfo newInstance(@NonNull final BackupContainer container,
-                                  final int bookCount,
-                                  final int coverCount,
-                                  final boolean hasStyles,
-                                  final boolean hasPrefs) {
+    static ArchiveInfo newInstance(@NonNull final Context context,
+                                   final int version,
+                                   final int bookCount,
+                                   final int coverCount,
+                                   final boolean hasStyles,
+                                   final boolean hasPrefs) {
         Bundle infoBundle = new Bundle();
-        infoBundle.putInt(INFO_ARCHIVER_VERSION, container.getVersion());
+        infoBundle.putInt(INFO_ARCHIVER_VERSION, version);
 
         if (bookCount > 0) {
             infoBundle.putInt(INFO_NUMBER_OF_BOOKS, bookCount);
@@ -121,17 +125,21 @@ public class BackupInfo {
         infoBundle.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
         infoBundle.putString(INFO_CREATION_DATE, DateUtils.utcSqlDateTimeForToday());
 
-        PackageInfo packageInfo = App.getPackageInfo(0);
-        if (packageInfo != null) {
-            infoBundle.putString(INFO_APP_PACKAGE, packageInfo.packageName);
-            infoBundle.putString(INFO_APP_VERSION_NAME, packageInfo.versionName);
+        try {
+            PackageInfo info =
+                    context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            infoBundle.putString(INFO_APP_PACKAGE, info.packageName);
+            infoBundle.putString(INFO_APP_VERSION_NAME, info.versionName);
             if (Build.VERSION.SDK_INT >= 28) {
-                infoBundle.putLong(INFO_APP_VERSION_CODE, packageInfo.getLongVersionCode());
+                infoBundle.putLong(INFO_APP_VERSION_CODE, info.getLongVersionCode());
             } else {
-                infoBundle.putLong(INFO_APP_VERSION_CODE, packageInfo.versionCode);
+                infoBundle.putLong(INFO_APP_VERSION_CODE, info.versionCode);
             }
+        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
+            // ignore
         }
-        return new BackupInfo(infoBundle);
+
+        return new ArchiveInfo(infoBundle);
     }
 
     /**
@@ -282,7 +290,7 @@ public class BackupInfo {
      * This is partially a debug method and partially a basic check to see if the info
      * block looks more or less correct.
      *
-     * @throws InvalidArchiveException on failure
+     * @throws InvalidArchiveException on failure to recognise a supported archive
      */
     public void validate()
             throws InvalidArchiveException {

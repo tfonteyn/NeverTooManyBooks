@@ -69,10 +69,11 @@ public class FetchWorksTask
     @Nullable
     protected List<GoodreadsWork> doInBackground(final Void... voids) {
         Thread.currentThread().setName("GR.FetchWorksTask");
-        Context context = App.getTaskContext();
-        GoodreadsAuth grAuth = new GoodreadsAuth(context);
+        final Context context = App.getTaskContext();
+
+        final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         try {
-            SearchBooksApiHandler searcher = new SearchBooksApiHandler(context, grAuth);
+            final SearchBooksApiHandler searcher = new SearchBooksApiHandler(context, grAuth);
             return searcher.search(mSearchText);
 
         } catch (@NonNull final Http404Exception e) {

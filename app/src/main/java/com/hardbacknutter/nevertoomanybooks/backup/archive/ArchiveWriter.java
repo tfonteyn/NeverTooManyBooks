@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
+package com.hardbacknutter.nevertoomanybooks.backup.archive;
 
 import android.content.Context;
 
@@ -36,68 +36,31 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * Public interface for any backup archive writer.
  */
-public interface BackupWriter
+public interface ArchiveWriter
         extends Closeable {
 
     /**
-     * Perform a backup of the database.
+     * Perform a backup.
      * <p>
      * See BackupWriterAbstract for a default implementation.
      *
      * @param context          Current context
-     * @param exportHelper     the import settings
      * @param progressListener Listener to receive progress information.
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    void backup(@NonNull Context context,
-                @NonNull ExportHelper exportHelper,
-                @NonNull ProgressListener progressListener)
+    void write(@NonNull Context context,
+               @NonNull ProgressListener progressListener)
             throws IOException;
 
-    /**
-     * Get the archive container.
-     *
-     * @return the container
-     */
-    @NonNull
-    BackupContainer getContainer();
-
-    /**
-     * Write the info block to the archive.
-     *
-     * @param bytes to store in the archive
-     *
-     * @throws IOException on failure
-     */
-    void putInfo(@NonNull byte[] bytes)
-            throws IOException;
-
-    /**
-     * Write a books csv file to the archive.
-     *
-     * @param file to store in the archive
-     *
-     * @throws IOException on failure
-     */
-    void putBooks(@NonNull File file)
-            throws IOException;
-
-    /**
-     * Write a xml file with the exported tables to the archive.
-     *
-     * @param file to store in the archive
-     *
-     * @throws IOException on failure
-     */
-    void putXmlData(@NonNull File file)
+    @WorkerThread
+    void putInfo(@NonNull ArchiveInfo archiveInfo)
             throws IOException;
 
     /**
@@ -113,24 +76,18 @@ public interface BackupWriter
             throws IOException;
 
     /**
-     * Write a collection of Booklist Styles.
+     * Write a generic byte array to the archive.
      *
+     * @param name  of the entry in the archive
      * @param bytes to store in the archive
      *
      * @throws IOException on failure
      */
-    void putBooklistStyles(@NonNull byte[] bytes)
-            throws IOException;
-
-    /**
-     * Store a SharedPreferences.
-     *
-     * @param bytes to store in the archive
-     *
-     * @throws IOException on failure
-     */
-    void putPreferences(@NonNull byte[] bytes)
-            throws IOException;
+    default void putByteArray(@NonNull String name,
+                              @NonNull byte[] bytes)
+            throws IOException {
+        throw new UnsupportedOperationException("not implemented");
+    }
 
     /**
      * Close the writer.
@@ -140,4 +97,11 @@ public interface BackupWriter
     @Override
     void close()
             throws IOException;
+
+    /**
+     * Get the version of the underlying archiver used to write archives.
+     *
+     * @return the version
+     */
+    int getVersion();
 }

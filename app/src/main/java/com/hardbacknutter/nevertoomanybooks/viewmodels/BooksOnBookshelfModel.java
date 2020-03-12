@@ -80,8 +80,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
-import static com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED;
-
 public class BooksOnBookshelfModel
         extends ViewModel {
 
@@ -202,6 +200,9 @@ public class BooksOnBookshelfModel
     private int mTotalBooks;
     /** Total number of unique books in current list. */
     private int mUniqueBooks;
+    /** Current displayed list cursor. */
+    @Nullable
+    private BooklistCursor mCursor;
     /**
      * Listener for {@link GetBookListTask} results.
      */
@@ -242,9 +243,6 @@ public class BooksOnBookshelfModel
                     mShowProgressBar.setValue(false);
                 }
             };
-    /** Current displayed list cursor. */
-    @Nullable
-    private BooklistCursor mCursor;
     private long mTopRowRowId;
 
     /**
@@ -363,7 +361,6 @@ public class BooksOnBookshelfModel
      *
      * @param context Current context
      * @param name    of desired Bookshelf
-     *
      */
     public void setCurrentBookshelf(@NonNull final Context context,
                                     @Nullable final String name) {
@@ -376,6 +373,12 @@ public class BooksOnBookshelfModel
         }
     }
 
+    @NonNull
+    public Bookshelf getCurrentBookshelf() {
+        Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
+        return mCurrentBookshelf;
+    }
+
     /**
      * Load and set the desired Bookshelf; do NOT set it as the preferred. Do NOT build the list
      *
@@ -384,13 +387,6 @@ public class BooksOnBookshelfModel
     public void setCurrentBookshelf(final long id) {
         mCurrentBookshelf = mDb.getBookshelf(id);
     }
-
-    @NonNull
-    public Bookshelf getCurrentBookshelf() {
-        Objects.requireNonNull(mCurrentBookshelf, ErrorMsg.NULL_CURRENT_BOOKSHELF);
-        return mCurrentBookshelf;
-    }
-
 
     /**
      * Get the style of the current bookshelf.
@@ -510,20 +506,20 @@ public class BooksOnBookshelfModel
         }
 
         // Add the conditional domains
-        if (App.isUsed(prefs, DBDefinitions.KEY_EDITION_BITMASK)) {
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_EDITION_BITMASK)) {
             // The edition bitmask
             blb.addDomain(new VirtualDomain(
                     DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)));
         }
 
-        if (App.isUsed(prefs, DBDefinitions.KEY_SIGNED)) {
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SIGNED)) {
             blb.addDomain(new VirtualDomain(
                     DBDefinitions.DOM_BOOK_SIGNED,
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED)));
         }
 
-        if (App.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             blb.addDomain(new VirtualDomain(
                     DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
                     DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN));
@@ -592,7 +588,7 @@ public class BooksOnBookshelfModel
 
         // if we have any criteria set at all, the build should expand the book list.
         if (!mSearchCriteria.isEmpty()) {
-            blb.setRebuildState(PREF_REBUILD_ALWAYS_EXPANDED);
+            blb.setRebuildState(BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED);
         }
 
         new GetBookListTask(blb, mCursor, mDesiredCentralBookId, mOnGetBookListTaskListener)
@@ -613,7 +609,7 @@ public class BooksOnBookshelfModel
      * @return the target rows to position the list
      */
     @NonNull
-    public MutableLiveData<List<RowStateDAO.ListRowDetails>> onBuilderSucess() {
+    public MutableLiveData<List<RowStateDAO.ListRowDetails>> onBuilderSuccess() {
         return mBuilderSuccess;
     }
 
@@ -1099,10 +1095,12 @@ public class BooksOnBookshelfModel
         @WorkerThread
         protected BuilderResult doInBackground(final Void... params) {
             Thread.currentThread().setName("GetBookListTask");
+            final Context context = App.getTaskContext();
+
             try {
                 // Build the underlying data
                 // (performance measuring: this is where all the actual action is done)
-                mBuilder.build();
+                mBuilder.build(context);
 
                 if (isCancelled()) {
                     // empty result
@@ -1125,7 +1123,7 @@ public class BooksOnBookshelfModel
 
             } catch (@NonNull final Exception e) {
                 // catch ALL exceptions, so we get them logged for certain.
-                Logger.error(TAG, e);
+                Logger.error(context, TAG, e);
                 mException = e;
                 cleanup();
             }
@@ -1196,7 +1194,6 @@ public class BooksOnBookshelfModel
                    + ", targetRows=" + targetRows
                    + '}';
         }
-
 
     }
 }

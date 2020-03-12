@@ -82,11 +82,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
@@ -175,7 +176,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * <p>
  * This class is 'context-free'. KEEP IT THAT WAY. Passing in a context is fine, but NO caching.
  * We need to use this in background tasks and ViewModel classes.
- * Using {@link App#getLocalizedAppContext}} or {@link App#getAppContext} is however allowed.
+ * Using {@link App#getAppContext} is however allowed.
  * <p>
  * insert: return new id, or {@code -1} for error.
  * <p>
@@ -927,7 +928,7 @@ public class DAO
 
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad.
-            Logger.error(TAG, e);
+            Logger.error(App.getAppContext(), TAG, e);
         }
     }
 
@@ -1152,8 +1153,8 @@ public class DAO
         if (uuid != null && !uuid.isEmpty()) {
             // remove from file system
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                File thumb = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
-                StorageUtils.deleteFile(thumb);
+                File thumb = AppDir.getCoverFile(context, uuid, cIdx);
+                FileUtils.delete(thumb);
             }
 
             // remove from cache
@@ -2377,10 +2378,12 @@ public class DAO
      * <p>
      * This is a slow call, as it needs to create a new {@link BooklistStyle} for each row.
      *
+     * @param context Current context
+     *
      * @return ordered map, with the uuid as key
      */
     @NonNull
-    public Map<String, BooklistStyle> getUserStyles() {
+    public Map<String, BooklistStyle> getUserStyles(@NonNull final Context context) {
         Map<String, BooklistStyle> list = new LinkedHashMap<>();
 
         String sql = SqlSelectFullTable.BOOKLIST_STYLES
@@ -2394,7 +2397,7 @@ public class DAO
             while (cursor.moveToNext()) {
                 long id = rowData.getLong(KEY_PK_ID);
                 String uuid = rowData.getString(KEY_UUID);
-                list.put(uuid, new BooklistStyle(id, uuid));
+                list.put(uuid, new BooklistStyle(context, id, uuid));
             }
         }
         return list;
@@ -3583,7 +3586,7 @@ public class DAO
             sSyncedDb.setTransactionSuccessful();
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
-            Logger.error(TAG, e);
+            Logger.error(App.getAppContext(), TAG, e);
             gotError = true;
         } finally {
             sSyncedDb.endTransaction(txLock);

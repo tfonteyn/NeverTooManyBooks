@@ -453,7 +453,7 @@ public class BooksOnBookshelf
             }
         });
 
-        mModel.onBuilderSucess().observe(this, this::displayList);
+        mModel.onBuilderSuccess().observe(this, this::displayList);
         mModel.onBuilderFailed().observe(this, this::initAdapter);
         mModel.onShowProgressBar().observe(this, show ->
                 mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE));
@@ -494,6 +494,9 @@ public class BooksOnBookshelf
 
         // for standard (system) local search only
         if (!Prefs.isAdvancedSearch(this)) {
+            // Popup the search widget when the user starts to type.
+            setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+
             // check & get search text coming from a system search intent
             handleStandardSearchIntent(getIntent());
         }
@@ -719,7 +722,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-                final boolean useLending = App.isUsed(this, DBDefinitions.KEY_LOANEE);
+                final boolean useLending = DBDefinitions.isUsed(this, DBDefinitions.KEY_LOANEE);
                 final boolean isAvailable = mModel.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
@@ -1357,7 +1360,7 @@ public class BooksOnBookshelf
                                            + "|desiredRowId=" + desiredRowId
                                            + "|actualRowId=" + actualRowId);
                 }
-//                // URGENT: the intention is to TRY to FIND the correct position obviously;
+//                // TODO: the intention is to TRY to FIND the correct position obviously;
 //                //  --/++ are placeholders and do not work
 //                if (actualRowId < desiredRowId) {
 //                    position++;

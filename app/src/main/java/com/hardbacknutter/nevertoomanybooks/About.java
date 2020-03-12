@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
@@ -107,9 +108,11 @@ public class About
 
         // Version Number
         TextView view = findViewById(R.id.version);
-        final PackageInfo packageInfo = App.getPackageInfo(0);
-        if (packageInfo != null) {
-            view.setText(packageInfo.versionName);
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
+            view.setText(info.versionName);
+        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
+            // ignore
         }
 
         view = findViewById(R.id.sourcecode6);

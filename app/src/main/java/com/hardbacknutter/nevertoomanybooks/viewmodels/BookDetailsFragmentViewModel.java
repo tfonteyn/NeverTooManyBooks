@@ -221,6 +221,8 @@ public class BookDetailsFragmentViewModel
      *
      * @param book    Current book
      * @param forward flag; move to the next or previous book relative to the passed book.
+     *
+     * @return {@code true} if we moved
      */
     public boolean move(@NonNull final Book book,
                         final boolean forward) {

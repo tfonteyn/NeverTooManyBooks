@@ -138,7 +138,7 @@ public class DiacriticArrayAdapter<T>
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param context            The current context.
      * @param resource           The resource ID for a layout file containing a layout to use when
@@ -187,7 +187,7 @@ public class DiacriticArrayAdapter<T>
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param context  The current context.
      * @param resource The resource ID for a layout file containing a TextView to use when
@@ -201,7 +201,7 @@ public class DiacriticArrayAdapter<T>
     }
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param context            The current context.
      * @param resource           The resource ID for a layout file containing a layout to use when

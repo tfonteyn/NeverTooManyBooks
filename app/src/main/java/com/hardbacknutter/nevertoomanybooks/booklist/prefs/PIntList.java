@@ -40,7 +40,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 
 /**
- * An {@code List<Integer>} is stored as a CSV String.
+ * A {@code List<Integer>} is stored as a CSV String.
  * <p>
  * No equivalent Preference widget
  */
@@ -83,24 +83,31 @@ public class PIntList
     public void set(@NonNull final Parcel in) {
         List<Integer> list = new ArrayList<>();
         in.readList(list, getClass().getClassLoader());
-        set(list);
+        this.set(list);
     }
 
     @NonNull
     @Override
     public List<Integer> getValue(@NonNull final Context context) {
-        if (!mIsPersistent) {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
-        } else {
+        if (mIsPersistent) {
             // reminder: it's a CSV string
             String value = getPrefs(context).getString(getKey(), null);
             if (value != null && !value.isEmpty()) {
                 return getAsList(value);
             }
             return getGlobalValue(context);
+        } else {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         }
     }
 
+    /**
+     * Split a CSV String into a List.
+     *
+     * @param values CSV string
+     *
+     * @return list
+     */
     @NonNull
     private List<Integer> getAsList(@NonNull final String values) {
         List<Integer> list = new ArrayList<>();
@@ -116,4 +123,6 @@ public class PIntList
         }
         return list;
     }
+
+
 }

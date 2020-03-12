@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 /**
- * Used for {@link androidx.preference.SwitchPreference}
+ * Used for {@link androidx.preference.SwitchPreference}.
  */
 public class PBoolean
         extends PPrefBase<Boolean> {
@@ -84,28 +84,18 @@ public class PBoolean
     @NonNull
     @Override
     public Boolean getValue(@NonNull final Context context) {
-        if (!mIsPersistent) {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
-        } else {
+        if (mIsPersistent) {
             // reminder: it's a primitive so we must test on contains first
             if (getPrefs(context).contains(getKey())) {
                 return getPrefs(context).getBoolean(getKey(), mDefaultValue);
             }
             return getGlobalValue(context);
+        } else {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         }
     }
 
-    /**
-     * syntax sugar...
-     */
     public boolean isTrue(@NonNull final Context context) {
         return getValue(context);
-    }
-
-    /**
-     * syntax sugar...
-     */
-    public boolean isFalse(@NonNull final Context context) {
-        return !getValue(context);
     }
 }

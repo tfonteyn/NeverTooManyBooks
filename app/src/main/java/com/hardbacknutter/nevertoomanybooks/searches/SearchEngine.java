@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -456,7 +456,7 @@ public interface SearchEngine {
                     File downloadedFile = new File(imageList.get(0));
                     // let the system resolve any path variations
                     File destination = new File(downloadedFile.getAbsolutePath());
-                    StorageUtils.renameFile(downloadedFile, destination);
+                    FileUtils.rename(downloadedFile, destination);
                     return destination.getAbsolutePath();
                 }
 

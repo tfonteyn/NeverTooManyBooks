@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
+package com.hardbacknutter.nevertoomanybooks.backup.archive;
 
 import android.content.Context;
 
@@ -36,33 +36,52 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * Public interface for any backup archive reader.
  */
-public interface BackupReader
+public interface ArchiveReader
         extends Closeable {
 
     /**
-     * Perform a restore of the database; a convenience method to loop through
-     * all entities in the backup and restore them based on the entity type.
+     * Perform a restore/import.
      * <p>
-     * See {@link BackupReaderAbstract} for a default implementation.
+     * See {@link ArchiveReaderAbstract} for a default implementation.
      *
      * @param context          Current context
-     * @param settings         the import settings
      * @param progressListener Listener to receive progress information.
      *
      * @throws IOException             on failure
      * @throws ImportException         on failure
      * @throws InvalidArchiveException on failure to recognise a supported archive
      */
-    void restore(@NonNull Context context,
-                 @NonNull ImportHelper settings,
-                 @NonNull ProgressListener progressListener)
+    void read(@NonNull Context context,
+              @NonNull ProgressListener progressListener)
             throws IOException, ImportException, InvalidArchiveException;
+
+    /**
+     * Checks if the current archive looks valid. Does not need to be exhaustive.
+     *
+     * @param context Current context
+     *
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException             on other failures
+     */
+    void validate(@NonNull Context context)
+            throws InvalidArchiveException, IOException;
+
+    /**
+     * Get the {@link ArchiveInfo} object read from the backup.
+     *
+     * @return info
+     *
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException             on other failures
+     */
+    @NonNull
+    ArchiveInfo getInfo()
+            throws IOException, InvalidArchiveException;
 
     /**
      * Read the next {@link ReaderEntity} from the backup.
@@ -107,14 +126,10 @@ public interface BackupReader
             throws IOException;
 
     /**
-     * Get the {@link BackupInfo} object read from the backup.
+     * Get the <strong>minimum</strong> version of the archive that the reader can still handle.
      *
-     * @return info
-     *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on other failures
+     * @return the minimum version
      */
-    @NonNull
-    BackupInfo getInfo()
-            throws IOException, InvalidArchiveException;
+    @SuppressWarnings("SameReturnValue")
+    int canReadVersion();
 }

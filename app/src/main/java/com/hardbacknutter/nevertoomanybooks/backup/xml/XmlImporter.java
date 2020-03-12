@@ -67,12 +67,13 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCollection;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCollectionBase;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
@@ -143,7 +144,7 @@ public class XmlImporter
      * @throws IOException on failure
      */
     public void doBackupInfoBlock(@NonNull final ReaderEntity entity,
-                                  @NonNull final BackupInfo info)
+                                  @NonNull final ArchiveInfo info)
             throws IOException {
         InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
                                                          StandardCharsets.UTF_8);
@@ -205,7 +206,6 @@ public class XmlImporter
     @Override
     public Results doBooks(@NonNull final Context context,
                            @NonNull final InputStream importStream,
-                           @Nullable final CoverFinder coverFinder,
                            @NonNull final ProgressListener progressListener) {
         throw new UnsupportedOperationException();
     }
@@ -702,7 +702,7 @@ public class XmlImporter
                 try {
                     id = Integer.parseInt(idStr);
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(TAG, e, "attr=" + name, "idStr=" + idStr);
+                    Logger.error(App.getAppContext(), TAG, e, "attr=" + name, "idStr=" + idStr);
                 }
             }
             value = attrs.getValue(XmlTags.ATTR_VALUE);
@@ -730,7 +730,7 @@ public class XmlImporter
         @NonNull
         private final Bundle mBundle;
 
-        InfoReader(@NonNull final BackupInfo info) {
+        InfoReader(@NonNull final ArchiveInfo info) {
             mBundle = info.getBundle();
         }
 
@@ -952,7 +952,7 @@ public class XmlImporter
                 throw new IllegalArgumentException();
             }
             // create a new Style object. This will not have any groups assigned to it...
-            mStyle = new BooklistStyle(tag.id, tag.name);
+            mStyle = new BooklistStyle(mContext, tag.id, tag.name);
             //... and hence, the Style Preferences won't have any group Preferences either.
             mStylePrefs = mStyle.getPreferences(true);
             // So loop all groups, and get their Preferences.
@@ -1015,18 +1015,18 @@ public class XmlImporter
         @Override
         public void putStringSet(@NonNull final String key,
                                  @NonNull final Iterable<String> value) {
-            PCollection p = (PCollection) mStylePrefs.get(key);
+            PCsvString p = (PCsvString) mStylePrefs.get(key);
             if (p != null) {
-                p.set(value);
+                p.set(mContext, TextUtils.join(PCollectionBase.DELIM, value));
             }
         }
 
         @Override
         public void putStringList(@NonNull final String key,
                                   @NonNull final Iterable<String> value) {
-            PCollection p = (PCollection) mStylePrefs.get(key);
+            PCsvString p = (PCsvString) mStylePrefs.get(key);
             if (p != null) {
-                p.set(value);
+                p.set(mContext, TextUtils.join(PCollectionBase.DELIM, value));
             }
         }
     }

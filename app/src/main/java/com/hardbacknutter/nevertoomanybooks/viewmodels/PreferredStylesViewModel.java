@@ -123,7 +123,8 @@ public class PreferredStylesViewModel
     /**
      * Called after a style has been edited.
      *
-     * @param style the (potentially) modified style
+     * @param context Current context
+     * @param style   the (potentially) modified style
      *
      * @return position of the style in the list
      */

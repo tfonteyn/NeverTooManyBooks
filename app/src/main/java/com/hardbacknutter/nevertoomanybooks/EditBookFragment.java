@@ -173,7 +173,7 @@ public class EditBookFragment
         if (EditBookActivity.showAuthSeriesOnTabs(getContext())) {
             mTabList.add(new TabInfo(EditBookAuthorsFragment.class, R.string.lbl_authors));
 
-            if (App.isUsed(prefs, DBDefinitions.KEY_FK_SERIES)) {
+            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_FK_SERIES)) {
                 mTabList.add(new TabInfo(EditBookSeriesFragment.class,
                                          R.string.lbl_series_multiple));
             }
@@ -183,7 +183,7 @@ public class EditBookFragment
 
         mTabList.add(new TabInfo(EditBookNotesFragment.class, R.string.tab_lbl_notes));
 
-        if (App.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
             mTabList.add(new TabInfo(EditBookTocFragment.class, R.string.tab_lbl_content));
         }
 
@@ -238,7 +238,7 @@ public class EditBookFragment
             // for unfinished edits (basically mimic their onPause)
             if (frag instanceof DataEditor && frag.isResumed()) {
                 //noinspection unchecked
-                final DataEditor<Book> dataEditor = ((DataEditor<Book>) frag);
+                final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
                 dataEditor.onSaveFields(book);
                 if (dataEditor.hasUnfinishedEdits() && checkUnfinishedEdits) {
                     mViewPager.setCurrentItem(i);
@@ -264,7 +264,7 @@ public class EditBookFragment
                 final Fragment frag = fm.findFragmentByTag(tag);
                 if (frag instanceof DataEditor && frag.isResumed()) {
                     //noinspection unchecked
-                    final DataEditor<Book> dataEditor = ((DataEditor<Book>) frag);
+                    final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
                     dataEditor.onSaveFields(book);
                     if (dataEditor.hasUnfinishedEdits() && checkUnfinishedEdits) {
                         StandardDialogs.unsavedEdits(

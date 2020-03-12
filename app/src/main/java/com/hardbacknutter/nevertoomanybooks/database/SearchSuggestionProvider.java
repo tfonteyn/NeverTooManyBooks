@@ -37,18 +37,16 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 public class SearchSuggestionProvider
         extends ContentProvider {
 
     /**
-     * The authorities value must match:
+     * The authority value must match:
      * - AndroidManifest.xml/provider/android:authorities
      * - res/xml/searchable.xml/searchSuggestAuthority
      * - SearchSuggestionProvider.java/AUTHORITY
      */
-    private static final String AUTHORITY = App.getAppPackageName() + ".SearchSuggestionProvider";
+    private static final String AUTHORITY = ".SearchSuggestionProvider";
 
     /** Log tag. */
     private static final String TAG = "SearchSuggestions";
@@ -66,7 +64,9 @@ public class SearchSuggestionProvider
     @Override
     public boolean onCreate() {
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        mUriMatcher.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, URI_MATCH_SUGGEST);
+        //noinspection ConstantConditions
+        mUriMatcher.addURI(getContext().getPackageName() + AUTHORITY,
+                           SearchManager.SUGGEST_URI_PATH_QUERY, URI_MATCH_SUGGEST);
         return true;
     }
 

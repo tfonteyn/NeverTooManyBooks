@@ -282,6 +282,7 @@ public final class DateUtils {
             try {
                 return YEAR.parse(dateString);
             } catch (@NonNull final ParseException ignore) {
+                // ignore
             }
         }
 
@@ -314,6 +315,7 @@ public final class DateUtils {
                 df.setLenient(lenient);
                 return df.parse(dateString);
             } catch (@NonNull final ParseException ignore) {
+                // ignore
             }
         }
         return null;

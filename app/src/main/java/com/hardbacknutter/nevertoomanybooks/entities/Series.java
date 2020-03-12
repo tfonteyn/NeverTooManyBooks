@@ -376,6 +376,7 @@ public class Series
                         try {
                             cleanNumber = String.valueOf(Long.parseLong(cleanNumber));
                         } catch (@NonNull final NumberFormatException ignore) {
+                            // ignore
                         }
                     }
                     newSeries.setNumber(cleanNumber);

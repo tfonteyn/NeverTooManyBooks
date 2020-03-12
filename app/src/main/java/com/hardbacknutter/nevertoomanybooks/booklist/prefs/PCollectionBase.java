@@ -45,16 +45,22 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
  * <p>
+ * A Set or a List is always represented by a {@code Set<String>} in the SharedPreferences
+ * due to limitations of {@link androidx.preference.ListPreference}
+ * and {@link androidx.preference.MultiSelectListPreference}
+ * <p>
  * All of them are written as a CSV String to preserve the order.
  *
  * @param <E> type of collection element
  * @param <T> type of collection, e.f. List,Set
+ *
+ * @see PCsvString
  */
 public abstract class PCollectionBase<E, T extends Collection<E>>
         extends PPrefBase<T>
-        implements PCollection {
+        implements PCsvString {
 
-    static final String DELIM = ",";
+    public static final String DELIM = ",";
 
     /**
      * Constructor.
@@ -78,58 +84,71 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
     }
 
     @Override
-    public void writeToParcel(@NonNull final Parcel dest) {
-        if (!mIsPersistent) {
-            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
-            // builtin ? write the in-memory value to the parcel
-            // do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeList(new ArrayList<>(mNonPersistedValue));
+    public void set(@NonNull final Context context,
+                    @Nullable final String values) {
+        if (mIsPersistent) {
+            SharedPreferences.Editor ed = getPrefs(context).edit();
+            if (values == null) {
+                ed.remove(getKey());
+            } else {
+                ed.putString(getKey(), values);
+            }
+            ed.apply();
         } else {
-            // write the actual value, this could be the default if we have no value, but that
-            // is ok anyhow.
-            dest.writeList(new ArrayList<>(getValue(App.getAppContext())));
+            // Not implemented for now, and in fact not needed/used for now (2020-03-11)
+            // Problem is that we'd need to split the incoming CSV string, and re-create the list.
+            // But on this level, we don't know the real type of the elements in the Csv string.
+            // i.o.w. this needs to be implemented in a concrete class.
+            // Aside of that, current usage is that a List is concatenated to a Csv String and
+            // given to this method. Implementing the non-persistent branch would bring a
+            // pointless double conversion.
+            throw new UnsupportedOperationException();
         }
     }
 
-    /**
-     * Bypass the real type. Writes out a CSV string.
-     */
     @Override
-    public void set(@Nullable final Iterable values) {
-        if (!mIsPersistent) {
-            throw new IllegalArgumentException("uuid was empty");
-        }
-
-        Context context = App.getAppContext();
-        if (values == null) {
-            getPrefs(context).edit().remove(getKey()).apply();
+    public void set(@Nullable final T values) {
+        if (mIsPersistent) {
+            SharedPreferences.Editor ed = getPrefs(App.getAppContext()).edit();
+            if (values == null) {
+                ed.remove(getKey());
+            } else {
+                ed.putString(getKey(), TextUtils.join(DELIM, values));
+            }
+            ed.apply();
         } else {
-            getPrefs(context).edit().putString(getKey(), TextUtils.join(DELIM, values)).apply();
-        }
-    }
-
-    public void clear() {
-        if (!mIsPersistent) {
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.clear();
+            if (values != null) {
+                mNonPersistedValue.addAll(values);
+            }
+        }
+    }
+
+    public void clear(@NonNull final Context context) {
+        if (mIsPersistent) {
+            getPrefs(context).edit().remove(getKey()).apply();
         } else {
-            getPrefs(App.getAppContext()).edit().remove(getKey()).apply();
+            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            mNonPersistedValue.clear();
         }
     }
 
     /**
      * Add a new element to the end of the list. The updated list is stored immediately.
      *
+     * @param context Current context
      * @param element Element to add
      */
-    public void add(@NonNull final E element) {
-        if (!mIsPersistent) {
+    public void add(@NonNull final Context context,
+                    @NonNull final E element) {
+        if (mIsPersistent) {
+            SharedPreferences.Editor ed = getPrefs(context).edit();
+            add(ed, getPrefs(context).getString(getKey(), null), element);
+            ed.apply();
+        } else {
             Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.add(element);
-        } else {
-            SharedPreferences.Editor ed = getPrefs(App.getAppContext()).edit();
-            add(ed, getPrefs(App.getAppContext()).getString(getKey(), null), element);
-            ed.apply();
         }
     }
 
@@ -153,21 +172,18 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             result.append(list).append(DELIM).append(element);
         }
         ed.putString(getKey(), result.toString());
-
         return result.toString();
     }
 
     /**
      * Remove an element from the list. The updated list is stored immediately.
      *
+     * @param context Current context
      * @param element to remove
      */
-    public void remove(@NonNull final E element) {
-        if (!mIsPersistent) {
-            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
-            mNonPersistedValue.remove(element);
-        } else {
-            Context context = App.getAppContext();
+    public void remove(@NonNull final Context context,
+                       @NonNull final E element) {
+        if (mIsPersistent) {
             String list = getPrefs(context).getString(getKey(), null);
             if (list != null && !list.isEmpty()) {
                 Collection<String> newList = new ArrayList<>();
@@ -183,6 +199,23 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                             .edit().putString(getKey(), TextUtils.join(DELIM, newList)).apply();
                 }
             }
+        } else {
+            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            mNonPersistedValue.remove(element);
+        }
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest) {
+        if (mIsPersistent) {
+            // write the actual value, this could be the default if we have no value, but that
+            // is ok anyhow.
+            dest.writeList(new ArrayList<>(getValue(App.getAppContext())));
+        } else {
+            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            // builtin ? write the in-memory value to the parcel
+            // do NOT use 'get' as that would return the default if the actual value is not set.
+            dest.writeList(new ArrayList<>(mNonPersistedValue));
         }
     }
 }

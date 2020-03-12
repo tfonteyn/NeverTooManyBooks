@@ -39,6 +39,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
@@ -62,6 +63,12 @@ public class BookDetailsActivity
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
 
         replaceFragment(R.id.main_fragment, BookDetailsFragment.class, BookDetailsFragment.TAG);
+
+        // for standard (system) local search only
+        if (!Prefs.isAdvancedSearch(this)) {
+            // Popup the search widget when the user starts to type.
+            setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+        }
     }
 
     @Override

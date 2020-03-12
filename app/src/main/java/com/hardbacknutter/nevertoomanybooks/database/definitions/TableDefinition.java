@@ -228,12 +228,15 @@ public class TableDefinition
         return this;
     }
 
-    @NonNull
-    public TableDefinition createIndices(@NonNull final SynchronizedDb db) {
+    /**
+     * Create all registered indexes for this table.
+     *
+     * @param db Database in which to drop/create table
+     */
+    public void createIndices(@NonNull final SynchronizedDb db) {
         for (IndexDefinition index : mIndexes) {
             index.create(db);
         }
-        return this;
     }
 
     /**

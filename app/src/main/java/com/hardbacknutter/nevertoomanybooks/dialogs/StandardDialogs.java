@@ -69,7 +69,7 @@ public final class StandardDialogs {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.title_details_have_changed)
-                .setMessage(R.string.warning_unsaved_edits)
+                .setMessage(R.string.confirm_unsaved_edits)
                 .setNeutralButton(R.string.btn_continue_edit, (dialog, which) -> dialog.dismiss());
 
         if (onExit != null) {

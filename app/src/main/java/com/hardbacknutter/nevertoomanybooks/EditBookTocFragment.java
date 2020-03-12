@@ -199,7 +199,7 @@ public class EditBookTocFragment
     private final ConfirmTocDialogFragment.ConfirmTocResults mConfirmTocResultsListener =
             new ConfirmTocDialogFragment.ConfirmTocResults() {
                 /**
-                 * The user approved, so add the TOC to the list and refresh the screen
+                 * The user approved, so add the TOC to the list and refresh the screen.
                  */
                 @Override
                 public void commitIsfdbData(@Book.TocBits final long tocBitMask,
@@ -372,7 +372,7 @@ public class EditBookTocFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.menu_populate_toc)
+        menu.add(Menu.NONE, R.id.MENU_POPULATE_TOC_FROM_ISFDB, 0, R.string.isfdb_menu_populate_toc)
             .setIcon(R.drawable.ic_autorenew);
 
         super.onCreateOptionsMenu(menu, inflater);

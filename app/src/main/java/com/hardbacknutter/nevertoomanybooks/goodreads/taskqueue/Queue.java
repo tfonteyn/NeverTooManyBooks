@@ -98,7 +98,7 @@ class Queue
      * Main worker thread logic.
      */
     public void run() {
-        Context context = App.getTaskContext();
+        final Context context = App.getTaskContext();
         try (QueueDAO queueDAO = new QueueDAO(context)) {
             while (!mTerminate) {
                 ScheduledTask scheduledTask;
@@ -144,6 +144,7 @@ class Queue
                     mManager.onQueueTerminating(this);
                 }
             } catch (@NonNull final RuntimeException ignore) {
+                // ignore
             }
         }
     }
@@ -166,7 +167,7 @@ class Queue
             if (task.getLastException() == null) {
                 task.setLastException(e);
             }
-            Logger.error(TAG, e, "Error running task " + task.getId());
+            Logger.error(App.getTaskContext(), TAG, e, "Error running task " + task.getId());
         }
 
         // Update the related database record to process the task correctly.

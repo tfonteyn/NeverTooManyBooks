@@ -358,7 +358,8 @@ class GoogleBooksEntryHandler
 
                     String currencyCode = attributes.getValue("", "currencyCode");
                     mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, currencyCode);
-                } catch (NumberFormatException ignore) {
+                } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
                 }
                 mInSuggestedRetailPriceTag = false;
 

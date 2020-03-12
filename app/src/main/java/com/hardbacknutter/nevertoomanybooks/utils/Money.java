@@ -153,6 +153,7 @@ public class Money
                 mCurrency = "GBP";
 
             } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
             }
         }
     }

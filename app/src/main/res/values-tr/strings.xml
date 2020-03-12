@@ -344,7 +344,7 @@
     <string name="menu_amazon_books_in_series">Bu dizideki kitaplar</string>
     <string name="menu_author_details">Bu yazarın tüm eserleri</string>
     <string name="menu_author_works_all">Hepsini Göster</string>
-    <string name="menu_show_all">Hepsini Göster</string>
+    <string name="X_menu_show_all">Hepsini Göster</string>
     <string name="menu_author_works_book">Sadece kitaplar</string>
     <string name="menu_author_works_toc">Yalnızca içerik başlıkları</string>
     <string name="menu_booklist_styles">Kitap listesi stilleri</string>
@@ -366,7 +366,7 @@
     <string name="menu_level_expand">Hepsini göster</string>
     <string name="menu_loan_lend_book">Kitabı ödünç ver…</string>
     <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
-    <string name="menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
+    <string name="isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
     <string name="fab_add_book_by_internet_search">Genelağ\'da ara</string>
     <string name="menu_set_complete">“Tamamla” olarak ayarla</string>
     <string name="menu_set_incomplete">Eksik ayarla</string>
@@ -416,7 +416,7 @@
     <string name="progress_msg_searching">Aranıyor…</string>
     <string name="progress_msg_searching_site">%1$s aranıyor</string>
     <string name="progress_msg_sending">Gönderiliyor, lütfen bekleyin…</string>
-    <string name="progress_msg_skip_title">Atla - %1$s</string>
+    <string name="progress_msg_skip_s">Atla - %1$s</string>
     <string name="progress_msg_starting_up">Başlatılıyor…</string>
     <string name="progress_msg_upgrading">Yükseltiliyor…</string>
     <string name="pt_allow_mobile_data">Mobil veri kullanımına izin ver</string>
@@ -537,7 +537,7 @@
     <string name="warning_if_month_set_year_must_be">Eğer bir ay belirtmiş iseniz yıl da belirtmelisiniz.</string>
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır</string>
     <string name="warning_import_be_cautious">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
-    <string name="warning_isfdb_only">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
+    <string name="isfdb_warning_limited_to">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
     <string name="warning_missing_name">Ad kısmı boş olamaz</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok</string>
     <string name="warning_no_isbn_stored_for_book">Bu kitap için bir ISBN depolanmamış</string>
@@ -547,8 +547,8 @@
     <string name="warning_series_already_in_list">Seri zaten ekli</string>
     <string name="warning_toc_confirm">Lütfen bu seçki adlarının doğru olduğunu onaylayın</string>
     <string name="warning_book_not_found">Belirtilen kitap bulunamıyor</string>
-    <string name="warning_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
-    <string name="warning_unsaved_edits2">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
+    <string name="confirm_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
+    <string name="confirm_unsaved_edits2">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="warning_x_already_exists">%1$s zaten var.</string>
     <string name="warning_x_is_not_a_valid_code">“%1$s” geçerli bir kod değil</string>
     <string name="x_of_y">%1$d (Toplam %2$d)</string>
@@ -641,8 +641,8 @@
     <string name="pt_maintenance">Bakım</string>
     <string name="lbl_import_export_csv">CSV (görüntüler olmadan)</string>
     <string name="pt_primary_author_type">Tipo de autor principal</string>
-    <string name="lbl_dust_cover_none_or_unknown">Yok</string>
-    <string name="lbl_dust_cover_missing">Eksik</string>
+    <string name="lbl_condition_dust_cover_none_or_unknown">Yok</string>
+    <string name="lbl_condition_dust_cover_missing">Eksik</string>
     <string name="menu_rebuild_index">Dizini yeniden oluştur</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="lbl_condition_reading_copy">Kopya okunuyor</string>
@@ -654,5 +654,11 @@
     <string name="warning_import_csv_failed_lines_some">CSV ayrıştırma %1$s satırları için başarısız oldu.</string>
     <string name="warning_import_csv_failed_lines_lots">CSV ayrıştırma işlemi %1$s satırları ve diğerleri için başarısız oldu.</string>
     <string name="warning_import_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
+    <string name="notification_channel_info">Bilgi</string>
+    <string name="notification_channel_error">Hata</string>
+    <string name="gr_pt_collect_genre">Popüler kitap rafı adlarını kitap türü olarak kullanma</string>
+    <string name="lbl_author_type_cover_inking">Kapak mürekkebi</string>
+    <string name="lbl_condition">Şart</string>
+    <string name="book_format_softcover">Yumuşak kapak</string>
 
 </resources>

@@ -163,7 +163,7 @@ public class PartialDatePickerDialogFragment
 
         private final NumberPicker mDayPicker;
         /** Used for reading month names + calculating number of days in a month. */
-        Calendar mCalendarForCalculations;
+        final Calendar mCalendarForCalculations;
         /** This listener is called after <strong>any change</strong> made to the pickers. */
         @SuppressWarnings("FieldCanBeLocal")
         private final NumberPicker.OnValueChangeListener mOnValueChangeListener =

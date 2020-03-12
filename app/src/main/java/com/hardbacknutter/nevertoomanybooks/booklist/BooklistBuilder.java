@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
@@ -339,8 +338,9 @@ public class BooklistBuilder
     /**
      * Clear and build the temporary list of books.
      * Criteria must be set before calling this method with one or more of the setCriteria calls.
+     * @param context Current context
      */
-    public void build() {
+    public void build(@NonNull final Context context) {
         final long t00 = System.nanoTime();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -355,7 +355,7 @@ public class BooklistBuilder
         mListTable.addDomain(DOM_BL_NODE_KEY);
 
         // Start building the table domains
-        final BuildHelper helper = new BuildHelper(mListTable, mStyle, mBookshelf);
+        final BuildHelper helper = new BuildHelper(context, mListTable, mStyle, mBookshelf);
 
         // always sort by level first
         helper.addDomain(new VirtualDomain(DOM_BL_NODE_LEVEL, null, VirtualDomain.Sorted.Asc),
@@ -438,7 +438,7 @@ public class BooklistBuilder
             }
 
             mRowStateDAO = new RowStateDAO(mSyncedDb, mInstanceId, mStyle, mBookshelf);
-            mRowStateDAO.build(mListTable, mRebuildState);
+            mRowStateDAO.build(context, mListTable, mRebuildState);
 
             t06_stateTable_created = System.nanoTime();
 
@@ -924,6 +924,8 @@ public class BooklistBuilder
         /** the list of Filters. */
         private final Collection<Filter> mFilters = new ArrayList<>();
 
+        @NonNull
+        private final Context mContext;
         /** The table we'll be generating. */
         @NonNull
         private final TableDefinition mDestinationTable;
@@ -956,19 +958,22 @@ public class BooklistBuilder
         /**
          * Constructor.
          *
+         * @param context          Current context
          * @param destinationTable the list table to build
          * @param style            to use
          * @param bookshelf        to use
          */
-        private BuildHelper(@NonNull final TableDefinition destinationTable,
+        private BuildHelper(@NonNull final Context context,
+                            @NonNull final TableDefinition destinationTable,
                             @NonNull final BooklistStyle style,
                             @NonNull final Bookshelf bookshelf) {
+            mContext = context;
             mDestinationTable = destinationTable;
             mStyle = style;
             mFilteredOnBookshelf = !bookshelf.isAllBooks();
             // copy filter references, but not the actual style filter list
             // as we'll be adding to the local list
-            mFilters.addAll(mStyle.getActiveFilters(App.getAppContext()));
+            mFilters.addAll(mStyle.getActiveFilters(mContext));
         }
 
         void addDomains(@NonNull final Iterable<VirtualDomain> vDomains,
@@ -1103,11 +1108,9 @@ public class BooklistBuilder
             destColumns.append(',').append(KEY_BL_NODE_KEY);
             sourceColumns.append(',').append(buildNodeKey());
 
-            Context context = App.getAppContext();
-
             String sql = "INSERT INTO " + mDestinationTable.getName() + " (" + destColumns + ')'
                          + " SELECT " + sourceColumns
-                         + " FROM " + buildFrom(context) + buildWhere(context)
+                         + " FROM " + buildFrom(mContext) + buildWhere(mContext)
                          + " ORDER BY " + buildOrderBy();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -1144,6 +1147,8 @@ public class BooklistBuilder
          * <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}<br>{@link DBDefinitions#TBL_BOOKSHELF}</li>
          * <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
          * </ul>
+         *
+         * @param context Current context
          */
         private String buildFrom(@NonNull final Context context) {
             // Text of join statement
@@ -1160,7 +1165,7 @@ public class BooklistBuilder
                 sql.append(TBL_BOOKS.ref());
             }
 
-            if (App.isUsed(context, KEY_LOANEE)) {
+            if (DBDefinitions.isUsed(context, DBDefinitions.KEY_LOANEE)) {
                 // get the loanee name, or a {@code null} for available books.
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE));
             }
@@ -1209,6 +1214,8 @@ public class BooklistBuilder
 
         /**
          * Create the WHERE clause based on all active filters (for in-use domains).
+         *
+         * @param context Current context
          */
         private String buildWhere(final Context context) {
             StringBuilder where = new StringBuilder();

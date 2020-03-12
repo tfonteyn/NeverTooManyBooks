@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
@@ -225,9 +224,7 @@ public class DataManager
             remove(key);
 
         } else {
-            Logger.warnWithStackTrace(App.getAppContext(), TAG,
-                                      "put|key=`" + key + "`|value=" + value);
-            throw new UnexpectedValueException(value.getClass().getName());
+            throw new UnexpectedValueException("put|key=`" + key + "`|value=" + value);
         }
     }
 

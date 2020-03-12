@@ -616,10 +616,12 @@ class QueueDAO
                 try {
                     s.close();
                 } catch (@NonNull final RuntimeException ignore) {
+                    // ignore
                 }
             }
             mQueueDBHelper.close();
         } catch (@NonNull final RuntimeException ignore) {
+            // ignore
         } finally {
             mStatements.clear();
         }

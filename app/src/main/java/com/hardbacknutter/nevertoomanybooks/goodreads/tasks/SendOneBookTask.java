@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -83,15 +84,15 @@ public class SendOneBookTask
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendOneBookTask " + mBookId);
-        Context context = App.getLocalizedAppContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         GrStatus result;
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
                 return GrStatus.NoInternet;
             }
-            GoodreadsAuth grAuth = new GoodreadsAuth(context);
-            GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
+            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
+            final GoodreadsHandler apiHandler = new GoodreadsHandler(grAuth);
             if (!grAuth.hasValidCredentials(context)) {
                 return GrStatus.CredentialsMissing;
             }

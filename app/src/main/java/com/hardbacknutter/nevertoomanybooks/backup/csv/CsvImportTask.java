@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
@@ -45,20 +44,20 @@ import com.hardbacknutter.nevertoomanybooks.backup.Importer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Task result: Integer: # books processed (i.e. not # books imported which could be lower)
  */
-public class ImportCSVTask
+public class CsvImportTask
         extends TaskBase<Void, ImportHelper> {
 
     /** Log tag. */
     private static final String TAG = "ImportCSVTask";
 
+    /** import configuration. */
     @NonNull
-    private final Uri mUri;
-    @NonNull
-    private final ImportHelper mImportHelper;
+    private final ImportHelper mHelper;
     @NonNull
     private final Importer mImporter;
 
@@ -66,50 +65,45 @@ public class ImportCSVTask
      * Constructor.
      *
      * @param context      Current context
-     * @param uri          to read from
-     * @param importHelper the import settings
+     * @param helper       import configuration
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public ImportCSVTask(@NonNull final Context context,
-                         @NonNull final Uri uri,
-                         @NonNull final ImportHelper importHelper,
+    public CsvImportTask(@NonNull final Context context,
+                         @NonNull final ImportHelper helper,
                          @NonNull final TaskListener<ImportHelper> taskListener) {
         super(R.id.TASK_ID_CSV_IMPORT, taskListener);
-        mUri = uri;
-        mImportHelper = importHelper;
-        mImporter = new CsvImporter(context, importHelper);
+        mHelper = helper;
+        mImporter = new CsvImporter(context, helper);
     }
 
     @Override
     @UiThread
-    protected void onCancelled(@NonNull final ImportHelper result) {
+    protected void onCancelled(@NonNull final ImportHelper helper) {
         cleanup();
-        super.onCancelled(result);
+        super.onCancelled(helper);
     }
 
     @Override
     @WorkerThread
     @NonNull
     protected ImportHelper doInBackground(final Void... params) {
-        Thread.currentThread().setName("ImportCSVTask");
+        Thread.currentThread().setName(TAG);
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
-        Context context = App.getLocalizedAppContext();
-
-        try (InputStream is = context.getContentResolver().openInputStream(mUri)) {
+        try (InputStream is = context.getContentResolver().openInputStream(mHelper.getUri())) {
             if (is == null) {
                 throw new IOException("InputStream was NULL");
             }
 
-            mImportHelper.addResults(mImporter.doBooks(context, is,
-                                                       null, getProgressListener()));
+            mHelper.addResults(mImporter.doBooks(context, is, getProgressListener()));
 
-            return mImportHelper;
+            return mHelper;
 
         } catch (@NonNull final IOException | ImportException e) {
             Logger.error(context, TAG, e);
             mException = e;
-            return mImportHelper;
+            return mHelper;
         } finally {
             cleanup();
         }
@@ -119,6 +113,7 @@ public class ImportCSVTask
         try {
             mImporter.close();
         } catch (@NonNull final IOException ignore) {
+            // ignore
         }
     }
 }

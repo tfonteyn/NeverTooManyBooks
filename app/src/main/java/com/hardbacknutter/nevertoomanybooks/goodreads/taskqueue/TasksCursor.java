@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -36,7 +37,6 @@ import androidx.annotation.NonNull;
 import java.io.Closeable;
 import java.util.Date;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueDBHelper.KEY_EVENT_COUNT;
@@ -153,7 +153,7 @@ public final class TasksCursor
 
     @NonNull
     @Override
-    public Task getBindableItem() {
+    public Task getBindableItem(@NonNull final Context context) {
         if (sTaskCol < 0) {
             sTaskCol = getColumnIndex(KEY_TASK);
         }
@@ -162,7 +162,7 @@ public final class TasksCursor
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
-            task = new LegacyTask(App.getLocalizedAppContext());
+            task = new LegacyTask(context);
         }
         task.setId(getId());
         return task;

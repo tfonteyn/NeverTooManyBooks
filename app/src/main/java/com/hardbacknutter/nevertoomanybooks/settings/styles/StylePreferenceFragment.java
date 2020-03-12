@@ -113,7 +113,8 @@ public class StylePreferenceFragment
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
-        BooklistStyle style = new BooklistStyle();
+        //noinspection ConstantConditions
+        BooklistStyle style = new BooklistStyle(getContext());
         for (BooklistGroup group : BooklistGroup.getAllGroups(style)) {
             group.setPreferencesVisible(screen, mStyle.containsGroup(group.getId()));
         }

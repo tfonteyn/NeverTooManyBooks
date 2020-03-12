@@ -53,9 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Holds the Scanner and related data.
@@ -121,8 +122,7 @@ public class ScannerViewModel
         // detect emulator for testing
         if (Build.PRODUCT.startsWith("sdk")) {
             // when used, the file must be in the root external app dir.
-            final File file = new File(StorageUtils.getRootDir(context),
-                                       "barcode.jpg");
+            final File file = AppDir.Root.getFile(context, "barcode.jpg");
             if (file.exists()) {
                 final Bitmap dummy = BitmapFactory.decodeFile(file.getAbsolutePath());
                 if (data != null
@@ -131,7 +131,7 @@ public class ScannerViewModel
                     data.putExtra("data", dummy);
                 } else {
                     try {
-                        StorageUtils.copyFile(file, CameraHelper.getCameraFile(context));
+                        FileUtils.copy(file, CameraHelper.getCameraFile(context));
                     } catch (@NonNull final IOException e) {
                         Log.d(TAG, "onActivityResult", e);
                     }
@@ -193,6 +193,7 @@ public class ScannerViewModel
                 try {
                     Thread.sleep(SCANNER_WAIT);
                 } catch (@NonNull final InterruptedException ignore) {
+                    // ignore
                 }
                 if (mScanner.isOperational()) {
                     break;

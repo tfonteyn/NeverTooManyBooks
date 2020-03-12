@@ -340,6 +340,8 @@ public class BooklistGroup
     /**
      * Get the {@link GroupKey} displayable name.
      *
+     * @param context Current context
+     *
      * @return name
      */
     @NonNull
@@ -348,7 +350,7 @@ public class BooklistGroup
     }
 
     /**
-     * Create the expression for the key column: "/key=value"
+     * Create the expression for the key column: "/key=value".
      * A {@code null} value is reformatted as an empty string
      *
      * @return column expression
@@ -501,7 +503,7 @@ public class BooklistGroup
 
              DATE_ACQUIRED_YEAR,
              DATE_ACQUIRED_MONTH,
-             DATE_ACQUIRED_DAY,
+             DATE_ACQUIRED_DAY
             })
     @Retention(RetentionPolicy.SOURCE)
     @interface Id {
@@ -623,6 +625,8 @@ public class BooklistGroup
 
         /**
          * Get this preference.
+         *
+         * @param context Current context
          *
          * @return {@code true} if we want to show a book under each of its Series.
          */
@@ -809,6 +813,8 @@ public class BooklistGroup
         /**
          * Get this preference.
          *
+         * @param context Current context
+         *
          * @return {@code true} if we want to show a book under each of its Authors.
          */
         boolean showBooksUnderEachAuthor(@NonNull final Context context) {
@@ -832,23 +838,23 @@ public class BooklistGroup
      * No need to make this Parcelable, it's encapsulated in the BooklistGroup,
      * but always reconstructed based on the ID alone.
      */
-    static class GroupKey {
+    static final class GroupKey {
 
         // Date based groups have to sort on the full date for cases
         // where we don't have all separate year,month,day fields.
-        private static final VirtualDomain datePublished =
+        private static final VirtualDomain DATE_PUBLISHED =
                 new VirtualDomain(DOM_DATE_PUBLISHED, null, VirtualDomain.Sorted.Desc);
-        private static final VirtualDomain dateFirstPublication =
+        private static final VirtualDomain DATE_FIRST_PUBLICATION =
                 new VirtualDomain(DOM_DATE_FIRST_PUBLICATION, null, VirtualDomain.Sorted.Desc);
-        private static final VirtualDomain bookIsRead =
+        private static final VirtualDomain BOOK_IS_READ =
                 new VirtualDomain(DOM_BOOK_READ, null, VirtualDomain.Sorted.Desc);
-        private static final VirtualDomain dateReadEnd =
+        private static final VirtualDomain DATE_READ_END =
                 new VirtualDomain(DOM_BOOK_DATE_READ_END, null, VirtualDomain.Sorted.Desc);
-        private static final VirtualDomain dateAdded =
+        private static final VirtualDomain DATE_ADDED =
                 new VirtualDomain(DOM_BOOK_DATE_ADDED, null, VirtualDomain.Sorted.Desc);
-        private static final VirtualDomain dateLastUpdated =
+        private static final VirtualDomain DATE_LAST_UPDATED =
                 new VirtualDomain(DOM_DATE_LAST_UPDATED, null, VirtualDomain.Sorted.Desc);
-        private static final VirtualDomain dateAcquired =
+        private static final VirtualDomain DATE_ACQUIRED =
                 new VirtualDomain(DOM_BOOK_DATE_ACQUIRED, null, VirtualDomain.Sorted.Desc);
 
         /** Cache for the static GroupKey instances. */
@@ -1068,7 +1074,7 @@ public class BooklistGroup
                                         DAO.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(datePublished);
+                            .addBaseDomain(DATE_PUBLISHED);
                 }
                 case DATE_PUBLISHED_MONTH: {
                     // UTC. Formatting is done after fetching.
@@ -1078,7 +1084,7 @@ public class BooklistGroup
                                         DAO.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(datePublished);
+                            .addBaseDomain(DATE_PUBLISHED);
                 }
 
                 case DATE_FIRST_PUBLICATION_YEAR: {
@@ -1090,7 +1096,7 @@ public class BooklistGroup
                                                 .year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
                                                       false),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateFirstPublication);
+                            .addBaseDomain(DATE_FIRST_PUBLICATION);
                 }
                 case DATE_FIRST_PUBLICATION_MONTH: {
                     // Local for the user. Formatting is done after fetching.
@@ -1101,7 +1107,7 @@ public class BooklistGroup
                                                 .month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
                                                        false),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateFirstPublication);
+                            .addBaseDomain(DATE_FIRST_PUBLICATION);
                 }
 
                 case DATE_ACQUIRED_YEAR: {
@@ -1111,7 +1117,7 @@ public class BooklistGroup
                                                 .build(),
                                         DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateAcquired);
+                            .addBaseDomain(DATE_ACQUIRED);
                 }
                 case DATE_ACQUIRED_MONTH: {
                     // Local for the user. Formatting is done after fetching.
@@ -1121,7 +1127,7 @@ public class BooklistGroup
                                         DAO.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateAcquired);
+                            .addBaseDomain(DATE_ACQUIRED);
                 }
                 case DATE_ACQUIRED_DAY: {
                     // Local for the user. Formatting is done in the sql expression.
@@ -1130,7 +1136,7 @@ public class BooklistGroup
                                                 .build(),
                                         DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateAcquired);
+                            .addBaseDomain(DATE_ACQUIRED);
                 }
 
 
@@ -1141,7 +1147,7 @@ public class BooklistGroup
                                                 .build(),
                                         DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateAdded);
+                            .addBaseDomain(DATE_ADDED);
                 }
                 case DATE_ADDED_MONTH: {
                     // Local for the user. Formatting is done after fetching.
@@ -1150,7 +1156,7 @@ public class BooklistGroup
                                                 .build(),
                                         DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateAdded);
+                            .addBaseDomain(DATE_ADDED);
                 }
                 case DATE_ADDED_DAY: {
                     // Local for the user. Formatting is done in the sql expression.
@@ -1159,7 +1165,7 @@ public class BooklistGroup
                                                 .build(),
                                         DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_DATE_ADDED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateAdded);
+                            .addBaseDomain(DATE_ADDED);
                 }
 
                 case DATE_LAST_UPDATE_YEAR: {
@@ -1170,7 +1176,7 @@ public class BooklistGroup
                                         DAO.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateLastUpdated);
+                            .addBaseDomain(DATE_LAST_UPDATED);
                 }
                 case DATE_LAST_UPDATE_MONTH: {
                     // Local for the user. Formatting is done after fetching.
@@ -1180,7 +1186,7 @@ public class BooklistGroup
                                         DAO.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateLastUpdated);
+                            .addBaseDomain(DATE_LAST_UPDATED);
                 }
                 case DATE_LAST_UPDATE_DAY: {
                     // Local for the user. Formatting is done in the sql expression.
@@ -1190,7 +1196,7 @@ public class BooklistGroup
                                         DAO.SqlColumns
                                                 .day(TBL_BOOKS.dot(KEY_DATE_LAST_UPDATED), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateLastUpdated);
+                            .addBaseDomain(DATE_LAST_UPDATED);
                 }
 
                 case DATE_READ_YEAR: {
@@ -1200,8 +1206,8 @@ public class BooklistGroup
                                                 .build(),
                                         DAO.SqlColumns.year(TBL_BOOKS.dot(KEY_READ_END), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateReadEnd)
-                            .addGroupDomain(bookIsRead);
+                            .addBaseDomain(DATE_READ_END)
+                            .addGroupDomain(BOOK_IS_READ);
                 }
                 case DATE_READ_MONTH: {
                     // Local for the user. Formatting is done after fetching.
@@ -1210,8 +1216,8 @@ public class BooklistGroup
                                                 .build(),
                                         DAO.SqlColumns.month(TBL_BOOKS.dot(KEY_READ_END), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateReadEnd)
-                            .addGroupDomain(bookIsRead);
+                            .addBaseDomain(DATE_READ_END)
+                            .addGroupDomain(BOOK_IS_READ);
                 }
                 case DATE_READ_DAY: {
                     // Local for the user. Formatting is done in the sql expression.
@@ -1220,8 +1226,8 @@ public class BooklistGroup
                                                 .build(),
                                         DAO.SqlColumns.day(TBL_BOOKS.dot(KEY_READ_END), true),
                                         VirtualDomain.Sorted.Desc)
-                            .addBaseDomain(dateReadEnd)
-                            .addGroupDomain(bookIsRead);
+                            .addBaseDomain(DATE_READ_END)
+                            .addGroupDomain(BOOK_IS_READ);
                 }
 
                 default:
@@ -1277,8 +1283,8 @@ public class BooklistGroup
         }
 
         /**
-         * Create the expression for the node key column: "/key=value"
-         * A {@code null} value is reformatted as an empty string
+         * Create the expression for the node key column: "/key=value".
+         * A {@code null} value is reformatted as an empty string.
          *
          * @return column expression
          */
@@ -1289,13 +1295,11 @@ public class BooklistGroup
 
         /**
          * Get the key domain.
-         * <p>
-         * This is final as it should not be tampered with.
          *
          * @return the key domain
          */
         @NonNull
-        final VirtualDomain getKeyDomain() {
+        VirtualDomain getKeyDomain() {
             return mKeyDomain;
         }
 

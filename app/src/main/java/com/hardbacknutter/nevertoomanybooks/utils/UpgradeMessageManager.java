@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -105,12 +105,12 @@ public final class UpgradeMessageManager {
     /**
      * Should be called after the user acknowledged the upgrade dialog message.
      *
-     * @param appContext Application context
+     * @param context Application context
      */
-    public static void setUpgradeAcknowledged(@NonNull final Context appContext) {
-        PreferenceManager.getDefaultSharedPreferences(appContext)
+    public static void setUpgradeAcknowledged(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putLong(PREF_STARTUP_LAST_VERSION, App.getVersion())
+                         .putLong(PREF_STARTUP_LAST_VERSION, App.getVersion(context))
                          .apply();
     }
 

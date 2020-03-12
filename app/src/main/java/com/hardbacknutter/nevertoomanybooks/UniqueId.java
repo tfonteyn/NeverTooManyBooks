@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -113,14 +113,6 @@ public final class UniqueId {
     public static final String BKEY_SEARCH_TEXT = "searchText";
 
     /**
-     * User Visibility flag / flag that we want covers.
-     * <br>type: {@code boolean}
-     *
-     * <strong>Note:</strong> do not change the string. It's a key in the preferences.
-     */
-    public static final String BKEY_THUMBNAIL = "thumbnail";
-
-    /**
      * Book front and back-cover file specs.
      */
     public static final String[] BKEY_FILE_SPEC = new String[2];
@@ -202,7 +194,7 @@ public final class UniqueId {
     public static final String BKEY_FRAGMENT_TAG = "fragment";
 
     /**
-     * The resulting {@link ImportHelper#options} flags after an import.
+     * The resulting {@link ImportHelper} options flags after an import.
      * <p>
      * <br>type: {@code int} (bitmask)
      * setResult
@@ -210,7 +202,7 @@ public final class UniqueId {
     public static final String BKEY_IMPORT_RESULT = "importResult";
 
     /**
-     * The resulting {@link ExportHelper#options} flags after an export.
+     * The resulting {@link ExportHelper} options flags after an export.
      * <p>
      * <br>type: {@code int} (bitmask)
      * setResult

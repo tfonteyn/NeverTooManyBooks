@@ -75,7 +75,7 @@ public class ImportTask
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.ImportTask");
-        Context context = App.getTaskContext();
+        final Context context = App.getTaskContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
@@ -91,7 +91,7 @@ public class ImportTask
             }
 
             // Make sure Goodreads is authorized for this app
-            GoodreadsAuth grAuth = new GoodreadsAuth(context);
+            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
             if (!grAuth.hasValidCredentials(context)) {
                 return GrStatus.CredentialsMissing;
             }

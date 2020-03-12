@@ -42,43 +42,44 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupContainer;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntity.Type;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.ReaderEntityAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveReaderAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntity;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntity.Type;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntityAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Implementation of TAR-specific reader functions.
- * <p>
- * Peeking is no longer used, but leaving it in for now.
  */
-public class TarBackupReader
-        extends BackupReaderAbstract {
+public class TarArchiveReader
+        extends ArchiveReaderAbstract {
 
-    /** Log tag. */
-    private static final String TAG = "TarBackupReader";
+    /** Meta data for the TAR archive. */
+    static final String INFO_FILE = "INFO.xml";
 
+    /** Meta data for the TAR archive. */
+    private static final Pattern INFO_PATTERN =
+            Pattern.compile("^INFO_.*\\.xml$",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** Legacy BookCatalogue. */
+    private static final String LEGACY_PREFERENCES = "preferences";
+    /** Legacy BookCatalogue. */
     private static final Pattern LEGACY_STYLES_PATTERN =
             Pattern.compile('^' + "style.blob." + "[0-9]*$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-    /** The archive container. */
-    @NonNull
-    private final BackupContainer mContainer;
     /** The data stream for the archive. */
     @Nullable
     private TarArchiveInputStream mInputStream;
 
     /** The INFO data read from the start of the archive. */
     @Nullable
-    private BackupInfo mInfo;
+    private ArchiveInfo mInfo;
     /** Used to allow 'peeking' at the input stream. */
     @Nullable
     private ReaderEntity mPushedEntity;
@@ -86,13 +87,20 @@ public class TarBackupReader
     /**
      * Constructor.
      *
-     * @param context   Current context
-     * @param container The archive container.
+     * @param context Current context
+     * @param helper  import configuration
      */
-    TarBackupReader(@NonNull final Context context,
-                    @NonNull final BackupContainer container) {
-        super(context);
-        mContainer = container;
+    public TarArchiveReader(@NonNull final Context context,
+                            @NonNull final ImportHelper helper) {
+        super(context, helper);
+    }
+
+    @Override
+    public void validate(@NonNull final Context context)
+            throws IOException, InvalidArchiveException {
+        ArchiveInfo archiveInfo = getInfo();
+        // the info block will/can do more checks.
+        archiveInfo.validate();
     }
 
     @Override
@@ -108,9 +116,9 @@ public class TarBackupReader
             }
 
             // Based on the file name, determine entity type
-            Type found = getBackupEntityType(entry);
-            if (type.equals(found)) {
-                return new TarBackupReaderEntity(type, this, entry);
+            Type typeFound = getBackupEntityType(entry);
+            if (type.equals(typeFound)) {
+                return new TarBackupReaderEntity(typeFound, this, entry);
             }
         }
     }
@@ -131,13 +139,21 @@ public class TarBackupReader
             return null;
         }
 
-        Type type = getBackupEntityType(entry);
-        return new TarBackupReaderEntity(type, this, entry);
+        Type typeFound = getBackupEntityType(entry);
+        return new TarBackupReaderEntity(typeFound, this, entry);
     }
 
+    /**
+     * Tar archive info is stored in an xml file.
+     *
+     * @return the info
+     *
+     * @throws IOException             on failure
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     */
     @NonNull
     @Override
-    public BackupInfo getInfo()
+    public ArchiveInfo getInfo()
             throws IOException, InvalidArchiveException {
         if (mInfo == null) {
             ReaderEntity entity;
@@ -158,7 +174,7 @@ public class TarBackupReader
             }
 
             // read the INFO
-            mInfo = new BackupInfo();
+            mInfo = new ArchiveInfo();
             try (XmlImporter importer = new XmlImporter(null)) {
                 importer.doBackupInfoBlock(entity, mInfo);
             }
@@ -168,54 +184,22 @@ public class TarBackupReader
         return mInfo;
     }
 
-    /**
-     * Detect the type of the passed entry.
-     *
-     * @param entry to get the type of
-     *
-     * @return the TarArchiveEntry type.
-     */
     @NonNull
-    private Type getBackupEntityType(@NonNull final ArchiveEntry entry) {
+    @Override
+    protected Type getBackupEntityType(@NonNull final ArchiveEntry entry) {
         String name = entry.getName().toLowerCase(LocaleUtils.getSystemLocale());
 
-        // check covers first, as we will have many
-        if (name.endsWith(".jpg") || name.endsWith(".png")) {
-            return Type.Cover;
-
-        } else if (TarBackupContainer.INFO_FILE.equalsIgnoreCase(name)
-                   || TarBackupContainer.INFO_PATTERN.matcher(name).find()) {
+        if (INFO_FILE.equalsIgnoreCase(name) || INFO_PATTERN.matcher(name).find()) {
             return Type.Info;
 
-        } else if (TarBackupContainer.BOOKS_FILE.equalsIgnoreCase(name)
-                   || TarBackupContainer.BOOKS_PATTERN.matcher(name).find()) {
-            return Type.Books;
-
-        } else if (TarBackupContainer.PREFERENCES.equalsIgnoreCase(name)) {
-            return Type.Preferences;
-
-        } else if (TarBackupContainer.STYLES.equalsIgnoreCase(name)) {
-            return Type.BooklistStyles;
-
-        } else if (TarBackupContainer.DB_FILE.equalsIgnoreCase(name)) {
-            return Type.Database;
-
-            // BookCatalogue
         } else if (LEGACY_STYLES_PATTERN.matcher(name).find()) {
             return Type.LegacyBooklistStyles;
 
-            // BookCatalogue
-        } else if ("preferences".equals(name)) {
+        } else if (LEGACY_PREFERENCES.equals(name)) {
             return Type.LegacyPreferences;
 
-            // needs to be below any specific xml files.
-        } else if (name.endsWith(".xml")) {
-            return Type.XML;
-
         } else {
-            Logger.warn(App.getAppContext(), TAG,
-                        "getBackupEntityType|Unknown file=" + entry.getName());
-            return Type.Unknown;
+            return super.getBackupEntityType(entry);
         }
     }
 
@@ -233,7 +217,7 @@ public class TarBackupReader
     private TarArchiveInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            InputStream is = mContentResolver.openInputStream(mContainer.getUri());
+            InputStream is = mContentResolver.openInputStream(getUri());
             if (is == null) {
                 throw new IOException("InputStream was NULL");
             }
@@ -267,7 +251,7 @@ public class TarBackupReader
             extends ReaderEntityAbstract {
 
         @NonNull
-        private final TarBackupReader mReader;
+        private final TarArchiveReader mReader;
         @NonNull
         private final TarArchiveEntry mEntry;
 
@@ -279,7 +263,7 @@ public class TarBackupReader
          * @param entry  Corresponding archive entry
          */
         TarBackupReaderEntity(@NonNull final Type type,
-                              @NonNull final TarBackupReader reader,
+                              @NonNull final TarArchiveReader reader,
                               @NonNull final TarArchiveEntry entry) {
             super(type);
             mReader = reader;

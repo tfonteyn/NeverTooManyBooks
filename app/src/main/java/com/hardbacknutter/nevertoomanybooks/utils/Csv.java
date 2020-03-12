@@ -196,7 +196,7 @@ public final class Csv {
                 value = valueFormatter.format(element);
             }
 
-            if ((value != null && !value.isEmpty())) {
+            if (value != null && !value.isEmpty()) {
                 if (first) {
                     first = false;
                 } else {
@@ -244,7 +244,7 @@ public final class Csv {
                 value = valueFormatter.format(element);
             }
 
-            if ((value != null && !value.isEmpty())) {
+            if (value != null && !value.isEmpty()) {
                 result.append("<li>").append(value).append("</li>");
             }
         }

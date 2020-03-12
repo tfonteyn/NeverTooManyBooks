@@ -33,7 +33,6 @@ import android.database.Cursor;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -42,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
+import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 
 /**
  * Background task class to send all books in the database to Goodreads.
@@ -124,10 +124,9 @@ class SendBooksLegacyTask
             }
         }
 
-        // Notify the user with a system Notification.
-        App.showNotification(context,
-                             context.getString(R.string.gr_title_send_book),
-                             context.getString(R.string.gr_info_send_all_books_results,
+        Notifier.show(context, Notifier.CHANNEL_INFO,
+                      context.getString(R.string.gr_menu_send_to_goodreads),
+                      context.getString(R.string.gr_info_send_all_books_results,
                                                mCount, mSent, mNoIsbn, mNotFound));
         return true;
     }

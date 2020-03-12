@@ -106,7 +106,7 @@ public class EditBookFieldsFragment
         mVb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
 
         //noinspection ConstantConditions
-        if (!App.isUsed(getContext(), UniqueId.BKEY_THUMBNAIL)) {
+        if (!DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_THUMBNAIL)) {
             mVb.coverImage0.setVisibility(View.GONE);
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -183,7 +183,7 @@ public class EditBookFieldsFragment
 
         // handle special fields
         //noinspection ConstantConditions
-        if (App.isUsed(getContext(), UniqueId.BKEY_THUMBNAIL)) {
+        if (DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 0, mVb.coverImage0,

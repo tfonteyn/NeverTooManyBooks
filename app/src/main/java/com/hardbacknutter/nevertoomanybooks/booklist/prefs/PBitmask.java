@@ -42,6 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.BitUtils;
  * Used for {@link androidx.preference.MultiSelectListPreference}.
  * <p>
  * We basically want a bitmask/int, but the Preference insists on a {@code Set<String>}
+ *
+ * @see PInt
  */
 public class PBitmask
         extends PPrefBase<Integer>
@@ -90,14 +92,14 @@ public class PBitmask
     @NonNull
     @Override
     public Integer getValue(@NonNull final Context context) {
-        if (!mIsPersistent) {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
-        } else {
+        if (mIsPersistent) {
             Set<String> value = getPrefs(context).getStringSet(getKey(), null);
             if (value != null) {
                 return BitUtils.from(value);
             }
             return getGlobalValue(context);
+        } else {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         }
     }
 

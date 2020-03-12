@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,23 +25,16 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.backup.archive;
 
 import androidx.annotation.NonNull;
 
-/**
- * A Set or a List is always represented by a {@code Set<String>} in the SharedPreferences
- * due to limitations of {@link androidx.preference.ListPreference}
- * and {@link androidx.preference.MultiSelectListPreference}
- * <p>
- * This call allows by-passing the real type for write-through.
- * Used in importing from a backup.
- */
-public interface PCollection {
+public class InvalidArchiveException
+        extends Exception {
 
-    /**
-     * This call allows by-passing the real type for write-through.
-     * It's up to the implementation on how the values will be stored.
-     */
-    void set(@NonNull Iterable values);
+    private static final long serialVersionUID = 3492827673584239777L;
+
+    public InvalidArchiveException(@NonNull final String message) {
+        super(message);
+    }
 }

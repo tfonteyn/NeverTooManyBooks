@@ -70,8 +70,6 @@ public abstract class OptionsDialogBase<T extends Options>
         }
     }
 
-    protected abstract void getOptions(@NonNull final T options);
-
     /**
      * Show a popup info text.
      *
@@ -97,9 +95,7 @@ public abstract class OptionsDialogBase<T extends Options>
         mListener = new WeakReference<>(listener);
     }
 
-    void onConfirmOptions(@NonNull final T options) {
-        getOptions(options);
-
+    void onOptionsSet(@NonNull final T options) {
         if (mListener.get() != null) {
             mListener.get().onOptionsSet(options);
         } else {

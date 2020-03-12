@@ -51,7 +51,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -63,8 +62,9 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
@@ -179,7 +179,7 @@ public class UpdateFieldsModel
 
         addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
-        addField(prefs, UniqueId.BKEY_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_THUMBNAIL, R.string.lbl_cover, CopyIfBlank);
 
         addListField(prefs, UniqueId.BKEY_SERIES_ARRAY, R.string.lbl_series,
                      DBDefinitions.KEY_SERIES_TITLE);
@@ -240,17 +240,17 @@ public class UpdateFieldsModel
      * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
      * <p>
      *
-     * @param prefs            SharedPreferences
+     * @param prefs        SharedPreferences
      * @param fieldId      List-field name to use in FieldUsages
      * @param nameStringId Field label string resource ID
-     * @param prefKey      Field name to use for preferences.
+     * @param key          Field name to use for preferences.
      */
     private void addListField(@NonNull final SharedPreferences prefs,
                               @NonNull final String fieldId,
                               @StringRes final int nameStringId,
-                              @NonNull final String prefKey) {
+                              @NonNull final String key) {
 
-        if (App.isUsed(prefs, prefKey)) {
+        if (DBDefinitions.isUsed(prefs, key)) {
             final FieldUsage fieldUsage = FieldUsage.createListField(fieldId, nameStringId, prefs);
             mFieldUsages.put(fieldId, fieldUsage);
         }
@@ -259,8 +259,8 @@ public class UpdateFieldsModel
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param prefs            SharedPreferences
-     * @param fieldId      Field name to use in FieldUsages / use for preferences.
+     * @param prefs        SharedPreferences
+     * @param fieldId      Field name to use in FieldUsages, and as key for preferences.
      * @param nameStringId Field label string resource ID
      * @param defValue     default Usage for this field
      */
@@ -269,7 +269,7 @@ public class UpdateFieldsModel
                           @StringRes final int nameStringId,
                           @NonNull final FieldUsage.Usage defValue) {
 
-        if (App.isUsed(prefs, fieldId)) {
+        if (DBDefinitions.isUsed(prefs, fieldId)) {
             final FieldUsage fieldUsage = FieldUsage.create(fieldId, nameStringId, prefs, defValue);
             mFieldUsages.put(fieldId, fieldUsage);
         }
@@ -336,7 +336,7 @@ public class UpdateFieldsModel
                         DBDefinitions.KEY_PRICE_LISTED_CURRENCY, R.string.lbl_currency);
 
         for (int cIdx = 0; cIdx < 2; cIdx++) {
-            addRelatedField(UniqueId.BKEY_THUMBNAIL,
+            addRelatedField(DBDefinitions.KEY_THUMBNAIL,
                             UniqueId.BKEY_FILE_SPEC[cIdx], R.string.lbl_cover);
         }
 
@@ -479,7 +479,7 @@ public class UpdateFieldsModel
                 }
 
                 // no data needed, or no search-data available.
-                setBaseMessage(context.getString(R.string.progress_msg_skip_title, title));
+                setBaseMessage(context.getString(R.string.progress_msg_skip_s, title));
             }
         } catch (@NonNull final Exception e) {
             postSearch(e);
@@ -574,7 +574,7 @@ public class UpdateFieldsModel
         boolean copyThumb = false;
         switch (usage.getUsage()) {
             case CopyIfBlank:
-                File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+                File file = AppDir.getCoverFile(context, uuid, cIdx);
                 copyThumb = !file.exists() || file.length() == 0;
                 break;
 
@@ -591,8 +591,8 @@ public class UpdateFieldsModel
             final String fileSpec = bookData.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
             if (fileSpec != null) {
                 final File downloadedFile = new File(fileSpec);
-                final File destination = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
-                StorageUtils.renameFile(downloadedFile, destination);
+                final File destination = AppDir.getCoverFile(context, uuid, cIdx);
+                FileUtils.rename(downloadedFile, destination);
             }
         }
     }
@@ -722,7 +722,7 @@ public class UpdateFieldsModel
         // - If it's a thumbnail, then see if it's missing or empty.
         final String uuid = bookData.getString(DBDefinitions.KEY_BOOK_UUID);
         Objects.requireNonNull(uuid, ErrorMsg.NULL_UUID);
-        final File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+        final File file = AppDir.getCoverFile(context, uuid, cIdx);
         if (!file.exists() || file.length() == 0) {
             fieldUsages.put(usage.fieldId, usage);
         }

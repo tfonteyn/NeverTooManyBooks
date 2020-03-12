@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Data cleaning. Done on each startup.
@@ -76,8 +77,8 @@ public class DBCleanerTask
     @WorkerThread
     @Override
     protected Boolean doInBackground(@Nullable final Void... params) {
-        Thread.currentThread().setName("DBCleanerTask");
-        final Context context = App.getLocalizedAppContext();
+        Thread.currentThread().setName(TAG);
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
             Log.d(TAG, "doInBackground|taskId=" + getTaskId());

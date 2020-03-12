@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import java.io.Closeable;
@@ -52,7 +51,6 @@ public interface Importer
      *
      * @param context      Current context
      * @param importStream Stream for reading data
-     * @param coverFinder  (Optional) object to find a cover on the local device
      * @param listener     Progress and cancellation provider
      *
      * @return {@link Results}
@@ -62,48 +60,31 @@ public interface Importer
      */
     Results doBooks(@NonNull Context context,
                     @NonNull InputStream importStream,
-                    @Nullable CoverFinder coverFinder,
                     @NonNull ProgressListener listener)
             throws IOException, ImportException;
 
     /**
-     * Interface for finding a cover file on the local device if missing from import directory.
-     * <p>
-     * Legacy of the "import from a directory" model. Used by the CSV importer.
-     */
-    interface CoverFinder {
-
-        void copyOrRenameCoverFile(@NonNull String uuidFromFile)
-                throws IOException;
-
-        void copyOrRenameCoverFile(long srcId,
-                                   @NonNull String uuidFromBook)
-                throws IOException;
-    }
-
-    /**
      * Value class to report back what was imported.
+     * <p>
+     * Note: failed = processed - created - updated
      */
     class Results {
 
+        public final List<Pair<Integer, String>> failedCsvLines = new ArrayList<>();
         /** The total #books that were present in the import data. */
         public int booksProcessed;
         /** #books we created. */
         public int booksCreated;
         /** #books we updated. */
         public int booksUpdated;
-
         /** The total #covers that were present in the import data. */
         public int coversProcessed;
         /** #covers we created. */
         public int coversCreated;
         /** #covers we updated. */
         public int coversUpdated;
-
         /** #styles we imported. */
         public int styles;
-
-        public final List<Pair<Integer, String>> failedCsvLines = new ArrayList<>();
 
         @Override
         @NonNull
@@ -112,9 +93,11 @@ public interface Importer
                    + "booksProcessed=" + booksProcessed
                    + ", booksCreated=" + booksCreated
                    + ", booksUpdated=" + booksUpdated
+
                    + ", coversSkipped=" + coversProcessed
                    + ", coversCreated=" + coversCreated
                    + ", coversUpdated=" + coversUpdated
+
                    + ", styles=" + styles
                    + ", failedCsvLines=" + failedCsvLines
                    + '}';

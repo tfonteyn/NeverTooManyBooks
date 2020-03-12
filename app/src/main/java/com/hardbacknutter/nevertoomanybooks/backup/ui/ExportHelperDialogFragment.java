@@ -33,6 +33,8 @@ import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -44,10 +46,10 @@ import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBindi
 public class ExportHelperDialogFragment
         extends OptionsDialogBase<ExportHelper> {
 
+    /** Log tag. */
     public static final String TAG = "ExportHelperDialogFragment";
-    private static final String BKEY_OPTIONS = TAG + ":options";
 
-    private ExportHelper mExportHelper;
+    private ExportHelperViewModel mModel;
 
     private DialogExportOptionsBinding mVb;
 
@@ -61,19 +63,12 @@ public class ExportHelperDialogFragment
         return new ExportHelperDialogFragment();
     }
 
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState == null) {
-            mExportHelper = new ExportHelper(ExportHelper.ALL);
-        } else {
-            mExportHelper = savedInstanceState.getParcelable(BKEY_OPTIONS);
-        }
-    }
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
+
+        mModel = new ViewModelProvider(this).get(ExportHelperViewModel.class);
+
         // Reminder: *always* use the activity inflater here.
         //noinspection ConstantConditions
         final LayoutInflater inflater = getActivity().getLayoutInflater();
@@ -87,56 +82,56 @@ public class ExportHelperDialogFragment
                 .setTitle(R.string.title_export_options)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                        onConfirmOptions(mExportHelper))
+                        onOptionsSet(mModel.getHelper()))
                 .create();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putParcelable(BKEY_OPTIONS, mExportHelper);
     }
 
     /**
      * Set the checkboxes/radio-buttons from the options.
      */
     private void setOptions() {
-        mVb.cbxBooksCsv.setChecked((mExportHelper.options & Options.BOOK_CSV) != 0);
-        mVb.cbxCovers.setChecked((mExportHelper.options & Options.COVERS) != 0);
-        mVb.cbxPreferences.setChecked(
-                (mExportHelper.options & (Options.PREFERENCES | Options.BOOK_LIST_STYLES)) != 0);
-        mVb.cbxXmlTables.setChecked((mExportHelper.options & Options.XML_TABLES) != 0);
+        ExportHelper helper = mModel.getHelper();
 
-        // Radio group
-        final boolean allBooks =
-                (mExportHelper.options & ExportHelper.EXPORT_SINCE_LAST_BACKUP) == 0;
+        mVb.cbxBooksCsv.setChecked(helper.getOption(Options.BOOK_CSV));
+        mVb.cbxBooksCsv.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    helper.setOption(Options.BOOK_CSV, isChecked);
+                    mVb.rbBooksGroup.setEnabled(isChecked);
+                });
+        mVb.cbxCovers.setChecked(helper.getOption(Options.COVERS));
+        mVb.cbxCovers.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
+        mVb.cbxPreferences.setChecked(helper.getOption(
+                Options.PREFERENCES | Options.BOOK_LIST_STYLES));
+        mVb.cbxPreferences.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    helper.setOption(Options.PREFERENCES, isChecked);
+                    helper.setOption(Options.BOOK_LIST_STYLES, isChecked);
+                });
+        mVb.cbxXmlTables.setChecked(helper.getOption(Options.XML_TABLES));
+        mVb.cbxXmlTables.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> helper.setOption(Options.XML_TABLES, isChecked));
+
+        final boolean allBooks = !helper.getOption(ExportHelper.EXPORT_SINCE_LAST_BACKUP);
         mVb.rbBooksAll.setChecked(allBooks);
-//        mVb.infoBtnRbBooksAll.setOnClickListener(v -> infoPopup(v, mVb.rbBooksAll));
         mVb.rbBooksSinceLastBackup.setChecked(!allBooks);
-//        mVb.infoBtnRbBooksSync.setOnClickListener(v -> infoPopup(v, mVb.rbBooksSinceLastBackup));
+
+        mVb.rbBooksGroup.setOnCheckedChangeListener(
+                // We only have two buttons and one option, so just check the pertinent one.
+                (group, checkedId) -> helper.setOption(ExportHelper.EXPORT_SINCE_LAST_BACKUP,
+                                                       checkedId == mVb.rbBooksSinceLastBackup
+                                                               .getId()));
     }
 
-    @Override
-    public void onPause() {
-        getOptions(mExportHelper);
-        super.onPause();
-    }
+    public static class ExportHelperViewModel
+            extends ViewModel {
 
-    /**
-     * Read the checkboxes/radio-buttons, and set the options accordingly.
-     *
-     * @param options to populate
-     */
-    protected void getOptions(@NonNull final ExportHelper options) {
+        /**  export configuration. */
+        private final ExportHelper mHelper = new ExportHelper(ExportHelper.ALL);
 
-        options.setOption(Options.BOOK_CSV, mVb.cbxBooksCsv.isChecked());
-        options.setOption(Options.COVERS, mVb.cbxCovers.isChecked());
-        options.setOption(Options.PREFERENCES | Options.BOOK_LIST_STYLES,
-                          mVb.cbxPreferences.isChecked());
-        options.setOption(Options.XML_TABLES, mVb.cbxXmlTables.isChecked());
-
-        // radio group
-        options.setOption(ExportHelper.EXPORT_SINCE_LAST_BACKUP,
-                          mVb.rbBooksSinceLastBackup.isChecked());
+        @NonNull
+        ExportHelper getHelper() {
+            return mHelper;
+        }
     }
 }

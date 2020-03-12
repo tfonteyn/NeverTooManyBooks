@@ -27,15 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
+import androidx.annotation.NonNull;
+
 /**
  * Thrown when external storage media is not available.
  */
 public class ExternalStorageException
         extends RuntimeException {
 
-    private static final long serialVersionUID = -8444141375654155396L;
+    private static final long serialVersionUID = 6097469722012011738L;
 
-    public ExternalStorageException() {
-        super("no external media");
+    public ExternalStorageException(@NonNull final String message) {
+        super(message);
     }
 }

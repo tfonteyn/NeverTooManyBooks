@@ -215,7 +215,7 @@ public class Domain
         return mIsNotBlank;
     }
 
-    public boolean isCollationLocalized() {
+    boolean isCollationLocalized() {
         return mIsCollationLocalized;
     }
 

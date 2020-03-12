@@ -108,6 +108,7 @@ public class SimpleXmlFilter {
             long l = Long.parseLong(elementContext.getBody());
             bc.getData().putLong(name, l);
         } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
         }
     };
     @NonNull
@@ -153,6 +154,7 @@ public class SimpleXmlFilter {
                 bc.getData().putDouble(name, d);
 
             } catch (@NonNull final NumberFormatException ignore) {
+                // ignore
             }
         };
 

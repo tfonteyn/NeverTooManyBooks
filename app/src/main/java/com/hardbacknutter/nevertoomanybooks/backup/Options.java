@@ -27,16 +27,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
+import java.util.Date;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 public abstract class Options
         implements Parcelable {
@@ -55,14 +60,18 @@ public abstract class Options
     //public static final int IMPORT_6 = 1 << 6;
     //public static final int IMPORT_7 = 1 << 7;
     //public static final int DATABASE = 1 << 8;
+
+    /** Last full backup date. */
+    private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
+
     @Nullable
-    public Uri uri;
+    private Uri mUri;
     /**
      * Bitmask.
      * Contains the user selected options before doing the import/export.
      * After the import/export, reflects the entities actually imported/exported.
      */
-    public int options;
+    private int mOptions;
 
     /**
      * Constructor.
@@ -73,21 +82,8 @@ public abstract class Options
      */
     Options(final int options,
             @Nullable final Uri uri) {
-        this.options = options;
-        this.uri = uri;
-    }
-
-    public void setUri(@Nullable final Uri uri) {
-        this.uri = uri;
-    }
-
-    public void setOption(final int optionBit,
-                          final boolean isSet) {
-        if (isSet) {
-            options |= optionBit;
-        } else {
-            options &= ~optionBit;
-        }
+        mOptions = options;
+        mUri = uri;
     }
 
     /**
@@ -96,12 +92,77 @@ public abstract class Options
      * @param in Parcel to construct the object from
      */
     Options(@NonNull final Parcel in) {
-        options = in.readInt();
-        uri = in.readParcelable(getClass().getClassLoader());
+        mOptions = in.readInt();
+        mUri = in.readParcelable(getClass().getClassLoader());
+    }
+
+    /**
+     * Store the date of the last full backup ('now') and reset the startup prompt-counter.
+     *
+     * @param context Current context
+     */
+    static void setLastFullBackupDate(@NonNull final Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putString(PREF_LAST_FULL_BACKUP_DATE,
+                                    DateUtils.utcSqlDateTimeForToday())
+                         .putInt(Prefs.PREF_STARTUP_BACKUP_COUNTDOWN,
+                                 Prefs.STARTUP_BACKUP_COUNTDOWN)
+                         .apply();
+    }
+
+    /**
+     * Get the last time we made a full backup.
+     *
+     * @param context Current context
+     *
+     * @return Date in the UTC timezone.
+     */
+    @Nullable
+    static Date getLastFullBackupDate(@NonNull final Context context) {
+        String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
+                                             .getString(PREF_LAST_FULL_BACKUP_DATE, null);
+
+        if (lastBackup != null && !lastBackup.isEmpty()) {
+            return DateUtils.parseSqlDateTime(lastBackup);
+        }
+
+        return null;
+    }
+
+    @NonNull
+    public Uri getUri() {
+        Objects.requireNonNull(mUri, ErrorMsg.NULL_URI);
+        return mUri;
+    }
+
+    public void setUri(@Nullable final Uri uri) {
+        this.mUri = uri;
+    }
+
+    public void setOption(final int optionBit,
+                          final boolean isSet) {
+        if (isSet) {
+            mOptions |= optionBit;
+        } else {
+            mOptions &= ~optionBit;
+        }
+    }
+
+    public boolean getOption(final int optionBit) {
+        return (mOptions & optionBit) != 0;
+    }
+
+    public int getOptions() {
+        return mOptions;
+    }
+
+    public void setOptions(final int options) {
+        this.mOptions = options;
     }
 
     void validate() {
-        Objects.requireNonNull(uri, ErrorMsg.NULL_URI);
+        Objects.requireNonNull(mUri, ErrorMsg.NULL_URI);
     }
 
     @SuppressWarnings("SameReturnValue")
@@ -113,7 +174,7 @@ public abstract class Options
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeInt(options);
-        dest.writeParcelable(uri, flags);
+        dest.writeInt(mOptions);
+        dest.writeParcelable(mUri, flags);
     }
 }

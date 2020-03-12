@@ -31,7 +31,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -46,7 +46,7 @@ public class ListOfValuesFilter<T>
     @NonNull
     private final TableDefinition mTable;
     @NonNull
-    private final String mDomain;
+    private final String mDomainKey;
 
     /** CSV list of (escaped) values. */
     @NonNull
@@ -56,14 +56,14 @@ public class ListOfValuesFilter<T>
      * Constructor.
      *
      * @param table  to use by the expression
-     * @param domain to use by the expression
+     * @param domainKey to use by the expression
      * @param list   of values
      */
     public ListOfValuesFilter(@NonNull final TableDefinition table,
-                              @NonNull final String domain,
+                              @NonNull final String domainKey,
                               @NonNull final Iterable<T> list) {
         mTable = table;
-        mDomain = domain;
+        mDomainKey = domainKey;
 
         mCriteria = new StringList<>(new StringList.Factory<T>() {
             @Override
@@ -88,12 +88,12 @@ public class ListOfValuesFilter<T>
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomain) + " IN (" + mCriteria + "))";
+        return '(' + mTable.dot(mDomainKey) + " IN (" + mCriteria + "))";
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return App.isUsed(context, mDomain);
+        return DBDefinitions.isUsed(context, mDomainKey);
     }
 
     @Override
@@ -101,7 +101,7 @@ public class ListOfValuesFilter<T>
     public String toString() {
         return "ListOfValuesFilter{"
                + "mTable=" + mTable.getName()
-               + ", mDomain=" + mDomain
+               + ", mDomain=" + mDomainKey
                + ", mCriteria=`" + mCriteria + '`'
                + '}';
     }

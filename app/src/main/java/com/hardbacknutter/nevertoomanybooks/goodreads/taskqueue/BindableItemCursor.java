@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
@@ -37,5 +38,5 @@ interface BindableItemCursor<BI extends BindableItem>
     long getId();
 
     @NonNull
-    BI getBindableItem();
+    BI getBindableItem(@NonNull Context context);
 }

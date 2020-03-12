@@ -166,8 +166,14 @@ public final class Prefs {
     private Prefs() {
     }
 
+
     /**
      * Copy all preferences from source to destination.
+     *
+     * @param context     Current context
+     * @param source      SharedPreferences name
+     * @param destination SharedPreferences name
+     * @param clearSource flag: clear/delete the source after copying
      */
     @SuppressWarnings("unused")
     protected static void copyPrefs(@NonNull final Context context,
@@ -213,6 +219,9 @@ public final class Prefs {
 
     /**
      * DEBUG only.
+     *
+     * @param context Current context
+     * @param uuid    SharedPreferences
      */
     @SuppressLint("LogConditional")
     public static void dumpPreferences(@NonNull final Context context,

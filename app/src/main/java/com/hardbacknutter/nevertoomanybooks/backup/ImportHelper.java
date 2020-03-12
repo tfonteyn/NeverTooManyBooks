@@ -105,12 +105,12 @@ public class ImportHelper
     }
 
     /**
-     * Will be called by {@link RestoreTask}.
+     * Will be called by {@link ImportTask}.
      */
     public void validate() {
         super.validate();
 
-        if ((options & MASK) == 0) {
+        if ((getOptions() & MASK) == 0) {
             throw new IllegalStateException("options not set");
         }
     }
@@ -119,7 +119,7 @@ public class ImportHelper
     @NonNull
     public String toString() {
         return "ImportHelper{"
-               + ", options=0b" + Integer.toBinaryString(options)
+               + ", options=0b" + Integer.toBinaryString(getOptions())
                + ", mResults=" + mResults
                + '}';
     }

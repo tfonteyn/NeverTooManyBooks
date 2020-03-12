@@ -59,6 +59,7 @@ import android.graphics.Region;
 import android.media.FaceDetector;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 
 import androidx.annotation.CallSuper;
@@ -79,7 +80,7 @@ import java.util.concurrent.CountDownLatch;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * The activity can crop specific region of interest from an image.
@@ -534,19 +535,19 @@ public class CropImageActivity
     @StringRes
     private int checkStorage() {
 
-        if (!StorageUtils.isExternalStorageMounted()) {
+        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             return R.string.error_storage_not_accessible;
         }
 
-        long freeSpace = StorageUtils.getSharedStorageFreeSpace(this);
-        if (freeSpace != StorageUtils.ERROR_CANNOT_STAT) {
+        long freeSpace = AppDir.Root.getFreeSpace(this);
+        if (freeSpace >= 0) {
             // make an educated guess how many pics we can store.
             if (freeSpace / ESTIMATED_PICTURE_SIZE < 1) {
                 return R.string.error_storage_no_space_left;
             }
         }
 
-        // all ok
+        // an error occurred.
         return 0;
     }
 }

@@ -37,34 +37,36 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupReader;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveManager;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
-public class RestoreTask
+public class ImportTask
         extends TaskBase<Void, ImportHelper> {
 
     /** Log tag. */
     private static final String TAG = "RestoreTask";
 
-    /** what and how to import. */
+    /** import configuration. */
     @NonNull
-    private final ImportHelper mImportHelper;
+    private final ImportHelper mHelper;
 
     /**
      * Constructor.
      *
-     * @param importHelper the import settings
+     * @param helper  import configuration
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RestoreTask(@NonNull final ImportHelper importHelper,
-                       @NonNull final TaskListener<ImportHelper> taskListener) {
+    public ImportTask(@NonNull final ImportHelper helper,
+                      @NonNull final TaskListener<ImportHelper> taskListener) {
         super(R.id.TASK_ID_READ_FROM_ARCHIVE, taskListener);
-        mImportHelper = importHelper;
-        mImportHelper.validate();
+        mHelper = helper;
+        mHelper.validate();
     }
 
     @Override
@@ -72,16 +74,15 @@ public class RestoreTask
     @WorkerThread
     protected ImportHelper doInBackground(final Void... params) {
         Thread.currentThread().setName(TAG);
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
-        Context context = App.getLocalizedAppContext();
-        //noinspection ConstantConditions
-        try (BackupReader reader = BackupManager.getReader(context, mImportHelper.uri)) {
-            reader.restore(context, mImportHelper, getProgressListener());
+        try (ArchiveReader reader = ArchiveManager.getReader(context, mHelper)) {
+            reader.read(context, getProgressListener());
 
         } catch (@NonNull final IOException | ImportException | InvalidArchiveException e) {
             Logger.error(context, TAG, e);
             mException = e;
         }
-        return mImportHelper;
+        return mHelper;
     }
 }

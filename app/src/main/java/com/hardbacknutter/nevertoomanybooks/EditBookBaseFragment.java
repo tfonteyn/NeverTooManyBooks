@@ -203,7 +203,8 @@ public abstract class EditBookBaseFragment
                          @NonNull final List<String> list) {
         Field field = mFragmentVM.getFields().getField(fieldId);
         // only bother when it's in use and we have a list
-        if (field.isUsed() && !list.isEmpty()) {
+        //noinspection ConstantConditions
+        if (field.isUsed(getContext()) && !list.isEmpty()) {
             AutoCompleteTextView view = (AutoCompleteTextView) field.getAccessor().getView();
             //noinspection unchecked
             Fields.FormattedDiacriticArrayAdapter adapter =
@@ -229,7 +230,8 @@ public abstract class EditBookBaseFragment
                        final boolean isPartial) {
         Field field = mFragmentVM.getFields().getField(fieldId);
         // only bother when it's in use
-        if (field.isUsed()) {
+        //noinspection ConstantConditions
+        if (field.isUsed(getContext())) {
             View view = field.getAccessor().getView();
             if (isPartial) {
                 view.setOnClickListener(v -> PartialDatePickerDialogFragment
@@ -255,7 +257,8 @@ public abstract class EditBookBaseFragment
                             @Nullable final View.OnClickListener listener) {
         Field field = mFragmentVM.getFields().getField(fieldId);
         // only bother when it's in use
-        if (field.isUsed()) {
+        //noinspection ConstantConditions
+        if (field.isUsed(getContext())) {
             field.getAccessor().getView().setOnClickListener(listener);
         }
     }

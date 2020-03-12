@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
@@ -342,10 +341,6 @@ public class SynchronizedStatement
                 Log.d(TAG, "execute|" + mStatement);
             }
             mStatement.execute();
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(TAG, e, mStatement.toString());
-            throw e;
         } finally {
             txLock.unlock();
         }
@@ -368,10 +363,6 @@ public class SynchronizedStatement
                 Log.d(TAG, "executeUpdateDelete|" + mStatement + "|rowsAffected=" + rowsAffected);
             }
             return rowsAffected;
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(TAG, e, mStatement.toString());
-            throw e;
         } finally {
             exclusiveLock.unlock();
         }
@@ -399,10 +390,6 @@ public class SynchronizedStatement
                 }
             }
             return id;
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(TAG, e, mStatement.toString());
-            throw e;
         } finally {
             exclusiveLock.unlock();
         }

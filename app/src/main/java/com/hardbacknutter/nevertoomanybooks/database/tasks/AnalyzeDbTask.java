@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Run 'analyse' on our databases.
@@ -50,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class AnalyzeDbTask
         extends TaskBase<Void, Boolean> {
 
+    /** Log tag. */
     private static final String TAG = "AnalyzeDbTask";
 
     /** Database Access. */
@@ -61,6 +63,7 @@ public class AnalyzeDbTask
     /**
      * @param taskId       a task identifier, will be returned in the task finished listener.
      * @param db           Database Access
+     * @param doCoversDb   Flag: also do the covers database (or not)
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
@@ -75,8 +78,8 @@ public class AnalyzeDbTask
 
     @Override
     protected Boolean doInBackground(@Nullable final Void... params) {
-        Thread.currentThread().setName("AnalyzeDbTask");
-        final Context context = App.getLocalizedAppContext();
+        Thread.currentThread().setName(TAG);
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
             Log.d(TAG, "doInBackground|taskId=" + getTaskId());

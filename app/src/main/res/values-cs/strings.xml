@@ -346,7 +346,7 @@
     <string name="menu_amazon_books_in_series">Knihy v této sérii</string>
     <string name="menu_author_details">Všechna díla tohoto autora</string>
     <string name="menu_author_works_all">Ukázat vše</string>
-    <string name="menu_show_all">Ukázat vše</string>
+    <string name="X_menu_show_all">Ukázat vše</string>
     <string name="menu_author_works_book">Pouze knihy</string>
     <string name="menu_author_works_toc">Pouze tituly obsahu</string>
     <string name="menu_booklist_styles">Styly pro seznam knih</string>
@@ -368,7 +368,7 @@
     <string name="menu_level_expand">Rozbalit vše</string>
     <string name="menu_loan_lend_book">Půjčit knihu…</string>
     <string name="menu_loan_return_book">Vypůjčená kniha je zpět</string>
-    <string name="menu_populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
+    <string name="isfdb_menu_populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
     <string name="fab_add_book_by_internet_search">Prohledat internet</string>
     <string name="menu_set_complete">Nastavit na „kompletní“</string>
     <string name="menu_set_incomplete">Nastaveno na „neúplné“</string>
@@ -418,7 +418,7 @@
     <string name="progress_msg_searching">Vyhledávání…</string>
     <string name="progress_msg_searching_site">Vyhledávám na %1$s</string>
     <string name="progress_msg_sending">Odesílá se, prosím čekejte…</string>
-    <string name="progress_msg_skip_title">Vynechat - %1$s</string>
+    <string name="progress_msg_skip_s">Vynechat - %1$s</string>
     <string name="progress_msg_starting_up">Spouštění…</string>
     <string name="progress_msg_upgrading">Aktualizování…</string>
     <string name="pt_allow_mobile_data">Povolit používání mobilních dat</string>
@@ -539,7 +539,7 @@
     <string name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Všechny uložené změny se aplikují u všech záznamů</string>
     <string name="warning_import_be_cautious">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
-    <string name="warning_isfdb_only">(podporuje pouze webová stránka ISFDB)</string>
+    <string name="isfdb_warning_limited_to">(podporuje pouze webová stránka ISFDB)</string>
     <string name="warning_missing_name">Jméno nesmí být prázdné</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
     <string name="warning_no_isbn_stored_for_book">Kniha nemá uložen ISBN</string>
@@ -549,8 +549,8 @@
     <string name="warning_series_already_in_list">Série je již v seznamu</string>
     <string name="warning_toc_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu</string>
-    <string name="warning_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
-    <string name="warning_unsaved_edits2">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>
+    <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
+    <string name="confirm_unsaved_edits2">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>
     <string name="warning_x_already_exists">%1$s již existuje.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s“ není platné číslo kód</string>
     <string name="x_of_y">%1$d z %2$d</string>
@@ -642,8 +642,8 @@
     <string name="pt_maintenance">Údržba</string>
     <string name="lbl_import_export_csv">CSV (bez obrázků)</string>
     <string name="pt_primary_author_type">Typ primárního autora</string>
-    <string name="lbl_dust_cover_none_or_unknown">Žádný</string>
-    <string name="lbl_dust_cover_missing">Chybějící</string>
+    <string name="lbl_condition_dust_cover_none_or_unknown">Žádný</string>
+    <string name="lbl_condition_dust_cover_missing">Chybějící</string>
     <string name="menu_rebuild_index">Znovu vytvořit index</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="lbl_condition_reading_copy">Čtení kopie</string>
@@ -655,5 +655,9 @@
     <string name="warning_import_csv_failed_lines_some">Analýza linek CSV se nezdařila pro řádky %1$s.</string>
     <string name="warning_import_csv_failed_lines_lots">Analýza linek CSV se nezdařila pro linky %1$s a další.</string>
     <string name="warning_import_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
+    <string name="notification_channel_info">Informace</string>
+    <string name="notification_channel_error">Chyba</string>
+    <string name="gr_pt_collect_genre">Jako žánry knih použijte populární názvy knihoven</string>
+    <string name="lbl_condition">Stav</string>
 
 </resources>

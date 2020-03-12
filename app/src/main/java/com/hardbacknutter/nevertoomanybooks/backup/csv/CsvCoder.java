@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -303,12 +304,15 @@ final class CsvCoder {
                 @NonNull
                 public Bookshelf decode(@NonNull final String element) {
                     List<String> parts = StringList.newInstance().decodeElement(element);
+
                     // the right thing to do would be: get a database and get the 'real'
-                    // default style. As this is a lot of overkill for importing,
-                    // and as hopefully the element will contain a UUID anyhow,
-                    // we're just using the builtin default.
-                    Bookshelf bookshelf = new Bookshelf(parts.get(0),
-                                                        BooklistStyle.Builtin.DEFAULT);
+                    // default style.
+                    // BooklistStyle style = BooklistStyle.getDefault(App.getAppContext(), mDb);
+                    // This is a lot of overkill for importing and hopefully the element
+                    // will contain a UUID anyhow, hence we're just using the builtin default.
+                    BooklistStyle style = BooklistStyle.Builtin.getDefault(App.getAppContext());
+
+                    Bookshelf bookshelf = new Bookshelf(parts.get(0), style);
                     if (parts.size() > 1) {
                         try {
                             JSONObject details = new JSONObject(parts.get(1));

@@ -153,6 +153,7 @@ public abstract class TaskBase<Params, Result>
      *
      * @return ProgressListener
      */
+    @NonNull
     protected ProgressListener getProgressListener() {
         return mProgressListener;
     }

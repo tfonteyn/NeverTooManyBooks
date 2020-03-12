@@ -553,6 +553,7 @@ class LibraryThingHandler
                     long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
                     mBookData.putLong(DBDefinitions.KEY_EID_LIBRARY_THING, id);
                 } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
                 }
             }
 //          } else if (localName.equalsIgnoreCase(XML_RESPONSE)){

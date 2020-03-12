@@ -340,7 +340,7 @@
     <string name="menu_amazon_books_in_series">Βιβλία σε αυτή τη σειρά</string>
     <string name="menu_author_details">Όλα τα έργα αυτού του συγγραφέα</string>
     <string name="menu_author_works_all">Προβολή όλων</string>
-    <string name="menu_show_all">Προβολή όλων</string>
+    <string name="X_menu_show_all">Προβολή όλων</string>
     <string name="menu_author_works_book">Μόνο βιβλία</string>
     <string name="menu_author_works_toc">Μόνο τίτλοι περιεχομένου</string>
     <string name="menu_booklist_styles">Στυλ λίστας βιβλίων</string>
@@ -362,7 +362,7 @@
     <string name="menu_level_expand">Επέκταση Όλων</string>
     <string name="menu_loan_lend_book">Δανεισμός βιβλίου…</string>
     <string name="menu_loan_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
-    <string name="menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
+    <string name="isfdb_menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
     <string name="fab_add_book_by_internet_search">Αναζήτηση στο Internet</string>
     <string name="menu_set_complete">Ορίστε να «ολοκληρώσετε»</string>
     <string name="menu_set_incomplete">Ρυθμίστε σε «ατελές»</string>
@@ -412,7 +412,7 @@
     <string name="progress_msg_searching">Γίνεται αναζήτηση…</string>
     <string name="progress_msg_searching_site">Αναζήτηση στο %1$s</string>
     <string name="progress_msg_sending">Αποστολή, παρακαλώ περιμένετε…</string>
-    <string name="progress_msg_skip_title">Παράβλεψη - %1$s</string>
+    <string name="progress_msg_skip_s">Παράβλεψη - %1$s</string>
     <string name="progress_msg_starting_up">Εκκίνηση…</string>
     <string name="progress_msg_upgrading">Γίνεται αναβάθμηση…</string>
     <string name="pt_allow_mobile_data">Να επιτρέπεται η χρήση δεδομένων κινητής τηλεφωνίας</string>
@@ -536,7 +536,7 @@
     <string name="warning_if_month_set_year_must_be">Αν προσδιοριστεί μήνας, τότε πρέπει να προσδιοριστεί και έτος.</string>
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
     <string name="warning_import_be_cautious">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
-    <string name="warning_isfdb_only">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
+    <string name="isfdb_warning_limited_to">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
     <string name="warning_missing_name">Το όνομα δε μπορεί να είναι κενό</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="warning_no_isbn_stored_for_book">Δεν υπάρχει αποθηκευμένο ISBN για το βιβλίο</string>
@@ -546,8 +546,8 @@
     <string name="warning_series_already_in_list">Η σειρά βρίσκεται ήδη στη λίστα</string>
     <string name="warning_toc_confirm">Παρακαλούμε επιβεβαιώστε ότι αυτοί οι τίτλοι ανθολογίας είναι (κυρίως) σωστοί</string>
     <string name="warning_book_not_found">Δεν μπόρεσε να βρεθεί το συγκεκριμένο βιβλίο</string>
-    <string name="warning_unsaved_edits">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
-    <string name="warning_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
+    <string name="confirm_unsaved_edits">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
+    <string name="confirm_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
     <string name="warning_x_already_exists">Το %1$s υπάρχει ήδη.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» δεν είναι έγκυρος κωδικός κώδικας</string>
     <string name="x_of_y">%1$d από %2$d</string>
@@ -590,7 +590,6 @@
     <string name="hint_empty_read_status">(Ανάγνωση άγνωστης κατάστασης)</string>
     <string name="warning_select_at_least_1_group">Επιλέξτε τουλάχιστον μία ομάδα.</string>
     <string name="lbl_color">χρώμα</string>
-    <string name="book_format_softcover">μαλακό βιβλίο</string>
     <string name="book_color_full_color">Εγχρωμος</string>
     <string name="book_color_uncolored">"γραπτώς "</string>
     <string name="size_hidden">Κρυμμένος</string>
@@ -640,8 +639,8 @@
     <string name="pt_maintenance">Συντήρηση</string>
     <string name="lbl_import_export_csv">CSV (χωρίς εικόνες)</string>
     <string name="pt_primary_author_type">Κύριος τύπος συγγραφέα</string>
-    <string name="lbl_dust_cover_none_or_unknown">Κανένας</string>
-    <string name="lbl_dust_cover_missing">Λείπει</string>
+    <string name="lbl_condition_dust_cover_none_or_unknown">Κανένας</string>
+    <string name="lbl_condition_dust_cover_missing">Λείπει</string>
     <string name="menu_rebuild_index">Αναδημιουργία ευρετηρίου</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="lbl_condition_reading_copy">Ανάγνωση αντιγράφου</string>
@@ -653,5 +652,9 @@
     <string name="warning_import_csv_failed_lines_some">Η ανάλυση του CSV απέτυχε για τις γραμμές %1$s.</string>
     <string name="warning_import_csv_failed_lines_lots">Η ανάλυση του CSV απέτυχε για τις γραμμές %1$s και άλλες.</string>
     <string name="warning_import_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
+    <string name="notification_channel_info">Πληροφορίες</string>
+    <string name="notification_channel_error">Λάθος</string>
+    <string name="gr_pt_collect_genre">Χρησιμοποιήστε δημοφιλή ονόματα βιβλιοθηκών ως είδη βιβλίων</string>
+    <string name="lbl_condition">Κατάσταση</string>
 
 </resources>

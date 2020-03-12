@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
@@ -166,7 +167,7 @@ public class SearchTask
     @Override
     @Nullable
     protected Bundle doInBackground(@NonNull final SearchTask.By... by) {
-        Context context = App.getLocalizedAppContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
 
         publishProgress(new TaskListener.ProgressMessage(getTaskId(), mProgressTitle));

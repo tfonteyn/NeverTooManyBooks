@@ -69,7 +69,7 @@ public interface Exporter
         /** #books we exported. */
         public int booksExported;
 
-        /** #books that did not have a front-cover / back-cover . */
+        /** #books that did not have a front-cover [0] / back-cover [1]. */
         public final int[] coversMissing = new int[2];
         /** #covers exported. */
         public int coversExported;

@@ -74,10 +74,11 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -189,15 +190,15 @@ class ImportLegacyTask
      */
     @Override
     public boolean run(@NonNull final QueueManager queueManager) {
-        Context localContext = App.getLocalizedAppContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
         try (DAO db = new DAO(TAG)) {
             // Load the Goodreads reviews
-            boolean ok = processReviews(localContext, db, queueManager);
+            final boolean ok = processReviews(context, db, queueManager);
             // If it's a sync job, then start the 'send' part and save last syn date
             if (mIsSync) {
-                setLastSyncDate(localContext, mStartDate);
+                setLastSyncDate(context, mStartDate);
                 QueueManager.getQueueManager().enqueueTask(
-                        new SendBooksLegacyTask(localContext.getString(R.string.gr_title_send_book),
+                        new SendBooksLegacyTask(context.getString(R.string.gr_title_send_book),
                                                 true),
                         QueueManager.Q_MAIN);
             }
@@ -464,8 +465,8 @@ class ImportLegacyTask
 
                     String uuid = db.getBookUuid(id);
                     if (uuid != null) {
-                        File destination = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
-                        StorageUtils.renameFile(downloadedFile, destination);
+                        File destination = AppDir.getCoverFile(context, uuid, cIdx);
+                        FileUtils.rename(downloadedFile, destination);
                     }
                 }
             }
@@ -657,7 +658,7 @@ class ImportLegacyTask
                 bsName = translateBookshelf(userLocale, db, bsName);
 
                 if (bsName != null && !bsName.isEmpty()) {
-                    bsList.add(new Bookshelf(bsName, BooklistStyle.getDefaultStyle(context, db)));
+                    bsList.add(new Bookshelf(bsName, BooklistStyle.getDefault(context, db)));
                 }
             }
             //TEST see above

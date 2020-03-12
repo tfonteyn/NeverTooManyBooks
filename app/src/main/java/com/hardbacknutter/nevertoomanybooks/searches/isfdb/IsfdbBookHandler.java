@@ -445,6 +445,7 @@ class IsfdbBookHandler
      * }
      * </pre>
      *
+     * @param context          Current context
      * @param addSeriesFromToc whether the TOC should get parsed for Series information
      * @param fetchThumbnail   Set to {@code true} if we want to get thumbnails
      * @param bookData         Bundle to save results in (passed in to allow mocking)
@@ -646,6 +647,7 @@ class IsfdbBookHandler
                     long record = Long.parseLong(tmpString);
                     bookData.putLong(DBDefinitions.KEY_EID_ISFDB, record);
                 } catch (@NonNull final NumberFormatException ignore) {
+                    // ignore
                 }
             }
         }

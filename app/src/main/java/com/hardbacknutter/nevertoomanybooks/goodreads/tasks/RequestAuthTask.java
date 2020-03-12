@@ -95,13 +95,13 @@ public class RequestAuthTask
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.RequestAuthTask");
-        Context context = App.getTaskContext();
+        final Context context = App.getTaskContext();
 
         if (!NetworkUtils.isNetworkAvailable(context)) {
             return GrStatus.NoInternet;
         }
 
-        GoodreadsAuth grAuth = new GoodreadsAuth(context);
+        final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         if (grAuth.hasValidCredentials(context)) {
             return GrStatus.AuthorizationAlreadyGranted;
         }

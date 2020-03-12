@@ -25,96 +25,98 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
-import android.net.Uri;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Objects;
+import java.io.OutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupWriter;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
-/**
- * Calls the default {@link  BackupManager#getWriter} to create a backup.
- */
-public class BackupTask
+public class CsvExportTask
         extends TaskBase<Void, ExportHelper> {
 
     /** Log tag. */
-    private static final String TAG = "BackupTask";
+    private static final String TAG = "ExportCSVTask";
+    /** Write to this temp file first. */
+    private static final String TEMP_FILE_NAME = TAG + ".tmp";
 
-    /** what and how to export. */
     @NonNull
-    private final ExportHelper mExportHelper;
+    private final CsvExporter mExporter;
+    /**  export configuration. */
+    @NonNull
+    private final ExportHelper mHelper;
 
     /**
      * Constructor.
      *
-     * @param exportHelper the export settings
+     * @param context      Current context
+     * @param helper the export settings
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public BackupTask(@NonNull final ExportHelper exportHelper,
-                      @NonNull final TaskListener<ExportHelper> taskListener) {
-        super(R.id.TASK_ID_WRITE_TO_ARCHIVE, taskListener);
-        mExportHelper = exportHelper;
-        mExportHelper.validate();
+    public CsvExportTask(@NonNull final Context context,
+                         @NonNull final ExportHelper helper,
+                         @NonNull final TaskListener<ExportHelper> taskListener) {
+        super(R.id.TASK_ID_CSV_EXPORT, taskListener);
+        mHelper = helper;
+        mExporter = new CsvExporter(context, helper);
     }
 
-    @UiThread
     @Override
+    @UiThread
     protected void onCancelled(@NonNull final ExportHelper result) {
-        cleanup(App.getAppContext());
+        cleanup(App.getTaskContext());
         super.onCancelled(result);
     }
 
-    @AnyThread
     private void cleanup(@NonNull final Context context) {
-        StorageUtils.deleteFile(ExportHelper.getTempFile(context));
+        FileUtils.delete(getTempFile(context));
+        try {
+            mExporter.close();
+        } catch (@NonNull final IOException ignore) {
+            // ignore
+        }
+    }
+
+    private File getTempFile(@NonNull final Context context) {
+        return AppDir.Cache.getFile(context, TEMP_FILE_NAME);
     }
 
     @Override
     @NonNull
     @WorkerThread
     protected ExportHelper doInBackground(final Void... params) {
-        Thread.currentThread().setName(TAG);
+        Thread.currentThread().setName("ExportCSVTask");
+        final Context context = App.getTaskContext();
 
-        Context context = App.getLocalizedAppContext();
-        Uri uri = Uri.fromFile(ExportHelper.getTempFile(context));
-        try (BackupWriter writer = BackupManager.getWriter(context, uri)) {
+        try (OutputStream os = new FileOutputStream(getTempFile(context))) {
+            mHelper.addResults(mExporter.doBooks(os, getProgressListener()));
 
-            writer.backup(context, mExportHelper, getProgressListener());
             if (!isCancelled()) {
-                Objects.requireNonNull(mExportHelper.uri, ErrorMsg.NULL_URI);
-                // the export was successful
-                StorageUtils.exportFile(context, ExportHelper.getTempFile(context),
-                                        mExportHelper.uri);
-
-                // if the backup was a full one (not a 'since') remember that.
-                if ((mExportHelper.options & ExportHelper.EXPORT_SINCE_LAST_BACKUP) == 0) {
-                    BackupManager.setLastFullBackupDate(context);
-                }
-
+                // send to user destination
+                FileUtils.copy(context, getTempFile(context), mHelper.getUri());
             }
-            return mExportHelper;
+            return mHelper;
 
-        } catch (@NonNull final IOException e) {
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final IOException e) {
             Logger.error(context, TAG, e);
             mException = e;
-            return mExportHelper;
+            return mHelper;
         } finally {
             cleanup(context);
         }

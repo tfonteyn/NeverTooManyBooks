@@ -29,16 +29,25 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 
 /**
  * Languages.
@@ -49,6 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEn
  * The JDK uses "ISO3" for the 3-character ISO 639-2 format (not to be confused with ISO 639-3)
  */
 public final class LanguageUtils {
+
+    private static final String TAG = "LanguageUtils";
 
     /**
      * The SharedPreferences name where we'll maintain our language to ISO mappings.
@@ -66,17 +77,17 @@ public final class LanguageUtils {
      * Try to convert a Language ISO code to the display name.
      *
      * @param context Current context
-     * @param iso     the ISO code
+     * @param iso3     the ISO code
      *
      * @return the display name for the language,
      * or the input string itself if it was an invalid ISO code
      */
     @NonNull
-    public static String getDisplayName(@NonNull final Context context,
-                                        @NonNull final String iso) {
-        Locale langLocale = LocaleUtils.getLocale(context, iso);
+    public static String getDisplayNameFromISO3(@NonNull final Context context,
+                                                @NonNull final String iso3) {
+        Locale langLocale = LocaleUtils.getLocale(context, iso3);
         if (langLocale == null) {
-            return iso;
+            return iso3;
         }
         return langLocale.getDisplayLanguage(LocaleUtils.getUserLocale(context));
     }
@@ -103,21 +114,21 @@ public final class LanguageUtils {
     /**
      * Try to convert a "language-country" code to an ISO3 code.
      *
-     * @param source a standard ISO string like "en" or "en-GB" or "en-GB*"
+     * @param code a standard ISO string like "en" or "en-GB" or "en-GB*"
      *
      * @return the ISO code, or if conversion failed, the input string
      */
     @NonNull
-    public static String getISO3Language(@NonNull final String source) {
+    public static String getISO3FromCode(@NonNull final String code) {
         // shortcut for English "en", "en-GB", etc
-        if ("en".equals(source) || source.startsWith("en_") || source.startsWith("en-")) {
+        if ("en".equals(code) || code.startsWith("en_") || code.startsWith("en-")) {
             return "eng";
         } else {
             try {
-                Locale bl = LocaleUtils.createLocale(source);
+                Locale bl = LocaleUtils.createLocale(code);
                 return bl.getISO3Language();
             } catch (@NonNull final MissingResourceException ignore) {
-                return source;
+                return code;
             }
         }
     }
@@ -148,7 +159,7 @@ public final class LanguageUtils {
      * @return a language code that can be used with {@code new Locale(x)},
      * or the incoming string if conversion failed.
      */
-    public static String getLocaleIsoFromIso3(@NonNull final Context context,
+    public static String getLocaleIsoFromISO3(@NonNull final Context context,
                                               @NonNull final String iso3) {
         // create the map on first usage
         if (LANG3_TO_LANG2_MAP == null) {
@@ -354,54 +365,6 @@ public final class LanguageUtils {
     }
 
     /**
-     * generate initial language2iso mappings.
-     *
-     * @param context Current context
-     */
-    public static void createLanguageMappingCache(@NonNull final Context context) {
-
-        SharedPreferences prefs = getLanguageCache(context);
-
-        // the one the user is using our app in (can be different from the system one)
-        createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));
-
-        // the system default
-        createLanguageMappingCache(prefs, LocaleUtils.getSystemLocale());
-
-        //NEWTHINGS: add new site specific ID: if a site uses a specific language, add it here
-
-        // Dutch
-        createLanguageMappingCache(prefs, StripInfoSearchEngine.SITE_LOCALE);
-        // Dutch
-        //createLanguageMappingCache(prefs, KbNlSearchEngine.SITE_LOCALE);
-
-        // and English for compatibility with lots of websites.
-        createLanguageMappingCache(prefs, Locale.ENGLISH);
-    }
-
-    /**
-     * Generate language mappings for a given Locale.
-     *
-     * @param prefs  the SharedPreferences used as our language names cache.
-     * @param locale the Locale for which to create a mapping
-     */
-    private static void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
-                                                   @NonNull final Locale locale) {
-        // just return if already done for this Locale.
-        if (prefs.getBoolean(locale.getISO3Language(), false)) {
-            return;
-        }
-        SharedPreferences.Editor ed = prefs.edit();
-        for (Locale loc : Locale.getAvailableLocales()) {
-            ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
-                         loc.getISO3Language());
-        }
-        // signal this Locale was done
-        ed.putBoolean(locale.getISO3Language(), true);
-        ed.apply();
-    }
-
-    /**
      * Convenience method to get the language SharedPreferences file.
      *
      * @param context Current context
@@ -424,5 +387,86 @@ public final class LanguageUtils {
 
                + "\nuserLocale         : " + userLocale.getDisplayName()
                + "\nuserLocale(user)   : " + userLocale.getDisplayName(userLocale);
+    }
+
+    /**
+     * Build the dedicated SharedPreferences file with the language mappings.
+     * Only build once per Locale.
+     */
+    public static class BuildLanguageMappingsTask
+            extends TaskBase<Void, Boolean> {
+
+        /**
+         * Constructor.
+         *
+         * @param taskId       a task identifier, will be returned in the task listener.
+         * @param taskListener for sending progress and finish messages to.
+         */
+        @UiThread
+        public BuildLanguageMappingsTask(final int taskId,
+                                         @NonNull final TaskListener<Boolean> taskListener) {
+            super(taskId, taskListener);
+        }
+
+        @Override
+        protected Boolean doInBackground(final Void... params) {
+            Thread.currentThread().setName("BuildLanguageMappingsTask");
+            final Context context = LocaleUtils.applyLocale(App.getTaskContext());
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
+                Log.d(TAG, "doInBackground|taskId=" + getTaskId());
+            }
+            publishProgress(new TaskListener.ProgressMessage(
+                    getTaskId(), context.getString(R.string.progress_msg_optimizing)));
+            try {
+
+                SharedPreferences prefs = getLanguageCache(context);
+
+                // the one the user is using our app in (can be different from the system one)
+                createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));
+
+                // the system default
+                createLanguageMappingCache(prefs, LocaleUtils.getSystemLocale());
+
+                //NEWTHINGS: add new site specific ID:
+                // if a site uses a specific language, add it here
+
+                // Dutch
+                createLanguageMappingCache(prefs, StripInfoSearchEngine.SITE_LOCALE);
+                // Dutch
+                //createLanguageMappingCache(prefs, KbNlSearchEngine.SITE_LOCALE);
+
+                // add English for compatibility with lots of websites.
+                createLanguageMappingCache(prefs, Locale.ENGLISH);
+                return true;
+
+            } catch (@NonNull final RuntimeException e) {
+                Logger.error(context, TAG, e);
+                mException = e;
+                return false;
+            }
+        }
+
+        /**
+         * Generate language mappings for a given Locale.
+         *
+         * @param prefs  the SharedPreferences used as our language names cache.
+         * @param locale the Locale for which to create a mapping
+         */
+        private void createLanguageMappingCache(@NonNull final SharedPreferences prefs,
+                                                @NonNull final Locale locale) {
+            // just return if already done for this Locale.
+            if (prefs.getBoolean(locale.getISO3Language(), false)) {
+                return;
+            }
+            SharedPreferences.Editor ed = prefs.edit();
+            for (Locale loc : Locale.getAvailableLocales()) {
+                ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
+                             loc.getISO3Language());
+            }
+            // signal this Locale was done
+            ed.putBoolean(locale.getISO3Language(), true);
+            ed.apply();
+        }
     }
 }

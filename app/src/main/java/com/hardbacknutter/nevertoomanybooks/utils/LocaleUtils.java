@@ -279,6 +279,8 @@ public final class LocaleUtils {
     /**
      * Return the user preferred Locale.
      *
+     * @param context Current context
+     *
      * @return Locale
      */
     @NonNull
@@ -305,6 +307,8 @@ public final class LocaleUtils {
 
     /**
      * Return the user preferred Locale list.
+     *
+     * @param context Current context
      *
      * @return LocaleList
      */
@@ -448,7 +452,7 @@ public final class LocaleUtils {
         }
 
         // THIS IS A MUST
-        lang = LanguageUtils.getLocaleIsoFromIso3(context, lang);
+        lang = LanguageUtils.getLocaleIsoFromISO3(context, lang);
 
         // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
         Locale locale = LOCALE_MAP.get(lang);

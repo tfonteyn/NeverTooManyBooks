@@ -51,8 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Holds the {@link Book} and whether it's dirty or not + some direct support functions.
@@ -277,7 +278,9 @@ public class BookViewModel
     }
 
     /**
-     * Toggle the 'read' status of the book.
+     * Toggle the read-status for this book.
+     *
+     * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
     public boolean toggleRead() {
         putResultData(UniqueId.BKEY_BOOK_MODIFIED, true);
@@ -313,9 +316,9 @@ public class BookViewModel
                         final String uuid = mDb.getBookUuid(id);
                         if (uuid != null) {
                             final File downloadedFile = new File(fileSpec);
-                            final File destination = StorageUtils
-                                    .getCoverFileForUuid(context, uuid, cIdx);
-                            StorageUtils.renameFile(downloadedFile, destination);
+                            final File destination = AppDir
+                                    .getCoverFile(context, uuid, cIdx);
+                            FileUtils.rename(downloadedFile, destination);
                         }
                     }
                 }

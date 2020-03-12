@@ -48,7 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.App;
 public abstract class PPrefBase<T>
         implements PPref<T> {
 
-    /** Flag to indicate the value is persisted. */
+    /**
+     * Flag to indicate the value is persisted.
+     * (This is used for builtin style properties)
+     */
     final boolean mIsPersistent;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
@@ -111,12 +114,8 @@ public abstract class PPrefBase<T>
         return mKey;
     }
 
-    @Override
     public void set(@Nullable final T value) {
-        if (!mIsPersistent) {
-            mNonPersistedValue = value;
-
-        } else {
+        if (mIsPersistent) {
             SharedPreferences.Editor ed = getPrefs(App.getAppContext()).edit();
             if (value == null) {
                 ed.remove(getKey());
@@ -124,9 +123,10 @@ public abstract class PPrefBase<T>
                 set(ed, value);
             }
             ed.apply();
+        } else {
+            mNonPersistedValue = value;
         }
     }
-
 
     /**
      * Set the <strong>value</strong> from the Parcel.
@@ -159,9 +159,9 @@ public abstract class PPrefBase<T>
         return "mKey=" + mKey
                + ", mUuid=" + mUuid
                + ", type=" + mDefaultValue.getClass().getSimpleName()
-               + ", defaultValue=`" + mDefaultValue + '`'
-               + ", ssPersistent=" + mIsPersistent
-               + ", nonPersistedValue=`" + mNonPersistedValue + '`'
+               + ", mDefaultValue=`" + mDefaultValue + '`'
+               + ", mIsPersistent=" + mIsPersistent
+               + ", mNonPersistedValue=`" + mNonPersistedValue + '`'
                + ", value=`" + getValue(App.getAppContext()) + '`';
     }
 }

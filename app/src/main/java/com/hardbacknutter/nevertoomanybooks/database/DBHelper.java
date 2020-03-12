@@ -41,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -54,7 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
@@ -97,20 +100,22 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
 public final class DBHelper
         extends SQLiteOpenHelper {
 
-    /**
-     * db1 == app1 == 1.0.0
-     * db2 == app1 == 1.0.0
-     */
+    /** Current version. */
     public static final int DATABASE_VERSION = 2;
+
+    /**
+     * Prefix for the filename of a database backup before doing an upgrade.
+     * Stored in {@link AppDir#Upgrades}.
+     */
+    public static final String DB_UPGRADE_FILE_PREFIX = "DbUpgrade";
+
     /** Log tag. */
     private static final String TAG = "DBHelper";
     /** NEVER change this name. */
     private static final String DATABASE_NAME = "nevertoomanybooks.db";
-
     /** SQL to get the names of all indexes. */
     private static final String SQL_GET_INDEX_NAMES =
             "SELECT name FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL";
-
     /** Readers/Writer lock for this database. */
     private static Synchronizer sSynchronizer;
     /** Singleton. */
@@ -186,13 +191,23 @@ public final class DBHelper
     }
 
     /**
+     * Check if the collation we use is case sensitive.
+     *
+     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
+     */
+    public static boolean isCollationCaseSensitive() {
+        //noinspection ConstantConditions
+        return sIsCollationCaseSensitive;
+    }
+
+    /**
      * This method should only be called at the *END* of onCreate/onUpdate.
      * <p>
      * (re)Creates the indexes as defined on the tables.
      *
      * @param syncedDb the database
      */
-    public void recreateIndices(@NonNull final SynchronizedDb syncedDb) {
+    void recreateIndices(@NonNull final SynchronizedDb syncedDb) {
         // Delete all indices.
         // We read the index names from the database, so we can delete
         // indexes which were removed from the TableDefinition objects.
@@ -203,10 +218,10 @@ public final class DBHelper
                     syncedDb.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
                     // bad sql is a developer issue... die!
-                    Logger.error(TAG, e);
+                    Logger.error(App.getAppContext(), TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
-                    Logger.error(TAG, e, "Index deletion failed: " + indexName);
+                    Logger.error(App.getAppContext(), TAG, e, "Index deletion failed: " + indexName);
                 }
             }
         }
@@ -217,16 +232,6 @@ public final class DBHelper
         }
 
         syncedDb.analyze();
-    }
-
-    /**
-     * Check if the collation we use is case sensitive.
-     *
-     * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
-     */
-    public static boolean isCollationCaseSensitive() {
-        //noinspection ConstantConditions
-        return sIsCollationCaseSensitive;
     }
 
     /**
@@ -511,7 +516,7 @@ public final class DBHelper
     @SuppressWarnings("unused")
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        Context localContext = App.getLocalizedAppContext();
+        Context localContext = LocaleUtils.applyLocale(App.getAppContext());
 
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged(localContext);
@@ -598,9 +603,17 @@ public final class DBHelper
         }
 
         if (oldVersion != newVersion) {
-            StorageUtils.copyFileWithBackup(new File(db.getPath()),
-                                            new File(StorageUtils.getRootDir(App.getAppContext()),
-                                                     "DbUpgrade-" + oldVersion + '-' + newVersion));
+            final Context context = App.getAppContext();
+            String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
+            try {
+                final File destFile = AppDir.Upgrades.getFile(context, backup);
+                // rename the existing file
+                FileUtils.rename(destFile, new File(destFile.getPath() + ".bak"));
+                // and create a new copy
+                FileUtils.copy(new File(db.getPath()), destFile);
+            } catch (@NonNull final IOException e) {
+                Logger.error(context, TAG, e);
+            }
         }
 
         SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
@@ -666,13 +679,13 @@ public final class DBHelper
 
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(TAG, e);
+            Logger.error(App.getAppContext(), TAG, e);
             throw e;
         } finally {
             try {
                 db.execSQL(dropTable);
             } catch (@NonNull final SQLException e) {
-                Logger.error(TAG, e);
+                Logger.error(App.getAppContext(), TAG, e);
             }
         }
     }

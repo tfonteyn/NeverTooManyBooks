@@ -43,7 +43,10 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 
 /**
@@ -154,6 +157,40 @@ public class GoogleBarcodeScanner
         public boolean isAvailable(@NonNull final Context context) {
             GoogleApiAvailability instance = GoogleApiAvailability.getInstance();
             return ConnectionResult.SUCCESS == instance.isGooglePlayServicesAvailable(context);
+        }
+    }
+
+    /**
+     * If the Google barcode scanner can be loaded, create a dummy instance to
+     * force it to download the native library if not done already.
+     * <p>
+     * This can be seen in the device logs as:
+     * <p>
+     * I/Vision: Loading library libbarhopper.so
+     * I/Vision: Library not found: /data/user/0/com.google.android.gms/app_vision/barcode/
+     * libs/x86/libbarhopper.so
+     * I/Vision: libbarhopper.so library load status: false
+     * Request download for engine barcode
+     */
+    public static class PreloadGoogleScanner
+            extends TaskBase<Void, Boolean> {
+
+        public PreloadGoogleScanner(final int taskId,
+                                    @NonNull final TaskListener<Boolean> taskListener) {
+            super(taskId, taskListener);
+        }
+
+        @Override
+        protected Boolean doInBackground(final Void... voids) {
+            Thread.currentThread().setName("PreloadGoogleScanner");
+            final Context context = App.getTaskContext();
+
+            ScannerFactory factory = new GoogleBarcodeScannerFactory();
+            if (factory.isAvailable(context)) {
+                // trigger the download if needed.
+                factory.getScanner(context);
+            }
+            return true;
         }
     }
 }

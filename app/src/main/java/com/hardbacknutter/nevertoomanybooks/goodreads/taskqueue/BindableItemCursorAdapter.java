@@ -92,7 +92,7 @@ public class BindableItemCursorAdapter<
         if (mLastItemViewTypePosition == position) {
             item = mLastItemViewTypeItem;
         } else {
-            item = cursor.getBindableItem();
+            item = cursor.getBindableItem(mLayoutInflater.getContext());
         }
 
         BindableItemViewHolder holder;
@@ -141,7 +141,7 @@ public class BindableItemCursorAdapter<
     }
 
     @Override
-    public BICursor getItem(int position) {
+    public BICursor getItem(final int position) {
         //noinspection unchecked
         return (BICursor) super.getItem(position);
     }
@@ -163,7 +163,7 @@ public class BindableItemCursorAdapter<
         }
 
         BICursor cursor = getItem(position);
-        BI item = cursor.getBindableItem();
+        BI item = cursor.getBindableItem(mLayoutInflater.getContext());
 
         // Use the class name to generate a layout number
         String s = item.getClass().toString();

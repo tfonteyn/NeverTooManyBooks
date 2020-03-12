@@ -120,8 +120,8 @@ public class IsbnTextInputEditText
         Editable current = getText();
         if (current != null) {
             // only allow one X character
-            if (keyChar != 'X' ||
-                (!current.toString().contains("X") && !current.toString().contains("x"))) {
+            if (keyChar != 'X'
+                || (!current.toString().contains("X") && !current.toString().contains("x"))) {
 
                 current.replace(start, end, String.valueOf(keyChar));
                 // set the cursor immediately behind the inserted character

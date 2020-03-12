@@ -112,10 +112,10 @@ public class StyleGroupsModel
         // Loop through all groups
         for (GroupWrapper wrapper : mList) {
             // Remove it from the style
-            mStyle.removeGroup(wrapper.group.getId());
+            mStyle.removeGroup(context, wrapper.group);
             // If required, add the group back; this also takes care of the order.
             if (wrapper.present) {
-                mStyle.addGroup(wrapper.group);
+                mStyle.addGroup(context, wrapper.group);
             }
         }
 

@@ -205,7 +205,7 @@ public class SettingsActivity
         switch (key) {
             // Trigger a recreate of this activity, if this setting has changed.
             case Prefs.pk_ui_theme:
-                if (App.isThemeChanged(mInitialThemeId)) {
+                if (App.isThemeChanged(this, mInitialThemeId)) {
                     setIsRecreating();
                     recreate();
                 }

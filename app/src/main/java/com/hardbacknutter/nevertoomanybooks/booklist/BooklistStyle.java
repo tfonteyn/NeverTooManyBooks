@@ -58,7 +58,6 @@ import java.util.UUID;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.BooleanFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
@@ -251,35 +250,39 @@ public class BooklistStyle
 
     /**
      * Global defaults constructor.
+     *
+     * @param context Current context
      */
-    public BooklistStyle() {
+    public BooklistStyle(@NonNull final Context context) {
         // negative == builtin; MIN_VALUE because why not....
         mId = Integer.MIN_VALUE;
         // empty indicates global
         mUuid = "";
         // must have a name res id to indicate it's not a user defined style.
         mNameResId = android.R.string.untitled;
-        initPrefs(false);
+        initPrefs(context, false);
     }
 
     /**
      * Constructor for system-defined styles.
      *
+     * @param context  Current context
      * @param id       a negative int
      * @param uuid     UUID for the builtin style.
      * @param nameId   the resource id for the name
      * @param groupIds a list of groups to attach to this style
      */
-    private BooklistStyle(@IntRange(from = -100, to = -1) final long id,
+    private BooklistStyle(@NonNull final Context context,
+                          @IntRange(from = -100, to = -1) final long id,
                           @NonNull final String uuid,
                           @StringRes final int nameId,
                           @NonNull final int... groupIds) {
         mId = id;
         mUuid = uuid;
         mNameResId = nameId;
-        initPrefs(mNameResId == 0);
+        initPrefs(context, mNameResId == 0);
         for (@BooklistGroup.Id int groupId : groupIds) {
-            mStyleGroups.add(BooklistGroup.newInstance(groupId, this));
+            mStyleGroups.add(context, BooklistGroup.newInstance(groupId, this));
         }
     }
 
@@ -289,14 +292,16 @@ public class BooklistStyle
      * Only used when styles are loaded from storage or imported from xml.
      * Real new styles are created by cloning an existing style.
      *
-     * @param id   the row id of the style
-     * @param uuid UUID of the style
+     * @param context Current context
+     * @param id      the row id of the style
+     * @param uuid    UUID of the style
      */
-    public BooklistStyle(final long id,
+    public BooklistStyle(@NonNull final Context context,
+                         final long id,
                          @NonNull final String uuid) {
         mId = id;
         mUuid = uuid;
-        initPrefs(mNameResId == 0);
+        initPrefs(context, mNameResId == 0);
     }
 
 //    /**
@@ -344,7 +349,7 @@ public class BooklistStyle
      * @param in Parcel to construct the object from
      */
     private BooklistStyle(@NonNull final Parcel in) {
-        this(false, null, in);
+        this(false, App.getAppContext(), in);
     }
 
     /**
@@ -353,11 +358,11 @@ public class BooklistStyle
      * @param isNew   when set to true, partially override the incoming data so we get
      *                a 'new' object but with the settings from the Parcel.
      *                The new id will be 0, and the uuid will be newly generated.
-     * @param context Current context;  will be {@code null} when isNew==false !
+     * @param context Current context
      * @param in      Parcel to construct the object from
      */
     private BooklistStyle(final boolean isNew,
-                          @Nullable final Context context,
+                          @NonNull final Context context,
                           @NonNull final Parcel in) {
         mId = in.readLong();
         mNameResId = in.readInt();
@@ -365,13 +370,12 @@ public class BooklistStyle
         mUuid = in.readString();
         if (isNew) {
             mUuid = UUID.randomUUID().toString();
-            //noinspection ConstantConditions
             context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
                    .edit().putString(Prefs.PK_STYLE_UUID, mUuid).apply();
         }
 
         // only init the prefs once we have a valid id, uuid and name resId
-        initPrefs(mNameResId == 0);
+        initPrefs(context, mNameResId == 0);
         mName.set(in);
 
         // create new clone ?
@@ -411,26 +415,27 @@ public class BooklistStyle
      * @return the style.
      */
     @NonNull
-    public static BooklistStyle getDefaultStyle(@NonNull final Context context,
-                                                @NonNull final DAO db) {
+    public static BooklistStyle getDefault(@NonNull final Context context,
+                                           @NonNull final DAO db) {
 
         // read the global user default, or if not present the hardcoded default.
         String uuid = PreferenceManager.getDefaultSharedPreferences(context)
                                        .getString(PREF_BL_STYLE_CURRENT_DEFAULT,
                                                   Builtin.DEFAULT_STYLE_UUID);
-        // hard-coded default ?
-        if (Builtin.DEFAULT_STYLE_UUID.equals(uuid)) {
-            return Builtin.DEFAULT;
-        }
-
-        // check that the style really/still exists!
-        BooklistStyle style = Helper.getStyles(context, db, true).get(uuid);
-
+        // Builtin ?
+        BooklistStyle style = Builtin.getByUuid(context, uuid);
         if (style != null) {
             return style;
-        } else {
-            return Builtin.DEFAULT;
         }
+
+        // User defined ?
+        style = Helper.getStyles(context, db, true).get(uuid);
+        if (style != null) {
+            return style;
+        }
+
+        // give up
+        return Builtin.getDefault(context);
     }
 
     /**
@@ -446,42 +451,45 @@ public class BooklistStyle
     public static BooklistStyle getStyle(@NonNull final Context context,
                                          @NonNull final DAO db,
                                          @NonNull final String uuid) {
-        BooklistStyle style = Helper.getUserStyles(db).get(uuid);
+        BooklistStyle style = Helper.getUserStyles(context, db).get(uuid);
         if (style != null) {
             return style;
         }
 
-        style = Builtin.getStyles().get(uuid);
+        style = Builtin.getStyles(context).get(uuid);
         if (style != null) {
             return style;
         }
 
-        return getDefaultStyle(context, db);
+        return getDefault(context, db);
     }
 
     /**
      * Get the specified style.
      *
-     * @param db Database Access
-     * @param id of the style to get.
+     * @param context Current context
+     * @param db      Database Access
+     * @param id      of the style to get.
      *
      * @return style, <strong>or {@code null} if not found</strong>
      */
+    @SuppressWarnings("unused")
     @Nullable
-    public static BooklistStyle getStyle(@NonNull final DAO db,
+    public static BooklistStyle getStyle(@NonNull final Context context,
+                                         @NonNull final DAO db,
                                          final long id) {
         if (id == 0) {
             return null;
         }
 
-        for (BooklistStyle style : Helper.getUserStyles(db).values()) {
+        for (BooklistStyle style : Helper.getUserStyles(context, db).values()) {
             if (style.getId() == id) {
                 return style;
             }
         }
 
         // check builtin.
-        for (BooklistStyle style : Builtin.getStyles().values()) {
+        for (BooklistStyle style : Builtin.getStyles(context).values()) {
             if (style.getId() == id) {
                 return style;
             }
@@ -495,6 +503,8 @@ public class BooklistStyle
      * Construct a clone of this object with id==0, and a new uuid.
      *
      * @param context Current context
+     *
+     * @return cloned/new instance
      */
     @NonNull
     public BooklistStyle clone(@NonNull final Context context) {
@@ -521,9 +531,11 @@ public class BooklistStyle
     /**
      * Only ever init the Preferences if you have a valid UUID.
      *
+     * @param context       Current context
      * @param isUserDefined flag
      */
-    private void initPrefs(final boolean isUserDefined) {
+    private void initPrefs(@NonNull final Context context,
+                           final boolean isUserDefined) {
 
         mName = new PString(Prefs.pk_style_name, mUuid, isUserDefined);
 
@@ -549,12 +561,12 @@ public class BooklistStyle
                                                    isUserDefined);
 
         // all groups in this style
-        mStyleGroups = new PStyleGroups(App.getAppContext(), this);
+        mStyleGroups = new PStyleGroups(context, this);
 
         // all optional details for book-rows.
         mAllBookDetailFields = new LinkedHashMap<>();
 
-        mAllBookDetailFields.put(UniqueId.BKEY_THUMBNAIL,
+        mAllBookDetailFields.put(DBDefinitions.KEY_THUMBNAIL,
                                  new PBoolean(Prefs.pk_style_book_show_thumbnails,
                                               mUuid, isUserDefined,
                                               true));
@@ -661,6 +673,8 @@ public class BooklistStyle
     }
 
     /**
+     * Get the UUID for this style.
+     *
      * @return the UUID
      */
     @NonNull
@@ -730,6 +744,8 @@ public class BooklistStyle
 
     /**
      * Check if this is a user preferred style.
+     *
+     * @param context Current context
      *
      * @return flag
      */
@@ -803,7 +819,7 @@ public class BooklistStyle
      * update the preferences of this style based on the values of the passed preferences.
      * Preferences we don't have will be not be added.
      *
-     * @param context  Application context
+     * @param context  Current context
      * @param newPrefs to apply
      */
     public void updatePreferences(@NonNull final Context context,
@@ -817,6 +833,9 @@ public class BooklistStyle
     /**
      * update the preferences of this style based on the values of the passed preferences.
      * Preferences we don't have will be not be added.
+     *
+     * @param context  Current context
+     * @param newPrefs to apply
      */
     private void updatePreferences(@NonNull final Context context,
                                    @NonNull final SharedPreferences.Editor ed,
@@ -837,6 +856,7 @@ public class BooklistStyle
     /**
      * Check if the style wants the specified header to be displayed.
      *
+     * @param context    Current context
      * @param headerMask to check
      *
      * @return {@code true} if the header should be shown
@@ -848,6 +868,8 @@ public class BooklistStyle
 
     /**
      * Get the scaling factor to apply to the View padding if text is scaled.
+     *
+     * @param context Current context
      *
      * @return scale factor
      */
@@ -876,6 +898,8 @@ public class BooklistStyle
      * <li>14sp: 19 lines; or 7 books</li>
      * </ul>
      *
+     * @param context Current context
+     *
      * @return sp units
      */
     float getTextSpUnits(@NonNull final Context context) {
@@ -892,6 +916,8 @@ public class BooklistStyle
 
     /**
      * Get the scale <strong>identifier</strong> for the text size preferred.
+     *
+     * @param context Current context
      *
      * @return scale id
      */
@@ -920,7 +946,7 @@ public class BooklistStyle
     @ImageUtils.Scale
     public int getThumbnailScale(@NonNull final Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (isBookDetailUsed(context, prefs, UniqueId.BKEY_THUMBNAIL)) {
+        if (isBookDetailUsed(context, prefs, DBDefinitions.KEY_THUMBNAIL)) {
             return mThumbnailScale.getValue(context);
         }
         return ImageUtils.SCALE_NOT_DISPLAYED;
@@ -941,19 +967,23 @@ public class BooklistStyle
     /**
      * Add an already existing instance.
      *
-     * @param group to add
+     * @param context Current context
+     * @param group   to add
      */
-    public void addGroup(@NonNull final BooklistGroup group) {
-        mStyleGroups.add(group);
+    public void addGroup(@NonNull final Context context,
+                         @NonNull final BooklistGroup group) {
+        mStyleGroups.add(context, group);
     }
 
     /**
      * Remove a group from this style.
      *
-     * @param id of group to remove.
+     * @param context Current context
+     * @param group   to remove.
      */
-    public void removeGroup(@BooklistGroup.Id final int id) {
-        mStyleGroups.remove(id);
+    public void removeGroup(@NonNull final Context context,
+                            @NonNull final BooklistGroup group) {
+        mStyleGroups.remove(context, group.getId());
     }
 
 
@@ -1085,7 +1115,7 @@ public class BooklistStyle
         List<String> labels = new ArrayList<>();
 
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(UniqueId.BKEY_THUMBNAIL).isTrue(context)) {
+        if (mAllBookDetailFields.get(DBDefinitions.KEY_THUMBNAIL).isTrue(context)) {
             labels.add(context.getString(R.string.pt_bob_thumbnails_show));
         }
         //noinspection ConstantConditions
@@ -1246,17 +1276,19 @@ public class BooklistStyle
     /**
      * Check if the given book-detail field is in use.
      *
-     * @param key to check
+     * @param context Current context
+     * @param key     to check
      *
      * @return {@code true} if in use
      */
     public boolean isBookDetailUsed(@NonNull final Context context,
                                     @NonNull final SharedPreferences sharedPreferences,
                                     @NonNull final String key) {
-        // global overrules here
-        if (!App.isUsed(sharedPreferences, key)) {
+        // global overrules local
+        if (!DBDefinitions.isUsed(sharedPreferences, key)) {
             return false;
         }
+
         if (mAllBookDetailFields.containsKey(key)) {
             PBoolean value = mAllBookDetailFields.get(key);
             return value != null && value.isTrue(context);
@@ -1324,6 +1356,8 @@ public class BooklistStyle
     /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
      *
+     * @param context Current context
+     *
      * @return {@code true} when Given names should come first
      */
     public boolean isShowAuthorByGivenNameFirst(@NonNull final Context context) {
@@ -1332,6 +1366,8 @@ public class BooklistStyle
 
     /**
      * Whether the user prefers the Author names sorted by Given names, or by Family name first.
+     *
+     * @param context Current context
      *
      * @return {@code true} when Given names should come first
      */
@@ -1344,6 +1380,8 @@ public class BooklistStyle
      * i.e. the level which will be visible but not expanded.
      * i.o.w. the top-level where items above will be expanded/visible,
      * and items below will be hidden.
+     *
+     * @param context Current context
      *
      * @return level
      */
@@ -1388,7 +1426,8 @@ public class BooklistStyle
         /**
          * Constructor.
          *
-         * @param style the style
+         * @param context Current context
+         * @param style   the style
          */
         PStyleGroups(@NonNull final Context context,
                      @NonNull final BooklistStyle style) {
@@ -1456,23 +1495,34 @@ public class BooklistStyle
         /**
          * Add a new group to the end of the list.
          *
-         * @param group to add
+         * @param context Current context
+         * @param group   to add
          */
-        void add(@NonNull final BooklistGroup group) {
+        void add(@NonNull final Context context,
+                 @NonNull final BooklistGroup group) {
             mGroups.put(group.getId(), group);
-            super.add(group.getId());
+            super.add(context, group.getId());
+        }
+
+        @Override
+        public void add(@NonNull final Context context,
+                        @NonNull final Integer element) {
+            // we need the actual group to add it to mGroups
+            throw new IllegalStateException("use add(BooklistGroup) instead");
         }
 
         /**
-         * We need the *id* of group to remove (and NOT the group itself),
-         * so we can (optionally) replace it with a new (different) copy.
+         * Remove the given group.
          *
-         * @param id of group to remove
+         * @param context Current context
+         * @param id      of group to remove
          */
-        void remove(@BooklistGroup.Id final int id) {
+        public void remove(@NonNull final Context context,
+                           @BooklistGroup.Id @NonNull final Integer id) {
             mGroups.remove(id);
-            super.remove(id);
+            super.remove(context, id);
         }
+
 
         /**
          * Set the <strong>value</strong> from the Parcel.
@@ -1481,7 +1531,7 @@ public class BooklistStyle
          */
         @Override
         public void set(@NonNull final Parcel in) {
-            clear();
+            clear(App.getAppContext());
             List<BooklistGroup> list = new ArrayList<>();
             in.readList(list, getClass().getClassLoader());
             // (faster) equivalent of add(@NonNull final BooklistGroup group)
@@ -1490,7 +1540,7 @@ public class BooklistStyle
                 mGroups.put(group.getId(), group);
             }
             // storing the ids in SharedPreference.
-            set(new ArrayList<>(mGroups.keySet()));
+            this.set(new ArrayList<>(mGroups.keySet()));
         }
 
         @Override
@@ -1499,19 +1549,9 @@ public class BooklistStyle
         }
 
         @Override
-        public void clear() {
+        public void clear(@NonNull final Context context) {
             mGroups.clear();
-            super.clear();
-        }
-
-        @Override
-        public void add(@NonNull final Integer element) {
-            throw new IllegalStateException("use add(BooklistGroup) instead");
-        }
-
-        @Override
-        public void remove(@NonNull final Integer element) {
-            throw new IllegalStateException("use remove(BooklistGroup) instead");
+            super.clear(context);
         }
     }
 
@@ -1537,14 +1577,16 @@ public class BooklistStyle
         /**
          * Get the user-defined Styles from the database.
          *
-         * @param db Database Access
+         * @param context Current context
+         * @param db      Database Access
          *
          * @return ordered map of BooklistStyle
          */
         @NonNull
-        public static Map<String, BooklistStyle> getUserStyles(@NonNull final DAO db) {
+        public static Map<String, BooklistStyle> getUserStyles(@NonNull final Context context,
+                                                               @NonNull final DAO db) {
             if (S_USER_STYLES.isEmpty()) {
-                S_USER_STYLES.putAll(db.getUserStyles());
+                S_USER_STYLES.putAll(db.getUserStyles(context));
             }
             return S_USER_STYLES;
         }
@@ -1564,9 +1606,9 @@ public class BooklistStyle
                                                            @NonNull final DAO db,
                                                            final boolean all) {
             // Get all styles: user
-            Map<String, BooklistStyle> allStyles = getUserStyles(db);
+            Map<String, BooklistStyle> allStyles = getUserStyles(context, db);
             // Get all styles: builtin
-            allStyles.putAll(Builtin.getStyles());
+            allStyles.putAll(Builtin.getStyles(context));
 
             // filter, so the list only shows the preferred ones.
             Map<String, BooklistStyle> styles = filterPreferredStyles(context, allStyles);
@@ -1717,18 +1759,7 @@ public class BooklistStyle
         private static final int AUTHOR_THEN_SERIES_ID = -1;
         private static final String AUTHOR_THEN_SERIES_UUID
                 = "6a82c4c0-48f1-4130-8a62-bbf478ffe184";
-        /**
-         * Hardcoded initial/default style. Avoids having the create the full set of styles just
-         * to load the default one.
-         */
-        public static final BooklistStyle DEFAULT =
-                new BooklistStyle(AUTHOR_THEN_SERIES_ID,
-                                  AUTHOR_THEN_SERIES_UUID,
-                                  R.string.style_builtin_author_series,
-                                  BooklistGroup.AUTHOR,
-                                  BooklistGroup.SERIES);
         private static final String DEFAULT_STYLE_UUID = AUTHOR_THEN_SERIES_UUID;
-
         private static final int UNREAD_AUTHOR_THEN_SERIES_ID = -2;
         private static final String UNREAD_AUTHOR_THEN_SERIES_UUID
                 = "f479e979-c43f-4b0b-9c5b-6942964749df";
@@ -1741,7 +1772,6 @@ public class BooklistStyle
         private static final int SERIES_ID = -5;
         private static final String SERIES_UUID
                 = "ad55ebc3-f79d-4cc2-a27d-f06ff0bf2335";
-
         private static final int GENRE_ID = -6;
         private static final String GENRE_UUID
                 = "edc5c178-60f0-40e7-9674-e08445b6c942";
@@ -1757,7 +1787,6 @@ public class BooklistStyle
         private static final int DATE_ADDED_ID = -10;
         private static final String DATE_ADDED_UUID
                 = "95d7afc0-a70a-4f1f-8d77-aa7ebc60e521";
-
         private static final int DATE_ACQUIRED_ID = -11;
         private static final String DATE_ACQUIRED_UUID
                 = "b3255b1f-5b07-4b3e-9700-96c0f8f35a58";
@@ -1773,7 +1802,6 @@ public class BooklistStyle
         private static final int LOCATION_ID = -15;
         private static final String LOCATION_UUID
                 = "e21a90c9-5150-49ee-a204-0cab301fc5a1";
-
         private static final int LANGUAGE_ID = -16;
         private static final String LANGUAGE_UUID
                 = "00379d95-6cb2-40e6-8c3b-f8278f34750a";
@@ -1786,7 +1814,6 @@ public class BooklistStyle
         private static final int DATE_LAST_UPDATE_ID = -19;
         private static final String DATE_LAST_UPDATE_UUID
                 = "427a0da5-0779-44b6-89e9-82772e5ad5ef";
-
         /** Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used. */
         public static final String[] ID_UUID = {
                 "",
@@ -1813,7 +1840,6 @@ public class BooklistStyle
                 BOOKSHELF_UUID,
                 DATE_LAST_UPDATE_UUID,
                 };
-
         /**
          * We keep a cache of Builtin styles in memory as it's to costly to keep
          * re-creating {@link BooklistStyle} objects.
@@ -1823,6 +1849,11 @@ public class BooklistStyle
          * Key: uuid of style.
          */
         private static final Map<String, BooklistStyle> S_BUILTIN_STYLES = new LinkedHashMap<>();
+        /**
+         * Hardcoded initial/default style. Avoids having the create the full set of styles just
+         * to load the default one. Created on first access in {@link #getDefault}.
+         */
+        private static BooklistStyle sDefaultStyle;
 
         private Builtin() {
         }
@@ -1833,26 +1864,49 @@ public class BooklistStyle
          * <strong>Note:</strong> Do NOT call this in static initialization of application.
          * This method requires the application context to be present.
          *
+         * @param context Current context
+         *
          * @return a collection of all builtin styles.
          */
         @SuppressWarnings("SameReturnValue")
         @NonNull
-        private static Map<String, BooklistStyle> getStyles() {
+        private static Map<String, BooklistStyle> getStyles(@NonNull final Context context) {
 
             if (S_BUILTIN_STYLES.isEmpty()) {
-                create();
+                create(context);
             }
             return S_BUILTIN_STYLES;
         }
 
-        private static void create() {
-            BooklistStyle style;
+        @NonNull
+        public static BooklistStyle getDefault(@NonNull final Context context) {
+            if (sDefaultStyle == null) {
+                sDefaultStyle = new BooklistStyle(context,
+                                                  AUTHOR_THEN_SERIES_ID,
+                                                  AUTHOR_THEN_SERIES_UUID,
+                                                  R.string.style_builtin_author_series,
+                                                  BooklistGroup.AUTHOR,
+                                                  BooklistGroup.SERIES);
+            }
+            return sDefaultStyle;
+        }
+
+        @Nullable
+        static BooklistStyle getByUuid(@NonNull final Context context,
+                                       @NonNull final String uuid) {
+            return getStyles(context).get(uuid);
+        }
+
+        private static void create(@NonNull final Context context) {
+
 
             // Author/Series
-            S_BUILTIN_STYLES.put(DEFAULT.getUuid(), DEFAULT);
+            BooklistStyle style = getDefault(context);
+            S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Unread
-            style = new BooklistStyle(UNREAD_AUTHOR_THEN_SERIES_ID,
+            style = new BooklistStyle(context,
+                                      UNREAD_AUTHOR_THEN_SERIES_ID,
                                       UNREAD_AUTHOR_THEN_SERIES_UUID,
                                       R.string.style_builtin_unread,
                                       BooklistGroup.AUTHOR,
@@ -1861,30 +1915,34 @@ public class BooklistStyle
             style.setFilter(Prefs.pk_style_filter_read, false);
 
             // Compact
-            style = new BooklistStyle(COMPACT_ID,
+            style = new BooklistStyle(context,
+                                      COMPACT_ID,
                                       COMPACT_UUID,
                                       R.string.style_builtin_compact,
                                       BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
             style.setTextScale(FONT_SCALE_SMALL);
-            style.setShowBookDetailField(UniqueId.BKEY_THUMBNAIL, false);
+            style.setShowBookDetailField(DBDefinitions.KEY_THUMBNAIL, false);
 
             // Title
-            style = new BooklistStyle(TITLE_FIRST_LETTER_ID,
+            style = new BooklistStyle(context,
+                                      TITLE_FIRST_LETTER_ID,
                                       TITLE_FIRST_LETTER_UUID,
                                       R.string.style_builtin_first_letter_book_title,
                                       BooklistGroup.BOOK_TITLE_LETTER);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Series
-            style = new BooklistStyle(SERIES_ID,
+            style = new BooklistStyle(context,
+                                      SERIES_ID,
                                       SERIES_UUID,
                                       R.string.style_builtin_series,
                                       BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Genre
-            style = new BooklistStyle(GENRE_ID,
+            style = new BooklistStyle(context,
+                                      GENRE_ID,
                                       GENRE_UUID,
                                       R.string.style_builtin_genre,
                                       BooklistGroup.GENRE,
@@ -1893,7 +1951,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Loaned
-            style = new BooklistStyle(LENDING_ID,
+            style = new BooklistStyle(context,
+                                      LENDING_ID,
                                       LENDING_UUID,
                                       R.string.style_builtin_loaned,
                                       BooklistGroup.LOANED,
@@ -1902,7 +1961,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Read & Unread
-            style = new BooklistStyle(READ_AND_UNREAD_ID,
+            style = new BooklistStyle(context,
+                                      READ_AND_UNREAD_ID,
                                       READ_AND_UNREAD_UUID,
                                       R.string.style_builtin_read_and_unread,
                                       BooklistGroup.READ_STATUS,
@@ -1911,7 +1971,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Publication date
-            style = new BooklistStyle(PUBLICATION_DATA_ID,
+            style = new BooklistStyle(context,
+                                      PUBLICATION_DATA_ID,
                                       PUBLICATION_DATA_UUID,
                                       R.string.style_builtin_publication_date,
                                       BooklistGroup.DATE_PUBLISHED_YEAR,
@@ -1921,7 +1982,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Added date
-            style = new BooklistStyle(DATE_ADDED_ID,
+            style = new BooklistStyle(context,
+                                      DATE_ADDED_ID,
                                       DATE_ADDED_UUID,
                                       R.string.style_builtin_added_date,
                                       BooklistGroup.DATE_ADDED_YEAR,
@@ -1931,7 +1993,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Acquired date
-            style = new BooklistStyle(DATE_ACQUIRED_ID,
+            style = new BooklistStyle(context,
+                                      DATE_ACQUIRED_ID,
                                       DATE_ACQUIRED_UUID,
                                       R.string.style_builtin_acquired_date,
                                       BooklistGroup.DATE_ACQUIRED_YEAR,
@@ -1941,7 +2004,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Author/Publication date
-            style = new BooklistStyle(AUTHOR_AND_YEAR_ID,
+            style = new BooklistStyle(context,
+                                      AUTHOR_AND_YEAR_ID,
                                       AUTHOR_AND_YEAR_UUID,
                                       R.string.style_builtin_author_year,
                                       BooklistGroup.AUTHOR,
@@ -1950,14 +2014,16 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Format
-            style = new BooklistStyle(FORMAT_ID,
+            style = new BooklistStyle(context,
+                                      FORMAT_ID,
                                       FORMAT_UUID,
                                       R.string.style_builtin_format,
                                       BooklistGroup.FORMAT);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Read date
-            style = new BooklistStyle(DATE_READ_ID,
+            style = new BooklistStyle(context,
+                                      DATE_READ_ID,
                                       DATE_READ_UUID,
                                       R.string.style_builtin_read_date,
                                       BooklistGroup.DATE_READ_YEAR,
@@ -1966,7 +2032,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
-            style = new BooklistStyle(LOCATION_ID,
+            style = new BooklistStyle(context,
+                                      LOCATION_ID,
                                       LOCATION_UUID,
                                       R.string.style_builtin_location,
                                       BooklistGroup.LOCATION,
@@ -1975,7 +2042,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
-            style = new BooklistStyle(LANGUAGE_ID,
+            style = new BooklistStyle(context,
+                                      LANGUAGE_ID,
                                       LANGUAGE_UUID,
                                       R.string.style_builtin_language,
                                       BooklistGroup.LANGUAGE,
@@ -1984,7 +2052,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Rating
-            style = new BooklistStyle(RATING_ID,
+            style = new BooklistStyle(context,
+                                      RATING_ID,
                                       RATING_UUID,
                                       R.string.style_builtin_rating,
                                       BooklistGroup.RATING,
@@ -1993,7 +2062,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Bookshelf
-            style = new BooklistStyle(BOOKSHELF_ID,
+            style = new BooklistStyle(context,
+                                      BOOKSHELF_ID,
                                       BOOKSHELF_UUID,
                                       R.string.style_builtin_bookshelf,
                                       BooklistGroup.BOOKSHELF,
@@ -2002,7 +2072,8 @@ public class BooklistStyle
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Update date
-            style = new BooklistStyle(DATE_LAST_UPDATE_ID,
+            style = new BooklistStyle(context,
+                                      DATE_LAST_UPDATE_ID,
                                       DATE_LAST_UPDATE_UUID,
                                       R.string.style_builtin_update_date,
                                       BooklistGroup.DATE_LAST_UPDATE_YEAR,

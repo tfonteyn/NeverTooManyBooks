@@ -57,10 +57,8 @@ import java.io.File;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -69,12 +67,12 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -195,7 +193,7 @@ public class BooklistAdapter
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.hint_empty_language);
                 } else {
-                    return LanguageUtils.getDisplayName(context, text);
+                    return LanguageUtils.getDisplayNameFromISO3(context, text);
                 }
             }
             case BooklistGroup.RATING: {
@@ -299,6 +297,8 @@ public class BooklistAdapter
      * @param parent     The ViewGroup into which the new View will be added after it is bound to
      *                   an adapter position.
      * @param groupKeyId The view type of the new View == the group id
+     *
+     * @return the view
      */
     @SuppressLint("SwitchIntDef")
     private View createView(@NonNull final ViewGroup parent,
@@ -618,11 +618,11 @@ public class BooklistAdapter
                     @NonNull final BooklistStyle style) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-            read = App.isUsed(prefs, DBDefinitions.KEY_READ);
-            signed = App.isUsed(prefs, DBDefinitions.KEY_SIGNED);
-            edition = App.isUsed(prefs, DBDefinitions.KEY_EDITION_BITMASK);
-            lending = App.isUsed(prefs, DBDefinitions.KEY_LOANEE);
-            series = App.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
+            read = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_READ);
+            signed = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SIGNED);
+            edition = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_EDITION_BITMASK);
+            lending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
+            series = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
 
             bookshelf = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_BOOKSHELF_CSV);
             author = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_AUTHOR_FORMATTED);
@@ -631,7 +631,7 @@ public class BooklistAdapter
             location = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_LOCATION);
             publisher = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_PUBLISHER);
             pubDate = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_DATE_PUBLISHED);
-            cover = style.isBookDetailUsed(context, prefs, UniqueId.BKEY_THUMBNAIL);
+            cover = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_THUMBNAIL);
         }
 
         /**
@@ -859,8 +859,7 @@ public class BooklistAdapter
                     mCoverView.setOnClickListener(v -> {
                         final FragmentActivity activity = (FragmentActivity) v.getContext();
                         final String currentUuid = (String) v.getTag(R.id.TAG_ITEM);
-                        final File file = StorageUtils.getCoverFileForUuid(
-                                activity, currentUuid, 0);
+                        final File file = AppDir.getCoverFile(activity, currentUuid, 0);
                         if (file.exists()) {
                             ZoomedImageDialogFragment
                                     .show(activity.getSupportFragmentManager(), file);

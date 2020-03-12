@@ -116,7 +116,7 @@
         <TextView
             android:id="@+id/publisher_info"
             style="@style/Label.Field"
-            android:text="@string/warning_isfdb_only"
+            android:text="@string/isfdb_warning_limited_to"
             android:textStyle="italic"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/lbl_publisher"

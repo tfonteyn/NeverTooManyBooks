@@ -31,8 +31,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -55,7 +55,7 @@ public class WildcardFilter
         implements Filter {
 
     private final TableDefinition mTable;
-    private final String mDomain;
+    private final String mDomainKey;
 
     private final String mCriteria;
 
@@ -63,26 +63,26 @@ public class WildcardFilter
      * Constructor.
      *
      * @param table    to use by the expression
-     * @param domain   to use by the expression
+     * @param domainKey   to use by the expression
      * @param criteria to use by the expression
      */
     public WildcardFilter(@NonNull final TableDefinition table,
-                          @NonNull final String domain,
+                          @NonNull final String domainKey,
                           @NonNull final String criteria) {
         mTable = table;
-        mDomain = domain;
+        mDomainKey = domainKey;
         mCriteria = criteria;
     }
 
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomain) + " LIKE '%" + DAO.encodeString(mCriteria) + "%'" + ')';
+        return '(' + mTable.dot(mDomainKey) + " LIKE '%" + DAO.encodeString(mCriteria) + "%'" + ')';
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return App.isUsed(context, mDomain);
+        return DBDefinitions.isUsed(context, mDomainKey);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class WildcardFilter
     public String toString() {
         return "WildcardFilter{"
                + "mTable=" + mTable.getName()
-               + ", mDomain=" + mDomain
+               + ", mDomain=" + mDomainKey
                + ", mCriteria=`" + mCriteria + '`'
                + '}';
     }

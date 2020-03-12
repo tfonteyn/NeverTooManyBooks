@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
+package com.hardbacknutter.nevertoomanybooks.backup.archive;
 
 import android.content.Context;
 
@@ -36,7 +36,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 /**
- * Interface provided by every entity read from a backup file.
+ * Interface provided by every entity read from an archive file.
  */
 public interface ReaderEntity {
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 import androidx.annotation.Nullable;
 
 /**
- * Allows us to cast any {@code PPref<Integer>} as needed.
+ * Passthrough support for {@link com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter}.
  */
 public interface PInt {
 

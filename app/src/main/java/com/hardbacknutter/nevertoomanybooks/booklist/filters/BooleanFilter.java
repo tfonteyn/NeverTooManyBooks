@@ -55,7 +55,7 @@ public class BooleanFilter
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
      * @param table        to use by the expression
-     * @param domain       to use by the expression
+     * @param domainKey    to use by the expression
      */
     public BooleanFilter(@StringRes final int labelId,
                          @NonNull final String key,
@@ -63,8 +63,8 @@ public class BooleanFilter
                          final boolean isPersistent,
                          @SuppressWarnings("SameParameterValue") @NonNull
                          final TableDefinition table,
-                         @NonNull final String domain) {
-        super(labelId, key, uuid, isPersistent, table, domain);
+                         @NonNull final String domainKey) {
+        super(labelId, key, uuid, isPersistent, table, domainKey);
     }
 
     /**

@@ -120,7 +120,7 @@ public class EditBookshelvesFragment
         fabButton.setImageResource(R.drawable.ic_add);
         fabButton.setVisibility(View.VISIBLE);
         fabButton.setOnClickListener(v -> editItem(
-                new Bookshelf("", BooklistStyle.getDefaultStyle(getContext(), mModel.getDb()))));
+                new Bookshelf("", BooklistStyle.getDefault(getContext(), mModel.getDb()))));
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mVb.bookshelfList.setLayoutManager(linearLayoutManager);

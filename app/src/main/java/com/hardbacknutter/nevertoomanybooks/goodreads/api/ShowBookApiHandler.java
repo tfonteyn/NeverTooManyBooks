@@ -40,7 +40,6 @@ import java.util.regex.Matcher;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -81,6 +80,7 @@ public abstract class ShowBookApiHandler
 //        try {
 //            mCurrSeriesId = Integer.parseInt(context.getBody());
 //        } catch (@NonNull final NumberFormatException ignore) {
+        // ignore
 //        }
     };
     // Current author being processed
@@ -92,6 +92,7 @@ public abstract class ShowBookApiHandler
 //        try {
 //            mCurrAuthorId = Long.parseLong(context.getBody());
 //        } catch (@NonNull final Exception ignore) {
+        // ignore
 //        }
     };
     @NonNull
@@ -135,6 +136,7 @@ public abstract class ShowBookApiHandler
             }
             mBookData.putBoolean(name, b);
         } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
         }
     };
     /** Local storage for Series the book appears in. */
@@ -228,6 +230,7 @@ public abstract class ShowBookApiHandler
         try {
             mCurrSeriesPosition = Integer.parseInt(elementContext.getBody());
         } catch (@NonNull final NumberFormatException ignore) {
+            // ignore
         }
     };
     private final XmlHandler mHandleAuthorEnd = elementContext -> {
@@ -264,7 +267,7 @@ public abstract class ShowBookApiHandler
         // Ideally we should use the Book locale
         mLocale = LocaleUtils.getUserLocale(context);
 
-        buildFilters();
+        buildFilters(context);
     }
 
     private Locale getLocale() {
@@ -348,7 +351,7 @@ public abstract class ShowBookApiHandler
             if (source != null && !source.isEmpty()) {
                 Locale locale = LocaleUtils.getUserLocale(context);
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
-                source = LanguageUtils.getISO3Language(source);
+                source = LanguageUtils.getISO3FromCode(source);
                 // and sometimes the alternative 3-char code for specific languages.
                 source = LanguageUtils.toBibliographic(locale, source);
                 // store the iso3
@@ -642,8 +645,9 @@ public abstract class ShowBookApiHandler
      *  </GoodreadsResponse>
      * }
      * </pre>
+     * @param context Current context
      */
-    private void buildFilters() {
+    private void buildFilters(@NonNull final Context context) {
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ID)
                  .setEndAction(mHandleLong, DBDefinitions.KEY_EID_GOODREADS_BOOK);
@@ -752,7 +756,7 @@ public abstract class ShowBookApiHandler
                               XmlTags.XML_AUTHOR, XmlTags.XML_ROLE)
                  .setEndAction(mHandleAuthorRole);
 
-        if (GoodreadsHandler.isCollectGenre(App.getAppContext())) {
+        if (GoodreadsHandler.isCollectGenre(context)) {
             XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                                   XmlTags.XML_POPULAR_SHELVES,
                                   XmlTags.XML_SHELF)

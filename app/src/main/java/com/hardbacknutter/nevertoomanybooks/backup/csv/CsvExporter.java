@@ -129,8 +129,9 @@ public class CsvExporter
             + '\n';
 
 
+    /**  export configuration. */
     @NonNull
-    private final ExportHelper mExportHelper;
+    private final ExportHelper mHelper;
     /** cached localized "unknown" string. */
     private final String mUnknownString;
 
@@ -138,17 +139,17 @@ public class CsvExporter
      * Constructor.
      *
      * @param context      Current context
-     * @param exportHelper {@link ExportHelper#EXPORT_SINCE_LAST_BACKUP} and
+     * @param helper {@link ExportHelper#EXPORT_SINCE_LAST_BACKUP} and
      *                     {@link ExportHelper#getDateFrom} are respected.
      *                     Other flags are ignored, as this method only
      *                     handles {@link ExportHelper#BOOK_CSV} anyhow.
      */
     public CsvExporter(@NonNull final Context context,
-                       @NonNull final ExportHelper exportHelper) {
+                       @NonNull final ExportHelper helper) {
         Locale locale = LocaleUtils.getUserLocale(context);
         mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
-        mExportHelper = exportHelper;
-        mExportHelper.validate();
+        mHelper = helper;
+        mHelper.validate();
     }
 
     /**
@@ -173,7 +174,7 @@ public class CsvExporter
         final StringBuilder sb = new StringBuilder();
 
         try (DAO db = new DAO(TAG);
-             Cursor cursor = db.fetchBooksForExport(mExportHelper.getDateFrom());
+             Cursor cursor = db.fetchBooksForExport(mHelper.getDateFrom());
              OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {
 

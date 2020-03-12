@@ -84,7 +84,7 @@ public abstract class StyleBaseFragment
         } else {
             // we're doing the global preferences, create a dummy style with an empty uuid
             // and let it use the standard SharedPreferences
-            mStyle = new BooklistStyle();
+            mStyle = new BooklistStyle(getContext());
         }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DUMP_STYLE) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,19 +48,19 @@
  * <p>
  * Contains a simple name-value set including:
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo} #INFO_ARCHIVER_VERSION
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo} #INFO_ARCHIVER_VERSION
  * Archiver internal Version number.
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo} #INFO_CREATION_DATE
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo} #INFO_CREATION_DATE
  * Creation Date of archive (in SQL format).
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo} #INFO_NUMBER_OF_BOOKS
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo} #INFO_NUMBER_OF_BOOKS
  * # of books in archive (will/may be fewer pictures).
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo} #INFO_APP_VERSION_CODE
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo} #INFO_APP_VERSION_CODE
  * Application Version that created it.
  * <p>
- * For a full list, see {@link com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo}
+ * For a full list, see {@link com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo}
  * <p>
  * ---------------------------------------------------------------------
  * "styles.xml"
@@ -83,4 +83,4 @@
  * <p>
  * Cover image. The full filename pattern is determined by the archiver.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
+package com.hardbacknutter.nevertoomanybooks.backup.archive;

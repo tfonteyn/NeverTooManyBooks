@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue;
 
+import android.content.Context;
 import android.database.sqlite.SQLiteCursor;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteQuery;
@@ -36,7 +37,6 @@ import androidx.collection.LongSparseArray;
 
 import java.util.Date;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
@@ -106,7 +106,7 @@ public class EventsCursor
 
     @Override
     @NonNull
-    public Event getBindableItem() {
+    public Event getBindableItem(@NonNull final Context context) {
         if (sEventCol < 0) {
             sEventCol = getColumnIndex(QueueDBHelper.KEY_EVENT);
         }
@@ -115,7 +115,7 @@ public class EventsCursor
         try {
             event = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {
-            event = new LegacyEvent(App.getLocalizedAppContext());
+            event = new LegacyEvent(context);
         }
         event.setId(getId());
         return event;

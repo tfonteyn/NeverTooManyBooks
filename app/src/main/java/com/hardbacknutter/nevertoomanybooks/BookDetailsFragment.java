@@ -140,7 +140,7 @@ public class BookDetailsFragment
         mVb = FragmentBookDetailsBinding.inflate(inflater, container, false);
 
         // Anthology/TOC fields
-        if (!App.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
+        if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
             mVb.lblAnthology.setVisibility(View.GONE);
             mVb.cbxAnthology.setVisibility(View.GONE);
             mVb.lblToc.setVisibility(View.GONE);
@@ -149,12 +149,12 @@ public class BookDetailsFragment
         }
 
         // Covers
-        if (!App.isUsed(prefs, UniqueId.BKEY_THUMBNAIL)) {
+        if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL)) {
             mVb.coverImage0.setVisibility(View.GONE);
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        if (!App.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
+        if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             mVb.loanedTo.setVisibility(View.GONE);
         }
 
@@ -313,15 +313,15 @@ public class BookDetailsFragment
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // handle special fields
-        if (App.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             populateLoanedToField(mBookViewModel.getLoanee());
         }
 
-        if (App.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
             populateToc(book);
         }
 
-        if (App.isUsed(prefs, UniqueId.BKEY_THUMBNAIL)) {
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL)) {
             // Hook up the indexed cover image.
             mCoverHandler[0] = new CoverHandler(this, mProgressBar,
                                                 book, mVb.isbn, 0, mVb.coverImage0,
@@ -509,7 +509,7 @@ public class BookDetailsFragment
             .setVisible(GoodreadsHandler.isShowSyncMenus(getContext()));
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-        final boolean useLending = App.isUsed(getContext(), DBDefinitions.KEY_LOANEE);
+        final boolean useLending = DBDefinitions.isUsed(getContext(), DBDefinitions.KEY_LOANEE);
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 

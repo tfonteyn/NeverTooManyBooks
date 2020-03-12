@@ -58,6 +58,7 @@ import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -259,7 +260,7 @@ public final class ImageUtils {
 
         // 2. Cache did not have it, or we were not allowed to check.
         // Check if the file exists; if it does not, set the placeholder icon and exit.
-        File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+        File file = AppDir.getCoverFile(context, uuid, cIdx);
         if (file.length() < MIN_IMAGE_FILE_SIZE) {
             setPlaceholder(imageView, R.drawable.ic_image, 0, maxHeight);
             return false;
@@ -449,7 +450,8 @@ public final class ImageUtils {
                 bm = BitmapFactory.decodeFile(fileSpec, opt);
             }
         } catch (@NonNull final OutOfMemoryError e) {
-            Logger.error(TAG, e);
+            // this is likely to fail if we're out of memory, but let's try at least
+            Logger.error(App.getAppContext(), TAG, e);
             return null;
         }
 
@@ -477,7 +479,7 @@ public final class ImageUtils {
                                    @NonNull final String url,
                                    @NonNull final String name) {
 
-        File file = StorageUtils.getTempCoverFile(context, name);
+        File file = AppDir.Cache.getFile(context, name + ".jpg");
 
         if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
             byte[] image = Base64.decode(url.substring(DATA_IMAGE_JPEG_BASE_64.length())
@@ -498,7 +500,7 @@ public final class ImageUtils {
             int retry = NR_OF_TRIES;
             while (retry > 0) {
                 try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
-                    file = StorageUtils.saveInputStreamToFile(context, con.getInputStream(), file);
+                    file = FileUtils.copyInputStream(context, con.getInputStream(), file);
                     return file != null ? file.getAbsolutePath() : null;
 
                 } catch (@NonNull final IOException e) {
@@ -513,6 +515,7 @@ public final class ImageUtils {
                     try {
                         Thread.sleep(RETRY_AFTER_MS);
                     } catch (@NonNull final InterruptedException ignore) {
+                        // ignore
                     }
                 }
             }
@@ -562,6 +565,7 @@ public final class ImageUtils {
                 try {
                     Thread.sleep(RETRY_AFTER_MS);
                 } catch (@NonNull final InterruptedException ignore) {
+                    // ignore
                 }
             }
         }
@@ -606,7 +610,7 @@ public final class ImageUtils {
         // so all would be deleted.
         for (int i = 0; i < imageList.size(); i++) {
             if (i != bestFileIndex) {
-                StorageUtils.deleteFile(new File(imageList.get(i)));
+                FileUtils.delete(new File(imageList.get(i)));
             }
         }
 
@@ -763,6 +767,8 @@ public final class ImageUtils {
         @Override
         @Nullable
         protected Bitmap doInBackground(final Void... voids) {
+            Thread.currentThread().setName("ImageLoader");
+
             Bitmap bitmap = BitmapFactory.decodeFile(mFile.getAbsolutePath());
             // upscale when required and allowed
             if (bitmap != null && bitmap.getHeight() < mMaxHeight && mAllowUpscaling) {
@@ -832,6 +838,8 @@ public final class ImageUtils {
         @Override
         @Nullable
         protected Bitmap doInBackground(final Void... voids) {
+            Thread.currentThread().setName("CacheLoader");
+
             return forceScaleBitmap(mFile.getAbsolutePath(), mMaxWidth, mMaxHeight, true);
         }
 

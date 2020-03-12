@@ -43,7 +43,7 @@ public interface Filter<T> {
      * @return filter SQL expression, or {@code null} if not active.
      */
     @Nullable
-    String getExpression(@NonNull final Context context);
+    String getExpression(@NonNull Context context);
 
     /**
      * Get a human readable label/name for this filter.

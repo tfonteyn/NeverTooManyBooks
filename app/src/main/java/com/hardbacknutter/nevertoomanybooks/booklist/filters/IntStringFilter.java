@@ -34,8 +34,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -52,7 +52,7 @@ public class IntStringFilter
     private final int mLabelId;
 
     private final TableDefinition mTable;
-    private final String mDomain;
+    private final String mDomainKey;
 
     /**
      * Constructor.
@@ -64,18 +64,18 @@ public class IntStringFilter
      * @param isPersistent {@code true} to have the value persisted.
      *                     {@code false} for in-memory only.
      * @param table        to use by the expression
-     * @param domain       to use by the expression
+     * @param domainKey       to use by the expression
      */
     IntStringFilter(@StringRes final int labelId,
                     @NonNull final String key,
                     @NonNull final String uuid,
                     final boolean isPersistent,
                     @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
-                    @NonNull final String domain) {
+                    @NonNull final String domainKey) {
         super(key, uuid, isPersistent, P_NOT_USED);
         mLabelId = labelId;
         mTable = table;
-        mDomain = domain;
+        mDomainKey = domainKey;
     }
 
     @Override
@@ -83,7 +83,7 @@ public class IntStringFilter
     public String getExpression(@NonNull final Context context) {
         Integer value = getValue(context);
         if (!P_NOT_USED.equals(value)) {
-            return mTable.dot(mDomain) + '=' + value;
+            return mTable.dot(mDomainKey) + '=' + value;
         }
         return null;
     }
@@ -97,7 +97,7 @@ public class IntStringFilter
     @Override
     public boolean isActive(@NonNull final Context context) {
         final SharedPreferences prefs = getPrefs(context);
-        return !P_NOT_USED.equals(getValue(context)) && App.isUsed(prefs, mDomain);
+        return !P_NOT_USED.equals(getValue(context)) && DBDefinitions.isUsed(prefs, mDomainKey);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class IntStringFilter
     public String toString() {
         return "IntStringFilter{"
                + "mTable=" + mTable.getName()
-               + ", mDomain=" + mDomain
+               + ", mDomainKey=" + mDomainKey
                + ", mLabelId=" + mLabelId
                + ", " + super.toString()
                + "}\n";

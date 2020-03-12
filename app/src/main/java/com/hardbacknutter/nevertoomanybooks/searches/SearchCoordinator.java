@@ -188,18 +188,18 @@ public class SearchCoordinator
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 mSearchTasksEndTime.put(message.taskId, System.nanoTime());
             }
-            Context localizedContext = App.getLocalizedAppContext();
+            Context context = LocaleUtils.applyLocale(App.getAppContext());
 
             // process the outcome and queue another task as needed.
-            int tasksActive = onSearchTaskFinished(localizedContext, message);
+            int tasksActive = onSearchTaskFinished(context, message);
 
             // no more tasks ? Then send the results back to our creator.
             if (tasksActive == 0) {
                 long processTime = System.nanoTime();
 
                 mIsSearchActive = false;
-                accumulateResults(localizedContext);
-                String searchErrors = accumulateErrors(localizedContext);
+                accumulateResults(context);
+                String searchErrors = accumulateErrors(context);
 
                 if (searchErrors != null && !searchErrors.isEmpty()) {
                     mBookData.putString(BKEY_SEARCH_ERROR, searchErrors);
@@ -256,8 +256,9 @@ public class SearchCoordinator
             synchronized (mSearchProgressMessages) {
                 mSearchProgressMessages.put(message.taskId, message);
             }
+            Context context = LocaleUtils.applyLocale(App.getAppContext());
             // forward the accumulated progress
-            mSearchCoordinatorProgressMessage.setValue(accumulateProgress());
+            mSearchCoordinatorProgressMessage.setValue(accumulateProgress(context));
         }
     };
 
@@ -308,7 +309,7 @@ public class SearchCoordinator
             mPreferIsbn10 = prefs.getBoolean(Prefs.pk_search_isbn_prefer_10, false);
 
             if (args != null) {
-                boolean useThumbnails = App.isUsed(prefs, UniqueId.BKEY_THUMBNAIL);
+                boolean useThumbnails = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL);
                 mFetchThumbnail = new boolean[2];
                 mFetchThumbnail[0] = useThumbnails;
                 mFetchThumbnail[1] = useThumbnails;
@@ -388,7 +389,7 @@ public class SearchCoordinator
             mSearchProgressMessages.remove(message.taskId);
         }
         // and update our listener.
-        mSearchCoordinatorProgressMessage.setValue(accumulateProgress());
+        mSearchCoordinatorProgressMessage.setValue(accumulateProgress(context));
 
         if (mWaitingForExactCode) {
             if (hasIsbn(message.result)) {
@@ -1178,10 +1179,12 @@ public class SearchCoordinator
     /**
      * Creates {@link TaskListener.ProgressMessage} with the global/total progress of all tasks.
      *
+     * @param context Current context
+     *
      * @return instance
      */
     @NonNull
-    private TaskListener.ProgressMessage accumulateProgress() {
+    private TaskListener.ProgressMessage accumulateProgress(@NonNull final Context context) {
 
         // Sum the current & max values for each active task.
         int progressMax = 0;
@@ -1195,7 +1198,6 @@ public class SearchCoordinator
             sb = new StringBuilder();
         }
 
-        Context context = App.getLocalizedAppContext();
         synchronized (mSearchProgressMessages) {
             if (!mSearchProgressMessages.isEmpty()) {
                 // if there was a baseMessage, add a linefeed to it.

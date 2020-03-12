@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.Options;
-import com.hardbacknutter.nevertoomanybooks.backup.archivebase.BackupInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
@@ -79,7 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
 /**
  * <strong>WARNING: EXPERIMENTAL</strong> There are two types of XML here.
  * <ul>Type based, where the tag name is the type. Used by:
- * <li>{@link BackupInfo}</li>
+ * <li>{@link ArchiveInfo}</li>
  * <li>{@link android.content.SharedPreferences}</li>
  * <li>{@link BooklistStyle}</li>
  * </ul>
@@ -128,19 +128,19 @@ public class XmlExporter
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-
+    /**  export configuration. */
     @NonNull
-    private final ExportHelper mExportHelper;
+    private final ExportHelper mHelper;
 
     /**
      * Constructor.
      *
-     * <strong>IMPORTANT:</strong> {@link ExportHelper#uri} is not used.
+     * <strong>IMPORTANT:</strong> {@link ExportHelper#getUri()} is not used.
      * We always use the passed in OutputStream.
      */
     public XmlExporter() {
         mDb = new DAO(TAG);
-        mExportHelper = new ExportHelper(ExportHelper.ALL);
+        mHelper = new ExportHelper(ExportHelper.ALL);
         // no validation of settings obv.
     }
 
@@ -152,15 +152,15 @@ public class XmlExporter
      * {@link #doAll} respects {@link ExportHelper#BOOK_LIST_STYLES}
      * and {@link ExportHelper#PREFERENCES}. All other flags are ignored.
      * <p>
-     * <strong>IMPORTANT:</strong> {@link ExportHelper#uri} is not used.
+     * <strong>IMPORTANT:</strong> {@link ExportHelper#getUri()} is not used.
      * We always use the passed in OutputStream.
      *
-     * @param exportHelper ExportHelper
+     * @param helper  export configuration
      */
-    public XmlExporter(@NonNull final ExportHelper exportHelper) {
+    public XmlExporter(@NonNull final ExportHelper helper) {
         mDb = new DAO(TAG);
-        mExportHelper = exportHelper;
-        mExportHelper.validate();
+        mHelper = helper;
+        mHelper.validate();
     }
 
     private static String version(final long version) {
@@ -522,8 +522,8 @@ public class XmlExporter
         // suffix for progress messages.
         String xml = " (xml)";
 
-        boolean incStyles = (mExportHelper.options & Options.BOOK_LIST_STYLES) != 0;
-        boolean incPrefs = (mExportHelper.options & Options.PREFERENCES) != 0;
+        boolean incStyles = mHelper.getOption(Options.BOOK_LIST_STYLES);
+        boolean incPrefs = mHelper.getOption(Options.PREFERENCES);
 
         try (OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {
@@ -555,7 +555,7 @@ public class XmlExporter
 
             if (!progressListener.isCancelled() && incStyles) {
                 progressListener.onProgressStep(1, context.getString(R.string.lbl_styles) + xml);
-                doStyles(out);
+                doStyles(context, out);
                 doStyles2(context, out, progressListener);
             }
 
@@ -722,7 +722,7 @@ public class XmlExporter
               .append(version(XML_EXPORTER_BOOKS_VERSION))
               .append(">\n");
 
-        try (Cursor cursor = mDb.fetchBooksForExport(mExportHelper.getDateFrom())) {
+        try (Cursor cursor = mDb.fetchBooksForExport(mHelper.getDateFrom())) {
             final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 writer.append('<' + XmlTags.XML_BOOK)
@@ -824,8 +824,7 @@ public class XmlExporter
     /**
      * Write out the user-defined styles using custom tags.
      *
-     *
-     * @param context           Current context
+     * @param context          Current context
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
      *
@@ -838,7 +837,8 @@ public class XmlExporter
                           @NonNull final Appendable writer,
                           @NonNull final ProgressListener progressListener)
             throws IOException {
-        Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
+        Collection<BooklistStyle> styles =
+                BooklistStyle.Helper.getUserStyles(context, mDb).values();
         if (styles.isEmpty()) {
             return 0;
         }
@@ -891,17 +891,21 @@ public class XmlExporter
     /**
      * Write out the user-defined styles.
      *
+     *
+     * @param context Current context
      * @param writer writer
      *
      * @return number of items written
      *
      * @throws IOException on failure
      */
-    public int doStyles(@NonNull final Appendable writer)
+    public int doStyles(@NonNull final Context context,
+                        @NonNull final Appendable writer)
             throws IOException {
-        Collection<BooklistStyle> styles = BooklistStyle.Helper.getUserStyles(mDb).values();
+        Collection<BooklistStyle> styles =
+                BooklistStyle.Helper.getUserStyles(context, mDb).values();
         if (!styles.isEmpty()) {
-            toXml(writer, new StylesWriter(styles));
+            toXml(writer, new StylesWriter(context, styles));
         }
         return styles.size();
     }
@@ -931,19 +935,19 @@ public class XmlExporter
                 it.remove();
             }
         }
-        toXml(writer, new PreferencesWriter(all, null));
+        toXml(writer, new PreferencesWriter(context, all, null));
         return 1;
     }
 
     /**
-     * Write out the standard archive info block.
+     * Write out the standard archive info block as an XML file.
      *
      * @param writer writer
      *
      * @throws IOException on failure
      */
     public void doBackupInfoBlock(@NonNull final Appendable writer,
-                                  @NonNull final BackupInfo info)
+                                  @NonNull final ArchiveInfo info)
             throws IOException {
         toXml(writer, new InfoWriter(info));
     }
@@ -1088,7 +1092,7 @@ public class XmlExporter
             implements EntityWriter<String> {
 
         /** The data we'll be writing. */
-        private final BackupInfo mInfo;
+        private final ArchiveInfo mInfo;
 
         @NonNull
         private final Bundle mBundle;
@@ -1098,7 +1102,7 @@ public class XmlExporter
          *
          * @param info block to write.
          */
-        InfoWriter(@NonNull final BackupInfo info) {
+        InfoWriter(@NonNull final ArchiveInfo info) {
             mInfo = info;
             mBundle = mInfo.getBundle();
         }
@@ -1158,16 +1162,20 @@ public class XmlExporter
         @Nullable
         private final String mName;
 
+        private final Context mContext;
         private final Map<String, ?> mMap;
 
         /**
          * Constructor.
          *
-         * @param map  to read from
-         * @param name (optional) of the SharedPreference
+         * @param context Current context
+         * @param map     to read from
+         * @param name    (optional) of the SharedPreference
          */
-        PreferencesWriter(@NonNull final Map<String, ?> map,
+        PreferencesWriter(final Context context,
+                          @NonNull final Map<String, ?> map,
                           @SuppressWarnings("SameParameterValue") @Nullable final String name) {
+            mContext = context;
             mMap = map;
             mName = name;
         }
@@ -1202,7 +1210,7 @@ public class XmlExporter
 
         @Override
         public long getElementVersionAttribute() {
-            return App.getVersion();
+            return App.getVersion(mContext);
         }
 
         @NonNull
@@ -1230,6 +1238,8 @@ public class XmlExporter
     static class StylesWriter
             implements EntityWriter<String> {
 
+        @NonNull
+        private final Context mContext;
         private final Collection<BooklistStyle> mStyles;
         private final Iterator<BooklistStyle> it;
 
@@ -1240,9 +1250,12 @@ public class XmlExporter
         /**
          * Constructor.
          *
+         * @param context Current context
          * @param styles list of styles to write
          */
-        StylesWriter(@NonNull final Collection<BooklistStyle> styles) {
+        StylesWriter(@NonNull final Context context,
+                     @NonNull final Collection<BooklistStyle> styles) {
+            mContext = context;
             mStyles = styles;
             it = styles.iterator();
             // get first element ready for processing
@@ -1297,8 +1310,7 @@ public class XmlExporter
         @NonNull
         @Override
         public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(currentStylePPrefs.get(key))
-                          .getValue(App.getAppContext());
+            return Objects.requireNonNull(currentStylePPrefs.get(key)).getValue(mContext);
         }
     }
 }

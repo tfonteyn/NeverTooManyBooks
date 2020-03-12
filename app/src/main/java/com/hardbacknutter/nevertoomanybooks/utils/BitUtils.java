@@ -45,7 +45,7 @@ import java.util.Set;
  */
 public final class BitUtils {
 
-    public static final String BITMASK = "bitmask=";
+    private static final String BITMASK = "bitmask=";
 
     /**
      * Convert a set where each element represents one bit to a bitmask.

@@ -101,7 +101,7 @@ public class DBCleaner {
                     iso = LanguageUtils.getISO3FromDisplayName(context, lang);
                 } else {
                     // It's almost certainly a language code
-                    iso = LanguageUtils.getISO3Language(lang);
+                    iso = LanguageUtils.getISO3FromCode(lang);
                 }
 
                 if (BuildConfig.DEBUG /* always */) {

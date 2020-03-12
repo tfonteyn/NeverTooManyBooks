@@ -267,9 +267,9 @@
     <string name="lbl_field_usage_copy_if_blank">Copier si vide</string>
     <string name="lbl_field_usage_overwrite">Remplacer les données existantes</string>
     <string name="lbl_field_usage_skip">Omettre</string>
-    <string name="lbl_first_publication">Première publication</string>
-    <string name="lbl_first_pub_month">Premier mois de publication</string>
-    <string name="lbl_first_pub_year">Première année de publication</string>
+    <string name="lbl_first_publication">Première parution</string>
+    <string name="lbl_first_pub_month">Premier mois de parution</string>
+    <string name="lbl_first_pub_year">Première année de parution</string>
     <string name="lbl_format">Format</string>
     <string name="lbl_genre">Genre</string>
     <string name="lbl_given_names">Prénoms</string>
@@ -293,9 +293,9 @@
     <string name="lbl_preferred_styles">Styles favoris</string>
     <string name="lbl_price_listed">Liste des prix</string>
     <string name="lbl_price_paid">Payé</string>
-    <string name="lbl_publication">Édition</string>
-    <string name="lbl_publication_month">Mois de publication</string>
-    <string name="lbl_publication_year">Année de publication</string>
+    <string name="lbl_publication">Parution</string>
+    <string name="lbl_publication_month">Mois de parution</string>
+    <string name="lbl_publication_year">Année de parution</string>
     <string name="lbl_publisher">Éditeur</string>
     <string name="lbl_rating">Appreciation</string>
     <string name="lbl_read">Lu</string>
@@ -351,7 +351,7 @@
     <string name="menu_amazon_books_in_series">Livres dans cette série</string>
     <string name="menu_author_details">Toutes les œuvres de cet auteur</string>
     <string name="menu_author_works_all">Montre tout</string>
-    <string name="menu_show_all">Montre tout</string>
+    <string name="X_menu_show_all">Montre tout</string>
     <string name="menu_author_works_book">Livres seulement</string>
     <string name="menu_author_works_toc">Titres de contenu uniquement</string>
     <string name="menu_booklist_styles">Styles de liste de livres</string>
@@ -373,7 +373,7 @@
     <string name="menu_level_expand">Tout étendre</string>
     <string name="menu_loan_lend_book">Prêter le livre…</string>
     <string name="menu_loan_return_book">Le livre emprunté est de retour</string>
-    <string name="menu_populate_toc">Renseigner les titres automatiquement (expérimental)</string>
+    <string name="isfdb_menu_populate_toc">Renseigner les titres automatiquement (expérimental)</string>
     <string name="fab_add_book_by_internet_search">Chercher sur Internet</string>
     <string name="menu_set_complete">Marquer comme complet</string>
     <string name="menu_set_incomplete">Marquer comme incomplet</string>
@@ -423,7 +423,7 @@
     <string name="progress_msg_searching">Recherche en cours…</string>
     <string name="progress_msg_searching_site">Recherche en cours sur %1$s</string>
     <string name="progress_msg_sending">Envoi en cours, veuillez patienter…</string>
-    <string name="progress_msg_skip_title">Passer - %1$s</string>
+    <string name="progress_msg_skip_s">Passer - %1$s</string>
     <string name="progress_msg_starting_up">Démarrage…</string>
     <string name="progress_msg_upgrading">Mise à niveau…</string>
     <string name="pt_allow_mobile_data">Autoriser l\'utilisation de données mobiles</string>
@@ -552,7 +552,7 @@
     <string name="warning_if_month_set_year_must_be">Si le mois est précisé, l\'année doit l\'être aussi.</string>
     <string name="warning_immediate_global_changes">Note : toutes les modifications sont prises en compte immédiatement et globalement.</string>
     <string name="warning_import_be_cautious">Attention ! L\'import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n\'avez modifié qu\'un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
-    <string name="warning_isfdb_only">(uniquement pris en charge par le site ISFDB)</string>
+    <string name="isfdb_warning_limited_to">(uniquement pris en charge par le site ISFDB)</string>
     <string name="warning_missing_name">Le nom ne peut pas être vide</string>
     <string name="warning_no_editions">Aucune information d\'édition supplémentaire disponible</string>
     <string name="warning_no_isbn_stored_for_book">Aucun ISBN enregistré pour ce livre</string>
@@ -562,8 +562,8 @@
     <string name="warning_series_already_in_list">La série est déjà dans la liste</string>
     <string name="warning_toc_confirm">Merci de confirmer que les titres de cette anthologie sont corrects.</string>
     <string name="warning_book_not_found">Impossible de trouver le livre demandé</string>
-    <string name="warning_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant elles seront perdues.</string>
-    <string name="warning_unsaved_edits2">Des modifications n\'ont pas été sauvegardées. Voulez-vous vraiment continuer ?</string>
+    <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant elles seront perdues.</string>
+    <string name="confirm_unsaved_edits2">Des modifications n\'ont pas été sauvegardées. Voulez-vous vraiment continuer ?</string>
     <string name="warning_x_already_exists">%1$s existe déjà.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» n\'est pas un code valable</string>
     <string name="x_of_y">%1$d de %2$d</string>
@@ -655,8 +655,8 @@
     <string name="pt_maintenance">Entretien</string>
     <string name="lbl_import_export_csv">CSV (sans images)</string>
     <string name="pt_primary_author_type">Type d\'auteur principal</string>
-    <string name="lbl_dust_cover_none_or_unknown">Aucun</string>
-    <string name="lbl_dust_cover_missing">Disparu</string>
+    <string name="lbl_condition_dust_cover_none_or_unknown">Aucun</string>
+    <string name="lbl_condition_dust_cover_missing">Disparu</string>
     <string name="menu_rebuild_index">Reconstruire l\'index</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="lbl_condition_reading_copy">Copie de lecture</string>
@@ -668,5 +668,11 @@
     <string name="warning_import_csv_failed_lines_some">L\'analyse CSV a échoué pour les lignes %1$s.</string>
     <string name="warning_import_csv_failed_lines_lots">L\'analyse CSV a échoué pour les lignes %1$s et autres.</string>
     <string name="warning_import_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
+    <string name="notification_channel_info">Information</string>
+    <string name="notification_channel_error">Erreur</string>
+    <string name="gr_pt_collect_genre">Utiliser des noms d\'étagères populaires comme genres de livres</string>
+    <string name="lbl_author_type_cover_inking">Encrage de couverture</string>
+    <string name="book_format_softcover">Broché</string>
+    <string name="lbl_condition">État</string>
 
 </resources>

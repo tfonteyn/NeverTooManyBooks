@@ -52,6 +52,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
@@ -301,7 +302,7 @@ public class UpdateFieldsFragment
         }
 
         // If the user has selected to overwrite thumbnails...
-        final FieldUsage covers = mUpdateFieldsModel.getFieldUsage(UniqueId.BKEY_THUMBNAIL);
+        final FieldUsage covers = mUpdateFieldsModel.getFieldUsage(DBDefinitions.KEY_THUMBNAIL);
         if (covers != null && covers.getUsage().equals(Overwrite)) {
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())

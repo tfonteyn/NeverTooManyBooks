@@ -34,6 +34,7 @@ import java.net.URL;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 public class Http404Exception
         extends Exception {
@@ -54,6 +55,7 @@ public class Http404Exception
     @Nullable
     @Override
     public String getLocalizedMessage() {
-        return App.getLocalizedAppContext().getString(R.string.error_site_access_failed);
+        return LocaleUtils.applyLocale(App.getAppContext())
+                          .getString(R.string.error_site_access_failed);
     }
 }

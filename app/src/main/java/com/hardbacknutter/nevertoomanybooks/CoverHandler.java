@@ -73,11 +73,12 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * Handler for a displayed Cover ImageView element.
@@ -106,7 +107,7 @@ class CoverHandler {
 
     private static final String IMAGE_MIME_TYPE = "image/*";
     /** The cropper uses a single file. */
-    private static final String TEMP_COVER_FILENAME = TAG + ".file";
+    private static final String TEMP_COVER_FILENAME = TAG + ".jpg";
     /** After taking a picture, do nothing. */
     private static final int CAMERA_NEXT_ACTION_NOTHING = 0;
     /** After taking a picture, crop. */
@@ -200,7 +201,7 @@ class CoverHandler {
      */
     static void deleteOrphanedCoverFiles(@NonNull final Context context) {
         for (int cIdx = 0; cIdx < 2; cIdx++) {
-            StorageUtils.deleteFile(StorageUtils.getTempCoverFile(context, String.valueOf(cIdx)));
+            FileUtils.delete(AppDir.Cache.getFile(context, cIdx + ".jpg"));
         }
     }
 
@@ -284,7 +285,7 @@ class CoverHandler {
                 return true;
             }
             case R.id.MENU_THUMB_ADD_FROM_CAMERA: {
-                startCamera();
+                startCamera(mContext);
                 return true;
             }
             case R.id.MENU_THUMB_ADD_FROM_GALLERY: {
@@ -335,13 +336,13 @@ class CoverHandler {
                         //URGENT: check file size and ask user if we should compress it
                         // and add a preference to 'always compress if over certain size'
 
-                        StorageUtils.renameFile(source, destination);
+                        FileUtils.rename(source, destination);
 
                         setImage(destination);
                         // anything else?
                         @CameraNextAction
                         final int action =
-                                PIntString.getListPreference(Prefs.pk_camera_image_action,
+                                PIntString.getListPreference(mContext, Prefs.pk_camera_image_action,
                                                              CAMERA_NEXT_ACTION_NOTHING);
                         switch (action) {
                             case CAMERA_NEXT_ACTION_CROP:
@@ -359,22 +360,20 @@ class CoverHandler {
                     }
                 }
                 // remove orphans
-                CameraHelper.deleteTempFile(mContext);
+                CameraHelper.deleteCameraFile(mContext);
                 return true;
             }
             case UniqueId.REQ_CROP_IMAGE:
             case UniqueId.REQ_EDIT_IMAGE: {
                 if (resultCode == Activity.RESULT_OK) {
-                    final File source = StorageUtils
-                            .getTempCoverFile(mContext, TEMP_COVER_FILENAME);
+                    final File source = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
                     final File destination = getCoverFile();
-                    StorageUtils.renameFile(source, destination);
+                    FileUtils.rename(source, destination);
                     setImage(destination);
                     return true;
                 }
                 // remove orphans
-                StorageUtils.deleteFile(
-                        StorageUtils.getTempCoverFile(mContext, TEMP_COVER_FILENAME));
+                FileUtils.delete(AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME));
                 return true;
             }
             default:
@@ -413,7 +412,7 @@ class CoverHandler {
         // for existing books, we use the UUID and the index to get the stored file.
         final String uuid = mBook.getString(DBDefinitions.KEY_BOOK_UUID);
         if (!uuid.isEmpty()) {
-            return StorageUtils.getCoverFileForUuid(mCoverView.getContext(), uuid, mCIdx);
+            return AppDir.getCoverFile(mCoverView.getContext(), uuid, mCIdx);
         }
 
         // for new books, check the bundle.
@@ -423,7 +422,7 @@ class CoverHandler {
         }
 
         // return a new File object
-        return StorageUtils.getTempCoverFile(mContext, String.valueOf(mCIdx));
+        return AppDir.Cache.getFile(mContext, mCIdx + ".jpg");
     }
 
     /**
@@ -432,7 +431,7 @@ class CoverHandler {
      * @param context Current context
      */
     private void deleteCoverFile(@NonNull final Context context) {
-        StorageUtils.deleteFile(getCoverFile());
+        FileUtils.delete(getCoverFile());
 
         // Ensure that the cached images for this book are deleted (if present).
         // Yes, this means we also delete the ones where != index, but we don't care; it's a cache.
@@ -445,11 +444,11 @@ class CoverHandler {
         mCoverView.setBackgroundResource(R.drawable.outline);
     }
 
-    private void startCamera() {
+    private void startCamera(@NonNull final Context context) {
         if (mCameraHelper == null) {
             mCameraHelper = new CameraHelper();
             mCameraHelper.setRotationAngle(
-                    PIntString.getListPreference(Prefs.pk_camera_image_autorotate, 0));
+                    PIntString.getListPreference(context, Prefs.pk_camera_image_autorotate, 0));
         }
         mCameraHelper.startCamera(mFragment, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
     }
@@ -494,7 +493,7 @@ class CoverHandler {
         if (fileSpec != null && !fileSpec.isEmpty()) {
             final File source = new File(fileSpec);
             final File destination = getCoverFile();
-            StorageUtils.renameFile(source, destination);
+            FileUtils.rename(source, destination);
             setImage(destination);
         }
     }
@@ -507,7 +506,7 @@ class CoverHandler {
         if (uri != null) {
             File file = null;
             try (InputStream is = mContext.getContentResolver().openInputStream(uri)) {
-                file = StorageUtils.saveInputStreamToFile(mContext, is, getCoverFile());
+                file = FileUtils.copyInputStream(mContext, is, getCoverFile());
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "Unable to copy content to file", e);
@@ -549,10 +548,9 @@ class CoverHandler {
      */
     private void cropCoverFile() {
         final File inputFile = getCoverFile();
-        // Get the output file spec.
-        final File outputFile = StorageUtils.getTempCoverFile(mContext, TEMP_COVER_FILENAME);
+        final File outputFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
         // delete any orphaned file.
-        StorageUtils.deleteFile(outputFile);
+        FileUtils.delete(outputFile);
 
         final boolean wholeImage = PreferenceManager
                 .getDefaultSharedPreferences(mContext)
@@ -573,7 +571,7 @@ class CoverHandler {
      */
     private void editCoverFile() {
         final File inputFile = getCoverFile();
-        final File outputFile = StorageUtils.getTempCoverFile(mContext, TEMP_COVER_FILENAME);
+        final File outputFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
 
         //TODO: we really should revoke the permissions afterwards
         final Uri inputUri = GenericFileProvider.getUriForFile(mContext, inputFile);
@@ -615,7 +613,7 @@ class CoverHandler {
 
     public interface HostingFragment {
 
-        void setCurrentCoverIndex(final int cIdx);
+        void setCurrentCoverIndex(int cIdx);
     }
 
     private static class RotateTask
@@ -649,7 +647,10 @@ class CoverHandler {
 
         @Override
         protected Boolean doInBackground(final Void... voids) {
-            return ImageUtils.rotate(App.getAppContext(), mFile, mAngle);
+            Thread.currentThread().setName("RotateTask");
+            final Context context = App.getTaskContext();
+
+            return ImageUtils.rotate(context, mFile, mAngle);
         }
 
         @Override

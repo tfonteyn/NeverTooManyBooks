@@ -27,6 +27,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
+import androidx.preference.PreferenceManager;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -61,14 +70,13 @@ public final class DBDefinitions {
      * Only add standard tables. Do not add the TMP_* tables.
      */
     public static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
+    /** Basic table definition. */
+    public static final TableDefinition TBL_BOOKSHELF;
 
     /* ======================================================================================
      * Basic table definitions with type & alias set.
      * All these should be added to {@link #ALL_TABLES}.
      * ====================================================================================== */
-
-    /** Basic table definition. */
-    public static final TableDefinition TBL_BOOKSHELF;
     /** Basic table definition. */
     public static final TableDefinition TBL_AUTHORS;
     /** Basic table definition. */
@@ -93,28 +101,26 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_FTS_BOOKS;
     /** Keeps track of nodes in the list across application restarts. */
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
+    public static final TableDefinition TMP_TBL_BOOK_LIST;
 
     /* ======================================================================================
      * Reminder: {@link TableDefinition.TableType#Temporary).
      * Should NOT be added to {@link #ALL_TABLES}.
      * ====================================================================================== */
-
-    public static final TableDefinition TMP_TBL_BOOK_LIST;
     public static final TableDefinition TMP_TBL_BOOK_LIST_ROW_STATE;
     /**
      * This table should always be created without column constraints applied,
      * with the exception of the "_id" primary key autoincrement.
      */
     public static final TableDefinition TMP_TBL_BOOK_LIST_NAVIGATOR;
+    /** Primary key. */
+    public static final Domain DOM_PK_ID;
 
     /* ======================================================================================
      * Primary and Foreign key domain definitions.
      * ====================================================================================== */
-    /** Primary key. */
-    public static final Domain DOM_PK_ID;
     /** FTS Primary key. */
     public static final Domain DOM_FTS_BOOKS_PK;
-
     /** Foreign key. */
     public static final Domain DOM_FK_AUTHOR;
     /** Foreign key. */
@@ -131,21 +137,19 @@ public final class DBDefinitions {
      * {@link BooklistStyle#DEFAULT_STYLE_ID}
      */
     public static final Domain DOM_FK_STYLE;
-
     /**
      * Foreign key.
      * Links {@link #TMP_TBL_BOOK_LIST_ROW_STATE} and {@link #TMP_TBL_BOOK_LIST}.
      */
     public static final Domain DOM_FK_BL_ROW_ID;
+    /** {@link #TBL_BOOKSHELF}. */
+    public static final Domain DOM_BOOKSHELF;
 
     /* ======================================================================================
      * Domain definitions.
      * ====================================================================================== */
-    /** {@link #TBL_BOOKSHELF}. */
-    public static final Domain DOM_BOOKSHELF;
     /** Virtual: build from "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')". */
     public static final Domain DOM_BOOKSHELF_CSV;
-
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
     /** {@link #TBL_AUTHORS}. */
@@ -156,12 +160,10 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
-
     /** Virtual: "FamilyName, GivenName". */
     public static final Domain DOM_AUTHOR_FORMATTED;
     /** Virtual: "GivenName FamilyName". */
     public static final Domain DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
-
     /** {@link #TBL_SERIES}. */
     public static final Domain DOM_SERIES_TITLE;
     /** {@link #TBL_SERIES}. */
@@ -170,7 +172,6 @@ public final class DBDefinitions {
     public static final Domain DOM_SERIES_IS_COMPLETE;
     /** Virtual: Series (nr). */
     public static final Domain DOM_SERIES_FORMATTED;
-
     /** {@link #TBL_BOOKS} + {@link #TBL_TOC_ENTRIES}. */
     public static final Domain DOM_TITLE;
     /**
@@ -237,8 +238,6 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_RATING;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_PRIVATE_NOTES;
-
-
     /** {@link #TBL_BOOKS}. Book ID, not 'work' ID. */
     public static final Domain DOM_EID_GOODREADS_BOOK;
     /** {@link #TBL_BOOKS}. */
@@ -253,10 +252,8 @@ public final class DBDefinitions {
     public static final Domain DOM_EID_STRIP_INFO_BE;
     /** {@link #TBL_BOOK_SERIES}. */
     public static final Domain DOM_BOOK_NUM_IN_SERIES;
-
     /** All native id keys supported for lookups. Also see {@link #NATIVE_ID_KEYS}. */
     public static final Collection<Domain> NATIVE_ID_DOMAINS = new ArrayList<>();
-
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
     /**
@@ -264,20 +261,14 @@ public final class DBDefinitions {
      * Virtual: returns 0 for 'available' or 1 for 'lend out'
      */
     public static final Domain DOM_BL_LOANEE_AS_BOOL;
-
-
     /** {@link #TBL_BOOK_AUTHOR}. */
     public static final Domain DOM_BOOK_AUTHOR_TYPE_BITMASK;
     /** {@link #TBL_BOOK_AUTHOR}. */
     public static final Domain DOM_BOOK_AUTHOR_POSITION;
-
-
     /** {@link #TBL_BOOK_TOC_ENTRIES}. */
     public static final Domain DOM_BOOK_TOC_ENTRY_POSITION;
-
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final Domain DOM_STYLE_IS_BUILTIN;
-
     /**
      * {@link #TBL_BOOK_SERIES}.
      * The Series position is the order the Series show up in a book. Particularly important
@@ -286,26 +277,22 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_SERIES_POSITION;
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
     public static final Domain DOM_UUID;
-
     /**
      * {@link #TBL_FTS_BOOKS}
      * specific formatted list; example: "stephen baxter;arthur c. clarke;"
      */
     public static final Domain DOM_FTS_AUTHOR_NAME;
     public static final Domain DOM_FTS_TOC_ENTRY_TITLE;
+    /** For sorting in the {@link BooklistBuilder}. */
+    public static final Domain DOM_BL_AUTHOR_SORT;
 
     /* ======================================================================================
      *  {@link BooklistBuilder} domains.
      * ====================================================================================== */
-
-    /** For sorting in the {@link BooklistBuilder}. */
-    public static final Domain DOM_BL_AUTHOR_SORT;
     /** For sorting in the {@link BooklistBuilder}. */
     public static final Domain DOM_BL_SERIES_SORT;
-
     /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_BOOK_COUNT;
-
     /**
      * Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
      * so we can sort it numerically regardless of content.
@@ -313,7 +300,6 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
     /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_PRIMARY_SERIES_COUNT;
-
     /**
      * {@link #TBL_BOOK_LIST_NODE_STATE}
      * {@link #TMP_TBL_BOOK_LIST_ROW_STATE}
@@ -323,7 +309,6 @@ public final class DBDefinitions {
      * Stored in each row and used to determine the expand/collapse results.
      */
     public static final Domain DOM_BL_NODE_KEY;
-
     /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_GROUP;
     /** {@link #TMP_TBL_BOOK_LIST} {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}. */
@@ -335,20 +320,18 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_NODE_EXPANDED;
     /** {@link #TMP_TBL_BOOK_LIST_ROW_STATE} {@link BooklistBuilder}. */
     public static final Domain DOM_BL_NODE_VISIBLE;
+    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
+    public static final String SUFFIX_KEY_ORDER_BY = "_ob";
 
     /* ======================================================================================
      *  Keys used as domain names / Bundle keys.
      * ====================================================================================== */
-    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
-    public static final String SUFFIX_KEY_ORDER_BY = "_ob";
     /** Suffix added to a price column name to create a joined currency column. */
     public static final String SUFFIX_KEY_CURRENCY = "_currency";
-
     /** Primary key. */
     public static final String KEY_PK_ID = "_id";
     /** Primary key. */
     public static final String KEY_FTS_BOOKS_PK = "docid";
-
     /** Foreign key. */
     public static final String KEY_FK_BOOK = "book";
     /** Foreign key. */
@@ -361,7 +344,6 @@ public final class DBDefinitions {
     public static final String KEY_FK_TOC_ENTRY = "anthology";
     /** Foreign key. */
     public static final String KEY_FK_STYLE = "style";
-
     /** External id. - Long. */
     public static final String KEY_EID_GOODREADS_BOOK = "goodreads_book_id";
     public static final String KEY_BOOK_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
@@ -375,14 +357,13 @@ public final class DBDefinitions {
     public static final String KEY_EID_STRIP_INFO_BE = "si_book_id";
     /** External id. - String. */
     public static final String KEY_EID_ASIN = "asin";
+    /** External id. - String. */
+    public static final String KEY_EID_WORLDCAT = "worldcat_oclc_book_id";
 
     //NEWTHINGS: add new site specific ID: add a KEY
     // ENHANCE: the search engines already use these when found, but not stored yet.
     /** External id. - String. */
-    public static final String KEY_EID_WORLDCAT = "worldcat_oclc_book_id";
-    /** External id. - String. */
     public static final String KEY_EID_LCCN = "lccn_book_id";
-
     /** All native id keys supported for lookups. Also see {@link #NATIVE_ID_DOMAINS}. */
     public static final String[] NATIVE_ID_KEYS = {
             DBDefinitions.KEY_EID_GOODREADS_BOOK,
@@ -394,12 +375,9 @@ public final class DBDefinitions {
 //                DBDefinitions.KEY_EID_WORLDCAT,
 //                DBDefinitions.KEY_EID_LCCN
     };
-
-
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF = "bookshelf";
     public static final String KEY_BOOKSHELF_CSV = "bookshelves_csv";
-
     /** {@link #TBL_AUTHORS} {@link #TBL_BOOK_AUTHOR} */
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
     public static final String KEY_AUTHOR_FAMILY_NAME_OB =
@@ -412,7 +390,6 @@ public final class DBDefinitions {
     public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
     public static final String KEY_BOOK_AUTHOR_TYPE_BITMASK = "author_type";
     public static final String KEY_BOOK_AUTHOR_POSITION = "author_position";
-
     /** {@link #TBL_SERIES} {@link #TBL_BOOK_SERIES} */
     public static final String KEY_SERIES_TITLE = "series_name";
     public static final String KEY_SERIES_TITLE_OB = KEY_SERIES_TITLE + SUFFIX_KEY_ORDER_BY;
@@ -420,7 +397,6 @@ public final class DBDefinitions {
     public static final String KEY_SERIES_IS_COMPLETE = "series_complete";
     public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
     public static final String KEY_BOOK_SERIES_POSITION = "series_position";
-
     /** {@link #TBL_TOC_ENTRIES}. */
     public static final String KEY_BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
     /** {@link #TBL_BOOKS}. */
@@ -445,7 +421,6 @@ public final class DBDefinitions {
     public static final String KEY_BOOK_UUID = "book_uuid";
     public static final String KEY_EDITION_BITMASK = "edition_bm";
     public static final String KEY_TOC_BITMASK = "anthology";
-
     /** {@link #TBL_BOOKS} Personal data. */
     public static final String KEY_PRICE_PAID = "price_paid";
     public static final String KEY_PRICE_PAID_CURRENCY = KEY_PRICE_PAID + SUFFIX_KEY_CURRENCY;
@@ -457,27 +432,21 @@ public final class DBDefinitions {
     public static final String KEY_SIGNED = "signed";
     public static final String KEY_RATING = "rating";
     public static final String KEY_PRIVATE_NOTES = "notes";
-
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final String KEY_LOANEE = "loaned_to";
     public static final String KEY_LOANEE_AS_BOOLEAN = "loaned_flag";
-
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final String KEY_STYLE_IS_BUILTIN = "builtin";
-
     /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
     public static final String KEY_FTS_AUTHOR_NAME = "author_name";
     /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
     public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
-
     public static final String KEY_BOOK_COUNT = "book_count";
-
     /** BooklistBuilder. Virtual domains. */
     public static final String KEY_BL_AUTHOR_SORT = "bl_aut_sort";
     public static final String KEY_BL_SERIES_SORT = "bl_ser_sort";
     public static final String KEY_BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
     public static final String KEY_BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
-
     /**
      * {@link #TBL_BOOK_LIST_NODE_STATE}.
      * The foreign key in the row-state table, pointing to the list table.
@@ -490,17 +459,11 @@ public final class DBDefinitions {
     public static final String KEY_BL_NODE_GROUP = "kind";
     public static final String KEY_BL_NODE_VISIBLE = "visible";
     public static final String KEY_BL_NODE_EXPANDED = "expanded";
-
     /**
      * All money keys.
      * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.
      */
     public static final String MONEY_KEYS = KEY_PRICE_LISTED + ',' + KEY_PRICE_PAID;
-
-    /* ======================================================================================
-     *  Keys used as column alias names / Bundle keys.
-     * ====================================================================================== */
-
     /**
      * Column alias.
      * <p>
@@ -513,6 +476,9 @@ public final class DBDefinitions {
      */
     public static final String KEY_BL_LIST_VIEW_ROW_ID = "lv_row_id";
 
+    /* ======================================================================================
+     *  Keys used as column alias names / Bundle keys.
+     * ====================================================================================== */
     /**
      * Column alias.
      * <p>
@@ -522,6 +488,17 @@ public final class DBDefinitions {
      * new Domain.Builder(KEY_TOC_TYPE, ColumnInfo.TYPE_TEXT).build();
      */
     public static final String KEY_TOC_TYPE = "type";
+    /**
+     * This key is for the file-based thumbnail field. It's not in the actual database.
+     * But otherwise it's used just like other keys in this class.
+     */
+    public static final String KEY_THUMBNAIL = "thumbnail";
+    /**
+     * Users can select which fields they use / don't want to use.
+     * Each field has an entry in the Preferences.
+     * The key is suffixed with the name of the field.
+     */
+    private static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
 
     static {
         /* ======================================================================================
@@ -1274,5 +1251,63 @@ public final class DBDefinitions {
     }
 
     private DBDefinitions() {
+    }
+
+    /**
+     * Is the field in use; i.e. is it enabled in the user-preferences.
+     *
+     * @param context Current context
+     * @param key     DBDefinitions.KEY_x to lookup
+     *
+     * @return {@code true} if the user wants to use this field.
+     */
+    public static boolean isUsed(@NonNull final Context context,
+                                 @UserSelectedDomain @NonNull final String key) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + key, true);
+    }
+
+    /**
+     * Is the field in use; i.e. is it enabled in the user-preferences.
+     *
+     * @param sharedPreferences prefs object
+     * @param key               DBDefinitions.KEY_x to lookup
+     *
+     * @return {@code true} if the user wants to use this field.
+     */
+    public static boolean isUsed(@NonNull final SharedPreferences sharedPreferences,
+                                 @UserSelectedDomain @NonNull final String key) {
+        return sharedPreferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + key, true);
+    }
+
+    /** Same set as on xml/preferences_field_visibility.xml */
+    @StringDef({KEY_ISBN,
+                KEY_THUMBNAIL,
+                KEY_BOOK_AUTHOR_TYPE_BITMASK,
+                KEY_SERIES_TITLE,
+                KEY_TOC_BITMASK,
+                KEY_DESCRIPTION,
+                KEY_PUBLISHER,
+                KEY_DATE_PUBLISHED,
+                KEY_DATE_FIRST_PUBLICATION,
+                KEY_FORMAT,
+                KEY_COLOR,
+                KEY_GENRE,
+                KEY_LANGUAGE,
+                KEY_PAGES,
+                KEY_PRICE_LISTED,
+                KEY_LOANEE,
+                KEY_PRIVATE_NOTES,
+                KEY_LOCATION,
+                KEY_PRICE_PAID,
+                KEY_READ,
+                KEY_READ_START,
+                KEY_READ_END,
+                KEY_EDITION_BITMASK,
+                KEY_SIGNED,
+                KEY_RATING})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface UserSelectedDomain {
+
     }
 }

@@ -78,7 +78,7 @@ public interface PPref<T> {
      * @return the value of the preference
      */
     @NonNull
-    T getValue(@NonNull final Context context);
+    T getValue(@NonNull Context context);
 
     /**
      * Implementations should return in order below.
@@ -92,5 +92,5 @@ public interface PPref<T> {
      * @return the value of the preference
      */
     @NonNull
-    T getGlobalValue(@NonNull final Context context);
+    T getGlobalValue(@NonNull Context context);
 }

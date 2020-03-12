@@ -75,7 +75,7 @@ public class SendBooksTask
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.SendBooksTask");
-        Context context = App.getTaskContext();
+        final Context context = App.getTaskContext();
 
         try {
             if (!NetworkUtils.isNetworkAvailable(context)) {
@@ -83,7 +83,7 @@ public class SendBooksTask
             }
 
             // Check that no other sync-related jobs are queued
-            GoodreadsAuth grAuth = new GoodreadsAuth(context);
+            final GoodreadsAuth grAuth = new GoodreadsAuth(context);
             if (QueueManager.getQueueManager().hasActiveTasks(TQTask.CAT_EXPORT_ALL)) {
                 return GrStatus.ExportTaskAlreadyQueued;
             }

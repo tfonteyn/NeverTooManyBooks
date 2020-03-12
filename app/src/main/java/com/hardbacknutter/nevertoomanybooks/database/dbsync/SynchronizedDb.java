@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
 import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -293,10 +292,6 @@ public class SynchronizedDb {
                                           + "|cv=" + cv);
             }
             return id;
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(TAG, e);
-            throw e;
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -329,10 +324,6 @@ public class SynchronizedDb {
         // but it can throw other exceptions.
         try {
             return mSqlDb.update(table, cv, whereClause, whereArgs);
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(TAG, e);
-            throw e;
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -376,10 +367,6 @@ public class SynchronizedDb {
         // but it can throw other exceptions.
         try {
             return mSqlDb.delete(table, whereClause, whereArgs);
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(TAG, e);
-            throw e;
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -457,24 +444,18 @@ public class SynchronizedDb {
             Log.d(TAG, "ENTER|execSQL|sql=" + sql);
         }
 
-        try {
-            if (mTxLock != null) {
-                if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
-                    throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
-                }
-                mSqlDb.execSQL(sql);
-            } else {
-                Synchronizer.SyncLock txLock = mSynchronizer.getExclusiveLock();
-                try {
-                    mSqlDb.execSQL(sql);
-                } finally {
-                    txLock.unlock();
-                }
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LockType.exclusive) {
+                throw new TransactionException(ERROR_UPDATE_INSIDE_SHARED_TX);
             }
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(TAG, e, sql);
-            throw e;
+            mSqlDb.execSQL(sql);
+        } else {
+            Synchronizer.SyncLock txLock = mSynchronizer.getExclusiveLock();
+            try {
+                mSqlDb.execSQL(sql);
+            } finally {
+                txLock.unlock();
+            }
         }
     }
 
@@ -517,11 +498,7 @@ public class SynchronizedDb {
     public void analyze() {
         // Don't do VACUUM -- it's a complete rebuild
         //execSQL("vacuum");
-        try {
-            execSQL("analyze");
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(TAG, e, "Analyze failed");
-        }
+        execSQL("analyze");
     }
 
     /**

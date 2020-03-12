@@ -175,14 +175,6 @@ public abstract class BaseActivity
         }
         // Normal setup of the action bar now
         updateActionBar(isTaskRoot());
-
-        // for standard (system) local search only - URGENT: DON'T DO FOR ALL... its annoying on edit screens
-//        if (!Prefs.isAdvancedSearch(this)) {
-//            // Popup the search widget when the user starts to type.
-//            // https://developer.android.com/guide/topics/search/search-dialog
-//            // #InvokingTheSearchDialog
-//            setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-//        }
     }
 
     public void updateActionBar(final boolean isRoot) {
@@ -224,7 +216,7 @@ public abstract class BaseActivity
         }
 
         if (sActivityRecreateStatus == ActivityStatus.NeedsRecreating
-            || App.isThemeChanged(mInitialThemeId) || localeChanged) {
+            || App.isThemeChanged(this, mInitialThemeId) || localeChanged) {
             setIsRecreating();
             recreate();
 
@@ -396,7 +388,7 @@ public abstract class BaseActivity
     }
 
     boolean isNavigationDrawerVisible() {
-        return (mDrawerLayout != null && mDrawerLayout.isDrawerVisible(GravityCompat.START));
+        return mDrawerLayout != null && mDrawerLayout.isDrawerVisible(GravityCompat.START);
     }
 
     void closeNavigationDrawer() {
@@ -431,7 +423,7 @@ public abstract class BaseActivity
     }
 
     /**
-     * Is the home button/icon representing the root menu (or is it the 'up' action)
+     * Is the home button/icon representing the root menu (or is it the 'up' action).
      *
      * @return {@code true} if it's the real home (hamburger) menu
      */
@@ -451,6 +443,7 @@ public abstract class BaseActivity
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        //noinspection SwitchStatementWithTooFewBranches
         switch (item.getItemId()) {
             // Default handler for home icon
             case android.R.id.home: {

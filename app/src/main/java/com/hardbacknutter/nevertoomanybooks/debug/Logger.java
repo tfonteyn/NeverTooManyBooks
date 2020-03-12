@@ -52,12 +52,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * ALWAYS call methods like this:
@@ -79,12 +78,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageExce
  */
 public final class Logger {
 
-    /** Full log path name. Used by ACRA configuration which only accepts a constant. */
+    /** Full log path name. Used by ACRA configuration which only seems to accepts a constant. */
     public static final String LOG_PATH = "log/error.log";
-    /** serious errors are written to this file. */
-    public static final String ERROR_LOG_FILE = "error.log";
-    /** The sub directory for the log files. */
-    private static final String LOG_SUB_DIR = "log";
+    //public static final String LOG_PATH = AppDir.LOG_SUB_DIR + "/" + ERROR_LOG_FILE;
+
+    /** serious errors are written to this file. Stored in {@link AppDir#Log}. */
+    static final String ERROR_LOG_FILE = "error.log";
 
     /** Keep the last 5 log files. */
     private static final int LOGFILE_COPIES = 5;
@@ -95,21 +94,7 @@ public final class Logger {
     private static final DateFormat DATE_FORMAT =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
-
     private Logger() {
-    }
-
-    /**
-     * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
-     *
-     * @param tag    log tag
-     * @param e      cause
-     * @param params to concat
-     */
-    public static void error(@NonNull final String tag,
-                             @NonNull final Throwable e,
-                             @Nullable final Object... params) {
-        error(App.getAppContext(), tag, e, params);
     }
 
     /**
@@ -238,7 +223,7 @@ public final class Logger {
                              + '|' + tag + '|' + type + '|' + message + exMsg;
 
 
-        File logFile = new File(getLogDir(context), ERROR_LOG_FILE);
+        File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
         try (FileWriter fw = new FileWriter(logFile, true);
              BufferedWriter out = new BufferedWriter(fw)) {
@@ -346,28 +331,14 @@ public final class Logger {
      */
     public static void cycleLogs(@NonNull final Context context) {
         try {
-            File logFile = new File(getLogDir(context), ERROR_LOG_FILE);
+            File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
                 File backup = new File(logFile.getPath() + ".bak");
-                StorageUtils.copyFileWithBackup(logFile, backup, LOGFILE_COPIES);
+                FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
-            // Ignore all backup failure...
+            // ignore
         }
-    }
-
-    /**
-     * Log storage location.
-     *
-     * @param context Current context
-     *
-     * @return the Shared Storage <strong>log</strong> Directory object
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available (not mounted)
-     */
-    public static File getLogDir(@NonNull final Context context)
-            throws ExternalStorageException {
-        return new File(StorageUtils.getRootDir(context), LOG_SUB_DIR);
     }
 
     /**

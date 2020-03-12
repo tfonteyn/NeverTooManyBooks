@@ -73,6 +73,13 @@
     <string name="fallback_currency_format">%1$s %2$.2f</string>
 
     <!-- ####################################################################################### -->
+    <!-- System Notification channel names -->
+    <!-- ####################################################################################### -->
+
+    <string name="notification_channel_error">Error</string>
+    <string name="notification_channel_info">Info</string>
+
+    <!-- ####################################################################################### -->
     <!-- Fatal/Crash/Debug messages -->
     <!-- ####################################################################################### -->
 
@@ -176,10 +183,12 @@
         or the id field is blank.
     </string>
 
-    <!-- Importing a CSV book list partially failed with more then 10 lines failing.
-     Only 10 line numbers will be listed -->
+
     <!-- Importing a CSV book list partially failed with less then 10 lines failing -->
     <string name="warning_import_csv_failed_lines_some">CSV parsing failed for lines %1$s.</string>
+    <!-- Importing a CSV book list partially failed with more then 10 lines failing.
+         Only 10 line numbers will be listed -->
+    <string name="warning_import_csv_failed_lines_lots">CSV parsing failed for lines %1$s and others.</string>
 
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position. -->
     <string name="warning_import_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
@@ -241,10 +250,6 @@
     <string name="warning_backup_request">
         Would you like to backup your database to your sdcard?
     </string>
-
-    <!-- some functionality is limited to the ISFDB web site only.
-        This is displayed after a label, hence needs the brackets for clarity. -->
-    <string name="warning_isfdb_only">(only supported by the ISFDB web site)</string>
 
     <!-- The user selected a folder, but we can't actually read/open it. -->
     <string name="warning_select_an_existing_folder">Please select an existing folder.</string>
@@ -354,10 +359,10 @@
     <!-- ####################################################################################### -->
     <!-- ========== Messages for actions that need confirming first. ========== -->
     <!-- ####################################################################################### -->
-    <string name="warning_unsaved_edits">
+    <string name="confirm_unsaved_edits">
         You have unsaved changes, if you exit now they will be lost.
     </string>
-    <string name="warning_unsaved_edits2">
+    <string name="confirm_unsaved_edits2">
         You have unsaved changes. Are you sure you wish to proceed?
     </string>
 
@@ -470,7 +475,7 @@
     <!-- displayed while searching for alternative editions of the book, to get cover images. -->
     <string name="progress_msg_finding_editions">Finding Editions…</string>
     <!-- Progress message displayed when automatically updating book fields  -->
-    <string name="progress_msg_skip_title">Skipping “%1$s”</string>
+    <string name="progress_msg_skip_s">Skipping “%1$s”</string>
 
     <!-- Progress message displayed when importing books -->
     <string name="progress_msg_n_books_processed">%1$d books processed</string>
@@ -489,6 +494,9 @@
         example:
             "Books: 4 created, 78 updated"
             "Covers: 32 created, 4 updated"
+
+            Note the format should cause the least disruption to the eyes of the user.
+            i.e. the numbers will count up, but the overall message will be constant.
         -->
     <string name="progress_msg_n_created_m_updated">%1$s: %2$d created, %3$d updated</string>
 
@@ -585,8 +593,11 @@
         As a result the menu “View on…” will likewise only show what is available.
     </string>
 
+    <!-- tip title and explanations for the icons used. -->
     <string name="tip_authors_works">Icons used:</string>
+    <!-- shown next to the Book icon -->
     <string name="tip_authors_works_book">Book.</string>
+    <!-- shown next to related icon. -->
     <string name="tip_authors_works_multiple_books">Entry is present in multiple books.</string>
 
     <!-- ####################################################################################### -->
@@ -608,6 +619,15 @@
     </string>
 
     <!-- ####################################################################################### -->
+    <!-- ========== ISFDB specific ========== -->
+    <!-- ####################################################################################### -->
+    <!-- Some functionality is limited to the ISFDB web site only.
+         This is displayed at the 'end' of a label, hence needs the brackets for clarity. -->
+    <string name="isfdb_warning_limited_to">(only supported by the ISFDB web site)</string>
+
+    <string name="isfdb_menu_populate_toc">Populate Titles (ISFDB only)</string>
+
+    <!-- ####################################################################################### -->
     <!-- ========== Goodreads specific ========== -->
     <!-- ####################################################################################### -->
 
@@ -624,6 +644,8 @@
 
     <!-- book and book list menu options -->
     <string name="gr_menu_send_to_goodreads">Send to Goodreads</string>
+
+    <string name="gr_pt_collect_genre">Use popular bookshelf names as book genres</string>
 
     <!-- Dialog title and (big) button -->
     <string name="gr_auth_blurb_part1">
@@ -650,7 +672,6 @@
         credentials from this device, then you can do so by pressing the button below. But it is
         also important to delete the application\'s registration on the Goodreads website as well.
     </string>
-
 
     <string name="gr_authorization_needed">
         This action can not be completed until this application is authorized on the Goodreads
@@ -726,7 +747,7 @@
     <string name="gr_tq_events_recorded">(%1$d events recorded)</string>
 
     <!-- ####################################################################################### -->
-    <!-- == Global preference settings == -->
+    <!-- == Global preference settings - TODO: prune duplicate strings == -->
     <!-- ####################################################################################### -->
 
     <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
@@ -1007,113 +1028,99 @@
     <!-- generic menu option - Duplication or Clone. Not the same as 'copy'. -->
     <string name="menu_duplicate">Duplicate</string>
 
-    <string name="menu_show_all">Show all</string>
-
-    <!-- ####################################################################################### -->
-
-    <!-- navigation panel menu -->
-    <!-- menu option -->
-    <string name="menu_search_local">Local Search</string>
-    <!-- menu option -->
-    <string name="menu_bookshelves">Bookshelves</string>
-    <!-- menu option -->
-    <string name="menu_booklist_styles">Booklist styles</string>
-    menu option
-    <string name="menu_settings">Settings</string>
-    <!-- menu option -->
-    <string name="menu_about">About</string>
-
-    <!-- ####################################################################################### -->
-
-    <!-- booklist FAB menu -->
-    <!-- menu option -->
-    <string name="fab_add_book_by_barcode_scan">Scan Barcode</string>
-    <!-- menu option -->
-    <string name="fab_add_book_by_isbn">Enter ISBN</string>
-    <!-- menu option -->
-    <string name="fab_add_book_by_internet_search">Search Internet</string>
-    <!-- menu option -->
-    <string name="fab_add_book_manually">Add Manually</string>
-    <!-- menu option / screen title -->
-    <string name="fab_add_book_by_native_id">Website book id</string>
-
-
-    <!-- menu option -->
-    <string name="menu_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
-
-
-    <!-- menu option -->
-    <string name="menu_level_reset">Preferred level expansion</string>
-    <!-- menu option -->
-    <string name="menu_level_preferred_expand">Expand to preferred level</string>
-    <!-- menu option -->
-    <string name="menu_level_preferred_collapse">Collapse to preferred level</string>
-    <!-- menu option -->
-    <string name="menu_level_expand">Expand All</string>
-    <!-- menu option -->
-    <string name="menu_level_collapse">Collapse All</string>
-    <!-- menu option -->
-    <string name="menu_clear_search_filters">Clear Filters</string>
-
     <string name="menu_strict_isbn">Strict ISBN</string>
 
-    <!-- ####################################################################################### -->
+    <string name="X_menu_show_all">Show all</string>
 
-    <!-- Options menu on the "view all works of an author" screen. -->
-    <!-- menu option - show both TOC entries and Books -->
+
+    <!-- navigation panel menu option -->
+    <string name="menu_search_local">Local Search</string>
+    <!-- navigation panel menu option -->
+    <string name="menu_bookshelves">Bookshelves</string>
+    <!-- navigation panel menu option -->
+    <string name="menu_booklist_styles">Booklist styles</string>
+    <!-- navigation panel menu option -->
+    <string name="menu_settings">Settings</string>
+    <!-- navigation panel menu option -->
+    <string name="menu_about">About</string>
+
+    <!-- Booklist FAB menu option -->
+    <string name="fab_add_book_by_barcode_scan">Scan Barcode</string>
+    <!-- Booklist FAB menu option -->
+    <string name="fab_add_book_by_isbn">Enter ISBN</string>
+    <!-- Booklist FAB menu option -->
+    <string name="fab_add_book_by_internet_search">Search Internet</string>
+    <!-- Booklist FAB menu option -->
+    <string name="fab_add_book_manually">Add Manually</string>
+    <!-- Booklist FAB menu option / screen title -->
+    <string name="fab_add_book_by_native_id">Website book id</string>
+
+    <!-- Booklist menu option -->
+    <string name="menu_sort_and_style_ellipsis">Sorting &amp; Styles…</string>
+    <!-- Booklist menu option -->
+    <string name="menu_level_reset">Preferred level expansion</string>
+    <!-- Booklist menu option -->
+    <string name="menu_level_preferred_expand">Expand to preferred level</string>
+    <!-- Booklist menu option -->
+    <string name="menu_level_preferred_collapse">Collapse to preferred level</string>
+    <!-- Booklist menu option -->
+    <string name="menu_level_expand">Expand All</string>
+    <!-- Booklist menu option -->
+    <string name="menu_level_collapse">Collapse All</string>
+    <!-- Booklist menu option -->
+    <string name="menu_clear_search_filters">Clear Filters</string>
+
+    <!-- "view all works of an author" menu option - show both TOC entries and Books -->
     <string name="menu_author_works_all">Show all</string>
-    <!-- menu option - show only Books -->
+    <!-- "view all works of an author" menu option - show only Books -->
     <string name="menu_author_works_book">Books only</string>
-    <!-- menu option - show only TOC entries -->
+    <!-- "view all works of an author" menu option - show only TOC entries -->
     <string name="menu_author_works_toc">Toc only</string>
 
-    <!-- ####################################################################################### -->
-    <!-- Context menu for a cover image -->
-    <!-- menu option -->
+    <!-- Cover image context menu option -->
     <string name="menu_cover_crop">Crop</string>
-    <!-- menu option -->
+    <!-- Cover image context menu option -->
     <string name="menu_cover_edit">Start editor</string>
-    <!-- submenu title -->
+    <!-- Context menu for a cover image submenu title -->
     <string name="menu_cover_replace">Replace…</string>
-    <!-- menu option -->
+    <!-- Cover image context menu option -->
     <string name="menu_cover_replace_from_gallery">From Gallery…</string>
-    <!-- menu option -->
+    <!-- Cover image context menu option -->
     <string name="menu_cover_replace_from_camera">From Camera…</string>
-    <!-- menu option -->
+    <!-- Cover image context menu option -->
     <string name="menu_cover_replace_from_alt_editions">From Other Editions…</string>
-    <!-- submenu title -->
+    <!-- Context menu for a cover image submenu title -->
     <string name="menu_cover_rotate">Rotate…</string>
-    <!-- menu option -->
+    <!-- Cover image context menu option -->
     <string name="menu_cover_rotate_cw">Clockwise</string>
-    <!-- menu option -->
+    <!-- Cover image context menu option -->
     <string name="menu_cover_rotate_ccw">Anti-Clockwise</string>
-    <!-- menu option -->
+    <!-- Cover image context menu option -->
     <string name="menu_cover_rotate_180" translatable="false">180°</string>
 
-    <!-- ####################################################################################### -->
-
-    <!-- context and option menu for books -->
-    <!-- menu option: set the current book as 'read' -->
+    <!-- Book context/options menu option: set the current book as 'read' -->
     <string name="menu_set_read">Set as read</string>
-    <!-- menu option: set the current book as 'unread' ('to read')-->
+    <!-- Book context/options menu option: set the current book as 'unread' ('to read')-->
     <string name="menu_set_unread">Set as unread</string>
-    <!-- menu option: lend out the current book. -->
+    <!-- Book context/options menu option: lend out the current book. -->
     <string name="menu_loan_lend_book">Lend Book to…</string>
-    <!-- menu option: the current book was returned. -->
+    <!-- Book context/options menu option: the current book was returned. -->
     <string name="menu_loan_return_book">Lend book is returned</string>
-    <!-- menu option: bring up the Android generic share chooser -->
+    <!-- Book context/options menu option: bring up the Android generic share chooser -->
     <string name="menu_share_this">Share</string>
-    <!-- Update Fields from internet for a single book; shown in options and in context menus -->
+    <!-- Book context/options Update Fields from internet for a single book -->
     <string name="menu_update_fields">Update fields</string>
-    <!-- submenu - will contain links to external websites for the current book.  -->
+    <!-- Book context/options submenu - will contain links to external websites for the current book.  -->
     <string name="menu_view_book_at">View on…</string>
 
 
     <!-- booklist screen - context menu for Author/Series/... -->
     <string name="menu_set_complete">Set “complete”</string>
+    <!-- booklist screen - context menu for Author/Series/... -->
     <string name="menu_set_incomplete">Set “incomplete”</string>
+    <!-- booklist screen - context menu for Author/Series/... -->
     <string name="menu_author_details">All works by this author</string>
-    <!-- Update Fields from internet for a set of books; shown in context menus -->
+    <!-- booklist screen - context menu - Update Fields from internet for a set of books -->
     <string name="menu_update_books">Update books</string>
 
     <!-- submenu options for the "amazon" menu -->
@@ -1224,43 +1231,6 @@
     <string name="size_xx_large">2X-Large</string>
 
     <!-- ####################################################################################### -->
-    <!-- == Book format and color names. Used to unify terminology from internet websites.    == -->
-    <!-- ####################################################################################### -->
-    <!--  book format - traditional 'hardcover' also known as 'hardback' -->
-    <string name="book_format_hardcover">Hardcover</string>
-    <!-- book format - A Softcover is not necessarily a paperback -->
-    <string name="book_format_softcover">Softcover</string>
-
-    <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
-    <string name="book_format_paperback">Paperback</string>
-    <!--  book format - a large format paperback -->
-    <string name="book_format_trade_paperback">Trade Paperback</string>
-
-    <!--  book format - mostly used for magazines like 'readers digest'
-          A lot of english Science Fiction magazines use the same format.  -->
-    <string name="book_format_digest">Digest</string>
-
-    <!--  book format string used if a website indicates it's an eBook -->
-    <string name="book_format_ebook">eBook</string>
-    <!-- book format used if a website indicates it's some sort of Audio (tape, cd, etc..) -->
-    <string name="book_format_audiobook">AudioBook</string>
-
-    <string name="book_format_dimensions">Dimensions</string>
-
-    <!-- Colors; used by mainly for comics. -->
-    <string name="book_color_full_color">Colored</string>
-    <string name="book_color_uncolored">Black &amp; white</string>
-
-    <!-- ####################################################################################### -->
-    <!-- == Defaults for bookshelf names == -->
-    <!-- ####################################################################################### -->
-
-    <!-- name of virtual bookshelf which displays all books; also used in list filters -->
-    <string name="bookshelf_all_books">All Books</string>
-    <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
-    <string name="bookshelf_my_books">My Books</string>
-
-    <!-- ####################################################################################### -->
     <!-- == Build in styles == -->
     <!-- ####################################################################################### -->
 
@@ -1289,21 +1259,98 @@
     <string name="style_builtin_update_date">Date updated</string>
 
     <!-- ####################################################################################### -->
-    <!-- == TAB labels - need to be very short -->
+    <!-- == List values used to unify terminology from internet websites. == -->
+    <!-- ####################################################################################### -->
+    <!--  book format - traditional 'hardcover' also known as 'hardback' -->
+    <string name="book_format_hardcover">Hardcover</string>
+    <!-- book format - A Softcover is not necessarily a paperback -->
+    <string name="book_format_softcover">Softcover</string>
+
+    <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
+    <string name="book_format_paperback">Paperback</string>
+    <!--  book format - a large format paperback -->
+    <string name="book_format_trade_paperback">Trade Paperback</string>
+
+    <!--  book format - mostly used for magazines like 'readers digest'
+          A lot of english Science Fiction magazines use the same format.  -->
+    <string name="book_format_digest">Digest</string>
+
+    <!--  book format string used if a website indicates it's an eBook -->
+    <string name="book_format_ebook">eBook</string>
+    <!-- book format used if a website indicates it's some sort of Audio (tape, cd, etc..) -->
+    <string name="book_format_audiobook">AudioBook</string>
+
+    <string name="book_format_dimensions">Dimensions</string>
+
+    <!-- Colors; used by mainly for comics. -->
+    <string name="book_color_full_color">Colored</string>
+    <string name="book_color_uncolored">Black &amp; white</string>
+
+    <!-- ####################################################################################### -->
+    <!-- == List values. == -->
+    <!-- ####################################################################################### -->
+    <!-- Book edition -->
+    <string name="lbl_edition">Edition</string>
+    <!-- Book editions values NEWTHINGS: add book edition: add label. -->
+    <string name="lbl_edition_first_edition">First Edition</string>
+    <string name="lbl_edition_first_impression">First impression</string>
+    <string name="lbl_edition_limited">Limited</string>
+    <string name="lbl_edition_slipcase">Slipcase</string>
+    <string name="lbl_edition_book_club">Bookclub edition</string>
+
+    <!-- Book / Dust cover condition -->
+    <string name="lbl_condition">Condition</string>
+    <!-- Book / Dust cover condition values -->
+    <string name="lbl_condition_fine">As new</string>
+    <string name="lbl_condition_very_good">Very good</string>
+    <string name="lbl_condition_good">Good</string>
+    <string name="lbl_condition_fair">"Acceptable "</string>
+    <string name="lbl_condition_reading_copy">Reading copy</string>
+    <string name="lbl_condition_dust_cover_missing">Missing</string>
+    <string name="lbl_condition_dust_cover_none_or_unknown">None</string>
+
+    <!-- Author types -->
+    <string name="lbl_author_type">Author type</string>
+    <!-- Author type values-->
+    <string name="lbl_author_type_writer">writer</string>
+    <string name="lbl_author_type_translator">translator</string>
+    <string name="lbl_author_type_editor">editor</string>
+    <string name="lbl_author_type_contributor">contributor</string>
+    <string name="lbl_author_type_intro">Introduction etc.</string>
+    <!-- Interior art / illustrations -->
+    <string name="lbl_author_type_artist">illustrations</string>
+    <string name="lbl_author_type_inking">Inking</string>
+    <string name="lbl_author_type_colorist">colorist</string>
+    <!-- Cover art / Cover illustration -->
+    <string name="lbl_author_type_cover_artist">Cover art</string>
+    <string name="lbl_author_type_cover_inking">Cover inking</string>
+    <string name="lbl_author_type_cover_colorist">Cover colorist</string>
+
+    <!-- ####################################################################################### -->
+    <!-- == Defaults for bookshelf names == -->
     <!-- ####################################################################################### -->
 
-    <!-- Name of the 'Details' tab when editing a book. -->
+    <!-- name of virtual bookshelf which displays all books; also used in list filters -->
+    <string name="bookshelf_all_books">All Books</string>
+    <!-- Name of the 'Default' bookshelf, created when app first installed. User can rename. -->
+    <string name="bookshelf_my_books">My Books</string>
+
+    <!-- ####################################################################################### -->
+    <!-- == TAB labels - need to be very short; 4 tabs should fit on a screen. Ideally 5.  -->
+    <!-- ####################################################################################### -->
+
+    <!-- Edit book: Name of the 'Details' tab -->
     <string name="tab_lbl_details">Details</string>
-    <!-- Name of the 'Publication' tab when editing a book. -->
+    <!-- Edit book: Name of the 'Publication' tab. -->
     <string name="tab_lbl_publication">Pub.</string>
-    <!-- Name of the 'Notes' tab when editing a book.-->
+    <!-- Edit book: Name of the 'Notes' tab.-->
     <string name="tab_lbl_notes">Notes</string>
-    <!-- Name of the 'Table Of Content' (formerly 'Anthology') tab when editing a book. -->
+    <!-- Edit book: Name of the 'Table Of Content' (formerly 'Anthology') tab. -->
     <string name="tab_lbl_content">TOC</string>
-    <!-- Name of the 'External website id' tab when editing a book.-->
+    <!-- Edit book: Name of the 'External website id' tab.-->
     <string name="tab_lbl_ext_id">Ext. ID</string>
 
-    <!-- Name of the 'Alternative Editions' tab on the SearchAdmin page -->
+    <!-- SearchAdmin page: Name of the 'Alternative Editions' tab. -->
     <string name="tab_lbl_alternative_editions">Alt. Ed.</string>
 
     <!-- ####################################################################################### -->
@@ -1325,8 +1372,6 @@
     <!-- e.g. clearing a form. -->
     <string name="clear">Clear</string>
 
-
-
     <!-- 'try again' -->
     <string name="retry">Retry</string>
 
@@ -1336,37 +1381,43 @@
     <!-- Default 'name' for anything that has a name -->
     <string name="name">Name</string>
 
-    <!-- Local search uses the single entry search form (top of the screen). -->
-    <string name="lbl_local_search_standard">Standard</string>
-    <!-- Local search uses the dedicated search form activity screen. -->
-    <string name="lbl_local_search_advanced">Advanced</string>
-
     <!-- ####################################################################################### -->
     <!-- == Field labels == -->
     <!-- ####################################################################################### -->
 
-    <!-- Short Headings for fields or tabs -->
-    <string name="lbl_by_author_s">by %1$s</string>
-    <string name="lbl_family_name">Family Name</string>
-    <string name="lbl_given_names">Given Names</string>
+    <!-- Single Style -->
+    <string name="lbl_style">Style</string>
+    <!-- Multiple Styles -->
+    <string name="lbl_styles">Styles</string>
 
-    <string name="lbl_author">Author</string>
-    <string name="lbl_authors">Authors</string>
+    <!-- A single Book. -->
+    <string name="lbl_book">Book</string>
+    <!-- Multiple Book. -->
+    <string name="lbl_books">Books</string>
 
     <!-- A single Series. -->
     <string name="lbl_series">Series</string>
     <!-- Multiple Series. -->
     <string name="lbl_series_multiple">Series</string>
 
-    <string name="lbl_publication">Publication</string>
-    <string name="lbl_publisher">Publisher</string>
-    <string name="lbl_first_publication">First Publication</string>
-    <string name="lbl_date_published">Date Published</string>
-    <string name="lbl_print_run">Print run</string>
+    <!-- Single Author -->
+    <string name="lbl_author">Author</string>
+    <!-- Multiple Authors. -->
+    <string name="lbl_authors">Authors</string>
+    <!-- Author. -->
+    <string name="lbl_by_author_s">by %1$s</string>
+    <!-- Authors. -->
+    <string name="lbl_family_name">Family Name</string>
+    <!-- Authors. -->
+    <string name="lbl_given_names">Given Names</string>
 
-    <string name="lbl_book">Book</string>
-    <string name="lbl_books">Books</string>
+    <!-- A single Bookshelf. -->
     <string name="lbl_bookshelf">Bookshelf</string>
+    <!-- Multiple Bookshelves. Short label -->
+    <string name="lbl_bookshelves">Shelves</string>
+    <!-- Multiple Bookshelves. Full size label -->
+    <string name="lbl_bookshelves_long">Bookshelves</string>
+
     <string name="lbl_rating">Rating</string>
     <string name="lbl_pages">Pages</string>
     <string name="lbl_anthology">Anthology</string>
@@ -1387,8 +1438,24 @@
     <string name="lbl_is_complete">Is complete</string>
     <string name="lbl_x_pages">%1$d pages</string>
     <string name="lbl_currency">Currency</string>
-    <string name="lbl_style">Style</string>
-    <string name="lbl_styles">Styles</string>
+
+    <!-- short and long label for the Location field -->
+    <string name="lbl_location">Location</string>
+    <string name="lbl_location_long">Location of the book</string>
+
+
+    <!-- Header for a screen section. -->
+    <string name="lbl_publication">Publication</string>
+    <string name="lbl_publisher">Publisher</string>
+    <!-- First Publication Date for the content of the book. -->
+    <string name="lbl_first_publication">First Publication</string>
+    <!-- Publication Date for the book. -->
+    <string name="lbl_date_published">Date Published</string>
+    <!-- Number of books printed of this edition. -->
+    <string name="lbl_print_run">Print run</string>
+
+
+
     <string name="lbl_credentials">Credentials</string>
 
     <string name="lbl_is_signed">Has this book been signed?</string>
@@ -1404,50 +1471,9 @@
     <string name="lbl_site_book_id">Website book ID</string>
     <string name="lbl_select_website">Select a website:</string>
 
-    <!-- short and long label for the same field -->
-    <string name="lbl_bookshelves">Shelves</string>
-    <string name="lbl_bookshelves_long">Bookshelves</string>
-    <string name="lbl_location">Location</string>
-    <string name="lbl_location_long">Location of the book</string>
-
     <!-- checkbox for the TOC edit screen. Should fit on a single line -->
     <string name="lbl_toc_anthology">This is an Anthology</string>
     <string name="lbl_toc_multiple_authors">It has multiple authors</string>
-
-    <!-- Author types header -->
-    <string name="lbl_author_type">Author type</string>
-    <!-- Author types -->
-    <string name="lbl_author_type_writer">writer</string>
-    <string name="lbl_author_type_translator">translator</string>
-    <string name="lbl_author_type_editor">editor</string>
-    <string name="lbl_author_type_contributor">contributor</string>
-    <string name="lbl_author_type_intro">Introduction etc.</string>
-    <!-- Interior art / illustrations -->
-    <string name="lbl_author_type_artist">illustrations</string>
-    <string name="lbl_author_type_inking">Inking</string>
-    <string name="lbl_author_type_colorist">colorist</string>
-    <!-- Cover art / Cover illustration -->
-    <string name="lbl_author_type_cover_artist">Cover art</string>
-    <string name="lbl_author_type_cover_inking">Cover inking</string>
-    <string name="lbl_author_type_cover_colorist">Cover colorist</string>
-
-    <!-- Book edition -->
-    <string name="lbl_edition">Edition</string>
-    <!-- Book editions flags NEWTHINGS: add book edition: add label. -->
-    <string name="lbl_edition_first_edition">First Edition</string>
-    <string name="lbl_edition_first_impression">First impression</string>
-    <string name="lbl_edition_limited">Limited</string>
-    <string name="lbl_edition_slipcase">Slipcase</string>
-    <string name="lbl_edition_book_club">Bookclub edition</string>
-
-    <!-- Book / Dust cover condition -->
-    <string name="lbl_condition_fine">As new</string>
-    <string name="lbl_condition_very_good">Very good</string>
-    <string name="lbl_condition_good">Good</string>
-    <string name="lbl_condition_fair">"Acceptable "</string>
-    <string name="lbl_condition_reading_copy">Reading copy</string>
-    <string name="lbl_dust_cover_missing">Missing</string>
-    <string name="lbl_dust_cover_none_or_unknown">None</string>
 
     <string name="lbl_select_fields">Select Fields</string>
     <string name="lbl_field_usage_copy_if_blank">Copy if blank</string>
@@ -1548,6 +1574,12 @@
     <string name="lbl_copy_database">Export Database</string>
     <string name="lbl_copy_database_blurb">Select a folder to export to.</string>
 
+    <!-- Local search uses the single entry search form (top of the screen). -->
+    <string name="lbl_local_search_standard">Standard</string>
+    <!-- Local search uses the dedicated search form activity screen. -->
+    <string name="lbl_local_search_advanced">Advanced</string>
+
+
     <!-- Headings in 'about' dialog -->
     <string name="lbl_about_website">Web page</string>
     <string name="lbl_about_sourcecode">Source Code</string>
@@ -1602,7 +1634,6 @@
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still  ========== -->
     <!-- ####################################################################################### -->
-    <string name="menu_populate_toc">Populate Titles (ISFDB only)</string>
 
     <!-- Internal cleanup of Booklist node states... collapsed/expanded etc... need proper name -->
     <string name="lbl_purge_blns">Purge BLNS</string>
@@ -1623,8 +1654,5 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
-
-    <string name="pt_goodreads_collect_genre">Collect genre from popular bookshelves</string>
-    <string name="warning_import_csv_failed_lines_lots">CSV parsing failed for lines %1$s and others.</string>
 
 </resources>

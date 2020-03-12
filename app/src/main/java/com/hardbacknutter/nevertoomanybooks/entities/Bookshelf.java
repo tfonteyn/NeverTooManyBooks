@@ -183,12 +183,12 @@ public class Bookshelf
             } else if (useAll) {
                 // Caller wants "AllBooks" (instead of the default Bookshelf)
                 return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
-                                     BooklistStyle.getDefaultStyle(context, db));
+                                     BooklistStyle.getDefault(context, db));
             }
         }
 
         return new Bookshelf(DEFAULT_ID, context.getString(R.string.bookshelf_my_books),
-                             BooklistStyle.getDefaultStyle(context, db));
+                             BooklistStyle.getDefault(context, db));
     }
 
     /**

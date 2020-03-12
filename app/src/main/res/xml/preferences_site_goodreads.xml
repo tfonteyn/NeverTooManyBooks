@@ -44,7 +44,7 @@
             android:key="goodreads.search.collect.genre"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_goodreads_collect_genre" />
+            android:title="@string/gr_pt_collect_genre" />
 
     </PreferenceCategory>
 

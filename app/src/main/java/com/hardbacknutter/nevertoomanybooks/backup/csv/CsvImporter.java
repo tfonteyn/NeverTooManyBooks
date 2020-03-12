@@ -34,7 +34,6 @@ import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.util.Pair;
 
@@ -69,10 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FORMATTED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
 
 /**
  * Implementation of {@link Importer} that reads a CSV file.
@@ -138,34 +133,38 @@ public class CsvImporter
     @NonNull
     private final DAO mDb;
 
+    @NonNull
     private final Locale mUserLocale;
 
+    /** import configuration. */
     @NonNull
-    private final ImportHelper mSettings;
+    private final ImportHelper mHelper;
 
     /** cached localized "Books" string. */
+    @NonNull
     private final String mBooksString;
+    @NonNull
     private final String mProgress_msg_n_created_m_updated;
-
+    @NonNull
     private final Results mResults = new Results();
 
     /**
      * Constructor.
      *
-     * @param context  Current context
-     * @param settings {@link ImportHelper#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
-     *                 Other flags are ignored, as this class only
-     *                 handles {@link ImportHelper#BOOK_CSV} anyhow.
+     * @param context Current context
+     * @param helper  {@link ImportHelper#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     *                Other flags are ignored, as this class only
+     *                handles {@link ImportHelper#BOOK_CSV} anyhow.
      */
     @AnyThread
     public CsvImporter(@NonNull final Context context,
-                       @NonNull final ImportHelper settings) {
+                       @NonNull final ImportHelper helper) {
         mBooksString = context.getString(R.string.lbl_books);
         mProgress_msg_n_created_m_updated =
                 context.getString(R.string.progress_msg_n_created_m_updated);
 
         mDb = new DAO(TAG);
-        mSettings = settings;
+        mHelper = helper;
 
         mUserLocale = LocaleUtils.getUserLocale(context);
     }
@@ -174,7 +173,6 @@ public class CsvImporter
     @WorkerThread
     public Results doBooks(@NonNull final Context context,
                            @NonNull final InputStream is,
-                           @Nullable final CoverFinder coverFinder,
                            @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
@@ -227,7 +225,7 @@ public class CsvImporter
         requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
 
         final boolean updateOnlyIfNewer;
-        if ((mSettings.options & ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
+        if (mHelper.getOption(ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED)) {
             requireColumnOrThrow(book, DBDefinitions.KEY_DATE_LAST_UPDATED);
             updateOnlyIfNewer = true;
         } else {
@@ -289,24 +287,9 @@ public class CsvImporter
 
                     // The data is ready to be send to the database
 
-                    // Save the original id from the file for use in checking for images
-                    long bookIdFromFile = bids.bookId;
                     // go!
                     bids.bookId = importBook(context, book, bids, updateOnlyIfNewer);
 
-                    // When importing a file that has an id or UUID, try to import a cover.
-                    if (bids.bookId > 0) {
-                        if (coverFinder != null) {
-                            if (!bids.uuid.isEmpty()) {
-                                coverFinder.copyOrRenameCoverFile(bids.uuid);
-                            } else {
-                                String uuid = mDb.getBookUuid(bids.bookId);
-                                if (uuid != null) {
-                                    coverFinder.copyOrRenameCoverFile(bookIdFromFile, uuid);
-                                }
-                            }
-                        }
-                    }
                 } catch (@NonNull final ImportException
                         | SQLiteDoneException | IndexOutOfBoundsException e) {
                     mResults.failedCsvLines.add(new Pair<>(row, e.getLocalizedMessage()));
@@ -506,22 +489,22 @@ public class CsvImporter
         } else {
             authors = new ArrayList<>();
 
-            if (book.contains(KEY_AUTHOR_FORMATTED)) {
-                String a = book.getString(KEY_AUTHOR_FORMATTED);
+            if (book.contains(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
+                String a = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
                 if (!a.isEmpty()) {
                     authors.add(Author.fromString(a));
                 }
-                book.remove(KEY_AUTHOR_FORMATTED);
+                book.remove(DBDefinitions.KEY_AUTHOR_FORMATTED);
 
-            } else if (book.contains(KEY_AUTHOR_FAMILY_NAME)) {
-                String family = book.getString(KEY_AUTHOR_FAMILY_NAME);
+            } else if (book.contains(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
+                String family = book.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 if (!family.isEmpty()) {
                     // given will be "" if it's not present
-                    String given = book.getString(KEY_AUTHOR_GIVEN_NAMES);
+                    String given = book.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
                     authors.add(new Author(family, given));
                 }
-                book.remove(KEY_AUTHOR_FAMILY_NAME);
-                book.remove(KEY_AUTHOR_GIVEN_NAMES);
+                book.remove(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+                book.remove(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
 
             } else if (book.contains(OLD_STYLE_AUTHOR_NAME)) {
                 String a = book.getString(OLD_STYLE_AUTHOR_NAME);

@@ -63,17 +63,12 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 
 /**
  * Represents the underlying data for a book.
@@ -179,7 +174,7 @@ public class Book
 
         // prepare the front-cover to post
         Uri uri = GenericFileProvider
-                .getUriForFile(context, StorageUtils.getCoverFileForUuid(context, uuid, 0));
+                .getUriForFile(context, AppDir.getCoverFile(context, uuid, 0));
 
         // so despite it being shown on the list it will not post any text unless the user types it.
         String text = context.getString(R.string.info_share_book_im_reading,
@@ -654,9 +649,9 @@ public class Book
         Locale bookLocale = getAndUpdateLocale(context, LocaleUtils.getUserLocale(context), true);
 
         // Handle TITLE
-        if (contains(KEY_TITLE)) {
+        if (contains(DBDefinitions.KEY_TITLE)) {
             String obTitle = reorderTitleForSorting(context, bookLocale);
-            putString(KEY_TITLE_OB, DAO.encodeOrderByColumn(obTitle, bookLocale));
+            putString(DBDefinitions.KEY_TITLE_OB, DAO.encodeOrderByColumn(obTitle, bookLocale));
         }
 
         // Handle TOC_BITMASK only, no handling of actual titles here,
@@ -672,9 +667,9 @@ public class Book
         }
 
         // make sure we only store valid bits
-        if (contains(KEY_EDITION_BITMASK)) {
-            int editions = getInt(KEY_EDITION_BITMASK) & Edition.BITMASK;
-            putInt(KEY_EDITION_BITMASK, editions);
+        if (contains(DBDefinitions.KEY_EDITION_BITMASK)) {
+            int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK) & Edition.BITMASK;
+            putInt(DBDefinitions.KEY_EDITION_BITMASK, editions);
         }
 
         // cleanup/build all price related fields
@@ -694,7 +689,9 @@ public class Book
      * Helper for {@link #preprocessForStoring(Context, boolean)}.
      * <p>
      *
-     * @param bookLocale the book Locale
+     * @param bookLocale  the book Locale
+     * @param valueKey    key for the value field
+     * @param currencyKey key for the currency field
      */
     @VisibleForTesting
     void preprocessPrice(@NonNull final Locale bookLocale,
@@ -806,7 +803,7 @@ public class Book
      */
     @VisibleForTesting
     void preprocessNullsAndBlanks(final boolean isNew) {
-        for (Domain domain : TBL_BOOKS.getDomains()) {
+        for (Domain domain : DBDefinitions.TBL_BOOKS.getDomains()) {
             String key = domain.getName();
             if (contains(key) && domain.hasDefault()) {
                 Object value = get(key);
@@ -825,6 +822,13 @@ public class Book
         }
     }
 
+    /**
+     * Toggle the read-status for this book.
+     *
+     * @param db Database Access
+     *
+     * @return the new 'read' status. If the update failed, this will be the unchanged status.
+     */
     public boolean toggleRead(@NonNull final DAO db) {
         return setRead(db, !getBoolean(DBDefinitions.KEY_READ));
     }
@@ -926,8 +930,8 @@ public class Book
 
         /** mapping the dust cover condition to a resource string for displaying. */
         private static final List<Integer> DUST_COVER =
-                Arrays.asList(R.string.lbl_dust_cover_none_or_unknown,
-                              R.string.lbl_dust_cover_missing,
+                Arrays.asList(R.string.lbl_condition_dust_cover_none_or_unknown,
+                              R.string.lbl_condition_dust_cover_missing,
                               R.string.lbl_condition_fair,
                               R.string.lbl_condition_good,
                               R.string.lbl_condition_very_good,

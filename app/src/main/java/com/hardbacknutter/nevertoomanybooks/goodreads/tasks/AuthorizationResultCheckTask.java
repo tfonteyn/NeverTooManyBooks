@@ -39,6 +39,8 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 /**
@@ -58,8 +60,9 @@ public class AuthorizationResultCheckTask
     @Override
     protected Boolean doInBackground(final Void... params) {
         Thread.currentThread().setName("GR.AuthorizationResultCheckTask");
-        Context context = App.getTaskContext();
-        GoodreadsAuth grAuth = new GoodreadsAuth(context);
+        final Context context = App.getTaskContext();
+
+        final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         try {
             return grAuth.handleAuthenticationAfterAuthorization(context);
 
@@ -71,7 +74,7 @@ public class AuthorizationResultCheckTask
 
     @Override
     protected void onPostExecute(@NonNull final Boolean result) {
-        Context context = App.getLocalizedAppContext();
+        final Context context = LocaleUtils.applyLocale(App.getAppContext());
 
         @StringRes
         int title;
@@ -81,6 +84,8 @@ public class AuthorizationResultCheckTask
             title = R.string.title_authorized;
             msg = context.getString(R.string.info_authorization_successful,
                                     context.getString(R.string.site_goodreads));
+
+            Notifier.show(context, Notifier.CHANNEL_INFO, context.getString(title), msg);
 
         } else {
             title = R.string.title_not_authorized;
@@ -96,8 +101,8 @@ public class AuthorizationResultCheckTask
                 msg = context.getString(R.string.error_site_authentication_failed,
                                         context.getString(R.string.site_goodreads));
             }
-        }
 
-        App.showNotification(context, context.getString(title), msg);
+            Notifier.show(context, Notifier.CHANNEL_ERROR, context.getString(title), msg);
+        }
     }
 }

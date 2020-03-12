@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Hard coded not to fetch any images.
@@ -102,10 +103,10 @@ public class IsfdbGetBookTask
     @WorkerThread
     protected Bundle doInBackground(final Void... params) {
         Thread.currentThread().setName(TAG);
-        Context context = App.getLocalizedAppContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         try {
-            boolean[] thumbs = {false, false};
+            final boolean[] thumbs = {false, false};
             if (mEditions != null) {
                 return new IsfdbBookHandler()
                         .fetch(context, mEditions, mAddSeriesFromToc, thumbs, new Bundle());

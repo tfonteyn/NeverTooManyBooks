@@ -129,16 +129,16 @@ public abstract class CropImageViewTouchBase
 
     public CropImageViewTouchBase(@NonNull final Context context) {
         super(context);
-        init();
+        init(context);
     }
 
     public CropImageViewTouchBase(@NonNull final Context context,
                                   @NonNull final AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
-    private void init() {
+    private void init(@NonNull final Context context) {
         setScaleType(ImageView.ScaleType.MATRIX);
 
         // specific for Android Studio so the view can render in the layout editor.
@@ -146,7 +146,7 @@ public abstract class CropImageViewTouchBase
             return;
         }
 
-        int type = PIntString.getListPreference(Prefs.pk_image_cropper_layer_type,
+        int type = PIntString.getListPreference(context, Prefs.pk_image_cropper_layer_type,
                                                 LAYER_TYPE_USE_DEFAULT);
         if (type == LAYER_TYPE_USE_DEFAULT) {
             return;

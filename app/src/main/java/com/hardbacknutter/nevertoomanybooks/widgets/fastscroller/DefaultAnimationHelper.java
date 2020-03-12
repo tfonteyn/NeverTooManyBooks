@@ -52,7 +52,7 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 
 /**
  * Original code from <a href="https://github.com/zhanghai/AndroidFastScroll">
- * https://github.com/zhanghai/AndroidFastScroll</a>
+ * https://github.com/zhanghai/AndroidFastScroll</a>.
  */
 public class DefaultAnimationHelper
         implements AnimationHelper {

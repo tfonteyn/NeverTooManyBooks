@@ -60,8 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * DB Helper for Covers DB. It uses the Application Context.
@@ -255,7 +255,7 @@ public final class CoversDAO
                 return null;
             }
 
-            File file = StorageUtils.getCoverFileForUuid(context, uuid, cIdx);
+            File file = AppDir.getCoverFile(context, uuid, cIdx);
             String dateStr = DateUtils.utcSqlDateTime(new Date(file.lastModified()));
             String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
             try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE,
@@ -564,8 +564,7 @@ public final class CoversDAO
         @WorkerThread
         protected Void doInBackground(final Void... params) {
             Thread.currentThread().setName("ImageCacheWriterTask");
-
-            Context context = App.getAppContext();
+            final Context context = App.getTaskContext();
 
             RUNNING_TASKS.incrementAndGet();
 

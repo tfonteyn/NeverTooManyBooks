@@ -44,25 +44,29 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Date;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 public final class DebugReport {
 
     /** Log tag. */
     private static final String TAG = "DebugReport";
 
-    /** files with these prefixes will be bundled in the report. */
-    private static final String[] FILE_PREFIXES = new String[]{
-            "DbUpgrade", "DbExport", "error.log", "export.csv"};
+    /**
+     * Prefix for the filename of a database backup.
+     * Created in {@link AppDir#Cache}.
+     */
+    private static final String DB_EXPORT_FILE_PREFIX = "DBDebug";
 
     private DebugReport() {
     }
@@ -88,20 +92,20 @@ public final class DebugReport {
         StringBuilder signedBy = new StringBuilder();
 
         try {
-            // Get app info
-            PackageManager manager = context.getPackageManager();
-            PackageInfo appInfo;
+            PackageInfo info;
             if (Build.VERSION.SDK_INT >= 28) {
-                appInfo = manager.getPackageInfo(context.getPackageName(),
-                                                 PackageManager.GET_SIGNING_CERTIFICATES);
+                info = context.getPackageManager()
+                              .getPackageInfo(context.getPackageName(),
+                                              PackageManager.GET_SIGNING_CERTIFICATES);
             } else {
                 // PackageManagerGetSignatures
-                appInfo = manager.getPackageInfo(context.getPackageName(),
-                                                 PackageManager.GET_SIGNATURES);
+                info = context.getPackageManager()
+                              .getPackageInfo(context.getPackageName(),
+                                              PackageManager.GET_SIGNATURES);
             }
 
             // concat the signature chain.
-            for (Signature sig : appInfo.signatures) {
+            for (Signature sig : info.signatures) {
                 if (sig != null) {
                     final MessageDigest md = MessageDigest.getInstance("SHA256");
                     final byte[] publicKey = md.digest(sig.toByteArray());
@@ -146,20 +150,22 @@ public final class DebugReport {
      */
     public static boolean sendDebugInfo(@NonNull final Context context) {
 
-        StringBuilder message = new StringBuilder();
+        final StringBuilder message = new StringBuilder();
 
-        PackageInfo packageInfo = App.getPackageInfo(0);
-        if (packageInfo != null) {
-            message.append("App: ").append(packageInfo.packageName).append('\n')
-                   .append("Version: ").append(packageInfo.versionName)
+        try {
+            PackageInfo info =
+                    context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            message.append("App: ").append(info.packageName).append('\n')
+                   .append("Version: ").append(info.versionName)
                    .append(" (");
             if (Build.VERSION.SDK_INT >= 28) {
-                message.append(packageInfo.getLongVersionCode());
+                message.append(info.getLongVersionCode());
             } else {
-                message.append(packageInfo.versionCode);
+                message.append(info.versionCode);
             }
             message.append(")\n");
-        } else {
+
+        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
             message.append("PackageInfo == null?");
         }
 
@@ -189,18 +195,28 @@ public final class DebugReport {
 
         try {
             // Copy the database from the internal protected area to the cache area.
-            File dbFile = new File(StorageUtils.getCacheDir(context), "DbExport-tmp.db");
+            final File dbFile = AppDir.Cache.getFile(context, DB_EXPORT_FILE_PREFIX
+                                                              + '-'
+                                                              + DateUtils.utcSqlDate(new Date())
+                                                              + ".db");
             dbFile.deleteOnExit();
-            StorageUtils.copyFile(DBHelper.getDatabasePath(context), dbFile);
+            FileUtils.copy(DBHelper.getDatabasePath(context), dbFile);
 
-            // Find all files of interest to send in the cache and log dirs
-            List<String> files = collectFiles(StorageUtils.getCacheDir(context),
-                                              Logger.getLogDir(context));
+            // Find all files of interest to send
+            final Collection<File> files = new ArrayList<>();
+
+            files.addAll(AppDir.Log.collectFiles(context, file ->
+                    file.getName().startsWith(Logger.ERROR_LOG_FILE)));
+
+            files.addAll(AppDir.Upgrades.collectFiles(context, file ->
+                    file.getName().startsWith(DBHelper.DB_UPGRADE_FILE_PREFIX)));
+
+            files.addAll(AppDir.Cache.collectFiles(context, file ->
+                    file.getName().startsWith(DB_EXPORT_FILE_PREFIX)));
 
             // Build the attachment list
-            ArrayList<Uri> uriList = new ArrayList<>();
-            for (String fileSpec : files) {
-                File file = new File(fileSpec);
+            final ArrayList<Uri> uriList = new ArrayList<>();
+            for (File file : files) {
                 if (file.exists() && file.length() > 0) {
                     Uri uri = GenericFileProvider.getUriForFile(context, file);
                     uriList.add(uri);
@@ -208,9 +224,9 @@ public final class DebugReport {
             }
 
             // setup the mail message
-            String subject = '[' + context.getString(R.string.app_name) + "] "
-                             + context.getString(R.string.debug_subject);
-            String[] to = context.getString(R.string.email_debug).split(";");
+            final String subject = '[' + context.getString(R.string.app_name) + "] "
+                                   + context.getString(R.string.debug_subject);
+            final String[] to = context.getString(R.string.email_debug).split(";");
             ArrayList<String> bodyText = new ArrayList<>();
             bodyText.add(message.toString());
             Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
@@ -219,7 +235,7 @@ public final class DebugReport {
                     .putExtra(Intent.EXTRA_EMAIL, to)
                     .putExtra(Intent.EXTRA_TEXT, bodyText)
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
-            String chooserText = context.getString(R.string.title_send_mail);
+            final String chooserText = context.getString(R.string.title_send_mail);
             context.startActivity(Intent.createChooser(intent, chooserText));
             return true;
 
@@ -227,31 +243,5 @@ public final class DebugReport {
             Logger.error(context, TAG, e);
             return false;
         }
-    }
-
-    /**
-     * Collect applicable files for the list of directories.
-     * Does <strong>not</strong> visit sub directories.
-     *
-     * @param dirs to walk
-     *
-     * @return list with absolute path names
-     */
-    private static List<String> collectFiles(@NonNull final File... dirs) {
-        List<String> files = new ArrayList<>();
-        for (File dir : dirs) {
-            if (dir.isDirectory()) {
-                //noinspection ConstantConditions
-                for (String name : dir.list()) {
-                    for (String prefix : FILE_PREFIXES) {
-                        if (name.startsWith(prefix)) {
-                            files.add(new File(name).getAbsolutePath());
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return files;
     }
 }

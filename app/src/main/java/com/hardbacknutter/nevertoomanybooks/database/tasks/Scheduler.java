@@ -35,7 +35,7 @@ import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
-public class Scheduler {
+public final class Scheduler {
 
     /** Flag to indicate FTS rebuild is required at startup. */
     public static final String PREF_REBUILD_FTS =
@@ -46,6 +46,9 @@ public class Scheduler {
     /** Flag to indicate all indexes must be rebuild at startup. */
     public static final String PREF_REBUILD_INDEXES =
             StartupViewModel.PREF_PREFIX + "rebuild.index";
+
+    private Scheduler() {
+    }
 
     /**
      * Set the flag to indicate an FTS rebuild is required.

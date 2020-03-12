@@ -34,13 +34,13 @@ import androidx.annotation.NonNull;
 import androidx.preference.ListPreference;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-
 /**
  * An Integer stored as a String
  * <p>
  * Used for {@link androidx.preference.ListPreference}
  * The Preference uses 'select 1 of many' type and insists on a String.
+ *
+ * @see PInt
  */
 public class PIntString
         extends PPrefBase<Integer>
@@ -62,6 +62,27 @@ public class PIntString
         super(key, uuid, isPersistent, defValue);
     }
 
+    /**
+     * {@link ListPreference} stores the selected value as a String.
+     * But they are really Integer values. Hence this transmogrification....
+     *
+     * @param context  Current context
+     * @param key      The name of the preference to retrieve.
+     * @param defValue Value to return if this preference does not exist.
+     *
+     * @return int (stored as String) global preference
+     */
+    public static int getListPreference(@NonNull final Context context,
+                                        @NonNull final String key,
+                                        final int defValue) {
+        String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                        .getString(key, null);
+        if (value == null || value.isEmpty()) {
+            return defValue;
+        }
+        return Integer.parseInt(value);
+    }
+
     @NonNull
     public Integer getGlobalValue(@NonNull final Context context) {
         String value = PreferenceManager.getDefaultSharedPreferences(context)
@@ -81,34 +102,15 @@ public class PIntString
     @NonNull
     @Override
     public Integer getValue(@NonNull final Context context) {
-        if (!mIsPersistent) {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
-        } else {
+        if (mIsPersistent) {
             // reminder: {@link androidx.preference.ListPreference} is stored as a String
             String value = getPrefs(context).getString(getKey(), null);
             if (value != null && !value.isEmpty()) {
                 return Integer.parseInt(value);
             }
             return getGlobalValue(context);
+        } else {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         }
-    }
-
-    /**
-     * {@link ListPreference} stores the selected value as a String.
-     * But they are really Integer values. Hence this transmogrification....
-     *
-     * @param key      The name of the preference to retrieve.
-     * @param defValue Value to return if this preference does not exist.
-     *
-     * @return int (stored as String) global preference
-     */
-    public static int getListPreference(@NonNull final String key,
-                                        final int defValue) {
-        String value = PreferenceManager.getDefaultSharedPreferences(App.getAppContext())
-                                        .getString(key, null);
-        if (value == null || value.isEmpty()) {
-            return defValue;
-        }
-        return Integer.parseInt(value);
     }
 }

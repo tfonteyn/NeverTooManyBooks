@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Rebuild all OrderBy columns. Can take several seconds.
@@ -51,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 public class RebuildOrderByTitleColumnsTask
         extends TaskBase<Void, Boolean> {
 
+    /** Log tag. */
     private static final String TAG = "RebuildOrderByTitle";
 
     /** Database Access. */
@@ -76,7 +78,7 @@ public class RebuildOrderByTitleColumnsTask
     @WorkerThread
     protected Boolean doInBackground(@Nullable final Void... params) {
         Thread.currentThread().setName("RebuildOrderByTitleColumnsTask");
-        final Context context = App.getLocalizedAppContext();
+        final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {
             Log.d(TAG, "doInBackground|taskId=" + getTaskId());

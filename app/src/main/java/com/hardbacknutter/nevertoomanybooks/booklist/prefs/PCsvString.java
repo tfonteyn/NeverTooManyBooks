@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,16 +25,18 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
+package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+
+import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-public class InvalidArchiveException
-        extends Exception {
+/**
+ * Passthrough support for {@link com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter}.
+ */
+public interface PCsvString {
 
-    private static final long serialVersionUID = 3492827673584239777L;
-
-    public InvalidArchiveException(@NonNull final String message) {
-        super(message);
-    }
+    void set(@NonNull Context context,
+             @Nullable String values);
 }

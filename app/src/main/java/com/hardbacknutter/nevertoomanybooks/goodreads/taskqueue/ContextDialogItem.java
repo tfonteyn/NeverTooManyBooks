@@ -78,7 +78,10 @@ public class ContextDialogItem
     }
 
     /**
-     * @return the name of the item to display in the AlertDialog.
+     * NOT debug!
+     * Returns the name of the item to display in the AlertDialog.
+     *
+     * @return the name
      */
     @NonNull
     @Override

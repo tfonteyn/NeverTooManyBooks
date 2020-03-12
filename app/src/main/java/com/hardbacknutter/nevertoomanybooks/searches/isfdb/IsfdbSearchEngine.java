@@ -260,6 +260,7 @@ public class IsfdbSearchEngine
                 }
             }
         } catch (@NonNull final SocketTimeoutException ignore) {
+            // ignore
         }
         return isbnList;
     }

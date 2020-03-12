@@ -96,12 +96,12 @@ public class FieldPicker<T>
                               @NonNull final Field<String> field,
                               @StringRes final int dialogTitleId,
                               @NonNull final List<String> list) {
+        final Context context = fieldView.getContext();
+
         // only bother when it's in use
-        if (!field.isUsed()) {
+        if (!field.isUsed(context)) {
             return;
         }
-
-        Context context = fieldView.getContext();
 
         if (list.isEmpty()) {
             fieldButton.setEnabled(false);

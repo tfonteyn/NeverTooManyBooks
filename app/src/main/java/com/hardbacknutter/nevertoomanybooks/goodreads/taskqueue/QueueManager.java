@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Class to handle service-level aspects of the queues.
@@ -165,6 +166,7 @@ public final class QueueManager {
                 }
             }
         } catch (@NonNull final RuntimeException ignore) {
+            // ignore
         }
     }
 
@@ -195,6 +197,7 @@ public final class QueueManager {
                 }
             }
         } catch (@NonNull final RuntimeException ignore) {
+            // ignore
         }
     }
 
@@ -215,6 +218,7 @@ public final class QueueManager {
                 try {
                     mMessageHandler.post(listener::onChange);
                 } catch (@NonNull final RuntimeException ignore) {
+                    // ignore
                 }
             }
         }
@@ -237,6 +241,7 @@ public final class QueueManager {
                 try {
                     mMessageHandler.post(listener::onChange);
                 } catch (@NonNull final RuntimeException ignore) {
+                    // ignore
                 }
             }
         }
@@ -297,6 +302,7 @@ public final class QueueManager {
                     mActiveQueues.remove(queue.getQueueName());
                 }
             } catch (@NonNull final RuntimeException ignore) {
+                // ignore
             }
         }
     }
@@ -338,7 +344,8 @@ public final class QueueManager {
     private void doToast(@NonNull final String message) {
         if (Thread.currentThread() == mUIThread.get()) {
             synchronized (this) {
-                Toast.makeText(App.getLocalizedAppContext(), message, Toast.LENGTH_LONG).show();
+                Toast.makeText(LocaleUtils.applyLocale(App.getAppContext()),
+                               message, Toast.LENGTH_LONG).show();
             }
         } else {
             // Send message to the handler

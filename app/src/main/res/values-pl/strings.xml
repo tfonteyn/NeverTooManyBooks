@@ -345,7 +345,7 @@
     <string name="menu_amazon_books_in_series">Książki z tej serii</string>
     <string name="menu_author_details">Wszystkie prace tego autora</string>
     <string name="menu_author_works_all">Pokaż wszystko</string>
-    <string name="menu_show_all">Pokaż wszystko</string>
+    <string name="X_menu_show_all">Pokaż wszystko</string>
     <string name="menu_author_works_book">Tylko książki</string>
     <string name="menu_author_works_toc">Tylko tytuły treści</string>
     <string name="menu_booklist_styles">Style listy książek</string>
@@ -367,7 +367,7 @@
     <string name="menu_level_expand">Rozwiń wszystko</string>
     <string name="menu_loan_lend_book">Wypożycz książkę…</string>
     <string name="menu_loan_return_book">Pożyczona książka powraca</string>
-    <string name="menu_populate_toc">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
+    <string name="isfdb_menu_populate_toc">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
     <string name="fab_add_book_by_internet_search">Szukaj w Internecie</string>
     <string name="menu_set_complete">Ustaw na „uzupełnij”</string>
     <string name="menu_set_incomplete">Ustaw na „niekompletny”</string>
@@ -417,7 +417,7 @@
     <string name="progress_msg_searching">Badawczy…</string>
     <string name="progress_msg_searching_site">Przeszukiwanie %1$s</string>
     <string name="progress_msg_sending">Wysyłanie, proszę czekać…</string>
-    <string name="progress_msg_skip_title">Pomiń - %1$s</string>
+    <string name="progress_msg_skip_s">Pomiń - %1$s</string>
     <string name="progress_msg_starting_up">Rozpoczęcie…</string>
     <string name="progress_msg_upgrading">Aktualizacja…</string>
     <string name="pt_allow_mobile_data">Włącz mobilne korzystanie z danych</string>
@@ -543,7 +543,7 @@
     <string name="warning_if_month_set_year_must_be">Jeśli określono miesiąc, należy również określić rok.</string>
     <string name="warning_immediate_global_changes">UWAGA: Wszystkie zapisane zmiany są globalne!</string>
     <string name="warning_import_be_cautious">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
-    <string name="warning_isfdb_only">(obsługiwane tylko przez stronę internetową ISFDB)</string>
+    <string name="isfdb_warning_limited_to">(obsługiwane tylko przez stronę internetową ISFDB)</string>
     <string name="warning_missing_name">Nazwa nie może być pusta</string>
     <string name="warning_no_editions">Brak wydań</string>
     <string name="warning_no_isbn_stored_for_book">Nie zapisano numeru ISBN dla książki</string>
@@ -553,8 +553,8 @@
     <string name="warning_series_already_in_list">Seria (tom) jest na liście</string>
     <string name="warning_toc_confirm">Potwierdź, czy te pozycje antologii są (zasadniczo) poprawne</string>
     <string name="warning_book_not_found">Nie mogę znaleźć tej książki</string>
-    <string name="warning_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
-    <string name="warning_unsaved_edits2">Nie zapisałeś zmian. Czy na pewno chcesz kontynuować?</string>
+    <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
+    <string name="confirm_unsaved_edits2">Nie zapisałeś zmian. Czy na pewno chcesz kontynuować?</string>
     <string name="warning_x_already_exists">%1$s już istnieje.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s” nie jest prawidłowym kod</string>
     <string name="x_of_y">%1$d z %2$d</string>
@@ -644,8 +644,8 @@
     <string name="pt_maintenance">Konserwacja</string>
     <string name="lbl_import_export_csv">CSV (bez zdjęć)</string>
     <string name="pt_primary_author_type">Główny typ autora</string>
-    <string name="lbl_dust_cover_none_or_unknown">Żaden</string>
-    <string name="lbl_dust_cover_missing">Brakujący</string>
+    <string name="lbl_condition_dust_cover_none_or_unknown">Żaden</string>
+    <string name="lbl_condition_dust_cover_missing">Brakujący</string>
     <string name="menu_rebuild_index">Przebuduj indeks</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
     <string name="lbl_condition_reading_copy">Czytanie kopii</string>
@@ -657,4 +657,9 @@
     <string name="warning_import_csv_failed_lines_some">Analiza CSV nie powiodła się dla linii %1$s.</string>
     <string name="warning_import_csv_failed_lines_lots">Analiza CSV nie powiodła się dla linii %1$s i innych.</string>
     <string name="warning_import_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
+    <string name="notification_channel_info">Informacja</string>
+    <string name="notification_channel_error">Błąd</string>
+    <string name="gr_pt_collect_genre">Używaj popularnych nazw półek jako gatunków książek</string>
+    <string name="lbl_condition">Stan</string>
+    <string name="book_format_softcover">Miękka okładka</string>
 </resources>

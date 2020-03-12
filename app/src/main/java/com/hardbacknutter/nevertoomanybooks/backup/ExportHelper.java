@@ -35,11 +35,9 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.File;
 import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 
 /**
  * Options on what to export/backup and some support functions.
@@ -55,7 +53,6 @@ public class ExportHelper
      * 1: books added/updated since last backup.
      */
     public static final int EXPORT_SINCE_LAST_BACKUP = 1 << 16;
-
     /** {@link Parcelable}. */
     public static final Creator<ExportHelper> CREATOR = new Creator<ExportHelper>() {
         @Override
@@ -85,7 +82,6 @@ public class ExportHelper
                                     | COVERS
                                     | XML_TABLES
                                     | EXPORT_SINCE_LAST_BACKUP;
-    private static final String TEMP_FILE_NAME = "tmpExport.tmp";
 
     @NonNull
     private final Exporter.Results mResults = new Exporter.Results();
@@ -126,10 +122,6 @@ public class ExportHelper
         if (in.readInt() != 0) {
             mDateFrom = new Date(in.readLong());
         }
-    }
-
-    public static File getTempFile(@NonNull final Context context) {
-        return new File(StorageUtils.getCacheDir(context), TEMP_FILE_NAME);
     }
 
     public void addResults(@NonNull final Exporter.Results results) {
@@ -175,7 +167,7 @@ public class ExportHelper
      * @return time
      */
     public long getTimeFrom() {
-        if (mDateFrom != null && (options & EXPORT_SINCE_LAST_BACKUP) != 0) {
+        if (mDateFrom != null && (getOption(EXPORT_SINCE_LAST_BACKUP))) {
             return mDateFrom.getTime();
         } else {
             return 0;
@@ -188,14 +180,14 @@ public class ExportHelper
     public void validate() {
         super.validate();
 
-        Context context = App.getAppContext();
+        final Context context = App.getAppContext();
 
-        if ((options & MASK) == 0) {
+        if ((getOptions() & MASK) == 0) {
             throw new IllegalStateException("options not set");
         }
 
-        if ((options & EXPORT_SINCE_LAST_BACKUP) != 0) {
-            mDateFrom = BackupManager.getLastFullBackupDate(context);
+        if (getOption(EXPORT_SINCE_LAST_BACKUP)) {
+            mDateFrom = Options.getLastFullBackupDate(context);
         } else {
             mDateFrom = null;
         }
@@ -205,7 +197,7 @@ public class ExportHelper
     @NonNull
     public String toString() {
         return "ExportHelper{"
-               + ", options=0b" + Integer.toBinaryString(options)
+               + ", options=0b" + Integer.toBinaryString(getOptions())
                + ", mResults=" + mResults
                + ", mDateFrom=" + mDateFrom
                + '}';

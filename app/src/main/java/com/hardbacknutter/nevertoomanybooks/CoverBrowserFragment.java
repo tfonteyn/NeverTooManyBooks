@@ -132,7 +132,7 @@ public class CoverBrowserFragment
         //noinspection ConstantConditions
         mModel.init(getContext(), requireArguments());
 
-        mModel.onEditionsloaded().observe(this, this::showGallery);
+        mModel.onEditionsLoaded().observe(this, this::showGallery);
         mModel.onGalleryImage().observe(this, this::setGalleryImage);
         mModel.onGalleryImageSelected().observe(this, this::setSwitcherImage);
     }

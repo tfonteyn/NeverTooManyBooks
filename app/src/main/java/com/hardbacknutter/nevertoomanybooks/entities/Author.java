@@ -50,7 +50,6 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -471,7 +470,7 @@ public class Author
     @NonNull
     public String getExtLabel(@NonNull final Context context) {
         String authorLabel = getLabel(context);
-        if (App.isUsed(context, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+        if (DBDefinitions.isUsed(context, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
             String type = getTypeLabels(context);
             if (!type.isEmpty()) {
                 authorLabel += " <small><i>" + type + "</i></small>";

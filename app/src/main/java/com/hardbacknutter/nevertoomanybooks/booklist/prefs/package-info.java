@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,7 +72,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntList}
  * => {@code List<Integer>}: an ordered list of {@code Integer} values. Stored as a CSV String
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCollection}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString}
  * => Interface implemented by {@code PIntList} (and potentially future List/Set classes) to 'set'
  * the value as {@code Set<String>}
  */

@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -39,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -47,7 +48,33 @@ import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
 public class AdvancedPreferenceFragment
         extends BasePreferenceFragment {
 
+    /** Log tag. */
     private static final String TAG = "AdvancedPreferenceFrag";
+    /** Bytes to Mb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
+    private static final int TO_MEGABYTES = 1_000_000;
+    /** Bytes to Kb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
+    private static final int TO_KILOBYTES = 1_000;
+
+    /**
+     * Format a number of bytes in a human readable form.
+     *
+     * @param bytes to format
+     *
+     * @return formatted # bytes
+     */
+    @NonNull
+    private String formatFileSize(final float bytes) {
+        if (bytes < 3_000) {
+            // Show 'bytes' if < 3k
+            return getString(R.string.bytes, bytes);
+        } else if (bytes < 250_000) {
+            // Show Kb if less than 250kB
+            return getString(R.string.kilobytes, bytes / TO_KILOBYTES);
+        } else {
+            // Show MB otherwise...
+            return getString(R.string.megabytes, bytes / TO_MEGABYTES);
+        }
+    }
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
@@ -138,9 +165,8 @@ public class AdvancedPreferenceFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
-                long bytes = StorageUtils.purgeFiles(getContext(), false);
-                String formattedSize = StorageUtils.formatFileSize(getContext(), bytes);
-                String msg = getString(R.string.info_cleanup_files_text, formattedSize,
+                long bytes = AppDir.purge(getContext(), false);
+                String msg = getString(R.string.info_cleanup_files_text, formatFileSize(bytes),
                                        getString(R.string.lbl_send_debug_info));
 
                 new MaterialAlertDialogBuilder(getContext())
@@ -149,7 +175,7 @@ public class AdvancedPreferenceFragment
                         .setMessage(msg)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                         .setPositiveButton(android.R.string.ok, (d, w) ->
-                                StorageUtils.purgeFiles(getContext(), true))
+                                AppDir.purge(getContext(), true))
                         .create()
                         .show();
                 return true;

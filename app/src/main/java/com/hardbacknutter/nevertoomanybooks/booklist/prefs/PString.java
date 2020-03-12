@@ -68,14 +68,14 @@ public class PString
     @NonNull
     @Override
     public String getValue(@NonNull final Context context) {
-        if (!mIsPersistent) {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
-        } else {
+        if (mIsPersistent) {
             String value = getPrefs(context).getString(getKey(), null);
             if (value != null && !value.isEmpty()) {
                 return value;
             }
             return getGlobalValue(context);
+        } else {
+            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         }
     }
 }

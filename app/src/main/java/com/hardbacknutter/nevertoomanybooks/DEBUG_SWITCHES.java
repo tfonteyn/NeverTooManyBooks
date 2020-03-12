@@ -66,7 +66,7 @@ public final class DEBUG_SWITCHES {
     public static final boolean BOOK_LIST_NODE_STATE = false;
     /** {@link BooklistCursor}. */
     public static final boolean BOB_PSEUDO_CURSOR = false;
-    /** Dump SQL when executing  {@link SynchronizedStatement} */
+    /** Dump SQL when executing  {@link SynchronizedStatement}. */
     public static final boolean DB_STMT_EXECUTE = false;
 
     /** enable timers for performance measurements. */

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,18 +25,17 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.archivebase;
+package com.hardbacknutter.nevertoomanybooks.backup.archive;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
-import com.hardbacknutter.nevertoomanybooks.utils.StorageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Basic implementation of the format-agnostic {@link ReaderEntity} methods.
@@ -68,14 +67,11 @@ public abstract class ReaderEntityAbstract
             throws IOException {
 
         // Build the new File and save
-        File destFile = new File(StorageUtils.getCoverDir(context), getName());
-        try (OutputStream os = new FileOutputStream(destFile)) {
-            StorageUtils.copy(getInputStream(), os);
-        } finally {
-            if (destFile.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                destFile.setLastModified(getDateModified().getTime());
-            }
+        final File destFile = AppDir.Covers.getFile(context, getName());
+        FileUtils.copyInputStream(context, getInputStream(), destFile);
+        if (destFile.exists()) {
+            //noinspection ResultOfMethodCallIgnored
+            destFile.setLastModified(getDateModified().getTime());
         }
     }
 }
