@@ -29,37 +29,38 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.io.Writer;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.options.Options;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
- * Implementation of Exporter that creates a CSV file.
+ * Implementation of Exporter that creates a CSV file with the books.
+ * All books will have full toc, author, series and bookshelf information.
  * <p>
- * 2019-02-01 : no longer exporting bookshelf ID's. They were not used during csv import anyhow.
- * Use xml export if you want ID's.
+ * Support {@link Options#BOOKS} only (and does in fact simply disregard all Options flags).
  */
 public class CsvExporter
         implements Exporter {
@@ -72,7 +73,6 @@ public class CsvExporter
     static final String CSV_COLUMN_AUTHORS = "author_details";
     /** Log tag. */
     private static final String TAG = "CsvExporter";
-    private static final int BUFFER_SIZE = 32768;
     /** Only send progress updates every 200ms. */
     private static final int PROGRESS_UPDATE_INTERVAL = 200;
 
@@ -129,76 +129,77 @@ public class CsvExporter
             + '\n';
 
 
-    /**  export configuration. */
+    /** Database Access. */
+    @NonNull
+    private final DAO mDb;
+
+    /** export configuration. */
     @NonNull
     private final ExportHelper mHelper;
     /** cached localized "unknown" string. */
     private final String mUnknownString;
 
+    private final StringList<Author> mAuthorCoder = CsvCoder.getAuthorCoder();
+    private final StringList<Series> mSeriesCoder = CsvCoder.getSeriesCoder();
+    private final StringList<TocEntry> mTocCoder = CsvCoder.getTocCoder();
+    private final StringList<Bookshelf> mBookshelfCoder;
+
+    private final ExportResults mResults = new ExportResults();
+
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param helper {@link ExportHelper#EXPORT_SINCE_LAST_BACKUP} and
-     *                     {@link ExportHelper#getDateFrom} are respected.
-     *                     Other flags are ignored, as this method only
-     *                     handles {@link ExportHelper#BOOK_CSV} anyhow.
+     * @param context Current context
+     * @param helper  {@link ExportHelper#EXPORT_SINCE_LAST_BACKUP} and
+     *                {@link ExportHelper#getDateFrom} are respected.
+     *                Other flags are ignored, as this method only
+     *                handles {@link ExportHelper#BOOKS} anyhow.
      */
+    @AnyThread
     public CsvExporter(@NonNull final Context context,
                        @NonNull final ExportHelper helper) {
         Locale locale = LocaleUtils.getUserLocale(context);
         mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
         mHelper = helper;
         mHelper.validate();
+
+        mDb = new DAO(TAG);
+        mBookshelfCoder = CsvCoder.getBookshelfCoder(BooklistStyle.getDefault(context, mDb));
     }
 
-    /**
-     * Get the total number of books exported.
-     *
-     * @param os               Stream for writing data
-     * @param progressListener Progress and cancellation interface
-     *
-     * @return total number of books exported, or 0 upon cancellation
-     *
-     * @throws IOException on failures
-     */
     @Override
-    @WorkerThread
-    public Results doBooks(@NonNull final OutputStream os,
-                           @NonNull final ProgressListener progressListener)
+    public ExportResults write(@NonNull final Context context,
+                               @NonNull final Writer writer,
+                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        Results results = new Results();
 
         long lastUpdate = 0;
+
         final StringBuilder sb = new StringBuilder();
 
-        try (DAO db = new DAO(TAG);
-             Cursor cursor = db.fetchBooksForExport(mHelper.getDateFrom());
-             OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE)) {
+        try (Cursor cursor = mDb.fetchBooksForExport(mHelper.getDateFrom())) {
 
             int progressMaxCount = progressListener.getMax() + cursor.getCount();
             progressListener.setMax(progressMaxCount);
 
             // Before we start, make sure we're not cancelled already.
             if (progressListener.isCancelled()) {
-                return results;
+                return mResults;
             }
 
             final RowDataHolder rowData = new CursorRow(cursor);
 
-            out.write(EXPORT_FIELD_HEADERS);
+            writer.write(EXPORT_FIELD_HEADERS);
             while (cursor.moveToNext()) {
                 if (progressListener.isCancelled()) {
-                    return results;
+                    return mResults;
                 }
 
-                results.booksExported++;
+                mResults.booksExported++;
                 long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
 
-                String authors = CsvCoder.getAuthorCoder()
-                                         .encodeList(db.getAuthorsByBookId(bookId));
+                String authors = mAuthorCoder.encodeList(mDb.getAuthorsByBookId(bookId));
                 // Sanity check: ensure author is non-blank.
                 if (authors.trim().isEmpty()) {
                     authors = mUnknownString;
@@ -224,11 +225,10 @@ public class CsvExporter
                   .append(format(rowData.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
 
                   .append(format(rowData.getDouble(DBDefinitions.KEY_RATING)))
-                  .append(format(CsvCoder.getBookshelfCoder()
-                                          .encodeList(db.getBookshelvesByBookId(bookId))))
+                  .append(format(
+                          mBookshelfCoder.encodeList(mDb.getBookshelvesByBookId(bookId))))
                   .append(format(rowData.getInt(DBDefinitions.KEY_READ)))
-                  .append(format(CsvCoder.getSeriesCoder()
-                                          .encodeList(db.getSeriesByBookId(bookId))))
+                  .append(format(mSeriesCoder.encodeList(mDb.getSeriesByBookId(bookId))))
                   .append(format(rowData.getString(DBDefinitions.KEY_PAGES)))
                   .append(format(rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
 
@@ -246,8 +246,7 @@ public class CsvExporter
                   .append(format(rowData.getString(DBDefinitions.KEY_COLOR)))
                   .append(format(rowData.getInt(DBDefinitions.KEY_SIGNED)))
                   .append(format(rowData.getString(DBDefinitions.KEY_LOANEE)))
-                  .append(format(CsvCoder.getTocCoder()
-                                          .encodeList(db.getTocEntryByBook(bookId))))
+                  .append(format(mTocCoder.encodeList(mDb.getTocEntryByBook(bookId))))
                   .append(format(rowData.getString(DBDefinitions.KEY_DESCRIPTION)))
                   .append(format(rowData.getString(DBDefinitions.KEY_GENRE)))
                   .append(format(rowData.getString(DBDefinitions.KEY_LANGUAGE)))
@@ -265,20 +264,16 @@ public class CsvExporter
                 // replace the comma at the end of the line with a '\n'
                 sb.replace(sb.length() - 1, sb.length(), "\n");
 
-                out.write(sb.toString());
+                writer.write(sb.toString());
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
-                    progressListener.onProgress(results.booksExported, title);
+                    progressListener.onProgress(mResults.booksExported, title);
                     lastUpdate = now;
                 }
             }
-        } finally {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Log.d(TAG, "doBooks|results=" + results);
-            }
         }
-        return results;
+        return mResults;
     }
 
     @NonNull
@@ -339,9 +334,8 @@ public class CsvExporter
         }
     }
 
-    @SuppressWarnings("RedundantThrows")
     @Override
-    public void close()
-            throws IOException {
+    public void close() {
+        mDb.close();
     }
 }

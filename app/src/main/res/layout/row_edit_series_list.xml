@@ -56,7 +56,7 @@
             android:id="@+id/row_series"
             style="@style/RowTextLine.Primary"
             android:textIsSelectable="false"
-            tools:text="row_series"
+            tools:text="@sample/data.json/series/title_nr"
             />
 
     </LinearLayout>

@@ -54,7 +54,7 @@
         app:layout_constraintEnd_toStartOf="@id/btn_retry"
         app:layout_constraintStart_toEndOf="@id/cbx_selected"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="I, Robot"
+        tools:text="@sample/data.json/book/title"
         />
 
     <TextView
@@ -65,7 +65,7 @@
         app:layout_constraintEnd_toEndOf="@id/title"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
-        tools:text="Asimov, Isaac"
+        tools:text="@sample/data.json/author/full_name"
         />
 
     <Button

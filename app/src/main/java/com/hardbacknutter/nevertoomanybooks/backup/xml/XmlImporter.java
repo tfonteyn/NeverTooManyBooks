@@ -66,14 +66,16 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
+import com.hardbacknutter.nevertoomanybooks.backup.XmlTags;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCollectionBase;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
@@ -100,7 +102,7 @@ public class XmlImporter
     private static final String ERROR_UNABLE_TO_PROCESS_XML_ENTITY =
             "Unable to process XML entity ";
 
-    private static final int BUFFER_SIZE = 32768;
+    private static final int BUFFER_SIZE = 65535;
 
     private static final Pattern QUOT_PATTERN = Pattern.compile("&quot;", Pattern.LITERAL);
     private static final Pattern APOS_PATTERN = Pattern.compile("&apos;", Pattern.LITERAL);
@@ -204,9 +206,9 @@ public class XmlImporter
      */
     @NonNull
     @Override
-    public Results doBooks(@NonNull final Context context,
-                           @NonNull final InputStream importStream,
-                           @NonNull final ProgressListener progressListener) {
+    public ImportResults readBooks(@NonNull final Context context,
+                                   @NonNull final InputStream is,
+                                   @NonNull final ProgressListener progressListener) {
         throw new UnsupportedOperationException();
     }
 

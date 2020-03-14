@@ -125,7 +125,7 @@ public final class ImageUtils {
     private static final int[] SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12};
     /** Log tag. */
     private static final String TAG = "ImageUtils";
-    private static final int BUFFER_SIZE = 32768;
+    private static final int BUFFER_SIZE = 65535;
     /** network: if at first we don't succeed... */
     private static final int NR_OF_TRIES = 2;
     /** network: milliseconds to wait between retries. */
@@ -732,6 +732,8 @@ public final class ImageUtils {
     public static class ImageLoader
             extends AsyncTask<Void, Void, Bitmap> {
 
+        private static final String TAG = "ImageLoader";
+
         @NonNull
         private final WeakReference<ImageView> mImageView;
         @NonNull
@@ -767,7 +769,7 @@ public final class ImageUtils {
         @Override
         @Nullable
         protected Bitmap doInBackground(final Void... voids) {
-            Thread.currentThread().setName("ImageLoader");
+            Thread.currentThread().setName(TAG);
 
             Bitmap bitmap = BitmapFactory.decodeFile(mFile.getAbsolutePath());
             // upscale when required and allowed
@@ -800,6 +802,8 @@ public final class ImageUtils {
      */
     private static class CacheLoader
             extends AsyncTask<Void, Void, Bitmap> {
+
+        private static final String TAG = "CacheLoader";
 
         @NonNull
         private final WeakReference<ImageView> mImageView;
@@ -838,7 +842,7 @@ public final class ImageUtils {
         @Override
         @Nullable
         protected Bitmap doInBackground(final Void... voids) {
-            Thread.currentThread().setName("CacheLoader");
+            Thread.currentThread().setName(TAG);
 
             return forceScaleBitmap(mFile.getAbsolutePath(), mMaxWidth, mMaxHeight, true);
         }

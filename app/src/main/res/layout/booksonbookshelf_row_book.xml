@@ -59,7 +59,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_height="@dimen/tools_cover_medium_height"
             tools:layout_width="@dimen/tools_cover_medium_width"
-            tools:src="@drawable/ic_image"
+            tools:src="@sample/covers"
             />
 
         <!-- A View, and not a 'Space' as this must be clickable. -->
@@ -113,20 +113,21 @@
             app:layout_constraintStart_toEndOf="@id/series_num"
             app:layout_constraintTop_toBottomOf="@id/series_num_long"
             tools:ignore="SelectableText"
-            tools:text="@string/lbl_title"
+            tools:text="@sample/data.json/book/title"
             />
 
+        <!-- Provide clickable whitespace if there are no/little extras. -->
         <include
             android:id="@+id/extras"
             layout="@layout/booksonbookshelf_row_inc_extras"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toStartOf="@id/icon_sidebar"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
 
-        <!-- Provide clickable whitespace if there are no/little extras. -->
         <View
             android:id="@+id/spacerBottom"
             android:layout_width="0dp"

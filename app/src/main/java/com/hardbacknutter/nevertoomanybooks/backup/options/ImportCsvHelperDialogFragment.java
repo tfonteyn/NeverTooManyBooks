@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.ui;
+package com.hardbacknutter.nevertoomanybooks.backup.options;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -42,8 +42,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
 
 public class ImportCsvHelperDialogFragment

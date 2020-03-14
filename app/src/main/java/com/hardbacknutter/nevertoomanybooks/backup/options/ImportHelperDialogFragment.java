@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.ui;
+package com.hardbacknutter.nevertoomanybooks.backup.options;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -42,10 +42,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveManager;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveManager;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
 
 public class ImportHelperDialogFragment
@@ -105,10 +103,10 @@ public class ImportHelperDialogFragment
     private void setupOptions() {
         ImportHelper helper = mModel.getHelper();
 
-        mVb.cbxBooksCsv.setChecked(helper.getOption(Options.BOOK_CSV));
-        mVb.cbxBooksCsv.setOnCheckedChangeListener(
+        mVb.cbxBooks.setChecked(helper.getOption(Options.BOOKS));
+        mVb.cbxBooks.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
-                    helper.setOption(Options.BOOK_CSV, isChecked);
+                    helper.setOption(Options.BOOKS, isChecked);
                     mVb.rbBooksGroup.setEnabled(isChecked);
                 });
 
@@ -117,11 +115,11 @@ public class ImportHelperDialogFragment
                 (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
 
         mVb.cbxPreferences.setChecked(helper.getOption(
-                Options.PREFERENCES | Options.BOOK_LIST_STYLES));
+                Options.PREFERENCES | Options.STYLES));
         mVb.cbxPreferences.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
                     helper.setOption(Options.PREFERENCES, isChecked);
-                    helper.setOption(Options.BOOK_LIST_STYLES, isChecked);
+                    helper.setOption(Options.STYLES, isChecked);
                 });
 
         if (mModel.isArchiveHasValidDates()) {

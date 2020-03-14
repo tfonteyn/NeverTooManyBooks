@@ -27,14 +27,10 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- Nothing to translate here. All arrays reference string resources. -->
 <resources>
     <!-- The defaults for MultiSelect fields, i.e. select nothing -->
     <string-array name="empty_array" />
-
-    <!-- used for dev. only as placeholder text. -->
-    <string-array name="dummy_bookshelves">
-        <item>@string/bookshelf_all_books</item>
-    </string-array>
 
     <!-- ListPreference - Preferred interface Language -->
     <!-- each language listed here must be written in its own language and spelling. -->

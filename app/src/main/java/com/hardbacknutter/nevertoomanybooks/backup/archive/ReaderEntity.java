@@ -87,16 +87,26 @@ public interface ReaderEntity {
 
     /** Supported entity types. */
     enum Type {
-        Books,
-        Info,
-        Database,
-        Preferences,
-        BooklistStyles,
-        Cover,
+        /** XML archive header. */
+        InfoXml,
+        /** An CSV encoded book list. */
+        BooksCsv,
+        /** An XML Preferences file. */
+        PreferencesXml,
+        /** An XML BooklistStyles file. */
+        BooklistStylesXml,
+        /** Generic xml file, the root tag should identify the content. */
         XML,
-        Unknown,
 
+        Cover,
+
+        Database,
+
+        /** Legacy XML Preferences file. */
         LegacyPreferences,
+        /** Legacy binary style file. */
         LegacyBooklistStyles,
+
+        Unknown
     }
 }

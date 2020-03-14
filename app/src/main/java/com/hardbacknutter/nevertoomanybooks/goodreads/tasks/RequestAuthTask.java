@@ -55,7 +55,7 @@ public class RequestAuthTask
         extends TaskBase<Void, GrStatus> {
 
     /** Log tag. */
-    private static final String TAG = "RequestAuthTask";
+    private static final String TAG = "GR.RequestAuthTask";
 
     /**
      * Constructor.
@@ -94,7 +94,7 @@ public class RequestAuthTask
     @NonNull
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
-        Thread.currentThread().setName("GR.RequestAuthTask");
+        Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
         if (!NetworkUtils.isNetworkAvailable(context)) {

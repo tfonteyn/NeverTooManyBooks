@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.tararchive;
+package com.hardbacknutter.nevertoomanybooks.backup.archive.tar;
 
 import android.content.Context;
 
@@ -36,42 +36,24 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.regex.Pattern;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntity.Type;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntityAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Implementation of TAR-specific reader functions.
  */
 public class TarArchiveReader
         extends ArchiveReaderAbstract {
-
-    /** Meta data for the TAR archive. */
-    static final String INFO_FILE = "INFO.xml";
-
-    /** Meta data for the TAR archive. */
-    private static final Pattern INFO_PATTERN =
-            Pattern.compile("^INFO_.*\\.xml$",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-
-    /** Legacy BookCatalogue. */
-    private static final String LEGACY_PREFERENCES = "preferences";
-    /** Legacy BookCatalogue. */
-    private static final Pattern LEGACY_STYLES_PATTERN =
-            Pattern.compile('^' + "style.blob." + "[0-9]*$",
-                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** The data stream for the archive. */
     @Nullable
@@ -158,12 +140,12 @@ public class TarArchiveReader
         if (mInfo == null) {
             ReaderEntity entity;
             try {
-                entity = findEntity(Type.Info);
+                entity = findEntity(Type.InfoXml);
             } catch (@NonNull final IOException e) {
                 //VERY annoying... the apache tar library does not throw a unique exception.
                 // So we, reluctantly, look at the message...
                 if ("Error detected parsing the header".equals(e.getMessage())) {
-                    throw new InvalidArchiveException("Not a valid archive");
+                    throw new InvalidArchiveException();
                 } else {
                     throw e;
                 }
@@ -182,25 +164,6 @@ public class TarArchiveReader
             reset();
         }
         return mInfo;
-    }
-
-    @NonNull
-    @Override
-    protected Type getBackupEntityType(@NonNull final ArchiveEntry entry) {
-        String name = entry.getName().toLowerCase(LocaleUtils.getSystemLocale());
-
-        if (INFO_FILE.equalsIgnoreCase(name) || INFO_PATTERN.matcher(name).find()) {
-            return Type.Info;
-
-        } else if (LEGACY_STYLES_PATTERN.matcher(name).find()) {
-            return Type.LegacyBooklistStyles;
-
-        } else if (LEGACY_PREFERENCES.equals(name)) {
-            return Type.LegacyPreferences;
-
-        } else {
-            return super.getBackupEntityType(entry);
-        }
     }
 
     /**

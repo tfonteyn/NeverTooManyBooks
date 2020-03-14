@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -42,6 +42,6 @@
         android:layout_margin="@dimen/border1"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textIsSelectable="false"
-        tools:text="Bookshelf name"
+        tools:text="@sample/data.json/shelves/name"
         />
 </LinearLayout>

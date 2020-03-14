@@ -45,7 +45,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.util.Pair;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -57,24 +56,27 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportTask;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportTask;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.Options;
-import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveManager;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveExportTask;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveImportTask;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ExportTask;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExportTask;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImportTask;
-import com.hardbacknutter.nevertoomanybooks.backup.ui.ExportHelperDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ui.ImportCsvHelperDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ui.ImportHelperDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ui.OptionsDialogBase;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExporter;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelperDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ImportCsvHelperDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelperDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.options.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.options.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportExportBinding;
@@ -334,7 +336,8 @@ public class ImportExportFragment
      * @param helper import configuration
      */
     private void importStart(@NonNull final ImportHelper helper) {
-        final ImportTask task = new ImportTask(helper, mImportHelperModel.getTaskListener());
+        final ArchiveImportTask task = new ArchiveImportTask(
+                helper, mImportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_importing, false, true, 0);
@@ -380,7 +383,7 @@ public class ImportExportFragment
      */
     private void importCsvShowOptions(@NonNull final Uri uri) {
         ImportHelper helper = new ImportHelper(
-                Options.BOOK_CSV | ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED, uri);
+                Options.BOOKS | ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED, uri);
 
         // bring up the options dialog immediately.
         ImportCsvHelperDialogFragment
@@ -395,8 +398,9 @@ public class ImportExportFragment
      */
     private void importCsvStart(@NonNull final ImportHelper helper) {
         //noinspection ConstantConditions
-        final CsvImportTask task = new CsvImportTask(getContext(), helper,
-                                                     mImportHelperModel.getTaskListener());
+        Importer importer = new CsvImporter(getContext(), helper);
+        final ImportTask task = new ImportTask(importer, helper,
+                                               mImportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_importing, false, true, 0);
@@ -426,7 +430,7 @@ public class ImportExportFragment
 
         switch (message.taskId) {
             case R.id.TASK_ID_READ_FROM_ARCHIVE:
-            case R.id.TASK_ID_CSV_IMPORT: {
+            case R.id.TASK_ID_IMPORTER: {
                 switch (message.status) {
                     case Success: {
                         onImportFinished(R.string.progress_end_import_complete,
@@ -464,7 +468,7 @@ public class ImportExportFragment
                                   @NonNull final ImportHelper helper) {
 
         // Transform the result data into a user friendly report.
-        final Importer.Results results = helper.getResults();
+        final ImportResults results = helper.getResults();
         final StringBuilder msg = new StringBuilder();
 
         //TODO: LTR
@@ -478,7 +482,7 @@ public class ImportExportFragment
                                                 getString(R.string.lbl_covers),
                                                 results.coversCreated, results.coversUpdated));
         }
-        if (helper.getOption(Options.BOOK_LIST_STYLES)) {
+        if (helper.getOption(Options.STYLES)) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));
@@ -487,23 +491,26 @@ public class ImportExportFragment
             msg.append("\n• ").append(getString(R.string.lbl_settings));
         }
 
-        final int failed = results.failedCsvLines.size();
+        int failed = results.failedCsvLinesNr.size();
         if (failed > 0) {
             final int fs;
-            final List<Pair<Integer, String>> list;
-            // keep it sensible, list maximum 10 lines.
+            final Collection<String> msgList = new ArrayList<>();
+
             if (failed > 10) {
+                // keep it sensible, list maximum 10 lines.
+                failed = 10;
                 fs = R.string.warning_import_csv_failed_lines_lots;
-                list = results.failedCsvLines.subList(0, 9);
             } else {
                 fs = R.string.warning_import_csv_failed_lines_some;
-                list = results.failedCsvLines;
             }
+            for (int i = 0; i < failed; i++) {
+                msgList.add(getString(R.string.a_bracket_b_bracket,
+                                      String.valueOf(results.failedCsvLinesNr.get(i)),
+                                      results.failedCsvLinesMessage.get(i)));
+            }
+
             //noinspection ConstantConditions
-            msg.append("\n").append(
-                    getString(fs, Csv.textList(getContext(), list, element ->
-                            getString(R.string.a_bracket_b_bracket,
-                                      String.valueOf(element.first), element.second))));
+            msg.append("\n").append(getString(fs, Csv.textList(getContext(), msgList, null)));
         }
 
         //noinspection ConstantConditions
@@ -592,11 +599,11 @@ public class ImportExportFragment
         mExportHelperModel.setHelper(helper);
 
         //noinspection ConstantConditions
-        final String fileName = ArchiveManager.getDefaultBackupFileName(getContext());
+        final String uriName = helper.getArchiveType().getDefaultOutputUriName(getContext());
         final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
-                .putExtra(Intent.EXTRA_TITLE, fileName);
+                .putExtra(Intent.EXTRA_TITLE, uriName);
         startActivityForResult(intent, REQ_PICK_FILE_FOR_ARCHIVE_BACKUP);
     }
 
@@ -610,7 +617,8 @@ public class ImportExportFragment
         Objects.requireNonNull(helper);
         helper.setUri(uri);
 
-        final ExportTask task = new ExportTask(helper, mExportHelperModel.getTaskListener());
+        final ArchiveExportTask task =
+                new ArchiveExportTask(helper, mExportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_backing_up, false, true, 0);
@@ -637,15 +645,16 @@ public class ImportExportFragment
     }
 
     /**
-     * Step 2 in the CSV export procedure: Start the CSV export task.
+     * Step 2 in the CSV export procedure: Start the export task.
      *
      * @param uri file to write to
      */
     private void exportCsvStart(@NonNull final Uri uri) {
+        ExportHelper helper = new ExportHelper(Options.BOOKS, uri);
         //noinspection ConstantConditions
-        final CsvExportTask task = new CsvExportTask(getContext(),
-                                                     new ExportHelper(Options.BOOK_CSV, uri),
-                                                     mExportHelperModel.getTaskListener());
+        Exporter exporter = new CsvExporter(getContext(), helper);
+        final ExportTask task = new ExportTask(exporter, helper,
+                                               mExportHelperModel.getTaskListener());
 
         mProgressDialog = ProgressDialogFragment
                 .newInstance(R.string.title_backing_up, false, true, 0);
@@ -691,7 +700,7 @@ public class ImportExportFragment
                 }
                 break;
             }
-            case R.id.TASK_ID_CSV_EXPORT: {
+            case R.id.TASK_ID_EXPORTER: {
                 switch (message.status) {
                     case Success: {
                         onExportFinished(message.result, true);
@@ -727,7 +736,7 @@ public class ImportExportFragment
     private void onExportFinished(@NonNull final ExportHelper helper,
                                   final boolean offerEmail) {
         // Transform the result data into a user friendly report.
-        final Exporter.Results results = helper.getResults();
+        final ExportResults results = helper.getResults();
         final StringBuilder msg = new StringBuilder();
 
         //TODO: LTR
@@ -746,7 +755,7 @@ public class ImportExportFragment
                                  results.coversMissing[1]));
         }
 
-        if (helper.getOption(Options.BOOK_LIST_STYLES)) {
+        if (helper.getOption(Options.STYLES)) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));

@@ -75,7 +75,7 @@ public class RebuildFtsTask
     @Override
     @WorkerThread
     protected Boolean doInBackground(@Nullable final Void... params) {
-        Thread.currentThread().setName("RebuildFtsTask");
+        Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {

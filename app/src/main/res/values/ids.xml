@@ -67,8 +67,8 @@
 
     <item name="TASK_ID_READ_FROM_ARCHIVE" type="id" />
     <item name="TASK_ID_WRITE_TO_ARCHIVE" type="id" />
-    <item name="TASK_ID_CSV_IMPORT" type="id" />
-    <item name="TASK_ID_CSV_EXPORT" type="id" />
+    <item name="TASK_ID_IMPORTER" type="id" />
+    <item name="TASK_ID_EXPORTER" type="id" />
 
     <item name="TASK_ID_UPDATE_FIELDS" type="id" />
 

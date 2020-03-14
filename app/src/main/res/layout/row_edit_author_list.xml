@@ -56,7 +56,7 @@
             android:id="@+id/row_author"
             style="@style/RowTextLine.Primary"
             android:textIsSelectable="false"
-            tools:text="Isaac Asimov"
+            tools:text="@tools:sample/full_names"
             />
 
     </LinearLayout>

@@ -60,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:popupBackground="@drawable/border"
-                    tools:entries="@array/dummy_bookshelves"
+                    tools:entries="@array/tools_placeholder"
                     />
 
             </androidx.appcompat.widget.Toolbar>

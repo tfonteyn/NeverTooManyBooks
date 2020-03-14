@@ -63,7 +63,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.options.Options;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
@@ -166,11 +166,6 @@ public class BooksOnBookshelf
     private ProgressBar mProgressBar;
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
-    /** The adapter used to fill the mBookshelfSpinner. */
-    private ArrayAdapter<String> mBookshelfSpinnerAdapter;
-
-    /** The ViewModel. */
-    private BooksOnBookshelfModel mModel;
     /** Listener for the Bookshelf Spinner. */
     private final OnItemSelectedListener mOnBookshelfSelectionChanged =
             new OnItemSelectedListener() {
@@ -180,9 +175,16 @@ public class BooksOnBookshelf
                                            final int position,
                                            final long id) {
                     @Nullable
-                    String selected = (String) parent.getItemAtPosition(position);
-                    // make the new shelf the current, this will build a new list
-                    mModel.setCurrentBookshelf(BooksOnBookshelf.this, selected);
+                    final BooksOnBookshelfModel.BookshelfSpinnerEntry selected =
+                            (BooksOnBookshelfModel.BookshelfSpinnerEntry)
+                                    parent.getItemAtPosition(position);
+
+                    if (selected != null) {
+                        // make the new shelf the current, and build the new list
+                        mModel.setCurrentBookshelf(BooksOnBookshelf.this,
+                                                   selected.getBookshelf());
+                        mModel.buildBookList(BooksOnBookshelf.this);
+                    }
                 }
 
                 @Override
@@ -190,6 +192,11 @@ public class BooksOnBookshelf
                     // Do Nothing
                 }
             };
+
+    /** The ViewModel. */
+    private BooksOnBookshelfModel mModel;
+    /** The adapter used to fill the mBookshelfSpinner. */
+    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
 
     // ENHANCE: update the modified row without a rebuild.
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
@@ -472,9 +479,9 @@ public class BooksOnBookshelf
         mListView.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.init(mListView);
 
-        // initialize but do not populate the list; the latter is done in onResume
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(
-                this, R.layout.booksonbookshelf_bookshelf_spinner, mModel.getBookshelfNameList());
+                this, R.layout.booksonbookshelf_bookshelf_spinner,
+                mModel.getBookshelfSpinnerList());
         mBookshelfSpinnerAdapter.setDropDownViewResource(
                 android.R.layout.simple_spinner_dropdown_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
@@ -1141,7 +1148,7 @@ public class BooksOnBookshelf
                     final long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
                                                                Bookshelf.DEFAULT_ID);
                     if (bookshelfId != mModel.getCurrentBookshelf().getId()) {
-                        mModel.setCurrentBookshelf(bookshelfId);
+                        mModel.setCurrentBookshelf(this, bookshelfId);
                         mModel.setForceRebuildInOnResume(true);
                     }
                 }
@@ -1174,7 +1181,7 @@ public class BooksOnBookshelf
                         final int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT,
                                                              Options.NOTHING);
                         if (options != 0) {
-                            if ((options & Options.BOOK_LIST_STYLES) != 0) {
+                            if ((options & Options.STYLES) != 0) {
                                 // Force a refresh of the list of all user styles.
                                 BooklistStyle.Helper.clear();
                             }
@@ -1488,9 +1495,10 @@ public class BooksOnBookshelf
      */
     private boolean setBookShelfSpinner() {
         @Nullable
-        final String previous = (String) mBookshelfSpinner.getSelectedItem();
+        final BooksOnBookshelfModel.BookshelfSpinnerEntry previous =
+                (BooksOnBookshelfModel.BookshelfSpinnerEntry) mBookshelfSpinner.getSelectedItem();
 
-        // disable the listener while we add the names.
+        // disable the listener while we add the list.
         mBookshelfSpinner.setOnItemSelectedListener(null);
         // (re)load the list of names
         final int currentPos = mModel.initBookshelfNameList(this);
@@ -1501,7 +1509,7 @@ public class BooksOnBookshelf
         // (re-)enable the listener
         mBookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
 
-        final String selected = mModel.getCurrentBookshelf().getName();
+        final long selected = mModel.getCurrentBookshelf().getId();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "populateBookShelfSpinner"
@@ -1510,7 +1518,7 @@ public class BooksOnBookshelf
         }
 
         // Flag up if the selection was different.
-        return !selected.equalsIgnoreCase(previous);
+        return previous == null || selected != previous.getBookshelf().getId();
     }
 
     /**

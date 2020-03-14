@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class SearchEditionsTask
         extends TaskBase<Void, ArrayList<String>> {
 
+    private static final String TAG = "SearchEditionsTask";
     @NonNull
     private final String mIsbn;
 
@@ -79,7 +80,7 @@ public class SearchEditionsTask
     @NonNull
     @WorkerThread
     protected ArrayList<String> doInBackground(final Void... params) {
-        Thread.currentThread().setName("SearchEditionsTask " + mIsbn);
+        Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
 
         final Locale locale = LocaleUtils.getUserLocale(context);

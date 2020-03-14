@@ -517,6 +517,8 @@ public final class CoversDAO
     public static final class ImageCacheWriterTask
             extends AsyncTask<Void, Void, Void> {
 
+        private static final String TAG = "ImageCacheWriterTask";
+
         /** Used to prevent trying to read from the cache while we're writing to it. */
         private static final AtomicInteger RUNNING_TASKS = new AtomicInteger();
 
@@ -563,7 +565,7 @@ public final class CoversDAO
         @Override
         @WorkerThread
         protected Void doInBackground(final Void... params) {
-            Thread.currentThread().setName("ImageCacheWriterTask");
+            Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
             RUNNING_TASKS.incrementAndGet();

@@ -120,6 +120,7 @@ public class LibraryThingRegistrationActivity
     private static class ValidateKey
             extends TaskBase<Void, Integer> {
 
+        private static final String TAG = "LT.ValidateKey";
         /**
          * Constructor.
          *
@@ -134,7 +135,7 @@ public class LibraryThingRegistrationActivity
         @NonNull
         @WorkerThread
         protected Integer doInBackground(final Void... params) {
-            Thread.currentThread().setName("LT.ValidateKey");
+            Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
             try {

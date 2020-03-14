@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -200,8 +201,8 @@ abstract class ApiHandlerNative {
 
             if (query != null) {
                 try (OutputStream os = request.getOutputStream();
-                     OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-                     BufferedWriter writer = new BufferedWriter(osw)) {
+                     Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                     Writer writer = new BufferedWriter(osw)) {
                     writer.write(query);
                     writer.flush();
                 }

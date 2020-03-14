@@ -65,22 +65,19 @@ public class Bookshelf
                     return new Bookshelf[size];
                 }
             };
-
-    /**
-     * Preference name - the bookshelf to load next time we startup.
-     * Storing the name and not the id. If you export/import... the id will be different.
-     */
-    private static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
     public static final int DEFAULT_ID = 1;
-
     /**
      * the virtual 'All Books' representing our complete library.
      * Note we use -1, as {@code 0} is generally used for a 'new' item.
      * i.e. when the user creates a new shelf, it has id==0 before it's saved.
      */
     public static final int ALL_BOOKS = -1;
-
+    /**
+     * Preference name - the bookshelf to load next time we startup.
+     * Storing the name and not the id. If you export/import... the id will be different.
+     */
+    private static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
     /** Bookshelf id. */
     private long mId;
     /** Bookshelf name. */
@@ -137,7 +134,7 @@ public class Bookshelf
     /**
      * Full constructor.
      *
-     * @param id        the Bookshelf id
+     * @param id      the Bookshelf id
      * @param rowData with data
      */
     public Bookshelf(final long id,
@@ -166,7 +163,7 @@ public class Bookshelf
      * @param context Current context
      * @param db      Database Access
      * @param name    of bookshelf to get
-     * @param useAll  set to {@code true} to return the AllBooks shelf, instead the default
+     * @param useAll  set to {@code true} to return the AllBooks shelf,
      *                if the desired shelf was not found.
      *
      * @return the bookshelf.
@@ -182,12 +179,18 @@ public class Bookshelf
                 return bookshelf;
             } else if (useAll) {
                 // Caller wants "AllBooks" (instead of the default Bookshelf)
-                return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
-                                     BooklistStyle.getDefault(context, db));
+                return getBookshelfAllBooks(context, db);
             }
         }
 
         return new Bookshelf(DEFAULT_ID, context.getString(R.string.bookshelf_my_books),
+                             BooklistStyle.getDefault(context, db));
+    }
+
+    @NonNull
+    public static Bookshelf getBookshelfAllBooks(@NonNull final Context context,
+                                                 @NonNull final DAO db) {
+        return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
                              BooklistStyle.getDefault(context, db));
     }
 
@@ -196,7 +199,7 @@ public class Bookshelf
      *
      * @param context Current context
      * @param db      Database Access
-     * @param useAll  set to {@code true} to return the AllBooks shelf, instead the default
+     * @param useAll  set to {@code true} to return the AllBooks shelf,
      *                if the desired shelf was not found.
      *
      * @return the bookshelf.

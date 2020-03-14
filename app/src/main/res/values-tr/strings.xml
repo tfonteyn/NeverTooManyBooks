@@ -198,7 +198,7 @@
     <string name="hint_empty_field">(Boş)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
-    <string name="lbl_import_export_option_csv">Kitaplar (*.csv)</string>
+    <string name="lbl_import_export_books_as_csv">Kitaplar (*.csv)</string>
     <string name="lbl_import_export_option_xml">Tüm veriler XML formatında</string>
     <string name="info_import_export_option_xml">Yalnızca XML dışa aktarma, içe aktarma yok.</string>
     <string name="info_import_option_all_books">Yeni kitaplar eklenecek. Mevcut kitaplar güncellenecek.</string>

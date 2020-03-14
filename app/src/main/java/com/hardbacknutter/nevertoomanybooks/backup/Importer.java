@@ -30,13 +30,10 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.Pair;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -49,58 +46,17 @@ public interface Importer
     /**
      * Import books from an InputStream.
      *
-     * @param context      Current context
-     * @param importStream Stream for reading data
-     * @param listener     Progress and cancellation provider
+     * @param context  Current context
+     * @param is       Stream for reading data
+     * @param listener Progress and cancellation provider
      *
-     * @return {@link Results}
+     * @return {@link ImportResults}
      *
      * @throws IOException     on failure
      * @throws ImportException on failure
      */
-    Results doBooks(@NonNull Context context,
-                    @NonNull InputStream importStream,
-                    @NonNull ProgressListener listener)
+    ImportResults readBooks(@NonNull Context context,
+                            @NonNull InputStream is,
+                            @NonNull ProgressListener listener)
             throws IOException, ImportException;
-
-    /**
-     * Value class to report back what was imported.
-     * <p>
-     * Note: failed = processed - created - updated
-     */
-    class Results {
-
-        public final List<Pair<Integer, String>> failedCsvLines = new ArrayList<>();
-        /** The total #books that were present in the import data. */
-        public int booksProcessed;
-        /** #books we created. */
-        public int booksCreated;
-        /** #books we updated. */
-        public int booksUpdated;
-        /** The total #covers that were present in the import data. */
-        public int coversProcessed;
-        /** #covers we created. */
-        public int coversCreated;
-        /** #covers we updated. */
-        public int coversUpdated;
-        /** #styles we imported. */
-        public int styles;
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "Results{"
-                   + "booksProcessed=" + booksProcessed
-                   + ", booksCreated=" + booksCreated
-                   + ", booksUpdated=" + booksUpdated
-
-                   + ", coversSkipped=" + coversProcessed
-                   + ", coversCreated=" + coversCreated
-                   + ", coversUpdated=" + coversUpdated
-
-                   + ", styles=" + styles
-                   + ", failedCsvLines=" + failedCsvLines
-                   + '}';
-        }
-    }
 }

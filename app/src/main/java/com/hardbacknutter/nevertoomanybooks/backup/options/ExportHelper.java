@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.options;
 
 import android.content.Context;
 import android.net.Uri;
@@ -35,9 +35,15 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveType;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Options on what to export/backup and some support functions.
@@ -53,6 +59,7 @@ public class ExportHelper
      * 1: books added/updated since last backup.
      */
     public static final int EXPORT_SINCE_LAST_BACKUP = 1 << 16;
+
     /** {@link Parcelable}. */
     public static final Creator<ExportHelper> CREATOR = new Creator<ExportHelper>() {
         @Override
@@ -69,26 +76,32 @@ public class ExportHelper
      * Options value to indicate all things should be exported.
      * Note that XML_TABLES is NOT included as it's considered special interest.
      */
-    public static final int ALL = BOOK_CSV
+    public static final int ALL = BOOKS
                                   | PREFERENCES
-                                  | BOOK_LIST_STYLES
+                                  | STYLES
                                   | COVERS;
+    /** Log tag. */
+    private static final String TAG = "ExportHelper";
+    /** Write to this temp file first. */
+    private static final String TEMP_FILE_NAME = TAG + ".tmp";
     /**
      * all defined flags.
      */
-    private static final int MASK = BOOK_CSV
+    private static final int MASK = BOOKS
                                     | PREFERENCES
-                                    | BOOK_LIST_STYLES
+                                    | STYLES
                                     | COVERS
-                                    | XML_TABLES
                                     | EXPORT_SINCE_LAST_BACKUP;
 
     @NonNull
-    private final Exporter.Results mResults = new Exporter.Results();
+    private final ExportResults mResults;
 
     /** EXPORT_SINCE_LAST_BACKUP. */
     @Nullable
     private Date mDateFrom;
+
+    @Nullable
+    private ArchiveType mArchiveType;
 
     /**
      * Constructor.
@@ -97,6 +110,7 @@ public class ExportHelper
      */
     public ExportHelper(final int options) {
         super(options, null);
+        mResults = new ExportResults();
     }
 
     /**
@@ -108,6 +122,7 @@ public class ExportHelper
     public ExportHelper(final int options,
                         @NonNull final Uri uri) {
         super(options, uri);
+        mResults = new ExportResults();
     }
 
     /**
@@ -117,43 +132,39 @@ public class ExportHelper
      */
     private ExportHelper(@NonNull final Parcel in) {
         super(in);
-
-        // date follows ?
-        if (in.readInt() != 0) {
-            mDateFrom = new Date(in.readLong());
+        //noinspection ConstantConditions
+        mResults = in.readParcelable(getClass().getClassLoader());
+        long dateLong = in.readLong();
+        if (dateLong != 0) {
+            mDateFrom = new Date(dateLong);
         }
-    }
-
-    public void addResults(@NonNull final Exporter.Results results) {
-        mResults.booksProcessed += results.booksProcessed;
-        mResults.booksExported += results.booksExported;
-
-        mResults.coversSkipped += results.coversSkipped;
-        mResults.coversExported += results.coversExported;
-        mResults.coversMissing[0] += results.coversMissing[0];
-        mResults.coversMissing[1] += results.coversMissing[1];
-
-        mResults.styles += results.styles;
     }
 
     @NonNull
-    public Exporter.Results getResults() {
-        return mResults;
+    public ArchiveType getArchiveType() {
+        if (mArchiveType == null) {
+            // use the default
+            return ArchiveType.Tar;
+        }
+        return mArchiveType;
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        super.writeToParcel(dest, flags);
+    void setArchiveType(@NonNull final ArchiveType archiveType) {
+        mArchiveType = archiveType;
+    }
 
-        if (mDateFrom != null) {
-            // date follows
-            dest.writeInt(1);
-            dest.writeLong(mDateFrom.getTime());
-        } else {
-            // no date
-            dest.writeInt(0);
-        }
+    /**
+     * Get the temporary File to write to.
+     * When writing is done (success <strong>and</strong> failure),
+     * {@link #onSuccess} / {@link #onCleanup} must be called as needed.
+     *
+     * @param context Current context
+     *
+     * @return File
+     */
+    @NonNull
+    public File getTempOutputFile(@NonNull final Context context) {
+        return AppDir.Cache.getFile(context, TEMP_FILE_NAME);
     }
 
     @Nullable
@@ -178,18 +189,58 @@ public class ExportHelper
      * Called by the export task before starting.
      */
     public void validate() {
-        super.validate();
-
-        final Context context = App.getAppContext();
 
         if ((getOptions() & MASK) == 0) {
             throw new IllegalStateException("options not set");
         }
 
         if (getOption(EXPORT_SINCE_LAST_BACKUP)) {
-            mDateFrom = Options.getLastFullBackupDate(context);
+            mDateFrom = Options.getLastFullBackupDate(App.getAppContext());
         } else {
             mDateFrom = null;
+        }
+    }
+
+    @NonNull
+    public ExportResults getResults() {
+        return mResults;
+    }
+
+    /**
+     * Should be called after a successful write.
+     *
+     * @param context Current context
+     *
+     * @throws IOException on failure to write to the destination Uri
+     */
+    public void onSuccess(@NonNull final Context context)
+            throws IOException {
+        FileUtils.copy(context, AppDir.Cache.getFile(context, TEMP_FILE_NAME), getUri());
+
+        // if the backup was a full one (not a 'since') remember that.
+        if (getOption(ExportHelper.EXPORT_SINCE_LAST_BACKUP)) {
+            Options.setLastFullBackupDate(context);
+        }
+    }
+
+    /**
+     * Should be called after a unsuccessful write.
+     *
+     * @param context Current context
+     */
+    public void onCleanup(@NonNull final Context context) {
+        FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeParcelable(mResults, flags);
+        if (mDateFrom != null) {
+            dest.writeLong(mDateFrom.getTime());
+        } else {
+            dest.writeInt(0);
         }
     }
 
@@ -197,9 +248,10 @@ public class ExportHelper
     @NonNull
     public String toString() {
         return "ExportHelper{"
-               + ", options=0b" + Integer.toBinaryString(getOptions())
-               + ", mResults=" + mResults
+               + super.toString()
+               + ", mArchiveType=" + mArchiveType
                + ", mDateFrom=" + mDateFrom
+               + ", mResults=" + mResults
                + '}';
     }
 }

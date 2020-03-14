@@ -68,7 +68,7 @@ public class FetchWorksTask
     @Override
     @Nullable
     protected List<GoodreadsWork> doInBackground(final Void... voids) {
-        Thread.currentThread().setName("GR.FetchWorksTask");
+        Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);

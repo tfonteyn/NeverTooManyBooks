@@ -54,7 +54,7 @@ public class SendBooksTask
         extends TaskBase<Void, GrStatus> {
 
     /** Log tag. */
-    private static final String TAG = "SendBooksTask";
+    private static final String TAG = "GR.SendBooksTask";
 
     private final boolean mUpdatesOnly;
 
@@ -74,7 +74,7 @@ public class SendBooksTask
     @NonNull
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
-        Thread.currentThread().setName("GR.SendBooksTask");
+        Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
         try {

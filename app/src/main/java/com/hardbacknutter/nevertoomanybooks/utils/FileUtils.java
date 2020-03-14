@@ -69,7 +69,7 @@ public final class FileUtils {
     /** Log tag. */
     private static final String TAG = "FileUtils";
     /** buffer size for file copy operations. */
-    private static final int FILE_COPY_BUFFER_SIZE = 32768;
+    private static final int FILE_COPY_BUFFER_SIZE = 65535;
 
     private FileUtils() {
     }
@@ -268,8 +268,8 @@ public final class FileUtils {
      *
      * @throws IOException on failure
      */
-    private static void copy(@NonNull final InputStream is,
-                             @NonNull final OutputStream os)
+    public static void copy(@NonNull final InputStream is,
+                            @NonNull final OutputStream os)
             throws IOException {
         byte[] buffer = new byte[FILE_COPY_BUFFER_SIZE];
         int nRead;

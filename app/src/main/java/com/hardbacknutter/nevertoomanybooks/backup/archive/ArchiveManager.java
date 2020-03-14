@@ -35,31 +35,32 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.tararchive.TarArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.tararchive.TarArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.tar.TarArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.tar.TarArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.xml.XmlArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
  * Encapsulates access to the actual reader/writer used for backup/restore.
  */
 public final class ArchiveManager {
 
+    /** Meta data for a generic archive. */
+    static final String INFO_FILE = "INFO.xml";
+
     /** Potential backup archive entry. */
-    static final String BOOKS_FILE = "books.csv";
-    /** Used in the storage and identification of data store. */
-    static final Pattern BOOKS_PATTERN =
-            Pattern.compile("^books_.*\\.csv$",
+    static final String BOOKS_CSV = "books.csv";
+    /** Potential backup archive entry. */
+    static final Pattern BOOKS_CSV_PATTERN =
+            Pattern.compile("^books.*\\.csv$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** Potential backup archive entry. */
     static final String PREFERENCES = "preferences.xml";
     /** Potential backup archive entry. */
     static final String STYLES = "styles.xml";
-
     /**
      * archive entry that will contain xml dumps of actual tables.
      * For now, this is export only, cannot import yet.
@@ -68,66 +69,23 @@ public final class ArchiveManager {
      */
     static final String XML_DATA = "data.xml";
 
-    /** LEGACY - Potential backup archive entry. A copy of the main database file. */
-    static final String DB_FILE = "snapshot.db";
+    /** Potential backup archive entry. */
+    static final Pattern DB_FILE_PATTERN =
+            Pattern.compile(".*\\.db$",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+
+    /** Legacy BookCatalogue. */
+    static final String LEGACY_PREFERENCES = "preferences";
+    /** Legacy BookCatalogue. */
+    static final Pattern LEGACY_STYLES_PATTERN =
+            Pattern.compile("^style.blob.[0-9]*$",
+                            Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /** Log tag. */
     private static final String TAG = "BackupManager";
-    /** Proposed extension for backup files. Not mandatory and not significant to the content. */
-    private static final String ARCHIVE_EXTENSION = ".ntmb";
 
     /** Constructor. */
     private ArchiveManager() {
-    }
-
-    /**
-     * Create a BackupReader for the specified Uri.
-     *
-     * @param context Current context
-     * @param helper  import configuration
-     *
-     * @return a new reader
-     *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on other failures
-     */
-    @NonNull
-    public static ArchiveReader getReader(@NonNull final Context context,
-                                          @NonNull final ImportHelper helper)
-            throws InvalidArchiveException, IOException {
-
-        // TODO: we should detect the type of uri to choose a reader
-        // for now, we only support tar files.
-        ArchiveReader reader = new TarArchiveReader(context, helper);
-        reader.validate(context);
-        return reader;
-    }
-
-    /**
-     * Create a BackupWriter for the specified Uri.
-     *
-     * @param context Current context
-     * @param helper  export configuration
-     *
-     * @return a new writer
-     *
-     * @throws IOException on failure
-     */
-    @NonNull
-    public static ArchiveWriter getWriter(@NonNull final Context context,
-                                          @NonNull final ExportHelper helper)
-            throws IOException {
-
-        // for now, we only support tar files.
-        return new TarArchiveWriter(context, helper);
-    }
-
-    public static String getDefaultBackupFileName(@NonNull final Context context) {
-        return context.getString(R.string.app_name) + '-'
-               + DateUtils.localSqlDateForToday()
-                          .replace(" ", "-")
-                          .replace(":", "")
-               + ARCHIVE_EXTENSION;
     }
 
     /**
@@ -151,4 +109,66 @@ public final class ArchiveManager {
         }
         return null;
     }
+
+    /**
+     * Create a BackupReader for the specified Uri.
+     *
+     * @param context Current context
+     * @param helper  import configuration
+     *
+     * @return a new reader
+     *
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException             on other failures
+     */
+    @NonNull
+    static ArchiveReader getReader(@NonNull final Context context,
+                                   @NonNull final ImportHelper helper)
+            throws InvalidArchiveException, IOException {
+
+        ArchiveReader reader;
+        switch (ArchiveType.getType(context, helper.getUri())) {
+
+            case Tar:
+                reader = new TarArchiveReader(context, helper);
+                break;
+
+            case Zip:
+            case Xml:
+            case Unknown:
+            default:
+                throw new InvalidArchiveException();
+        }
+
+        reader.validate(context);
+        return reader;
+    }
+
+    /**
+     * Create a BackupWriter for the specified Uri.
+     *
+     * @param context Current context
+     * @param helper  export configuration
+     *
+     * @return a new writer
+     *
+     * @throws IOException on failure
+     */
+    @NonNull
+    static ArchiveWriter getWriter(@NonNull final Context context,
+                                   @NonNull final ExportHelper helper)
+            throws IOException {
+
+        //noinspection EnumSwitchStatementWhichMissesCases
+        switch (helper.getArchiveType()) {
+            case Xml:
+                return new XmlArchiveWriter(context, helper);
+
+            case Tar:
+            default:
+                // the default
+                return new TarArchiveWriter(context, helper);
+        }
+    }
+
 }

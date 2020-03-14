@@ -78,7 +78,7 @@
             app:layout_constraintStart_toEndOf="@id/cbx_read"
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:ignore="SelectableText"
-            tools:text="War and Peace &amp; Anna Karenina"
+            tools:text="@sample/data.json/book/title"
             />
 
         <RatingBar
@@ -101,7 +101,7 @@
             app:layout_constraintTop_toBottomOf="@id/loaned_to"
             tools:layout_height="@dimen/tools_cover_large_height"
             tools:layout_width="@dimen/tools_cover_large_width"
-            tools:src="@drawable/ic_image"
+            tools:src="@sample/covers"
             />
 
         <ImageView
@@ -123,7 +123,7 @@
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:ignore="SelectableText"
-            tools:text="Lev Tolstoy"
+            tools:text="@sample/data.json/author/full_name"
             />
 
         <TextView
@@ -169,7 +169,7 @@
             app:layout_constraintTop_toBottomOf="@id/barrier_format"
             app:layout_goneMarginStart="0dp"
             tools:ignore="SelectableText"
-            tools:text="colour"
+            tools:text="color"
             />
 
         <androidx.constraintlayout.widget.Barrier
@@ -186,7 +186,7 @@
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/barrier_language"
             tools:ignore="SelectableText"
-            tools:text="Quenya"
+            tools:text="@sample/data.json/language/name"
             />
 
         <TextView
@@ -305,7 +305,7 @@
             app:layout_constraintStart_toEndOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/lbl_publication_section"
             tools:ignore="SelectableText"
-            tools:text="Printed Paper Press Inc."
+            tools:text="@sample/data.json/publisher/name"
             />
 
         <TextView
@@ -559,7 +559,7 @@
             app:layout_constraintStart_toEndOf="@id/lbl_location_long"
             app:layout_constraintTop_toBottomOf="@id/read_end"
             tools:ignore="SelectableText"
-            tools:text="Library"
+            tools:text="@sample/data.json/location/name"
             />
 
         <!-- Description -->

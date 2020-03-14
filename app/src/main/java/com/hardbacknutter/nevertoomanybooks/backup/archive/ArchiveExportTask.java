@@ -25,11 +25,10 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.archive;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
@@ -38,54 +37,41 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveManager;
-import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * Calls the default {@link  ArchiveManager#getWriter} to create a backup.
+ * Uses the default {@link  ArchiveManager#getWriter} to write a backup to a Uri.
+ * <p>
+ * Input: an {@link  ArchiveManager#getWriter} and a configured {@link ExportHelper}.
+ * Output: the updated {@link ExportHelper} with the {@link ExportResults}.
  */
-public class ExportTask
+public class ArchiveExportTask
         extends TaskBase<Void, ExportHelper> {
 
     /** Log tag. */
     private static final String TAG = "BackupTask";
-    /** Write to this temp file first. */
-    private static final String TEMP_FILE_NAME = TAG + ".tmp";
 
-    /**  export configuration. */
+    /** export configuration. */
     @NonNull
     private final ExportHelper mHelper;
 
     /**
      * Constructor.
      *
-     * @param helper  export configuration
+     * @param helper       export configuration
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public ExportTask(@NonNull final ExportHelper helper,
-                      @NonNull final TaskListener<ExportHelper> taskListener) {
+    public ArchiveExportTask(@NonNull final ExportHelper helper,
+                             @NonNull final TaskListener<ExportHelper> taskListener) {
         super(R.id.TASK_ID_WRITE_TO_ARCHIVE, taskListener);
         mHelper = helper;
         mHelper.validate();
-    }
-
-    @UiThread
-    @Override
-    protected void onCancelled(@NonNull final ExportHelper result) {
-        cleanup(App.getTaskContext());
-        super.onCancelled(result);
-    }
-
-    @AnyThread
-    private void cleanup(@NonNull final Context context) {
-        FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
     }
 
     @Override
@@ -95,27 +81,24 @@ public class ExportTask
         Thread.currentThread().setName(TAG);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
-        try (ArchiveWriter writer = ArchiveManager.getWriter(context, mHelper)) {
-            writer.write(context, getProgressListener());
-            if (!isCancelled()) {
-                // the export was successful, move the temp file to the permanent location
-                FileUtils.copy(context,
-                               AppDir.Cache.getFile(context, TEMP_FILE_NAME),
-                               mHelper.getUri());
-
-                // if the backup was a full one (not a 'since') remember that.
-                if (mHelper.getOption(ExportHelper.EXPORT_SINCE_LAST_BACKUP)) {
-                    Options.setLastFullBackupDate(context);
-                }
-            }
-            return mHelper;
-
+        try (ArchiveWriter exporter = ArchiveManager.getWriter(context, mHelper)) {
+            mHelper.getResults().add(exporter.write(context, getProgressListener()));
         } catch (@NonNull final IOException e) {
             Logger.error(context, TAG, e);
             mException = e;
-            return mHelper;
-        } finally {
-            cleanup(context);
         }
+
+        // The ArchiveWriter file is now properly closed,
+        // export it to the user Uri (if successful) and cleanup.
+        try {
+            if (mException == null && !isCancelled()) {
+                mHelper.onSuccess(context);
+            }
+        } catch (@NonNull final IOException e) {
+            Logger.error(context, TAG, e);
+        } finally {
+            mHelper.onCleanup(context);
+        }
+        return mHelper;
     }
 }

@@ -205,7 +205,7 @@
     <string name="hint_empty_field">(Vide)</string>
     <string name="hint_search_text">Texte et/ou ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
-    <string name="lbl_import_export_option_csv">Livres (*.csv)</string>
+    <string name="lbl_import_export_books_as_csv">Livres (*.csv)</string>
     <string name="lbl_import_export_option_xml">Toutes les données au format XML</string>
     <string name="info_import_export_option_xml">XML est uniquement exportable, pas d\'importation.</string>
     <string name="info_import_option_all_books">De nouveaux livres seront ajoutés. Les livres existants seront mis à jour.</string>

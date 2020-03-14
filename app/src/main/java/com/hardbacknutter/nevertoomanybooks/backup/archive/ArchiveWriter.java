@@ -36,6 +36,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
@@ -55,12 +56,80 @@ public interface ArchiveWriter
      * @throws IOException on failure
      */
     @WorkerThread
-    void write(@NonNull Context context,
-               @NonNull ProgressListener progressListener)
+    ExportResults write(@NonNull Context context,
+                        @NonNull ProgressListener progressListener)
             throws IOException;
 
+    /**
+     * Write the archive header information.
+     * <p>
+     * See {@link ArchiveWriterAbstract} for a default implementation.
+     *
+     * @param archiveInfo header
+     *
+     * @throws IOException on failure
+     */
     @WorkerThread
-    void putInfo(@NonNull ArchiveInfo archiveInfo)
+    void writeArchiveHeader(@NonNull ArchiveInfo archiveInfo)
+            throws IOException;
+
+    /**
+     * Write the styles.
+     * <p>
+     * See {@link ArchiveWriterAbstract} for a default implementation.
+     *
+     * @param context          Current context
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    void writeStyles(@NonNull Context context,
+                     @NonNull ProgressListener progressListener)
+            throws IOException;
+
+    /**
+     * Write the preference settings.
+     * <p>
+     * See {@link ArchiveWriterAbstract} for a default implementation.
+     *
+     * @param context          Current context
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    void writePreferences(@NonNull final Context context,
+                          @NonNull final ProgressListener progressListener)
+            throws IOException;
+
+    /**
+     * Prepare the books. This is step 1 of writing books.
+     * Implementations should count the number of books and populate the archive header.
+     * <p>
+     * See {@link ArchiveWriterAbstract} for a default implementation.
+     *
+     * @param context          Current context
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    void prepareBooks(@NonNull final Context context,
+                      @NonNull final ProgressListener progressListener)
+            throws IOException;
+
+    /**
+     * Write the books. This is step 2 of writing books.
+     * <p>
+     * See {@link ArchiveWriterAbstract} for a default implementation.
+     *
+     * @param context          Current context
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    void writeBooks(@NonNull final Context context,
+                    @NonNull final ProgressListener progressListener)
             throws IOException;
 
     /**
@@ -104,4 +173,8 @@ public interface ArchiveWriter
      * @return the version
      */
     int getVersion();
+
+    interface SupportsBinary {
+
+    }
 }

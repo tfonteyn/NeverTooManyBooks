@@ -64,7 +64,7 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="@dimen/border2"
                 tools:ignore="SelectableText"
-                tools:text="Goodreads url here"
+                tools:text="https://www.goodreads.com"
                 />
 
             <TextView

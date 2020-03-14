@@ -54,12 +54,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageExc
 public class AuthorizationResultCheckTask
         extends AsyncTask<Void, Void, Boolean> {
 
+    private static final String TAG = "GR.AuthResultCheck";
     @Nullable
     private Exception mException;
 
     @Override
     protected Boolean doInBackground(final Void... params) {
-        Thread.currentThread().setName("GR.AuthorizationResultCheckTask");
+        Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);

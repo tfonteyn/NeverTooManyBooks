@@ -104,5 +104,10 @@
     <string name="debug_sq_shell_run" translatable="false">Run</string>
     <string name="debug_sq_shell_list_tables" translatable="false">List tables</string>
 
+    <!-- used for dev. as placeholder text. Can't seem to use "@tools:sample/lorem/random" here. -->
+    <string-array name="tools_placeholder">
+        <item>Placeholder 1</item>
+        <item>Placeholder 2</item>
+    </string-array>
 
 </resources>

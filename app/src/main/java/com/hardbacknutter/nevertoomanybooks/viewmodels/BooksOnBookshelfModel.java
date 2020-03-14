@@ -161,7 +161,7 @@ public class BooksOnBookshelfModel
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /** Cache for all bookshelf names / spinner list. */
-    private final List<String> mBookshelfNameList = new ArrayList<>();
+    private final List<BookshelfSpinnerEntry> mBookshelfNameList = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;
     /** Lazy init, always use {@link #getGoodreadsTaskListener(Context)}. */
@@ -325,7 +325,7 @@ public class BooksOnBookshelfModel
     }
 
     @NonNull
-    public List<String> getBookshelfNameList() {
+    public List<BookshelfSpinnerEntry> getBookshelfSpinnerList() {
         return mBookshelfNameList;
     }
 
@@ -338,7 +338,8 @@ public class BooksOnBookshelfModel
      */
     public int initBookshelfNameList(@NonNull final Context context) {
         mBookshelfNameList.clear();
-        mBookshelfNameList.add(context.getString(R.string.bookshelf_all_books));
+        mBookshelfNameList.add(new BookshelfSpinnerEntry(
+                Bookshelf.getBookshelfAllBooks(context, mDb)));
         // default to 'All Books'
         int currentPos = 0;
         // start at 1, as position 0 is 'All Books'
@@ -349,28 +350,37 @@ public class BooksOnBookshelfModel
                 currentPos = position;
             }
             position++;
-            mBookshelfNameList.add(bookshelf.getName());
+            mBookshelfNameList.add(new BookshelfSpinnerEntry(bookshelf));
         }
 
         return currentPos;
     }
 
     /**
-     * Load and set the desired Bookshelf as the preferred.
-     * If the shelf was changed, a {@link #buildBookList} is started.
+     * Load and set the desired Bookshelf.
      *
      * @param context Current context
-     * @param name    of desired Bookshelf
+     * @param id      of desired Bookshelf
      */
     public void setCurrentBookshelf(@NonNull final Context context,
-                                    @Nullable final String name) {
-        // this test should not actually be needed.
-        if (name != null && !name.equalsIgnoreCase(getCurrentBookshelf().getName())) {
-            mCurrentBookshelf = Bookshelf.getBookshelf(context, mDb, name, true);
-            mCurrentBookshelf.setAsPreferred(context);
-            // new shelf, build the list
-            buildBookList(context);
+                                    final long id) {
+        mCurrentBookshelf = mDb.getBookshelf(id);
+        if (mCurrentBookshelf == null) {
+            mCurrentBookshelf = Bookshelf.getPreferredBookshelf(context, mDb, true);
         }
+        mCurrentBookshelf.setAsPreferred(context);
+    }
+
+    /**
+     * Load and set the desired Bookshelf.
+     *
+     * @param context   Current context
+     * @param bookshelf desired Bookshelf
+     */
+    public void setCurrentBookshelf(@NonNull final Context context,
+                                    @NonNull final Bookshelf bookshelf) {
+        mCurrentBookshelf = bookshelf;
+        mCurrentBookshelf.setAsPreferred(context);
     }
 
     @NonNull
@@ -379,14 +389,6 @@ public class BooksOnBookshelfModel
         return mCurrentBookshelf;
     }
 
-    /**
-     * Load and set the desired Bookshelf; do NOT set it as the preferred. Do NOT build the list
-     *
-     * @param id of Bookshelf
-     */
-    public void setCurrentBookshelf(final long id) {
-        mCurrentBookshelf = mDb.getBookshelf(id);
-    }
 
     /**
      * Get the style of the current bookshelf.
@@ -868,6 +870,35 @@ public class BooksOnBookshelfModel
     }
 
     /**
+     * A Spinner entry with a Bookshelf.
+     */
+    public static class BookshelfSpinnerEntry {
+
+        @NonNull
+        private final Bookshelf mBookshelf;
+
+        BookshelfSpinnerEntry(@NonNull final Bookshelf bookshelf) {
+            mBookshelf = bookshelf;
+        }
+
+        @NonNull
+        public Bookshelf getBookshelf() {
+            return mBookshelf;
+        }
+
+        /**
+         * NOT debug, used by the Spinner view.
+         *
+         * @return entry title
+         */
+        @Override
+        @NonNull
+        public String toString() {
+            return mBookshelf.getName();
+        }
+    }
+
+    /**
      * Holder class for search criteria with some methods to bulk manipulate them.
      */
     public static class SearchCriteria {
@@ -1021,7 +1052,6 @@ public class BooksOnBookshelfModel
                   .putExtra(UniqueId.BKEY_ID_LIST, bookList);
         }
 
-        @SuppressWarnings("BooleanMethodIsAlwaysInverted")
         public boolean isEmpty() {
             return (ftsKeywords == null || ftsKeywords.isEmpty())
                    && (ftsAuthor == null || ftsAuthor.isEmpty())
@@ -1094,7 +1124,7 @@ public class BooksOnBookshelfModel
         @NonNull
         @WorkerThread
         protected BuilderResult doInBackground(final Void... params) {
-            Thread.currentThread().setName("GetBookListTask");
+            Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
             try {

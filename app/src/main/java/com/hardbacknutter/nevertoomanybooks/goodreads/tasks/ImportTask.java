@@ -54,7 +54,7 @@ public class ImportTask
         extends TaskBase<Void, GrStatus> {
 
     /** Log tag. */
-    private static final String TAG = "ImportTask";
+    private static final String TAG = "GR.ImportTask";
 
     private final boolean mIsSync;
 
@@ -74,7 +74,7 @@ public class ImportTask
     @NonNull
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
-        Thread.currentThread().setName("GR.ImportTask");
+        Thread.currentThread().setName(TAG);
         final Context context = App.getTaskContext();
 
         try {

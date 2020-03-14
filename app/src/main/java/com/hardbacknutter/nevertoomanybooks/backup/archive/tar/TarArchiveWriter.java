@@ -25,42 +25,38 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.tararchive;
+package com.hardbacknutter.nevertoomanybooks.backup.archive.tar;
 
 import android.content.Context;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlExporter;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Implementation of TAR-specific writer functions.
+ * <p>
+ * Supports storing binary files (i.e. our covers).
  */
 public class TarArchiveWriter
-        extends ArchiveWriterAbstract {
+        extends ArchiveWriterAbstract
+        implements ArchiveWriter.SupportsBinary {
 
-    /** Buffer size for buffered streams. */
-    private static final int BUFFER_SIZE = 32768;
-
-    /** The data stream for the archive. */
+    /** The output stream for the archive. */
     @NonNull
     private final TarArchiveOutputStream mOutputStream;
 
@@ -77,28 +73,8 @@ public class TarArchiveWriter
             throws IOException {
         super(context, helper);
 
-        OutputStream os = context.getContentResolver().openOutputStream(helper.getUri());
-        mOutputStream = new TarArchiveOutputStream(os);
-    }
-
-    /**
-     * Tar files don't support meta-data, so we just write the info to an xml file.
-     *
-     * @param archiveInfo info about what we're writing to this archive
-     *
-     * @throws IOException on failure
-     */
-    @Override
-    public void putInfo(@NonNull final ArchiveInfo archiveInfo)
-            throws IOException {
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (OutputStreamWriter osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
-             BufferedWriter out = new BufferedWriter(osw, BUFFER_SIZE);
-             XmlExporter xmlExporter = new XmlExporter()) {
-            xmlExporter.doBackupInfoBlock(out, archiveInfo);
-        }
-
-        putByteArray(TarArchiveReader.INFO_FILE, data.toByteArray());
+        mOutputStream = new TarArchiveOutputStream(
+                new FileOutputStream(helper.getTempOutputFile(context)));
     }
 
     @Override
@@ -110,7 +86,9 @@ public class TarArchiveWriter
         entry.setSize(file.length());
         mOutputStream.putArchiveEntry(entry);
         try (InputStream is = new FileInputStream(file)) {
-            streamToArchive(is);
+            FileUtils.copy(is, mOutputStream);
+        } finally {
+            mOutputStream.closeArchiveEntry();
         }
     }
 
@@ -119,38 +97,17 @@ public class TarArchiveWriter
                              @NonNull final byte[] bytes)
             throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry(name);
+        entry.setModTime(new Date());
         entry.setSize(bytes.length);
         mOutputStream.putArchiveEntry(entry);
         try (InputStream is = new ByteArrayInputStream(bytes)) {
-            streamToArchive(is);
-        }
-    }
-
-    /**
-     * Sends the contents of a stream to the current archive entry.
-     *
-     * @param is Stream to be written to the archive
-     *
-     * @throws IOException on failure
-     */
-    private void streamToArchive(@NonNull final InputStream is)
-            throws IOException {
-        try {
-            final byte[] buffer = new byte[BUFFER_SIZE];
-            while (true) {
-                int cnt = is.read(buffer);
-                if (cnt <= 0) {
-                    break;
-                }
-                mOutputStream.write(buffer, 0, cnt);
-            }
+            FileUtils.copy(is, mOutputStream);
         } finally {
             mOutputStream.closeArchiveEntry();
         }
     }
 
     @Override
-    @CallSuper
     public void close()
             throws IOException {
         mOutputStream.close();

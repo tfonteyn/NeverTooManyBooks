@@ -68,9 +68,9 @@ import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.tasks.AlternativeExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class CoverBrowserViewModel
@@ -538,6 +538,7 @@ public class CoverBrowserViewModel
     static class GetGalleryImageTask
             extends TaskBase<Void, FileInfo> {
 
+        private static final String TAG = "GetGalleryImageTask";
         @NonNull
         private final String mIsbn;
         @NonNull
@@ -576,7 +577,7 @@ public class CoverBrowserViewModel
         @NonNull
         @WorkerThread
         protected FileInfo doInBackground(final Void... params) {
-            Thread.currentThread().setName("GetGalleryImageTask " + mIsbn);
+            Thread.currentThread().setName(TAG + mIsbn);
             final Context context = App.getTaskContext();
 
             try {
@@ -601,6 +602,8 @@ public class CoverBrowserViewModel
      */
     static class GetSwitcherImageTask
             extends TaskBase<Void, FileInfo> {
+
+        private static final String TAG = "GetSwitcherImageTask";
 
         @NonNull
         private final FileInfo mFileInfo;
@@ -640,7 +643,7 @@ public class CoverBrowserViewModel
         @NonNull
         @WorkerThread
         protected FileInfo doInBackground(final Void... params) {
-            Thread.currentThread().setName("GetSwitcherImageTask " + mFileInfo.isbn);
+            Thread.currentThread().setName(TAG + mFileInfo.isbn);
             final Context context = App.getTaskContext();
 
             try {

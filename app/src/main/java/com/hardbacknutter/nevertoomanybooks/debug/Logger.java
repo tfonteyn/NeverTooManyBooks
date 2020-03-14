@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -226,7 +227,7 @@ public final class Logger {
         File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
         try (FileWriter fw = new FileWriter(logFile, true);
-             BufferedWriter out = new BufferedWriter(fw)) {
+             Writer out = new BufferedWriter(fw)) {
             out.write(fullMessage);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignored) {
             // do nothing - we can't log an error in the logger

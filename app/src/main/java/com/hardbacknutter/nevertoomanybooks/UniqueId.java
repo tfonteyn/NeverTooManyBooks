@@ -27,8 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**

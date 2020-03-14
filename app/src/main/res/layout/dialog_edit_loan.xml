@@ -42,7 +42,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="by Isaac Asimov"
+        tools:text="@sample/data.json/author/full_name"
         />
 
     <TextView

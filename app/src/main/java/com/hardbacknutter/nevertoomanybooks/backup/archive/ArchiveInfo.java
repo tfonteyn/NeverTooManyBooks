@@ -103,7 +103,7 @@ public class ArchiveInfo {
      */
     @NonNull
     static ArchiveInfo newInstance(@NonNull final Context context,
-                                   final int version,
+                                   @SuppressWarnings("SameParameterValue") final int version,
                                    final int bookCount,
                                    final int coverCount,
                                    final boolean hasStyles,
@@ -217,8 +217,7 @@ public class ArchiveInfo {
     }
 
     /**
-     * We *should* have Preferences in the archive.
-     * At least that was the intention when it was created.
+     * Check if this archive has a Preferences file stored.
      *
      * @return {@code true} if present
      */
@@ -227,8 +226,8 @@ public class ArchiveInfo {
     }
 
     /**
-     * We *should* have Styles in the archive.
-     * At least that was the intention when it was created.
+     * Check if this archive has a Styles file stored.
+
      *
      * @return {@code true} if present
      */
@@ -237,7 +236,7 @@ public class ArchiveInfo {
     }
 
     /**
-     * Check if the archive has books (with or without an exact number).
+     * Check if the archive has a books file stored (with or without an exact number).
      *
      * @return {@code true} if books are present
      */

@@ -72,7 +72,7 @@ public class IsfdbGetEditionsTask
     @Nullable
     @WorkerThread
     protected ArrayList<Edition> doInBackground(final Void... params) {
-        Thread.currentThread().setName("IsfdbGetEditionsTask " + mIsbn);
+        Thread.currentThread().setName(TAG + mIsbn);
         final Context context = App.getTaskContext();
 
         try {

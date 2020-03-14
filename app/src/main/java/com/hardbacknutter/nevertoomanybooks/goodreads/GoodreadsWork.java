@@ -188,6 +188,7 @@ public class GoodreadsWork {
     static class GetImageTask
             extends AsyncTask<Void, Void, byte[]> {
 
+        private static final String TAG = "GR.GetImageTask";
         /** URL of image to fetch. */
         @NonNull
         private final String mUrl;
@@ -215,7 +216,7 @@ public class GoodreadsWork {
         @Override
         @WorkerThread
         protected byte[] doInBackground(final Void... params) {
-            Thread.currentThread().setName("GR.GetImageTask");
+            Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
             return ImageUtils.getBytes(context, mUrl);

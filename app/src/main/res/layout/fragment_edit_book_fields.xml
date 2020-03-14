@@ -90,7 +90,7 @@
                 android:id="@+id/author"
                 style="@style/EditText.Button"
                 android:layout_width="match_parent"
-                tools:text="@string/lbl_authors"
+                tools:text="@sample/data.json/author/full_name"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -109,7 +109,7 @@
                 style="@style/titleTextEntry"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
-                tools:text="@string/lbl_title"
+                tools:text="@sample/data.json/book/title"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -159,7 +159,7 @@
                 android:id="@+id/series_title"
                 style="@style/EditText.Button"
                 android:layout_width="match_parent"
-                tools:text="@string/lbl_series_multiple"
+                tools:text="@sample/data.json/series/title_nr"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -178,7 +178,7 @@
                 android:id="@+id/bookshelves"
                 style="@style/EditText.Button"
                 android:layout_width="match_parent"
-                tools:text="@string/lbl_bookshelves_long"
+                tools:text="@sample/data.json/shelves/name"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

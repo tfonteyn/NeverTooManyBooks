@@ -35,13 +35,11 @@ import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -50,10 +48,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.options.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -95,9 +94,8 @@ public abstract class ArchiveReaderAbstract
     /** import configuration. */
     @NonNull
     private final ImportHelper mHelper;
-
-    @Nullable
-    private Importer.Results mResults;
+    @NonNull
+    private final ImportResults mResults = new ImportResults();
 
     /**
      * Constructor.
@@ -130,19 +128,17 @@ public abstract class ArchiveReaderAbstract
     }
 
     @Override
-    public void read(@NonNull final Context context,
-                     @NonNull final ProgressListener progressListener)
+    public ImportResults read(@NonNull final Context context,
+                              @NonNull final ProgressListener progressListener)
             throws IOException, ImportException, InvalidArchiveException {
-
-        mResults = new Importer.Results();
 
         // keep track of what we read from the archive
         int entitiesRead = Options.NOTHING;
 
         // entities that only appear once
-        boolean readStyles = mHelper.getOption(Options.BOOK_LIST_STYLES);
+        boolean readStyles = mHelper.getOption(Options.STYLES);
         boolean readPrefs = mHelper.getOption(Options.PREFERENCES);
-        boolean readBooks = mHelper.getOption(Options.BOOK_CSV);
+        boolean readBooks = mHelper.getOption(Options.BOOKS);
         boolean readCovers = mHelper.getOption(Options.COVERS);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -167,12 +163,12 @@ public abstract class ArchiveReaderAbstract
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
             if (readStyles) {
                 progressListener.onProgressStep(1, mProcessBooklistStyles);
-                ReaderEntity entity = findEntity(ReaderEntity.Type.BooklistStyles);
+                ReaderEntity entity = findEntity(ReaderEntity.Type.BooklistStylesXml);
                 if (entity != null) {
                     try (XmlImporter importer = new XmlImporter(null)) {
                         mResults.styles += importer.doStyles(context, entity, progressListener);
                     }
-                    entitiesRead |= Options.BOOK_LIST_STYLES;
+                    entitiesRead |= Options.STYLES;
                     readStyles = false;
                 }
                 reset();
@@ -181,7 +177,7 @@ public abstract class ArchiveReaderAbstract
             // Seek the preferences entity next, so we can apply any prefs while reading data.
             if (readPrefs) {
                 progressListener.onProgressStep(1, mProcessPreferences);
-                ReaderEntity entity = findEntity(ReaderEntity.Type.Preferences);
+                ReaderEntity entity = findEntity(ReaderEntity.Type.PreferencesXml);
                 if (entity != null) {
                     try (XmlImporter importer = new XmlImporter(null)) {
                         importer.doPreferences(entity, prefs, progressListener);
@@ -219,20 +215,20 @@ public abstract class ArchiveReaderAbstract
                         }
                         break;
                     }
-                    case Books: {
+                    case BooksCsv: {
                         if (readBooks) {
                             // a CSV file with all book data
                             try (Importer importer = new CsvImporter(context, mHelper)) {
-                                mHelper.addResults(importer.doBooks(context,
-                                                                    entity.getInputStream(),
-                                                                    progressListener));
+                                mResults.add(importer.readBooks(context,
+                                                                entity.getInputStream(),
+                                                                progressListener));
                             }
-                            entitiesRead |= Options.BOOK_CSV;
+                            entitiesRead |= Options.BOOKS;
                             readBooks = false;
                         }
                         break;
                     }
-                    case Preferences: {
+                    case PreferencesXml: {
                         if (readPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
                             try (XmlImporter importer = new XmlImporter(null)) {
@@ -243,31 +239,28 @@ public abstract class ArchiveReaderAbstract
                         }
                         break;
                     }
-                    case BooklistStyles: {
+                    case BooklistStylesXml: {
                         if (readStyles) {
                             progressListener.onProgressStep(1, mProcessBooklistStyles);
                             try (XmlImporter importer = new XmlImporter(null)) {
                                 mResults.styles += importer.doStyles(context, entity,
                                                                      progressListener);
                             }
-                            entitiesRead |= Options.BOOK_LIST_STYLES;
+                            entitiesRead |= Options.STYLES;
                             readStyles = false;
                         }
                         break;
                     }
                     case XML:
-                        // skip, future extension
-                        break;
-
+                        // skip for now, future extension
+                    case InfoXml:
+                        // skip, already handled.
                     case Database:
-                        // never restore from archive.
-                        break;
-
+                        // skip, never restore from archive.
                     case LegacyPreferences:
+                        // BookCatalogue format. No longer supported.
                     case LegacyBooklistStyles:
                         // BookCatalogue format. No longer supported.
-                    case Info:
-                        // skip, *should* already be handled.
                         break;
 
                     case Unknown:
@@ -281,21 +274,21 @@ public abstract class ArchiveReaderAbstract
             if (mResults.coversProcessed > 0) {
                 entitiesRead |= Options.COVERS;
             }
-
             mHelper.setOptions(entitiesRead);
-            mHelper.addResults(mResults);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-                Log.d(TAG, "read"
-                           + "|results=" + mResults
-                           + "|mSettings=" + mHelper);
-            }
             try {
                 close();
             } catch (@NonNull final IOException ignore) {
                 // ignore
             }
         }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
+            Log.d(TAG, "read"
+                       + "|results=" + mResults
+                       + "|mHelper=" + mHelper);
+        }
+        return mResults;
     }
 
     /**
@@ -324,21 +317,30 @@ public abstract class ArchiveReaderAbstract
         if (name.endsWith(".jpg") || name.endsWith(".png")) {
             return ReaderEntity.Type.Cover;
 
-        } else if (ArchiveManager.BOOKS_FILE.equalsIgnoreCase(name)
-                   || ArchiveManager.BOOKS_PATTERN.matcher(name).find()) {
-            return ReaderEntity.Type.Books;
+        } else if (ArchiveManager.INFO_FILE.equalsIgnoreCase(name)) {
+            return ReaderEntity.Type.InfoXml;
+
+        } else if (ArchiveManager.BOOKS_CSV.equalsIgnoreCase(name)
+                   || ArchiveManager.BOOKS_CSV_PATTERN.matcher(name).find()) {
+            return ReaderEntity.Type.BooksCsv;
 
         } else if (ArchiveManager.PREFERENCES.equalsIgnoreCase(name)) {
-            return ReaderEntity.Type.Preferences;
+            return ReaderEntity.Type.PreferencesXml;
 
         } else if (ArchiveManager.STYLES.equalsIgnoreCase(name)) {
-            return ReaderEntity.Type.BooklistStyles;
+            return ReaderEntity.Type.BooklistStylesXml;
 
-        } else if (ArchiveManager.DB_FILE.equalsIgnoreCase(name)) {
+        } else if (ArchiveManager.DB_FILE_PATTERN.matcher(name).find()) {
             return ReaderEntity.Type.Database;
 
         } else if (name.endsWith(".xml")) {
             return ReaderEntity.Type.XML;
+
+        } else if (ArchiveManager.LEGACY_PREFERENCES.equals(name)) {
+            return ReaderEntity.Type.LegacyPreferences;
+
+        } else if (ArchiveManager.LEGACY_STYLES_PATTERN.matcher(name).find()) {
+            return ReaderEntity.Type.LegacyBooklistStyles;
 
         } else {
             Logger.warn(App.getAppContext(), TAG,
@@ -375,7 +377,6 @@ public abstract class ArchiveReaderAbstract
             // save/overwrite
             cover.save(context);
 
-            Objects.requireNonNull(mResults, "mResults");
             if (exists) {
                 mResults.coversUpdated++;
             } else {

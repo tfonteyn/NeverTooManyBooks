@@ -1,0 +1,100 @@
+{
+  "author": [
+    {
+      "full_name": "Lev Tolstoy"
+    },
+    {
+      "full_name": "Isaac Asimov"
+    },
+    {
+      "full_name": "J.K Rowling"
+    },
+    {
+      "full_name": "Philip J. Farmer"
+    }
+  ],
+  "book": [
+    {
+      "title": "War and Peace & Anna Karenina"
+    },
+    {
+      "title": "Foundation and Empire"
+    },
+    {
+      "title": "The prisoner of Azkaban"
+    },
+    {
+      "title": "Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"
+    }
+  ],
+  "series": [
+    {
+      "title_nr": "Russian Classics"
+    },
+    {
+      "title_nr": "Foundation (2)"
+    },
+    {
+      "title_nr": "Harry Potter (3)"
+    },
+    {
+      "title_nr": "Farmer collection"
+    }
+  ],
+  "publisher": [
+    {
+      "name": "Printed paper Ltd."
+    },
+    {
+      "name": "Gnome Press"
+    },
+    {
+      "name": "Bloomsburry"
+    },
+    {
+      "name": "Subterranean"
+    }
+  ],
+  "location": [
+    {
+      "name": "Library"
+    },
+    {
+      "name": "Under the stairs"
+    },
+    {
+      "name": "Fun"
+    },
+    {
+      "name": "Office"
+    }
+  ],
+  "shelves": [
+    {
+      "name": "Literature"
+    },
+    {
+      "name": "Favourites"
+    },
+    {
+      "name": "British writers"
+    },
+    {
+      "name": "Top shelf"
+    }
+  ],
+  "language": [
+    {
+      "name": "Quenya"
+    },
+    {
+      "name": "American"
+    },
+    {
+      "name": "English"
+    },
+    {
+      "name": "Esperanto"
+    }
+  ]
+}

@@ -396,6 +396,7 @@ public final class LanguageUtils {
     public static class BuildLanguageMappingsTask
             extends TaskBase<Void, Boolean> {
 
+        private static final String TAG = "BuildLanguageMappings";
         /**
          * Constructor.
          *
@@ -410,7 +411,7 @@ public final class LanguageUtils {
 
         @Override
         protected Boolean doInBackground(final Void... params) {
-            Thread.currentThread().setName("BuildLanguageMappingsTask");
+            Thread.currentThread().setName(TAG);
             final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.STARTUP_TASKS) {

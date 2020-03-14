@@ -62,7 +62,7 @@ public class SendOneBookTask
         extends TaskBase<Void, GrStatus> {
 
     /** Log tag. */
-    private static final String TAG = "SendOneBookTask";
+    private static final String TAG = "GR.SendOneBook";
 
     /** The book to send. */
     private final long mBookId;
@@ -83,7 +83,7 @@ public class SendOneBookTask
     @NonNull
     @WorkerThread
     protected GrStatus doInBackground(final Void... params) {
-        Thread.currentThread().setName("GR.SendOneBookTask " + mBookId);
+        Thread.currentThread().setName(TAG + mBookId);
         final Context context = LocaleUtils.applyLocale(App.getTaskContext());
 
         GrStatus result;

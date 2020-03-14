@@ -619,6 +619,8 @@ class CoverHandler {
     private static class RotateTask
             extends AsyncTask<Void, Void, Boolean> {
 
+        private static final String TAG = "RotateTask";
+
         @Nullable
         private final WeakReference<CoverHandler> mCoverHandler;
         @NonNull
@@ -647,7 +649,7 @@ class CoverHandler {
 
         @Override
         protected Boolean doInBackground(final Void... voids) {
-            Thread.currentThread().setName("RotateTask");
+            Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
             return ImageUtils.rotate(context, mFile, mAngle);

@@ -175,6 +175,8 @@ public class GoogleBarcodeScanner
     public static class PreloadGoogleScanner
             extends TaskBase<Void, Boolean> {
 
+        private static final String TAG = "PreloadGoogleScanner";
+
         public PreloadGoogleScanner(final int taskId,
                                     @NonNull final TaskListener<Boolean> taskListener) {
             super(taskId, taskListener);
@@ -182,7 +184,7 @@ public class GoogleBarcodeScanner
 
         @Override
         protected Boolean doInBackground(final Void... voids) {
-            Thread.currentThread().setName("PreloadGoogleScanner");
+            Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
 
             ScannerFactory factory = new GoogleBarcodeScannerFactory();

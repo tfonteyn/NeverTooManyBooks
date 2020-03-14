@@ -36,6 +36,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
@@ -56,8 +57,8 @@ public interface ArchiveReader
      * @throws ImportException         on failure
      * @throws InvalidArchiveException on failure to recognise a supported archive
      */
-    void read(@NonNull Context context,
-              @NonNull ProgressListener progressListener)
+    ImportResults read(@NonNull Context context,
+                       @NonNull ProgressListener progressListener)
             throws IOException, ImportException, InvalidArchiveException;
 
     /**

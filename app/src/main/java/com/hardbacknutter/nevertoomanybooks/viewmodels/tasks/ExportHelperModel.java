@@ -30,7 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
 
 /**
  * See parent class doc.

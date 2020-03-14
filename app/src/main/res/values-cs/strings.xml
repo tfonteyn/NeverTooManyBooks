@@ -200,7 +200,7 @@
     <string name="hint_empty_field">(Prázdné)</string>
     <string name="hint_search_text">Vložit a/nebo ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
-    <string name="lbl_import_export_option_csv">Knihy (*.csv)</string>
+    <string name="lbl_import_export_books_as_csv">Knihy (*.csv)</string>
     <string name="lbl_import_export_option_xml">Všechna data ve formátu XML</string>
     <string name="info_import_export_option_xml">XML je pouze export, bez importu.</string>
     <string name="info_import_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>

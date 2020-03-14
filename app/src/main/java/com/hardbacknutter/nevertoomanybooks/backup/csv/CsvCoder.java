@@ -28,7 +28,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -37,7 +36,6 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -67,18 +65,6 @@ final class CsvCoder {
                                                                 + "|[1|2]\\d\\d\\d-\\d\\d"
                                                                 + "|[1|2]\\d\\d\\d-\\d\\d-\\d\\d)"
                                                                 + "\\)");
-    /** pre-configured coder/decoder for Author elements. */
-    @Nullable
-    private static StringList<Author> sAuthorCoder;
-    /** pre-configured coder/decoder for Series elements. */
-    @Nullable
-    private static StringList<Series> sSeriesCoder;
-    /** pre-configured coder/decoder for TocEntry elements. */
-    @Nullable
-    private static StringList<TocEntry> sTocCoder;
-    /** pre-configured  coder/decoder for Bookshelf elements. */
-    @Nullable
-    private static StringList<Bookshelf> sBookshelfCoder;
 
     private CsvCoder() {
     }
@@ -97,52 +83,49 @@ final class CsvCoder {
      */
     @NonNull
     static StringList<Author> getAuthorCoder() {
-        if (sAuthorCoder == null) {
-            sAuthorCoder = new StringList<>(new StringList.Factory<Author>() {
-                private final char[] escapeChars = {Author.NAME_SEPARATOR, ' ', '(', ')'};
+        return new StringList<>(new StringList.Factory<Author>() {
+            private final char[] escapeChars = {Author.NAME_SEPARATOR, ' ', '(', ')'};
 
-                @Override
-                @NonNull
-                public Author decode(@NonNull final String element) {
-                    List<String> parts = StringList.newInstance().decodeElement(element);
-                    Author author = Author.fromString(parts.get(0));
-                    if (parts.size() > 1) {
-                        try {
-                            JSONObject details = new JSONObject(parts.get(1));
-                            author.fromJson(details);
-                        } catch (@NonNull final JSONException ignore) {
-                            // ignore
-                        }
-                    }
-                    return author;
-                }
-
-                @NonNull
-                @Override
-                public String encode(@NonNull final Author author) {
-                    // Note the use of Author.NAME_SEPARATOR between family and given-names,
-                    // i.e. the names are considered ONE field with a private separator.
-                    String result =
-                            escape(author.getFamilyName(), escapeChars)
-                            + Author.NAME_SEPARATOR + ' '
-                            + escape(author.getGivenNames(), escapeChars);
-
-                    JSONObject details = new JSONObject();
+            @Override
+            @NonNull
+            public Author decode(@NonNull final String element) {
+                List<String> parts = StringList.newInstance().decodeElement(element);
+                Author author = Author.fromString(parts.get(0));
+                if (parts.size() > 1) {
                     try {
-                        author.toJson(details);
-                    } catch (@NonNull final JSONException e) {
-                        throw new IllegalStateException(e);
+                        JSONObject details = new JSONObject(parts.get(1));
+                        author.fromJson(details);
+                    } catch (@NonNull final JSONException ignore) {
+                        // ignore
                     }
-
-                    if (details.length() != 0) {
-                        result += ' ' + String.valueOf(getObjectSeparator())
-                                  + ' ' + details.toString();
-                    }
-                    return result;
                 }
-            });
-        }
-        return sAuthorCoder;
+                return author;
+            }
+
+            @NonNull
+            @Override
+            public String encode(@NonNull final Author author) {
+                // Note the use of Author.NAME_SEPARATOR between family and given-names,
+                // i.e. the names are considered ONE field with a private separator.
+                String result =
+                        escape(author.getFamilyName(), escapeChars)
+                        + Author.NAME_SEPARATOR + ' '
+                        + escape(author.getGivenNames(), escapeChars);
+
+                JSONObject details = new JSONObject();
+                try {
+                    author.toJson(details);
+                } catch (@NonNull final JSONException e) {
+                    throw new IllegalStateException(e);
+                }
+
+                if (details.length() != 0) {
+                    result += ' ' + String.valueOf(getObjectSeparator())
+                              + ' ' + details.toString();
+                }
+                return result;
+            }
+        });
     }
 
     /**
@@ -158,52 +141,49 @@ final class CsvCoder {
      */
     @NonNull
     static StringList<Series> getSeriesCoder() {
-        if (sSeriesCoder == null) {
-            sSeriesCoder = new StringList<>(new StringList.Factory<Series>() {
-                private final char[] escapeChars = {'(', ')'};
+        return new StringList<>(new StringList.Factory<Series>() {
+            private final char[] escapeChars = {'(', ')'};
 
-                @Override
-                @NonNull
-                public Series decode(@NonNull final String element) {
-                    List<String> parts = StringList.newInstance().decodeElement(element);
-                    Series series = Series.fromString(parts.get(0));
-                    if (parts.size() > 1) {
-                        try {
-                            JSONObject details = new JSONObject(parts.get(1));
-                            series.fromJson(details);
-                        } catch (@NonNull final JSONException ignore) {
-                            // ignore
-                        }
-                    }
-                    return series;
-                }
-
-                @NonNull
-                @Override
-                public String encode(@NonNull final Series series) {
-                    String result = escape(series.getTitle(), escapeChars);
-                    if (!series.getNumber().isEmpty()) {
-                        // start with a space for readability
-                        // the surrounding () are NOT escaped as they are part of the format.
-                        result += " (" + escape(series.getNumber(), escapeChars) + ')';
-                    }
-
-                    JSONObject details = new JSONObject();
+            @Override
+            @NonNull
+            public Series decode(@NonNull final String element) {
+                List<String> parts = StringList.newInstance().decodeElement(element);
+                Series series = Series.fromString(parts.get(0));
+                if (parts.size() > 1) {
                     try {
-                        series.toJson(details);
-                    } catch (@NonNull final JSONException e) {
-                        throw new IllegalStateException(e);
+                        JSONObject details = new JSONObject(parts.get(1));
+                        series.fromJson(details);
+                    } catch (@NonNull final JSONException ignore) {
+                        // ignore
                     }
-
-                    if (details.length() != 0) {
-                        result += ' ' + String.valueOf(getObjectSeparator())
-                                  + ' ' + details.toString();
-                    }
-                    return result;
                 }
-            });
-        }
-        return sSeriesCoder;
+                return series;
+            }
+
+            @NonNull
+            @Override
+            public String encode(@NonNull final Series series) {
+                String result = escape(series.getTitle(), escapeChars);
+                if (!series.getNumber().isEmpty()) {
+                    // start with a space for readability
+                    // the surrounding () are NOT escaped as they are part of the format.
+                    result += " (" + escape(series.getNumber(), escapeChars) + ')';
+                }
+
+                JSONObject details = new JSONObject();
+                try {
+                    series.toJson(details);
+                } catch (@NonNull final JSONException e) {
+                    throw new IllegalStateException(e);
+                }
+
+                if (details.length() != 0) {
+                    result += ' ' + String.valueOf(getObjectSeparator())
+                              + ' ' + details.toString();
+                }
+                return result;
+            }
+        });
     }
 
     /**
@@ -219,63 +199,66 @@ final class CsvCoder {
      */
     @NonNull
     static StringList<TocEntry> getTocCoder() {
-        if (sTocCoder == null) {
-            sTocCoder = new StringList<>(new StringList.Factory<TocEntry>() {
-                private final char[] escapeChars = {'(', ')'};
+        return new StringList<>(new StringList.Factory<TocEntry>() {
+            private final char[] escapeChars = {'(', ')'};
 
-                /**
-                 * Attempts to parse a single string into an TocEntry.
-                 * <ul>The date *must* match a patter of a (partial) SQL date string:
-                 * <li>(YYYY)</li>
-                 * <li>(YYYY-MM)</li>
-                 * <li>(YYYY-MM-DD)</li>
-                 * <li>(YYYY-DD-MM) might work depending on the user's Locale. Not tested.</li>
-                 * </ul>
-                 * BookCatalogue had no dates: Giants In The Sky * Blish, James
-                 * <ul>We now also accept:
-                 * <li>Giants In The Sky (1952) * Blish, James</li>
-                 * <li>Giants In The Sky (1952-03) * Blish, James</li>
-                 * <li>Giants In The Sky (1952-03-22) * Blish, James</li>
-                 * </ul>
-                 */
-                @Override
-                @NonNull
-                public TocEntry decode(@NonNull final String element) {
-                    List<String> parts = StringList.newInstance().decodeElement(element);
-                    String title = parts.get(0);
-                    Author author = Author.fromString(parts.get(1));
+            /**
+             * Attempts to parse a single string into an TocEntry.
+             * <ul>The date *must* match a patter of a (partial) SQL date string:
+             * <li>(YYYY)</li>
+             * <li>(YYYY-MM)</li>
+             * <li>(YYYY-MM-DD)</li>
+             * <li>(YYYY-DD-MM) might work depending on the user's Locale. Not tested.</li>
+             * </ul>
+             * BookCatalogue had no dates: Giants In The Sky * Blish, James
+             * <ul>We now also accept:
+             * <li>Giants In The Sky (1952) * Blish, James</li>
+             * <li>Giants In The Sky (1952-03) * Blish, James</li>
+             * <li>Giants In The Sky (1952-03-22) * Blish, James</li>
+             * </ul>
+             */
+            @Override
+            @NonNull
+            public TocEntry decode(@NonNull final String element) {
+                List<String> parts = StringList.newInstance().decodeElement(element);
+                String title = parts.get(0);
+                Author author = Author.fromString(parts.get(1));
 
-                    Matcher matcher = DATE_PATTERN.matcher(title);
-                    if (matcher.find()) {
-                        String g1 = matcher.group(0);
-                        if (g1 != null) {
-                            // strip out the found pattern (including the brackets)
-                            title = title.replace(g1, "").trim();
-                            return new TocEntry(author, title, matcher.group(1));
-                        }
+                Matcher matcher = DATE_PATTERN.matcher(title);
+                if (matcher.find()) {
+                    String g1 = matcher.group(0);
+                    if (g1 != null) {
+                        // strip out the found pattern (including the brackets)
+                        title = title.replace(g1, "").trim();
+                        return new TocEntry(author, title, matcher.group(1));
                     }
-                    return new TocEntry(author, title, "");
+                }
+                return new TocEntry(author, title, "");
+            }
+
+            @NonNull
+            @Override
+            public String encode(@NonNull final TocEntry tocEntry) {
+                String result = escape(tocEntry.getTitle(), escapeChars);
+
+                if (!tocEntry.getFirstPublication().isEmpty()) {
+                    // start with a space for readability
+                    // the surrounding () are NOT escaped as they are part of the format.
+                    result += " (" + tocEntry.getFirstPublication() + ')';
                 }
 
-                @NonNull
-                @Override
-                public String encode(@NonNull final TocEntry tocEntry) {
-                    String result = escape(tocEntry.getTitle(), escapeChars);
+                return result
+                       + ' ' + getObjectSeparator()
+                       // we only use the name here
+                       + ' ' + getAuthorCoder().encodeElement(tocEntry.getAuthor());
+            }
+        });
+    }
 
-                    if (!tocEntry.getFirstPublication().isEmpty()) {
-                        // start with a space for readability
-                        // the surrounding () are NOT escaped as they are part of the format.
-                        result += " (" + tocEntry.getFirstPublication() + ')';
-                    }
 
-                    return result
-                           + ' ' + getObjectSeparator()
-                           // we only use the name here
-                           + ' ' + getAuthorCoder().encodeElement(tocEntry.getAuthor());
-                }
-            });
-        }
-        return sTocCoder;
+    @NonNull
+    static StringList<Bookshelf> getBookshelfCoder(@NonNull final BooklistStyle defaultStyle) {
+        return new StringList<>(new BookshelfCoderFactory(defaultStyle));
     }
 
     /**
@@ -283,67 +266,65 @@ final class CsvCoder {
      * <ul>Format:
      * <li>shelfName * {json}</li>
      * </ul>
-     *
-     * @return StringList factory
      */
-    @NonNull
-    static StringList<Bookshelf> getBookshelfCoder() {
-        if (sBookshelfCoder == null) {
-            sBookshelfCoder = new StringList<>(new StringList.Factory<Bookshelf>() {
-                private final char[] escapeChars = {'(', ')'};
+    public static class BookshelfCoderFactory
+            implements StringList.Factory<Bookshelf> {
 
-                /**
-                 * Backwards compatibility rules ',' (not using the default '|').
-                 */
-                @Override
-                public char getElementSeparator() {
-                    return ',';
-                }
+        private final BooklistStyle defaultStyle;
 
-                @Override
-                @NonNull
-                public Bookshelf decode(@NonNull final String element) {
-                    List<String> parts = StringList.newInstance().decodeElement(element);
+        private final char[] escapeChars = {'(', ')'};
 
-                    // the right thing to do would be: get a database and get the 'real'
-                    // default style.
-                    // BooklistStyle style = BooklistStyle.getDefault(App.getAppContext(), mDb);
-                    // This is a lot of overkill for importing and hopefully the element
-                    // will contain a UUID anyhow, hence we're just using the builtin default.
-                    BooklistStyle style = BooklistStyle.Builtin.getDefault(App.getAppContext());
-
-                    Bookshelf bookshelf = new Bookshelf(parts.get(0), style);
-                    if (parts.size() > 1) {
-                        try {
-                            JSONObject details = new JSONObject(parts.get(1));
-                            bookshelf.fromJson(details);
-                        } catch (@NonNull final JSONException ignore) {
-                            // ignore
-                        }
-                    }
-                    return bookshelf;
-                }
-
-                @NonNull
-                @Override
-                public String encode(@NonNull final Bookshelf bookshelf) {
-                    String result = escape(bookshelf.getName(), escapeChars);
-
-                    JSONObject details = new JSONObject();
-                    try {
-                        bookshelf.toJson(details);
-                    } catch (@NonNull final JSONException e) {
-                        throw new IllegalStateException(e);
-                    }
-
-                    if (details.length() != 0) {
-                        result += ' ' + String.valueOf(getObjectSeparator())
-                                  + ' ' + details.toString();
-                    }
-                    return result;
-                }
-            });
+        /**
+         * Constructor.
+         *
+         * @param defaultStyle to use for bookshelves without a style set.
+         */
+        BookshelfCoderFactory(@NonNull final BooklistStyle defaultStyle) {
+            this.defaultStyle = defaultStyle;
         }
-        return sBookshelfCoder;
+
+        /**
+         * Backwards compatibility rules ',' (not using the default '|').
+         */
+        @Override
+        public char getElementSeparator() {
+            return ',';
+        }
+
+        @Override
+        @NonNull
+        public Bookshelf decode(@NonNull final String element) {
+            List<String> parts = StringList.newInstance().decodeElement(element);
+            Bookshelf bookshelf = new Bookshelf(parts.get(0), defaultStyle);
+            if (parts.size() > 1) {
+                try {
+                    JSONObject details = new JSONObject(parts.get(1));
+                    bookshelf.fromJson(details);
+                } catch (@NonNull final JSONException ignore) {
+                    // ignore
+                }
+            }
+            return bookshelf;
+        }
+
+        @NonNull
+        @Override
+        public String encode(@NonNull final Bookshelf bookshelf) {
+            String result = escape(bookshelf.getName(), escapeChars);
+
+            JSONObject details = new JSONObject();
+            try {
+                bookshelf.toJson(details);
+            } catch (@NonNull final JSONException e) {
+                throw new IllegalStateException(e);
+            }
+
+            if (details.length() != 0) {
+                result += ' ' + String.valueOf(getObjectSeparator())
+                          + ' ' + details.toString();
+            }
+            return result;
+        }
+
     }
 }

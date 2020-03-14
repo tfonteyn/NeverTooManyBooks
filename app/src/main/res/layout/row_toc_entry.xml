@@ -52,7 +52,7 @@
         app:layout_constraintEnd_toStartOf="@id/year"
         app:layout_constraintStart_toEndOf="@id/cbx_multiple_books"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Sentinel, The"
+        tools:text="@sample/data.json/book/title"
         />
 
     <TextView

@@ -199,7 +199,7 @@
     <string name="hint_empty_field">(Пусто)</string>
     <string name="hint_search_text">Текст и/или ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
-    <string name="lbl_import_export_option_csv">книги (*.csv)</string>
+    <string name="lbl_import_export_books_as_csv">книги (*.csv)</string>
     <string name="lbl_import_export_option_xml">Все данные в формате XML</string>
     <string name="info_import_export_option_xml">Только экспорт XML, без импорта.</string>
     <string name="info_import_option_all_books">Будут добавлены новые книги. существующие книги будут обновлены.</string>

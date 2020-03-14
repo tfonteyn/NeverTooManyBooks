@@ -201,7 +201,7 @@
     <string name="hint_empty_field">(Vacío)</string>
     <string name="hint_search_text">Texto y/o ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
-    <string name="lbl_import_export_option_csv">Los libros (*.csv)</string>
+    <string name="lbl_import_export_books_as_csv">Los libros (*.csv)</string>
     <string name="lbl_import_export_option_xml">Todos los datos en formato XML</string>
     <string name="info_import_export_option_xml">XML es solo de exportación, no de importación.</string>
     <string name="info_import_option_all_books">Se agregarán nuevos libros. Los libros existentes serán actualizados.</string>

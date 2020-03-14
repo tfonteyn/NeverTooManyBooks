@@ -1533,7 +1533,7 @@
     <string name="lbl_publication_month">Publication Month</string>
 
     <!-- 'export/import to archive' option -->
-    <string name="lbl_import_export_option_csv">Books (*.csv)</string>
+    <string name="lbl_import_export_books_as_csv">Books (*.csv)</string>
     <!-- 'export/import to archive' option -->
     <string name="lbl_import_export_csv">CSV (without images)</string>
     <!-- 'import to archive' option -->
@@ -1654,5 +1654,7 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
+    <string name="lbl_backup_archive">Backup/Restore archive</string>
+    <string name="lbl_xml_export">XML export file</string>
 
 </resources>

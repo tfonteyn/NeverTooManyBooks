@@ -205,7 +205,7 @@
     <string name="hint_empty_field">(Leeg)</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
-    <string name="lbl_import_export_option_csv">Boeken (*.csv)</string>
+    <string name="lbl_import_export_books_as_csv">Boeken (*.csv)</string>
     <string name="lbl_import_export_option_xml">Alle gegevens in XML formaat</string>
     <string name="info_import_export_option_xml">XML is enkel export, geen import.</string>
     <string name="info_import_option_all_books">Nieuwe boeken worden toegevoegd. Bestaande boeken worden bijgewerkt.</string>

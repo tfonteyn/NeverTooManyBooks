@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.ui;
+package com.hardbacknutter.nevertoomanybooks.backup.options;
 
 import android.app.Dialog;
 import android.content.res.Configuration;
@@ -43,7 +43,6 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.backup.Options;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public abstract class OptionsDialogBase<T extends Options>

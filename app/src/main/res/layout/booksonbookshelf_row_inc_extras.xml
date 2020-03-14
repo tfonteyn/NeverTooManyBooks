@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_author"
+        tools:text="@sample/data.json/author/full_name"
         tools:visibility="visible"
         />
 
@@ -58,7 +58,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/author"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_publisher"
+        tools:text="@sample/data.json/publisher/name"
         tools:visibility="visible"
         />
 
@@ -70,7 +70,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/publisher"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_isbn"
+        tools:text="1234567890123"
         tools:visibility="visible"
         />
 
@@ -82,7 +82,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/isbn"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_format"
+        tools:text="@string/book_format_hardcover"
         tools:visibility="visible"
         />
 
@@ -94,7 +94,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/format"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_location"
+        tools:text="@sample/data.json/location/name"
         tools:visibility="visible"
         />
 
@@ -106,7 +106,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/location"
         tools:ignore="SelectableText"
-        tools:text="@string/lbl_bookshelves"
+        tools:text="Top shelf"
         tools:visibility="visible"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

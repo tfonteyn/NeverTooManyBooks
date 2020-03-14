@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.options;
 
 import android.content.Context;
 import android.net.Uri;
@@ -48,18 +48,18 @@ public abstract class Options
 
     /**
      * options as to what should be imported/exported.
-     * These are the common lower 8 bits of the 'options'.
+     * Not all exporters will support all options.
+     * These are the common lower 16 bits of the 'options'.
      */
     public static final int NOTHING = 0;
-    public static final int BOOK_CSV = 1;
-    public static final int PREFERENCES = 1 << 1;
-    public static final int BOOK_LIST_STYLES = 1 << 2;
-    public static final int COVERS = 1 << 3;
-    public static final int XML_TABLES = 1 << 4;
-    //public static final int IMPORT_5 = 1 << 5;
-    //public static final int IMPORT_6 = 1 << 6;
-    //public static final int IMPORT_7 = 1 << 7;
-    //public static final int DATABASE = 1 << 8;
+    public static final int BOOKS = 1;
+    public static final int COVERS = 1 << 1;
+    public static final int BOOKSHELVES = 1 << 2;
+    public static final int AUTHORS = 1 << 3;
+    public static final int SERIES = 1 << 4;
+
+    public static final int PREFERENCES = 1 << 8;
+    public static final int STYLES = 1 << 9;
 
     /** Last full backup date. */
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
@@ -161,10 +161,6 @@ public abstract class Options
         this.mOptions = options;
     }
 
-    void validate() {
-        Objects.requireNonNull(mUri, ErrorMsg.NULL_URI);
-    }
-
     @SuppressWarnings("SameReturnValue")
     @Override
     public int describeContents() {
@@ -176,5 +172,14 @@ public abstract class Options
                               final int flags) {
         dest.writeInt(mOptions);
         dest.writeParcelable(mUri, flags);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "Options{"
+               + "mUri=" + mUri
+               + ", mOptions=0b" + Integer.toBinaryString(mOptions)
+               + '}';
     }
 }

@@ -27,70 +27,69 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
+import java.io.BufferedWriter;
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * TODO: fix inconsistencies introduced in the XmlExporter: OutputStream/BufferedWriter
- * <p>
  * Interface definition for an exporter.
  */
 public interface Exporter
         extends Closeable {
 
+    /** BufferedWriter buffer size. */
+    int BUFFER_SIZE = 65535;
+
     /**
-     * Export Books to an OutputStream.
+     * Wrapper for {@link #write(Context, Writer, ProgressListener)}
      *
-     * @param os       Stream for writing data
-     * @param listener Progress and cancellation interface
+     * @param context          Current context
+     * @param file             File to write to
+     * @param progressListener Progress and cancellation interface
      *
-     * @return {@link Results}
+     * @return {@link ExportResults}
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    Results doBooks(@NonNull OutputStream os,
-                    @NonNull ProgressListener listener)
-            throws IOException;
-
-    /**
-     * Value class to report back what was exported.
-     */
-    class Results {
-
-        /** The total #books that were considered for export. */
-        public int booksProcessed;
-        /** #books we exported. */
-        public int booksExported;
-
-        /** #books that did not have a front-cover [0] / back-cover [1]. */
-        public final int[] coversMissing = new int[2];
-        /** #covers exported. */
-        public int coversExported;
-        /** #covers that were skipped. */
-        public int coversSkipped;
-
-        /** #styles we exported. */
-        public int styles;
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "Results{"
-                   + "booksProcessed=" + booksProcessed
-                   + ", booksExported=" + booksExported
-                   + ", coversSkipped=" + coversSkipped
-                   + ", coversExported=" + coversExported
-                   + ", coversMissing[0]=" + coversMissing[0]
-                   + ", coversMissing[1]=" + coversMissing[1]
-                   + ", styles=" + styles
-                   + '}';
+    default ExportResults write(@NonNull final Context context,
+                                @NonNull final File file,
+                                @NonNull final ProgressListener progressListener)
+            throws IOException {
+        try (OutputStream os = new FileOutputStream(file);
+             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
+            return write(context, writer, progressListener);
         }
     }
+
+    /**
+     * Export to a Writer.
+     *
+     * @param context          Current context
+     * @param writer           Writer to write to
+     * @param progressListener Progress and cancellation interface
+     *
+     * @return {@link ExportResults}
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    ExportResults write(@NonNull final Context context,
+                        @NonNull final Writer writer,
+                        @NonNull final ProgressListener progressListener)
+            throws IOException;
 }

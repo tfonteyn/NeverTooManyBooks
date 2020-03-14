@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.options;
 
 import android.net.Uri;
 import android.os.Parcel;
@@ -33,6 +33,9 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveImportTask;
 
 public class ImportHelper
         extends Options {
@@ -56,14 +59,14 @@ public class ImportHelper
         }
     };
     /** Options value to indicate all things should be exported. */
-    public static final int ALL = BOOK_CSV | COVERS | BOOK_LIST_STYLES | PREFERENCES;
+    public static final int ALL = BOOKS | COVERS | STYLES | PREFERENCES;
     /**
      * all defined flags.
      */
     private static final int MASK = ALL | IMPORT_ONLY_NEW_OR_UPDATED;
 
     @NonNull
-    private final Importer.Results mResults = new Importer.Results();
+    private final ImportResults mResults;
 
     /**
      * Constructor.
@@ -74,6 +77,7 @@ public class ImportHelper
     public ImportHelper(final int options,
                         @Nullable final Uri uri) {
         super(options, uri);
+        mResults = new ImportResults();
     }
 
     /**
@@ -83,45 +87,36 @@ public class ImportHelper
      */
     private ImportHelper(@NonNull final Parcel in) {
         super(in);
+        //noinspection ConstantConditions
+        mResults = in.readParcelable(getClass().getClassLoader());
     }
 
     @NonNull
-    public Importer.Results getResults() {
+    public ImportResults getResults() {
         return mResults;
     }
 
-    public void addResults(@NonNull final Importer.Results results) {
-        mResults.booksProcessed += results.booksProcessed;
-        mResults.booksCreated += results.booksCreated;
-        mResults.booksUpdated += results.booksUpdated;
-
-        mResults.coversProcessed += results.coversProcessed;
-        mResults.coversCreated += results.coversCreated;
-        mResults.coversUpdated += results.coversUpdated;
-
-        mResults.styles += results.styles;
-
-        mResults.failedCsvLines.addAll(results.failedCsvLines);
-    }
-
     /**
-     * Will be called by {@link ImportTask}.
+     * Will be called by {@link ArchiveImportTask}.
      */
     public void validate() {
-        super.validate();
-
         if ((getOptions() & MASK) == 0) {
             throw new IllegalStateException("options not set");
         }
     }
 
     @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeParcelable(mResults, flags);
+    }
+    @Override
     @NonNull
     public String toString() {
         return "ImportHelper{"
-               + ", options=0b" + Integer.toBinaryString(getOptions())
+               + super.toString()
                + ", mResults=" + mResults
                + '}';
     }
-
 }

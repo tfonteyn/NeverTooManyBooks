@@ -85,7 +85,7 @@
         style="@style/Envelope.EditText"
         android:layout_width="80dp"
         android:hint="@string/lbl_year"
-        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
         >
 

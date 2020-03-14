@@ -35,7 +35,6 @@ import android.util.Log;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-import androidx.core.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -53,8 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.Importer;
+import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
@@ -68,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Implementation of {@link Importer} that reads a CSV file.
@@ -115,7 +117,7 @@ public class CsvImporter
     /** Only send progress updates every 200ms. */
     private static final int PROGRESS_UPDATE_INTERVAL = 200;
 
-    private static final int BUFFER_SIZE = 32768;
+    private static final int BUFFER_SIZE = 65535;
 
     private static final String STRINGED_ID = DBDefinitions.KEY_PK_ID;
 
@@ -146,7 +148,12 @@ public class CsvImporter
     @NonNull
     private final String mProgress_msg_n_created_m_updated;
     @NonNull
-    private final Results mResults = new Results();
+    private final ImportResults mResults = new ImportResults();
+
+    private final StringList<Author> mAuthorCoder = CsvCoder.getAuthorCoder();
+    private final StringList<Series> mSeriesCoder = CsvCoder.getSeriesCoder();
+    private final StringList<TocEntry> mTocCoder = CsvCoder.getTocCoder();
+    private final StringList<Bookshelf> mBookshelfCoder;
 
     /**
      * Constructor.
@@ -154,7 +161,7 @@ public class CsvImporter
      * @param context Current context
      * @param helper  {@link ImportHelper#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
      *                Other flags are ignored, as this class only
-     *                handles {@link ImportHelper#BOOK_CSV} anyhow.
+     *                handles {@link ImportHelper#BOOKS} anyhow.
      */
     @AnyThread
     public CsvImporter(@NonNull final Context context,
@@ -163,17 +170,18 @@ public class CsvImporter
         mProgress_msg_n_created_m_updated =
                 context.getString(R.string.progress_msg_n_created_m_updated);
 
-        mDb = new DAO(TAG);
         mHelper = helper;
 
+        mDb = new DAO(TAG);
+        mBookshelfCoder = CsvCoder.getBookshelfCoder(BooklistStyle.getDefault(context, mDb));
         mUserLocale = LocaleUtils.getUserLocale(context);
     }
 
     @Override
     @WorkerThread
-    public Results doBooks(@NonNull final Context context,
-                           @NonNull final InputStream is,
-                           @NonNull final ProgressListener progressListener)
+    public ImportResults readBooks(@NonNull final Context context,
+                                   @NonNull final InputStream is,
+                                   @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
         BufferedReader in = new BufferedReader(
@@ -292,7 +300,8 @@ public class CsvImporter
 
                 } catch (@NonNull final ImportException
                         | SQLiteDoneException | IndexOutOfBoundsException e) {
-                    mResults.failedCsvLines.add(new Pair<>(row, e.getLocalizedMessage()));
+                    mResults.failedCsvLinesNr.add(row);
+                    mResults.failedCsvLinesMessage.add(e.getLocalizedMessage());
                     Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 
@@ -450,7 +459,7 @@ public class CsvImporter
         }
 
         if (encodedList != null && !encodedList.isEmpty()) {
-            ArrayList<Bookshelf> bookshelves = CsvCoder.getBookshelfCoder().decodeList(encodedList);
+            ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
                 // Do not run in batch
                 ItemWithFixableId.pruneList(bookshelves, context, db, mUserLocale, false);
@@ -482,7 +491,7 @@ public class CsvImporter
         book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
 
         if (!encodedList.isEmpty()) {
-            authors = CsvCoder.getAuthorCoder().decodeList(encodedList);
+            authors = mAuthorCoder.decodeList(encodedList);
             // run in batch mode, i.e. force using the user Locale;
             ItemWithFixableId.pruneList(authors, context, db, mUserLocale, true);
 
@@ -543,7 +552,7 @@ public class CsvImporter
 
         if (!encodedList.isEmpty()) {
             Locale bookLocale = book.getLocale(context);
-            series = CsvCoder.getSeriesCoder().decodeList(encodedList);
+            series = mSeriesCoder.decodeList(encodedList);
             // run in batch mode, i.e. force using the Book Locale;
             // otherwise the import is far to slow and of little benefit.
             Series.pruneList(series, context, db, bookLocale, true);
@@ -587,7 +596,7 @@ public class CsvImporter
         book.remove(CsvExporter.CSV_COLUMN_TOC);
 
         if (!encodedList.isEmpty()) {
-            ArrayList<TocEntry> toc = CsvCoder.getTocCoder().decodeList(encodedList);
+            ArrayList<TocEntry> toc = mTocCoder.decodeList(encodedList);
             if (!toc.isEmpty()) {
                 // Do not run in batch
                 ItemWithFixableId.pruneList(toc, context, db, book.getLocale(context), false);

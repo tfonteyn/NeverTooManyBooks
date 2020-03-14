@@ -194,7 +194,7 @@
     <string name="hint_empty_field">(Κενή)</string>
     <string name="hint_search_text">Κείμενο και/ή ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
-    <string name="lbl_import_export_option_csv">βιβλία (*.csv)</string>
+    <string name="lbl_import_export_books_as_csv">βιβλία (*.csv)</string>
     <string name="lbl_import_export_option_xml">Όλα τα δεδομένα σε μορφή XML</string>
     <string name="info_import_export_option_xml">Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
     <string name="info_import_option_all_books">Θα προστεθούν νέα βιβλία. τα υπάρχοντα βιβλία θα ενημερωθούν.</string>

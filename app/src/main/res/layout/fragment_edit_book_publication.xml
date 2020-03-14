@@ -94,7 +94,7 @@
                 style="@style/languageTextEntry"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
-                tools:text="Quenya"
+                tools:text="@sample/data.json/language/name"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -113,7 +113,7 @@
                 style="@style/personalNameTextEntry"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
-                tools:text="Printed Press"
+                tools:text="@sample/data.json/publisher/name"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

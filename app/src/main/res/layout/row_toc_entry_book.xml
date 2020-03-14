@@ -43,7 +43,7 @@
         app:layout_constraintEnd_toStartOf="@id/year"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Obscure Life and Hard Times of Kilgore Trout: A Skirmish in Biography, The"
+        tools:text="@sample/data.json/book/title"
         />
 
     <TextView

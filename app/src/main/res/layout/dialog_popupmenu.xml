@@ -42,7 +42,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="false"
         android:visibility="gone"
-        tools:text="some message"
+        tools:text="@tools:sample/lorem"
         tools:visibility="visible"
         />
 
