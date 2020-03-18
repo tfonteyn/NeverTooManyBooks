@@ -161,8 +161,8 @@ public class SettingsActivity
     /**
      * If any of the child preference fragments have an xml configuration with nested
      * PreferenceScreen elements, then a click on those will trigger this method.
-     * <p>
-     * <br>{@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      *
      * @deprecated android docs claim nested PreferenceScreen tags are no longer supported.
      */

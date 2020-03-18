@@ -29,11 +29,14 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
@@ -47,6 +50,7 @@ import java.nio.channels.FileChannel;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -70,6 +74,10 @@ public final class FileUtils {
     private static final String TAG = "FileUtils";
     /** buffer size for file copy operations. */
     private static final int FILE_COPY_BUFFER_SIZE = 65535;
+    /** Bytes to Mb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
+    private static final int TO_MEGABYTES = 1_000_000;
+    /** Bytes to Kb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
+    private static final int TO_KILOBYTES = 1_000;
 
     private FileUtils() {
     }
@@ -309,4 +317,54 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * Format a number of bytes in a human readable form.
+     *
+     * @param context Current context
+     * @param bytes   to format
+     *
+     * @return formatted # bytes
+     */
+    @NonNull
+    public static String formatFileSize(@NonNull final Context context,
+                                        final float bytes) {
+        if (bytes < 3_000) {
+            // Show 'bytes' if < 3k
+            return context.getString(R.string.bytes, bytes);
+        } else if (bytes < 250_000) {
+            // Show Kb if less than 250kB
+            return context.getString(R.string.kilobytes, bytes / TO_KILOBYTES);
+        } else {
+            // Show MB otherwise...
+            return context.getString(R.string.megabytes, bytes / TO_MEGABYTES);
+        }
+    }
+
+    @Nullable
+    public static Pair<String, Long> getUriInfo(@NonNull final Context context,
+                                                @NonNull final Uri uri) {
+        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            ContentResolver contentResolver = context.getContentResolver();
+            try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    String name = cursor.getString(cursor.getColumnIndex(
+                            OpenableColumns.DISPLAY_NAME));
+                    long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                    if (name != null && !name.isEmpty()) {
+                        return new Pair<>(name, size);
+                    }
+                }
+            }
+        } else if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+            String path = uri.getPath();
+            if (path != null) {
+                File file = new File(path);
+                if (file.exists()) {
+                    return new Pair<>(file.getName(), file.length());
+                }
+            }
+        }
+
+        return null;
+    }
 }

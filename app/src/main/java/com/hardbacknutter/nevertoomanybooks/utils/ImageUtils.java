@@ -732,6 +732,7 @@ public final class ImageUtils {
     public static class ImageLoader
             extends AsyncTask<Void, Void, Bitmap> {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "ImageLoader";
 
         @NonNull
@@ -803,6 +804,7 @@ public final class ImageUtils {
     private static class CacheLoader
             extends AsyncTask<Void, Void, Bitmap> {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "CacheLoader";
 
         @NonNull

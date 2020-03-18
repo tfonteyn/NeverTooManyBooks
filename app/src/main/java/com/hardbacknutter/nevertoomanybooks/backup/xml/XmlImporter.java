@@ -36,6 +36,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -52,7 +53,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -66,11 +66,12 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.XmlTags;
-import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.archive.ReaderEntity;
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
@@ -82,14 +83,23 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
- * For now, only INFO, Preferences and Styles are implemented.
+ * <ul>Supports:
+ * <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
+ * <li>{@link ArchiveContainerEntry#BooklistStylesXml}</li>
+ * <li>{@link ArchiveContainerEntry#PreferencesXml}</li>
+ * </ul>
+ *
+ * <strong>Important</strong>: The sax parser closes streams, which is not good
+ * on a Tar archive entry. This class uses a {@link BufferedReaderNoClose} to get around that.
  * <p>
  * TODO: unify the handling of simple elements and set/list elements.
  */
@@ -104,18 +114,12 @@ public class XmlImporter
 
     private static final int BUFFER_SIZE = 65535;
 
-    private static final Pattern QUOT_PATTERN = Pattern.compile("&quot;", Pattern.LITERAL);
-    private static final Pattern APOS_PATTERN = Pattern.compile("&apos;", Pattern.LITERAL);
-    private static final Pattern LT_PATTERN = Pattern.compile("&lt;", Pattern.LITERAL);
-    private static final Pattern GT_PATTERN = Pattern.compile("&gt;", Pattern.LITERAL);
-    private static final Pattern AMP_PATTERN = Pattern.compile("&amp;", Pattern.LITERAL);
-
     /** Database Access. */
     @NonNull
     private final DAO mDb;
 
     @Nullable
-    private final Locale mLocale;
+    private final Locale mUserLocale;
 
     /**
      * Stack for popping tags on if we go into one.
@@ -123,133 +127,114 @@ public class XmlImporter
      * but it's clean and future proof
      */
     private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
+    private final int mOptions;
+    @NonNull
+    private final ImportResults mResults = new ImportResults();
+
     /** a simple Holder for the current tag name and attributes. */
     private TagInfo mTag;
 
     /**
      * Constructor.
-     * <p>
      *
-     * @param locale (optional)
+     * @param context Current context
+     * @param options what to import; respects INFO, Preferences and Styles
+     *                ignores other flags
      */
-    public XmlImporter(@Nullable final Locale locale) {
-        mLocale = locale;
+    public XmlImporter(@NonNull final Context context,
+                       final int options) {
+        mOptions = options;
         mDb = new DAO(TAG);
+        mUserLocale = LocaleUtils.getUserLocale(context);
+    }
+
+    @Override
+    public ImportResults read(@NonNull Context context,
+                              @NonNull ReaderEntity entity,
+                              @NonNull ProgressListener progressListener)
+            throws IOException {
+
+        switch (entity.getType()) {
+            case BooklistStylesXml:
+                if ((mOptions & Options.STYLES) != 0) {
+                    // Don't close this stream!
+                    InputStream is = entity.getInputStream();
+                    Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                    Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
+                    StylesReader stylesReader = new StylesReader(context, mDb);
+                    fromXml(in, stylesReader);
+                    mResults.styles += stylesReader.getStylesRead();
+                }
+                break;
+
+            case PreferencesXml:
+                if ((mOptions & Options.PREFERENCES) != 0) {
+                    // Don't close this stream!
+                    InputStream is = entity.getInputStream();
+                    Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                    Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
+                    SharedPreferences prefs =
+                            PreferenceManager.getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    fromXml(in, new PreferencesReader(editor));
+                    editor.apply();
+                    mResults.preferences++;
+                }
+                break;
+
+            case InfoHeaderXml:
+                throw new IllegalStateException("call #readInfo instead");
+
+            case BooksCsv:
+            case BooksXml:
+            case XML:
+            case Cover:
+            case Database:
+            case LegacyPreferences:
+            case LegacyBooklistStyles:
+            case Unknown:
+            default:
+                // not implemented.
+                break;
+        }
+
+        return mResults;
     }
 
     /**
      * Read the info block from an XML stream.
      *
-     * @param entity to read
-     * @param info   object to populate
+     * @param inputStream to read
+     *
+     * @return the archive info
      *
      * @throws IOException on failure
-     */
-    public void doBackupInfoBlock(@NonNull final ReaderEntity entity,
-                                  @NonNull final ArchiveInfo info)
-            throws IOException {
-        InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
-                                                         StandardCharsets.UTF_8);
-        BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
-        fromXml(in, new InfoReader(info), null);
-    }
-
-    /**
-     * Read Styles from an XML stream.
-     *
-     * @param context          Current context
-     * @param entity           to read
-     * @param progressListener Progress and cancellation provider
-     *
-     * @throws IOException on failure
-     */
-    public int doStyles(@NonNull final Context context,
-                        @NonNull final ReaderEntity entity,
-                        @Nullable final ProgressListener progressListener)
-            throws IOException {
-        InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
-                                                         StandardCharsets.UTF_8);
-        BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
-        StylesReader stylesReader = new StylesReader(context, mDb);
-        fromXml(in, stylesReader, progressListener);
-
-        return stylesReader.getStylesRead();
-    }
-
-    /**
-     * Read Preferences from an XML stream.
-     * <p>
-     * <strong>Note:</strong> the passed in SharedPreferences is dependent on the caller.
-     *
-     * @param entity           to read
-     * @param prefs            object to populate
-     * @param progressListener Progress and cancellation provider
-     *
-     * @throws IOException on failure
-     */
-    public void doPreferences(@NonNull final ReaderEntity entity,
-                              @NonNull final SharedPreferences prefs,
-                              @Nullable final ProgressListener progressListener)
-            throws IOException {
-        InputStreamReader reader = new InputStreamReader(entity.getInputStream(),
-                                                         StandardCharsets.UTF_8);
-        BufferedReader in = new BufferedReaderNoClose(reader, BUFFER_SIZE);
-        SharedPreferences.Editor editor = prefs.edit();
-        fromXml(in, new PreferencesReader(editor), progressListener);
-        editor.apply();
-    }
-
-    /**
-     * Not supported for now.
-     * <p>
-     * <br>{@inheritDoc}
      */
     @NonNull
-    @Override
-    public ImportResults readBooks(@NonNull final Context context,
-                                   @NonNull final InputStream is,
-                                   @NonNull final ProgressListener progressListener) {
-        throw new UnsupportedOperationException();
-    }
+    public ArchiveInfo readInfo(@NonNull final InputStream inputStream)
+            throws IOException {
+        final ArchiveInfo info = new ArchiveInfo();
+        try (Reader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE)) {
 
-    /**
-     * counterpart of {@link XmlExporter} #encodeString}
-     * <p>
-     * Only String 'value' tags need decoding.
-     * <p>
-     * decode the bare essentials only. To decode all possible entities we could add the Apache
-     * 'lang' library I suppose.... maybe some day.
-     */
-    private String decodeString(@Nullable final String data) {
-        if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
-            return "";
+            fromXml(in, new InfoReader(info));
         }
-
-        // must be last of the entities
-        String result = data.trim();
-        result = AMP_PATTERN.matcher(result).replaceAll("&");
-        result = GT_PATTERN.matcher(result).replaceAll(">");
-        result = LT_PATTERN.matcher(result).replaceAll("<");
-        result = APOS_PATTERN.matcher(result).replaceAll("'");
-        result = QUOT_PATTERN.matcher(result).replaceAll("\"");
-        return result;
+        return info;
     }
 
     /**
      * Internal routine to update the passed EntityAccessor from an XML file.
      *
-     * @param progressListener (optional) Progress and cancellation provider
-     *
      * @throws IOException on failure
      */
-    private void fromXml(@NonNull final BufferedReader in,
-                         @NonNull final EntityReader<String> accessor,
-                         @Nullable final ProgressListener progressListener)
+    private void fromXml(@NonNull final Reader reader,
+                         @NonNull final EntityReader<String> accessor)
             throws IOException {
 
         // we need an uber-root to hang our tree on.
         XmlFilter rootFilter = new XmlFilter("");
 
+        // The filter are build for *all* entities we can read here.
         // Allow reading BookCatalogue archive data.
         buildLegacyFilters(rootFilter, accessor);
         // Current version filters
@@ -260,8 +245,7 @@ public class XmlImporter
 
         try {
             SAXParser parser = factory.newSAXParser();
-            InputSource is = new InputSource();
-            is.setCharacterStream(in);
+            InputSource is = new InputSource(reader);
             parser.parse(is, handler);
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -285,7 +269,8 @@ public class XmlImporter
                      // use as top-tag
                      mTag = new TagInfo(elementContext);
                      // we only have a version on the top tag, not on every tag.
-                     String version = elementContext.getAttributes().getValue(XmlTags.ATTR_VERSION);
+                     String version = elementContext.getAttributes().getValue(
+                             XmlUtils.ATTR_VERSION);
 
                      if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
                          Log.d(TAG, "fromXml|NEW-ELEMENT"
@@ -309,29 +294,31 @@ public class XmlImporter
             // if we have a value attribute, this tag is done. Handle here.
             if (mTag.value != null) {
                 switch (mTag.type) {
-                    case XmlTags.XML_STRING:
+                    case XmlUtils.TAG_STRING:
                         // attribute Strings are encoded.
-                        accessor.putString(mTag.name, decodeString(mTag.value));
+                        accessor.putString(mTag.name, XmlUtils.decodeString(mTag.value));
                         break;
 
-                    case XmlTags.XML_BOOLEAN:
+                    case XmlUtils.TAG_BOOLEAN:
                         accessor.putBoolean(mTag.name, Boolean.parseBoolean(mTag.value));
                         break;
 
-                    case XmlTags.XML_INT:
+                    case XmlUtils.TAG_INT:
                         accessor.putInt(mTag.name, Integer.parseInt(mTag.value));
                         break;
 
-                    case XmlTags.XML_LONG:
+                    case XmlUtils.TAG_LONG:
                         accessor.putLong(mTag.name, Long.parseLong(mTag.value));
                         break;
 
-                    case XmlTags.XML_FLOAT:
-                        accessor.putFloat(mTag.name, ParseUtils.parseFloat(mTag.value, mLocale));
+                    case XmlUtils.TAG_FLOAT:
+                        accessor.putFloat(mTag.name,
+                                          ParseUtils.parseFloat(mTag.value, mUserLocale));
                         break;
 
-                    case XmlTags.XML_DOUBLE:
-                        accessor.putDouble(mTag.name, ParseUtils.parseDouble(mTag.value, mLocale));
+                    case XmlUtils.TAG_DOUBLE:
+                        accessor.putDouble(mTag.name, ParseUtils.parseDouble(mTag.value,
+                                                                             mUserLocale));
                         break;
 
                     default:
@@ -351,24 +338,24 @@ public class XmlImporter
             }
             try {
                 switch (mTag.type) {
-                    case XmlTags.XML_STRING:
+                    case XmlUtils.TAG_STRING:
                         // body Strings use CDATA
                         accessor.putString(mTag.name, elementContext.getBody());
                         break;
 
-                    case XmlTags.XML_SET:
+                    case XmlUtils.TAG_SET:
                         accessor.putStringSet(mTag.name, currentStringList);
                         // cleanup, ready for the next Set
                         currentStringList.clear();
                         break;
 
-                    case XmlTags.XML_LIST:
+                    case XmlUtils.TAG_LIST:
                         accessor.putStringList(mTag.name, currentStringList);
                         // cleanup, ready for the next List
                         currentStringList.clear();
                         break;
 
-                    case XmlTags.XML_SERIALIZABLE:
+                    case XmlUtils.TAG_SERIALIZABLE:
                         accessor.putSerializable(mTag.name, Base64.decode(elementContext.getBody(),
                                                                           Base64.DEFAULT));
                         break;
@@ -387,28 +374,28 @@ public class XmlImporter
         };
 
         // typed tags that only use a value attribute only need action on the start of a tag
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_BOOLEAN)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_BOOLEAN)
                  .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_INT)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_INT)
                  .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_LONG)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_LONG)
                  .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_FLOAT)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_FLOAT)
                  .setStartAction(startTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_DOUBLE)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_DOUBLE)
                  .setStartAction(startTypedTag);
 
         // typed tags that have bodies.
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_STRING)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_STRING)
                  .setStartAction(startTypedTag)
                  .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_SET)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_SET)
                  .setStartAction(startTypedTag)
                  .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_LIST)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_LIST)
                  .setStartAction(startTypedTag)
                  .setEndAction(endTypedTag);
-        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlTags.XML_SERIALIZABLE)
+        XmlFilter.buildFilter(rootFilter, listRootElement, rootElement, XmlUtils.TAG_SERIALIZABLE)
                  .setStartAction(startTypedTag)
                  .setEndAction(endTypedTag);
 
@@ -431,11 +418,11 @@ public class XmlImporter
             if (mTag.value != null) {
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
                 switch (mTag.type) {
-                    case XmlTags.XML_BOOLEAN:
-                    case XmlTags.XML_INT:
-                    case XmlTags.XML_LONG:
-                    case XmlTags.XML_FLOAT:
-                    case XmlTags.XML_DOUBLE:
+                    case XmlUtils.TAG_BOOLEAN:
+                    case XmlUtils.TAG_INT:
+                    case XmlUtils.TAG_LONG:
+                    case XmlUtils.TAG_FLOAT:
+                    case XmlUtils.TAG_DOUBLE:
                         currentStringList.add(mTag.value);
                         break;
 
@@ -461,10 +448,10 @@ public class XmlImporter
                 // yes, switch is silly here. But let's keep it generic and above all, clear!
                 switch (mTag.type) {
                     // No support for list/set inside a list/set (no point)
-                    case XmlTags.XML_SERIALIZABLE:
+                    case XmlUtils.TAG_SERIALIZABLE:
                         // serializable is indeed just added as a string...
                         // this 'case' is only here for completeness sake.
-                    case XmlTags.XML_STRING:
+                    case XmlUtils.TAG_STRING:
                         // body strings use CDATA
                         currentStringList.add(elementContext.getBody());
                         break;
@@ -484,22 +471,22 @@ public class XmlImporter
 
         // Set<String>. The String's are body based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlTags.XML_SET, XmlTags.XML_STRING)
+                              XmlUtils.TAG_SET, XmlUtils.TAG_STRING)
                  .setStartAction(startElementInCollection)
                  .setEndAction(endElementInCollection);
         // List<String>. The String's are body based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlTags.XML_LIST, XmlTags.XML_STRING)
+                              XmlUtils.TAG_LIST, XmlUtils.TAG_STRING)
                  .setStartAction(startElementInCollection)
                  .setEndAction(endElementInCollection);
 
         // Set<Integer>. The int's are attribute based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlTags.XML_SET, XmlTags.XML_INT)
+                              XmlUtils.TAG_SET, XmlUtils.TAG_INT)
                  .setStartAction(startElementInCollection);
         // List<Integer>. The int's are attribute based.
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
-                              XmlTags.XML_LIST, XmlTags.XML_INT)
+                              XmlUtils.TAG_LIST, XmlUtils.TAG_INT)
                  .setStartAction(startElementInCollection);
     }
 
@@ -698,8 +685,8 @@ public class XmlImporter
             if ("item".equals(type)) {
                 type = attrs.getValue("type");
             }
-            name = attrs.getValue(XmlTags.ATTR_NAME);
-            String idStr = attrs.getValue(XmlTags.ATTR_ID);
+            name = attrs.getValue(XmlUtils.ATTR_NAME);
+            String idStr = attrs.getValue(XmlUtils.ATTR_ID);
             if (idStr != null) {
                 try {
                     id = Integer.parseInt(idStr);
@@ -707,7 +694,7 @@ public class XmlImporter
                     Logger.error(App.getAppContext(), TAG, e, "attr=" + name, "idStr=" + idStr);
                 }
             }
-            value = attrs.getValue(XmlTags.ATTR_VALUE);
+            value = attrs.getValue(XmlUtils.ATTR_VALUE);
         }
 
         @Override
@@ -723,8 +710,8 @@ public class XmlImporter
     }
 
     /**
-     * Supports a *single* {@link XmlTags#XML_INFO} block,
-     * enclosed inside a {@link XmlTags#XML_INFO_LIST}.
+     * Supports a *single* {@link XmlTags#TAG_INFO} block,
+     * enclosed inside a {@link XmlTags#TAG_INFO_LIST}.
      */
     static class InfoReader
             implements EntityReader<String> {
@@ -739,13 +726,13 @@ public class XmlImporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlTags.XML_INFO_LIST;
+            return XmlTags.TAG_INFO_LIST;
         }
 
         @Override
         @NonNull
         public String getElementRoot() {
-            return XmlTags.XML_INFO;
+            return XmlTags.TAG_INFO;
         }
 
         @Override
@@ -801,8 +788,8 @@ public class XmlImporter
     }
 
     /**
-     * Supports a *single* {@link XmlTags#XML_PREFERENCES} block,
-     * enclosed inside a {@link XmlTags#XML_PREFERENCES_LIST}.
+     * Supports a *single* {@link XmlTags#TAG_PREFERENCES} block,
+     * enclosed inside a {@link XmlTags#TAG_PREFERENCES_LIST}.
      */
     static class PreferencesReader
             implements EntityReader<String> {
@@ -821,13 +808,13 @@ public class XmlImporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlTags.XML_PREFERENCES_LIST;
+            return XmlTags.TAG_PREFERENCES_LIST;
         }
 
         @Override
         @NonNull
         public String getElementRoot() {
-            return XmlTags.XML_PREFERENCES;
+            return XmlTags.TAG_PREFERENCES;
         }
 
         @Override
@@ -887,8 +874,8 @@ public class XmlImporter
     }
 
     /**
-     * Supports a *list* of {@link XmlTags#XML_STYLE} block,
-     * enclosed inside a {@link XmlTags#XML_STYLE_LIST}
+     * Supports a *list* of {@link XmlTags#TAG_STYLE} block,
+     * enclosed inside a {@link XmlTags#TAG_STYLE_LIST}
      * <p>
      * See {@link XmlExporter} :
      * * Filters and Groups are flattened.
@@ -931,21 +918,21 @@ public class XmlImporter
         @Override
         @NonNull
         public String getListRoot() {
-            return XmlTags.XML_STYLE_LIST;
+            return XmlTags.TAG_STYLE_LIST;
         }
 
         @NonNull
         @Override
         public String getElementRoot() {
-            return XmlTags.XML_STYLE;
+            return XmlTags.TAG_STYLE;
         }
 
         /**
          * The start of a Style element.
          * <p>
          * Creates a new BooklistStyle, and sets it as the 'current' one ready for writes.
-         * <p>
-         * <br>{@inheritDoc}
+         *
+         * <br><br>{@inheritDoc}
          */
         @Override
         public void startElement(final int version,

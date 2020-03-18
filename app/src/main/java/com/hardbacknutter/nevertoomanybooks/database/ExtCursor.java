@@ -98,9 +98,9 @@ class ExtCursor
     }
 
     /**
-     * See class docs.<br>
-     * <p>
-     * {@inheritDoc}
+     * See class docs.
+     *
+     * <br><br>{@inheritDoc}
      */
     @Override
     public int getType(final int columnIndex) {

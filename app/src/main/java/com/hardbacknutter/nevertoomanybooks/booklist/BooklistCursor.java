@@ -186,36 +186,43 @@ public class BooklistCursor
 
     @Override
     public String getString(final int column) {
+        //noinspection ConstantConditions
         return mActiveCursor.getString(column);
     }
 
     @Override
     public short getShort(final int column) {
+        //noinspection ConstantConditions
         return mActiveCursor.getShort(column);
     }
 
     @Override
     public int getInt(final int column) {
+        //noinspection ConstantConditions
         return mActiveCursor.getInt(column);
     }
 
     @Override
     public long getLong(final int column) {
+        //noinspection ConstantConditions
         return mActiveCursor.getLong(column);
     }
 
     @Override
     public float getFloat(final int column) {
+        //noinspection ConstantConditions
         return mActiveCursor.getFloat(column);
     }
 
     @Override
     public double getDouble(final int column) {
+        //noinspection ConstantConditions
         return mActiveCursor.getDouble(column);
     }
 
     @Override
     public boolean isNull(final int column) {
+        //noinspection ConstantConditions
         return mActiveCursor.isNull(column);
     }
 

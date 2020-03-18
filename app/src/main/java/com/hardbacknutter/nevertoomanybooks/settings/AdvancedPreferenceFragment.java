@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -41,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -50,31 +50,6 @@ public class AdvancedPreferenceFragment
 
     /** Log tag. */
     private static final String TAG = "AdvancedPreferenceFrag";
-    /** Bytes to Mb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
-    private static final int TO_MEGABYTES = 1_000_000;
-    /** Bytes to Kb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
-    private static final int TO_KILOBYTES = 1_000;
-
-    /**
-     * Format a number of bytes in a human readable form.
-     *
-     * @param bytes to format
-     *
-     * @return formatted # bytes
-     */
-    @NonNull
-    private String formatFileSize(final float bytes) {
-        if (bytes < 3_000) {
-            // Show 'bytes' if < 3k
-            return getString(R.string.bytes, bytes);
-        } else if (bytes < 250_000) {
-            // Show Kb if less than 250kB
-            return getString(R.string.kilobytes, bytes / TO_KILOBYTES);
-        } else {
-            // Show MB otherwise...
-            return getString(R.string.megabytes, bytes / TO_MEGABYTES);
-        }
-    }
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
@@ -166,7 +141,8 @@ public class AdvancedPreferenceFragment
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
                 long bytes = AppDir.purge(getContext(), false);
-                String msg = getString(R.string.info_cleanup_files_text, formatFileSize(bytes),
+                String msg = getString(R.string.info_cleanup_files_text,
+                                       FileUtils.formatFileSize(getContext(), bytes),
                                        getString(R.string.lbl_send_debug_info));
 
                 new MaterialAlertDialogBuilder(getContext())

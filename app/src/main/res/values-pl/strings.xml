@@ -199,9 +199,9 @@
     <string name="hint_empty_field">(Puste)</string>
     <string name="hint_search_text">Tekst i / lub ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
-    <string name="lbl_import_export_books_as_csv">Książki (*.csv)</string>
+    <string name="lbl_archive_type_books">Książki (%1$s)</string>
     <string name="lbl_import_export_option_xml">Wszystkie dane w formacie XML</string>
-    <string name="info_import_export_option_xml">XML jest tylko eksportem, bez importu.</string>
+    <string name="lbl_archive_type_xml_info">XML jest tylko eksportem, bez importu.</string>
     <string name="info_import_option_all_books">Nowe książki zostaną dodane. Istniejące książki zostaną zaktualizowane.</string>
     <string name="info_import_option_new_and_changed_books">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
     <string name="lbl_import_option_new_and_changed_books">Nowe i zaktualizowane książki</string>
@@ -509,7 +509,7 @@
     <string name="title_edit_bookshelf">Edycja półek</string>
     <string name="title_edit_bookshelves">Zarządzaj półkami</string>
     <string name="title_edit_style">Edytuj styl</string>
-    <string name="X_title_import">Importuj</string>
+    <string name="lbl_import">Importuj</string>
     <string name="title_import_book_data">Importuj książki</string>
     <string name="title_registration">Rejestracja w LibraryThing</string>
     <string name="title_scope_of_change">Zakres zmiany</string>
@@ -662,4 +662,8 @@
     <string name="gr_pt_collect_genre">Używaj popularnych nazw półek jako gatunków książek</string>
     <string name="lbl_condition">Stan</string>
     <string name="book_format_softcover">Miękka okładka</string>
+    <string name="lbl_archive_type_tar">Kopia zapasowa (%1$s)</string>
+    <string name="lbl_archive_type_xml">Eksport XML (%1$s)</string>
+    <string name="lbl_archive_type_tar_info">Pełne archiwum kopii zapasowej / przywracania</string>
+    <string name="lbl_author_type_cover_inking">Okładka książki z atramentem</string>
 </resources>

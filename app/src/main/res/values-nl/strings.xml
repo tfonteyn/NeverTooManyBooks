@@ -205,9 +205,9 @@
     <string name="hint_empty_field">(Leeg)</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
-    <string name="lbl_import_export_books_as_csv">Boeken (*.csv)</string>
+    <string name="lbl_archive_type_books">Boeken (%1$s)</string>
     <string name="lbl_import_export_option_xml">Alle gegevens in XML formaat</string>
-    <string name="info_import_export_option_xml">XML is enkel export, geen import.</string>
+    <string name="lbl_archive_type_xml_info">XML is enkel export, geen import.</string>
     <string name="info_import_option_all_books">Nieuwe boeken worden toegevoegd. Bestaande boeken worden bijgewerkt.</string>
     <string name="info_import_option_new_and_changed_books">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
     <string name="lbl_import_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
@@ -231,7 +231,7 @@
     <string name="lbl_advanced_options">Geavanceerde opties</string>
     <string name="lbl_anthology">Bloemlezing</string>
     <string name="lbl_author">Auteur</string>
-    <string name="lbl_backup_to_archive">Back-up naar archief</string>
+    <string name="lbl_backup_to_archive">Backup naar archief</string>
     <string name="lbl_book">Boek</string>
     <string name="lbl_books">Boeken</string>
     <string name="lbl_bookshelf">Boekenplank</string>
@@ -518,7 +518,7 @@
     <string name="title_edit_bookshelf">Boekenplank bewerken</string>
     <string name="title_edit_bookshelves">Boekenplank beheren</string>
     <string name="title_edit_style">Stijl bewerken</string>
-    <string name="X_title_import">Importeren</string>
+    <string name="lbl_import">Importeren</string>
     <string name="title_import_book_data">Boeken Importeren</string>
     <string name="title_registration">LibraryThing Registratie</string>
     <string name="title_scope_of_change">Omvang van de verandering</string>
@@ -585,7 +585,7 @@
     <string name="info_waiting_for_scanner">Wachten op scanner / camera</string>
     <string name="warning_scanner_failed_to_start">De scanner kan niet worden gestart.</string>
     <string name="warning_scanner_retry_install">We raden je aan het opnieuw te proberen, maar als het blijft mislukken, installeer de scanner opnieuw of installeer een andere scanner.</string>
-    <string name="error_import_invalid_archive">Het geselecteerde bestand wordt niet herkend.</string>
+    <string name="error_import_invalid_archive">Het geselecteerde bestand is niet herkend.</string>
     <string name="lbl_author_type_cover_artist">Omslag</string>
     <string name="lbl_author_type_cover_colorist">Omslag inkleuring</string>
     <string name="pt_show_title_reordered">Toon titels als</string>
@@ -675,5 +675,8 @@
     <string name="lbl_author_type_cover_inking">Omslag inkting</string>
     <string name="lbl_condition">Staat</string>
     <string name="book_color_support_color">Twee kleuren</string>
+    <string name="lbl_archive_type_tar">Backup kopie (%1$s)</string>
+    <string name="lbl_archive_type_xml">XML-export (%1$s)</string>
+    <string name="lbl_archive_type_tar_info">Volledig back-up- / herstelarchief</string>
 
 </resources>

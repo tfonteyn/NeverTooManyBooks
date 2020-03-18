@@ -592,8 +592,8 @@ public class Author
 
     /**
      * ENHANCE: The Locale of the Author should be based on the main language the author writes in.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @NonNull
     @Override

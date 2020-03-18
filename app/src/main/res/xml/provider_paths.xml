@@ -27,21 +27,23 @@
   -->
 
 <!--
-    https://developer.android.com/reference/kotlin/androidx/core/content/FileProvider
+    https://developer.android.com/reference/androidx/core/content/FileProvider
 
     Rather rough... we make them all available.
 -->
 <paths>
+    <!-- to access the "Picture", "log" and "Upgrades" sub directories. -->
     <external-path
         name="external-path"
         path="./" />
 
+    <!-- we build files in the external cache dir that need to be given access to. -->
     <external-cache-path
         name="external-cache-path"
         path="." />
 
-    <cache-path
-        name="cache-path"
-        path="." />
+    <!--    <cache-path-->
+    <!--        name="cache-path"-->
+    <!--        path="." />-->
 
 </paths>

@@ -63,7 +63,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.options.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
@@ -264,7 +264,7 @@ public class BooksOnBookshelf
          * <li>Not a book: expand/collapse the section as appropriate.</li>
          * </ul>
          *
-         * {@inheritDoc}
+         * <br><br>{@inheritDoc}
          */
         @Override
         public void onItemClick(final int position) {
@@ -321,7 +321,7 @@ public class BooksOnBookshelf
         /**
          * User long-clicked on a row. Bring up a context menu as appropriate.
          *
-         * {@inheritDoc}
+         * <br><br>{@inheritDoc}
          */
         @Override
         public boolean onItemLongClick(final int position) {
@@ -894,8 +894,7 @@ public class BooksOnBookshelf
 
             case R.id.MENU_SHARE: {
                 final Book book = new Book(bookId, mModel.getDb());
-                startActivity(Intent.createChooser(book.getShareBookIntent(this),
-                                                   getString(R.string.menu_share_this)));
+                startActivity(book.getShareBookIntent(this));
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
@@ -1088,8 +1087,8 @@ public class BooksOnBookshelf
      * Reminder: don't do any commits on the fragment manager.
      * This includes showing fragments, or starting tasks that show fragments.
      * Do this in {@link #onResume} which will be called after onActivityResult.
-     * <p>
-     * <br>{@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Override
     @CallSuper
@@ -1281,8 +1280,8 @@ public class BooksOnBookshelf
 
     /**
      * Save position when paused.
-     * <p>
-     * <br>{@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Override
     @CallSuper

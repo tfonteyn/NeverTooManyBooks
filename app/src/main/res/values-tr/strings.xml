@@ -198,9 +198,9 @@
     <string name="hint_empty_field">(Boş)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
-    <string name="lbl_import_export_books_as_csv">Kitaplar (*.csv)</string>
+    <string name="lbl_archive_type_books">Kitaplar (%1$s)</string>
     <string name="lbl_import_export_option_xml">Tüm veriler XML formatında</string>
-    <string name="info_import_export_option_xml">Yalnızca XML dışa aktarma, içe aktarma yok.</string>
+    <string name="lbl_archive_type_xml_info">Yalnızca XML dışa aktarma, içe aktarma yok.</string>
     <string name="info_import_option_all_books">Yeni kitaplar eklenecek. Mevcut kitaplar güncellenecek.</string>
     <string name="info_import_option_new_and_changed_books">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
     <string name="lbl_import_option_new_and_changed_books">Yeni ve güncellenmiş kitaplar</string>
@@ -502,7 +502,7 @@
     <string name="title_edit_bookshelf">Kitaplığı düzenle</string>
     <string name="title_edit_bookshelves">Kitaplıkları yönet</string>
     <string name="title_edit_style">Biçemi düzenle</string>
-    <string name="X_title_import">Ithal etmek</string>
+    <string name="lbl_import">Ithal etmek</string>
     <string name="title_import_book_data">Kitapları içe aktar</string>
     <string name="title_registration">LibraryThing Kayıt</string>
     <string name="title_scope_of_change">Değişiklik kapsamı</string>
@@ -660,5 +660,8 @@
     <string name="lbl_author_type_cover_inking">Kapak mürekkebi</string>
     <string name="lbl_condition">Şart</string>
     <string name="book_format_softcover">Yumuşak kapak</string>
+    <string name="lbl_archive_type_tar">Yedek kopya (%1$s)</string>
+    <string name="lbl_archive_type_xml">XML dışa aktarma (%1$s)</string>
+    <string name="lbl_archive_type_tar_info">Tam Yedekleme / Geri Yükleme arşivi</string>
 
 </resources>

@@ -36,13 +36,14 @@ import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Date;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.options.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -57,7 +58,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
- * Implementation of Exporter that creates a CSV file with the books.
+ * <ul>Supports:
+ * <li>{@link ArchiveContainerEntry#BooksCsv}</li>
+ * </ul>
+ *
  * All books will have full toc, author, series and bookshelf information.
  * <p>
  * Support {@link Options#BOOKS} only (and does in fact simply disregard all Options flags).
@@ -65,6 +69,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 public class CsvExporter
         implements Exporter {
 
+    /** The format version of this exporter. */
+    public static final int VERSION = 1;
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
     static final String CSV_COLUMN_TOC = "anthology_titles";
     /** column in CSV file - string-encoded - used in import/export, never change this string. */
@@ -75,7 +81,6 @@ public class CsvExporter
     private static final String TAG = "CsvExporter";
     /** Only send progress updates every 200ms. */
     private static final int PROGRESS_UPDATE_INTERVAL = 200;
-
     /**
      * The order of the header MUST be the same as the order used to write the data (obvious eh?).
      * <p>
@@ -127,15 +132,10 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_EID_GOODREADS_BOOK + "\","
             + '"' + DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "\""
             + '\n';
-
-
     /** Database Access. */
     @NonNull
     private final DAO mDb;
 
-    /** export configuration. */
-    @NonNull
-    private final ExportHelper mHelper;
     /** cached localized "unknown" string. */
     private final String mUnknownString;
 
@@ -144,27 +144,35 @@ public class CsvExporter
     private final StringList<TocEntry> mTocCoder = CsvCoder.getTocCoder();
     private final StringList<Bookshelf> mBookshelfCoder;
 
+    @NonNull
     private final ExportResults mResults = new ExportResults();
+    /** export configuration. */
+    private final int mOptions;
+    @Nullable
+    private final Date mSince;
 
     /**
      * Constructor.
      *
      * @param context Current context
-     * @param helper  {@link ExportHelper#EXPORT_SINCE_LAST_BACKUP} and
-     *                {@link ExportHelper#getDateFrom} are respected.
-     *                Other flags are ignored, as this method only
-     *                handles {@link ExportHelper#BOOKS} anyhow.
      */
     @AnyThread
     public CsvExporter(@NonNull final Context context,
-                       @NonNull final ExportHelper helper) {
+                       final int options,
+                       @Nullable final Date since) {
+
         Locale locale = LocaleUtils.getUserLocale(context);
         mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
-        mHelper = helper;
-        mHelper.validate();
 
+        mOptions = options;
+        mSince = since;
         mDb = new DAO(TAG);
         mBookshelfCoder = CsvCoder.getBookshelfCoder(BooklistStyle.getDefault(context, mDb));
+    }
+
+    @Override
+    public int getVersion() {
+        return VERSION;
     }
 
     @Override
@@ -173,12 +181,17 @@ public class CsvExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
+        // we only support books, return empty results
+        boolean writeBooks = (mOptions & Options.BOOKS) != 0;
+        if (!writeBooks) {
+            return mResults;
+        }
 
         long lastUpdate = 0;
 
         final StringBuilder sb = new StringBuilder();
 
-        try (Cursor cursor = mDb.fetchBooksForExport(mHelper.getDateFrom())) {
+        try (Cursor cursor = mDb.fetchBooksForExport(mSince)) {
 
             int progressMaxCount = progressListener.getMax() + cursor.getCount();
             progressListener.setMax(progressMaxCount);

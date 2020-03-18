@@ -74,6 +74,11 @@ public class VirtualDomain
         this.mSorted = sorted;
     }
 
+    /**
+     * {@link Parcelable} Constructor.
+     *
+     * @param in Parcel to construct the object from
+     */
     private VirtualDomain(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mDomain = in.readParcelable(Domain.class.getClassLoader());

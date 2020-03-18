@@ -34,12 +34,12 @@ import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.WorkerThread;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,10 +51,13 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -73,6 +76,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Implementation of {@link Importer} that reads a CSV file.
+ * <ul>Supports:
+ * <li>{@link ArchiveContainerEntry#BooksCsv}</li>
+ * </ul>
  * <p>
  * A CSV file which was not written by this app, should be careful about encoding the following
  * characters:
@@ -139,8 +145,7 @@ public class CsvImporter
     private final Locale mUserLocale;
 
     /** import configuration. */
-    @NonNull
-    private final ImportHelper mHelper;
+    private final int mOptions;
 
     /** cached localized "Books" string. */
     @NonNull
@@ -159,18 +164,18 @@ public class CsvImporter
      * Constructor.
      *
      * @param context Current context
-     * @param helper  {@link ImportHelper#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
+     * @param options {@link ImportManager#IMPORT_ONLY_NEW_OR_UPDATED} is respected.
      *                Other flags are ignored, as this class only
-     *                handles {@link ImportHelper#BOOKS} anyhow.
+     *                handles {@link Options#BOOKS} anyhow.
      */
     @AnyThread
     public CsvImporter(@NonNull final Context context,
-                       @NonNull final ImportHelper helper) {
+                       final int options) {
         mBooksString = context.getString(R.string.lbl_books);
         mProgress_msg_n_created_m_updated =
                 context.getString(R.string.progress_msg_n_created_m_updated);
 
-        mHelper = helper;
+        mOptions = options;
 
         mDb = new DAO(TAG);
         mBookshelfCoder = CsvCoder.getBookshelfCoder(BooklistStyle.getDefault(context, mDb));
@@ -178,19 +183,25 @@ public class CsvImporter
     }
 
     @Override
-    @WorkerThread
-    public ImportResults readBooks(@NonNull final Context context,
-                                   @NonNull final InputStream is,
-                                   @NonNull final ProgressListener progressListener)
+    public ImportResults read(@NonNull Context context,
+                              @NonNull ReaderEntity entity,
+                              @NonNull ProgressListener progressListener)
             throws IOException, ImportException {
 
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(is, StandardCharsets.UTF_8), BUFFER_SIZE);
+        // we only support books, return empty results
+        if (!entity.getType().equals(ArchiveContainerEntry.BooksCsv)) {
+            return mResults;
+        }
+
+        // Don't close this stream!
+        InputStream is = entity.getInputStream();
+        Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE);
 
         // We read the whole file/list into memory.
         List<String> importedList = new ArrayList<>();
         String line;
-        while ((line = in.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             importedList.add(line);
         }
         if (importedList.isEmpty()) {
@@ -233,7 +244,7 @@ public class CsvImporter
         requireColumnOrThrow(book, DBDefinitions.KEY_TITLE);
 
         final boolean updateOnlyIfNewer;
-        if (mHelper.getOption(ImportHelper.IMPORT_ONLY_NEW_OR_UPDATED)) {
+        if ((mOptions & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) != 0) {
             requireColumnOrThrow(book, DBDefinitions.KEY_DATE_LAST_UPDATED);
             updateOnlyIfNewer = true;
         } else {
@@ -300,8 +311,8 @@ public class CsvImporter
 
                 } catch (@NonNull final ImportException
                         | SQLiteDoneException | IndexOutOfBoundsException e) {
-                    mResults.failedCsvLinesNr.add(row);
-                    mResults.failedCsvLinesMessage.add(e.getLocalizedMessage());
+                    mResults.failedLinesNr.add(row);
+                    mResults.failedLinesMessage.add(e.getLocalizedMessage());
                     Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                 }
 

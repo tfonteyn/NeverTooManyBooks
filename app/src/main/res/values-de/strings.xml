@@ -203,9 +203,9 @@
     <string name="hint_empty_field">(Leer)</string>
     <string name="hint_search_text">Text und/oder ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s</string>
-    <string name="lbl_import_export_books_as_csv">Bücher (*.csv)</string>
+    <string name="lbl_archive_type_books">Bücher (%1$s)</string>
     <string name="lbl_import_export_option_xml">Alle Daten im XML-Format</string>
-    <string name="info_import_export_option_xml">XML ist nur Export, kein Import.</string>
+    <string name="lbl_archive_type_xml_info">XML ist nur Export, kein Import.</string>
     <string name="info_import_option_all_books">Neue Bücher werden hinzugefügt. Vorhandene Bücher werden aktualisiert.</string>
     <string name="info_import_option_new_and_changed_books">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
     <string name="lbl_import_option_new_and_changed_books">Neue und aktualisierte Bücher</string>
@@ -517,7 +517,7 @@
     <string name="title_edit_bookshelf">Bücherregal bearbeiten</string>
     <string name="title_edit_bookshelves">Bücherregale verwalten</string>
     <string name="title_edit_style">Bearbeite Stil</string>
-    <string name="X_title_import">Importieren</string>
+    <string name="lbl_import">Importieren</string>
     <string name="title_import_book_data">Bücher importieren</string>
     <string name="title_registration">LibraryThing-Registrierung</string>
     <string name="title_scope_of_change">Umfang der Änderung</string>
@@ -670,4 +670,9 @@
     <string name="notification_channel_error">Fehler</string>
     <string name="gr_pt_collect_genre">Verwenden Sie beliebte Bücherregalnamen als Buchgenres</string>
     <string name="lbl_condition">Bedingung</string>
+    <string name="lbl_archive_type_tar">Sicherheitskopie (%1$s)</string>
+    <string name="lbl_archive_type_xml">XML-Export (%1$s)</string>
+    <string name="lbl_archive_type_tar_info">Vollständiges Backup / Restore-Archiv</string>
+    <string name="lbl_author_type_cover_inking">Buchumschlag Inkting</string>
+    <string name="book_format_softcover">Softcover</string>
 </resources>

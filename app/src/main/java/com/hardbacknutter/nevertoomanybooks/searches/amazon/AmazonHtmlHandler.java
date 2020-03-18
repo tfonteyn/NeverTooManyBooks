@@ -157,8 +157,7 @@ class AmazonHtmlHandler
     @NonNull
     @VisibleForTesting
     Bundle parseDoc(@NonNull final boolean[] fetchThumbnail,
-                    @NonNull final Bundle bookData)
-            throws SocketTimeoutException {
+                    @NonNull final Bundle bookData) {
 
         // This is WEIRD...
         // Unless we do this seemingly needless select, the next select (for the title)

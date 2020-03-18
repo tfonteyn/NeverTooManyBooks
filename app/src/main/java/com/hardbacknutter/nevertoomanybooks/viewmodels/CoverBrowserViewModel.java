@@ -538,6 +538,7 @@ public class CoverBrowserViewModel
     static class GetGalleryImageTask
             extends TaskBase<Void, FileInfo> {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "GetGalleryImageTask";
         @NonNull
         private final String mIsbn;
@@ -603,6 +604,7 @@ public class CoverBrowserViewModel
     static class GetSwitcherImageTask
             extends TaskBase<Void, FileInfo> {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "GetSwitcherImageTask";
 
         @NonNull

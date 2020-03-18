@@ -200,9 +200,9 @@
     <string name="hint_empty_field">(Prázdné)</string>
     <string name="hint_search_text">Vložit a/nebo ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
-    <string name="lbl_import_export_books_as_csv">Knihy (*.csv)</string>
+    <string name="lbl_archive_type_books">Knihy (%1$s)</string>
     <string name="lbl_import_export_option_xml">Všechna data ve formátu XML</string>
-    <string name="info_import_export_option_xml">XML je pouze export, bez importu.</string>
+    <string name="lbl_archive_type_xml_info">XML je pouze export, bez importu.</string>
     <string name="info_import_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>
     <string name="info_import_option_new_and_changed_books">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
     <string name="lbl_import_option_new_and_changed_books">Nové a aktualizované knihy</string>
@@ -505,7 +505,7 @@
     <string name="title_edit_bookshelf">Upravit knihovnu</string>
     <string name="title_edit_bookshelves">Spravovat knihovny</string>
     <string name="title_edit_style">Upravit styl</string>
-    <string name="X_title_import">Importovat</string>
+    <string name="lbl_import">Importovat</string>
     <string name="title_import_book_data">Importovat knihy</string>
     <string name="title_registration">LibraryThing registrace</string>
     <string name="title_scope_of_change">Rozsah změny</string>
@@ -659,5 +659,10 @@
     <string name="notification_channel_error">Chyba</string>
     <string name="gr_pt_collect_genre">Jako žánry knih použijte populární názvy knihoven</string>
     <string name="lbl_condition">Stav</string>
+    <string name="lbl_archive_type_tar">Záložní kopie (%1$s)</string>
+    <string name="lbl_archive_type_xml">Export XML (%1$s)</string>
+    <string name="lbl_archive_type_tar_info">Úplný archiv zálohy / obnovy</string>
+    <string name="lbl_author_type_cover_inking">Obal na inkoustové knihy</string>
+    <string name="book_format_softcover">Softcover</string>
 
 </resources>

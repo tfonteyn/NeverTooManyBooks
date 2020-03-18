@@ -92,8 +92,8 @@ public class StripInfoSearchEngine
 
     /**
      * Also handles {@link SearchEngine.ByBarcode}.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @NonNull
     @Override

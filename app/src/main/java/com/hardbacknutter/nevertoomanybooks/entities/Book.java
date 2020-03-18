@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
@@ -63,9 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -135,7 +132,7 @@ public class Book
     }
 
     /**
-     * Perform sharing of book. Create chooser with matched apps for sharing some text like:
+     * Creates a chooser with matched apps for sharing some text like:
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
      *
      * @param context Current context
@@ -148,7 +145,6 @@ public class Book
         double rating = getDouble(DBDefinitions.KEY_RATING);
         String author = getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
         String series = getString(DBDefinitions.KEY_SERIES_FORMATTED);
-        String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
 
         if (!series.isEmpty()) {
             series = " (" + SERIES_NR_PATTERN.matcher(series).replaceAll("%23 ") + ')';
@@ -172,17 +168,22 @@ public class Book
             ratingString = '(' + ratingString + ')';
         }
 
-        // prepare the front-cover to post
-        Uri uri = GenericFileProvider
-                .getUriForFile(context, AppDir.getCoverFile(context, uuid, 0));
+        // The share intent is limited to a single *type* of data.
+        // We cannot send the cover AND the text; for now we send the text only.
+//        String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+//        // prepare the front-cover to post
+//        File coverFile = AppDir.getCoverFile(context, uuid, 0);
+//        if (coverFile.exists()) {
+//            Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
+//        }
 
-        // so despite it being shown on the list it will not post any text unless the user types it.
         String text = context.getString(R.string.info_share_book_im_reading,
                                         title, author, series, ratingString);
-        return new Intent(Intent.ACTION_SEND)
-                .setType("text/plain")
-                .putExtra(Intent.EXTRA_TEXT, text)
-                .putExtra(Intent.EXTRA_STREAM, uri);
+
+        return Intent.createChooser(new Intent(Intent.ACTION_SEND)
+                                            .setType("text/plain")
+                                            .putExtra(Intent.EXTRA_TEXT, text),
+                                    context.getString(R.string.menu_share_this));
     }
 
     /**

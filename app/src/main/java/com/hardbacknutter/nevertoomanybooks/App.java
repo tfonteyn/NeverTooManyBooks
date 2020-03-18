@@ -323,8 +323,8 @@ public class App
 
     /**
      * Initialize ACRA for a given Application.
-     * <p>
-     * <br>{@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Override
     @CallSuper

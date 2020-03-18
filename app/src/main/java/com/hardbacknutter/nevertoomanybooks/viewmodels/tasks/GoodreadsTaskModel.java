@@ -27,26 +27,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
 
-import androidx.annotation.Nullable;
-
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.tasks.TaskBase;
 
 /**
  * See parent class doc.
  */
 public class GoodreadsTaskModel
-        extends TaskListenerModel<GrStatus> {
-
-    @Nullable
-    private TaskBase mTask;
-
-    @Nullable
-    public TaskBase getTask() {
-        return mTask;
-    }
-
-    public void setTask(@Nullable final TaskBase task) {
-        mTask = task;
-    }
+        extends TaskBaseModel<GrStatus> {
 }

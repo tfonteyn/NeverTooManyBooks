@@ -135,7 +135,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/archive_format"
         app:layout_constraintTop_toBottomOf="@id/archive_format"
-        tools:text="@string/info_import_export_option_xml"
+        tools:text="@string/lbl_archive_type_xml_info"
         tools:visibility="visible"
         />
 

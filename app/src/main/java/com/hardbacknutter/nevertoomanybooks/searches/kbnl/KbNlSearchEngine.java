@@ -150,8 +150,8 @@ public class KbNlSearchEngine
      * Ths kb.nl site does not have images, but we try bibliotheek.be.
      * <p>
      * https://webservices.bibliotheek.be/index.php?func=cover&ISBN=9789463731454&coversize=large
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Nullable
     @Override

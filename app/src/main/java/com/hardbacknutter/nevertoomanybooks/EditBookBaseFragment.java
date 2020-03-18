@@ -167,8 +167,8 @@ public abstract class EditBookBaseFragment
      * This is always done, even when the user 'cancel's the edit.
      * The latter will result in a "are you sure" where they can 'cancel the cancel'
      * and continue with all data present.
-     * <p>
-     * <br>{@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Override
     @CallSuper

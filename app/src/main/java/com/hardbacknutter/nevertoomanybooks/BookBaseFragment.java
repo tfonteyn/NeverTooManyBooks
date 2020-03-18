@@ -104,8 +104,7 @@ public abstract class BookBaseFragment
     /**
      * Hook up the Views, and populate them with the book data.
      *
-     * <p>
-     * <br>{@inheritDoc}
+     * <br><br>{@inheritDoc}
      */
     @Override
     @CallSuper

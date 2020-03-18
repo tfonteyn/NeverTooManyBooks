@@ -152,6 +152,9 @@
 
     <!-- The user selected a file to import that was not recognised as a valid archive. -->
     <string name="error_import_invalid_archive">The file selected is not recognized.</string>
+    <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
+    <string name="error_cannot_import">The selected file cannot be imported.</string>
+
     <!-- generic backup failure -->
     <string name="error_backup_failed">Backup Failed.</string>
     <!-- generic import failure -->
@@ -193,6 +196,7 @@
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position. -->
     <string name="warning_import_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
 
+    <!-- URGENT:older archive versions -> change string to "... archive is missing a creation date field. -->
     <!-- Explanatory note associated with import options not available with older archives -->
     <string name="warning_import_old_archive">This option is not supported for older archive versions.</string>
 
@@ -333,8 +337,7 @@
     <string name="info_export_backup_all">
         All books, covers, preferences and custom styles will be exported to the archive.
     </string>
-    <!-- Explanatory note for 'All data in XML format' -->
-    <string name="info_import_export_option_xml">XML is export only, no import.</string>
+
 
     <string name="legacy_record">Obsolete record #%1$d</string>
     <string name="legacy_description">This record is obsolete and can not be recovered. It is advisable to delete it.</string>
@@ -1265,25 +1268,23 @@
     <string name="book_format_hardcover">Hardcover</string>
     <!-- book format - A Softcover is not necessarily a paperback -->
     <string name="book_format_softcover">Softcover</string>
-
     <!--  book format - traditional 'paperback' also known as 'pocketbook' -->
     <string name="book_format_paperback">Paperback</string>
     <!--  book format - a large format paperback -->
     <string name="book_format_trade_paperback">Trade Paperback</string>
-
     <!--  book format - mostly used for magazines like 'readers digest'
-          A lot of english Science Fiction magazines use the same format.  -->
+          A lot of english monthly magazines use the same format.  -->
     <string name="book_format_digest">Digest</string>
-
-    <!--  book format string used if a website indicates it's an eBook -->
+    <!--  book format - string used if a website indicates it's an eBook -->
     <string name="book_format_ebook">eBook</string>
-    <!-- book format used if a website indicates it's some sort of Audio (tape, cd, etc..) -->
+    <!-- book format - used if a website indicates it's some sort of Audio (tape, cd, etc..) -->
     <string name="book_format_audiobook">AudioBook</string>
-
+    <!--  book format - string used when a website gives exact dimensions of the book. -->
     <string name="book_format_dimensions">Dimensions</string>
 
-    <!-- Colors; used by mainly for comics. -->
+    <!-- Color - content is full color. -->
     <string name="book_color_full_color">Colored</string>
+    <!-- Color - content is black and white / single color only. -->
     <string name="book_color_uncolored">Black &amp; white</string>
 
     <!-- ####################################################################################### -->
@@ -1455,7 +1456,6 @@
     <string name="lbl_print_run">Print run</string>
 
 
-
     <string name="lbl_credentials">Credentials</string>
 
     <string name="lbl_is_signed">Has this book been signed?</string>
@@ -1532,10 +1532,20 @@
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
 
+
+    <!-- Text in a spinner dropdown. Must be fairly short. -->
+    <string name="lbl_archive_type_tar">Backup (%1$s)</string>
+    <!-- Explanatory note for 'lbl_archive_type_xml' -->
+    <string name="lbl_archive_type_tar_info">Full Backup / Restore archive</string>
+    <!-- Text in a spinner dropdown. Must be fairly short. -->
+    <string name="lbl_archive_type_xml">XML export (%1$s)</string>
+    <!-- Explanatory note for 'lbl_archive_type_xml' -->
+    <string name="lbl_archive_type_xml_info">XML is export only, no import.</string>
     <!-- 'export/import to archive' option -->
-    <string name="lbl_import_export_books_as_csv">Books (*.csv)</string>
+    <string name="lbl_archive_type_books">Books (%1$s)</string>
+
     <!-- 'export/import to archive' option -->
-    <string name="lbl_import_export_csv">CSV (without images)</string>
+    <string name="lbl_import_export_csv">Books only</string>
     <!-- 'import to archive' option -->
     <string name="lbl_import_option_new_and_changed_books">New and updated books</string>
     <!-- 'export to archive' option -->
@@ -1556,8 +1566,8 @@
     <string name="lbl_backup_to_archive">Backup to Archive</string>
     <!-- Admin -->
     <string name="lbl_import_from_archive">Import from Archive</string>
-    <!-- Admin export books -->
-    <string name="lbl_export_to_csv">Export to CSV File</string>
+    <!-- Admin export books URGENT: update translations -->
+    <string name="lbl_export_to_csv">Export Books to a CSV File</string>
     <!-- Admin import books -->
     <string name="lbl_import_from_csv">Import from CSV File</string>
 
@@ -1624,7 +1634,7 @@
     <!-- Screen title. -->
     <string name="X_title_backup">Backup</string>
     <!-- Screen title. -->
-    <string name="X_title_import">Import</string>
+    <string name="lbl_import">Import</string>
     <string name="X_btn_do_not_show_again">Do not show again</string>
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
     <string name="X_lbl_available">Available</string>
@@ -1654,7 +1664,4 @@
         Select 0 or more options and tap “OK” to apply them,
         or tap “%1$s” to disregard all of them.
     </string>
-    <string name="lbl_backup_archive">Backup/Restore archive</string>
-    <string name="lbl_xml_export">XML export file</string>
-
 </resources>

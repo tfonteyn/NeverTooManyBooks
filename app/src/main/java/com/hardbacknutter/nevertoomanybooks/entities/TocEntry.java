@@ -264,8 +264,8 @@ public class TocEntry
     /**
      * ENHANCE: The Locale of the TocEntry should be based on either a specific language
      * setting for the TocEntry itself, or on the Locale of the <strong>primary</strong> book.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @NonNull
     @Override

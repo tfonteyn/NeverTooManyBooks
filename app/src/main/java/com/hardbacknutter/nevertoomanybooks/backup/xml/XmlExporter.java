@@ -38,8 +38,8 @@ import androidx.preference.PreferenceManager;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +48,11 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.XmlTags;
-import com.hardbacknutter.nevertoomanybooks.backup.archive.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.options.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
@@ -67,8 +66,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
+ * <ul>Supports:
+ * <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
+ * <li>{@link ArchiveContainerEntry#BooklistStylesXml}</li>
+ * <li>{@link ArchiveContainerEntry#PreferencesXml}</li>
+ * <li>{@link ArchiveContainerEntry#BooksXml}</li>
+ * </ul>
+ *
  * <strong>WARNING: EXPERIMENTAL</strong> There are two types of XML here.
  * <ul>Type based, where the tag name is the type. Used by:
  * <li>{@link ArchiveInfo}</li>
@@ -80,6 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * <li>can be generically written (and read), so future adding/remove
  * entries requires no changes here</li>
  * <li>really only useful to the application itself</li>
+ * <li>write and read support</li>
  * </ul>
  * <ul>Database column name based. Used by:
  * <li>{@link Bookshelf}</li>
@@ -88,51 +96,54 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * <li>{@link Book}</li>
  * </ul>
  * <ul>Reason:
- * <li>EXPERIMENTAL (NO import facility; format can/will change)</li>
+ * <li>EXPERIMENTAL - format can/will change</li>
  * <li>meant for loading on a computer to create reports or whatever...</li>
  * <li>not bound to the application itself.</li>
+ * <li>write (export) only.</li>
  * </ul>
- *
- * <strong>Note:</strong> None of the methods here count/contribute to the ExportHelper
- * result counters.
  */
 public class XmlExporter
         implements Exporter, Closeable {
 
+    /** The format version of this exporter. */
+    public static final int VERSION = 2;
     /** Log tag. */
     private static final String TAG = "XmlExporter";
-
-    /** uber-version of the exporter (not necessarily the same as the archive container !). */
-    public static final int XML_EXPORTER_VERSION = 2;
-
     /** individual format versions of table based data. */
     private static final int XML_EXPORTER_BOOKSHELVES_VERSION = 1;
     private static final int XML_EXPORTER_AUTHORS_VERSION = 1;
     private static final int XML_EXPORTER_SERIES_VERSION = 1;
     private static final int XML_EXPORTER_BOOKS_VERSION = 1;
 
+    /** individual format version of Preferences. */
+    private static final int XML_EXPORTER_PREFERENCES_VERSION = 1;
+
     /** individual format version of Styles. */
-    private static final int XML_EXPORTER_STYLES_VERSION_1 = 1;
-    private static final int XML_EXPORTER_STYLES_VERSION_2 = 2;
+    private static final int XML_EXPORTER_STYLES_VERSION = 1;
+    private static final int XML_EXPORTER_STYLES_VERSION_EXPERIMENTAL = 99;
 
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-    /** export configuration. */
-    @NonNull
-    private final ExportHelper mHelper;
 
     private final ExportResults mResults = new ExportResults();
+    private final int mOptions;
+    @Nullable
+    private final Date mSince;
 
     /**
      * Constructor.
-     *
-     * @param helper export configuration
      */
-    public XmlExporter(@NonNull final ExportHelper helper) {
+    public XmlExporter(final int options,
+                       @Nullable final Date since) {
+        mOptions = options;
+        mSince = since;
         mDb = new DAO(TAG);
-        mHelper = helper;
-        mHelper.validate();
+    }
+
+    @Override
+    public int getVersion() {
+        return VERSION;
     }
 
     /**
@@ -140,8 +151,8 @@ public class XmlExporter
      * <p>
      * The progressListener will not be very accurate as we advance by 1 for each step,
      * and not per item (author,book,etc) written.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Override
     public ExportResults write(@NonNull final Context context,
@@ -152,45 +163,32 @@ public class XmlExporter
         // suffix for progress messages.
         String xml = " (xml)";
 
-        boolean incBooks = mHelper.getOption(Options.BOOKS);
-        boolean incAuthors = mHelper.getOption(Options.AUTHORS);
-        boolean incSeries = mHelper.getOption(Options.SERIES);
-        boolean incBookshelves = mHelper.getOption(Options.BOOKSHELVES);
-        boolean incPrefs = mHelper.getOption(Options.PREFERENCES);
-        boolean incStyles = mHelper.getOption(Options.STYLES);
+        boolean writeBooks = (mOptions & Options.BOOKS) != 0;
+        boolean writePrefs = (mOptions & Options.PREFERENCES) != 0;
+        boolean writeStyles = (mOptions & Options.STYLES) != 0;
 
         // Write styles and prefs first.
 
-        if (!progressListener.isCancelled() && incStyles) {
+        if (!progressListener.isCancelled() && writeStyles) {
             progressListener.onProgressStep(1, context.getString(R.string.lbl_styles) + xml);
             writeStyles(context, writer);
-            // an experiment, might be the v2 of the styles format
+            // an experiment, might become the v2 of the styles format
             //writeStyles2(context, writer, progressListener);
         }
 
-        if (!progressListener.isCancelled() && incPrefs) {
+        if (!progressListener.isCancelled() && writePrefs) {
             progressListener.onProgressStep(1, context.getString(R.string.lbl_settings) + xml);
             writePreferences(context, writer);
         }
 
-        // not strictly needed, but parsing will be faster if these go in the order done here.
-
-        if (!progressListener.isCancelled() && incBookshelves) {
+        if (!progressListener.isCancelled() && writeBooks) {
+            // parsing will be faster if these go in the order done here.
             progressListener.onProgressStep(1, context.getString(R.string.lbl_bookshelves) + xml);
             writeBookshelves(writer, progressListener);
-        }
-
-        if (!progressListener.isCancelled() && incAuthors) {
             progressListener.onProgressStep(1, context.getString(R.string.lbl_author) + xml);
             writeAuthors(writer, progressListener);
-        }
-
-        if (!progressListener.isCancelled() && incSeries) {
             progressListener.onProgressStep(1, context.getString(R.string.lbl_series) + xml);
             writeSeries(writer, progressListener);
-        }
-
-        if (!progressListener.isCancelled() && incBooks) {
             progressListener.onProgressStep(1, context.getString(R.string.lbl_books) + xml);
             writeBooks(writer, progressListener);
         }
@@ -249,48 +247,48 @@ public class XmlExporter
             return;
         }
 
-        writer.write('<' + XmlTags.XML_STYLE_LIST);
-        writer.write(XmlTags.version(XML_EXPORTER_STYLES_VERSION_2));
+        writer.write('<' + XmlTags.TAG_STYLE_LIST);
+        writer.write(XmlUtils.versionAttr(XML_EXPORTER_STYLES_VERSION_EXPERIMENTAL));
         writer.write(">\n");
 
         for (BooklistStyle style : styles) {
-            writer.write('<' + XmlTags.XML_STYLE);
-            writer.write(XmlTags.id(style.getId()));
-            writer.write(XmlTags.name(style.getUuid()));
+            writer.write('<' + XmlTags.TAG_STYLE);
+            writer.write(XmlUtils.idAttr(style.getId()));
+            writer.write(XmlUtils.nameAttr(style.getUuid()));
             writer.write(">\n");
 
             // All 'flat' Preferences for this style.
             for (PPref p : style.getPreferences(false).values()) {
-                writer.write(XmlTags.typedTag(p.getKey(), p.getValue(context)));
+                writer.write(XmlUtils.typedTag(p.getKey(), p.getValue(context)));
             }
 
             // Groups with their Preferences.
-            writer.write('<' + XmlTags.XML_GROUP_LIST + '>');
+            writer.write('<' + XmlTags.TAG_GROUP_LIST + '>');
             for (BooklistGroup group : style.getGroups()) {
-                writer.write('<' + XmlTags.XML_GROUP);
-                writer.write(XmlTags.id(group.getId()));
+                writer.write('<' + XmlTags.TAG_GROUP);
+                writer.write(XmlUtils.idAttr(group.getId()));
                 writer.write(">\n");
                 for (PPref p : group.getPreferences().values()) {
-                    writer.write(XmlTags.typedTag(p.getKey(), p.getValue(context)));
+                    writer.write(XmlUtils.typedTag(p.getKey(), p.getValue(context)));
                 }
-                writer.write("</" + XmlTags.XML_GROUP + ">\n");
+                writer.write("</" + XmlTags.TAG_GROUP + ">\n");
             }
-            writer.write("</" + XmlTags.XML_GROUP_LIST + '>');
+            writer.write("</" + XmlTags.TAG_GROUP_LIST + '>');
 
             // Active filters with their Preferences.
-            writer.write('<' + XmlTags.XML_FILTER_LIST + '>');
+            writer.write('<' + XmlTags.TAG_FILTER_LIST + '>');
             for (Filter filter : style.getActiveFilters(context)) {
                 if (filter.isActive(context)) {
-                    writer.write(XmlTags.tag(XmlTags.XML_FILTER, filter.getKey(), filter.get()));
+                    writer.write(XmlUtils.tag(XmlTags.TAG_FILTER, filter.getKey(), filter.get()));
                 }
             }
-            writer.write("</" + XmlTags.XML_FILTER_LIST + '>');
+            writer.write("</" + XmlTags.TAG_FILTER_LIST + '>');
 
             // close style tag.
-            writer.write("</" + XmlTags.XML_STYLE + ">\n");
+            writer.write("</" + XmlTags.TAG_STYLE + ">\n");
         }
 
-        writer.write("</" + XmlTags.XML_STYLE_LIST + ">\n");
+        writer.write("</" + XmlTags.TAG_STYLE_LIST + ">\n");
         mResults.styles += styles.size();
     }
 
@@ -317,6 +315,7 @@ public class XmlExporter
             }
         }
         toXml(writer, new PreferencesWriter(context, all, null));
+        mResults.preferences++;
     }
 
     /**
@@ -331,18 +330,18 @@ public class XmlExporter
                                   @NonNull final ProgressListener progressListener)
             throws IOException {
         List<Bookshelf> list = mDb.getBookshelves();
-        writer.write('<' + XmlTags.XML_BOOKSHELF_LIST);
-        writer.write(XmlTags.version(XML_EXPORTER_BOOKSHELVES_VERSION));
+        writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
+        writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKSHELVES_VERSION));
         writer.write(">\n");
 
         for (Bookshelf bookshelf : list) {
-            writer.write('<' + XmlTags.XML_BOOKSHELF);
-            writer.write(XmlTags.id(bookshelf.getId()));
-            writer.write(XmlTags.attr(DBDefinitions.KEY_BOOKSHELF, bookshelf.getName()));
-            writer.write(XmlTags.attr(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid()));
+            writer.write('<' + XmlTags.TAG_BOOKSHELF);
+            writer.write(XmlUtils.idAttr(bookshelf.getId()));
+            writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOKSHELF, bookshelf.getName()));
+            writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid()));
             writer.write("/>\n");
         }
-        writer.write("</" + XmlTags.XML_BOOKSHELF_LIST + ">\n");
+        writer.write("</" + XmlTags.TAG_BOOKSHELF_LIST + ">\n");
     }
 
     /**
@@ -356,27 +355,29 @@ public class XmlExporter
     private void writeAuthors(@NonNull final Writer writer,
                               @NonNull final ProgressListener progressListener)
             throws IOException {
-        writer.write('<' + XmlTags.XML_AUTHOR_LIST);
-        writer.write(XmlTags.version(XML_EXPORTER_AUTHORS_VERSION));
+        writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
+        writer.write(XmlUtils.versionAttr(XML_EXPORTER_AUTHORS_VERSION));
         writer.write(">\n");
 
         try (Cursor cursor = mDb.fetchAuthors()) {
             final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                writer.write('<' + XmlTags.XML_AUTHOR);
-                writer.write(XmlTags.id(rowData.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write('<' + XmlTags.TAG_AUTHOR);
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
 
-                writer.write(XmlTags.attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
-                                          rowData.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
-                                          rowData.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
-                                          rowData.getBoolean(
-                                                  DBDefinitions.KEY_AUTHOR_IS_COMPLETE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_AUTHOR_FAMILY_NAME)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+                                           rowData.getBoolean(
+                                                   DBDefinitions.KEY_AUTHOR_IS_COMPLETE)));
                 writer.write("/>\n");
             }
         }
-        writer.write("</" + XmlTags.XML_AUTHOR_LIST + ">\n");
+        writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">\n");
     }
 
     /**
@@ -390,24 +391,24 @@ public class XmlExporter
     private void writeSeries(@NonNull final Writer writer,
                              @NonNull final ProgressListener progressListener)
             throws IOException {
-        writer.write('<' + XmlTags.XML_SERIES_LIST);
-        writer.write(XmlTags.version(XML_EXPORTER_SERIES_VERSION));
+        writer.write('<' + XmlTags.TAG_SERIES_LIST);
+        writer.write(XmlUtils.versionAttr(XML_EXPORTER_SERIES_VERSION));
         writer.write(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
             final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                writer.write('<' + XmlTags.XML_SERIES);
-                writer.write(XmlTags.id(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_SERIES_TITLE,
-                                          rowData.getString(DBDefinitions.KEY_SERIES_TITLE)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
-                                          rowData.getBoolean(
-                                                  DBDefinitions.KEY_SERIES_IS_COMPLETE)));
+                writer.write('<' + XmlTags.TAG_SERIES);
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_SERIES_TITLE,
+                                           rowData.getString(DBDefinitions.KEY_SERIES_TITLE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
+                                           rowData.getBoolean(
+                                                   DBDefinitions.KEY_SERIES_IS_COMPLETE)));
                 writer.write("/>\n");
             }
         }
-        writer.write("</" + XmlTags.XML_SERIES_LIST + ">\n");
+        writer.write("</" + XmlTags.TAG_SERIES_LIST + ">\n");
     }
 
     /**
@@ -421,115 +422,124 @@ public class XmlExporter
     private void writeBooks(@NonNull final Writer writer,
                             @NonNull final ProgressListener progressListener)
             throws IOException {
-        writer.write('<' + XmlTags.XML_BOOK_LIST);
-        writer.write(XmlTags.version(XML_EXPORTER_BOOKS_VERSION));
+        writer.write('<' + XmlTags.TAG_BOOK_LIST);
+        writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKS_VERSION));
         writer.write(">\n");
 
-        try (Cursor cursor = mDb.fetchBooksForExport(mHelper.getDateFrom())) {
+        try (Cursor cursor = mDb.fetchBooksForExport(mSince)) {
             final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                writer.write('<' + XmlTags.XML_BOOK);
-                writer.write(XmlTags.id(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_TITLE,
-                                          rowData.getString(DBDefinitions.KEY_TITLE)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_ISBN,
-                                          rowData.getString(DBDefinitions.KEY_ISBN)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_BOOK_UUID,
-                                          rowData.getString(DBDefinitions.KEY_BOOK_UUID)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_DATE_ADDED,
-                                          rowData.getString(DBDefinitions.KEY_DATE_ADDED)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
-                                          rowData.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_READ,
-                                          rowData.getBoolean(DBDefinitions.KEY_READ)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_READ_START,
-                                          rowData.getString(DBDefinitions.KEY_READ_START)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_READ_END,
-                                          rowData.getString(DBDefinitions.KEY_READ_END)));
+                writer.write('<' + XmlTags.TAG_BOOK);
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE,
+                                           rowData.getString(DBDefinitions.KEY_TITLE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_ISBN,
+                                           rowData.getString(DBDefinitions.KEY_ISBN)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_UUID,
+                                           rowData.getString(DBDefinitions.KEY_BOOK_UUID)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_ADDED,
+                                           rowData.getString(DBDefinitions.KEY_DATE_ADDED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_DATE_LAST_UPDATED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_READ,
+                                           rowData.getBoolean(DBDefinitions.KEY_READ)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_START,
+                                           rowData.getString(DBDefinitions.KEY_READ_START)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_END,
+                                           rowData.getString(DBDefinitions.KEY_READ_END)));
 
-                writer.write(XmlTags.attr(DBDefinitions.KEY_PUBLISHER,
-                                          rowData.getString(DBDefinitions.KEY_PUBLISHER)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_PRINT_RUN,
-                                          rowData.getString(DBDefinitions.KEY_PRINT_RUN)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_DATE_PUBLISHED,
-                                          rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_PRICE_LISTED,
-                                          rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                                          rowData.getString(
-                                                  DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                                          rowData.getString(
-                                                  DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_FORMAT,
-                                          rowData.getString(DBDefinitions.KEY_FORMAT)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_COLOR,
-                                          rowData.getString(DBDefinitions.KEY_COLOR)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_PAGES,
-                                          rowData.getString(DBDefinitions.KEY_PAGES)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_GENRE,
-                                          rowData.getString(DBDefinitions.KEY_GENRE)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_LANGUAGE,
-                                          rowData.getString(DBDefinitions.KEY_LANGUAGE)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_TOC_BITMASK,
-                                          rowData.getLong(DBDefinitions.KEY_TOC_BITMASK)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_PUBLISHER,
+                                           rowData.getString(DBDefinitions.KEY_PUBLISHER)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRINT_RUN,
+                                           rowData.getString(DBDefinitions.KEY_PRINT_RUN)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_PUBLISHED,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_DATE_PUBLISHED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED,
+                                           rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_FORMAT,
+                                           rowData.getString(DBDefinitions.KEY_FORMAT)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_COLOR,
+                                           rowData.getString(DBDefinitions.KEY_COLOR)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_PAGES,
+                                           rowData.getString(DBDefinitions.KEY_PAGES)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_GENRE,
+                                           rowData.getString(DBDefinitions.KEY_GENRE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_LANGUAGE,
+                                           rowData.getString(DBDefinitions.KEY_LANGUAGE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_TOC_BITMASK,
+                                           rowData.getLong(DBDefinitions.KEY_TOC_BITMASK)));
 
-                writer.write(XmlTags.attr(DBDefinitions.KEY_PRICE_PAID,
-                                          rowData.getDouble(DBDefinitions.KEY_PRICE_PAID)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                                          rowData.getString(
-                                                  DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_DATE_ACQUIRED,
-                                          rowData.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_LOCATION,
-                                          rowData.getString(DBDefinitions.KEY_LOCATION)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_RATING,
-                                          rowData.getDouble(DBDefinitions.KEY_RATING)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_SIGNED,
-                                          rowData.getBoolean(DBDefinitions.KEY_SIGNED)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_EDITION_BITMASK,
-                                          rowData.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID,
+                                           rowData.getDouble(DBDefinitions.KEY_PRICE_PAID)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_ACQUIRED,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_DATE_ACQUIRED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_LOCATION,
+                                           rowData.getString(DBDefinitions.KEY_LOCATION)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_RATING,
+                                           rowData.getDouble(DBDefinitions.KEY_RATING)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_SIGNED,
+                                           rowData.getBoolean(DBDefinitions.KEY_SIGNED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
+                                           rowData.getLong(
+                                                   DBDefinitions.KEY_EDITION_BITMASK)));
 
                 // external ID's
                 //NEWTHINGS: add new site specific ID: add attribute
-                writer.write(XmlTags.attr(DBDefinitions.KEY_EID_LIBRARY_THING,
-                                          rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_EID_STRIP_INFO_BE,
-                                          rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_EID_OPEN_LIBRARY,
-                                          rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_EID_ISFDB,
-                                          rowData.getLong(DBDefinitions.KEY_EID_ISFDB)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
-                                          rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
-                writer.write(XmlTags.attr(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
-                                          rowData.getString(
-                                                  DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_LIBRARY_THING,
+                                           rowData.getLong(
+                                                   DBDefinitions.KEY_EID_LIBRARY_THING)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_STRIP_INFO_BE,
+                                           rowData.getLong(
+                                                   DBDefinitions.KEY_EID_STRIP_INFO_BE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_OPEN_LIBRARY,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_EID_OPEN_LIBRARY)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_ISFDB,
+                                           rowData.getLong(DBDefinitions.KEY_EID_ISFDB)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
+                                           rowData.getLong(
+                                                   DBDefinitions.KEY_EID_GOODREADS_BOOK)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
 
                 // cross-linked with the loanee table
-                writer.write(XmlTags.attr(DBDefinitions.KEY_LOANEE,
-                                          rowData.getString(DBDefinitions.KEY_LOANEE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_LOANEE,
+                                           rowData.getString(DBDefinitions.KEY_LOANEE)));
 
                 // close the tag
                 writer.write(">\n");
 
                 // last are the text field tags
-                writer.write(XmlTags.tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
-                                                  rowData.getString(
-                                                          DBDefinitions.KEY_DESCRIPTION)));
-                writer.write(XmlTags.tagWithCData(DBDefinitions.KEY_PRIVATE_NOTES, null,
-                                                  rowData.getString(
-                                                          DBDefinitions.KEY_PRIVATE_NOTES)));
+                writer.write(XmlUtils.tagWithCData(DBDefinitions.KEY_DESCRIPTION, null,
+                                                   rowData.getString(
+                                                           DBDefinitions.KEY_DESCRIPTION)));
+                writer.write(XmlUtils.tagWithCData(DBDefinitions.KEY_PRIVATE_NOTES, null,
+                                                   rowData.getString(
+                                                           DBDefinitions.KEY_PRIVATE_NOTES)));
 
-                writer.write("</" + XmlTags.XML_BOOK + ">\n");
+                writer.write("</" + XmlTags.TAG_BOOK + ">\n");
                 mResults.booksExported++;
             }
         }
-        writer.write("</" + XmlTags.XML_BOOK_LIST + ">\n");
+        writer.write("</" + XmlTags.TAG_BOOK_LIST + ">\n");
     }
 
     /**
-     * Internal routine to send the passed {@link EntityWriter} data to an XML file.
+     * Internal routine that uses the passed {@link EntityWriter} to convert
+     * and send collection data to an XML file.
      *
      * @param writer   where to send the XML to
      * @param accessor which provides the input
@@ -538,40 +548,40 @@ public class XmlExporter
                        @NonNull final EntityWriter<String> accessor)
             throws IOException {
 
-        String listRoot = accessor.getListRoot();
+        // the list root does not get a version number,  individual elements do.
+        String listRoot = accessor.getRootTag();
         writer.write('<');
         writer.write(listRoot);
-        writer.write(XmlTags.size(accessor.size()));
+        writer.write(XmlUtils.versionAttr(accessor.getRootTagVersionAttribute()));
+        writer.write(XmlUtils.sizeAttr(accessor.getRootTagSizeAttribute()));
         writer.write(">\n");
 
         // loop through all elements
-        do {
-            // IMPORTANT: get the keys for each iteration, as they might be different
-            // from element to element.
-            String[] keys = accessor.elementKeySet().toArray(new String[]{});
-            // sure, not needed, but if you want to eyeball the resulting file...
-            Arrays.sort(keys);
-
-            // start with an element, optionally add a name attribute
-            String nameAttr = accessor.getElementNameAttribute();
+        while (accessor.hasMoreElements()) {
+            // start with an element, optionally add an id and/or name attribute
+            long idAttr = accessor.getElementTagIdAttribute();
+            String nameAttr = accessor.getElementTagNameAttribute();
             writer.write('<');
-            writer.write(accessor.getElementRoot());
-            writer.write(XmlTags.version(accessor.getElementVersionAttribute()));
-            if (nameAttr != null) {
-                writer.write(XmlTags.name(nameAttr));
+            writer.write(accessor.getElementTag());
+            if (idAttr != 0) {
+                writer.write(XmlUtils.idAttr(idAttr));
             }
-            writer.write(" >\n");
+            if (nameAttr != null) {
+                writer.write(XmlUtils.nameAttr(nameAttr));
+            }
+            writer.write(">\n");
 
             // loop through all keys of the element
-            for (String name : keys) {
-                writer.write(XmlTags.typedTag(name, accessor.get(name)));
+            // IMPORTANT: get the keys for each iteration, as they might be different
+            // from element to element.
+            for (String name : accessor.getElementKeySet()) {
+                writer.write(XmlUtils.typedTag(name, accessor.get(name)));
             }
             // end of element.
             writer.write("</");
-            writer.write(accessor.getElementRoot());
+            writer.write(accessor.getElementTag());
             writer.write(">\n");
-
-        } while (accessor.hasMore());
+        }
 
         // close the list.
         writer.write("</");
@@ -586,75 +596,78 @@ public class XmlExporter
 
     /**
      * Provide translator between Collections, and XML tags/attributes.
+     * <p>
+     * Supports 2-layer deep/flat xml output; i.e. a list (tag) of elements (one tag per element)
      *
      * @param <K> Type of the collection key
      */
     interface EntityWriter<K> {
 
         /**
-         * Get the top-root list element name (even if the list only contains one element).
+         * Get the top-root tag name.
          *
-         * @return list root
+         * @return root tag name
          */
         @NonNull
-        String getListRoot();
+        String getRootTag();
+
+        /**
+         * Get the top-root tag version attribute.
+         *
+         * @return version
+         */
+        long getRootTagVersionAttribute();
 
         /**
          * Get the size of the list.
          *
          * @return size
          */
-        int size();
+        int getRootTagSizeAttribute();
 
         /**
-         * When we do not have a list, this method should simply return 'false'.
-         * <ul>When there is a list:
-         * <li>the first element should be set to be the 'current'</li>
-         * <li>a loop should be (is) implemented with:</li>
-         * </ul>
-         * <pre>
-         * {@code
-         *      do {
-         *          current.get(...)
-         *      } while (hasMore());
-         * }
-         * </pre>
+         * Check if the collection has more elements.
+         * <p>
          * See {@link XmlImporter.StylesReader} for an example
          */
-        boolean hasMore();
+        boolean hasMoreElements();
 
         /**
-         * Get the root element for each item in a list.
+         * Get the element tag for each item in the collection.
          *
          * @return root
          */
         @NonNull
-        String getElementRoot();
+        String getElementTag();
 
         /**
-         * Get the name attribute to be set on the {@link #getElementRoot()}.
+         * Get the element id attribute for each item in the collection.
+         * Optional; {@code 0} by default.
+         *
+         * @return name, or {@code null}
+         */
+        default long getElementTagIdAttribute() {
+            return 0;
+        }
+
+        /**
+         * Get the element tag name attribute for each item in the collection.
+         * Optional. {@code null} by default.
          *
          * @return name, or {@code null}
          */
         @Nullable
-        String getElementNameAttribute();
+        default String getElementTagNameAttribute() {
+            return null;
+        }
 
         /**
-         * The version attribute to be set on the {@link #getElementRoot()}.
-         * We set it on the element, not on the list, as it describes the format of one element.
-         *
-         * @return version
-         */
-        long getElementVersionAttribute();
-
-        /**
-         * Get the collection of keys for an element.
-         * Implementations should return the keys for the <strong>current</strong> element.
+         * Get the collection of keys for the <strong>current</strong> element.
          * i.e. the XML writer assumes that each element can have a different key set.
          *
          * @return keys
          */
-        Set<K> elementKeySet();
+        Set<K> getElementKeySet();
 
         /**
          * Get the object for the specified key of the current element.
@@ -677,6 +690,8 @@ public class XmlExporter
         @NonNull
         private final Bundle mBundle;
 
+        private boolean mHasMore = true;
+
         /**
          * Constructor.
          *
@@ -689,40 +704,36 @@ public class XmlExporter
 
         @Override
         @NonNull
-        public String getListRoot() {
-            return XmlTags.XML_INFO_LIST;
+        public String getRootTag() {
+            return XmlTags.TAG_INFO_LIST;
         }
 
         @Override
-        public int size() {
+        public long getRootTagVersionAttribute() {
+            return mInfo.getArchiveVersion();
+        }
+
+        @Override
+        public int getRootTagSizeAttribute() {
             return 1;
         }
 
         @Override
-        public boolean hasMore() {
-            return false;
+        public boolean hasMoreElements() {
+            boolean hasMore = mHasMore;
+            mHasMore = false;
+            return hasMore;
         }
 
         @Override
         @NonNull
-        public String getElementRoot() {
-            return XmlTags.XML_INFO;
-        }
-
-        @Nullable
-        @Override
-        public String getElementNameAttribute() {
-            return null;
-        }
-
-        @Override
-        public long getElementVersionAttribute() {
-            return mInfo.getArchVersion();
+        public String getElementTag() {
+            return XmlTags.TAG_INFO;
         }
 
         @Override
         @NonNull
-        public Set<String> elementKeySet() {
+        public Set<String> getElementKeySet() {
             return mBundle.keySet();
         }
 
@@ -745,6 +756,8 @@ public class XmlExporter
         private final Context mContext;
         private final Map<String, ?> mMap;
 
+        private boolean mHasMore = true;
+
         /**
          * Constructor.
          *
@@ -762,40 +775,42 @@ public class XmlExporter
 
         @Override
         @NonNull
-        public String getListRoot() {
-            return XmlTags.XML_PREFERENCES_LIST;
+        public String getRootTag() {
+            return XmlTags.TAG_PREFERENCES_LIST;
         }
 
         @Override
-        public int size() {
-            return 1;
+        public long getRootTagVersionAttribute() {
+            return App.getVersion(mContext);
         }
 
         @Override
-        public boolean hasMore() {
-            return false;
+        public int getRootTagSizeAttribute() {
+            return XML_EXPORTER_PREFERENCES_VERSION;
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+            boolean hasMore = mHasMore;
+            mHasMore = false;
+            return hasMore;
         }
 
         @Override
         @NonNull
-        public String getElementRoot() {
-            return XmlTags.XML_PREFERENCES;
+        public String getElementTag() {
+            return XmlTags.TAG_PREFERENCES;
         }
 
         @Nullable
         @Override
-        public String getElementNameAttribute() {
+        public String getElementTagNameAttribute() {
             return mName;
-        }
-
-        @Override
-        public long getElementVersionAttribute() {
-            return App.getVersion(mContext);
         }
 
         @NonNull
         @Override
-        public Set<String> elementKeySet() {
+        public Set<String> getElementKeySet() {
             return mMap.keySet();
         }
 
@@ -838,23 +853,26 @@ public class XmlExporter
             mContext = context;
             mStyles = styles;
             it = styles.iterator();
-            // get first element ready for processing
-            hasMore();
         }
 
         @Override
         @NonNull
-        public String getListRoot() {
-            return XmlTags.XML_STYLE_LIST;
+        public String getRootTag() {
+            return XmlTags.TAG_STYLE_LIST;
         }
 
         @Override
-        public int size() {
+        public long getRootTagVersionAttribute() {
+            return XmlExporter.XML_EXPORTER_STYLES_VERSION;
+        }
+
+        @Override
+        public int getRootTagSizeAttribute() {
             return mStyles.size();
         }
 
         @Override
-        public boolean hasMore() {
+        public boolean hasMoreElements() {
             if (it.hasNext()) {
                 currentStyle = it.next();
                 currentStylePPrefs = currentStyle.getPreferences(true);
@@ -866,24 +884,19 @@ public class XmlExporter
 
         @NonNull
         @Override
-        public String getElementRoot() {
-            return XmlTags.XML_STYLE;
+        public String getElementTag() {
+            return XmlTags.TAG_STYLE;
         }
 
         @Nullable
         @Override
-        public String getElementNameAttribute() {
+        public String getElementTagNameAttribute() {
             return currentStyle.getUuid();
         }
 
         @Override
-        public long getElementVersionAttribute() {
-            return XmlExporter.XML_EXPORTER_STYLES_VERSION_1;
-        }
-
-        @Override
         @NonNull
-        public Set<String> elementKeySet() {
+        public Set<String> getElementKeySet() {
             return currentStylePPrefs.keySet();
         }
 

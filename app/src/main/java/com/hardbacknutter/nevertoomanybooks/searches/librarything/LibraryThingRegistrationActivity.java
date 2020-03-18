@@ -120,6 +120,7 @@ public class LibraryThingRegistrationActivity
     private static class ValidateKey
             extends TaskBase<Void, Integer> {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "LT.ValidateKey";
         /**
          * Constructor.

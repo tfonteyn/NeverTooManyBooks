@@ -297,10 +297,9 @@ public class BookDetailsFragment
     }
 
     /**
-     * <p>
      * At this point we're told to load our local (to the fragment) fields from the Book.
-     * </p>
-     * <br>{@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      *
      * @param book to load
      */
@@ -570,8 +569,7 @@ public class BookDetailsFragment
             }
             case R.id.MENU_SHARE: {
                 //noinspection ConstantConditions
-                startActivity(Intent.createChooser(book.getShareBookIntent(getContext()),
-                                                   getString(R.string.menu_share_this)));
+                startActivity(book.getShareBookIntent(getContext()));
                 return true;
             }
             case R.id.MENU_BOOK_SEND_TO_GOODREADS: {

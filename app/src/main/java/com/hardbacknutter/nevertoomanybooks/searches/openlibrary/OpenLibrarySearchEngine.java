@@ -159,7 +159,7 @@ public class OpenLibrarySearchEngine
      * View a Book on the web site.
      *
      * @param context Current context
-     * @param bookId     site native book id to show
+     * @param bookId  site native book id to show
      */
     public static void openWebsite(@NonNull final Context context,
                                    @NonNull final String bookId) {
@@ -186,8 +186,8 @@ public class OpenLibrarySearchEngine
 
     /**
      * <a href="https://openlibrary.org/dev/docs/api/books">API books</a>.
-     * <br>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @NonNull
     @Override
@@ -207,8 +207,8 @@ public class OpenLibrarySearchEngine
             throws IOException {
         // get and store the result into a string.
         String response;
-        try (TerminatorConnection con = TerminatorConnection.open(context, url)) {
-            InputStream is = con.getInputStream();
+        try (TerminatorConnection con = TerminatorConnection.open(context, url);
+             InputStream is = con.getInputStream()) {
             if (is == null) {
                 throw new IOException("no InputStream");
             }
@@ -229,11 +229,12 @@ public class OpenLibrarySearchEngine
     String readResponseStream(@NonNull final InputStream is)
             throws IOException {
         StringBuilder response = new StringBuilder();
-        BufferedReader streamReader = new BufferedReader(
-                new InputStreamReader(is, StandardCharsets.UTF_8));
+        // Don't close this stream!
+        InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+        BufferedReader reader = new BufferedReader(isr);
         String line;
 
-        while ((line = streamReader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             response.append(line);
         }
         return response.toString();
@@ -247,8 +248,8 @@ public class OpenLibrarySearchEngine
      * }
      * <p>
      * S/M/L
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Nullable
     @Override
@@ -418,7 +419,6 @@ public class OpenLibrarySearchEngine
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
-     *
      * @param jsonObject     the complete book record.
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to populate
@@ -451,7 +451,6 @@ public class OpenLibrarySearchEngine
 
     /**
      * Parse the results, and build the bookData bundle.
-     *
      *
      * @param isbn           of the book
      * @param result         JSON result data

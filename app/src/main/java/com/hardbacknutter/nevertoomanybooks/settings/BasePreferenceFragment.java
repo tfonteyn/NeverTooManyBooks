@@ -110,8 +110,8 @@ public abstract class BasePreferenceFragment
     /**
      * BitmaskPreference get a custom Dialog were the neutral button displays
      * the "unused" option.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Override
     public void onDisplayPreferenceDialog(@NonNull final Preference preference) {
@@ -216,8 +216,7 @@ public abstract class BasePreferenceFragment
     /**
      * Update the summary after a change.
      *
-     * <p>
-     * <br>{@inheritDoc}
+     * <br><br>{@inheritDoc}
      */
     @CallSuper
     @Override

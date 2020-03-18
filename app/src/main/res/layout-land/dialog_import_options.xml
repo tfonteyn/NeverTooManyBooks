@@ -63,7 +63,7 @@
         style="@style/OptionRow.Checkable"
         android:layout_width="0dp"
         android:checked="true"
-        android:text="@string/lbl_import_export_books_as_csv"
+        android:text="@string/lbl_books"
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

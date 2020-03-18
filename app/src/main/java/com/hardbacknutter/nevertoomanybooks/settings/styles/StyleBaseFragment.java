@@ -84,6 +84,7 @@ public abstract class StyleBaseFragment
         } else {
             // we're doing the global preferences, create a dummy style with an empty uuid
             // and let it use the standard SharedPreferences
+            //noinspection ConstantConditions
             mStyle = new BooklistStyle(getContext());
         }
 

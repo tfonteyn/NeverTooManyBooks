@@ -396,6 +396,7 @@ public final class LanguageUtils {
     public static class BuildLanguageMappingsTask
             extends TaskBase<Void, Boolean> {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "BuildLanguageMappings";
         /**
          * Constructor.

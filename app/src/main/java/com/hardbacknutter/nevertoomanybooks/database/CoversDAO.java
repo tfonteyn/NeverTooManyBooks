@@ -517,6 +517,7 @@ public final class CoversDAO
     public static final class ImageCacheWriterTask
             extends AsyncTask<Void, Void, Void> {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "ImageCacheWriterTask";
 
         /** Used to prevent trying to read from the cache while we're writing to it. */

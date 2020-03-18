@@ -61,8 +61,6 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723
 ==> so this is why we only ever get ONE result back.
 
 Bugs seen:
-FIXME: https://github.com/eleybourn/Book-Catalogue/issues/504 - CursorIndexOutOfBoundsException: Index 0 requested, with a size of 0
-=> see BooklistMappedCursorRow.java
 
 Implemented:
 https://github.com/eleybourn/Book-Catalogue/issues/834 - 820..834: all screen orientation change issues

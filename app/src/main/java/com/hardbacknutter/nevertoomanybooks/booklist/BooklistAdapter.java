@@ -490,8 +490,8 @@ public class BooklistAdapter
 
     /**
      * Get the full set of 'level' texts for the given position.
-     * <p>
-     * <br>{@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Nullable
     @Override

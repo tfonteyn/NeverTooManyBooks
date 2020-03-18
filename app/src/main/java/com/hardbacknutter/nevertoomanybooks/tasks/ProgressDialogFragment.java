@@ -200,6 +200,10 @@ public class ProgressDialogFragment
         super.onStop();
     }
 
+    public boolean hasTask() {
+        return mCancellable != null;
+    }
+
     /**
      * Optionally link this object with a Cancellable.
      *
@@ -309,8 +313,8 @@ public class ProgressDialogFragment
 //     * https://issuetracker.google.com/issues/36929400
 //     * <p>
 //     * Still not fixed in Nov 2019
-//     * <p>
-//     * <br>{@inheritDoc}
+//     *
+//     * <br><br>{@inheritDoc}
 //     */
 //    @Override
 //    @CallSuper

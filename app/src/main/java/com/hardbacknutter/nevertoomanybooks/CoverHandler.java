@@ -619,6 +619,7 @@ class CoverHandler {
     private static class RotateTask
             extends AsyncTask<Void, Void, Boolean> {
 
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "RotateTask";
 
         @Nullable

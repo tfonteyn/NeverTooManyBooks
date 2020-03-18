@@ -147,7 +147,6 @@ public class ReviewEditApiHandler
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS) {
             handler = new XmlDumpParser();
         }
-        //noinspection ConstantConditions
         executePost(url, parameters, true, handler);
     }
 

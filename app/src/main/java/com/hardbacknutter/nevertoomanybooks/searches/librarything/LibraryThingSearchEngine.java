@@ -217,8 +217,8 @@ public class LibraryThingSearchEngine
      *
      * <strong>Note:</strong> we assume the isbn numbers from the site are valid.
      * No extra checks are made.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @WorkerThread
     @NonNull
@@ -257,8 +257,8 @@ public class LibraryThingSearchEngine
 
     /**
      * Dev-key needed for this call.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @NonNull
     @Override
@@ -279,8 +279,8 @@ public class LibraryThingSearchEngine
 
     /**
      * Dev-key needed for this call.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @NonNull
     @Override
@@ -329,8 +329,8 @@ public class LibraryThingSearchEngine
     /**
      * ENHANCE: See if we can get the alternate user-contributed images from LibraryThing.
      * The latter are often the best source but at present could only be obtained by HTML scraping.
-     * <p>
-     * {@inheritDoc}
+     *
+     * <br><br>{@inheritDoc}
      */
     @Nullable
     @WorkerThread

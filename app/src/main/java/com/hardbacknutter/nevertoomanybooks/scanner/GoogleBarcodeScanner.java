@@ -98,7 +98,7 @@ public class GoogleBarcodeScanner
     /**
      * Start the camera to get an image.
      *
-     * {@inheritDoc}
+     * <br><br>{@inheritDoc}
      */
     @Override
     public boolean startActivityForResult(@NonNull final Fragment fragment,

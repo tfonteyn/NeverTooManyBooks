@@ -29,38 +29,37 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 
 public final class ErrorMsg {
 
-    public static final String NO_TARGET_FRAGMENT_SET = "no target fragment set";
-    public static final String KEY_SHOULD_NOT_BE_EMPTY = "key should not be empty";
-    public static final String WEAK_REFERENCE = "Listener was dead";
+    public static final String INPUT_STREAM_INVALID = "InputStream was NULL";
     public static final String ISBN_MUST_BE_VALID = "isbn must be valid";
+    public static final String KEY_SHOULD_NOT_BE_EMPTY = "key should not be empty";
+    public static final String NO_TARGET_FRAGMENT_SET = "no target fragment set";
+    public static final String WEAK_REFERENCE = "Listener was dead";
 
-
-    public static final String NULL_SCANNER_MODEL = "ScannerModel";
-    public static final String NULL_INTENT_DATA = "Intent data";
+    public static final String NULL_CURRENT_BOOKSHELF = "CurrentBookshelf";
+    public static final String NULL_CURSOR = "Cursor";
+    public static final String NULL_DRAWABLE = "Drawable";
     public static final String NULL_FRAGMENT_TAG = "Fragment Tag";
-
-    public static final String NULL_ROW_POS = "rowPos";
-    public static final String NULL_URI = "uri";
+    public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
+    public static final String NULL_INTENT_DATA = "Intent data";
     public static final String NULL_ISBN_STR = "IsbnStr";
     public static final String NULL_NATIVE_ID = "nativeId";
-    public static final String NULL_GALLERY_ADAPTER = "GalleryAdapter";
     public static final String NULL_NON_PERSISTED_VALUE = "NonPersistedValue";
-    public static final String NULL_CURSOR = "Cursor";
-    public static final String NULL_CURRENT_BOOKSHELF = "CurrentBookshelf";
-    public static final String NULL_UUID = "UUID";
+    public static final String NULL_ROW_POS = "rowPos";
+    public static final String NULL_SCANNER_MODEL = "ScannerModel";
     public static final String NULL_TOC_ENTRY = "TocEntries";
+    public static final String NULL_URI = "uri";
+    public static final String NULL_UUID = "UUID";
 
-    public static final String ARGS_MISSING_ISBN = "ISBN";
     public static final String ARGS_MISSING_AUTHOR = "Author";
+    public static final String ARGS_MISSING_BOOKSHELF = "Bookshelf";
+    public static final String ARGS_MISSING_CHECKLIST = "Checklist";
+    public static final String ARGS_MISSING_EXTRAS = "Extras";
+    public static final String ARGS_MISSING_IMAGE_PATH = "ImagePath";
+    public static final String ARGS_MISSING_ISBN = "ISBN";
+    public static final String ARGS_MISSING_PUBLISHER = "Publisher";
     public static final String ARGS_MISSING_SERIES = "Series";
     public static final String ARGS_MISSING_TOC_ENTRIES = "TocEntries";
     public static final String ARGS_MISSING_STYLE = "Style";
-    public static final String ARGS_MISSING_IMAGE_PATH = "ImagePath";
-    public static final String ARGS_MISSING_CHECKLIST = "Checklist";
-    public static final String ARGS_MISSING_BOOKSHELF = "Bookshelf";
-    public static final String ARGS_MISSING_PUBLISHER = "Publisher";
-    public static final String ARGS_MISSING_EXTRAS = "Extras";
-    public static final String NULL_DRAWABLE = "Drawable";
 
     private ErrorMsg() {
     }

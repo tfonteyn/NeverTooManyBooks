@@ -199,9 +199,9 @@
     <string name="hint_empty_field">(Пусто)</string>
     <string name="hint_search_text">Текст и/или ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
-    <string name="lbl_import_export_books_as_csv">книги (*.csv)</string>
+    <string name="lbl_archive_type_books">книги (%1$s)</string>
     <string name="lbl_import_export_option_xml">Все данные в формате XML</string>
-    <string name="info_import_export_option_xml">Только экспорт XML, без импорта.</string>
+    <string name="lbl_archive_type_xml_info">Только экспорт XML, без импорта.</string>
     <string name="info_import_option_all_books">Будут добавлены новые книги. существующие книги будут обновлены.</string>
     <string name="info_import_option_new_and_changed_books">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
     <string name="lbl_import_option_new_and_changed_books">Новые и обновленные книги</string>
@@ -504,7 +504,7 @@
     <string name="title_edit_bookshelf">редактирование книжной полки</string>
     <string name="title_edit_bookshelves">управление книжными полками</string>
     <string name="title_edit_style">Редактировать стиль</string>
-    <string name="X_title_import">Импортировать</string>
+    <string name="lbl_import">Импортировать</string>
     <string name="title_import_book_data">Импортировать книги</string>
     <string name="title_registration">Регистрация в LibraryThing</string>
     <string name="title_scope_of_change">Масштаб изменения</string>
@@ -659,5 +659,9 @@
     <string name="gr_pt_collect_genre">Используйте популярные названия книжных полок в качестве книжных жанров</string>
     <string name="lbl_condition">Условие</string>
     <string name="book_format_softcover">Мягкое покрытие</string>
+    <string name="lbl_archive_type_tar">резервная копия (%1$s)</string>
+    <string name="lbl_archive_type_xml">Экспорт XML (%1$s)</string>
+    <string name="lbl_archive_type_tar_info">Полное резервное копирование / восстановление архива</string>
+    <string name="lbl_author_type_cover_inking">Обложка для книги</string>
 
 </resources>

@@ -27,8 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import com.hardbacknutter.nevertoomanybooks.backup.options.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.options.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
@@ -194,7 +194,7 @@ public final class UniqueId {
     public static final String BKEY_FRAGMENT_TAG = "fragment";
 
     /**
-     * The resulting {@link ImportHelper} options flags after an import.
+     * The resulting {@link ImportManager} options flags after an import.
      * <p>
      * <br>type: {@code int} (bitmask)
      * setResult
@@ -202,7 +202,7 @@ public final class UniqueId {
     public static final String BKEY_IMPORT_RESULT = "importResult";
 
     /**
-     * The resulting {@link ExportHelper} options flags after an export.
+     * The resulting {@link ExportManager} options flags after an export.
      * <p>
      * <br>type: {@code int} (bitmask)
      * setResult

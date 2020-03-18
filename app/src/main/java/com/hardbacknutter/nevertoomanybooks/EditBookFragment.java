@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
  * Does not have fields of its own, as it's merely the coordinator/container for the actual
  * editor fragments.
  * <p>
- * URGENT: eliminate... move functionality to the activity and ViewModel
+ * TODO: eliminate... move functionality to the activity and ViewModel
  */
 public class EditBookFragment
         extends Fragment {
@@ -173,7 +173,7 @@ public class EditBookFragment
         if (EditBookActivity.showAuthSeriesOnTabs(getContext())) {
             mTabList.add(new TabInfo(EditBookAuthorsFragment.class, R.string.lbl_authors));
 
-            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_FK_SERIES)) {
+            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE)) {
                 mTabList.add(new TabInfo(EditBookSeriesFragment.class,
                                          R.string.lbl_series_multiple));
             }
