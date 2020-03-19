@@ -45,6 +45,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
@@ -61,6 +62,7 @@ public class XmlArchiveWriter
     /** The output stream for the archive. */
     @NonNull
     private final OutputStream mOutputStream;
+    /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
     @Nullable
     private File mTmpBookXmlFile;
 
@@ -69,6 +71,8 @@ public class XmlArchiveWriter
      *
      * @param context Current context
      * @param helper  export configuration
+     *
+     * @throws IOException on failure to create / and write the header
      */
     public XmlArchiveWriter(@NonNull final Context context,
                             @NonNull final ExportManager helper)
@@ -87,6 +91,7 @@ public class XmlArchiveWriter
      *
      * <br><br>{@inheritDoc}
      */
+    @Override
     public void prepareBooks(@NonNull final Context context,
                              @NonNull final ProgressListener progressListener)
             throws IOException {
@@ -94,7 +99,7 @@ public class XmlArchiveWriter
         mTmpBookXmlFile = File.createTempFile("data_xml_", ".tmp");
         mTmpBookXmlFile.deleteOnExit();
 
-        Exporter exporter = new XmlExporter(mHelper.getOptions(), mHelper.getDateSince());
+        Exporter exporter = new XmlExporter(context, Options.BOOKS, mHelper.getDateSince());
         mResults.add(exporter.write(context, mTmpBookXmlFile, progressListener));
     }
 

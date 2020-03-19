@@ -59,7 +59,7 @@ public class ImportHelperDialogFragment
     private static final String BKEY_OPTIONS = TAG + ":options";
 
     private ImportHelperViewModel mModel;
-
+    /** View Binding. */
     private DialogImportOptionsBinding mVb;
 
     /**
@@ -96,7 +96,7 @@ public class ImportHelperDialogFragment
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(mVb.getRoot())
                 .setTitle(R.string.title_import_options)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> onCancelled())
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
                         onOptionsSet(mModel.getHelper()))
                 .create();
@@ -126,11 +126,11 @@ public class ImportHelperDialogFragment
             mVb.cbxCovers.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
 
-            mVb.cbxPreferences.setChecked(
-                    (helper.getOptions() & (Options.PREFERENCES | Options.STYLES)) != 0);
-            mVb.cbxPreferences.setOnCheckedChangeListener(
+            mVb.cbxPrefsAndStyles.setChecked(
+                    (helper.getOptions() & (Options.PREFS | Options.STYLES)) != 0);
+            mVb.cbxPrefsAndStyles.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
-                        helper.setOption(Options.PREFERENCES, isChecked);
+                        helper.setOption(Options.PREFS, isChecked);
                         helper.setOption(Options.STYLES, isChecked);
                     });
         }

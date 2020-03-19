@@ -77,6 +77,7 @@ public class EditAuthorDialogFragment
     private String mGivenNames;
     /** Current edit. */
     private boolean mIsComplete;
+    /** View Binding. */
     private DialogEditAuthorBinding mVb;
 
     /**

@@ -119,7 +119,7 @@ public class FTSSearchActivity
             userIsActive(true);
         }
     };
-
+    /** View Binding. */
     private ActivityAdvancedSearchBinding mVb;
 
     @Override

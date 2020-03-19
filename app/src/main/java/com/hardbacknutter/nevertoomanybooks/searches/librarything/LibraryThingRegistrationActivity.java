@@ -61,10 +61,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class LibraryThingRegistrationActivity
         extends BaseActivity {
 
-    /** Log tag. */
-    private static final String TAG = "LibraryThingReg";
-
+    /** View Binding. */
     private ActivityLibrarythingRegisterBinding mVb;
+
     private final TaskListener<Integer> mListener = new TaskListener<Integer>() {
         @Override
         public void onFinished(@NonNull final FinishMessage<Integer> message) {
@@ -120,8 +119,8 @@ public class LibraryThingRegistrationActivity
     private static class ValidateKey
             extends TaskBase<Void, Integer> {
 
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "LT.ValidateKey";
+
         /**
          * Constructor.
          *

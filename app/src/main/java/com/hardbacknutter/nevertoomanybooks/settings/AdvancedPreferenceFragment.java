@@ -27,19 +27,34 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
@@ -50,6 +65,8 @@ public class AdvancedPreferenceFragment
 
     /** Log tag. */
     private static final String TAG = "AdvancedPreferenceFrag";
+
+    private static final int REQ_PICK_FILE_FOR_EXPORT_DATABASE = 1;
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
@@ -179,6 +196,53 @@ public class AdvancedPreferenceFragment
                         .show();
                 return true;
             });
+        }
+
+        preference = findPreference(Prefs.PSK_EXPORT_DATABASE);
+        if (preference != null) {
+            // Export database - Mainly meant for debug or external processing.
+            preference.setOnPreferenceClickListener(p -> {
+                final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE)
+                        .setType("*/*")
+                        .putExtra(Intent.EXTRA_TITLE, getString(R.string.app_name) + '-'
+                                                      + DateUtils.localSqlDateForToday()
+                                                                 .replace(" ", "-")
+                                                                 .replace(":", "")
+                                                      + ".ntmb.db");
+                startActivityForResult(intent, REQ_PICK_FILE_FOR_EXPORT_DATABASE);
+                return true;
+            });
+        }
+    }
+
+    @Override
+    @CallSuper
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        if (requestCode == REQ_PICK_FILE_FOR_EXPORT_DATABASE) {
+            if (resultCode == Activity.RESULT_OK) {
+                Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                final Uri uri = data.getData();
+                if (uri != null) {
+                    @StringRes
+                    int msgId;
+                    try {
+                        final Context context = getContext();
+                        //noinspection ConstantConditions
+                        FileUtils.copy(context, DBHelper.getDatabasePath(context), uri);
+                        msgId = R.string.progress_end_backup_success;
+                    } catch (@NonNull final IOException e) {
+                        Logger.error(getContext(), TAG, e);
+                        msgId = R.string.error_backup_failed;
+                    }
+                    //noinspection ConstantConditions
+                    Snackbar.make(getView(), msgId, Snackbar.LENGTH_LONG).show();
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 }

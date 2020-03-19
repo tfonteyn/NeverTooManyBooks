@@ -2331,27 +2331,36 @@ public class DAO
     }
 
     /**
-     * Returns a list of all bookshelves in the database.
+     * Convenience method, fetch all shelves, and return them as a List.
      *
-     * <strong>Note:</strong> we do not include the 'All Books' shelf (id==-1).
+     * <strong>Note:</strong> we do not include the 'All Books' shelf.
      *
-     * @return The list
+     * @return a list of all bookshelves in the database.
      */
     @NonNull
     public ArrayList<Bookshelf> getBookshelves() {
         ArrayList<Bookshelf> list = new ArrayList<>();
-
-        String sql = SqlSelectFullTable.BOOKSHELVES
-                     + " WHERE " + TBL_BOOKSHELF.dot(KEY_PK_ID) + ">0"
-                     + " ORDER BY " + KEY_BOOKSHELF + COLLATION;
-
-        try (Cursor cursor = sSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = fetchBookshelves()) {
             final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(KEY_PK_ID), rowData));
             }
         }
         return list;
+    }
+
+    /**
+     * Get all Bookshelves; mainly for the purpose of backups.
+     * <strong>Note:</strong> we do not include the 'All Books' shelf.
+     *
+     * @return Cursor over all Bookshelves
+     */
+    @NonNull
+    public Cursor fetchBookshelves() {
+        String sql = SqlSelectFullTable.BOOKSHELVES
+                     + " WHERE " + TBL_BOOKSHELF.dot(KEY_PK_ID) + ">0"
+                     + " ORDER BY " + KEY_BOOKSHELF + COLLATION;
+        return sSyncedDb.rawQuery(sql, null);
     }
 
     /**
@@ -3820,6 +3829,9 @@ public class DAO
                 + ',' + PRIM_SERIES
                 + ',' + PRIM_AUTHOR
 
+                // list of the BookShelf IDs the book sits on
+                //+ ',' + SqlColumns.EXP_BOOKSHELF_ID_CSV + " AS " + KEY_BOOKSHELF_ID_CSV
+
                 // use an empty loanee (i.e. don't use null's) if there is no loanee
                 + ',' + "COALESCE(" + KEY_LOANEE + ", '') AS " + KEY_LOANEE
 
@@ -4013,12 +4025,25 @@ public class DAO
                 + " END";
 
         /**
-         * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_CSV}.
+         * Expression for the domain {@link DBDefinitions#KEY_BOOKSHELF_ID_CSV}.
          * <p>
-         * The order of the names is arbitrary.
+         * The order of the returned names will be arbitrary.
          * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
          */
-        public static final String EXP_BOOKSHELVES_CSV =
+        public static final String EXP_BOOKSHELF_ID_CSV =
+                "("
+                + "SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_PK_ID) + ",', ')"
+                + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
+                + " WHERE " + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
+                + ")";
+
+        /**
+         * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
+         * <p>
+         * The order of the returned names will be arbitrary.
+         * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+         */
+        public static final String EXP_BOOKSHELF_NAME_CSV =
                 "("
                 + "SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')"
                 + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)

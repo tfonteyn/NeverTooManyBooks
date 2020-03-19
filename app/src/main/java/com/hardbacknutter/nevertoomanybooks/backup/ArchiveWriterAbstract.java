@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstractBase;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
@@ -67,13 +66,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  * <li>XML Preferences</li>
  * <li>CSV Books</li>
  * </ol>
- *
- * Covers are implemented in {@link #doCovers} but support depends on the concreate class.
+ * <p>
+ * Covers are implemented in {@link #doCovers} but support depends on the concrete class.
  */
 public abstract class ArchiveWriterAbstract
         extends ArchiveWriterAbstractBase
-        implements ArchiveWriter.SupportsPreferences,
-                   ArchiveWriter.SupportsStyles {
+        implements ArchiveWriterAbstractBase.SupportsPreferences,
+                   ArchiveWriterAbstractBase.SupportsStyles {
 
     /**
      * The format/version is shared between writers.
@@ -82,6 +81,7 @@ public abstract class ArchiveWriterAbstract
     protected static final int VERSION = 2;
     /** Log tag. */
     private static final String TAG = "ArchiveWriterAbstract";
+    /** {@link BufferedWriter} use. */
     private static final int BUFFER_SIZE = 65535;
 
     /** progress message. */
@@ -91,6 +91,7 @@ public abstract class ArchiveWriterAbstract
     @NonNull
     private final String mProgress_msg_covers_skip;
 
+    /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
     @Nullable
     private File mTmpBookCsvFile;
 
@@ -119,18 +120,19 @@ public abstract class ArchiveWriterAbstract
     }
 
     /**
-     * Default implementation: write as XML
+     * Default implementation: write as XML.
      *
      * <br><br>{@inheritDoc}
      */
     @Override
-    public void writeArchiveHeader(@NonNull final ArchiveInfo archiveInfo)
+    public void writeArchiveHeader(@NonNull final Context context,
+                                   @NonNull final ArchiveInfo archiveInfo)
             throws IOException {
         // Write the archiveInfo as XML to a byte array.
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             XmlExporter xmlExporter = new XmlExporter(Options.INFO, null)) {
+             XmlExporter xmlExporter = new XmlExporter(context, Options.INFO, null)) {
             xmlExporter.writeArchiveInfo(writer, archiveInfo);
         }
         // and store the array
@@ -138,7 +140,7 @@ public abstract class ArchiveWriterAbstract
     }
 
     /**
-     * Default implementation: write as XML
+     * Default implementation: write as XML.
      *
      * <br><br>{@inheritDoc}
      */
@@ -150,7 +152,7 @@ public abstract class ArchiveWriterAbstract
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             Exporter exporter = new XmlExporter(Options.STYLES, null)) {
+             Exporter exporter = new XmlExporter(context, Options.STYLES, null)) {
             mResults.add(exporter.write(context, writer, progressListener));
         }
         // and store the array
@@ -158,7 +160,7 @@ public abstract class ArchiveWriterAbstract
     }
 
     /**
-     * Default implementation: write as XML
+     * Default implementation: write as XML.
      *
      * <br><br>{@inheritDoc}
      */
@@ -170,7 +172,7 @@ public abstract class ArchiveWriterAbstract
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             Exporter exporter = new XmlExporter(Options.PREFERENCES, null)) {
+             Exporter exporter = new XmlExporter(context, Options.PREFS, null)) {
             exporter.write(context, writer, progressListener);
         }
         // and store the array
@@ -183,6 +185,7 @@ public abstract class ArchiveWriterAbstract
      *
      * <br><br>{@inheritDoc}
      */
+    @Override
     public void prepareBooks(@NonNull final Context context,
                              @NonNull final ProgressListener progressListener)
             throws IOException {
@@ -190,7 +193,7 @@ public abstract class ArchiveWriterAbstract
         mTmpBookCsvFile = File.createTempFile("books_csv_", ".tmp");
         mTmpBookCsvFile.deleteOnExit();
 
-        Exporter exporter = new CsvExporter(context, mHelper.getOptions(), mHelper.getDateSince());
+        Exporter exporter = new CsvExporter(context, Options.BOOKS, mHelper.getDateSince());
         mResults.add(exporter.write(context, mTmpBookCsvFile, progressListener));
     }
 
@@ -212,15 +215,40 @@ public abstract class ArchiveWriterAbstract
     }
 
     /**
+     * Write a generic file to the archive.
+     *
+     * @param name for the entry;  allows easier overriding of the file name
+     * @param file to store in the archive
+     *
+     * @throws IOException on failure
+     */
+    protected abstract void putFile(@NonNull String name,
+                                    @NonNull File file)
+            throws IOException;
+
+    /**
+     * Write a generic byte array to the archive.
+     *
+     * @param name  for the entry
+     * @param bytes to store in the archive
+     *
+     * @throws IOException on failure
+     */
+    protected abstract void putByteArray(@NonNull String name,
+                                         @NonNull byte[] bytes)
+            throws IOException;
+
+    /**
      * A container agnostic default implementation for writing cover files.
      * <p>
      * Write each cover file corresponding to a book to the archive.
      *
      * <strong>Note:</strong> We update the count during <strong>dryRun</strong> only.
      *
-     * @param context Current context
-     * @param dryRun  when {@code true}, no writing is done, we only count them.
-     *                when {@code false}, we write.
+     * @param context          Current context
+     * @param dryRun           when {@code true}, no writing is done, we only count them.
+     *                         when {@code false}, we write.
+     * @param progressListener Listener to receive progress information.
      *
      * @throws IOException on failure
      */

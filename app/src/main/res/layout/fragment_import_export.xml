@@ -27,19 +27,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--<androidx.core.widget.NestedScrollView-->
-<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
-<!--    tools:context=".AdminActivity"-->
-<!--    >-->
-
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -47,68 +36,4 @@
     tools:context=".AdminActivity"
     >
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/indents"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/fieldGuidelineIndent"
-        />
-
-    <TextView
-        android:id="@+id/lbl_import_export"
-        style="@style/Label.Header.Small"
-        android:text="@string/lbl_data_import_export"
-        app:layout_constraintStart_toEndOf="@id/indents"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <Button
-        android:id="@+id/lbl_export_archive"
-        style="@style/MenuButton"
-        android:text="@string/lbl_backup_to_archive"
-        app:icon="@drawable/ic_sd_storage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indents"
-        app:layout_constraintTop_toBottomOf="@id/lbl_import_export"
-        />
-
-    <Button
-        android:id="@+id/lbl_export_csv"
-        style="@style/MenuButton"
-        android:text="@string/lbl_export_to_csv"
-        app:icon="@drawable/ic_sd_storage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indents"
-        app:layout_constraintTop_toBottomOf="@id/lbl_export_archive"
-        />
-
-    <Button
-        android:id="@+id/lbl_import"
-        style="@style/MenuButton"
-        android:text="@string/lbl_import"
-        app:icon="@drawable/ic_file_download"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indents"
-        app:layout_constraintTop_toBottomOf="@id/lbl_export_csv"
-        />
-
-    <TextView
-        android:id="@+id/lbl_advanced"
-        style="@style/Label.Header.Small"
-        android:text="@string/lbl_advanced_options"
-        app:layout_constraintStart_toEndOf="@id/indents"
-        app:layout_constraintTop_toBottomOf="@id/lbl_import"
-        />
-
-    <Button
-        android:id="@+id/lbl_copy_database"
-        style="@style/MenuButton"
-        android:text="@string/lbl_copy_database"
-        app:icon="@drawable/ic_sd_storage"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indents"
-        app:layout_constraintTop_toBottomOf="@id/lbl_advanced"
-        />
 </androidx.constraintlayout.widget.ConstraintLayout>
-    <!--</androidx.core.widget.NestedScrollView>-->

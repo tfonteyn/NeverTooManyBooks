@@ -96,7 +96,7 @@
         />
 
     <CheckBox
-        android:id="@+id/cbx_preferences"
+        android:id="@+id/cbx_prefs_and_styles"
         style="@style/OptionRow.Checkable"
         android:layout_width="0dp"
         android:checked="true"
@@ -109,17 +109,16 @@
     <TextView
         android:id="@+id/lbl_format"
         style="@style/Label.Header.Small"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="@string/lbl_format"
         app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/cbx_preferences"
+        app:layout_constraintTop_toBottomOf="@id/cbx_prefs_and_styles"
         />
 
     <Spinner
         android:id="@+id/archive_format"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/indent2"
         app:layout_constraintStart_toStartOf="@id/lbl_format"
         app:layout_constraintTop_toBottomOf="@id/lbl_format"
         tools:entries="@array/tools_placeholder"
@@ -127,16 +126,12 @@
 
     <TextView
         android:id="@+id/archive_format_info"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/indent2"
-        android:visibility="invisible"
-        android:textAppearance="?android:attr/textAppearanceSmall"
+        style="@style/Blurb.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/archive_format"
         app:layout_constraintTop_toBottomOf="@id/archive_format"
         tools:text="@string/lbl_archive_type_xml_info"
-        tools:visibility="visible"
+        android:textIsSelectable="true"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

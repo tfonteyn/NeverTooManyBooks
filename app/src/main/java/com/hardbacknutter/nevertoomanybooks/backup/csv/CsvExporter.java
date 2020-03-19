@@ -39,6 +39,7 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
@@ -61,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <ul>Supports:
  * <li>{@link ArchiveContainerEntry#BooksCsv}</li>
  * </ul>
- *
+ * <p>
  * All books will have full toc, author, series and bookshelf information.
  * <p>
  * Support {@link Options#BOOKS} only (and does in fact simply disregard all Options flags).
@@ -160,6 +161,14 @@ public class CsvExporter
     public CsvExporter(@NonNull final Context context,
                        final int options,
                        @Nullable final Date since) {
+        if (BuildConfig.DEBUG /* always */) {
+            // For now, we only want to write one entity at a time.
+            // This is by choice so debug is easier.
+            //TODO: restructure and allow multi-writes
+            if (Integer.bitCount(options) > 1) {
+                throw new IllegalStateException("only one option allowed");
+            }
+        }
 
         Locale locale = LocaleUtils.getUserLocale(context);
         mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
@@ -181,7 +190,7 @@ public class CsvExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        // we only support books, return empty results
+        // we only support books, return empty results, ignoring other options
         boolean writeBooks = (mOptions & Options.BOOKS) != 0;
         if (!writeBooks) {
             return mResults;
@@ -189,27 +198,17 @@ public class CsvExporter
 
         long lastUpdate = 0;
 
-        final StringBuilder sb = new StringBuilder();
-
         try (Cursor cursor = mDb.fetchBooksForExport(mSince)) {
+            // header: the top row with column labels
+            writer.write(EXPORT_FIELD_HEADERS);
 
             int progressMaxCount = progressListener.getMax() + cursor.getCount();
             progressListener.setMax(progressMaxCount);
 
-            // Before we start, make sure we're not cancelled already.
-            if (progressListener.isCancelled()) {
-                return mResults;
-            }
-
             final RowDataHolder rowData = new CursorRow(cursor);
 
-            writer.write(EXPORT_FIELD_HEADERS);
-            while (cursor.moveToNext()) {
-                if (progressListener.isCancelled()) {
-                    return mResults;
-                }
+            while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                mResults.booksExported++;
                 long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
 
                 String authors = mAuthorCoder.encodeList(mDb.getAuthorsByBookId(bookId));
@@ -224,60 +223,95 @@ public class CsvExporter
                     title = mUnknownString;
                 }
 
-                sb.setLength(0);
-                sb.append(format(bookId))
-                  .append(format(rowData.getString(DBDefinitions.KEY_BOOK_UUID)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)))
-                  .append(format(authors))
-                  .append(format(title))
-                  .append(format(rowData.getString(DBDefinitions.KEY_ISBN)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_PUBLISHER)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_PRINT_RUN)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)))
-                  .append(format(rowData.getLong(DBDefinitions.KEY_EDITION_BITMASK)))
+                // it's a buffered writer, no need to first StringBuilder the line.
+                writer.write(encode(bookId));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_BOOK_UUID)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)));
+                writer.write(",");
+                writer.write(encode(authors));
+                writer.write(",");
+                writer.write(encode(title));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_ISBN)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_PUBLISHER)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_PRINT_RUN)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
+                writer.write(",");
+                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+                writer.write(",");
+                writer.write(encode(rowData.getDouble(DBDefinitions.KEY_RATING)));
+                writer.write(",");
+                writer.write(
+                        encode(mBookshelfCoder.encodeList(mDb.getBookshelvesByBookId(bookId))));
+                writer.write(",");
+                writer.write(encode(rowData.getInt(DBDefinitions.KEY_READ)));
+                writer.write(",");
+                writer.write(encode(mSeriesCoder.encodeList(mDb.getSeriesByBookId(bookId))));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_PAGES)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES)));
+                writer.write(",");
+                writer.write(encode(rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
+                writer.write(",");
+                writer.write(encode(rowData.getDouble(DBDefinitions.KEY_PRICE_PAID)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
+                writer.write(",");
+                writer.write(encode(rowData.getLong(DBDefinitions.KEY_TOC_BITMASK)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_LOCATION)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_READ_START)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_READ_END)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_FORMAT)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_COLOR)));
+                writer.write(",");
+                writer.write(encode(rowData.getInt(DBDefinitions.KEY_SIGNED)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_LOANEE)));
+                writer.write(",");
+                writer.write(encode(mTocCoder.encodeList(mDb.getTocEntryByBook(bookId))));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_DESCRIPTION)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_GENRE)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_LANGUAGE)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_DATE_ADDED)));
+                writer.write(",");
 
-                  .append(format(rowData.getDouble(DBDefinitions.KEY_RATING)))
-                  .append(format(
-                          mBookshelfCoder.encodeList(mDb.getBookshelvesByBookId(bookId))))
-                  .append(format(rowData.getInt(DBDefinitions.KEY_READ)))
-                  .append(format(mSeriesCoder.encodeList(mDb.getSeriesByBookId(bookId))))
-                  .append(format(rowData.getString(DBDefinitions.KEY_PAGES)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES)))
+                //NEWTHINGS: add new site specific ID: add column value
+                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
+                writer.write(",");
+                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
+                writer.write(",");
+                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_ISFDB)));
+                writer.write(",");
+                writer.write(encode(rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
+                writer.write(",");
+                writer.write(
+                        encode(rowData.getString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
+                writer.write("\n");
 
-                  .append(format(rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY)))
-                  .append(format(rowData.getDouble(DBDefinitions.KEY_PRICE_PAID)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_ACQUIRED)))
-
-                  .append(format(rowData.getLong(DBDefinitions.KEY_TOC_BITMASK)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_LOCATION)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_READ_START)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_READ_END)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_FORMAT)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_COLOR)))
-                  .append(format(rowData.getInt(DBDefinitions.KEY_SIGNED)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_LOANEE)))
-                  .append(format(mTocCoder.encodeList(mDb.getTocEntryByBook(bookId))))
-                  .append(format(rowData.getString(DBDefinitions.KEY_DESCRIPTION)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_GENRE)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_LANGUAGE)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_DATE_ADDED)))
-
-                  //NEWTHINGS: add new site specific ID: add column value
-                  .append(format(rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)))
-                  .append(format(rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)))
-                  .append(format(rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)))
-                  .append(format(rowData.getLong(DBDefinitions.KEY_EID_ISFDB)))
-                  .append(format(rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)))
-                  .append(format(
-                          rowData.getString(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
-
-                // replace the comma at the end of the line with a '\n'
-                sb.replace(sb.length() - 1, sb.length(), "\n");
-
-                writer.write(sb.toString());
+                mResults.booksExported++;
 
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
@@ -286,28 +320,29 @@ public class CsvExporter
                 }
             }
         }
+
         return mResults;
     }
 
     @NonNull
-    private String format(final long cell) {
-        return format(String.valueOf(cell));
+    private String encode(final long cell) {
+        return encode(String.valueOf(cell));
     }
 
     @NonNull
-    private String format(final double cell) {
-        return format(String.valueOf(cell));
+    private String encode(final double cell) {
+        return encode(String.valueOf(cell));
     }
 
     /**
      * Double quote all "'s and remove all newlines.
      *
-     * @param cell to format
+     * @param cell to encode
      *
-     * @return The formatted cell enclosed in escaped quotes and a trailing ','
+     * @return The encoded cell enclosed in escaped quotes and a trailing ','
      */
     @NonNull
-    private String format(@Nullable final String cell) {
+    private String encode(@Nullable final String cell) {
         try {
             if (cell == null || "null".equalsIgnoreCase(cell) || cell.trim().isEmpty()) {
                 return "\"\",";
@@ -341,9 +376,9 @@ public class CsvExporter
                 pos++;
 
             }
-            return sb.append("\",").toString();
+            return sb.append("\"").toString();
         } catch (@NonNull final NullPointerException e) {
-            return "\"\",";
+            return "\"\"";
         }
     }
 

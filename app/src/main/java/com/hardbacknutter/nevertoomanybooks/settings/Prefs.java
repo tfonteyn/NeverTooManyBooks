@@ -157,6 +157,9 @@ public final class Prefs {
     static final String PSK_REBUILD_FTS = "psk_rebuild_fts";
     /** Global - Send debug info. */
     static final String PSK_SEND_DEBUG_INFO = "psk_send_debug_info";
+    /** Global - Export the database. */
+    static final String PSK_EXPORT_DATABASE = "psk_export_database";
+
     /** Global - Purge action. */
     static final String PSK_PURGE_BLNS = "psk_purge_blns";
     private static final String pk_search_form_advanced = "search.form.advanced";

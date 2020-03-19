@@ -60,13 +60,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
- * Handled <strong>ALL</strong> types of {@link ReaderEntity}.
+ * Handles <strong>ALL</strong> types of {@link ReaderEntity}.
  * <p>
  * i.o.w.: not split in two classes like the ArchiveWriter abstract and abstract-base.
  */
 public abstract class ArchiveReaderAbstract
         implements ArchiveReader {
 
+    /** Log tag. */
     private static final String TAG = "ArchiveReaderAbstract";
 
     /** Database Access. */
@@ -84,6 +85,7 @@ public abstract class ArchiveReaderAbstract
     /** import configuration. */
     @NonNull
     private final ImportManager mHelper;
+    /** The accumulated results. */
     @NonNull
     private final ImportResults mResults = new ImportResults();
 
@@ -106,6 +108,11 @@ public abstract class ArchiveReaderAbstract
                 context.getString(R.string.progress_msg_n_created_m_updated);
     }
 
+    /**
+     * Get the Uri for the user location to read from.
+     *
+     * @return Uri
+     */
     protected Uri getUri() {
         return mHelper.getUri();
     }
@@ -120,7 +127,7 @@ public abstract class ArchiveReaderAbstract
         int entitiesRead = Options.NOTHING;
 
         boolean readStyles = (mHelper.getOptions() & Options.STYLES) != 0;
-        boolean readPrefs = (mHelper.getOptions() & Options.PREFERENCES) != 0;
+        boolean readPrefs = (mHelper.getOptions() & Options.PREFS) != 0;
         final boolean readBooks = (mHelper.getOptions() & Options.BOOKS) != 0;
         final boolean readCovers = (mHelper.getOptions() & Options.COVERS) != 0;
 
@@ -145,7 +152,7 @@ public abstract class ArchiveReaderAbstract
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
             if (readStyles) {
                 progressListener.onProgressStep(1, mProcessBooklistStyles);
-                final ReaderEntity entity = findEntity(ArchiveContainerEntry.BooklistStylesXml);
+                final ReaderEntity entity = seek(ArchiveContainerEntry.BooklistStylesXml);
                 if (entity != null) {
                     try (Importer importer = new XmlImporter(context, Options.STYLES)) {
                         mResults.add(importer.read(context, entity, progressListener));
@@ -159,19 +166,19 @@ public abstract class ArchiveReaderAbstract
             // Seek the preferences entity next, so we can apply any prefs while reading data.
             if (readPrefs) {
                 progressListener.onProgressStep(1, mProcessPreferences);
-                final ReaderEntity entity = findEntity(ArchiveContainerEntry.PreferencesXml);
+                final ReaderEntity entity = seek(ArchiveContainerEntry.PreferencesXml);
                 if (entity != null) {
-                    try (Importer importer = new XmlImporter(context, Options.PREFERENCES)) {
+                    try (Importer importer = new XmlImporter(context, Options.PREFS)) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
-                    entitiesRead |= Options.PREFERENCES;
+                    entitiesRead |= Options.PREFS;
                     readPrefs = false;
                 }
                 resetToStart();
             }
 
             // Get first entity.
-            ReaderEntity entity = nextEntity();
+            ReaderEntity entity = next();
 
             // process each entry based on type, unless we are cancelled.
             while (entity != null && !progressListener.isCancelled()) {
@@ -207,7 +214,7 @@ public abstract class ArchiveReaderAbstract
                         }
                         break;
                     }
-                    case BooksXml:
+                    case BooksXml: {
                         if (readBooks) {
                             try (Importer importer = new XmlImporter(context, Options.BOOKS)) {
                                 mResults.add(importer.read(context, entity, progressListener));
@@ -215,20 +222,21 @@ public abstract class ArchiveReaderAbstract
                             entitiesRead |= Options.BOOKS;
                         }
                         break;
-
+                    }
                     case PreferencesXml: {
+                        // yes, we have already read them at the start. Leaving the code for now.
                         if (readPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
-                            try (Importer importer = new XmlImporter(context,
-                                                                     Options.PREFERENCES)) {
+                            try (Importer importer = new XmlImporter(context, Options.PREFS)) {
                                 importer.read(context, entity, progressListener);
                             }
-                            entitiesRead |= Options.PREFERENCES;
+                            entitiesRead |= Options.PREFS;
                             readPrefs = false;
                         }
                         break;
                     }
                     case BooklistStylesXml: {
+                        // yes, we have already read them at the start. Leaving the code for now.
                         if (readStyles) {
                             progressListener.onProgressStep(1, mProcessBooklistStyles);
                             try (Importer importer = new XmlImporter(context, Options.STYLES)) {
@@ -252,11 +260,13 @@ public abstract class ArchiveReaderAbstract
                         break;
 
                     case Unknown:
+                    default: {
                         Logger.warn(context, TAG, "read|type=" + entity.getType());
                         break;
+                    }
                 }
 
-                entity = nextEntity();
+                entity = next();
             }
         } finally {
             // report what we actually imported
@@ -278,18 +288,6 @@ public abstract class ArchiveReaderAbstract
                        + "|mHelper=" + mHelper);
         }
         return mResults;
-    }
-
-    /**
-     * Actual reader should override and close their input.
-     *
-     * @throws IOException on failure
-     */
-    @Override
-    @CallSuper
-    public void close()
-            throws IOException {
-        mDb.close();
     }
 
     /**
@@ -339,6 +337,18 @@ public abstract class ArchiveReaderAbstract
     }
 
     /**
+     * Actual reader should override and close their input.
+     *
+     * @throws IOException on failure
+     */
+    @Override
+    @CallSuper
+    public void close()
+            throws IOException {
+        mDb.close();
+    }
+
+    /**
      * Read the next {@link ReaderEntity} from the backup.
      *
      * @return The next entity, or {@code null} if at end
@@ -346,7 +356,7 @@ public abstract class ArchiveReaderAbstract
      * @throws IOException on failure
      */
     @Nullable
-    protected abstract ReaderEntity nextEntity()
+    protected abstract ReaderEntity next()
             throws IOException;
 
     /**
@@ -360,11 +370,11 @@ public abstract class ArchiveReaderAbstract
      * @throws IOException on failure
      */
     @Nullable
-    protected abstract ReaderEntity findEntity(@NonNull ArchiveContainerEntry type)
+    protected abstract ReaderEntity seek(@NonNull ArchiveContainerEntry type)
             throws IOException;
 
     /**
-     * Reset the reader so {@link #nextEntity()} will get the first entity.
+     * Reset the reader so {@link #next()} will get the first entity.
      *
      * @throws IOException on failure
      */

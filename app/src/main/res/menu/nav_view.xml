@@ -48,9 +48,17 @@
 
     <!-- visibility set from code. -->
     <item
-        android:id="@+id/nav_import_export"
+        android:id="@+id/nav_export"
         android:icon="@drawable/ic_sd_storage"
-        android:title="@string/lbl_data_import_export"
+        android:title="@string/lbl_backup"
+        android:visible="false"
+        tools:visible="true" />
+
+    <!-- visibility set from code. -->
+    <item
+        android:id="@+id/nav_import"
+        android:icon="@drawable/ic_file_download"
+        android:title="@string/lbl_import"
         android:visible="false"
         tools:visible="true" />
 

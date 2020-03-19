@@ -150,7 +150,7 @@
     <string name="confirm_email_export">Wil je dit exportbestand als e-mail ergens heen sturen?</string>
     <string name="info_export_backup_all">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
     <string name="X_export_info_success_archive_details">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” map.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt\nsinds de laatste volledige back-up</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
     <string name="title_export_options">Selecteer wat geëxporteerd zal worden naar het archief.</string>
     <string name="error_site_access_failed">Er was een netwerkprobleem terwijl je probeerde toegang te krijgen tot %1$s. Controleer of de website in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning.</string>
     <string name="gr_authorization_needed">Deze actie kan niet worden voltooid voordat deze applicatie door Goodreads is geautoriseerd. Probeer het nog eens als de autorisatie is geslaagd.\n\nWil je de autorisatie nu doen?</string>
@@ -205,9 +205,8 @@
     <string name="hint_empty_field">(Leeg)</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
-    <string name="lbl_archive_type_books">Boeken (%1$s)</string>
-    <string name="lbl_import_export_option_xml">Alle gegevens in XML formaat</string>
-    <string name="lbl_archive_type_xml_info">XML is enkel export, geen import.</string>
+    <string name="lbl_archive_type_csv">Boeken (%1$s)</string>
+    <string name="lbl_archive_type_xml_info">Alle gegevens in XML formaat. XML is enkel export, geen import.</string>
     <string name="info_import_option_all_books">Nieuwe boeken worden toegevoegd. Bestaande boeken worden bijgewerkt.</string>
     <string name="info_import_option_new_and_changed_books">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
     <string name="lbl_import_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
@@ -261,7 +260,7 @@
     <string name="lbl_edition_first_impression">Eerste oplage</string>
     <string name="lbl_edition_limited">Gelimiteerd</string>
     <string name="lbl_purge_image_cache">Afbeeldingen cache wissen</string>
-    <string name="lbl_export_to_csv">Exporteer naar CSV-bestand</string>
+    <string name="lbl_archive_type_csv_info">Export van de boeken naar een CSV-bestand</string>
     <string name="lbl_family_name">Achternaam</string>
     <string name="lbl_field_usage_append">Voegt extra gegevens toe</string>
     <string name="lbl_field_usage_copy_if_blank">kopieer indien leeg</string>
@@ -273,8 +272,6 @@
     <string name="lbl_format">Formaat</string>
     <string name="lbl_genre">Genre</string>
     <string name="lbl_given_names">Voornamen</string>
-    <string name="lbl_import_from_archive">Importeren vanuit archief</string>
-    <string name="lbl_import_from_csv">Importeer vanuit CSV-bestand</string>
     <string name="lbl_toc_anthology">Dit boek is een bloemlezing</string>
     <string name="lbl_is_complete">Is volledig</string>
     <string name="lbl_is_read">Heb je dit boek gelezen?</string>
@@ -508,7 +505,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Als boeken worden getoond in alle reeksen, kunnen ze meermalen voorkomen in de lijst. Het verwijderen van één van die boeken heeft tot gevolg dat alle exemplaren worden verwijderd uit de lijst.</string>
     <string name="tip_view_only_help">Je kan naar link en rechts vegen om naar andere boeken te gaan.</string>
     <string name="title_add_book">Boek Toevoegen</string>
-    <string name="X_title_backup">Back-up</string>
+    <string name="lbl_backup">Back-up</string>
     <string name="title_clone_style">Stijl klonen</string>
     <string name="title_cover">Omslag miniatuur</string>
     <string name="title_delete_book">Boek verwijderen</string>
@@ -654,7 +651,6 @@
     <string name="lbl_sorting">Sorteren</string>
     <string name="lbl_formatting">Formatteren</string>
     <string name="pt_maintenance">Onderhoud</string>
-    <string name="lbl_import_export_csv">CSV (zonder afbeeldingen)</string>
     <string name="pt_primary_author_type">Type primaire auteur</string>
     <string name="lbl_condition_dust_cover_none_or_unknown">Geen</string>
     <string name="lbl_condition_dust_cover_missing">Missend</string>
@@ -678,5 +674,6 @@
     <string name="lbl_archive_type_tar">Backup kopie (%1$s)</string>
     <string name="lbl_archive_type_xml">XML-export (%1$s)</string>
     <string name="lbl_archive_type_tar_info">Volledig back-up- / herstelarchief</string>
+    <string name="error_cannot_import">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
 
 </resources>

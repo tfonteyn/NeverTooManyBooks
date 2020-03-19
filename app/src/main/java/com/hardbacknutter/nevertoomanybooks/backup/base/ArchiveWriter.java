@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.io.Closeable;
-import java.io.File;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
@@ -54,16 +53,21 @@ public interface ArchiveWriter
      * <p>
      * See {@link ArchiveWriterAbstract} for a default implementation.
      *
+     *
+     * @param context          Current context
      * @param archiveInfo header
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    void writeArchiveHeader(@NonNull ArchiveInfo archiveInfo)
-            throws IOException;
+    default void writeArchiveHeader(@NonNull Context context,
+                                    @NonNull ArchiveInfo archiveInfo)
+            throws IOException {
+        // override if needed
+    }
 
     /**
-     * Perform a full write; implementations should call the other interface methods as applicable.
+     * Perform a full write.
      * <p>
      * See {@link ArchiveWriterAbstractBase} for a default implementation.
      *
@@ -77,147 +81,9 @@ public interface ArchiveWriter
                         @NonNull ProgressListener progressListener)
             throws IOException;
 
-    /**
-     * Prepare the books. This is step 1 of writing books.
-     * Implementations should count the number of books and populate the archive header.
-     * <p>
-     * See {@link ArchiveWriterAbstract} for a default implementation.
-     *
-     * @param context          Current context
-     * @param progressListener Listener to receive progress information.
-     *
-     * @throws IOException on failure
-     */
-    @WorkerThread
-    void prepareBooks(@NonNull final Context context,
-                      @NonNull final ProgressListener progressListener)
-            throws IOException;
-
-    /**
-     * Write the books. This is step 2 of writing books.
-     * <p>
-     * See {@link ArchiveWriterAbstract} for a default implementation.
-     *
-     * @param context          Current context
-     * @param progressListener Listener to receive progress information.
-     *
-     * @throws IOException on failure
-     */
-    @WorkerThread
-    void writeBooks(@NonNull final Context context,
-                    @NonNull final ProgressListener progressListener)
-            throws IOException;
-
-    /**
-     * Write a generic file to the archive.
-     *
-     * @param name for the entry;  allows easier overriding of the file name
-     * @param file to store in the archive
-     *
-     * @throws IOException on failure
-     */
-    void putFile(@NonNull String name,
-                 @NonNull File file)
-            throws IOException;
-
-    /**
-     * Write a generic byte array to the archive.
-     *
-     * @param name  for the entry
-     * @param bytes to store in the archive
-     *
-     * @throws IOException on failure
-     */
-    default void putByteArray(@NonNull String name,
-                              @NonNull byte[] bytes)
-            throws IOException {
-        throw new UnsupportedOperationException("not implemented");
-    }
-
-    /**
-     * Close the writer.
-     *
-     * @throws IOException on failure
-     */
     @Override
-    void close()
-            throws IOException;
-
-    /**
-     * Additional support for Styles.
-     */
-    interface SupportsStyles {
-
-        /**
-         * Write the styles.
-         * <p>
-         * See {@link ArchiveWriterAbstract} for a default implementation.
-         *
-         * @param context          Current context
-         * @param progressListener Listener to receive progress information.
-         *
-         * @throws IOException on failure
-         */
-        void writeStyles(@NonNull Context context,
-                         @NonNull ProgressListener progressListener)
-                throws IOException;
-    }
-
-    /**
-     * Additional support for Preferences.
-     */
-    interface SupportsPreferences {
-
-        /**
-         * Write the preference settings.
-         * <p>
-         * See {@link ArchiveWriterAbstract} for a default implementation.
-         *
-         * @param context          Current context
-         * @param progressListener Listener to receive progress information.
-         *
-         * @throws IOException on failure
-         */
-        void writePreferences(@NonNull final Context context,
-                              @NonNull final ProgressListener progressListener)
-                throws IOException;
-    }
-
-    /**
-     * Additional support for Covers.
-     */
-    interface SupportsCovers {
-
-        /**
-         * Prepare the covers. This is step 1 of writing covers.
-         * <p>
-         * Implementations should count the number of covers and populate the archive header.
-         * See {@link ArchiveWriterAbstract} for an implementation.
-         *
-         * @param context          Current context
-         * @param progressListener Listener to receive progress information.
-         *
-         * @throws IOException on failure
-         */
-        @WorkerThread
-        void prepareCovers(@NonNull final Context context,
-                           @NonNull final ProgressListener progressListener)
-                throws IOException;
-
-        /**
-         * Write the covers. This is step 2 of writing covers.
-         * <p>
-         * Implementations should write the files to the archive.
-         * See {@link ArchiveWriterAbstract} for an implementation.
-         *
-         * @param context          Current context
-         * @param progressListener Listener to receive progress information.
-         *
-         * @throws IOException on failure
-         */
-        @WorkerThread
-        void writeCovers(@NonNull final Context context,
-                         @NonNull final ProgressListener progressListener)
-                throws IOException;
+    default void close()
+            throws IOException {
+        // override if needed
     }
 }

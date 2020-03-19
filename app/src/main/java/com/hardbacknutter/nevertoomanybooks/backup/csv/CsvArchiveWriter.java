@@ -25,54 +25,50 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.viewmodels.tasks;
+package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
-import java.util.Objects;
+import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveExportTask;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
-/**
- * See parent class doc.
- *
- * <strong>Note:</strong> a ViewModel must be "public" despite Android Studio
- * proposing "package-private".
- * The catch: it will work in the emulator, but fail on a real device.
- */
-public class ExportTaskModel
-        extends TaskBaseModel<ExportManager> {
+public class CsvArchiveWriter
+        implements ArchiveWriter {
 
-    /** export configuration. */
-    @Nullable
-    private ExportManager mHelper;
+    protected static final int VERSION = 1;
 
-    public void setHelper(@NonNull final ExportManager helper) {
+    @NonNull
+    private final ExportManager mHelper;
+
+    /**
+     * Constructor.
+     *
+     * @param helper export configuration
+     */
+    public CsvArchiveWriter(@NonNull final ExportManager helper) {
         mHelper = helper;
     }
 
-    public String getDefaultUriName(@NonNull final Context context) {
-        Objects.requireNonNull(mHelper);
-        return Exporter.getNamePrefix(context) + mHelper.getArchiveContainer().getFileExt();
+    @Override
+    public int getVersion() {
+        return VERSION;
     }
 
-    /**
-     * Start the task.
-     * {@link #setHelper(ExportManager)} must have been called before.
-     *
-     * @param uri to write to
-     */
-    public void startArchiveExportTask(@NonNull final Uri uri) {
-        Objects.requireNonNull(mHelper);
-        mHelper.setUri(uri);
-        ArchiveExportTask task = new ArchiveExportTask(mHelper, getTaskListener());
-        setTask(task);
-        task.execute();
+    @Override
+    public ExportResults write(@NonNull final Context context,
+                               @NonNull final ProgressListener progressListener)
+            throws IOException {
+
+        try (Exporter exporter = new CsvExporter(context, Options.BOOKS, mHelper.getDateSince())) {
+            return exporter.write(context, mHelper.getTempOutputFile(context), progressListener);
+        }
     }
 }

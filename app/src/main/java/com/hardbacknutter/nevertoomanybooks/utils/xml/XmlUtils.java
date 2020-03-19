@@ -253,7 +253,7 @@ public final class XmlUtils {
      * @return The encoded data
      */
     @NonNull
-    private static String encodeString(@Nullable final String data) {
+    private static String encode(@Nullable final String data) {
         try {
             if (data == null || data.trim().isEmpty() || "null".equalsIgnoreCase(data)) {
                 return "";
@@ -307,14 +307,14 @@ public final class XmlUtils {
     }
 
     /**
-     * counterpart of {@link #encodeString}
+     * counterpart of {@link #encode}
      * <p>
      * Only String 'value' tags need decoding.
      * <p>
      * decode the bare essentials only. To decode all possible entities we could add the Apache
      * 'lang' library I suppose.... maybe some day.
      */
-    public static String decodeString(@Nullable final String data) {
+    public static String decode(@Nullable final String data) {
         if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
             return "";
         }
@@ -398,7 +398,7 @@ public final class XmlUtils {
     public static String attr(@NonNull final String attr,
                               @Nullable final String value) {
         if (value != null && !value.isEmpty()) {
-            return ' ' + attr + "=\"" + encodeString(value) + '"';
+            return ' ' + attr + "=\"" + encode(value) + '"';
         } else {
             return "";
         }

@@ -62,7 +62,7 @@ public class BookSearchByNativeIdFragment
     private int mCheckedSiteResId = View.NO_ID;
     /** The current native id text for onPause/onSaveInstanceState. */
     private String mNativeId;
-
+    /** View Binding. */
     private FragmentBooksearchByNativeIdBinding mVb;
 
     @Override

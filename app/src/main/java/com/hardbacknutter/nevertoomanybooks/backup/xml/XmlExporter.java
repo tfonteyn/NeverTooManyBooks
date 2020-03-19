@@ -41,12 +41,13 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
@@ -66,6 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
@@ -122,6 +124,9 @@ public class XmlExporter
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
     private static final int XML_EXPORTER_STYLES_VERSION_EXPERIMENTAL = 99;
 
+    /** Only send progress updates every 200ms. */
+    private static final int PROGRESS_UPDATE_INTERVAL = 200;
+
     /** Database Access. */
     @NonNull
     private final DAO mDb;
@@ -130,12 +135,28 @@ public class XmlExporter
     private final int mOptions;
     @Nullable
     private final Date mSince;
+    /** cached localized "unknown" string. */
+    @NonNull
+    private final String mUnknownString;
 
     /**
      * Constructor.
      */
-    public XmlExporter(final int options,
+    public XmlExporter(@NonNull final Context context,
+                       final int options,
                        @Nullable final Date since) {
+        if (BuildConfig.DEBUG /* always */) {
+            // For now, we only want to write one entity at a time.
+            // This is by choice so debug is easier.
+            //TODO: restructure and allow multi-writes
+            if (Integer.bitCount(options) > 1) {
+                throw new IllegalStateException("only one option allowed");
+            }
+        }
+
+        Locale locale = LocaleUtils.getUserLocale(context);
+        mUnknownString = context.getString(R.string.unknown).toUpperCase(locale);
+
         mOptions = options;
         mSince = since;
         mDb = new DAO(TAG);
@@ -148,9 +169,6 @@ public class XmlExporter
 
     /**
      * Write all desired item types to the output writer as XML.
-     * <p>
-     * The progressListener will not be very accurate as we advance by 1 for each step,
-     * and not per item (author,book,etc) written.
      *
      * <br><br>{@inheritDoc}
      */
@@ -163,8 +181,9 @@ public class XmlExporter
         // suffix for progress messages.
         String xml = " (xml)";
 
+        // ignore non-supported options
         boolean writeBooks = (mOptions & Options.BOOKS) != 0;
-        boolean writePrefs = (mOptions & Options.PREFERENCES) != 0;
+        boolean writePrefs = (mOptions & Options.PREFS) != 0;
         boolean writeStyles = (mOptions & Options.STYLES) != 0;
 
         // Write styles and prefs first.
@@ -192,7 +211,6 @@ public class XmlExporter
             progressListener.onProgressStep(1, context.getString(R.string.lbl_books) + xml);
             writeBooks(writer, progressListener);
         }
-
         return mResults;
     }
 
@@ -329,19 +347,25 @@ public class XmlExporter
     private void writeBookshelves(@NonNull final Writer writer,
                                   @NonNull final ProgressListener progressListener)
             throws IOException {
-        List<Bookshelf> list = mDb.getBookshelves();
-        writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
-        writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKSHELVES_VERSION));
-        writer.write(">\n");
 
-        for (Bookshelf bookshelf : list) {
-            writer.write('<' + XmlTags.TAG_BOOKSHELF);
-            writer.write(XmlUtils.idAttr(bookshelf.getId()));
-            writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOKSHELF, bookshelf.getName()));
-            writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid()));
-            writer.write("/>\n");
+        try (Cursor cursor = mDb.fetchBookshelves()) {
+            writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
+            writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKSHELVES_VERSION));
+            writer.write(XmlUtils.sizeAttr(cursor.getCount()));
+            writer.write(">\n");
+
+            final RowDataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext() && !progressListener.isCancelled()) {
+                writer.write('<' + XmlTags.TAG_BOOKSHELF);
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOKSHELF,
+                                           rowData.getString(DBDefinitions.KEY_BOOKSHELF)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_STYLE,
+                                           rowData.getString(DBDefinitions.KEY_UUID)));
+                writer.write("/>\n");
+            }
+            writer.write("</" + XmlTags.TAG_BOOKSHELF_LIST + ">\n");
         }
-        writer.write("</" + XmlTags.TAG_BOOKSHELF_LIST + ">\n");
     }
 
     /**
@@ -355,13 +379,16 @@ public class XmlExporter
     private void writeAuthors(@NonNull final Writer writer,
                               @NonNull final ProgressListener progressListener)
             throws IOException {
-        writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
-        writer.write(XmlUtils.versionAttr(XML_EXPORTER_AUTHORS_VERSION));
-        writer.write(">\n");
 
         try (Cursor cursor = mDb.fetchAuthors()) {
+            writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
+            writer.write(XmlUtils.versionAttr(XML_EXPORTER_AUTHORS_VERSION));
+            writer.write(XmlUtils.sizeAttr(cursor.getCount()));
+            writer.write(">\n");
+
             final RowDataHolder rowData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
+            while (cursor.moveToNext() && !progressListener.isCancelled()) {
+
                 writer.write('<' + XmlTags.TAG_AUTHOR);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
 
@@ -376,8 +403,8 @@ public class XmlExporter
                                                    DBDefinitions.KEY_AUTHOR_IS_COMPLETE)));
                 writer.write("/>\n");
             }
+            writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">\n");
         }
-        writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">\n");
     }
 
     /**
@@ -391,13 +418,16 @@ public class XmlExporter
     private void writeSeries(@NonNull final Writer writer,
                              @NonNull final ProgressListener progressListener)
             throws IOException {
-        writer.write('<' + XmlTags.TAG_SERIES_LIST);
-        writer.write(XmlUtils.versionAttr(XML_EXPORTER_SERIES_VERSION));
-        writer.write(">\n");
 
         try (Cursor cursor = mDb.fetchSeries()) {
+            writer.write('<' + XmlTags.TAG_SERIES_LIST);
+            writer.write(XmlUtils.versionAttr(XML_EXPORTER_SERIES_VERSION));
+            writer.write(XmlUtils.sizeAttr(cursor.getCount()));
+            writer.write(">\n");
+
             final RowDataHolder rowData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
+            while (cursor.moveToNext() && !progressListener.isCancelled()) {
+
                 writer.write('<' + XmlTags.TAG_SERIES);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_SERIES_TITLE,
@@ -407,12 +437,12 @@ public class XmlExporter
                                                    DBDefinitions.KEY_SERIES_IS_COMPLETE)));
                 writer.write("/>\n");
             }
+            writer.write("</" + XmlTags.TAG_SERIES_LIST + ">\n");
         }
-        writer.write("</" + XmlTags.TAG_SERIES_LIST + ">\n");
     }
 
     /**
-     * 'loan_to' is added to the books section here, this might be removed!
+     * 'loan_to' is added to the books section here, this might be removed.
      *
      * @param writer           writer
      * @param progressListener Progress and cancellation interface
@@ -422,17 +452,31 @@ public class XmlExporter
     private void writeBooks(@NonNull final Writer writer,
                             @NonNull final ProgressListener progressListener)
             throws IOException {
-        writer.write('<' + XmlTags.TAG_BOOK_LIST);
-        writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKS_VERSION));
-        writer.write(">\n");
+
+        long lastUpdate = 0;
 
         try (Cursor cursor = mDb.fetchBooksForExport(mSince)) {
+            writer.write('<' + XmlTags.TAG_BOOK_LIST);
+            writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKS_VERSION));
+            writer.write(XmlUtils.sizeAttr(cursor.getCount()));
+            writer.write(">\n");
+
+            int progressMaxCount = progressListener.getMax() + cursor.getCount();
+            progressListener.setMax(progressMaxCount);
+
             final RowDataHolder rowData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
+            while (cursor.moveToNext() && !progressListener.isCancelled()) {
+
+                String title = rowData.getString(DBDefinitions.KEY_TITLE);
+                // Sanity check: ensure title is non-blank.
+                if (title.trim().isEmpty()) {
+                    title = mUnknownString;
+                }
+
+                // it's a buffered writer, no need to first StringBuilder the line.
                 writer.write('<' + XmlTags.TAG_BOOK);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE,
-                                           rowData.getString(DBDefinitions.KEY_TITLE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE, title));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_ISBN,
                                            rowData.getString(DBDefinitions.KEY_ISBN)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_UUID,
@@ -440,8 +484,7 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_ADDED,
                                            rowData.getString(DBDefinitions.KEY_DATE_ADDED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_LAST_UPDATED,
-                                           rowData.getString(
-                                                   DBDefinitions.KEY_DATE_LAST_UPDATED)));
+                                           rowData.getString(DBDefinitions.KEY_DATE_LAST_UPDATED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_READ,
                                            rowData.getBoolean(DBDefinitions.KEY_READ)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_START,
@@ -454,8 +497,7 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRINT_RUN,
                                            rowData.getString(DBDefinitions.KEY_PRINT_RUN)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_PUBLISHED,
-                                           rowData.getString(
-                                                   DBDefinitions.KEY_DATE_PUBLISHED)));
+                                           rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED,
                                            rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
@@ -483,8 +525,7 @@ public class XmlExporter
                                            rowData.getString(
                                                    DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_ACQUIRED,
-                                           rowData.getString(
-                                                   DBDefinitions.KEY_DATE_ACQUIRED)));
+                                           rowData.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_LOCATION,
                                            rowData.getString(DBDefinitions.KEY_LOCATION)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_RATING,
@@ -492,25 +533,20 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_SIGNED,
                                            rowData.getBoolean(DBDefinitions.KEY_SIGNED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
-                                           rowData.getLong(
-                                                   DBDefinitions.KEY_EDITION_BITMASK)));
+                                           rowData.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
 
                 // external ID's
                 //NEWTHINGS: add new site specific ID: add attribute
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_LIBRARY_THING,
-                                           rowData.getLong(
-                                                   DBDefinitions.KEY_EID_LIBRARY_THING)));
+                                           rowData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_STRIP_INFO_BE,
-                                           rowData.getLong(
-                                                   DBDefinitions.KEY_EID_STRIP_INFO_BE)));
+                                           rowData.getLong(DBDefinitions.KEY_EID_STRIP_INFO_BE)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_OPEN_LIBRARY,
-                                           rowData.getString(
-                                                   DBDefinitions.KEY_EID_OPEN_LIBRARY)));
+                                           rowData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_ISFDB,
                                            rowData.getLong(DBDefinitions.KEY_EID_ISFDB)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EID_GOODREADS_BOOK,
-                                           rowData.getLong(
-                                                   DBDefinitions.KEY_EID_GOODREADS_BOOK)));
+                                           rowData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE,
                                            rowData.getString(
                                                    DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE)));
@@ -531,10 +567,17 @@ public class XmlExporter
                                                            DBDefinitions.KEY_PRIVATE_NOTES)));
 
                 writer.write("</" + XmlTags.TAG_BOOK + ">\n");
+
                 mResults.booksExported++;
+
+                long now = System.currentTimeMillis();
+                if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL) {
+                    progressListener.onProgress(mResults.booksExported, title);
+                    lastUpdate = now;
+                }
             }
+            writer.write("</" + XmlTags.TAG_BOOK_LIST + ">\n");
         }
-        writer.write("</" + XmlTags.TAG_BOOK_LIST + ">\n");
     }
 
     /**
@@ -542,7 +585,9 @@ public class XmlExporter
      * and send collection data to an XML file.
      *
      * @param writer   where to send the XML to
-     * @param accessor which provides the input
+     * @param accessor the EntityReader to convert the object to XML
+     *
+     * @throws IOException on failure
      */
     private void toXml(@NonNull final Writer writer,
                        @NonNull final EntityWriter<String> accessor)
@@ -629,6 +674,8 @@ public class XmlExporter
          * Check if the collection has more elements.
          * <p>
          * See {@link XmlImporter.StylesReader} for an example
+         *
+         * @return {@code true} if there are
          */
         boolean hasMoreElements();
 
@@ -685,6 +732,7 @@ public class XmlExporter
             implements EntityWriter<String> {
 
         /** The data we'll be writing. */
+        @NonNull
         private final ArchiveInfo mInfo;
 
         @NonNull
@@ -752,8 +800,9 @@ public class XmlExporter
 
         @Nullable
         private final String mName;
-
+        @NonNull
         private final Context mContext;
+        @NonNull
         private final Map<String, ?> mMap;
 
         private boolean mHasMore = true;
@@ -765,7 +814,7 @@ public class XmlExporter
          * @param map     to read from
          * @param name    (optional) of the SharedPreference
          */
-        PreferencesWriter(final Context context,
+        PreferencesWriter(@NonNull final Context context,
                           @NonNull final Map<String, ?> map,
                           @SuppressWarnings("SameParameterValue") @Nullable final String name) {
             mContext = context;
@@ -835,7 +884,9 @@ public class XmlExporter
 
         @NonNull
         private final Context mContext;
+        @NonNull
         private final Collection<BooklistStyle> mStyles;
+        @NonNull
         private final Iterator<BooklistStyle> it;
 
         private BooklistStyle currentStyle;

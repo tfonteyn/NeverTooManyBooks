@@ -134,6 +134,11 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  *     <li>#onBackPressed checks if there are search criteria, if so, clears and
  *     rebuild and suppresses the 'back' action</li>
  * </ol>
+ * <p>
+ * URGENT: turn the list + list header components into a proper fragment.
+ * That will allow us to have a central FragmentContainer, where we can swap in
+ * other fragments without leaving the activity. e.g. import/export/... etc...
+ * Something for version 1.1 presumably.
  */
 public class BooksOnBookshelf
         extends BaseActivity {
@@ -166,6 +171,8 @@ public class BooksOnBookshelf
     private ProgressBar mProgressBar;
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
+    /** The ViewModel. */
+    private BooksOnBookshelfModel mModel;
     /** Listener for the Bookshelf Spinner. */
     private final OnItemSelectedListener mOnBookshelfSelectionChanged =
             new OnItemSelectedListener() {
@@ -192,12 +199,6 @@ public class BooksOnBookshelf
                     // Do Nothing
                 }
             };
-
-    /** The ViewModel. */
-    private BooksOnBookshelfModel mModel;
-    /** The adapter used to fill the mBookshelfSpinner. */
-    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
-
     // ENHANCE: update the modified row without a rebuild.
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
@@ -235,7 +236,6 @@ public class BooksOnBookshelf
 //            }
 //        }
     };
-
     /** Apply the style that a user has selected. */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
@@ -252,7 +252,6 @@ public class BooksOnBookshelf
                     mModel.buildBookList(BooksOnBookshelf.this);
                 }
             };
-
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener
             = new BooklistAdapter.OnRowClickedListener() {
@@ -350,6 +349,8 @@ public class BooksOnBookshelf
             return true;
         }
     };
+    /** The adapter used to fill the mBookshelfSpinner. */
+    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
     /** Whether to show level-header - this depends on the current style. */
     private boolean mShowLevelHeaders;
     /** Define a scroller to update header detail when the top row changes. */
@@ -468,7 +469,8 @@ public class BooksOnBookshelf
         // enable the navigation menu
         setNavigationItemVisibility(R.id.nav_manage_list_styles, true);
         setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
-        setNavigationItemVisibility(R.id.nav_import_export, true);
+        setNavigationItemVisibility(R.id.nav_export, true);
+        setNavigationItemVisibility(R.id.nav_import, true);
         setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsHandler.isShowSyncMenus(this));
 
         // initialize but do not populate the list; the latter is done in onResume
@@ -639,6 +641,19 @@ public class BooksOnBookshelf
                 final Intent intent = new Intent(this, PreferredStylesActivity.class)
                         .putExtra(UniqueId.BKEY_STYLE_ID, mModel.getCurrentStyle(this).getId());
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                return true;
+            }
+
+            case R.id.nav_import: {
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMPORT);
+                return true;
+            }
+            case R.id.nav_export: {
+                Intent intent = new Intent(this, AdminActivity.class)
+                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EXPORT);
                 return true;
             }
 
@@ -1174,7 +1189,11 @@ public class BooksOnBookshelf
                 break;
             }
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_IMP_EXP: {
+            case UniqueId.REQ_NAV_PANEL_EXPORT:
+                break;
+
+            // from BaseActivity Nav Panel
+            case UniqueId.REQ_NAV_PANEL_IMPORT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
                         final int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT,
@@ -1184,7 +1203,7 @@ public class BooksOnBookshelf
                                 // Force a refresh of the list of all user styles.
                                 BooklistStyle.Helper.clear();
                             }
-                            if ((options & Options.PREFERENCES) != 0) {
+                            if ((options & Options.PREFS) != 0) {
                                 // Refresh the preferred bookshelf. This also refreshes its style.
                                 mModel.reloadCurrentBookshelf(this);
                             }

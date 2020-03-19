@@ -39,6 +39,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -58,6 +59,7 @@ public abstract class ArchiveWriterAbstractBase
     /** export configuration. */
     @NonNull
     protected final ExportManager mHelper;
+    /** The accumulated results. */
     @NonNull
     protected final ExportResults mResults = new ExportResults();
     /** Database Access. */
@@ -101,7 +103,7 @@ public abstract class ArchiveWriterAbstractBase
         boolean writeStyles = this instanceof SupportsStyles
                               && (mHelper.getOptions() & Options.STYLES) != 0;
         boolean writePrefs = this instanceof SupportsPreferences
-                             && (mHelper.getOptions() & Options.PREFERENCES) != 0;
+                             && (mHelper.getOptions() & Options.PREFS) != 0;
         boolean writeCovers = this instanceof SupportsCovers
                               && (mHelper.getOptions() & Options.COVERS) != 0;
 
@@ -140,7 +142,7 @@ public abstract class ArchiveWriterAbstractBase
                 if (mResults.coversExported > 0) {
                     info.setCoverCount(mResults.coversExported);
                 }
-                writeArchiveHeader(info);
+                writeArchiveHeader(context, info);
             }
 
             // Write styles and prefs next. This will facilitate & speedup
@@ -157,7 +159,7 @@ public abstract class ArchiveWriterAbstractBase
                 progressListener.onProgressStep(0, context.getString(R.string.lbl_settings));
                 ((SupportsPreferences) this).writePreferences(context, progressListener);
                 progressListener.onProgressStep(1, null);
-                entitiesWritten |= Options.PREFERENCES;
+                entitiesWritten |= Options.PREFS;
             }
 
             // Add the previously generated books file.
@@ -194,6 +196,33 @@ public abstract class ArchiveWriterAbstractBase
     }
 
     /**
+     * Prepare the books. This is step 1 of writing books.
+     * Implementations should count the number of books and populate the archive header.
+     *
+     * @param context          Current context
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    public abstract void prepareBooks(@NonNull final Context context,
+                                      @NonNull final ProgressListener progressListener)
+            throws IOException;
+
+    /**
+     * Write the books. This is step 2 of writing books.
+     *
+     * @param context          Current context
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    public abstract void writeBooks(@NonNull final Context context,
+                                    @NonNull final ProgressListener progressListener)
+            throws IOException;
+
+    /**
      * Actual writer should override and close their output.
      *
      * @throws IOException on failure
@@ -203,5 +232,83 @@ public abstract class ArchiveWriterAbstractBase
     public void close()
             throws IOException {
         mDb.close();
+    }
+
+    /**
+     * Additional support for Styles.
+     */
+    public interface SupportsStyles {
+
+        /**
+         * Write the styles.
+         * <p>
+         * See {@link ArchiveWriterAbstract} for a default implementation.
+         *
+         * @param context          Current context
+         * @param progressListener Listener to receive progress information.
+         *
+         * @throws IOException on failure
+         */
+        void writeStyles(@NonNull Context context,
+                         @NonNull ProgressListener progressListener)
+                throws IOException;
+    }
+
+    /**
+     * Additional support for Preferences.
+     */
+    public interface SupportsPreferences {
+
+        /**
+         * Write the preference settings.
+         * <p>
+         * See {@link ArchiveWriterAbstract} for a default implementation.
+         *
+         * @param context          Current context
+         * @param progressListener Listener to receive progress information.
+         *
+         * @throws IOException on failure
+         */
+        void writePreferences(@NonNull final Context context,
+                              @NonNull final ProgressListener progressListener)
+                throws IOException;
+    }
+
+    /**
+     * Additional support for Covers.
+     */
+    public interface SupportsCovers {
+
+        /**
+         * Prepare the covers. This is step 1 of writing covers.
+         * <p>
+         * Implementations should count the number of covers and populate the archive header.
+         * See {@link ArchiveWriterAbstract} for an implementation.
+         *
+         * @param context          Current context
+         * @param progressListener Listener to receive progress information.
+         *
+         * @throws IOException on failure
+         */
+        @WorkerThread
+        void prepareCovers(@NonNull final Context context,
+                           @NonNull final ProgressListener progressListener)
+                throws IOException;
+
+        /**
+         * Write the covers. This is step 2 of writing covers.
+         * <p>
+         * Implementations should write the files to the archive.
+         * See {@link ArchiveWriterAbstract} for an implementation.
+         *
+         * @param context          Current context
+         * @param progressListener Listener to receive progress information.
+         *
+         * @throws IOException on failure
+         */
+        @WorkerThread
+        void writeCovers(@NonNull final Context context,
+                         @NonNull final ProgressListener progressListener)
+                throws IOException;
     }
 }

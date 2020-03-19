@@ -1018,8 +1018,8 @@ class IsfdbBookHandler
 
                     //  • 4] • (1987) • novel by
                     String nr = a.nextSibling().toString();
-//                    int dotIdx = nr.indexOf('\u2022');
-                    int dotIdx = nr.indexOf('•');
+                    int dotIdx = nr.indexOf('\u2022');
+//                    int dotIdx = nr.indexOf('•');
                     if (dotIdx != -1) {
                         int closeBrIdx = nr.indexOf(']');
                         if (closeBrIdx > dotIdx) {

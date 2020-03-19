@@ -259,7 +259,7 @@ public class StartupActivity
 
         if (mModel.isBackupRequired()) {
             final Intent backupIntent = new Intent(this, AdminActivity.class)
-                    .putExtra(ImportExportFragment.BKEY_AUTO_START_BACKUP, true);
+                    .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
             startActivity(backupIntent);
         }
 

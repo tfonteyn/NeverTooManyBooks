@@ -212,8 +212,6 @@ public class EditBookTocFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
-        // we need to hookup the listener for the applicable DIALOG.
-        // (tasks uses observers already)
         if (ConfirmTocDialogFragment.TAG.equals(childFragment.getTag())) {
             ((ConfirmTocDialogFragment) childFragment).setListener(mConfirmTocResultsListener);
 

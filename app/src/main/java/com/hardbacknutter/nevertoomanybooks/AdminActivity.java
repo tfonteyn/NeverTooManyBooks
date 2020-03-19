@@ -35,6 +35,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
@@ -56,10 +58,7 @@ public class AdminActivity
         super.onCreate(savedInstanceState);
 
         String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
-        if (tag == null) {
-            tag = ImportExportFragment.TAG;
-        }
-
+        Objects.requireNonNull(tag);
         replaceFragment(R.id.main_fragment, tag);
     }
 
@@ -73,8 +72,11 @@ public class AdminActivity
                                  @IdRes final int containerViewId,
                                  @NonNull final String tag) {
         switch (tag) {
-            case ImportExportFragment.TAG:
-                replaceFragment(containerViewId, ImportExportFragment.class, tag);
+            case ImportFragment.TAG:
+                replaceFragment(containerViewId, ImportFragment.class, tag);
+                return;
+            case ExportFragment.TAG:
+                replaceFragment(containerViewId, ExportFragment.class, tag);
                 return;
 
             case GoodreadsAdminFragment.TAG:

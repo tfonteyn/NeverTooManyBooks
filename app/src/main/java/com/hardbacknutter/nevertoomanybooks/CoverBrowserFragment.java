@@ -96,6 +96,7 @@ public class CoverBrowserFragment
     /** Absolute file path of the selected image. */
     @Nullable
     private String mSelectedFileSpec;
+    /** View Binding. */
     private DialogCoverBrowserBinding mVb;
 
     /**

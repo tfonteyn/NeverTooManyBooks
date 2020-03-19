@@ -41,9 +41,9 @@ public final class Options {
     public static final int BOOKS = 1 << 1;
     public static final int COVERS = 1 << 2;
 
-    public static final int PREFERENCES = 1 << 8;
+    public static final int PREFS = 1 << 8;
     public static final int STYLES = 1 << 9;
 
     /** All options. */
-    public static final int ALL = INFO | BOOKS | COVERS | PREFERENCES | STYLES;
+    public static final int ALL = INFO | BOOKS | COVERS | PREFS | STYLES;
 }

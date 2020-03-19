@@ -200,10 +200,6 @@ public class ProgressDialogFragment
         super.onStop();
     }
 
-    public boolean hasTask() {
-        return mCancellable != null;
-    }
-
     /**
      * Optionally link this object with a Cancellable.
      *

@@ -144,7 +144,7 @@
     <string name="confirm_email_export">Θα θέλατε να αποστείλετε σαν e-mail αυτην την εξαγωγή;</string>
     <string name="info_export_backup_all">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
     <string name="X_export_info_success_archive_details">;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο «%1$s».\n\nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από\nτο τελευταίο πλήρες αντίγραφο ασφαλείας</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
     <string name="title_export_options">Επιλέξτε τι θα εξαχθεί στο Αρχείο.</string>
     <string name="error_site_access_failed">Παρουσιάστηκε πρόβλημα δικτύου κατά την πρόσβαση στο %1$s. Ελέγξτε εάν ο ιστότοπος είναι ανεβασμένος και εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη.</string>
     <string name="gr_authorization_needed">Αυτή η ενέργεια δε μπορεί να ολοκληρωθεί μέχρι η εφαρμογή να πάρει άδεια μέσω της ιστοσελίδας Goodreads. Όταν η εφαρμογή πάρει άδεια, παρακαλούμε δοκιμάστε ξανά. \n\nΘέλετε να πάρετε άδεια τώρα;</string>
@@ -194,9 +194,8 @@
     <string name="hint_empty_field">(Κενή)</string>
     <string name="hint_search_text">Κείμενο και/ή ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
-    <string name="lbl_archive_type_books">βιβλία (%1$s)</string>
-    <string name="lbl_import_export_option_xml">Όλα τα δεδομένα σε μορφή XML</string>
-    <string name="lbl_archive_type_xml_info">Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
+    <string name="lbl_archive_type_csv">βιβλία (%1$s)</string>
+    <string name="lbl_archive_type_xml_info">Όλα τα δεδομένα σε μορφή XML. Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
     <string name="info_import_option_all_books">Θα προστεθούν νέα βιβλία. τα υπάρχοντα βιβλία θα ενημερωθούν.</string>
     <string name="info_import_option_new_and_changed_books">Εισαγωγή μόνο βιβλίων που είναι καινούρια, ή που έχουν ενημερωθεί πιο πρόσφατα στο Αρχείο. Χρήσιμο όταν συγχρονίζετε δύο συσκευές.</string>
     <string name="lbl_import_option_new_and_changed_books">Καινούρια και ενημερωμένα βιβλία</string>
@@ -250,7 +249,7 @@
     <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="lbl_edition_limited">Περιορισμένη έκδοση</string>
     <string name="lbl_purge_image_cache">Καθαρή cache εικόνας</string>
-    <string name="lbl_export_to_csv">Εξαγωγή σε αρχείο CSV</string>
+    <string name="lbl_archive_type_csv_info">Εξαγωγή βιβλίων σε αρχείο CSV</string>
     <string name="lbl_family_name">Επώνυμο</string>
     <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
     <string name="lbl_field_usage_copy_if_blank">Αντιγραφή εαν ειναι κενό</string>
@@ -262,8 +261,6 @@
     <string name="lbl_format">Μορφή</string>
     <string name="lbl_genre">Είδος</string>
     <string name="lbl_given_names">Ονόματα</string>
-    <string name="lbl_import_from_archive">Εισαγωγή από Αρχείο</string>
-    <string name="lbl_import_from_csv">Εισαγωγή από αρχείο CSV</string>
     <string name="lbl_toc_anthology">Αυτό το βιβλίο είναι μια Ανθολογία</string>
     <string name="lbl_is_complete">Ολοκληρώθηκε</string>
     <string name="lbl_is_read">Έχετε διαβάσει αυτό το βιβλίο;</string>
@@ -492,7 +489,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Αν εμφανίζεται για κάθε σειρά, ένα βιβλίο μπορεί να εμφανίζεται πολλές φορές σε μια λίστα. Τότε, αν διαγραφεί ένα από αυτά, θα διαγραφούν όλα από τη λίστα.</string>
     <string name="tip_view_only_help">Μπορείτε να σύρετε αριστερά ή δεξιά την οθόνη, για να πάτε σε άλλα βιβλία.</string>
     <string name="title_add_book">Προσθήκη Βιβλίου</string>
-    <string name="X_title_backup">Αντιγράφων ασφαλείας</string>
+    <string name="lbl_backup">Αντιγράφων ασφαλείας</string>
     <string name="title_clone_style">Αντιγραφή στυλ</string>
     <string name="title_cover">Μικρογραφία Εξωφύλλου</string>
     <string name="title_delete_book">Διαγραφή Βιβλίου</string>
@@ -637,7 +634,6 @@
     <string name="lbl_formatting">Μορφοποίηση</string>
     <string name="lbl_sorting">Ταξινόμηση</string>
     <string name="pt_maintenance">Συντήρηση</string>
-    <string name="lbl_import_export_csv">CSV (χωρίς εικόνες)</string>
     <string name="pt_primary_author_type">Κύριος τύπος συγγραφέα</string>
     <string name="lbl_condition_dust_cover_none_or_unknown">Κανένας</string>
     <string name="lbl_condition_dust_cover_missing">Λείπει</string>
@@ -661,5 +657,6 @@
     <string name="lbl_archive_type_tar_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
     <string name="lbl_author_type_cover_inking">Καλύπτοντας το βιβλίο</string>
     <string name="book_format_softcover">μαλακό κάλυμμα</string>
+    <string name="error_cannot_import">Δεν είναι δυνατή η εισαγωγή του επιλεγμένου αρχείου.</string>
 
 </resources>

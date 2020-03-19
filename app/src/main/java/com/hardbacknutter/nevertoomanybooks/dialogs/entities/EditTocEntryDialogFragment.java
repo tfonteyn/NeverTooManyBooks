@@ -81,6 +81,7 @@ public class EditTocEntryDialogFragment
 
     /** The TocEntry we're editing. */
     private TocEntry mTocEntry;
+    /** View Binding. */
     private DialogEditBookTocBinding mVb;
 
     /**

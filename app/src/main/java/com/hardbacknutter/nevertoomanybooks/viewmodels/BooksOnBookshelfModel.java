@@ -530,8 +530,8 @@ public class BooksOnBookshelfModel
         if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_BOOKSHELF)) {
             // This collects a CSV list of the bookshelves the book is on.
             blb.addDomain(new VirtualDomain(
-                    DBDefinitions.DOM_BOOKSHELF_CSV,
-                    DAO.SqlColumns.EXP_BOOKSHELVES_CSV));
+                    DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
+                    DAO.SqlColumns.EXP_BOOKSHELF_NAME_CSV));
         }
 
         // we fetch ONLY the primary author

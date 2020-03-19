@@ -149,7 +149,7 @@ public final class DBDefinitions {
      * Domain definitions.
      * ====================================================================================== */
     /** Virtual: build from "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')". */
-    public static final Domain DOM_BOOKSHELF_CSV;
+    public static final Domain DOM_BOOKSHELF_NAME_CSV;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
     /** {@link #TBL_AUTHORS}. */
@@ -377,7 +377,11 @@ public final class DBDefinitions {
     };
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF = "bookshelf";
-    public static final String KEY_BOOKSHELF_CSV = "bookshelves_csv";
+    /** Alias. */
+    public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
+    /** Alias. */
+    public static final String KEY_BOOKSHELF_ID_CSV = "bs_id_csv";
+
     /** {@link #TBL_AUTHORS} {@link #TBL_BOOK_AUTHOR} */
     public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
     public static final String KEY_AUTHOR_FAMILY_NAME_OB =
@@ -600,8 +604,8 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_BOOKSHELF, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
-        DOM_BOOKSHELF_CSV =
-                new Domain.Builder(KEY_BOOKSHELF_CSV, ColumnInfo.TYPE_TEXT)
+        DOM_BOOKSHELF_NAME_CSV =
+                new Domain.Builder(KEY_BOOKSHELF_NAME_CSV, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
 

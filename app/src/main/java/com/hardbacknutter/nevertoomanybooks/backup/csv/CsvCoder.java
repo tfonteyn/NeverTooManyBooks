@@ -270,8 +270,9 @@ final class CsvCoder {
     public static class BookshelfCoderFactory
             implements StringList.Factory<Bookshelf> {
 
+        @NonNull
         private final BooklistStyle defaultStyle;
-
+        @NonNull
         private final char[] escapeChars = {'(', ')'};
 
         /**

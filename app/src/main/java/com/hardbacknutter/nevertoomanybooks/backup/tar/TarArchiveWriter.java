@@ -44,7 +44,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstractBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  */
 public class TarArchiveWriter
         extends ArchiveWriterAbstract
-        implements ArchiveWriter.SupportsCovers {
+        implements ArchiveWriterAbstractBase.SupportsCovers {
 
     /** The output stream for the archive. */
     @NonNull

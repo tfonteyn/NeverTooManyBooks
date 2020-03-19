@@ -112,6 +112,7 @@ public class XmlImporter
     private static final String ERROR_UNABLE_TO_PROCESS_XML_ENTITY =
             "Unable to process XML entity ";
 
+    /** {@link BufferedReaderNoClose} use. */
     private static final int BUFFER_SIZE = 65535;
 
     /** Database Access. */
@@ -149,9 +150,9 @@ public class XmlImporter
     }
 
     @Override
-    public ImportResults read(@NonNull Context context,
-                              @NonNull ReaderEntity entity,
-                              @NonNull ProgressListener progressListener)
+    public ImportResults read(@NonNull final Context context,
+                              @NonNull final ReaderEntity entity,
+                              @NonNull final ProgressListener progressListener)
             throws IOException {
 
         switch (entity.getType()) {
@@ -168,7 +169,7 @@ public class XmlImporter
                 break;
 
             case PreferencesXml:
-                if ((mOptions & Options.PREFERENCES) != 0) {
+                if ((mOptions & Options.PREFS) != 0) {
                     // Don't close this stream!
                     InputStream is = entity.getInputStream();
                     Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -224,6 +225,9 @@ public class XmlImporter
 
     /**
      * Internal routine to update the passed EntityAccessor from an XML file.
+     *
+     * @param reader   to read from
+     * @param accessor the EntityReader to convert XML to the object
      *
      * @throws IOException on failure
      */
@@ -296,7 +300,7 @@ public class XmlImporter
                 switch (mTag.type) {
                     case XmlUtils.TAG_STRING:
                         // attribute Strings are encoded.
-                        accessor.putString(mTag.name, XmlUtils.decodeString(mTag.value));
+                        accessor.putString(mTag.name, XmlUtils.decode(mTag.value));
                         break;
 
                     case XmlUtils.TAG_BOOLEAN:

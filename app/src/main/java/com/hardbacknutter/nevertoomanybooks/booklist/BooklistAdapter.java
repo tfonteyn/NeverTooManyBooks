@@ -624,7 +624,8 @@ public class BooklistAdapter
             lending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
             series = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
 
-            bookshelf = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_BOOKSHELF_CSV);
+            bookshelf = style
+                    .isBookDetailUsed(context, prefs, DBDefinitions.KEY_BOOKSHELF_NAME_CSV);
             author = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_AUTHOR_FORMATTED);
             isbn = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_ISBN);
             format = style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_FORMAT);
@@ -652,7 +653,7 @@ public class BooklistAdapter
             lending = lending && rowData.contains(DBDefinitions.KEY_LOANEE_AS_BOOLEAN);
             cover = cover && rowData.contains(DBDefinitions.KEY_BOOK_UUID);
             series = series && rowData.contains(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
-            bookshelf = bookshelf && rowData.contains(DBDefinitions.KEY_BOOKSHELF_CSV);
+            bookshelf = bookshelf && rowData.contains(DBDefinitions.KEY_BOOKSHELF_NAME_CSV);
             author = author && rowData.contains(DBDefinitions.KEY_AUTHOR_FORMATTED);
             isbn = isbn && rowData.contains(DBDefinitions.KEY_ISBN);
             format = format && rowData.contains(DBDefinitions.KEY_FORMAT);
@@ -888,7 +889,8 @@ public class BooklistAdapter
             }
 
             if (mInUse.bookshelf) {
-                showOrHide(mBookshelvesView, rowData.getString(DBDefinitions.KEY_BOOKSHELF_CSV));
+                showOrHide(mBookshelvesView,
+                           rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME_CSV));
             }
             if (mInUse.author) {
                 showOrHide(mAuthorView, rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));

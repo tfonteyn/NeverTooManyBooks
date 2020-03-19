@@ -99,7 +99,17 @@ public abstract class OptionsDialogBase<T>
             mListener.get().onOptionsSet(options);
         } else {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onConfirmOptions|" + ErrorMsg.WEAK_REFERENCE);
+                Log.d(TAG, "onOptionsSet|" + ErrorMsg.WEAK_REFERENCE);
+            }
+        }
+    }
+
+    protected void onCancelled() {
+        if (mListener.get() != null) {
+            mListener.get().onCancelled();
+        } else {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
+                Log.d(TAG, "onCancelled|" + ErrorMsg.WEAK_REFERENCE);
             }
         }
     }
@@ -110,5 +120,7 @@ public abstract class OptionsDialogBase<T>
     public interface OptionsListener<T> {
 
         void onOptionsSet(@NonNull T options);
+
+        void onCancelled();
     }
 }

@@ -125,6 +125,7 @@ public final class ImageUtils {
     private static final int[] SCALE_FACTOR = {0, 1, 2, 3, 5, 8, 12};
     /** Log tag. */
     private static final String TAG = "ImageUtils";
+    /** {@link ByteArrayOutputStream} use. */
     private static final int BUFFER_SIZE = 65535;
     /** network: if at first we don't succeed... */
     private static final int NR_OF_TRIES = 2;

@@ -84,6 +84,7 @@ public class EditBookshelvesFragment
         setHasOptionsMenu(true);
     }
 
+    /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
 
     @Override

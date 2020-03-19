@@ -75,7 +75,7 @@ public class BookSearchByIsbnFragment
     /** The scanner. */
     @Nullable
     private ScannerViewModel mScannerModel;
-
+    /** View Binding. */
     private FragmentBooksearchByIsbnBinding mVb;
 
     /** manage the validation check next to the field. */

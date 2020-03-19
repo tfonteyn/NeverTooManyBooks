@@ -42,9 +42,11 @@ public final class UniqueId {
     /** Request code: navigation panel. */
     public static final int REQ_NAV_PANEL_EDIT_STYLES = 1_002;
     /** Request code: navigation panel. */
-    public static final int REQ_NAV_PANEL_IMP_EXP = 1_003;
+    public static final int REQ_NAV_PANEL_IMPORT = 1_003;
     /** Request code: navigation panel. */
-    public static final int REQ_NAV_PANEL_GOODREADS = 1_004;
+    public static final int REQ_NAV_PANEL_EXPORT = 1_004;
+    /** Request code: navigation panel. */
+    public static final int REQ_NAV_PANEL_GOODREADS = 1_005;
     /** Request code: navigation panel call to bring up the Settings. */
     public static final int REQ_NAV_PANEL_SETTINGS = 1_010;
     /** Request code: <strong>non</strong>-navigation panel call to bring up the Settings. */

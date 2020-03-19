@@ -128,7 +128,7 @@ public enum ArchiveContainer {
      *
      * @return file name extension including a '.'
      */
-    public String getFileExtension() {
+    public String getFileExt() {
         switch (this) {
             case Tar:
                 return ".tar";

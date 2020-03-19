@@ -102,13 +102,6 @@ public abstract class BookSearchBaseFragment
 
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
-        final FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        if (mProgressDialog != null) {
-            // reconnect after a fragment restart
-            mProgressDialog.setCancellable(mSearchCoordinator);
-        }
-
         // Warn the user, but don't abort.
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
@@ -186,9 +179,30 @@ public abstract class BookSearchBaseFragment
     }
 
     private void onSearchProgress(@NonNull final TaskListener.ProgressMessage message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.onProgress(message);
+        if (mProgressDialog == null) {
+            mProgressDialog = getOrCreateProgressDialog();
         }
+        mProgressDialog.onProgress(message);
+    }
+
+    @NonNull
+    private ProgressDialogFragment getOrCreateProgressDialog() {
+        FragmentManager fm = getChildFragmentManager();
+
+        // get dialog after a fragment restart
+        ProgressDialogFragment dialog = (ProgressDialogFragment)
+                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        // not found? create it
+        if (dialog == null) {
+            dialog = ProgressDialogFragment
+                    .newInstance(R.string.progress_msg_searching, true, false, 0);
+            dialog.show(fm, ProgressDialogFragment.TAG);
+        }
+
+        // hook the task up.
+        dialog.setCancellable(mSearchCoordinator);
+
+        return dialog;
     }
 
     @CallSuper
@@ -227,13 +241,7 @@ public abstract class BookSearchBaseFragment
         }
 
         // Start the lookup in a background search task.
-        if (onSearch()) {
-            // we started at least one search.
-            mProgressDialog = ProgressDialogFragment
-                    .newInstance(R.string.progress_msg_searching, true, false, 0);
-            mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
-            mProgressDialog.setCancellable(mSearchCoordinator);
-        } else {
+        if (!onSearch()) {
             //TODO: not the best error message, but it will do for now.
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.error_search_failed_network, Snackbar.LENGTH_LONG)

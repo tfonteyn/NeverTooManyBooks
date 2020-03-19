@@ -122,7 +122,7 @@ public class CsvImporter
 
     /** Only send progress updates every 200ms. */
     private static final int PROGRESS_UPDATE_INTERVAL = 200;
-
+    /** {@link BufferedReader} use. */
     private static final int BUFFER_SIZE = 65535;
 
     private static final String STRINGED_ID = DBDefinitions.KEY_PK_ID;
@@ -183,9 +183,9 @@ public class CsvImporter
     }
 
     @Override
-    public ImportResults read(@NonNull Context context,
-                              @NonNull ReaderEntity entity,
-                              @NonNull ProgressListener progressListener)
+    public ImportResults read(@NonNull final Context context,
+                              @NonNull final ReaderEntity entity,
+                              @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
         // we only support books, return empty results

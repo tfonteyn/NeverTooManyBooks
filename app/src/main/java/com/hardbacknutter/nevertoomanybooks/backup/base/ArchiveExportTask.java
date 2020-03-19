@@ -80,15 +80,19 @@ public class ArchiveExportTask
 
         try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
             mHelper.setResults(exporter.write(context, getProgressListener()));
-            exporter.close();
-            // The output file is now properly closed, export it to the user Uri
-            if (!isCancelled()) {
+        } catch (@NonNull final IOException e) {
+            Logger.error(context, TAG, e);
+            mException = e;
+        }
+
+        // The output file is now properly closed, export it to the user Uri
+        try {
+            if (mException == null && !isCancelled()) {
                 mHelper.onSuccess(context);
                 return mHelper;
             }
         } catch (@NonNull final IOException e) {
             Logger.error(context, TAG, e);
-            mException = e;
         }
         mHelper.onFail(context);
         return mHelper;

@@ -149,7 +149,7 @@
     <string name="confirm_email_export">Желаете ли Вы отправить этот экспорт по почте?</string>
     <string name="info_export_backup_all">Все книги, обложки, настройки и пользовательские стили будут экспортированы в архив.</string>
     <string name="X_export_info_success_archive_details">Файл %3$s с именем %2$s был создан в папке «%1$s».\n\nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Все добавленные или обновленные\nкниги с последнего бэкапа</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
     <string name="title_export_options">Выберите, что будет экспортировано в архив.</string>
     <string name="error_site_access_failed">При доступе к %1$s возникла проблема с сетью. Пожалуйста, проверьте, работает ли веб-сайт, и если проблема не устранена, обратитесь в службу поддержки.</string>
     <string name="gr_authorization_needed">Данное действие не может быть завершено пока приложение не будет авторизовано через сайт Goodreads. Пожалуйста, попробуйте ещё раз, после авторизации приложения.\n\nХотите ли Вы авторизоваться сейчас?</string>
@@ -199,9 +199,8 @@
     <string name="hint_empty_field">(Пусто)</string>
     <string name="hint_search_text">Текст и/или ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
-    <string name="lbl_archive_type_books">книги (%1$s)</string>
-    <string name="lbl_import_export_option_xml">Все данные в формате XML</string>
-    <string name="lbl_archive_type_xml_info">Только экспорт XML, без импорта.</string>
+    <string name="lbl_archive_type_csv">книги (%1$s)</string>
+    <string name="lbl_archive_type_xml_info">Все данные в формате XML. Только экспорт XML, без импорта.</string>
     <string name="info_import_option_all_books">Будут добавлены новые книги. существующие книги будут обновлены.</string>
     <string name="info_import_option_new_and_changed_books">Импортировать только новые книги или только те, что обновлены более поздно. Это удобно, когда синхронизируются несклоько устройств.</string>
     <string name="lbl_import_option_new_and_changed_books">Новые и обновленные книги</string>
@@ -255,7 +254,7 @@
     <string name="lbl_edition_first_impression">первый отпечаток</string>
     <string name="lbl_edition_limited">ограниченный выпуск</string>
     <string name="lbl_purge_image_cache">Очистить кэш изображений</string>
-    <string name="lbl_export_to_csv">Экспортировать в CSV файл</string>
+    <string name="lbl_archive_type_csv_info">Экспорт книг в файл CSV</string>
     <string name="lbl_family_name">Фамилия</string>
     <string name="lbl_field_usage_append">Добавляет дополнительные данные</string>
     <string name="lbl_field_usage_copy_if_blank">Копирует, если пусто</string>
@@ -267,8 +266,6 @@
     <string name="lbl_format">Формат</string>
     <string name="lbl_genre">Жанр</string>
     <string name="lbl_given_names">Имя</string>
-    <string name="lbl_import_from_archive">Импорт из архива</string>
-    <string name="lbl_import_from_csv">Импортировать CSV файл</string>
     <string name="lbl_toc_anthology">Эта книга Антология</string>
     <string name="lbl_is_complete">Завершено</string>
     <string name="lbl_is_read">Вы прочитали эту книгу?</string>
@@ -494,7 +491,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Если показывается по сериям, то одна и та же книга может появиться в списке многократно. В этом случае удаление одной из таких книг, удалит и все остальные из списка.</string>
     <string name="tip_view_only_help">вы можете потянуть экран вправо или влево, чтобы перейти на другие книги. </string>
     <string name="title_add_book">Добавить книгу</string>
-    <string name="X_title_backup">Резервная копия</string>
+    <string name="lbl_backup">Резервная копия</string>
     <string name="title_clone_style">Клонировать стиль</string>
     <string name="title_cover">Эскиз обложки</string>
     <string name="title_delete_book">Удалить книгу</string>
@@ -639,7 +636,6 @@
     <string name="lbl_formatting">Форматирование</string>
     <string name="lbl_sorting">Сортировка</string>
     <string name="pt_maintenance">обслуживание</string>
-    <string name="lbl_import_export_csv">CSV (без изображений)</string>
     <string name="pt_primary_author_type">Основной тип автора</string>
     <string name="lbl_condition_dust_cover_none_or_unknown">Никто</string>
     <string name="lbl_condition_dust_cover_missing">Отсутствует</string>
@@ -663,5 +659,6 @@
     <string name="lbl_archive_type_xml">Экспорт XML (%1$s)</string>
     <string name="lbl_archive_type_tar_info">Полное резервное копирование / восстановление архива</string>
     <string name="lbl_author_type_cover_inking">Обложка для книги</string>
+    <string name="error_cannot_import">Выбранный файл не может быть импортирован.</string>
 
 </resources>

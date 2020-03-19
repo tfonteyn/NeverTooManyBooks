@@ -85,7 +85,7 @@ public class UpdateFieldsFragment
 
     /** The extended SearchCoordinator. */
     private UpdateFieldsModel mUpdateFieldsModel;
-
+    @Nullable
     private ProgressDialogFragment mProgressDialog;
 
     @Override
@@ -123,13 +123,6 @@ public class UpdateFieldsFragment
         // The update task itself; i.e. the end result.
         mUpdateFieldsModel.getAllUpdatesFinishedMessage()
                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
-
-        final FragmentManager fm = getChildFragmentManager();
-        mProgressDialog = (ProgressDialogFragment) fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        if (mProgressDialog != null) {
-            // reconnect after a fragment restart
-            mProgressDialog.setCancellable(mUpdateFieldsModel);
-        }
 
         // optional activity title
         if (getArguments() != null && getArguments().containsKey(UniqueId.BKEY_DIALOG_TITLE)) {
@@ -327,17 +320,10 @@ public class UpdateFieldsFragment
     }
 
     private void startUpdate() {
-        mProgressDialog = ProgressDialogFragment
-                .newInstance(R.string.progress_msg_searching, true, true, 0);
-        mProgressDialog.setCancellable(mUpdateFieldsModel);
-
         //noinspection ConstantConditions
         mUpdateFieldsModel.writePreferences(getContext());
 
-        if (mUpdateFieldsModel.startSearch(getContext())) {
-            mProgressDialog.show(getChildFragmentManager(), ProgressDialogFragment.TAG);
-        } else {
-            mProgressDialog = null;
+        if (!mUpdateFieldsModel.startSearch(getContext())) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.warning_no_search_data_for_active_sites,
                           Snackbar.LENGTH_LONG).show();
@@ -386,8 +372,29 @@ public class UpdateFieldsFragment
     }
 
     private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
-        if (mProgressDialog != null) {
-            mProgressDialog.onProgress(message);
+        if (mProgressDialog == null) {
+            mProgressDialog = getOrCreateProgressDialog();
         }
+        mProgressDialog.onProgress(message);
+    }
+
+    @NonNull
+    private ProgressDialogFragment getOrCreateProgressDialog() {
+        FragmentManager fm = getChildFragmentManager();
+
+        // get dialog after a fragment restart
+        ProgressDialogFragment dialog = (ProgressDialogFragment)
+                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        // not found? create it
+        if (dialog == null) {
+            dialog = ProgressDialogFragment
+                    .newInstance(R.string.progress_msg_searching, true, true, 0);
+            dialog.show(fm, ProgressDialogFragment.TAG);
+        }
+
+        // hook the task up.
+        dialog.setCancellable(mUpdateFieldsModel);
+
+        return dialog;
     }
 }

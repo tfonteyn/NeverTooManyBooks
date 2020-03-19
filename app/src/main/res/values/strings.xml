@@ -1532,28 +1532,27 @@
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
 
-
     <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_tar">Backup (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_type_tar_info">Full Backup / Restore archive</string>
     <!-- Text in a spinner dropdown. Must be fairly short. -->
+    <string name="lbl_archive_type_csv">Books (%1$s)</string>
+    <!-- Explanatory note for 'lbl_archive_type_xml' -->
+    <string name="lbl_archive_type_csv_info">Export of the books to a CSV file</string>
+    <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_xml">XML export (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
-    <string name="lbl_archive_type_xml_info">XML is export only, no import.</string>
-    <!-- 'export/import to archive' option -->
-    <string name="lbl_archive_type_books">Books (%1$s)</string>
+    <string name="lbl_archive_type_xml_info">All data in XML format. XML is export only, no import.</string>
 
-    <!-- 'export/import to archive' option -->
-    <string name="lbl_import_export_csv">Books only</string>
-    <!-- 'import to archive' option -->
-    <string name="lbl_import_option_new_and_changed_books">New and updated books</string>
-    <!-- 'export to archive' option -->
-    <string name="lbl_import_export_option_xml">All data in XML format</string>
-    <!-- 'export to archive' option. Should be Two (or one) short lines maximum. -->
+    <!-- 'export books' option. -->
     <string name="lbl_export_option_books_since_last_full_backup">
-        Books added or updated\nsince last full backup.
+        Books added or updated since last full backup.
     </string>
+
+    <!-- 'import' option -->
+    <string name="lbl_import_option_new_and_changed_books">New and updated books</string>
+
 
     <!-- heading/titles for settings/preference screens -->
     <string name="lbl_settings">Settings</string>
@@ -1564,12 +1563,6 @@
     <string name="lbl_data_import_export">Backup &amp; Import</string>
     <!-- Admin -->
     <string name="lbl_backup_to_archive">Backup to Archive</string>
-    <!-- Admin -->
-    <string name="lbl_import_from_archive">Import from Archive</string>
-    <!-- Admin export books URGENT: update translations -->
-    <string name="lbl_export_to_csv">Export Books to a CSV File</string>
-    <!-- Admin import books -->
-    <string name="lbl_import_from_csv">Import from CSV File</string>
 
     <!-- Admin GROUP -->
     <string name="lbl_advanced_options">Advanced</string>
@@ -1632,7 +1625,7 @@
     </string>
 
     <!-- Screen title. -->
-    <string name="X_title_backup">Backup</string>
+    <string name="lbl_backup">Backup</string>
     <!-- Screen title. -->
     <string name="lbl_import">Import</string>
     <string name="X_btn_do_not_show_again">Do not show again</string>

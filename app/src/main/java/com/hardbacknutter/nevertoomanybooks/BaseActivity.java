@@ -360,12 +360,7 @@ public abstract class BaseActivity
 //                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
 //                return true;
 //            }
-            case R.id.nav_import_export: {
-                Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportExportFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMP_EXP);
-                return true;
-            }
+
             case R.id.nav_goodreads: {
                 Intent intent = new Intent(this, AdminActivity.class)
                         .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
@@ -509,9 +504,16 @@ public abstract class BaseActivity
                 return;
 
             // logging only
-            case UniqueId.REQ_NAV_PANEL_IMP_EXP:
+            case UniqueId.REQ_NAV_PANEL_IMPORT:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_IMP_EXP");
+                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_IMPORT");
+                }
+                return;
+
+            // logging only
+            case UniqueId.REQ_NAV_PANEL_EXPORT:
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EXPORT");
                 }
                 return;
 

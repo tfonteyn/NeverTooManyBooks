@@ -42,13 +42,23 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 public interface Exporter
         extends Closeable {
 
-    /** BufferedWriter buffer size. */
+    /** {@link BufferedWriter} use. */
     int BUFFER_SIZE = 65535;
+
+    static String getNamePrefix(@NonNull final Context context) {
+        return context.getString(R.string.app_name) + '-'
+               + DateUtils.localSqlDateForToday()
+                          .replace(" ", "-")
+                          .replace(":", "")
+               + ".ntmb";
+    }
 
     /**
      * Get the format version that this exporter is writing out.

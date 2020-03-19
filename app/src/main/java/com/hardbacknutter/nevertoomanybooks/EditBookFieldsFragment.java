@@ -95,7 +95,7 @@ public class EditBookFieldsFragment
     /** The scanner. */
     @Nullable
     private ScannerViewModel mScannerModel;
-
+    /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
 
     @Override

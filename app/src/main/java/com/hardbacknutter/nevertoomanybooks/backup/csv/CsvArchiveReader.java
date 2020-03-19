@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -71,7 +72,7 @@ public class CsvArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (Importer importer = new CsvImporter(context, mHelper.getOptions())) {
+        try (Importer importer = new CsvImporter(context, Options.BOOKS)) {
             ReaderEntity entity = new CsvReaderEntity(is);
             return importer.read(context, entity, progressListener);
         } finally {
@@ -87,6 +88,7 @@ public class CsvArchiveReader
     private static class CsvReaderEntity
             implements ReaderEntity {
 
+        /** The entity source stream. */
         @NonNull
         private final InputStream mIs;
 

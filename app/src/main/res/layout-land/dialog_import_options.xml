@@ -47,7 +47,7 @@
         android:id="@+id/cbx_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="cbx_books,cbx_covers,cbx_preferences"
+        app:constraint_referenced_ids="cbx_books,cbx_covers,cbx_prefs_and_styles"
         />
 
     <androidx.constraintlayout.widget.Guideline
@@ -118,7 +118,7 @@
         />
 
     <CheckBox
-        android:id="@+id/cbx_preferences"
+        android:id="@+id/cbx_prefs_and_styles"
         style="@style/OptionRow.Checkable"
         android:layout_width="0dp"
         android:checked="true"

@@ -149,7 +149,7 @@
     <string name="confirm_email_export">Dışarı aktarılan veriyi e-posta ile göndermemizi ister misiniz?</string>
     <string name="info_export_backup_all">Tüm kitaplar, kapaklar, ayarlar ve kişiselleştirilmiş biçemler arşive aktarılacaktır.</string>
     <string name="X_export_info_success_archive_details">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen\nveya güncellenen kitaplar</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
     <string name="title_export_options">Arşive nelerin aktarılacağını seçin.</string>
     <string name="error_site_access_failed">%1$s\'e erişilirken bir ağ sorunu oluştu. Lütfen web sitesinin açık olup olmadığını kontrol edin ve sorun devam ederse lütfen destek ile iletişime geçin.</string>
     <string name="gr_authorization_needed">Bu uygulama Goodreads ağ sayfasında yetkilendirilmeden verilen bu görev tamamlanamaz. Uygulamayı yetkilendirdikten sonra yeniden deneyiniz. \n\nŞimdi yetkilendirmek istiyor musunuz?</string>
@@ -198,9 +198,8 @@
     <string name="hint_empty_field">(Boş)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
-    <string name="lbl_archive_type_books">Kitaplar (%1$s)</string>
-    <string name="lbl_import_export_option_xml">Tüm veriler XML formatında</string>
-    <string name="lbl_archive_type_xml_info">Yalnızca XML dışa aktarma, içe aktarma yok.</string>
+    <string name="lbl_archive_type_csv">Kitaplar (%1$s)</string>
+    <string name="lbl_archive_type_xml_info">Tüm veriler XML formatında. Yalnızca XML dışa aktarma, içe aktarma yok.</string>
     <string name="info_import_option_all_books">Yeni kitaplar eklenecek. Mevcut kitaplar güncellenecek.</string>
     <string name="info_import_option_new_and_changed_books">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
     <string name="lbl_import_option_new_and_changed_books">Yeni ve güncellenmiş kitaplar</string>
@@ -254,7 +253,7 @@
     <string name="lbl_edition_first_impression">1. basım</string>
     <string name="lbl_edition_limited">Sınırlı sayıda</string>
     <string name="lbl_purge_image_cache">Görüntü önbelleğini temizle</string>
-    <string name="lbl_export_to_csv">CSV dosyasına dışa aktar</string>
+    <string name="lbl_archive_type_csv_info">Kitapların bir CSV dosyasına aktarılması</string>
     <string name="lbl_family_name">Soyadı</string>
     <string name="lbl_field_usage_append">Ek veriyi iliştirir</string>
     <string name="lbl_field_usage_copy_if_blank">Boş ise eşlemle</string>
@@ -266,8 +265,6 @@
     <string name="lbl_format">Biçim</string>
     <string name="lbl_genre">Tür</string>
     <string name="lbl_given_names">Adı</string>
-    <string name="lbl_import_from_archive">Arşivden içe aktar</string>
-    <string name="lbl_import_from_csv">CSV dosyasından içe aktar</string>
     <string name="lbl_toc_anthology">Bu kitap bir antoloji</string>
     <string name="lbl_is_complete">Tamamlandı</string>
     <string name="lbl_is_read">Bu kitabı okudunuz mu?</string>
@@ -492,7 +489,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Eğer her bir seride gösteriliyorsa, tek bir kitap bir dizelgede birden fazla görünebilir. Böyle bir durumda bu kitaplardan birini silmek dizelgeden tüm girileri silecektir.</string>
     <string name="tip_view_only_help">Sağa/sola kaydırarak diğer kitaplara geçebilir.</string>
     <string name="title_add_book">Kitap ekle</string>
-    <string name="X_title_backup">Yedekle</string>
+    <string name="lbl_backup">Yedekle</string>
     <string name="title_clone_style">Biçemi çoğalt</string>
     <string name="title_cover">Kapak resmi</string>
     <string name="title_delete_book">Kitap sil</string>
@@ -639,7 +636,6 @@
     <string name="lbl_formatting">Biçimlendirme</string>
     <string name="lbl_sorting">sınıflandırma</string>
     <string name="pt_maintenance">Bakım</string>
-    <string name="lbl_import_export_csv">CSV (görüntüler olmadan)</string>
     <string name="pt_primary_author_type">Tipo de autor principal</string>
     <string name="lbl_condition_dust_cover_none_or_unknown">Yok</string>
     <string name="lbl_condition_dust_cover_missing">Eksik</string>
@@ -663,5 +659,6 @@
     <string name="lbl_archive_type_tar">Yedek kopya (%1$s)</string>
     <string name="lbl_archive_type_xml">XML dışa aktarma (%1$s)</string>
     <string name="lbl_archive_type_tar_info">Tam Yedekleme / Geri Yükleme arşivi</string>
+    <string name="error_cannot_import">Seçilen dosya içe aktarılamaz.</string>
 
 </resources>

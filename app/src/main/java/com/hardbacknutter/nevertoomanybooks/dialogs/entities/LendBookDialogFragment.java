@@ -153,6 +153,7 @@ public class LendBookDialogFragment
         }
     }
 
+    /** View Binding. */
     private DialogEditLoanBinding mVb;
 
     @NonNull

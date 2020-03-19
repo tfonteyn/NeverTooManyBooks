@@ -56,7 +56,7 @@ public class ExportHelperDialogFragment
     public static final String TAG = "ExportHelperDialogFragment";
 
     private ExportHelperViewModel mModel;
-
+    /** View Binding. */
     private DialogExportOptionsBinding mVb;
 
     /**
@@ -86,7 +86,7 @@ public class ExportHelperDialogFragment
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(mVb.getRoot())
                 .setTitle(R.string.title_export_options)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> onCancelled())
                 .setPositiveButton(android.R.string.ok, (dialog, which) ->
                         onOptionsSet(mModel.getHelper()))
                 .create();
@@ -119,18 +119,18 @@ public class ExportHelperDialogFragment
         mVb.cbxCovers.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
 
-        mVb.cbxPreferences.setChecked(
-                (helper.getOptions() & (Options.PREFERENCES | Options.STYLES)) != 0);
-        mVb.cbxPreferences.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            helper.setOption(Options.PREFERENCES, isChecked);
+        mVb.cbxPrefsAndStyles.setChecked(
+                (helper.getOptions() & (Options.PREFS | Options.STYLES)) != 0);
+        mVb.cbxPrefsAndStyles.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            helper.setOption(Options.PREFS, isChecked);
             helper.setOption(Options.STYLES, isChecked);
         });
 
         // Check options on position.
         final List<String> list = new ArrayList<>();
-        list.add(getString(R.string.lbl_archive_type_tar, ArchiveContainer.Tar.getFileExtension()));
-        list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExtension()));
-//        list.add(getString(R.string.lbl_archive_type_csv, ArchiveType.CsvBooks.getExt()));
+        list.add(getString(R.string.lbl_archive_type_tar, ArchiveContainer.Tar.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_csv, ArchiveContainer.CsvBooks.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
 
         //noinspection ConstantConditions
         ArrayAdapter archiveFormatAdapter =
@@ -149,33 +149,36 @@ public class ExportHelperDialogFragment
                 switch (position) {
                     case 0:
                         helper.setArchiveContainer(ArchiveContainer.Tar);
-                        mVb.archiveFormatInfo.setVisibility(View.INVISIBLE);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_tar_info);
+                        mVb.cbxBooks.setChecked(true);
+                        mVb.cbxBooks.setEnabled(true);
+                        mVb.cbxPrefsAndStyles.setChecked(true);
+                        mVb.cbxPrefsAndStyles.setEnabled(true);
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
-                        mVb.cbxPreferences.setChecked(true);
-                        mVb.cbxPreferences.setEnabled(true);
                         break;
 
                     case 1:
-                        helper.setArchiveContainer(ArchiveContainer.Xml);
-                        mVb.archiveFormatInfo.setVisibility(View.VISIBLE);
-                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_xml_info);
+                        helper.setArchiveContainer(ArchiveContainer.CsvBooks);
+                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
+                        mVb.cbxBooks.setChecked(true);
+                        mVb.cbxBooks.setEnabled(false);
+                        mVb.cbxPrefsAndStyles.setChecked(false);
+                        mVb.cbxPrefsAndStyles.setEnabled(false);
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
-                        mVb.cbxPreferences.setChecked(true);
-                        mVb.cbxPreferences.setEnabled(true);
                         break;
 
-//                    case 2:
-//                        helper.setArchiveType(ArchiveType.CsvBooks);
-//                        mVb.archiveFormatInfo.setVisibility(View.VISIBLE);
-//                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
-//                        mVb.cbxCovers.setChecked(false);
-//                        mVb.cbxCovers.setEnabled(false);
-//                        mVb.cbxPreferences.setChecked(false);
-//                        mVb.cbxPreferences.setEnabled(false);
-//                        break;
+                    case 2:
+                        helper.setArchiveContainer(ArchiveContainer.Xml);
+                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_xml_info);
+                        mVb.cbxBooks.setChecked(true);
+                        mVb.cbxBooks.setEnabled(true);
+                        mVb.cbxPrefsAndStyles.setChecked(true);
+                        mVb.cbxPrefsAndStyles.setEnabled(true);
+                        mVb.cbxCovers.setChecked(false);
+                        mVb.cbxCovers.setEnabled(false);
+                        break;
                 }
             }
 

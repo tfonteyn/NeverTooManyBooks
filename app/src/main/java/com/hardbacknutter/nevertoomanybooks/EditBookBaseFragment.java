@@ -89,7 +89,6 @@ public abstract class EditBookBaseFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
-
         if (PartialDatePickerDialogFragment.TAG.equals(childFragment.getTag())) {
             ((PartialDatePickerDialogFragment) childFragment)
                     .setListener(mDatePickerResultsListener);

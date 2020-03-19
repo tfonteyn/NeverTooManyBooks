@@ -93,7 +93,7 @@ public class TarArchiveReader
 
     @Override
     @Nullable
-    public ReaderEntity findEntity(@NonNull final ArchiveContainerEntry type)
+    public ReaderEntity seek(@NonNull final ArchiveContainerEntry type)
             throws IOException {
 
         TarArchiveEntry entry;
@@ -113,7 +113,7 @@ public class TarArchiveReader
 
     @Override
     @Nullable
-    public ReaderEntity nextEntity()
+    public ReaderEntity next()
             throws IOException {
 
         TarArchiveEntry entry = getInputStream().getNextTarEntry();
@@ -139,7 +139,7 @@ public class TarArchiveReader
             // We try and find the InfoHeader entity, and process it with the XMLImporter
             ReaderEntity entity;
             try {
-                entity = findEntity(ArchiveContainerEntry.InfoHeaderXml);
+                entity = seek(ArchiveContainerEntry.InfoHeaderXml);
             } catch (@NonNull final IOException e) {
                 //VERY annoying... the apache tar library does not throw a unique exception.
                 // We reluctantly look at the message, to give the user better error details
@@ -209,6 +209,7 @@ public class TarArchiveReader
     private static class TarReaderEntity
             implements ReaderEntity {
 
+        /** The entity source stream. */
         @NonNull
         private final TarArchiveReader mReader;
         @NonNull

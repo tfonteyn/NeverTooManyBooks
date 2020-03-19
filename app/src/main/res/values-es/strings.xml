@@ -151,7 +151,7 @@
     <string name="confirm_email_export">¿Desea enviar por correo electrónico el fichero exportado?</string>
     <string name="info_export_backup_all">Se exportarán al fichero todos los libros, portadas, configuraciones y estilos personalizados.</string>
     <string name="X_export_info_success_archive_details">Se ha creado un fichero de %3$s llamado %2$s en el directorio «%1$s».\n\nDebe copiarlo a otro lugar para proteger los datos en caso de que su dispositivo resulte dañado, se pierda o sea robado.</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Todos los libros añadidos o actualizados\ndesde la última copia de seguridad completa</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Todos los libros añadidos o actualizados desde la última copia de seguridad completa</string>
     <string name="title_export_options">Seleccione lo que desea exportar al fichero.</string>
     <string name="error_site_access_failed">Hubo un problema de red al acceder a %1$s. Compruebe si el sitio web está activo y, si el problema persiste, póngase en contacto con el servicio de asistencia.</string>
     <string name="gr_authorization_needed">Esta acción no se puede completar mientras la aplicación no sea autorizada en el sitio web Goodreads. Inténtelo una vez haya autorizado esta aplicación. \n\nQuiere autorizarla ahora?</string>
@@ -201,9 +201,8 @@
     <string name="hint_empty_field">(Vacío)</string>
     <string name="hint_search_text">Texto y/o ISBN</string>
     <string name="error_import_csv_file_must_contain_columns_x">El fichero debe tener una columna con uno de los nombres siguientes: %1$s</string>
-    <string name="lbl_archive_type_books">Los libros (%1$s)</string>
-    <string name="lbl_import_export_option_xml">Todos los datos en formato XML</string>
-    <string name="lbl_archive_type_xml_info">XML es solo de exportación, no de importación.</string>
+    <string name="lbl_archive_type_csv">Los libros (%1$s)</string>
+    <string name="lbl_archive_type_xml_info">Todos los datos en formato XML. XML es solo de exportación, no de importación.</string>
     <string name="info_import_option_all_books">Se agregarán nuevos libros. Los libros existentes serán actualizados.</string>
     <string name="info_import_option_new_and_changed_books">Importar sólo los libros nuevos, o los que tienen fecha de actualización más reciente en el fichero. Esto es útil para sincronizar dispositivos.</string>
     <string name="lbl_import_option_new_and_changed_books">Libros nuevos y actualizados</string>
@@ -257,7 +256,7 @@
     <string name="lbl_edition_first_impression">Primera impresión</string>
     <string name="lbl_edition_limited">Edición limitada</string>
     <string name="lbl_purge_image_cache">Borrar caché de imágenes</string>
-    <string name="lbl_export_to_csv">Exportar a fichero CSV</string>
+    <string name="lbl_archive_type_csv_info">Exportación de los libros a fichero CSV</string>
     <string name="lbl_family_name">Apellidos</string>
     <string name="lbl_field_usage_append">Añadir datos adicionales</string>
     <string name="lbl_field_usage_copy_if_blank">Copiar si está en blanco</string>
@@ -269,8 +268,6 @@
     <string name="lbl_format">Formato</string>
     <string name="lbl_genre">Género</string>
     <string name="lbl_given_names">Nombre</string>
-    <string name="lbl_import_from_archive">Importar de fichero</string>
-    <string name="lbl_import_from_csv">Importar de fichero CSV</string>
     <string name="lbl_toc_anthology">Este libro es una antología.</string>
     <string name="lbl_is_complete">Esta completo</string>
     <string name="lbl_is_read">¿Has leído este libro?</string>
@@ -503,7 +500,7 @@
     <string name="tip_series_book_may_appear_more_than_once">Si se muestra en cada serie, un mismo libro puede aparecer más de una vez en un listado. En ese caso, si se elimina uno de esos libros se eliminará de todas las posiciones del listado.</string>
     <string name="tip_view_only_help">Puede deslizar la pantalla a derecha o izquierda para ver otros libros.</string>
     <string name="title_add_book">Añadir libro</string>
-    <string name="X_title_backup">Copia</string>
+    <string name="lbl_backup">Copia</string>
     <string name="title_clone_style">Duplicar estilo</string>
     <string name="title_cover">Portada</string>
     <string name="title_delete_book">Eliminar libro</string>
@@ -648,7 +645,6 @@
     <string name="lbl_formatting">Formateo</string>
     <string name="lbl_sorting">Clasificación</string>
     <string name="pt_maintenance">Mantenimiento</string>
-    <string name="lbl_import_export_csv">CSV (sin imágenes)</string>
     <string name="pt_primary_author_type">Tipo de autor principal</string>
     <string name="lbl_condition_dust_cover_none_or_unknown">Ninguno</string>
     <string name="lbl_condition_dust_cover_missing">Desaparecido</string>
@@ -672,5 +668,6 @@
     <string name="lbl_archive_type_tar">Copia de respaldo (%1$s)</string>
     <string name="lbl_archive_type_xml">Exportación XML (%1$s)</string>
     <string name="lbl_archive_type_tar_info">Copia de seguridad completa / Restaurar archivo</string>
+    <string name="error_cannot_import">El archivo seleccionado no se puede importar.</string>
 
 </resources>

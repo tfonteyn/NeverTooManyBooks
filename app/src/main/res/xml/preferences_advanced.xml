@@ -92,5 +92,10 @@
             android:title="@string/lbl_send_debug_info"
             />
 
+        <Preference
+            android:icon="@drawable/ic_sd_storage"
+            android:key="psk_export_database"
+            android:title="@string/lbl_copy_database"
+            />
     </PreferenceCategory>
 </PreferenceScreen>
