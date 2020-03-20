@@ -1286,6 +1286,9 @@
     <string name="book_color_full_color">Colored</string>
     <!-- Color - content is black and white / single color only. -->
     <string name="book_color_uncolored">Black &amp; white</string>
+    <!-- uncolored, but with 1 or 2 support-colors.
+         e.g. black and white, but additional red for emphasis -->
+    <string name="book_color_support_color">Uncolored + support color</string>
 
     <!-- ####################################################################################### -->
     <!-- == List values. == -->
@@ -1559,10 +1562,9 @@
     <string name="lbl_preferred_styles">Preferred styles</string>
     <string name="lbl_websites">Websites</string>
 
-    <!-- Admin GROUP -->
-    <string name="lbl_data_import_export">Backup &amp; Import</string>
-    <!-- Admin -->
-    <string name="lbl_backup_to_archive">Backup to Archive</string>
+    <string name="lbl_backup">Backup</string>
+    <string name="lbl_import">Import</string>
+    <string name="X_lbl_data_import_export">Backup &amp; Import</string>
 
     <!-- Admin GROUP -->
     <string name="lbl_advanced_options">Advanced</string>
@@ -1600,7 +1602,6 @@
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
-    <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
 
     <!-- displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
     <string name="X_export_info_success_archive_details">
@@ -1609,13 +1610,10 @@
         is damaged, lost, or stolen.
     </string>
 
+    <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
+
     <string name="X_warning_cover_corrupt">Cover is corrupt</string>
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
-
-    <string name="X_info_reset_tips">
-        From time to time this application can display optional messages regarding %1$s.\n
-        Press the button below to reset any of these messages that have been disabled.
-    </string>
 
     <string name="X_tip_booklist_global_properties">
         You can use this screen to set the default characteristics of all booklist styles.
@@ -1624,10 +1622,6 @@
         variety of other preferences that will be applied to all your styles when possible.
     </string>
 
-    <!-- Screen title. -->
-    <string name="lbl_backup">Backup</string>
-    <!-- Screen title. -->
-    <string name="lbl_import">Import</string>
     <string name="X_btn_do_not_show_again">Do not show again</string>
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
     <string name="X_lbl_available">Available</string>
@@ -1644,17 +1638,11 @@
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf ToRead" -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s %2$s ?</string>
 
-
-    <!-- uncolored, but with 1 or 2 support-colors.
-         e.g. black and white, but additional red for emphasis -->
-    <string name="book_color_support_color">Uncolored + support color</string>
-
     <!-- meant for dialog box where a set of bitmask checkboxes can be selected,
-        or the neutral button to indicate "don't use this at all"
+        or the neutral button to indicate "don't use this at all".
          Dialog UI still needs to change.
     -->
     <string name="info_bitmask_preference">
-        Select 0 or more options and tap “OK” to apply them,
-        or tap “%1$s” to disregard all of them.
+        Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
     </string>
 </resources>
