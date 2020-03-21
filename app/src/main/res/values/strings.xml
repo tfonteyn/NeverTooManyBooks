@@ -186,12 +186,11 @@
         or the id field is blank.
     </string>
 
-
     <!-- Importing a CSV book list partially failed with less then 10 lines failing -->
-    <string name="warning_import_csv_failed_lines_some">CSV parsing failed for lines %1$s.</string>
+    <string name="warning_import_csv_failed_lines_some">CSV parsing failed for lines \n%1$s\n</string>
     <!-- Importing a CSV book list partially failed with more then 10 lines failing.
          Only 10 line numbers will be listed -->
-    <string name="warning_import_csv_failed_lines_lots">CSV parsing failed for lines %1$s and others.</string>
+    <string name="warning_import_csv_failed_lines_lots">CSV parsing failed for lines \n%1$s\n and others.</string>
 
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position. -->
     <string name="warning_import_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
@@ -461,7 +460,6 @@
     <string name="progress_msg_rebuilding_search_index">Rebuilding Search Index…</string>
     <string name="progress_msg_optimizing">Optimizing…</string>
 
-
     <!-- Search. -->
     <string name="progress_msg_searching">Searching…</string>
     <string name="progress_msg_searching_site">Searching %1$s</string>
@@ -477,19 +475,14 @@
 
     <!-- displayed while searching for alternative editions of the book, to get cover images. -->
     <string name="progress_msg_finding_editions">Finding Editions…</string>
+
+
     <!-- Progress message displayed when automatically updating book fields  -->
     <string name="progress_msg_skip_s">Skipping “%1$s”</string>
 
-    <!-- Progress message displayed when importing books -->
-    <string name="progress_msg_n_books_processed">%1$d books processed</string>
-
-    <!-- Progress message displayed when exporting covers -->
-    <string name="progress_msg_n_covers_processed_m_missing">
-        %1$d covers processed\n  (%2$d/%3$d missing)
-    </string>
     <!-- Progress message displayed when exporting covers -->
     <string name="progress_msg_n_covers_processed_m_missing_s_skipped">
-        %1$d covers processed\n  (%2$d/%3$d missing, %4$d skipped)
+        %1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)
     </string>
 
     <!-- Progress message displayed when importing books/covers.
@@ -501,24 +494,33 @@
             Note the format should cause the least disruption to the eyes of the user.
             i.e. the numbers will count up, but the overall message will be constant.
         -->
-    <string name="progress_msg_n_created_m_updated">%1$s: %2$d created, %3$d updated</string>
+    <string name="progress_msg_x_created_y_updated">%1$s: %2$d created, %3$d updated</string>
+    <!-- variation on "progress_msg_x_created_y_updated" with a #skipped added. Used during CSV import. -->
+    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d created, %3$d updated, %4$d skipped</string>
 
     <!-- progress final message - all data was imported. -->
     <string name="progress_end_import_complete">Import complete</string>
-    <!-- progress final message - some data was imported.
-         The user probably canceled before we finished. -->
+    <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
     <string name="progress_end_import_partially_complete">Partial import done</string>
     <!-- progress final message - all data was exported. -->
     <string name="progress_end_backup_success">Backup success</string>
-
+    <!-- The user probably canceled before we finished. -->
     <string name="progress_end_cancelled">Cancelled</string>
+
+
+    <!-- Progress message displayed when importing books -->
+    <string name="info_export_result_n_books_processed">%1$d books processed</string>
+    <!-- Progress message displayed when exporting covers -->
+    <string name="info_export_result_n_covers_processed_m_missing">
+        %1$d covers processed\n(%2$d/%3$d missing)
+    </string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
     <!-- ####################################################################################### -->
-    <string name="tip_dialog_title">Hint</string>
-    <string name="tip_reset_all">Reset hints</string>
-    <string name="tip_reset_done">Hints have been reset</string>
+    <string name="tip_dialog_title">Tip</string>
+    <string name="tip_reset_all">Reset tips</string>
+    <string name="tip_reset_done">Tips have been reset</string>
 
     <string name="tip_book_not_found">
         The book was not found. You can sometimes find the correct barcode on the inside front

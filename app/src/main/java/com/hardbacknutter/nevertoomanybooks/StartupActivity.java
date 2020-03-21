@@ -254,14 +254,18 @@ public class StartupActivity
      * If requested earlier, run a backup now.
      */
     private void gotoMainScreen() {
-        final Intent intent = new Intent(this, BooksOnBookshelf.class);
-        startActivity(intent);
+        final Intent main = new Intent(this, BooksOnBookshelf.class);
 
         if (mModel.isBackupRequired()) {
-            final Intent backupIntent = new Intent(this, AdminActivity.class)
-                    .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-            startActivity(backupIntent);
+            main.putExtra(BooksOnBookshelf.START_BACKUP, true);
         }
+        startActivity(main);
+
+//        if (mModel.isBackupRequired()) {
+//            final Intent backupIntent = new Intent(this, AdminActivity.class)
+//                    .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+//            startActivity(backupIntent);
+//        }
 
         // We are done here. Remove the weak self-reference and finish.
         sStartupActivity.clear();

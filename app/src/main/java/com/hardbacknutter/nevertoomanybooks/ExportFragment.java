@@ -79,7 +79,6 @@ public class ExportFragment
     /** Log tag. */
     public static final String TAG = "ExportFragment";
 
-    private static final int REQ_PICK_FILE_FOR_EXPORT = 1;
     /** ViewModel. */
     private ResultDataModel mResultDataModel;
     /** Export. */
@@ -144,7 +143,7 @@ public class ExportFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case REQ_PICK_FILE_FOR_EXPORT: {
+            case UniqueId.REQ_EXPORT_PICK_URI: {
                 // The user selected a file to backup to. Next step starts the export task.
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
@@ -191,12 +190,12 @@ public class ExportFragment
     }
 
     /**
-     * Export to archive: Step 1: show the options to the user.
+     * Export Step 1: show the options to the user.
      */
     private void exportShowOptions() {
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.lbl_backup_to_archive)
+                .setTitle(R.string.lbl_backup)
                 .setMessage(R.string.info_export_backup_all)
                 .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
                     //noinspection ConstantConditions
@@ -213,7 +212,7 @@ public class ExportFragment
     }
 
     /**
-     * Export to archive: Step 2: prompt the user for a uri to export to.
+     * Export Step 2: prompt the user for a uri to export to.
      *
      * @param helper export configuration
      */
@@ -225,7 +224,7 @@ public class ExportFragment
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
                 .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName((getContext())));
-        startActivityForResult(intent, REQ_PICK_FILE_FOR_EXPORT);
+        startActivityForResult(intent, UniqueId.REQ_EXPORT_PICK_URI);
     }
 
     /**
@@ -273,13 +272,14 @@ public class ExportFragment
         // slightly misleading. The text currently says "processed" but it's really "exported".
         if (results.booksExported > 0) {
             msg.append("\n• ")
-               .append(getString(R.string.progress_msg_n_books_processed, results.booksExported));
+               .append(getString(R.string.info_export_result_n_books_processed,
+                                 results.booksExported));
         }
         if (results.coversExported > 0
             || results.coversMissing[0] > 0
             || results.coversMissing[1] > 0) {
             msg.append("\n• ")
-               .append(getString(R.string.progress_msg_n_covers_processed_m_missing,
+               .append(getString(R.string.info_export_result_n_covers_processed_m_missing,
                                  results.coversExported,
                                  results.coversMissing[0],
                                  results.coversMissing[1]));
@@ -330,7 +330,7 @@ public class ExportFragment
 
         if (offerEmail) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.btn_email),
-                             (d, which) -> emailExportFile(uri));
+                             (d, which) -> onExportEmail(uri));
         }
 
         dialog.show();
@@ -394,7 +394,7 @@ public class ExportFragment
      *
      * @param uri for the file to email
      */
-    private void emailExportFile(@NonNull final Uri uri) {
+    private void onExportEmail(@NonNull final Uri uri) {
 
         final String subject = '[' + getString(R.string.app_name) + "] "
                                + getString(R.string.lbl_books);

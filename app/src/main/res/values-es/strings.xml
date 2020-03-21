@@ -446,10 +446,10 @@
     <string name="progress_msg_connecting">Conectando con el sitio web…</string>
     <string name="progress_msg_finding_editions">Buscando ediciones…</string>
     <string name="progress_msg_loading">Cargando…</string>
-    <string name="progress_msg_n_books_processed">%1$d libros procesados</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas\n(%2$d/%3$d faltantes, %4$d omitidas)</string>
-    <string name="progress_msg_n_created_m_updated">%1$s: %2$d creados, %3$d actualizados</string>
+    <string name="info_export_result_n_books_processed">%1$d libros procesados</string>
+    <string name="info_export_result_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas (%2$d/%3$d faltantes, %4$d omitidas)</string>
+    <string name="progress_msg_x_created_y_updated">%1$s: %2$d creados, %3$d actualizados</string>
     <string name="progress_msg_optimizing">Optimizando bases de datos…</string>
     <string name="progress_msg_please_wait">Por favor espera…</string>
     <string name="progress_msg_process_booklist_style">Estilos de listas de libros…</string>
@@ -628,8 +628,8 @@
     <string name="warning_if_month_set_year_must_be">Si se especifica el mes, debe especificarse también el año.</string>
     <string name="warning_immediate_global_changes">NOTA: Todos los cambios guardados se aplican de manera instantánea y global</string>
     <string name="warning_import_be_cautious">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
-    <string name="warning_import_csv_failed_lines_lots">El análisis CSV falló para las líneas %1$s y otras.</string>
-    <string name="warning_import_csv_failed_lines_some">El análisis CSV falló para las líneas %1$s.</string>
+    <string name="warning_import_csv_failed_lines_lots">El análisis CSV falló para las líneas \n%1$s\n y otras.</string>
+    <string name="warning_import_csv_failed_lines_some">El análisis CSV falló para las líneas \n%1$s\n</string>
     <string name="warning_import_old_archive">Esta opción no está soportada para versiones de archivo antiguas.</string>
     <string name="warning_import_unescaped_quote">Carácter de comillas sin escapes en la fila %1$d, posición %2$d</string>
     <string name="warning_missing_name">El nombre no puede ser blanco</string>
@@ -654,5 +654,6 @@
     <string name="warning_x_is_not_a_valid_code">«%1$s» no es un código válido</string>
     <string name="x_of_y">%1$d de %2$d</string>
     <string name="yes">Sí</string>
+    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d creados, %3$d actualizados, %4$d omitidas</string>
 
 </resources>

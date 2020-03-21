@@ -443,10 +443,10 @@
     <string name="progress_msg_connecting">Соединение с сайтом…</string>
     <string name="progress_msg_finding_editions">Поиск изданий…</string>
     <string name="progress_msg_loading">Загрузка…</string>
-    <string name="progress_msg_n_books_processed">%1$d книг обработано</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d обложек обработана\n(%2$d/%3$d отсутствует, %4$d пропущена)</string>
-    <string name="progress_msg_n_created_m_updated">%1$s: %2$d создано, %3$d обновлено</string>
+    <string name="info_export_result_n_books_processed">%1$d книг обработано</string>
+    <string name="info_export_result_n_covers_processed_m_missing">%1$d обложек обработана\n(%2$d/%3$d отсутствует)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d обложек обработана (%2$d/%3$d отсутствует, %4$d пропущена)</string>
+    <string name="progress_msg_x_created_y_updated">%1$s: %2$d создано, %3$d обновлено</string>
     <string name="progress_msg_optimizing">Оптимизация баз данных…</string>
     <string name="progress_msg_please_wait">подождите пожалуйста…</string>
     <string name="progress_msg_process_booklist_style">Стили списков книг…</string>
@@ -622,8 +622,8 @@
     <string name="warning_if_month_set_year_must_be">Если указан месяц, также необходимо указать год.</string>
     <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно</string>
     <string name="warning_import_be_cautious">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
-    <string name="warning_import_csv_failed_lines_lots">Сбой разбора CSV для строк %1$s и других.</string>
-    <string name="warning_import_csv_failed_lines_some">Сбой разбора CSV для строк %1$s.</string>
+    <string name="warning_import_csv_failed_lines_lots">Сбой разбора CSV для строк \n%1$s\n и других.</string>
+    <string name="warning_import_csv_failed_lines_some">Сбой разбора CSV для строк \n%1$s\n</string>
     <string name="warning_import_old_archive">Эта опция не поддерживается для архивов более ранних версий.</string>
     <string name="warning_import_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
     <string name="warning_missing_name">Имя не может быть пустым</string>
@@ -648,5 +648,6 @@
     <string name="warning_x_is_not_a_valid_code">«%1$s» не является допустимым кодом</string>
     <string name="x_of_y">%1$d из %2$d</string>
     <string name="yes">Да</string>
+    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d создано, %3$d обновлено, %4$d пропущена</string>
 
 </resources>

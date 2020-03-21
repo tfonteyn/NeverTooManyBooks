@@ -43,6 +43,7 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public abstract class OptionsDialogBase<T>
@@ -53,15 +54,14 @@ public abstract class OptionsDialogBase<T>
 
     private WeakReference<OptionsListener<T>> mListener;
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
+    protected void fixDialogWidth() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // force the dialog to be big enough
             Dialog dialog = getDialog();
             if (dialog != null) {
-                int width = ViewGroup.LayoutParams.MATCH_PARENT;
+//                int width = ViewGroup.LayoutParams.MATCH_PARENT;
+                int width = getResources()
+                        .getDimensionPixelSize(R.dimen.import_dialog_landscape_width);
                 int height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 //noinspection ConstantConditions
                 dialog.getWindow().setLayout(width, height);
@@ -121,6 +121,8 @@ public abstract class OptionsDialogBase<T>
 
         void onOptionsSet(@NonNull T options);
 
-        void onCancelled();
+        default void onCancelled() {
+            // do nothing
+        }
     }
 }

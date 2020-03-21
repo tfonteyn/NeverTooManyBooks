@@ -52,8 +52,9 @@ public class ArchiveInfo {
     /** Log tag. */
     private static final String TAG = "ArchiveInfo";
 
-    /** version of archiver used to write this archive. */
+    /** Version of archiver used to write this archive. */
     private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
+    /** Creation Date of archive (in SQL format). */
     private static final String INFO_CREATION_DATE = "CreateDate";
 
     private static final String INFO_APP_PACKAGE = "AppPackage";
@@ -63,6 +64,7 @@ public class ArchiveInfo {
 
     private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
     private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
+
     private static final String INFO_HAS_BOOKS = "HasBooks";
     private static final String INFO_HAS_COVERS = "HasCovers";
 

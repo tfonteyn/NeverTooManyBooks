@@ -92,6 +92,12 @@ public class ExportHelperDialogFragment
                 .create();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        fixDialogWidth();
+    }
+
     /**
      * Set the checkboxes/radio-buttons from the options.
      */

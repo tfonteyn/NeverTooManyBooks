@@ -29,9 +29,13 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.app.SearchManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.system.ErrnoException;
+import android.system.OsConstants;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -48,22 +52,36 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelperDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelperDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
@@ -101,9 +119,17 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportTaskModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportTaskModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -145,32 +171,37 @@ public class BooksOnBookshelf
 
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
+    public static final String START_BACKUP = TAG + ":startBackup";
 
     /**
      * List header.
      * Views for the current row level-text.
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
-    private final TextView[] mHeaderTextView = new TextView[2];
+    private final TextView[] mHeaderRowLevelTextView = new TextView[2];
+
+    /** simple indeterminate progress spinner to show while getting the list of books. */
+    private ProgressBar mProgressBar;
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
+
     /** List header. */
-    private TextView mStyleNameView;
+    private TextView mHeaderStyleNameView;
     /** List header. */
-    private TextView mFilterTextView;
+    private TextView mHeaderFilterTextView;
     /** List header: The number of books in the current list. */
-    private TextView mBookCountView;
-
-    /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
-    private ExtendedFloatingActionButton[] mFabMenuItems;
-
+    private TextView mHeaderBookCountView;
     /** The View for the list. */
     private RecyclerView mListView;
     private LinearLayoutManager mLayoutManager;
+
+
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
-    /** simple indeterminate progress spinner to show while getting the list of books. */
-    private ProgressBar mProgressBar;
-    /** The dropdown button to select a Bookshelf. */
-    private Spinner mBookshelfSpinner;
+    /** The adapter used to fill the mBookshelfSpinner. */
+    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
+
+
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
     /** Listener for the Bookshelf Spinner. */
@@ -349,10 +380,27 @@ public class BooksOnBookshelf
             return true;
         }
     };
-    /** The adapter used to fill the mBookshelfSpinner. */
-    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
+
+    /** Export. */
+    private ExportTaskModel mExportModel;
+    private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
+            this::exportPickUri;
+    /** Import. */
+    private ImportTaskModel mImportModel;
+    private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
+            new OptionsDialogBase.OptionsListener<ImportManager>() {
+                @Override
+                public void onOptionsSet(@NonNull final ImportManager options) {
+                    mImportModel.startArchiveImportTask(options);
+                }
+            };
+
+    /** The dropdown button to select a Bookshelf. */
+    private Spinner mBookshelfSpinner;
+
     /** Whether to show level-header - this depends on the current style. */
     private boolean mShowLevelHeaders;
+
     /** Define a scroller to update header detail when the top row changes. */
     private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
             new RecyclerView.OnScrollListener() {
@@ -369,8 +417,12 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
+
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
+    /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
+    private ExtendedFloatingActionButton[] mFabMenuItems;
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
     private View mFabOverlay;
     /** Define a scroller to show, or collapse/hide the FAB. */
@@ -406,11 +458,11 @@ public class BooksOnBookshelf
         setContentView(R.layout.booksonbookshelf);
         mProgressBar = findViewById(R.id.progressBar);
         mListView = findViewById(android.R.id.list);
-        mStyleNameView = findViewById(R.id.style_name);
-        mFilterTextView = findViewById(R.id.filter_text);
-        mBookCountView = findViewById(R.id.book_count);
-        mHeaderTextView[0] = findViewById(R.id.level_1_text);
-        mHeaderTextView[1] = findViewById(R.id.level_2_text);
+        mHeaderStyleNameView = findViewById(R.id.style_name);
+        mHeaderFilterTextView = findViewById(R.id.filter_text);
+        mHeaderBookCountView = findViewById(R.id.book_count);
+        mHeaderRowLevelTextView[0] = findViewById(R.id.level_1_text);
+        mHeaderRowLevelTextView[1] = findViewById(R.id.level_2_text);
         mBookshelfSpinner = findViewById(R.id.bookshelf_spinner);
 
         mFabButton = findViewById(R.id.fab);
@@ -440,6 +492,12 @@ public class BooksOnBookshelf
 
         } else if (LendBookDialogFragment.TAG.equals(fragment.getTag())) {
             ((LendBookDialogFragment) fragment).setListener(mBookChangedListener);
+
+        } else if (ExportHelperDialogFragment.TAG.equals(fragment.getTag())) {
+            ((ExportHelperDialogFragment) fragment).setListener(mExportOptionsListener);
+
+        } else if (ImportHelperDialogFragment.TAG.equals(fragment.getTag())) {
+            ((ImportHelperDialogFragment) fragment).setListener(mImportOptionsListener);
         }
     }
 
@@ -449,7 +507,6 @@ public class BooksOnBookshelf
 
         mModel = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
         mModel.init(this, getIntent().getExtras(), savedInstanceState);
-
         mModel.onUserMessage().observe(this, message -> {
             if (message != null) {
                 Snackbar.make(mListView, message, Snackbar.LENGTH_LONG).show();
@@ -460,11 +517,18 @@ public class BooksOnBookshelf
                 RequestAuthTask.prompt(this, mModel.getGoodreadsTaskListener(this));
             }
         });
-
         mModel.onBuilderSuccess().observe(this, this::displayList);
         mModel.onBuilderFailed().observe(this, this::initAdapter);
         mModel.onShowProgressBar().observe(this, show ->
                 mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE));
+
+        mExportModel = new ViewModelProvider(this).get(ExportTaskModel.class);
+        mExportModel.onTaskProgress().observe(this, this::onTaskProgress);
+        mExportModel.onTaskFinished().observe(this, this::onExportFinished);
+
+        mImportModel = new ViewModelProvider(this).get(ImportTaskModel.class);
+        mImportModel.onTaskProgress().observe(this, this::onTaskProgress);
+        mImportModel.onTaskFinished().observe(this, this::onImportFinished);
 
         // enable the navigation menu
         setNavigationItemVisibility(R.id.nav_manage_list_styles, true);
@@ -497,17 +561,19 @@ public class BooksOnBookshelf
             mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
         }
 
-        if (savedInstanceState == null) {
-            TipManager.display(this, R.string.tip_book_list, null);
-        }
-
         // for standard (system) local search only
         if (!Prefs.isAdvancedSearch(this)) {
             // Popup the search widget when the user starts to type.
             setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-
             // check & get search text coming from a system search intent
             handleStandardSearchIntent(getIntent());
+        }
+
+        if (getIntent().getBooleanExtra(START_BACKUP, false)) {
+            exportShowOptions();
+
+        } else if (savedInstanceState == null) {
+            TipManager.display(this, R.string.tip_book_list, null);
         }
     }
 
@@ -645,15 +711,17 @@ public class BooksOnBookshelf
             }
 
             case R.id.nav_import: {
-                Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMPORT);
+//                Intent intent = new Intent(this, AdminActivity.class)
+//                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+//                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_IMPORT);
+                importPickUri();
                 return true;
             }
             case R.id.nav_export: {
-                Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EXPORT);
+//                Intent intent = new Intent(this, AdminActivity.class)
+//                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+//                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EXPORT);
+                exportShowOptions();
                 return true;
             }
 
@@ -1188,10 +1256,10 @@ public class BooksOnBookshelf
                 }
                 break;
             }
+
             // from BaseActivity Nav Panel
             case UniqueId.REQ_NAV_PANEL_EXPORT:
                 break;
-
             // from BaseActivity Nav Panel
             case UniqueId.REQ_NAV_PANEL_IMPORT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
@@ -1211,6 +1279,30 @@ public class BooksOnBookshelf
                             // styles, prefs, books, covers,... it all requires a rebuild.
                             mModel.setForceRebuildInOnResume(true);
                         }
+                    }
+                }
+                break;
+            }
+
+            case UniqueId.REQ_EXPORT_PICK_URI: {
+                // The user selected a file to backup to. Next step starts the export task.
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
+                    if (uri != null) {
+                        mExportModel.startArchiveExportTask(uri);
+                    }
+                }
+                break;
+            }
+
+            case UniqueId.REQ_IMPORT_PICK_URI: {
+                // The user selected a file to import from. Next step asks for the options.
+                if (resultCode == Activity.RESULT_OK) {
+                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    final Uri uri = data.getData();
+                    if (uri != null) {
+                        importShowOptions(uri);
                     }
                 }
                 break;
@@ -1558,15 +1650,15 @@ public class BooksOnBookshelf
         boolean atLeastOne = false;
 
         // for each level, set the visibility of the views.
-        for (int i = 0; i < mHeaderTextView.length; i++) {
+        for (int i = 0; i < mHeaderRowLevelTextView.length; i++) {
             if (i < style.getGroupCount()
                 && style.showHeader(this, BooklistStyle.HEADER_LEVELS[i])) {
                 // the actual text will be filled in as/when the user scrolls
-                mHeaderTextView[i].setText("");
-                mHeaderTextView[i].setVisibility(View.VISIBLE);
+                mHeaderRowLevelTextView[i].setText("");
+                mHeaderRowLevelTextView[i].setVisibility(View.VISIBLE);
                 atLeastOne = true;
             } else {
-                mHeaderTextView[i].setVisibility(View.GONE);
+                mHeaderRowLevelTextView[i].setVisibility(View.GONE);
             }
         }
 
@@ -1578,10 +1670,10 @@ public class BooksOnBookshelf
      */
     private void setHeaderStyleName() {
         if (mModel.getCurrentStyle(this).showHeader(this, BooklistStyle.HEADER_SHOW_STYLE_NAME)) {
-            mStyleNameView.setText(mModel.getCurrentStyle(this).getLabel(this));
-            mStyleNameView.setVisibility(View.VISIBLE);
+            mHeaderStyleNameView.setText(mModel.getCurrentStyle(this).getLabel(this));
+            mHeaderStyleNameView.setVisibility(View.VISIBLE);
         } else {
-            mStyleNameView.setVisibility(View.GONE);
+            mHeaderStyleNameView.setVisibility(View.GONE);
         }
     }
 
@@ -1604,14 +1696,14 @@ public class BooksOnBookshelf
             }
 
             if (!filterText.isEmpty()) {
-                mFilterTextView.setText(getString(R.string.lbl_search_filtered_on_x,
-                                                  TextUtils.join(", ", filterText)));
-                mFilterTextView.setVisibility(View.VISIBLE);
+                mHeaderFilterTextView.setText(getString(R.string.lbl_search_filtered_on_x,
+                                                        TextUtils.join(", ", filterText)));
+                mHeaderFilterTextView.setVisibility(View.VISIBLE);
                 return;
             }
         }
 
-        mFilterTextView.setVisibility(View.GONE);
+        mHeaderFilterTextView.setVisibility(View.GONE);
     }
 
     /**
@@ -1629,10 +1721,10 @@ public class BooksOnBookshelf
                 stringArgs = getResources().getQuantityString(R.plurals.displaying_n_books,
                                                               uniqueBooks, uniqueBooks);
             }
-            mBookCountView.setText(stringArgs);
-            mBookCountView.setVisibility(View.VISIBLE);
+            mHeaderBookCountView.setText(stringArgs);
+            mHeaderBookCountView.setVisibility(View.VISIBLE);
         } else {
-            mBookCountView.setVisibility(View.GONE);
+            mHeaderBookCountView.setVisibility(View.GONE);
         }
     }
 
@@ -1647,16 +1739,500 @@ public class BooksOnBookshelf
 
         mModel.setPreviousFirstVisibleItemPosition(position);
         // use visibility which was set in {@link #initHeaders}
-        if (mHeaderTextView[0].getVisibility() == View.VISIBLE
-            || mHeaderTextView[1].getVisibility() == View.VISIBLE) {
+        if (mHeaderRowLevelTextView[0].getVisibility() == View.VISIBLE
+            || mHeaderRowLevelTextView[1].getVisibility() == View.VISIBLE) {
             final String[] lines = mAdapter.getPopupText(position);
             if (lines != null) {
                 for (int i = 0; i < lines.length; i++) {
-                    if (mHeaderTextView[i].getVisibility() == View.VISIBLE) {
-                        mHeaderTextView[i].setText(lines[i]);
+                    if (mHeaderRowLevelTextView[i].getVisibility() == View.VISIBLE) {
+                        mHeaderRowLevelTextView[i].setText(lines[i]);
                     }
                 }
             }
         }
+    }
+
+    private void onTaskProgress(@NonNull final TaskListener.ProgressMessage message) {
+        if (mProgressDialog == null) {
+            mProgressDialog = getOrCreateProgressDialog(message.taskId);
+        }
+        mProgressDialog.onProgress(message);
+    }
+
+    @NonNull
+    private ProgressDialogFragment getOrCreateProgressDialog(final int taskId) {
+        FragmentManager fm = getSupportFragmentManager();
+
+        // get dialog after a fragment restart
+        ProgressDialogFragment dialog = (ProgressDialogFragment)
+                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+
+        // not found? create it
+        if (dialog == null) {
+            switch (taskId) {
+                case R.id.TASK_ID_EXPORT:
+                    dialog = ProgressDialogFragment
+                            .newInstance(R.string.title_backing_up, false, true, 0);
+                    break;
+
+                case R.id.TASK_ID_IMPORT:
+                    dialog = ProgressDialogFragment
+                            .newInstance(R.string.title_importing, false, true, 0);
+                    break;
+
+                default:
+                    throw new UnexpectedValueException("taskId=" + taskId);
+            }
+
+            dialog.show(fm, ProgressDialogFragment.TAG);
+        }
+
+        // hook the task up.
+        switch (taskId) {
+            case R.id.TASK_ID_EXPORT:
+                dialog.setCancellable(mExportModel.getTask());
+                break;
+
+            case R.id.TASK_ID_IMPORT:
+                dialog.setCancellable(mImportModel.getTask());
+                break;
+
+            default:
+                throw new UnexpectedValueException("taskId=" + taskId);
+        }
+        return dialog;
+    }
+
+    /**
+     * Export Step 1: show the options to the user.
+     */
+    private void exportShowOptions() {
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.lbl_backup)
+                .setMessage(R.string.info_export_backup_all)
+                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                .setNeutralButton(R.string.btn_options, (dialog, which)
+                        -> ExportHelperDialogFragment.newInstance()
+                                                     .show(getSupportFragmentManager(),
+                                                           ExportHelperDialogFragment.TAG))
+                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                        exportPickUri(new ExportManager(Options.ALL)))
+                .create()
+                .show();
+    }
+
+    /**
+     * Export Step 2: prompt the user for a uri to export to.
+     *
+     * @param helper export configuration
+     */
+    private void exportPickUri(@NonNull final ExportManager helper) {
+        // save the configured helper
+        mExportModel.setHelper(helper);
+        final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("*/*")
+                .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName((this)));
+        startActivityForResult(intent, UniqueId.REQ_EXPORT_PICK_URI);
+    }
+
+    /**
+     * Export finished/failed: Step 1: Process the result.
+     *
+     * @param message to process
+     */
+    private void onExportFinished(@NonNull final TaskListener.FinishMessage<ExportManager>
+                                          message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+
+        switch (message.status) {
+            case Success: {
+                onExportFinished(message.result.getResults(),
+                                 message.result.getUri());
+                break;
+            }
+            case Cancelled: {
+                Snackbar.make(mListView, R.string.progress_end_cancelled,
+                              Snackbar.LENGTH_LONG).show();
+                break;
+            }
+            case Failed: {
+                onExportFailed(message.exception);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Export finished: Step 2: Inform the user.
+     */
+    private void onExportFinished(@NonNull final ExportResults results,
+                                  @NonNull final Uri uri) {
+        // Transform the result data into a user friendly report.
+        final StringBuilder msg = new StringBuilder();
+
+        //TODO: LTR
+        // slightly misleading. The text currently says "processed" but it's really "exported".
+        if (results.booksExported > 0) {
+            msg.append("\n• ")
+               .append(getString(R.string.info_export_result_n_books_processed,
+                                 results.booksExported));
+        }
+        if (results.coversExported > 0
+            || results.coversMissing[0] > 0
+            || results.coversMissing[1] > 0) {
+            msg.append("\n• ")
+               .append(getString(R.string.info_export_result_n_covers_processed_m_missing,
+                                 results.coversExported,
+                                 results.coversMissing[0],
+                                 results.coversMissing[1]));
+        }
+
+        if (results.styles > 0) {
+            msg.append("\n• ").append(getString(R.string.name_colon_value,
+                                                getString(R.string.lbl_styles),
+                                                String.valueOf(results.styles)));
+        }
+        if (results.preferences > 0) {
+            msg.append("\n• ").append(getString(R.string.lbl_settings));
+        }
+
+        final Pair<String, Long> uriInfo = FileUtils.getUriInfo(this, uri);
+        // The below works, but we cannot get the folder name for the file.
+        // Disabling for now. We'd need to change the descriptive string not to include the folder.
+        if (uriInfo != null && uriInfo.first != null && uriInfo.second != null) {
+            msg.append("\n\n")
+               .append(getString(R.string.X_export_info_success_archive_details,
+                                 "",
+                                 uriInfo.first,
+                                 FileUtils.formatFileSize(this, uriInfo.second)));
+        }
+
+        final long fileSize;
+        if (uriInfo != null && uriInfo.second != null) {
+            fileSize = uriInfo.second;
+        } else {
+            fileSize = 0;
+        }
+        // up to 5mb
+        boolean offerEmail = fileSize > 0 && fileSize < 5_000_000;
+
+        if (offerEmail) {
+            msg.append("\n\n").append(getString(R.string.confirm_email_export));
+        }
+
+        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.progress_end_backup_success)
+                .setMessage(msg)
+                .setPositiveButton(R.string.done, (d, which) -> d.dismiss())
+                .create();
+
+        if (offerEmail) {
+            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.btn_email),
+                             (d, which) -> onExportEmail(uri));
+        }
+
+        dialog.show();
+    }
+
+    /**
+     * Export failed: Step 2: Inform the user.
+     *
+     * @param e the Exception as returned from the export task
+     */
+    private void onExportFailed(@Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof IOException) {
+            // see if we can find the exact cause
+            if (e.getCause() instanceof ErrnoException) {
+                final int errno = ((ErrnoException) e.getCause()).errno;
+                // write failed: ENOSPC (No space left on device)
+                if (errno == OsConstants.ENOSPC) {
+                    msg = getString(R.string.error_storage_no_space_left);
+                } else {
+                    // write to logfile for future reporting enhancements.
+                    Logger.warn(this, TAG, "onExportFailed|errno=" + errno);
+                }
+            }
+
+            // generic IOException message
+            if (msg == null) {
+                msg = getString(R.string.error_storage_not_writable) + "\n\n"
+                      + getString(R.string.error_if_the_problem_persists,
+                                  getString(R.string.lbl_send_debug_info));
+            }
+        } else if (e instanceof FormattedMessageException) {
+            msg = ((FormattedMessageException) e).getLocalizedMessage(this);
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = getString(R.string.error_unexpected_error);
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.error_backup_failed)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+    /**
+     * Create and send an email with the specified Uri.
+     *
+     * @param uri for the file to email
+     */
+    private void onExportEmail(@NonNull final Uri uri) {
+
+        final String subject = '[' + getString(R.string.app_name) + "] "
+                               + getString(R.string.lbl_books);
+
+        ArrayList<Uri> uris = new ArrayList<>();
+        uris.add(uri);
+        try {
+            final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+                    .setType("plain/text")
+                    .putExtra(Intent.EXTRA_SUBJECT, subject)
+                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+            startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
+
+        } catch (@NonNull final NullPointerException e) {
+            Logger.error(this, TAG, e);
+            new MaterialAlertDialogBuilder(this)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setMessage(R.string.error_email_failed)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .create()
+                    .show();
+        }
+    }
+
+    /**
+     * Import Step 1: prompt the user for a uri to export to.
+     */
+    private void importPickUri() {
+        // Import
+        // This does not allow multiple saved files like "foo.tar (1)", "foo.tar (2)"
+//        String[] mimeTypes = {"application/x-tar", "text/csv"};
+        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+//                .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+                .setType("*/*");
+        startActivityForResult(intent, UniqueId.REQ_IMPORT_PICK_URI);
+    }
+
+    /**
+     * Import Step 2: show the options to the user.
+     *
+     * @param uri file to read from
+     */
+    private void importShowOptions(@NonNull final Uri uri) {
+        // options will be overridden if the import is a CSV.
+        ImportManager helper = new ImportManager(Options.ALL, uri);
+
+        final ArchiveContainer container = helper.getContainer(this);
+        if (!helper.isSupported(container)) {
+            new MaterialAlertDialogBuilder(this)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setMessage(R.string.error_cannot_import)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .create()
+                    .show();
+            return;
+        }
+
+        if (ArchiveContainer.CsvBooks.equals(container)) {
+            // use more prudent default options for Csv files.
+            helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+            // Verify - this can be a dangerous operation
+            new MaterialAlertDialogBuilder(this)
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.title_import_book_data)
+                    .setMessage(R.string.warning_import_be_cautious)
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton(android.R.string.ok,
+                                       (dialog, which) -> ImportHelperDialogFragment
+                                               .newInstance(helper)
+                                               .show(getSupportFragmentManager(),
+                                                     ImportHelperDialogFragment.TAG))
+                    .create()
+                    .show();
+
+        } else {
+            // Show a quick-options dialog first.
+            // The user can divert to the full options dialog if needed.
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.lbl_import)
+                    .setMessage(R.string.info_import_option_all_books)
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                    .setNeutralButton(R.string.btn_options,
+                                      (dialog, which) -> ImportHelperDialogFragment
+                                              .newInstance(helper)
+                                              .show(getSupportFragmentManager(),
+                                                    ImportHelperDialogFragment.TAG))
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> mImportModel
+                            .startArchiveImportTask(helper))
+                    .create()
+                    .show();
+        }
+    }
+
+    /**
+     * Import finished/failed: Step 1: Process the result.
+     *
+     * @param message to process
+     */
+    private void onImportFinished(@NonNull final TaskListener.FinishMessage<ImportManager>
+                                          message) {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
+        }
+
+        switch (message.status) {
+            case Success: {
+                onImportFinished(R.string.progress_end_import_complete,
+                                 message.result.getOptions(),
+                                 message.result.getResults());
+                break;
+            }
+            case Cancelled: {
+                onImportFinished(R.string.progress_end_import_partially_complete,
+                                 message.result.getOptions(),
+                                 message.result.getResults());
+                break;
+            }
+            case Failed: {
+                onImportFailed(message.exception);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Import finished: Step 2: Inform the user.
+     *
+     * @param titleId for the dialog title; reports success or cancelled.
+     * @param options what was actually imported
+     * @param results what was imported
+     */
+    private void onImportFinished(@StringRes final int titleId,
+                                  final int options,
+                                  @NonNull final ImportResults results) {
+
+        // Transform the result data into a user friendly report.
+        final StringBuilder msg = new StringBuilder();
+
+        //TODO: LTR
+        if (results.booksCreated > 0 || results.booksUpdated > 0 || results.booksSkipped > 0) {
+            msg.append("\n• ")
+               .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                 getString(R.string.lbl_books),
+                                 results.booksCreated,
+                                 results.booksUpdated,
+                                 results.booksSkipped));
+        }
+        if (results.coversCreated > 0 || results.coversUpdated > 0 || results.coversSkipped > 0) {
+            msg.append("\n• ")
+               .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                 getString(R.string.lbl_covers),
+                                 results.coversCreated,
+                                 results.coversUpdated,
+                                 results.coversSkipped));
+        }
+        if (results.styles > 0) {
+            msg.append("\n• ").append(getString(R.string.name_colon_value,
+                                                getString(R.string.lbl_styles),
+                                                String.valueOf(results.styles)));
+        }
+        if (results.preferences > 0) {
+            msg.append("\n• ").append(getString(R.string.lbl_settings));
+        }
+
+        int failed = results.failedLinesNr.size();
+        if (failed > 0) {
+            final int fs;
+            final Collection<String> msgList = new ArrayList<>();
+
+            if (failed > 10) {
+                // keep it sensible, list maximum 10 lines.
+                failed = 10;
+                fs = R.string.warning_import_csv_failed_lines_lots;
+            } else {
+                fs = R.string.warning_import_csv_failed_lines_some;
+            }
+            for (int i = 0; i < failed; i++) {
+                msgList.add(getString(R.string.a_bracket_b_bracket,
+                                      String.valueOf(results.failedLinesNr.get(i)),
+                                      results.failedLinesMessage.get(i)));
+            }
+
+            msg.append("\n").append(getString(fs, Csv.textList(this, msgList, null)));
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(titleId)
+                .setMessage(msg)
+                .setPositiveButton(R.string.done, (dialog, which) -> {
+                    if (options != 0) {
+                        if ((options & Options.STYLES) != 0) {
+                            // Force a refresh of the list of all user styles.
+                            BooklistStyle.Helper.clear();
+                        }
+                        if ((options & Options.PREFS) != 0) {
+                            // Refresh the preferred bookshelf. This also refreshes its style.
+                            mModel.reloadCurrentBookshelf(this);
+                        }
+
+                        // styles, prefs, books, covers,... it all requires a rebuild.
+                        setBookShelfSpinner();
+                        mListView.setAdapter(null);
+                        mAdapter = null;
+                        mModel.buildBookList(this);
+                    }
+
+                })
+                .create()
+                .show();
+    }
+
+    /**
+     * Import failed: Step 2: Inform the user.
+     *
+     * @param e the Exception as returned from the import task
+     */
+    private void onImportFailed(@Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof InvalidArchiveException) {
+            msg = getString(R.string.error_import_invalid_archive);
+
+        } else if (e instanceof IOException) {
+            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
+            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
+            msg = getString(R.string.error_storage_not_readable) + "\n\n"
+                  + getString(R.string.error_if_the_problem_persists,
+                              getString(R.string.lbl_send_debug_info));
+
+        } else if (e instanceof FormattedMessageException) {
+            msg = ((FormattedMessageException) e).getLocalizedMessage(this);
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = getString(R.string.error_unexpected_error);
+        }
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.error_import_failed)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
     }
 }

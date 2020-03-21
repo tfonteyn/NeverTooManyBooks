@@ -444,10 +444,10 @@
     <string name="progress_msg_connecting">Připojení k webu…</string>
     <string name="progress_msg_finding_editions">Hledání edicí…</string>
     <string name="progress_msg_loading">Načítání…</string>
-    <string name="progress_msg_n_books_processed">Zpracované knih %1$d</string>
-    <string name="progress_msg_n_covers_processed_m_missing">Zpracované kryty %1$d\n(chybí %2$d/%3$d)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Zpracované kryty %1$d\n(chybí %2$d/%3$d, %4$d přeskočeno)</string>
-    <string name="progress_msg_n_created_m_updated">%1$s: %2$d vytvořeno, %3$d aktualizováno</string>
+    <string name="info_export_result_n_books_processed">Zpracované knih %1$d</string>
+    <string name="info_export_result_n_covers_processed_m_missing">Zpracované kryty %1$d\n(chybí %2$d/%3$d)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Zpracované kryty %1$d (chybí %2$d/%3$d, %4$d přeskočeno)</string>
+    <string name="progress_msg_x_created_y_updated">%1$s: %2$d vytvořeno, %3$d aktualizováno</string>
     <string name="progress_msg_optimizing">Optimalizování databáze…</string>
     <string name="progress_msg_please_wait">Prosím, čekejte…</string>
     <string name="progress_msg_process_booklist_style">Styly seznamu…</string>
@@ -623,8 +623,8 @@
     <string name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Všechny uložené změny se aplikují u všech záznamů</string>
     <string name="warning_import_be_cautious">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
-    <string name="warning_import_csv_failed_lines_lots">Analýza linek CSV se nezdařila pro linky %1$s a další.</string>
-    <string name="warning_import_csv_failed_lines_some">Analýza linek CSV se nezdařila pro řádky %1$s.</string>
+    <string name="warning_import_csv_failed_lines_lots">Analýza linek CSV se nezdařila pro linky \n%1$s\n a další.</string>
+    <string name="warning_import_csv_failed_lines_some">Analýza linek CSV se nezdařila pro řádky \n%1$s\n</string>
     <string name="warning_import_old_archive">Tato volba není podporována u starších verzí archivu.</string>
     <string name="warning_import_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
     <string name="warning_missing_name">Jméno nesmí být prázdné</string>
@@ -649,5 +649,6 @@
     <string name="warning_x_is_not_a_valid_code">„%1$s“ není platné číslo kód</string>
     <string name="x_of_y">%1$d z %2$d</string>
     <string name="yes">Ano</string>
+    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d vytvořeno, %3$d aktualizováno, %4$d přeskočeno</string>
 
 </resources>

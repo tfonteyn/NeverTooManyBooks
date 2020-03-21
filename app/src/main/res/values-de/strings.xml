@@ -449,10 +449,10 @@
     <string name="progress_msg_connecting">Verbinde mit der Website…</string>
     <string name="progress_msg_finding_editions">Suche Ausgaben…</string>
     <string name="progress_msg_loading">Lade…</string>
-    <string name="progress_msg_n_books_processed">%1$d Bücher verarbeitet</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen, %4$d übersprungen)</string>
-    <string name="progress_msg_n_created_m_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
+    <string name="info_export_result_n_books_processed">%1$d Bücher verarbeitet</string>
+    <string name="info_export_result_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Cover verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
+    <string name="progress_msg_x_created_y_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>
     <string name="progress_msg_please_wait">Warten Sie mal…</string>
     <string name="progress_msg_process_booklist_style">Bücherlistenstile…</string>
@@ -631,8 +631,8 @@
     <string name="warning_if_month_set_year_must_be">Wenn das Monat angegeben wird, muss auch das Jahr angegeben werden.</string>
     <string name="warning_immediate_global_changes">HINWEIS: Alle gespeicherten Änderungen werden sofort übernommen</string>
     <string name="warning_import_be_cautious">Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben, wenn die ID der Importdatei mit der bestehenden ID übereinstimmt. Normalerweise ist es kein Problem wenn ein Feld in der exportierten Datei geändert wurde. Bitte stellen Sie bei einem neuen Buch sicher, dass das ID-Feld leer ist.</string>
-    <string name="warning_import_csv_failed_lines_lots">Die CSV-Analyse für die Zeilen %1$s und andere ist fehlgeschlagen.</string>
-    <string name="warning_import_csv_failed_lines_some">CSV-Analyse für die Zeilen %1$s fehlgeschlagen.</string>
+    <string name="warning_import_csv_failed_lines_lots">Die CSV-Analyse für die Zeilen \n%1$s\n und andere ist fehlgeschlagen.</string>
+    <string name="warning_import_csv_failed_lines_some">CSV-Analyse für die Zeilen \n%1$s\n fehlgeschlagen.</string>
     <string name="warning_import_old_archive">Diese Option wird für ältere Archivversionen nicht unterstützt.</string>
     <string name="warning_import_unescaped_quote">Unescaped-Anführungszeichen in Zeile %1$d, Position %2$d</string>
     <string name="warning_missing_name">Name darf nicht leer sein</string>
@@ -657,4 +657,5 @@
     <string name="warning_x_is_not_a_valid_code">„%1$s“ ist keine gültige Code</string>
     <string name="x_of_y">%1$d von %2$d</string>
     <string name="yes">Ja</string>
+    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d erzeugt, %3$d aktualisiert, %4$d übersprungen</string>
 </resources>

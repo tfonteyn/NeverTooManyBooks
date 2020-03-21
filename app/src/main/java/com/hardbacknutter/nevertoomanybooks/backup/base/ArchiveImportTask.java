@@ -66,7 +66,7 @@ public class ArchiveImportTask
     @UiThread
     public ArchiveImportTask(@NonNull final ImportManager helper,
                              @NonNull final TaskListener<ImportManager> taskListener) {
-        super(R.id.TASK_ID_READ_FROM_ARCHIVE, taskListener);
+        super(R.id.TASK_ID_IMPORT, taskListener);
         mHelper = helper;
         mHelper.validate();
     }

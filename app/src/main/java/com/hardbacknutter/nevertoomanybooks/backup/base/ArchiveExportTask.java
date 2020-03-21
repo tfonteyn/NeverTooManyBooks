@@ -66,7 +66,7 @@ public class ArchiveExportTask
     @UiThread
     public ArchiveExportTask(@NonNull final ExportManager helper,
                              @NonNull final TaskListener<ExportManager> taskListener) {
-        super(R.id.TASK_ID_WRITE_TO_ARCHIVE, taskListener);
+        super(R.id.TASK_ID_EXPORT, taskListener);
         mHelper = helper;
         mHelper.validate();
     }

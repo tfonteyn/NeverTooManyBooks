@@ -218,6 +218,8 @@ public class DAO
     private static final String TAG = "DAO";
     /** log error string. */
     private static final String ERROR_FAILED_CREATING_BOOK_FROM = "Failed creating book from\n";
+    /** log error string. */
+    private static final String ERROR_FAILED_UPDATING_BOOK_FROM = "Failed updating book from\n";
 
     /** Synchronizer to coordinate DB access. Must be STATIC so all instances share same sync. */
     private static final Synchronizer SYNCHRONIZER = new Synchronizer();
@@ -1164,35 +1166,24 @@ public class DAO
 
     /**
      * Create a new book using the details provided.
-     *
-     * @param context Current context
-     * @param book    A collection with the columns to be set. May contain extra data.
-     *
-     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
-     */
-    public long insertBook(@NonNull final Context context,
-                           @NonNull final Book book) {
-        return insertBook(context, 0, book);
-    }
-
-    /**
-     * Create a new book using the details provided.
      * <p>
      * <strong>Transaction:</strong> participate, or runs in new.
      *
      * @param context Current context
-     * @param bookId  of the book
-     *                zero: a new book
-     *                non-zero: will override the autoIncrement,
-     *                only an Import should use this
+     * @param bookId  <strong>must</strong> be {@code 0} for a new book.
+     *                Only an Import is allowed to pass non-zero: will override the autoIncrement.
      * @param book    A collection with the columns to be set. May contain extra data.
      *                The id will be updated.
      *
-     * @return the row id of the newly inserted row, or {@code -1} if an error occurred.
+     * @return the row id of the newly inserted row
+     *
+     * @throws DaoWriteException on failure
      */
+    @IntRange(from = 1, to = Integer.MAX_VALUE)
     public long insertBook(@NonNull final Context context,
                            final long bookId,
-                           @NonNull final Book /* in/out */ book) {
+                           @NonNull final Book /* in/out */ book)
+            throws DaoWriteException {
 
         SyncLock txLock = null;
         if (!sSyncedDb.inTransaction()) {
@@ -1205,12 +1196,11 @@ public class DAO
             // Make sure we have at least one author
             List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
             if (authors.isEmpty()) {
-                Logger.warnWithStackTrace(context, TAG, "No authors\n", book);
-                return -1L;
+                throw new DaoWriteException("No authors for book=" + book);
             }
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale(context));
+            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(context));
 
             // if we have an id, use it.
             if (bookId > 0) {
@@ -1238,19 +1228,19 @@ public class DAO
                     sSyncedDb.setTransactionSuccessful();
                 }
 
-                // set the new id on the Book itself
+                // set the new id/uuid on the Book itself
                 book.putLong(KEY_PK_ID, newBookId);
-                // and return it
+                //noinspection ConstantConditions
+                book.putString(KEY_BOOK_UUID, getBookUuid(newBookId));
+                // and return the id
                 return newBookId;
 
             } else {
-                Logger.error(context, TAG, new Throwable(), ERROR_FAILED_CREATING_BOOK_FROM + book);
-                return -1L;
+                throw new DaoWriteException(ERROR_FAILED_CREATING_BOOK_FROM + book);
             }
 
-        } catch (@NonNull final NumberFormatException e) {
-            Logger.error(context, TAG, e, ERROR_FAILED_CREATING_BOOK_FROM + book);
-            return -1L;
+        } catch (@NonNull final IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_FAILED_CREATING_BOOK_FROM + book, e);
         } finally {
             if (txLock != null) {
                 sSyncedDb.endTransaction(txLock);
@@ -1266,12 +1256,13 @@ public class DAO
      * @param book    A collection with the columns to be set. May contain extra data.
      * @param flags   See {@link #BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT} for flag definition
      *
-     * @return {@code true} for success.
+     * @throws DaoWriteException on failure
      */
-    public boolean updateBook(@NonNull final Context context,
-                              final long bookId,
-                              @NonNull final Book book,
-                              final int flags) {
+    public void updateBook(@NonNull final Context context,
+                           final long bookId,
+                           @NonNull final Book book,
+                           final int flags)
+            throws DaoWriteException {
 
         SyncLock txLock = null;
         if (!sSyncedDb.inTransaction()) {
@@ -1282,7 +1273,7 @@ public class DAO
             book.preprocessForStoring(context, false);
 
             // correct field types if needed, and filter out fields we don't have in the db table.
-            ContentValues cv = filterValues(context, TBL_BOOKS, book, book.getLocale(context));
+            ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(context));
 
             // Disallow UUID updates
             if (cv.containsKey(KEY_BOOK_UUID)) {
@@ -1311,14 +1302,10 @@ public class DAO
                 book.putLong(KEY_PK_ID, bookId);
 
             } else {
-                // there was no exception, but the update failed?
-                Logger.error(context, TAG, new Throwable());
+                throw new DaoWriteException(ERROR_FAILED_UPDATING_BOOK_FROM + book);
             }
-            return success;
-
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-            return false;
+        } catch (@NonNull final IllegalArgumentException e) {
+            throw new DaoWriteException(ERROR_FAILED_UPDATING_BOOK_FROM + book);
 
         } finally {
             if (txLock != null) {
@@ -1887,6 +1874,31 @@ public class DAO
         }
     }
 
+    /**
+     * Get the list of TocEntry for this book.
+     *
+     * @param bookId of the book
+     *
+     * @return list
+     */
+    @NonNull
+    public ArrayList<TocEntry> getTocEntryByBook(final long bookId) {
+        ArrayList<TocEntry> list = new ArrayList<>();
+        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
+                                                new String[]{String.valueOf(bookId)})) {
+            final RowDataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
+                                      new Author(rowData.getLong(KEY_FK_AUTHOR), rowData),
+                                      rowData.getString(KEY_TITLE),
+                                      rowData.getString(KEY_DATE_FIRST_PUBLICATION),
+                                      TocEntry.Type.TYPE_BOOK,
+                                      rowData.getInt(KEY_BOOK_COUNT)));
+            }
+        }
+        return list;
+    }
+
     /*
      * Bad idea. Instead use: Book book = Book.getBook(mDb, bookId);
      * So you never get a {@code null} Book!
@@ -1918,31 +1930,6 @@ public class DAO
 //        }
 //        return null;
 //    }
-
-    /**
-     * Get the list of TocEntry for this book.
-     *
-     * @param bookId of the book
-     *
-     * @return list
-     */
-    @NonNull
-    public ArrayList<TocEntry> getTocEntryByBook(final long bookId) {
-        ArrayList<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(SqlSelectList.TOC_ENTRIES_BY_BOOK_ID,
-                                                new String[]{String.valueOf(bookId)})) {
-            final RowDataHolder rowData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
-                list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
-                                      new Author(rowData.getLong(KEY_FK_AUTHOR), rowData),
-                                      rowData.getString(KEY_TITLE),
-                                      rowData.getString(KEY_DATE_FIRST_PUBLICATION),
-                                      TocEntry.Type.TYPE_BOOK,
-                                      rowData.getInt(KEY_BOOK_COUNT)));
-            }
-        }
-        return list;
-    }
 
     /**
      * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
@@ -2608,7 +2595,6 @@ public class DAO
         }
     }
 
-
     /**
      * Returns a unique list of all loanee in the database.
      *
@@ -2935,7 +2921,6 @@ public class DAO
         }
     }
 
-
     /**
      * Find a Series, and return its ID. The incoming object is not modified.
      *
@@ -3194,19 +3179,20 @@ public class DAO
      * e.g. if a columns says it's Integer, an incoming boolean will be transformed to 0/1</li>
      * </ul>
      *
-     * @param context         Current context
      * @param tableDefinition destination table
      * @param dataManager     A collection with the columns to be set. May contain extra data.
      * @param bookLocale      the Locale to use for character case manipulation
      *
      * @return New and filtered ContentValues
+     *
+     * @throws IllegalArgumentException on any failure.
      */
     @NonNull
-    private ContentValues filterValues(@NonNull final Context context,
-                                       @SuppressWarnings("SameParameterValue")
+    private ContentValues filterValues(@SuppressWarnings("SameParameterValue")
                                        @NonNull final TableDefinition tableDefinition,
                                        @NonNull final DataManager dataManager,
-                                       @NonNull final Locale bookLocale) {
+                                       @NonNull final Locale bookLocale)
+            throws IllegalArgumentException {
 
         TableInfo tableInfo = tableDefinition.getTableInfo(sSyncedDb);
 
@@ -3222,105 +3208,97 @@ public class DAO
                     if (columnInfo.isNullable()) {
                         cv.putNull(key);
                     } else {
-                        throw new IllegalStateException("NULL on a non-nullable column key=" + key);
+                        throw new IllegalArgumentException(
+                                "NULL on a non-nullable column|key=" + key);
                     }
                 } else {
-                    try {
-                        // Try to set the appropriate value, but if that fails, just use TEXT...
-                        switch (columnInfo.storageClass) {
-                            case Real: {
-                                if (entry instanceof Number) {
-                                    cv.put(columnInfo.name, ((Number) entry).doubleValue());
+                    switch (columnInfo.storageClass) {
+                        case Real: {
+                            if (entry instanceof Number) {
+                                cv.put(columnInfo.name, ((Number) entry).doubleValue());
+                            } else {
+                                // Theoretically we should only get here during an import,
+                                // where everything is handled as a String.
+                                String stringValue = entry.toString().trim();
+                                if (!stringValue.isEmpty()) {
+                                    // Sqlite does not care about float/double,
+                                    // Using double covers float as well.
+                                    //Reminder: do NOT use the bookLocale to parse.
+                                    cv.put(columnInfo.name, Double.parseDouble(stringValue));
                                 } else {
-                                    // Theoretically we should only get here during an import,
-                                    // where everything is handled as a String.
-                                    String stringValue = entry.toString().trim();
-                                    if (!stringValue.isEmpty()) {
-                                        // sqlite does not care about float/double,
-                                        // Using double covers float as well.
-                                        //Reminder: do NOT use the bookLocale to parse.
-                                        cv.put(columnInfo.name,
-                                               Double.parseDouble(stringValue));
-                                    } else {
-                                        cv.put(columnInfo.name, "");
-                                    }
+                                    cv.put(columnInfo.name, "");
                                 }
-                                break;
                             }
-                            case Integer: {
-                                if (entry instanceof Boolean) {
-                                    if ((Boolean) entry) {
-                                        cv.put(columnInfo.name, 1);
-                                    } else {
-                                        cv.put(columnInfo.name, 0);
-                                    }
-                                } else if (entry instanceof Integer) {
-                                    cv.put(columnInfo.name, (Integer) entry);
-                                } else if (entry instanceof Long) {
-                                    cv.put(columnInfo.name, (Long) entry);
-                                } else {
-                                    // Theoretically we should only get here during an import,
-                                    // where everything is handled as a String.
-                                    String s = entry.toString().toLowerCase(bookLocale);
-                                    if (!s.isEmpty()) {
-                                        // It's not strictly needed to do these conversions.
-                                        // parseInt/catch(Exception) works,
-                                        // but it's not elegant...
-                                        switch (s) {
-                                            case "1":
-                                            case "true":
-                                            case "t":
-                                            case "yes":
-                                            case "y":
-                                                cv.put(columnInfo.name, 1);
-                                                break;
-
-                                            case "0":
-                                            case "false":
-                                            case "f":
-                                            case "no":
-                                            case "n":
-                                                cv.put(columnInfo.name, 0);
-                                                break;
-
-                                            default:
-                                                //Reminder: do NOT use the bookLocale to parse.
-                                                cv.put(columnInfo.name, Integer.parseInt(s));
-                                        }
-
-                                    } else {
-                                        // s.isEmpty
-                                        cv.put(columnInfo.name, "");
-                                    }
-                                }
-                                break;
-                            }
-                            case Text: {
-                                if (entry instanceof String) {
-                                    cv.put(columnInfo.name, (String) entry);
-                                } else {
-                                    cv.put(columnInfo.name, entry.toString());
-                                }
-                                break;
-                            }
-                            case Blob: {
-                                if (entry instanceof byte[]) {
-                                    cv.put(columnInfo.name, (byte[]) entry);
-                                } else {
-                                    throw new IllegalArgumentException(
-                                            "non-null Blob but not a byte[] ?"
-                                            + " column.name=" + columnInfo.name
-                                            + ", key=" + key);
-                                }
-                                break;
-                            }
+                            break;
                         }
-                    } catch (@NonNull final NumberFormatException e) {
-                        Logger.error(context, TAG, e,
-                                     "column=" + columnInfo.name,
-                                     "stringValue=" + entry.toString());
-                        // not really ok, but let's store it anyhow.
-                        cv.put(columnInfo.name, entry.toString());
+                        case Integer: {
+                            if (entry instanceof Boolean) {
+                                if ((Boolean) entry) {
+                                    cv.put(columnInfo.name, 1);
+                                } else {
+                                    cv.put(columnInfo.name, 0);
+                                }
+                            } else if (entry instanceof Integer) {
+                                cv.put(columnInfo.name, (Integer) entry);
+                            } else if (entry instanceof Long) {
+                                cv.put(columnInfo.name, (Long) entry);
+                            } else {
+                                // Theoretically we should only get here during an import,
+                                // where everything is handled as a String.
+                                String s = entry.toString().toLowerCase(bookLocale);
+                                if (!s.isEmpty()) {
+                                    // It's not strictly needed to do these conversions.
+                                    // parseInt/catch(Exception) works,
+                                    // but it's not elegant...
+                                    switch (s) {
+                                        case "1":
+                                        case "true":
+                                        case "t":
+                                        case "yes":
+                                        case "y":
+                                            cv.put(columnInfo.name, 1);
+                                            break;
+
+                                        case "0":
+                                        case "0.0":
+                                        case "false":
+                                        case "f":
+                                        case "no":
+                                        case "n":
+                                            cv.put(columnInfo.name, 0);
+                                            break;
+
+                                        default:
+                                            //Reminder: do NOT use the bookLocale to parse.
+                                            cv.put(columnInfo.name, Integer.parseInt(s));
+                                    }
+
+                                } else {
+                                    // s.isEmpty
+                                    cv.put(columnInfo.name, "");
+                                }
+                            }
+                            break;
+                        }
+                        case Text: {
+                            if (entry instanceof String) {
+                                cv.put(columnInfo.name, (String) entry);
+                            } else {
+                                cv.put(columnInfo.name, entry.toString());
+                            }
+                            break;
+                        }
+                        case Blob: {
+                            if (entry instanceof byte[]) {
+                                cv.put(columnInfo.name, (byte[]) entry);
+                            } else {
+                                throw new IllegalArgumentException(
+                                        "non-null Blob but not a byte[] ?"
+                                        + "|column.name=" + columnInfo.name
+                                        + "|key=" + key);
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -3715,6 +3693,21 @@ public class DAO
 
     public void analyze() {
         sSyncedDb.analyze();
+    }
+
+    public static class DaoWriteException
+            extends Exception {
+
+        private static final long serialVersionUID = -2857466683799399619L;
+
+        DaoWriteException(@NonNull final String message) {
+            super(message);
+        }
+
+        DaoWriteException(@NonNull final String message,
+                          @NonNull final Throwable cause) {
+            super(message, cause);
+        }
     }
 
     /**

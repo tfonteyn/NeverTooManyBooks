@@ -151,7 +151,9 @@ public class CsvImporter
     @NonNull
     private final String mBooksString;
     @NonNull
-    private final String mProgress_msg_n_created_m_updated;
+    private final String mUnknownError;
+    @NonNull
+    private final String mProgressMessage;
     @NonNull
     private final ImportResults mResults = new ImportResults();
 
@@ -172,8 +174,8 @@ public class CsvImporter
     public CsvImporter(@NonNull final Context context,
                        final int options) {
         mBooksString = context.getString(R.string.lbl_books);
-        mProgress_msg_n_created_m_updated =
-                context.getString(R.string.progress_msg_n_created_m_updated);
+        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
+        mUnknownError = context.getString(R.string.unknown);
 
         mOptions = options;
 
@@ -304,26 +306,48 @@ public class CsvImporter
                     handleBookshelves(context, mDb, book);
                     handleAnthology(context, mDb, book);
 
-                    // The data is ready to be send to the database
-
-                    // go!
+                    // The data is now ready to be send to the database
                     bids.bookId = importBook(context, book, bids, updateOnlyIfNewer);
 
-                } catch (@NonNull final ImportException
-                        | SQLiteDoneException | IndexOutOfBoundsException e) {
+                } catch (@NonNull final DAO.DaoWriteException
+                        | SQLiteDoneException
+                        | IndexOutOfBoundsException e) {
+                    mResults.booksSkipped++;
+                    //TODO: see if we can give a meaningful user-displaying string.
+                    mResults.failedLinesMessage.add(mUnknownError);
                     mResults.failedLinesNr.add(row);
+                    if (BuildConfig.DEBUG /* always */) {
+                        if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                            Logger.warn(context, TAG, ERROR_IMPORT_FAILED_AT_ROW + row);
+                        } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
+                            // logging with the exception is VERY HEAVY
+                            Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                        }
+                    }
+                } catch (@NonNull final ImportException e) {
+                    mResults.booksSkipped++;
+                    // an ImportException has a user-displayable message.
                     mResults.failedLinesMessage.add(e.getLocalizedMessage());
-                    Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                    mResults.failedLinesNr.add(row);
+                    if (BuildConfig.DEBUG /* always */) {
+                        if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+                            Logger.warn(context, TAG, ERROR_IMPORT_FAILED_AT_ROW + row);
+                        } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
+                            // logging with the exception is VERY HEAVY
+                            Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                        }
+                    }
                 }
 
                 // limit the amount of progress updates, otherwise this will cause a slowdown.
                 long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > PROGRESS_UPDATE_INTERVAL
                     && !progressListener.isCancelled()) {
-                    String msg = String.format(mProgress_msg_n_created_m_updated,
+                    String msg = String.format(mProgressMessage,
                                                mBooksString,
                                                mResults.booksCreated,
-                                               mResults.booksUpdated);
+                                               mResults.booksUpdated,
+                                               mResults.booksSkipped);
                     progressListener.onProgressStep(delta, msg);
                     delta = 0;
                     lastUpdate = now;
@@ -341,8 +365,8 @@ public class CsvImporter
         // minus 1 for the column header line
         mResults.booksProcessed = row - 1;
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BACKUP) {
-            Log.d(TAG, "EXIT|doBooks|Csv Import successful|" + mResults);
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+            Log.d(TAG, "read|mResults=" + mResults);
         }
         return mResults;
     }
@@ -361,23 +385,23 @@ public class CsvImporter
      * @param bids              the holder with all information about the book id/uuid
      * @param updateOnlyIfNewer flag
      *
-     * @return the imported book ID, or {@code -1} if an error occurred
+     * @return the imported book ID
+     *
+     * @throws DAO.DaoWriteException on failure
      */
     private long importBook(@NonNull final Context context,
                             @NonNull final Book book,
                             @NonNull final BookIds bids,
-                            final boolean updateOnlyIfNewer) {
+                            final boolean updateOnlyIfNewer)
+            throws DAO.DaoWriteException {
 
         final boolean hasUuid = !bids.uuid.isEmpty();
 
-        // Always import empty ID's...even if they are duplicates.
-        // Would be nice to import a cover, but without ID/UUID that is not possible
+        // Always import empty ID's (we don't try and search/match)...even if they are duplicates.
         if (!hasUuid && !bids.hasNumericId) {
-            bids.bookId = mDb.insertBook(context, book);
-            if (bids.bookId > 0) {
-                mResults.booksCreated++;
-            }
-            // inserted id, or -1
+            bids.bookId = mDb.insertBook(context, 0, book);
+            mResults.booksCreated++;
+            // inserted id
             return bids.bookId;
         }
 
@@ -403,23 +427,17 @@ public class CsvImporter
 
         if (!exists) {
             bids.bookId = mDb.insertBook(context, bids.bookId, book);
-            if (bids.bookId > 0) {
-                mResults.booksCreated++;
-            }
-            // inserted id, or -1
+            mResults.booksCreated++;
+            // inserted id
             return bids.bookId;
 
         } else {
             if (!updateOnlyIfNewer || updateOnlyIfNewer(mDb, book, bids.bookId)) {
-                if (mDb.updateBook(context, bids.bookId, book,
-                                   DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT)) {
-                    mResults.booksUpdated++;
-                    // (updated) id
-                    return bids.bookId;
-                } else {
-                    // convert a rowsAffected==0 into the error code for this method.
-                    return -1L;
-                }
+                mDb.updateBook(context, bids.bookId, book,
+                               DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                mResults.booksUpdated++;
+                // (updated) id
+                return bids.bookId;
             } else {
                 // no update needed, just return the existing id
                 return bids.bookId;
@@ -769,7 +787,7 @@ public class CsvImporter
      * @param book  to check
      * @param names columns which should be checked for, in order of preference
      *
-     * @throws ImportException iif no suitable column is present
+     * @throws ImportException if no suitable column is present
      */
     private void requireColumnOrThrow(@SuppressWarnings("TypeMayBeWeakened")
                                       @NonNull final Book book,

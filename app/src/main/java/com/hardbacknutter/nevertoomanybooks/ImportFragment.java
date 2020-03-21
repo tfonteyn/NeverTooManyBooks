@@ -77,8 +77,6 @@ public class ImportFragment
     /** Log tag. */
     public static final String TAG = "ImportFragment";
 
-    private static final int REQ_PICK_FILE_FOR_IMPORT = 1;
-
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
@@ -86,12 +84,12 @@ public class ImportFragment
     private ResultDataModel mResultDataModel;
 
     /** Import. */
-    private ImportTaskModel mModel;
+    private ImportTaskModel mImportModel;
     private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
             new OptionsDialogBase.OptionsListener<ImportManager>() {
                 @Override
                 public void onOptionsSet(@NonNull final ImportManager options) {
-                    mModel.startArchiveImportTask(options);
+                    mImportModel.startArchiveImportTask(options);
                 }
 
                 @Override
@@ -123,18 +121,11 @@ public class ImportFragment
         //noinspection ConstantConditions
         mResultDataModel = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
 
-        mModel = new ViewModelProvider(this).get(ImportTaskModel.class);
-        mModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
-        mModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        mImportModel = new ViewModelProvider(this).get(ImportTaskModel.class);
+        mImportModel.onTaskProgress().observe(getViewLifecycleOwner(), this::onTaskProgress);
+        mImportModel.onTaskFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        importPickUri();
 
-        // Import
-        // This does not allow multiple saved files like "foo.tar (1)", "foo.tar (2)"
-//        String[] mimeTypes = {"application/x-tar", "text/csv"};
-        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                .addCategory(Intent.CATEGORY_OPENABLE)
-//                .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-                .setType("*/*");
-        startActivityForResult(intent, ImportFragment.REQ_PICK_FILE_FOR_IMPORT);
     }
 
     @Override
@@ -152,7 +143,7 @@ public class ImportFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case REQ_PICK_FILE_FOR_IMPORT: {
+            case UniqueId.REQ_IMPORT_PICK_URI: {
                 // The user selected a file to import from. Next step asks for the options.
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
@@ -194,13 +185,27 @@ public class ImportFragment
         }
 
         // hook the task up.
-        dialog.setCancellable(mModel.getTask());
+        dialog.setCancellable(mImportModel.getTask());
 
         return dialog;
     }
 
     /**
-     * Import from Archive: Step 2: show the options to the user.
+     * Import Step 1: prompt the user for a uri to export to.
+     */
+    private void importPickUri() {
+        // Import
+        // This does not allow multiple saved files like "foo.tar (1)", "foo.tar (2)"
+//        String[] mimeTypes = {"application/x-tar", "text/csv"};
+        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+//                .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+                .setType("*/*");
+        startActivityForResult(intent, UniqueId.REQ_IMPORT_PICK_URI);
+    }
+
+    /**
+     * Import Step 2: show the options to the user.
      *
      * @param uri file to read from
      */
@@ -223,7 +228,7 @@ public class ImportFragment
             return;
         }
 
-        if (container.equals(ArchiveContainer.CsvBooks)) {
+        if (ArchiveContainer.CsvBooks.equals(container)) {
             // use more prudent default options for Csv files.
             helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
             // Verify - this can be a dangerous operation
@@ -258,7 +263,7 @@ public class ImportFragment
                                               .newInstance(helper)
                                               .show(getChildFragmentManager(),
                                                     ImportHelperDialogFragment.TAG))
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> mModel
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> mImportModel
                             .startArchiveImportTask(helper))
                     .create()
                     .show();
@@ -312,15 +317,21 @@ public class ImportFragment
         final StringBuilder msg = new StringBuilder();
 
         //TODO: LTR
-        if (results.booksCreated > 0 || results.booksUpdated > 0) {
-            msg.append("\n• ").append(getString(R.string.progress_msg_n_created_m_updated,
-                                                getString(R.string.lbl_books),
-                                                results.booksCreated, results.booksUpdated));
+        if (results.booksCreated > 0 || results.booksUpdated > 0 || results.booksSkipped > 0) {
+            msg.append("\n• ")
+               .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                 getString(R.string.lbl_books),
+                                 results.booksCreated,
+                                 results.booksUpdated,
+                                 results.booksSkipped));
         }
-        if (results.coversCreated > 0 || results.coversUpdated > 0) {
-            msg.append("\n• ").append(getString(R.string.progress_msg_n_created_m_updated,
-                                                getString(R.string.lbl_covers),
-                                                results.coversCreated, results.coversUpdated));
+        if (results.coversCreated > 0 || results.coversUpdated > 0 || results.coversSkipped > 0) {
+            msg.append("\n• ")
+               .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                 getString(R.string.lbl_covers),
+                                 results.coversCreated,
+                                 results.coversUpdated,
+                                 results.coversSkipped));
         }
         if (results.styles > 0) {
             msg.append("\n• ").append(getString(R.string.name_colon_value,

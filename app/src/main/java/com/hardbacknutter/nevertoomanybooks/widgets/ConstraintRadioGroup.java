@@ -142,7 +142,6 @@ public final class ConstraintRadioGroup
         ViewGroup.LayoutParams params = getLayoutParams();
         params.width = 0;
         params.height = 0;
-
         super.updatePostLayout(container);
     }
 

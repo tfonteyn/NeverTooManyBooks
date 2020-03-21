@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.App;
@@ -46,11 +47,11 @@ public abstract class FormattedMessageException
     @StringRes
     private final int mStringId;
     /** Args to pass to format function. */
-    @NonNull
+    @Nullable
     private final Object[] mArgs;
 
     public FormattedMessageException(@StringRes final int stringId,
-                                     @NonNull final Object... args) {
+                                     @Nullable final Object... args) {
         mStringId = stringId;
         mArgs = args;
     }
@@ -65,6 +66,10 @@ public abstract class FormattedMessageException
 
     @NonNull
     public String getLocalizedMessage(@NonNull final Context context) {
-        return context.getString(mStringId, mArgs);
+        if (mArgs != null) {
+            return context.getString(mStringId, mArgs);
+        } else {
+            return context.getString(mStringId);
+        }
     }
 }

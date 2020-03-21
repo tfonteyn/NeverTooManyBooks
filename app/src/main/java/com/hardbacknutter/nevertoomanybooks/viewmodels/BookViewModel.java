@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithFixableId;
 import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * Holds the {@link Book} and whether it's dirty or not + some direct support functions.
@@ -303,39 +303,31 @@ public class BookViewModel
      *
      * @param context Current context
      *
-     * @return {@code true} on success
+     * @throws DAO.DaoWriteException on failure
      */
-    public boolean saveBook(@NonNull final Context context) {
+    public void saveBook(@NonNull final Context context)
+            throws DAO.DaoWriteException {
         if (mBook.isNew()) {
-            final long id = mDb.insertBook(context, mBook);
-            if (id > 0) {
-                // if the user added a cover to the new book, make it permanent
-                for (int cIdx = 0; cIdx < 2; cIdx++) {
-                    final String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
-                    if (!fileSpec.isEmpty()) {
-                        final String uuid = mDb.getBookUuid(id);
-                        if (uuid != null) {
-                            final File downloadedFile = new File(fileSpec);
-                            final File destination = AppDir
-                                    .getCoverFile(context, uuid, cIdx);
-                            FileUtils.rename(downloadedFile, destination);
-                        }
+            final long id = mDb.insertBook(context, 0, mBook);
+            // if the user added a cover to the new book, make it permanent
+            for (int cIdx = 0; cIdx < 2; cIdx++) {
+                final String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
+                if (!fileSpec.isEmpty()) {
+                    final String uuid = mDb.getBookUuid(id);
+                    if (uuid != null) {
+                        final File downloadedFile = new File(fileSpec);
+                        final File destination = AppDir
+                                .getCoverFile(context, uuid, cIdx);
+                        FileUtils.rename(downloadedFile, destination);
                     }
                 }
-            } else {
-                // insert failed
-                return false;
             }
         } else {
-            if (!mDb.updateBook(context, mBook.getId(), mBook, 0)) {
-                // update failed
-                return false;
-            }
+            mDb.updateBook(context, mBook.getId(), mBook, 0);
         }
 
         putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
         putResultData(UniqueId.BKEY_BOOK_MODIFIED, true);
-        return true;
     }
 
     /**

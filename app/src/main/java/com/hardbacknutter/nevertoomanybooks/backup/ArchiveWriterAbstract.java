@@ -106,7 +106,7 @@ public abstract class ArchiveWriterAbstract
         super(context, helper);
 
         mProgress_msg_covers = context.getString(
-                R.string.progress_msg_n_covers_processed_m_missing);
+                R.string.info_export_result_n_covers_processed_m_missing);
         mProgress_msg_covers_skip = context.getString(
                 R.string.progress_msg_n_covers_processed_m_missing_s_skipped);
     }

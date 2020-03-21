@@ -62,6 +62,8 @@ public class ImportHelperDialogFragment
     /** View Binding. */
     private DialogImportOptionsBinding mVb;
 
+    private boolean mIsCsvBooks;
+
     /**
      * Constructor.
      *
@@ -91,6 +93,7 @@ public class ImportHelperDialogFragment
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         mVb = DialogImportOptionsBinding.inflate(inflater);
 
+        mIsCsvBooks = mModel.isCsvContainer(getContext());
         setupOptions();
 
         return new MaterialAlertDialogBuilder(getContext())
@@ -102,17 +105,25 @@ public class ImportHelperDialogFragment
                 .create();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        // do NOT adjust the dialog if we're doing CSV... it's big enough
+        if (!mIsCsvBooks) {
+            fixDialogWidth();
+        }
+    }
+
     /**
      * Set the checkboxes/radio-buttons from the options.
      */
     private void setupOptions() {
         ImportManager helper = mModel.getHelper();
 
-        //noinspection ConstantConditions
-        boolean isCsvBooks = ArchiveContainer.CsvBooks.equals(helper.getContainer(getContext()));
-        if (isCsvBooks) {
+        if (mIsCsvBooks) {
             // CSV files don't have options other then the books.
             mVb.cbxGroup.setVisibility(View.GONE);
+
         } else {
             // Populate the options.
             mVb.cbxBooks.setChecked((helper.getOptions() & Options.BOOKS) != 0);
@@ -136,7 +147,7 @@ public class ImportHelperDialogFragment
         }
 
         // enable or disable the sync option
-        if (isCsvBooks || mModel.getArchiveCreationDate() != null) {
+        if (mIsCsvBooks || mModel.getArchiveCreationDate() != null) {
             final boolean allBooks = (helper.getOptions()
                                       & ImportManager.IMPORT_ONLY_NEW_OR_UPDATED) == 0;
             mVb.rbBooksAll.setChecked(allBooks);
@@ -154,9 +165,9 @@ public class ImportHelperDialogFragment
             mVb.rbBooksAll.setChecked(true);
             mVb.rbBooksSync.setChecked(false);
             helper.setOption(ImportManager.IMPORT_ONLY_NEW_OR_UPDATED, false);
+            //noinspection ConstantConditions
             mVb.infoBtnRbBooksSync.setContentDescription(
                     getContext().getString(R.string.warning_import_old_archive));
-
         }
     }
 
@@ -199,6 +210,10 @@ public class ImportHelperDialogFragment
             } else {
                 return mInfo.getCreationDate();
             }
+        }
+
+        boolean isCsvContainer(@NonNull final Context context) {
+            return ArchiveContainer.CsvBooks.equals(mHelper.getContainer(context));
         }
     }
 }

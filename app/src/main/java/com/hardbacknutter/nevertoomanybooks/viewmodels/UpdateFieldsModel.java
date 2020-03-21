@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -551,8 +552,12 @@ public class UpdateFieldsModel
 
                 final Book book = new Book();
                 book.putAll(bookData);
-                // failures to update are ignored.
-                mDb.updateBook(context, mCurrentBookId, book, 0);
+                try {
+                    mDb.updateBook(context, mCurrentBookId, book, 0);
+                } catch (@NonNull final DAO.DaoWriteException e) {
+                    // ignore, but log it.
+                    Logger.error(context, TAG, e);
+                }
             }
         }
 

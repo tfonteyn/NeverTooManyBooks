@@ -78,7 +78,7 @@ public abstract class ArchiveReaderAbstract
     /** progress message. */
     private final String mCoversText;
     /** progress message. */
-    private final String mProgress_covers_n_created_m_updated;
+    private final String mProgressMessage;
     /** progress message. */
     private final String mProcessBooklistStyles;
 
@@ -104,8 +104,7 @@ public abstract class ArchiveReaderAbstract
         mProcessBooklistStyles = context.getString(R.string.progress_msg_process_booklist_style);
 
         mCoversText = context.getString(R.string.lbl_covers);
-        mProgress_covers_n_created_m_updated =
-                context.getString(R.string.progress_msg_n_created_m_updated);
+        mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
     }
 
     /**
@@ -190,15 +189,14 @@ public abstract class ArchiveReaderAbstract
                     case Cover: {
                         if (readCovers) {
                             String msg;
-                            if (readCover(context, entity)) {
-                                msg = String.format(mProgress_covers_n_created_m_updated,
-                                                    mCoversText,
-                                                    mResults.coversCreated,
-                                                    mResults.coversUpdated);
-                            } else {
-                                msg = context.getString(R.string.progress_msg_skip_s,
-                                                        context.getString(R.string.lbl_cover));
+                            if (!readCover(context, entity)) {
+                                mResults.coversSkipped++;
                             }
+                            msg = String.format(mProgressMessage,
+                                                mCoversText,
+                                                mResults.coversCreated,
+                                                mResults.coversUpdated,
+                                                mResults.coversSkipped);
                             progressListener.onProgressStep(1, msg);
                             mResults.coversProcessed++;
                             // entitiesRead is set when all done

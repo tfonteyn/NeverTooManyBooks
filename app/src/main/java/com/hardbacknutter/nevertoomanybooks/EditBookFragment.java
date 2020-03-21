@@ -55,8 +55,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -327,12 +329,14 @@ public class EditBookFragment
      * Save the collected book details.
      */
     private void saveBook() {
-        //noinspection ConstantConditions
-        if (mBookViewModel.saveBook(getContext())) {
+        try {
+            //noinspection ConstantConditions
+            mBookViewModel.saveBook(getContext());
             //noinspection ConstantConditions
             getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultData());
             getActivity().finish();
-        } else {
+        } catch (@NonNull final DAO.DaoWriteException e) {
+            Logger.error(getContext(), TAG, e);
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.error_unexpected_error, Snackbar.LENGTH_LONG)
                     .show();

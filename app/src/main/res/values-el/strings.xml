@@ -445,10 +445,10 @@
     <string name="progress_msg_connecting">Γίνεται σύνδεση με τη ιστοσελίδα…</string>
     <string name="progress_msg_finding_editions">Γίνεται εντοπισμός Εκδόσεων…</string>
     <string name="progress_msg_loading">Φορτώνει…</string>
-    <string name="progress_msg_n_books_processed">%1$d βιβλία επεξεργασμένα</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν, %4$d παρελείφθησαν)</string>
-    <string name="progress_msg_n_created_m_updated">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν</string>
+    <string name="info_export_result_n_books_processed">%1$d βιβλία επεξεργασμένα</string>
+    <string name="info_export_result_n_covers_processed_m_missing">%1$d εξώφυλλα επεξεργάστηκαν\n(%2$d/%3$d λείπουν)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d εξώφυλλα επεξεργάστηκαν (%2$d/%3$d λείπουν, %4$d παρελείφθησαν)</string>
+    <string name="progress_msg_x_created_y_updated">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν</string>
     <string name="progress_msg_optimizing">Βελτιστοποίηση βάσεων δεδομένων…</string>
     <string name="progress_msg_please_wait">Παρακαλώ περιμένετε…</string>
     <string name="progress_msg_process_booklist_style">Στυλ βιβλίου…</string>
@@ -627,8 +627,8 @@
     <string name="warning_if_month_set_year_must_be">Αν προσδιοριστεί μήνας, τότε πρέπει να προσδιοριστεί και έτος.</string>
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
     <string name="warning_import_be_cautious">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
-    <string name="warning_import_csv_failed_lines_lots">Η ανάλυση του CSV απέτυχε για τις γραμμές %1$s και άλλες.</string>
-    <string name="warning_import_csv_failed_lines_some">Η ανάλυση του CSV απέτυχε για τις γραμμές %1$s.</string>
+    <string name="warning_import_csv_failed_lines_lots">Η ανάλυση του CSV απέτυχε για τις γραμμές \n%1$s\n και άλλες.</string>
+    <string name="warning_import_csv_failed_lines_some">Η ανάλυση του CSV απέτυχε για τις γραμμές \n%1$s\n</string>
     <string name="warning_import_old_archive">Αυτή η επιλογή δεν υποστηρίζεται από Αρχεία παλαιότερης έκδοσης.</string>
     <string name="warning_import_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
     <string name="warning_missing_name">Το όνομα δε μπορεί να είναι κενό</string>
@@ -653,5 +653,6 @@
     <string name="warning_x_is_not_a_valid_code">«%1$s» δεν είναι έγκυρος κωδικός κώδικας</string>
     <string name="x_of_y">%1$d από %2$d</string>
     <string name="yes">Ναι</string>
+    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d δημιουργήθηκαν, %3$d ενημερώθηκαν, %4$d παρελείφθησαν</string>
 
 </resources>

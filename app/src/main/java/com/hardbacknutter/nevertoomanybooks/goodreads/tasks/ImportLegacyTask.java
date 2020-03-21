@@ -76,9 +76,9 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.taskqueue.TQTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -437,8 +437,12 @@ class ImportLegacyTask
         long bookId = rowData.getLong(DBDefinitions.KEY_PK_ID);
         Book book = new Book();
         book.putAll(buildBundle(context, db, bookId, review));
-        // failures to update are ignored.
-        db.updateBook(context, bookId, book, DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+        try {
+            db.updateBook(context, bookId, book, DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+        } catch (@NonNull final DAO.DaoWriteException e) {
+            // ignore, but log it.
+            Logger.error(context, TAG, e);
+        }
     }
 
     /**
@@ -453,27 +457,23 @@ class ImportLegacyTask
                             @NonNull final DAO db,
                             @NonNull final Bundle review) {
 
-        Book book = new Book();
+        final Book book = new Book();
         book.putAll(buildBundle(context, db, 0, review));
-        long id = db.insertBook(context, book);
-
-        if (id > 0) {
+        try {
+            final long id = db.insertBook(context, 0, book);
             for (int cIdx = 0; cIdx < 2; cIdx++) {
                 String fileSpec = book.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
                 if (!fileSpec.isEmpty()) {
                     File downloadedFile = new File(fileSpec);
-
-                    String uuid = db.getBookUuid(id);
-                    if (uuid != null) {
-                        File destination = AppDir.getCoverFile(context, uuid, cIdx);
-                        FileUtils.rename(downloadedFile, destination);
-                    }
+                    String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+                    File destination = AppDir.getCoverFile(context, uuid, cIdx);
+                    FileUtils.rename(downloadedFile, destination);
                 }
             }
+        } catch (@NonNull final DAO.DaoWriteException e) {
+            // ignore, but log it.
+            Logger.error(context, TAG, e);
         }
-        //else {
-        // ignore the insert failure
-        //}
     }
 
     /**

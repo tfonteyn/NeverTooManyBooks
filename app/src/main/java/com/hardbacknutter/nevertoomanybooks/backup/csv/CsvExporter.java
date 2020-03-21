@@ -133,18 +133,18 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_EID_GOODREADS_BOOK + "\","
             + '"' + DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "\""
             + '\n';
+
+    private static final String EMPTY_QUOTED_STRING = "\"\"";
+
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-
     /** cached localized "unknown" string. */
     private final String mUnknownString;
-
     private final StringList<Author> mAuthorCoder = CsvCoder.getAuthorCoder();
     private final StringList<Series> mSeriesCoder = CsvCoder.getSeriesCoder();
     private final StringList<TocEntry> mTocCoder = CsvCoder.getTocCoder();
     private final StringList<Bookshelf> mBookshelfCoder;
-
     @NonNull
     private final ExportResults mResults = new ExportResults();
     /** export configuration. */
@@ -339,13 +339,14 @@ public class CsvExporter
      *
      * @param cell to encode
      *
-     * @return The encoded cell enclosed in escaped quotes and a trailing ','
+     * @return The encoded cell enclosed in escaped quotes
      */
     @NonNull
     private String encode(@Nullable final String cell) {
+
         try {
             if (cell == null || "null".equalsIgnoreCase(cell) || cell.trim().isEmpty()) {
-                return "\"\",";
+                return EMPTY_QUOTED_STRING;
             }
 
             final StringBuilder sb = new StringBuilder("\"");
@@ -364,7 +365,8 @@ public class CsvExporter
                         sb.append("\\t");
                         break;
                     case '"':
-                        sb.append("\"\"");
+                        // quotes are escaped by doubling them
+                        sb.append(EMPTY_QUOTED_STRING);
                         break;
                     case '\\':
                         sb.append("\\\\");
@@ -378,7 +380,7 @@ public class CsvExporter
             }
             return sb.append("\"").toString();
         } catch (@NonNull final NullPointerException e) {
-            return "\"\"";
+            return EMPTY_QUOTED_STRING;
         }
     }
 

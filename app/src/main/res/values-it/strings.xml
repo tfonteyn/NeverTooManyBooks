@@ -445,10 +445,10 @@
     <string name="progress_msg_connecting">Collegamento al sito web…</string>
     <string name="progress_msg_finding_editions">Ricerca edizioni…</string>
     <string name="progress_msg_loading">Caricamento…</string>
-    <string name="progress_msg_n_books_processed">%1$d libri elaborati</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate\n(%2$d/%3$d mancanti, %4$d saltate)</string>
-    <string name="progress_msg_n_created_m_updated">%1$s: %2$d creati, %3$d aggiornati</string>
+    <string name="info_export_result_n_books_processed">%1$d libri elaborati</string>
+    <string name="info_export_result_n_covers_processed_m_missing">%1$d copertine elaborate\n(%2$d/%3$d mancanti)</string>
+    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d copertine elaborate (%2$d/%3$d mancanti, %4$d saltate)</string>
+    <string name="progress_msg_x_created_y_updated">%1$s: %2$d creati, %3$d aggiornati</string>
     <string name="progress_msg_optimizing">Ottimizzazione archivi…</string>
     <string name="progress_msg_please_wait">Attendere prego…</string>
     <string name="progress_msg_process_booklist_style">Stili della lista di libri…</string>
@@ -627,8 +627,8 @@
     <string name="warning_if_month_set_year_must_be">Se si indica il mese, occorre indicare anche l\'anno.</string>
     <string name="warning_immediate_global_changes">NOTA: Tutte le modifiche salvate si applicano istantaneamente e globalmente</string>
     <string name="warning_import_be_cautious">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
-    <string name="warning_import_csv_failed_lines_lots">Analisi CSV non riuscita per le righe %1$s e altre.</string>
-    <string name="warning_import_csv_failed_lines_some">Analisi CSV non riuscita per le righe %1$s.</string>
+    <string name="warning_import_csv_failed_lines_lots">Analisi CSV non riuscita per le righe \n%1$s\n e altre.</string>
+    <string name="warning_import_csv_failed_lines_some">Analisi CSV non riuscita per le righe \n%1$s\n</string>
     <string name="warning_import_old_archive">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
     <string name="warning_import_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
     <string name="warning_missing_name">Il nome non può essere vuoto</string>
@@ -653,5 +653,6 @@
     <string name="warning_x_is_not_a_valid_code">«%1$s» non è un codice valido</string>
     <string name="x_of_y">%1$d di %2$d</string>
     <string name="yes">Sì</string>
+    <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d creati, %3$d aggiornati, %4$d saltate</string>
 
 </resources>

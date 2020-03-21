@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
  * <p>
  * The compiler should remove all code between dead if() blocks
  */
+@SuppressWarnings("WeakerAccess")
 public final class DEBUG_SWITCHES {
 
     // special case, uncomment this to enable OAUTH debug messages
@@ -105,17 +106,28 @@ public final class DEBUG_SWITCHES {
     /** Dump SQL for {@link SynchronizedDb#execSQL(String)}. */
     public static final boolean DB_SYNC_EXEC_SQL = false;
     /** {@link BooksOnBookshelfModel#buildBookList}. */
-    static final boolean BOB_INIT_BOOK_LIST = false;
+    public static final boolean BOB_INIT_BOOK_LIST = false;
+
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter}.
+     * Normal logging.
+     */
+    public static final boolean IMPORT_CSV_BOOKS = false;
+    /**
+     * {@link com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter}.
+     * Extensive logging.
+     */
+    public static final boolean IMPORT_CSV_BOOKS_EXT = false;
 
     /** dump the style each time it is accessed. Medium length in the log. */
     public static final boolean DUMP_STYLE = false;
     public static final boolean BOOK_LOCALE = false;
 
     /** Log the full flow of {@link Activity#recreate()}. */
-    static final boolean RECREATE_ACTIVITY = false;
+    public static final boolean RECREATE_ACTIVITY = false;
 
     /** Enable strict mode reporting on network,disc,... usage. */
-    static final boolean STRICT_MODE = false;
+    public static final boolean STRICT_MODE = false;
 
     private DEBUG_SWITCHES() {
     }

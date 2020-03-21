@@ -754,10 +754,13 @@ public class Book
                         } catch (@NonNull final NumberFormatException e) {
                             // always remove illegal input
                             remove(key);
-                            Logger.warn(context, TAG, "preprocessExternalIds"
-                                                      + "|NumberFormatException"
-                                                      + "|name=" + key
-                                                      + "|value=" + o);
+
+                            if (BuildConfig.DEBUG /* always */) {
+                                Logger.warn(context, TAG, "preprocessExternalIds"
+                                                          + "|NumberFormatException"
+                                                          + "|name=" + key
+                                                          + "|value=" + o);
+                            }
                         }
                         break;
                     }

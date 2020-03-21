@@ -76,6 +76,12 @@ public final class UniqueId {
     /** Request code: open the admin page to order and en/disable sites. */
     public static final int REQ_PREFERRED_SEARCH_SITES = 2_201;
 
+    /** Request code: Let the user pick a Uri to export to. */
+    public static final int REQ_EXPORT_PICK_URI = 2_501;
+    /** Request code: Let the user pick a Uri to import from. */
+    public static final int REQ_IMPORT_PICK_URI = 2_502;
+
+
     /** Request code: ask the CoverBrowserFragment to get an alternative edition cover. */
     public static final int REQ_ACTION_COVER_BROWSER = 3_001;
     /** Request code: use internal routines for cropping images. */

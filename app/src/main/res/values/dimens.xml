@@ -103,6 +103,9 @@
     -->
     <dimen name="largeMenuButton">320dp</dimen>
 
+    <!-- Import options dialog in landscape mode showing all options.-->
+    <dimen name="import_dialog_landscape_width">580dp</dimen>
+
 
     <!-- indent an element so it matches up with the text part of a standard size text field
     which has a drawable at the start/end. -->

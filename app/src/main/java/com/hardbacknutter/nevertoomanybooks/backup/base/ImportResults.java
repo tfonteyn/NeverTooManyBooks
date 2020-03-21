@@ -67,6 +67,8 @@ public class ImportResults
     public int booksCreated;
     /** #books we updated. */
     public int booksUpdated;
+    /** #books we skipped. (yes, we could use failedLinesNr.size()) */
+    public int booksSkipped;
 
     /** The total #covers that were present in the import data. */
     public int coversProcessed;
@@ -74,6 +76,8 @@ public class ImportResults
     public int coversCreated;
     /** #covers we updated. */
     public int coversUpdated;
+    /** #covers we skipped. */
+    public int coversSkipped;
 
     /** #styles we imported. */
     public int styles;
@@ -92,10 +96,12 @@ public class ImportResults
         booksProcessed = in.readInt();
         booksCreated = in.readInt();
         booksUpdated = in.readInt();
+        booksSkipped = in.readInt();
 
         coversProcessed = in.readInt();
         coversCreated = in.readInt();
         coversUpdated = in.readInt();
+        coversSkipped = in.readInt();
 
         styles = in.readInt();
         preferences = in.readInt();
@@ -108,10 +114,12 @@ public class ImportResults
         booksProcessed += results.booksProcessed;
         booksCreated += results.booksCreated;
         booksUpdated += results.booksUpdated;
+        booksSkipped += results.booksSkipped;
 
         coversProcessed += results.coversProcessed;
         coversCreated += results.coversCreated;
         coversUpdated += results.coversUpdated;
+        coversSkipped += results.coversSkipped;
 
         styles += results.styles;
         preferences += results.preferences;
@@ -126,10 +134,12 @@ public class ImportResults
         dest.writeInt(booksProcessed);
         dest.writeInt(booksCreated);
         dest.writeInt(booksUpdated);
+        dest.writeInt(booksSkipped);
 
         dest.writeInt(coversProcessed);
         dest.writeInt(coversCreated);
         dest.writeInt(coversUpdated);
+        dest.writeInt(coversSkipped);
 
         dest.writeInt(styles);
         dest.writeInt(preferences);
@@ -150,10 +160,12 @@ public class ImportResults
                + ", booksProcessed=" + booksProcessed
                + ", booksCreated=" + booksCreated
                + ", booksUpdated=" + booksUpdated
+               + ", booksSkipped=" + booksSkipped
 
                + ", coversSkipped=" + coversProcessed
                + ", coversCreated=" + coversCreated
                + ", coversUpdated=" + coversUpdated
+               + ", coversSkipped=" + coversSkipped
 
                + ", styles=" + styles
                + ", preferences=" + preferences
