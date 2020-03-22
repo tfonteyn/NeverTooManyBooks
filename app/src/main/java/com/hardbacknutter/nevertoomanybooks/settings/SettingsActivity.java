@@ -101,13 +101,11 @@ public class SettingsActivity
                              @NonNull final String tag) {
         switch (tag) {
             case GlobalPreferenceFragment.TAG:
-                addFragment(containerViewId, GlobalPreferenceFragment.class,
-                            GlobalPreferenceFragment.TAG);
+                addFragment(containerViewId, GlobalPreferenceFragment.class, tag);
                 return;
 
             case StylePreferenceFragment.TAG:
-                addFragment(containerViewId, StylePreferenceFragment.class,
-                            StylePreferenceFragment.TAG);
+                addFragment(containerViewId, StylePreferenceFragment.class, tag);
                 return;
 
             default:
