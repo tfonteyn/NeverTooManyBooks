@@ -50,6 +50,10 @@ public class GlobalPreferenceFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "GlobalPreferenceFragment";
+    private static final String BKEY_CURRENT_SORT_TITLE_REORDERED = TAG + ":cSTR";
+
+    /** Used to be able to reset this pref to what it was when this fragment started. */
+    private boolean mCurrentSortTitleReordered;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -57,7 +61,22 @@ public class GlobalPreferenceFragment
 
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
+        boolean storedSortTitleReordered = getPreferenceManager()
+                .getSharedPreferences().getBoolean(Prefs.pk_sort_title_reordered, true);
+        if (savedInstanceState == null) {
+            mCurrentSortTitleReordered = storedSortTitleReordered;
+        } else {
+            mCurrentSortTitleReordered = savedInstanceState
+                    .getBoolean(BKEY_CURRENT_SORT_TITLE_REORDERED, storedSortTitleReordered);
+        }
+
         initListeners();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(BKEY_CURRENT_SORT_TITLE_REORDERED, mCurrentSortTitleReordered);
     }
 
     /**
@@ -69,23 +88,21 @@ public class GlobalPreferenceFragment
         preference = findPreference(Prefs.pk_sort_title_reordered);
         if (preference != null) {
             preference.setOnPreferenceChangeListener((pref, newValue) -> {
-                boolean current = getPreferenceManager()
-                        .getSharedPreferences().getBoolean(Prefs.pk_sort_title_reordered, true);
-
+                final SwitchPreference sp = (SwitchPreference) pref;
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setMessage(R.string.warning_rebuild_orderby_columns)
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
-                        .setNegativeButton(android.R.string.cancel, (d, w) ->
-                                Scheduler.scheduleOrderByRebuild(getContext(), false))
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                            sp.setChecked(mCurrentSortTitleReordered);
+                            Scheduler.scheduleOrderByRebuild(getContext(), false);
+                        })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            SwitchPreference sp = findPreference(Prefs.pk_sort_title_reordered);
-                            //noinspection ConstantConditions
-                            sp.setChecked(!current);
-
+                            sp.setChecked(!sp.isChecked());
                             Scheduler.scheduleOrderByRebuild(getContext(), true);
+                            //URGENT: needs visual indicator when scheduled.
                         })
                         .create()
                         .show();
