@@ -47,8 +47,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.Scheduler;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -118,13 +118,14 @@ public class AdvancedPreferenceFragment
                 new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.menu_rebuild_fts)
-                        .setMessage(R.string.menu_rebuild_fts_info)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setMessage(R.string.warning_rebuild_fts)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                            Scheduler.scheduleFtsRebuild(getContext(), false);
+                            p.setSummary(null);
+                        })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            //TODO: run the rebuild task instead
-                            try (DAO db = new DAO(TAG)) {
-                                db.ftsRebuild();
-                            }
+                            Scheduler.scheduleFtsRebuild(getContext(), true);
+                            p.setSummary(R.string.info_rebuild_scheduled);
                         })
                         .create()
                         .show();
@@ -139,13 +140,14 @@ public class AdvancedPreferenceFragment
                 new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.menu_rebuild_index)
-                        .setMessage(R.string.menu_rebuild_index_info)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setMessage(R.string.warning_rebuild_index)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                            Scheduler.scheduleIndexRebuild(getContext(), false);
+                            p.setSummary(null);
+                        })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            //TODO: run the rebuild task instead
-                            try (DAO db = new DAO(TAG)) {
-                                db.rebuildIndices();
-                            }
+                            Scheduler.scheduleIndexRebuild(getContext(), true);
+                            p.setSummary(R.string.info_rebuild_scheduled);
                         })
                         .create()
                         .show();
@@ -205,11 +207,12 @@ public class AdvancedPreferenceFragment
                 final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
                         .setType("*/*")
-                        .putExtra(Intent.EXTRA_TITLE, getString(R.string.app_name) + '-'
-                                                      + DateUtils.localSqlDateForToday()
-                                                                 .replace(" ", "-")
-                                                                 .replace(":", "")
-                                                      + ".ntmb.db");
+                        .putExtra(Intent.EXTRA_TITLE,
+                                  getString(R.string.app_name) + '-'
+                                  + DateUtils.localSqlDateForToday()
+                                             .replace(" ", "-")
+                                             .replace(":", "")
+                                  + ".ntmb.db");
                 startActivityForResult(intent, REQ_PICK_FILE_FOR_EXPORT_DATABASE);
                 return true;
             });
