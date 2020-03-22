@@ -221,9 +221,13 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
+    <style name="EditText.Spinner">
+        <item name="android:inputType">none</item>
+    </style>
+
     <!-- A disabled edit text field, on which an onClickListener can be installed.
         Without the latter, it behaves like a read-only EditText. -->
-    <style name="EditText.Button">
+    <style name="EditText.ReadOnly">
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>
         <item name="android:inputType">none</item>

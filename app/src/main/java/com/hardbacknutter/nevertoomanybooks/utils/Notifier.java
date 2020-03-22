@@ -59,6 +59,8 @@ public final class Notifier {
     /**
      * Create the Notification channels we need.
      *
+     * This is called during startup.
+     *
      * @param context Current context
      */
     public static void init(@NonNull final Context context) {

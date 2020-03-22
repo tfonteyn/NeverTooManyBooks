@@ -43,11 +43,17 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * FieldFormatter for a bitmask field.
- * <ul>
- * <li>Multiple fields: <strong>no</strong></li>
- * <li>Extract: <strong>local variable</strong></li>
- * </ul>
+ * <pre>
+ *     {@code
+ *             <com.google.android.material.chip.ChipGroup
+ *             android:id="@+id/edition"
+ *             android:layout_width="0dp"
+ *             android:layout_height="wrap_content"
+ *             app:layout_constraintEnd_toEndOf="parent"
+ *             app:layout_constraintStart_toStartOf="parent"
+ *             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
+ *             />}
+ * </pre>
  */
 public class BitmaskChipGroupAccessor
         extends BaseDataAccessor<Integer> {

@@ -245,8 +245,8 @@
     <string name="lbl_by_author_s">por %1$s</string>
     <string name="lbl_color">Color</string>
     <string name="lbl_condition">Condición</string>
-    <string name="lbl_condition_dust_cover_missing">Desaparecido</string>
-    <string name="lbl_condition_dust_cover_none_or_unknown">Ninguno</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Desaparecido</string>
+    <string name="lbl_condition_dust_cover_none">Ninguno</string>
     <string name="lbl_condition_fair">Aceptable</string>
     <string name="lbl_condition_fine">Como nuevo</string>
     <string name="lbl_condition_good">Bueno</string>

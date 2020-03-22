@@ -46,6 +46,19 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * </ul>
  * <p>
  * NOT covered is {@code CheckedTextView extends TextView}'
+ *
+ * <pre>
+ *     {@code
+ *             <CheckBox
+ *             android:id="@+id/cbx_read"
+ *             style="@style/CheckboxEntry"
+ *             android:text="@string/lbl_read"
+ *             app:layout_constraintStart_toStartOf="parent"
+ *             app:layout_constraintEnd_toEndOf="parent"
+ *             app:layout_constraintTop_toBottomOf="@id/rating"
+ *             tools:checked="true"
+ *             />}
+ * </pre>
  */
 public class CompoundButtonAccessor
         extends BaseDataAccessor<Boolean> {

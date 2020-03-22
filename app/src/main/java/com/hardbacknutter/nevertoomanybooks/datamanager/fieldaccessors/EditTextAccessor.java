@@ -42,7 +42,29 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFor
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
- * Implementation that stores and retrieves data from an TextView.
+ * Stores and retrieves data from an TextView.
+ *
+ * <pre>
+ *     {@code
+ *             <com.google.android.material.textfield.TextInputLayout
+ *             android:id="@+id/lbl_title"
+ *             style="@style/Envelope.EditText"
+ *             android:hint="@string/lbl_title"
+ *             app:layout_constraintEnd_toEndOf="parent"
+ *             app:layout_constraintStart_toStartOf="parent"
+ *             app:layout_constraintTop_toBottomOf="@id/lbl_author"
+ *             >
+ *
+ *             <com.google.android.material.textfield.TextInputEditText
+ *                 android:id="@+id/title"
+ *                 style="@style/titleTextEntry"
+ *                 android:layout_width="match_parent"
+ *                 tools:ignore="Autofill"
+ *                 tools:text="@sample/data.json/book/title"
+ *                 />
+ *
+ *         </com.google.android.material.textfield.TextInputLayout>}
+ * </pre>
  *
  * @param <T> type of Field value.
  */

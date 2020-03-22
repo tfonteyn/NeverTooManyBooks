@@ -100,6 +100,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION_COVER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
@@ -3794,6 +3796,8 @@ public class DAO
                 + ',' + TBL_BOOKS.dotAs(KEY_EDITION_BITMASK)
                 // user data
                 + ',' + TBL_BOOKS.dotAs(KEY_PRIVATE_NOTES)
+                + ',' + TBL_BOOKS.dotAs(KEY_BOOK_CONDITION)
+                + ',' + TBL_BOOKS.dotAs(KEY_BOOK_CONDITION_COVER)
                 + ',' + TBL_BOOKS.dotAs(KEY_LOCATION)
                 + ',' + TBL_BOOKS.dotAs(KEY_SIGNED)
                 + ',' + TBL_BOOKS.dotAs(KEY_RATING)

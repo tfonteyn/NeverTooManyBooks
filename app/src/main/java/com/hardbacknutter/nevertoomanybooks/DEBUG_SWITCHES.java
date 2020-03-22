@@ -81,7 +81,7 @@ public final class DEBUG_SWITCHES {
     /** Where listeners are held in a WeakReference, log dead references. */
     public static final boolean TRACE_WEAK_REFERENCES = false;
 
-    /** {@link CoverBrowserFragment}. */
+    /** {@link CoverBrowserDialogFragment}. */
     public static final boolean COVER_BROWSER = false;
     /** {@link com.hardbacknutter.nevertoomanybooks.utils.ImageUtils}. */
     public static final boolean IMAGE_UTILS = false;

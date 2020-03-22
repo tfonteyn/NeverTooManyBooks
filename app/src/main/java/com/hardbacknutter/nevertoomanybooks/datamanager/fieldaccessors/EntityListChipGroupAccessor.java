@@ -45,11 +45,27 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
- * FieldFormatter for a list field.
- * <ul>
- * <li>Multiple fields: <strong>no</strong></li>
- * <li>Extract: <strong>local variable</strong></li>
- * </ul>
+ * <pre>
+ *     {@code
+ *             <com.google.android.material.textfield.TextInputLayout
+ *             android:id="@+id/lbl_bookshelves"
+ *             style="@style/Envelope.EditText"
+ *             android:hint="@string/lbl_bookshelves"
+ *             app:endIconMode="none"
+ *             app:layout_constraintEnd_toEndOf="parent"
+ *             app:layout_constraintStart_toStartOf="parent"
+ *             app:layout_constraintTop_toBottomOf="@id/lbl_series"
+ *             >
+ *
+ *             <com.google.android.material.textfield.TextInputEditText
+ *                 android:id="@+id/bookshelves"
+ *                 style="@style/EditText.ReadOnly"
+ *                 android:layout_width="match_parent"
+ *                 tools:text="@sample/data.json/shelves/name"
+ *                 />
+ *
+ *         </com.google.android.material.textfield.TextInputLayout>}
+ * </pre>
  */
 public class EntityListChipGroupAccessor
         extends BaseDataAccessor<ArrayList<Entity>> {

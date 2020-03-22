@@ -27,6 +27,10 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- NEWTHINGS: new fields visibility.
+     Third part of the key name **MUST** be equal to the DOM column name.
+     The list here must be kept in sync with DBDefinitions#UserSelectedDomain
+-->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
     <com.hardbacknutter.nevertoomanybooks.widgets.ExtPreferenceCategory
@@ -34,8 +38,7 @@
         android:summary="@string/info_manage_fields"
         android:title="@string/pg_ui_field_visibility">
 
-        <!-- NEWTHINGS: new fields visibility.
-             Third part of the key name **MUST** be equal to the DOM column name. -->
+
         <SwitchPreference
             android:defaultValue="true"
             android:key="fields.visibility.isbn"
@@ -159,6 +162,20 @@
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/lbl_personal_notes" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.cond_bk"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_condition" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="fields.visibility.cond_cvr"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/lbl_dust_cover" />
 
         <SwitchPreference
             android:defaultValue="true"

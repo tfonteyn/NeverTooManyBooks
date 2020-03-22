@@ -101,7 +101,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -620,11 +620,14 @@ public final class DBHelper
 
         int curVersion = oldVersion;
 
-        // db1 == app1 == 1.0.0;
         if (curVersion < newVersion && curVersion == 1) {
-            //noinspection UnusedAssignment
             curVersion = 2;
             UpgradeDatabase.toDb2(syncedDb);
+        }
+        if (curVersion < newVersion && curVersion == 2) {
+            //noinspection UnusedAssignment
+            curVersion = 3;
+            UpgradeDatabase.toDb3(syncedDb);
         }
 
         // Rebuild all indices

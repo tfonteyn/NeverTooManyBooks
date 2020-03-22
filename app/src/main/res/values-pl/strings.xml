@@ -242,8 +242,8 @@
     <string name="lbl_by_author_s">Według %1$s</string>
     <string name="lbl_color">Kolor</string>
     <string name="lbl_condition">Stan</string>
-    <string name="lbl_condition_dust_cover_missing">Brakujący</string>
-    <string name="lbl_condition_dust_cover_none_or_unknown">Żaden</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Brakujący</string>
+    <string name="lbl_condition_dust_cover_none">Żaden</string>
     <string name="lbl_condition_fair">Do przyjęcia</string>
     <string name="lbl_condition_fine">Jak nowy</string>
     <string name="lbl_condition_good">Dobry</string>

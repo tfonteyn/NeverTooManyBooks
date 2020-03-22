@@ -30,84 +30,79 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors;
 import android.content.Context;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
+import android.widget.AutoCompleteTextView;
 
+import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
- * Very simple Spinner accessor.
  * The value is expected to be the list position.
+ *
+ * <pre>
+ *     {@code
+ *             <com.google.android.material.textfield.TextInputLayout
+ *             android:id="@+id/lbl_condition"
+ *             style="@style/Envelope.AutoCompleteTextView"
+ *             android:hint="@string/lbl_condition"
+ *             app:layout_constraintStart_toStartOf="parent"
+ *             app:layout_constraintEnd_toStartOf="@id/lbl_condition_cover"
+ *             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
+ *             >
+ *
+ *             <AutoCompleteTextView
+ *                 android:id="@+id/condition"
+ *                 style="@style/EditText.Spinner"
+ *                 android:layout_width="match_parent"
+ *                 tools:ignore="LabelFor"
+ *                 />
+ *
+ *         </com.google.android.material.textfield.TextInputLayout>}
+ * </pre>
  */
-public class SpinnerAccessor
+public class MaterialSpinnerAccessor
         extends BaseDataAccessor<Integer> {
 
     @NonNull
-    private final SpinnerAdapter mAdapter;
+    private final ArrayAdapter<CharSequence> mAdapter;
 
     /**
      * Constructor.
      *
-     * @param adapter to use
+     * @param arrayResId to use
      */
-    public SpinnerAccessor(@NonNull final SpinnerAdapter adapter) {
-        mAdapter = adapter;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param list of strings to populate the spinner
-     */
-    public SpinnerAccessor(@NonNull final Context context,
-                           @NonNull final List<String> list) {
-        mAdapter = new ArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     * @param resIds  list of StringRes id to populate the spinner
-     */
-    public SpinnerAccessor(@NonNull final Context context,
-                           @NonNull final Iterable<Integer> resIds) {
-        List<String> list = new ArrayList<>();
-        for (int id : resIds) {
-            list.add(context.getString(id));
-        }
-        mAdapter = new ArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);
+    public MaterialSpinnerAccessor(@NonNull final Context context,
+                                   @ArrayRes final int arrayResId) {
+        mAdapter = ArrayAdapter.createFromResource(context, arrayResId,
+                                                   R.layout.dropdown_menu_popup_item);
     }
 
     @Override
     public void setView(@NonNull final View view) {
         super.setView(view);
-        ((Spinner) view).setAdapter(mAdapter);
+        ((AutoCompleteTextView) view).setAdapter(mAdapter);
         addTouchSignalsDirty(view);
     }
 
     @Override
     @NonNull
     public Integer getValue() {
-        Spinner spinner = (Spinner) getView();
-        return spinner.getSelectedItemPosition();
+        AutoCompleteTextView spinner = (AutoCompleteTextView) getView();
+        String current = spinner.getText().toString();
+        return mAdapter.getPosition(current);
     }
 
     @Override
     public void setValue(@NonNull final Integer value) {
         mRawValue = value;
 
-        Spinner spinner = (Spinner) getView();
-        if (value >= 0 && value < spinner.getCount()) {
-            spinner.setSelection(value);
+        AutoCompleteTextView spinner = (AutoCompleteTextView) getView();
+        if (value >= 0 && value < mAdapter.getCount()) {
+            spinner.setText(mAdapter.getItem(value), false);
         } else {
-            spinner.setSelection(0);
+            spinner.setText(mAdapter.getItem(0), false);
         }
     }
 

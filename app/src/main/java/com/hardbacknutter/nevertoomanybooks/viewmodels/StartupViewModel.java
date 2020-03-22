@@ -83,7 +83,7 @@ public class StartupViewModel
 
     private final MutableLiveData<Integer> mFatalMsgId = new MutableLiveData<>();
 
-    private final MutableLiveData<Boolean> mTaskFinished = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> mAllTasksFinished = new MutableLiveData<>(false);
     private final MutableLiveData<Exception> mTaskException = new MutableLiveData<>();
     /** Using MutableLiveData as we actually want re-delivery after a device rotation. */
     private final MutableLiveData<String> mTaskProgressMessage = new MutableLiveData<>();
@@ -100,7 +100,7 @@ public class StartupViewModel
                 }
                 mAllTasks.remove(message.taskId);
                 if (mAllTasks.isEmpty()) {
-                    mTaskFinished.setValue(true);
+                    mAllTasksFinished.setValue(true);
                 }
             }
         }
@@ -143,8 +143,8 @@ public class StartupViewModel
      * @return {@code true} if all tasks are finished.
      */
     @NonNull
-    public MutableLiveData<Boolean> onTaskFinished() {
-        return mTaskFinished;
+    public MutableLiveData<Boolean> onAllTasksFinished() {
+        return mAllTasksFinished;
     }
 
     /**
@@ -305,7 +305,7 @@ public class StartupViewModel
 
         synchronized (mAllTasks) {
             if (mAllTasks.isEmpty()) {
-                mTaskFinished.setValue(true);
+                mAllTasksFinished.setValue(true);
             }
         }
     }

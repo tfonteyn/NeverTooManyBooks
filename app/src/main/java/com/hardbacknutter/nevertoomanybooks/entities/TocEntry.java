@@ -52,6 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
  * This circumvents the 'position' column as the update will simply insert in-order
  * and auto increment the position.
  * Retrieving by bookId is always done ordered by position.
+ * <p>
+ * TODO: orphaned TocEntry:
+ * when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding
+ * to new books / wish list?
+ * consider a purge based on book for orphan TocEntry (a purge based on Author is already done)
  */
 public class TocEntry
         implements Entity, ItemWithFixableId, ItemWithTitle {
@@ -218,6 +223,10 @@ public class TocEntry
         return mTitle;
     }
 
+    public void setTitle(@NonNull final String title) {
+        mTitle = title;
+    }
+
     @NonNull
     public String getLabel(@NonNull final Context context) {
         Locale locale = LocaleUtils.getUserLocale(context);
@@ -226,10 +235,6 @@ public class TocEntry
         //     locale = getLocale(context, db, LocaleUtils.getUserLocale(context));
         // }
         return reorderTitleForDisplaying(context, locale);
-    }
-
-    public void setTitle(@NonNull final String title) {
-        mTitle = title;
     }
 
     @NonNull

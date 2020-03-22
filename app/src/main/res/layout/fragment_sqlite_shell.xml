@@ -33,8 +33,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".debug.SqliteShellFragment"
-    tools:showIn="@layout/activity_main"
     >
 
     <EditText
@@ -45,6 +45,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/output"
         tools:ignore="Autofill,LabelFor"
         />
 

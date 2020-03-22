@@ -178,8 +178,8 @@ public class StartupActivity
             mModel.onTaskProgress().observe(this, message ->
                     mProgressMessageView.setText(message));
 
-            // when tasks are done, move on to next startup-stage
-            mModel.onTaskFinished().observe(this, finished -> {
+            // when all tasks are done, move on to next startup-stage
+            mModel.onAllTasksFinished().observe(this, finished -> {
                 if (finished) {
                     nextStage();
                 }

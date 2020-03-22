@@ -238,6 +238,10 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_RATING;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_PRIVATE_NOTES;
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_BOOK_CONDITION;
+    /** {@link #TBL_BOOKS}. */
+    public static final Domain DOM_BOOK_CONDITION_DUST_COVER;
     /** {@link #TBL_BOOKS}. Book ID, not 'work' ID. */
     public static final Domain DOM_EID_GOODREADS_BOOK;
     /** {@link #TBL_BOOKS}. */
@@ -436,6 +440,9 @@ public final class DBDefinitions {
     public static final String KEY_SIGNED = "signed";
     public static final String KEY_RATING = "rating";
     public static final String KEY_PRIVATE_NOTES = "notes";
+    public static final String KEY_BOOK_CONDITION = "cond_bk";
+    public static final String KEY_BOOK_CONDITION_COVER = "cond_cvr";
+
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final String KEY_LOANEE = "loaned_to";
     public static final String KEY_LOANEE_AS_BOOLEAN = "loaned_flag";
@@ -814,6 +821,13 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_PRIVATE_NOTES, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().build();
 
+        DOM_BOOK_CONDITION =
+                new Domain.Builder(KEY_BOOK_CONDITION, ColumnInfo.TYPE_INTEGER)
+                        .notNull().withDefault(0).build();
+        DOM_BOOK_CONDITION_DUST_COVER =
+                new Domain.Builder(KEY_BOOK_CONDITION_COVER, ColumnInfo.TYPE_INTEGER)
+                        .notNull().withDefault(0).build();
+
         /* ======================================================================================
          *  Book external website id domains
          * ====================================================================================== */
@@ -986,6 +1000,8 @@ public final class DBDefinitions {
                              DOM_BOOK_RATING,
                              DOM_BOOK_LOCATION,
                              DOM_BOOK_PRIVATE_NOTES,
+                             DOM_BOOK_CONDITION,
+                             DOM_BOOK_CONDITION_DUST_COVER,
 
                              // external id/data
                              //NEWTHINGS: add new site specific ID: add DOM to table
@@ -1284,7 +1300,10 @@ public final class DBDefinitions {
         return sharedPreferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + key, true);
     }
 
-    /** Same set as on xml/preferences_field_visibility.xml */
+    /**
+     * NEWTHINGS: new fields visibility.
+     * Same set as on xml/preferences_field_visibility.xml
+     */
     @StringDef({KEY_ISBN,
                 KEY_THUMBNAIL,
                 KEY_BOOK_AUTHOR_TYPE_BITMASK,
@@ -1302,6 +1321,8 @@ public final class DBDefinitions {
                 KEY_PRICE_LISTED,
                 KEY_LOANEE,
                 KEY_PRIVATE_NOTES,
+                KEY_BOOK_CONDITION,
+                KEY_BOOK_CONDITION_COVER,
                 KEY_LOCATION,
                 KEY_PRICE_PAID,
                 KEY_READ,

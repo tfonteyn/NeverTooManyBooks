@@ -50,6 +50,12 @@ import java.util.regex.Pattern;
  * -2.7 -> -2
  * <p>
  * Casting to a float is with loss of precision.
+ * <p>
+ * ENHANCE: currency fields should not use float/double.
+ * https://javamoney.github.io - a wonderful library, although it seems it
+ * won't make it into the JDK for now. Might have issues on Android though.
+ * https://www.joda.org/joda-money/ not tried, but looks small and neat.
+ * Alternatively migrate to using BigDecimal as a short term solution.
  */
 public class Money
         extends Number {

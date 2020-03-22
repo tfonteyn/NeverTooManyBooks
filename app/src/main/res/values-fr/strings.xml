@@ -248,8 +248,8 @@
     <string name="lbl_by_author_s">par %1$s</string>
     <string name="lbl_color">Couleur</string>
     <string name="lbl_condition">État</string>
-    <string name="lbl_condition_dust_cover_missing">Disparu</string>
-    <string name="lbl_condition_dust_cover_none_or_unknown">Aucun</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Disparu</string>
+    <string name="lbl_condition_dust_cover_none">Aucun</string>
     <string name="lbl_condition_fair">Acceptable</string>
     <string name="lbl_condition_fine">Comme neuf</string>
     <string name="lbl_condition_good">Bien</string>

@@ -72,6 +72,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_READ_END;
@@ -94,6 +95,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
@@ -195,13 +197,14 @@ public class BooklistGroup
     public static final int DATE_FIRST_PUBLICATION_MONTH = 28;
     public static final int COLOR = 29;
     public static final int SERIES_TITLE_LETTER = 30;
+    public static final int CONDITION = 31;
 
     /**
      * NEWTHINGS: GROUP_KEY_x
      * The highest valid index of GroupKey - ALWAYS to be updated after adding a group key.
      */
     @VisibleForTesting
-    static final int GROUP_KEY_MAX = 30;
+    static final int GROUP_KEY_MAX = 31;
 
     /** The UUID for the style. */
     @NonNull
@@ -292,7 +295,7 @@ public class BooklistGroup
         List<BooklistGroup> list = new ArrayList<>();
         // Get the set of all valid <strong>Group</strong> values.
         // In other words: all valid groups, <strong>except</strong> the BOOK.
-        for (int id = 1; id < GROUP_KEY_MAX; id++) {
+        for (int id = 1; id <= GROUP_KEY_MAX; id++) {
             list.add(newInstance(id, style));
         }
         return list;
@@ -483,6 +486,8 @@ public class BooklistGroup
              LOCATION,
              LANGUAGE,
              RATING,
+
+             CONDITION,
 
              DATE_PUBLISHED_YEAR,
              DATE_PUBLISHED_MONTH,
@@ -1018,6 +1023,11 @@ public class BooklistGroup
                     return new GroupKey(R.string.lbl_publisher, "p",
                                         DOM_BOOK_PUBLISHER, TBL_BOOKS.dot(KEY_PUBLISHER),
                                         VirtualDomain.Sorted.Asc);
+                }
+                case CONDITION: {
+                    return new GroupKey(R.string.lbl_condition, "bk_cnd",
+                                        DOM_BOOK_CONDITION, TBL_BOOKS.dot(KEY_BOOK_CONDITION),
+                                        VirtualDomain.Sorted.Desc);
                 }
                 case RATING: {
                     // Formatting is done after fetching

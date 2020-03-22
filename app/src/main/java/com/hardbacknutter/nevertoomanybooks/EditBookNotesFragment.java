@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.BitmaskCh
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.CompoundButtonAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.DecimalEditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.MaterialSpinnerAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DoubleNumberFormatter;
@@ -96,10 +97,17 @@ public class EditBookNotesFragment
               .setRelatedFields(R.id.lbl_price_paid,
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
+        //noinspection ConstantConditions
+        fields.add(R.id.condition, DBDefinitions.KEY_BOOK_CONDITION,
+                   new MaterialSpinnerAccessor(getContext(), R.array.conditions_book))
+              .setRelatedFields(R.id.lbl_condition);
+        fields.add(R.id.condition_cover, DBDefinitions.KEY_BOOK_CONDITION_COVER,
+                   new MaterialSpinnerAccessor(getContext(), R.array.conditions_dust_cover))
+              .setRelatedFields(R.id.lbl_condition_cover);
+
         fields.add(R.id.location, DBDefinitions.KEY_LOCATION, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-        //noinspection ConstantConditions
         fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK,
                    new BitmaskChipGroupAccessor(Book.Edition.getEditions(getContext()), true))
               .setRelatedFields(R.id.lbl_edition);

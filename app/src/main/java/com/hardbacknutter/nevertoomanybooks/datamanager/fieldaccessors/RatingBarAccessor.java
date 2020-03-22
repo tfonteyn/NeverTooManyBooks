@@ -36,6 +36,20 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
  * RatingBar accessor.
+ *
+ * <pre>
+ *     {@code
+ *             <RatingBar
+ *             android:id="@+id/rating"
+ *             style="?android:attr/ratingBarStyle"
+ *             android:layout_width="wrap_content"
+ *             android:layout_height="wrap_content"
+ *             android:numStars="5"
+ *             app:layout_constraintStart_toStartOf="parent"
+ *             app:layout_constraintTop_toBottomOf="@id/lbl_rating"
+ *             tools:rating="5"
+ *             />}
+ * </pre>
  */
 public class RatingBarAccessor
         extends BaseDataAccessor<Float> {

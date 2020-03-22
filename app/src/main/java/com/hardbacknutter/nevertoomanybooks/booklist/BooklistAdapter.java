@@ -98,8 +98,12 @@ public class BooklistAdapter
 
     /** The padding indent (in pixels) added for each level: padding = (level-1) * mLevelIndent. */
     private final int mLevelIndent;
+    /** Cached inflater. */
     @NonNull
     private final LayoutInflater mInflater;
+    /** Cached locale. */
+    @NonNull
+    private final Locale mUserLocale;
     @NonNull
     private final BooklistStyle mStyle;
     /** The cursor is the equivalent of the 'list of items'. */
@@ -125,6 +129,7 @@ public class BooklistAdapter
                            @NonNull final BooklistStyle style,
                            @NonNull final Cursor cursor) {
         mInflater = LayoutInflater.from(context);
+        mUserLocale = LocaleUtils.getUserLocale(context);
         mStyle = style;
         mCursor = cursor;
         mRowData = new CursorRow(mCursor);
@@ -149,10 +154,10 @@ public class BooklistAdapter
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
-    private static String format(@NonNull final Context context,
-                                 @BooklistGroup.Id final int groupKeyId,
-                                 @Nullable final String text,
-                                 @Nullable final Locale locale) {
+    private String format(@NonNull final Context context,
+                          @BooklistGroup.Id final int groupKeyId,
+                          @Nullable final String text,
+                          @Nullable final Locale locale) {
         switch (groupKeyId) {
             case BooklistGroup.AUTHOR: {
                 if (text == null || text.isEmpty()) {
@@ -170,7 +175,7 @@ public class BooklistAdapter
                     if (locale != null) {
                         tmpLocale = locale;
                     } else {
-                        tmpLocale = LocaleUtils.getUserLocale(context);
+                        tmpLocale = mUserLocale;
                     }
                     return ItemWithTitle.reorder(context, text, tmpLocale);
                 } else {
@@ -196,7 +201,21 @@ public class BooklistAdapter
                     return LanguageUtils.getDisplayNameFromISO3(context, text);
                 }
             }
+            case BooklistGroup.CONDITION: {
+                if (text == null || text.isEmpty()) {
+                    return context.getString(R.string.unknown);
+                } else {
+                    try {
+                        int i = Integer.parseInt(text);
+                        return context.getResources().getStringArray(R.array.conditions_book)[i];
+                    } catch (@NonNull final NumberFormatException
+                            | IndexOutOfBoundsException ignore) {
+                        return context.getString(R.string.unknown);
+                    }
+                }
+            }
             case BooklistGroup.RATING: {
+                // This is the text based formatting, as used by the level/scroller text.
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.hint_empty_rating);
                 } else {
@@ -232,7 +251,7 @@ public class BooklistAdapter
                             if (locale != null) {
                                 tmpLocale = locale;
                             } else {
-                                tmpLocale = LocaleUtils.getUserLocale(context);
+                                tmpLocale = mUserLocale;
                             }
                             return DateUtils.getMonthName(tmpLocale, m, false);
                         }
@@ -270,16 +289,16 @@ public class BooklistAdapter
         // NEWTHINGS: GROUP_KEY_x add a new holder type if needed
         switch (groupKeyId) {
             case BooklistGroup.BOOK:
-                return new BookHolder(itemView, mStyle, mFieldsInUse);
+                return new BookHolder(itemView, mUserLocale, mStyle, mFieldsInUse);
 
             case BooklistGroup.AUTHOR:
                 //noinspection ConstantConditions
-                return new CheckableStringHolder(itemView, mStyle.getGroupById(groupKeyId),
+                return new CheckableStringHolder(this, itemView, mStyle.getGroupById(groupKeyId),
                                                  DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
 
             case BooklistGroup.SERIES:
                 //noinspection ConstantConditions
-                return new SeriesHolder(itemView, mStyle.getGroupById(groupKeyId));
+                return new SeriesHolder(this, itemView, mStyle.getGroupById(groupKeyId));
 
             case BooklistGroup.RATING:
                 //noinspection ConstantConditions
@@ -287,7 +306,7 @@ public class BooklistAdapter
 
             default:
                 //noinspection ConstantConditions
-                return new GenericStringHolder(itemView, mStyle.getGroupById(groupKeyId));
+                return new GenericStringHolder(this, itemView, mStyle.getGroupById(groupKeyId));
         }
     }
 
@@ -759,17 +778,19 @@ public class BooklistAdapter
          * Hence make sure to explicitly set visibility.
          *
          * @param itemView    the view specific for this holder
+         * @param userLocale  to use
          * @param style       to use
          * @param fieldsInUse which fields are used
          */
         BookHolder(@NonNull final View itemView,
+                   @NonNull final Locale userLocale,
                    @NonNull final BooklistStyle style,
                    @NonNull final FieldsInUse fieldsInUse) {
             super(itemView);
             mReorderTitle = ItemWithTitle.isReorderTitleForDisplaying(itemView.getContext());
             mInUse = fieldsInUse;
             Context context = itemView.getContext();
-            mLocale = LocaleUtils.getUserLocale(context);
+            mLocale = userLocale;
 
             mX_bracket_Y_bracket = context.getString(R.string.a_bracket_b_bracket);
 
@@ -913,9 +934,8 @@ public class BooklistAdapter
         String getPublisherAndPubDateText(@NonNull final RowDataHolder rowData) {
             final String publicationDate;
             if (mInUse.pubDate) {
-                publicationDate = DateUtils.toPrettyDate(
-                        LocaleUtils.getUserLocale(itemView.getContext()),
-                        rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+                publicationDate = DateUtils.toPrettyDate(mLocale,
+                                                         rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
             } else {
                 publicationDate = null;
             }
@@ -1007,6 +1027,10 @@ public class BooklistAdapter
         /*** View to populate. */
         @NonNull
         final TextView mTextView;
+        /** The parent adapter. */
+        @NonNull
+        final BooklistAdapter mAdapter;
+
         /*** Default resource id for the View to populate. */
         @IdRes
         int mTextViewId = R.id.name;
@@ -1014,12 +1038,15 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param adapter  for format callbacks
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */
-        GenericStringHolder(@NonNull final View itemView,
+        GenericStringHolder(@NonNull final BooklistAdapter adapter,
+                            @NonNull final View itemView,
                             @NonNull final BooklistGroup group) {
             super(itemView);
+            mAdapter = adapter;
             mGroupKeyId = group.getId();
             mKey = group.getDisplayDomain().getName();
             mTextView = itemView.findViewById(mTextViewId);
@@ -1041,7 +1068,7 @@ public class BooklistAdapter
          * @return the formatted text
          */
         public String format(@Nullable final String text) {
-            return BooklistAdapter.format(itemView.getContext(), mGroupKeyId, text, null);
+            return mAdapter.format(itemView.getContext(), mGroupKeyId, text, null);
         }
     }
 
@@ -1054,6 +1081,9 @@ public class BooklistAdapter
         /** Column name of related boolean column. */
         private final String mCheckableColumnKey;
 
+        @NonNull
+        private final Drawable mLock;
+
         /**
          * Constructor.
          *
@@ -1061,11 +1091,16 @@ public class BooklistAdapter
          * @param group              the group this holder represents
          * @param checkableColumnKey Column name to use for the boolean 'lock' status
          */
-        CheckableStringHolder(@NonNull final View itemView,
+        CheckableStringHolder(@NonNull final BooklistAdapter adapter,
+                              @NonNull final View itemView,
                               @NonNull final BooklistGroup group,
                               @NonNull final String checkableColumnKey) {
-            super(itemView, group);
+            super(adapter, itemView, group);
             mCheckableColumnKey = checkableColumnKey;
+            //noinspection ConstantConditions
+            mLock = itemView.getContext().getDrawable(R.drawable.ic_lock);
+            //noinspection ConstantConditions
+            mLock.setBounds(0, 0, mLock.getIntrinsicWidth(), mLock.getIntrinsicHeight());
         }
 
         @Override
@@ -1074,15 +1109,7 @@ public class BooklistAdapter
             // do the text part first
             super.onBindViewHolder(rowData, style);
 
-            final Drawable lock;
-            if (rowData.getBoolean(mCheckableColumnKey)) {
-                lock = itemView.getContext().getDrawable(R.drawable.ic_lock);
-                //noinspection ConstantConditions
-                lock.setBounds(0, 0, lock.getIntrinsicWidth(), lock.getIntrinsicHeight());
-            } else {
-                lock = null;
-            }
-
+            final Drawable lock = rowData.getBoolean(mCheckableColumnKey) ? mLock : null;
             final Drawable[] drawables = mTextView.getCompoundDrawablesRelative();
             mTextView.setCompoundDrawablesRelative(drawables[0], drawables[1], lock, drawables[3]);
         }
@@ -1103,9 +1130,10 @@ public class BooklistAdapter
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */
-        SeriesHolder(@NonNull final View itemView,
+        SeriesHolder(@NonNull final BooklistAdapter adapter,
+                     @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
-            super(itemView, group, DBDefinitions.KEY_SERIES_IS_COMPLETE);
+            super(adapter, itemView, group, DBDefinitions.KEY_SERIES_IS_COMPLETE);
         }
 
         @Override
@@ -1125,9 +1153,9 @@ public class BooklistAdapter
             // but as long as we don't store the Series language there is no point
             Locale bookLocale = LocaleUtils.getLocale(context, mBookLanguage);
             if (bookLocale == null) {
-                bookLocale = LocaleUtils.getUserLocale(context);
+                bookLocale = mAdapter.mUserLocale;
             }
-            return BooklistAdapter.format(context, mGroupKeyId, text, bookLocale);
+            return mAdapter.format(context, mGroupKeyId, text, bookLocale);
         }
     }
 }

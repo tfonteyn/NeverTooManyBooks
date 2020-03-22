@@ -55,7 +55,6 @@ public final class Scheduler {
      *
      * @param context Current context
      */
-    @SuppressWarnings("WeakerAccess")
     public static void scheduleFtsRebuild(@NonNull final Context context,
                                           final boolean flag) {
         schedule(context, PREF_REBUILD_FTS, flag);
@@ -76,7 +75,6 @@ public final class Scheduler {
      *
      * @param context Current context
      */
-    @SuppressWarnings("WeakerAccess")
     public static void scheduleIndexRebuild(@NonNull final Context context,
                                             final boolean flag) {
         schedule(context, PREF_REBUILD_INDEXES, flag);

@@ -1,17 +1,7 @@
-TODO: performance tuning.
- * image caching from main preferences.
- * book extra details task/immediate from style. Default on ? (but need to fix 'bookshelves')
- * find some rule to switch task/immediate automatically depending on number of books ?
-
 TODO: usage "profile": comics versus fiction books versus non-fiction books.
  * optimize all search engines
  * optimize visible fields.
  * optimize maybe different author types.
-
-TODO: orphaned TocEntry:
- * when to delete entries in ANTHOLOGY ? when last book is gone? or keep them for adding
-   to new books / wish list?
- * consider a purge based on book for orphan TocEntry (a purge based on Author is already done)
 
 TODO: move Publisher, Location, Format ... to separate tables ?
 
@@ -19,18 +9,6 @@ ENHANCE: database using 'lower()' in WHERE and ORDER BY clauses.
  * check indexes for using all lower case, then eliminate the lower() for all that uses
    those indexes.
  * 'order by' columns have been added to TITLE (book, series, tocEntry) and AUTHOR name fields.
-
-ENHANCE: XML Exporter / Importer
- * pro: easier / (sort of) foolproof / FLEXIBLE!
- * con: fools / fields will be bigger due to labels/tags
-        not easy to get 'others' to create import files
-        importing IDs is dangerous
-
-ENHANCE: currency fields should not use float/double.
-https://javamoney.github.io - a wonderful library, although it seems it
-won't make it into the JDK for now. Might have issues on Android though.
-https://www.joda.org/joda-money/ not tried, but looks small and neat.
-Alternatively migrate to using BigDecimal as a short term solution.
 
 TODO: go over ViewModel usage and related onSaveInstanceState. Remove the latter when appropriate.
 

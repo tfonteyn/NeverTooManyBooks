@@ -470,10 +470,11 @@ class CoverHandler {
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = ISBN.createISBN(isbnStr);
             if (isbn.isValid(true)) {
-                final CoverBrowserFragment coverBrowser = CoverBrowserFragment
+                final CoverBrowserDialogFragment coverBrowser = CoverBrowserDialogFragment
                         .newInstance(isbn.asText(), mCIdx);
                 // we must use the same fragment manager as the hosting fragment...
-                coverBrowser.show(mFragment.getParentFragmentManager(), CoverBrowserFragment.TAG);
+                coverBrowser.show(mFragment.getParentFragmentManager(),
+                                  CoverBrowserDialogFragment.TAG);
                 // ... as the coverBrowser will send its results directly to that fragment.
                 coverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
                 return;
@@ -485,7 +486,7 @@ class CoverHandler {
     }
 
     /**
-     * When the user clicks the switcher in the {@link CoverBrowserFragment},
+     * When the user clicks the switcher in the {@link CoverBrowserDialogFragment},
      * we take that image and stuff it into the view.
      */
     private void processCoverBrowserResult(@NonNull final Intent data) {

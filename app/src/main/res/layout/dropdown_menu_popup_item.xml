@@ -27,6 +27,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!-- https://www.material.io/develop/android/components/menu/#exposed-dropdown-menus -->
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"

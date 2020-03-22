@@ -114,7 +114,7 @@ public abstract class TaskBase<Params, Result>
 
     /** The client listener where to send our results to. */
     @NonNull
-    private WeakReference<TaskListener<Result>> mTaskListener;
+    private final WeakReference<TaskListener<Result>> mTaskListener;
 
     /**
      * Constructor.
@@ -126,17 +126,6 @@ public abstract class TaskBase<Params, Result>
                        @NonNull final TaskListener<Result> taskListener) {
         mTaskId = taskId;
         mTaskListener = new WeakReference<>(taskListener);
-    }
-
-    /**
-     * (Re)set the listener.
-     *
-     * @param taskListener for sending progress and finish messages to.
-     */
-    public void setListener(final TaskListener<Result> taskListener) {
-        synchronized (this) {
-            mTaskListener = new WeakReference<>(taskListener);
-        }
     }
 
     /**

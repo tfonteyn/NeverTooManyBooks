@@ -271,7 +271,14 @@
         This will rebuild the sorting data when the app is restarted.
         Are you sure you want to continue ?
     </string>
-
+    <string name="warning_rebuild_fts">
+        This will rebuild the search index data when the app is restarted.
+        Are you sure you want to continue ?
+    </string>
+    <string name="warning_rebuild_index">
+        This will rebuild the indexes when the app is restarted.
+        Are you sure you want to continue ?
+    </string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
@@ -365,7 +372,7 @@
         You have unsaved changes, if you exit now they will be lost.
     </string>
     <string name="confirm_unsaved_edits2">
-        You have unsaved changes. Are you sure you wish to proceed?
+        You have unsaved changes. Are you sure you want to continue?
     </string>
 
     <string name="confirm_delete_series">
@@ -381,7 +388,7 @@
 
     <string name="confirm_delete_book">
         This will completely delete the book entitled “%1$s” by %2$s.
-        \nAre you sure you wish to proceed?
+        \nAre you sure you want to continue?
     </string>
     <string name="confirm_merge_bookshelves">
         The bookshelf you are renaming already exists. Would you like to merge them?
@@ -1133,13 +1140,10 @@
     <string name="menu_amazon_books_by_author">Books by this author</string>
     <string name="menu_amazon_books_by_author_in_series">Books by author/series</string>
 
-
     <!-- menu option on Advanced preferences -->
     <string name="menu_rebuild_fts">Rebuild FTS</string>
-    <string name="menu_rebuild_fts_info">Rebuild FTS info TBD</string>
     <!-- menu option on Advanced preferences -->
     <string name="menu_rebuild_index">Rebuild index</string>
-    <string name="menu_rebuild_index_info">Rebuild index info TBD</string>
 
     <!-- ####################################################################################### -->
     <!-- == Button texts, must be short == -->
@@ -1312,8 +1316,9 @@
     <string name="lbl_condition_good">Good</string>
     <string name="lbl_condition_fair">"Acceptable "</string>
     <string name="lbl_condition_reading_copy">Reading copy</string>
-    <string name="lbl_condition_dust_cover_missing">Missing</string>
-    <string name="lbl_condition_dust_cover_none_or_unknown">None</string>
+    <!-- URGENT: translations. -->
+    <string name="lbl_condition_dust_cover_missing_or_bad">Missing/Fair</string>
+    <string name="lbl_condition_dust_cover_none">None</string>
 
     <!-- Author types -->
     <string name="lbl_author_type">Author type</string>
@@ -1647,4 +1652,6 @@
     <string name="info_bitmask_preference">
         Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
     </string>
+    <string name="info_rebuild_scheduled">Rebuild scheduled</string>
+    <string name="lbl_dust_cover">Dust cover</string>
 </resources>

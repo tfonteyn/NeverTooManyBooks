@@ -96,6 +96,5 @@ public class RebuildFtsTask
             // regardless of result, always disable as we do not want to rebuild/fail/rebuild...
             Scheduler.scheduleFtsRebuild(context, false);
         }
-
     }
 }

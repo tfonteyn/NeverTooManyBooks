@@ -148,7 +148,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/first_publication"
-                style="@style/EditText.Button"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 />
@@ -166,7 +166,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/date_published"
-                style="@style/EditText.Button"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 />

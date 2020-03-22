@@ -46,12 +46,12 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.CoverBrowserFragment;
+import com.hardbacknutter.nevertoomanybooks.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 
 /**
@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  * <li>{@link ByText}</li>
  * </ul>
  * and if the site supports fetching images by ISBN: {@link CoverByIsbn}.
- * The latter is used to get covers for alternative editions in {@link CoverBrowserFragment}.
+ * The latter is used to get covers for alternative editions in {@link CoverBrowserDialogFragment}.
  * <p>
  * ENHANCE: it seems most implementations can return multiple book bundles quite easily.
  */

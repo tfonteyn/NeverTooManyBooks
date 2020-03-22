@@ -247,8 +247,8 @@
     <string name="lbl_by_author_s">door %1$s</string>
     <string name="lbl_color">Kleur</string>
     <string name="lbl_condition">Staat</string>
-    <string name="lbl_condition_dust_cover_missing">Missend</string>
-    <string name="lbl_condition_dust_cover_none_or_unknown">Geen</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Missend</string>
+    <string name="lbl_condition_dust_cover_none">Geen</string>
     <string name="lbl_condition_fair">Aanvaardbaar</string>
     <string name="lbl_condition_fine">Als nieuw</string>
     <string name="lbl_condition_good">Goed</string>
@@ -319,7 +319,7 @@
     <string name="lbl_read">Gelezen</string>
     <string name="lbl_read_and_unread">Gelezen &amp; Ongelezen</string>
     <string name="lbl_read_day">Dag</string>
-    <string name="lbl_read_end">Einddatum lezen</string>
+    <string name="lbl_read_end">Einddatum gelezen</string>
     <string name="lbl_read_month">Maand</string>
     <string name="lbl_read_start">Begindatum lezen</string>
     <string name="lbl_read_year">Jaar</string>

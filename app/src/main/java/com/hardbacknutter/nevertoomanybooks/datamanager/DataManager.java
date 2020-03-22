@@ -207,9 +207,13 @@ public class DataManager
         } else if (value instanceof Boolean) {
             mRawData.putBoolean(key, (boolean) value);
 
-        } else if ((value instanceof ArrayList)
-                   && (!((ArrayList) value).isEmpty())
-                   && ((ArrayList) value).get(0) instanceof Parcelable) {
+//        } else if ((value instanceof ArrayList)
+//                   && (!((ArrayList) value).isEmpty())
+//                   && ((ArrayList) value).get(0) instanceof Parcelable) {
+//            //noinspection unchecked
+//            putParcelableArrayList(key, (ArrayList<Parcelable>) value);
+
+        } else if ((value instanceof ArrayList)) {
             //noinspection unchecked
             putParcelableArrayList(key, (ArrayList<Parcelable>) value);
 
@@ -386,7 +390,7 @@ public class DataManager
     }
 
     /**
-     * Store a long value.
+     * Store an int value.
      *
      * @param key   Key of data object
      * @param value to store

@@ -182,4 +182,10 @@ public final class UpgradeDatabase {
     static void toDb2(@NonNull final SynchronizedDb syncedDb) {
         DBDefinitions.TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_COLOR);
     }
+
+    static void toDb3(@NonNull final SynchronizedDb syncedDb) {
+        DBDefinitions.TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_CONDITION);
+        DBDefinitions.TBL_BOOKS.alterTableAddColumn(syncedDb,
+                                                    DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER);
+    }
 }

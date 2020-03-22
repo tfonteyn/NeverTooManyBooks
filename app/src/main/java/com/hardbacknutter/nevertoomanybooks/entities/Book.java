@@ -43,7 +43,6 @@ import androidx.annotation.VisibleForTesting;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -280,8 +279,11 @@ public class Book
 
         bookData.putString(DBDefinitions.KEY_PRIVATE_NOTES,
                            getString(DBDefinitions.KEY_PRIVATE_NOTES));
-        bookData.putString(DBDefinitions.KEY_LOCATION,
-                           getString(DBDefinitions.KEY_LOCATION));
+        bookData.putInt(DBDefinitions.KEY_BOOK_CONDITION,
+                        getInt(DBDefinitions.KEY_BOOK_CONDITION));
+        bookData.putInt(DBDefinitions.KEY_BOOK_CONDITION_COVER,
+                        getInt(DBDefinitions.KEY_BOOK_CONDITION_COVER));
+
         bookData.putString(DBDefinitions.KEY_READ_START,
                            getString(DBDefinitions.KEY_READ_START));
         bookData.putString(DBDefinitions.KEY_READ_END,
@@ -851,96 +853,6 @@ public class Book
     @IntDef(flag = true, value = {TOC_MULTIPLE_WORKS, TOC_MULTIPLE_AUTHORS})
     public @interface TocBits {
 
-    }
-
-    /**
-     * URGENT: add condition field for book and for dust-cover
-     *
-     * <a href="https://en.wikipedia.org/wiki/List_of_used_book_conditions">wikipedia</a>
-     * <p>
-     * As new means that the book is in the state that it should have been in when it
-     * left the publisher. This is the equivalent of mint condition in numismatics.
-     * <p>
-     * Fine (F or FN) is "as new" but allowing for the normal effects of time on an
-     * unused book that has been protected. A fine book shows no damage.
-     * <p>
-     * Very good (VG) describes a book that is worn but not torn. For many collectors
-     * this is the minimum acceptable condition for all but the rarest items.
-     * Any defects must be noted.
-     * <p>
-     * Good (G) describes the condition of an average used worn book that is complete.
-     * Any defects must be noted.
-     * <p>
-     * Fair shows wear and tear but all the text pages and illustrations or maps are present.
-     * It may lack endpapers, half-title, and even the title page. All defects must be noted.
-     * <p>
-     * Poor describes a book that has the complete text but is so damaged that it is only of
-     * interest to a buyer who seeks a reading copy. If the damage renders the text illegible
-     * then the book is not even poor.
-     * <p>
-     * Ex-library copies must always be designated as such no matter what the condition of the book.
-     * <p>
-     * Book club copies must always be designated as such no matter what the condition of the book.
-     * <p>
-     * Binding copy describes a book in which the pages or leaves are perfect,
-     * but the binding is very bad, loose, off, or non-existent.
-     * <p>
-     * Slightly simplified:
-     * <ol>
-     * <li>Fine (covers As New)</li>
-     * <li>Very good</li>
-     * <li>Good</li>
-     * <li>Fair</li>
-     * <li>Reading copy (covers Poor, Binding copy</li>
-     * </ol>
-     * <p>
-     * Bookclub is covered in Editions which is what it is.
-     * <p>
-     * Book and Dust cover conditions use the same condition 'numbers'
-     * with 0 and 1 doing double duty.
-     */
-    public static final class Condition {
-
-        /** book: the user has not entered a condition. */
-        public static final int UNKNOWN = 0;
-        /**
-         * dust-cover: the book was not issued with a dust-cover (e.g. paperback),
-         * or the user has not entered a condition.
-         */
-        public static final int DUST_COVER_NONE = 0;
-        /** book. */
-        public static final int READING_COPY = 1;
-        /** dust-cover. */
-        public static final int DUST_COVER_MISSING = 1;
-
-        /** book / dust-cover. */
-        public static final int FAIR = 2;
-        /** book / dust-cover. */
-        public static final int GOOD = 3;
-        /** book / dust-cover. */
-        public static final int VERY_GOOD = 4;
-        /** book / dust-cover. */
-        public static final int FINE = 5;
-
-        /** mapping the book condition to a resource string for displaying. */
-        private static final List<Integer> BOOK =
-                Arrays.asList(R.string.unknown,
-                              R.string.lbl_condition_reading_copy,
-                              R.string.lbl_condition_fair,
-                              R.string.lbl_condition_good,
-                              R.string.lbl_condition_very_good,
-                              R.string.lbl_condition_fine
-                             );
-
-        /** mapping the dust cover condition to a resource string for displaying. */
-        private static final List<Integer> DUST_COVER =
-                Arrays.asList(R.string.lbl_condition_dust_cover_none_or_unknown,
-                              R.string.lbl_condition_dust_cover_missing,
-                              R.string.lbl_condition_fair,
-                              R.string.lbl_condition_good,
-                              R.string.lbl_condition_very_good,
-                              R.string.lbl_condition_fine
-                             );
     }
 
     public static final class Edition {

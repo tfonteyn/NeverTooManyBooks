@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.Language
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.SeriesListFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.StringArrayResFormatter;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -197,6 +198,13 @@ public class BookDetailsFragmentViewModel
 
         fields.add(R.id.rating, DBDefinitions.KEY_RATING, new RatingBarAccessor())
               .setRelatedFields(R.id.lbl_rating);
+
+        fields.add(R.id.condition, DBDefinitions.KEY_BOOK_CONDITION, new TextAccessor<>(
+                new StringArrayResFormatter(context, R.array.conditions_book)))
+              .setRelatedFields(R.id.lbl_condition);
+        fields.add(R.id.condition_cover, DBDefinitions.KEY_BOOK_CONDITION_COVER, new TextAccessor<>(
+                new StringArrayResFormatter(context, R.array.conditions_dust_cover)))
+              .setRelatedFields(R.id.lbl_condition_cover);
 
         fields.add(R.id.notes, DBDefinitions.KEY_PRIVATE_NOTES, new TextAccessor<>(htmlFormatter))
               .setRelatedFields(R.id.lbl_notes);

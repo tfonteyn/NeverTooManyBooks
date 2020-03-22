@@ -242,8 +242,8 @@
     <string name="lbl_by_author_s">к %1$s</string>
     <string name="lbl_color">цвет</string>
     <string name="lbl_condition">Условие</string>
-    <string name="lbl_condition_dust_cover_missing">Отсутствует</string>
-    <string name="lbl_condition_dust_cover_none_or_unknown">Никто</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Отсутствует</string>
+    <string name="lbl_condition_dust_cover_none">Никто</string>
     <string name="lbl_condition_fair">Приемлемо</string>
     <string name="lbl_condition_fine">Как новый</string>
     <string name="lbl_condition_good">Хорошо</string>

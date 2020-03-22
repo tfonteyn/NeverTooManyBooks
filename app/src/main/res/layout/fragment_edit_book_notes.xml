@@ -65,7 +65,7 @@
         <CheckBox
             android:id="@+id/cbx_read"
             style="@style/CheckboxEntry"
-            android:text="@string/lbl_is_read"
+            android:text="@string/lbl_read"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating"
@@ -83,7 +83,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/read_start"
-                style="@style/EditText.Button"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 />
@@ -101,7 +101,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/read_end"
-                style="@style/EditText.Button"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 />
@@ -109,7 +109,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_read_buttons"
+            android:id="@+id/barrier_date_read_fields"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
@@ -122,7 +122,7 @@
             android:hint="@string/lbl_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_read_buttons"
+            app:layout_constraintTop_toBottomOf="@id/barrier_date_read_fields"
             >
 
             <AutoCompleteTextView
@@ -145,7 +145,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/date_acquired"
-                style="@style/EditText.Button"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
                 />
@@ -189,12 +189,56 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_condition"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_condition"
+            app:layout_constraintEnd_toStartOf="@id/lbl_condition_cover"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
+            >
+
+            <AutoCompleteTextView
+                android:id="@+id/condition"
+                style="@style/EditText.Spinner"
+                android:layout_width="match_parent"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_condition_cover"
+            style="@style/Envelope.AutoCompleteTextView"
+            android:hint="@string/lbl_dust_cover"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lbl_condition"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
+            >
+
+            <AutoCompleteTextView
+                android:id="@+id/condition_cover"
+                style="@style/EditText.Spinner"
+                android:layout_width="match_parent"
+                tools:ignore="LabelFor"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_condition_fields"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="lbl_condition,lbl_condition_cover"
+            />
+
         <TextView
             android:id="@+id/lbl_edition"
             style="@style/Label.Field"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid"
+            app:layout_constraintTop_toBottomOf="@id/barrier_condition_fields"
             />
 
         <com.google.android.material.chip.ChipGroup
@@ -209,7 +253,7 @@
         <CheckBox
             android:id="@+id/cbx_signed"
             style="@style/CheckboxEntry"
-            android:text="@string/lbl_is_signed"
+            android:text="@string/lbl_signed"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edition"

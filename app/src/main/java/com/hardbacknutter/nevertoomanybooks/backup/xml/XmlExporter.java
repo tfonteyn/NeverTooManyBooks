@@ -519,6 +519,11 @@ public class XmlExporter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_TOC_BITMASK,
                                            rowData.getLong(DBDefinitions.KEY_TOC_BITMASK)));
 
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_CONDITION,
+                                           rowData.getInt(DBDefinitions.KEY_BOOK_CONDITION)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_CONDITION_COVER,
+                                           rowData.getInt(DBDefinitions.KEY_BOOK_CONDITION_COVER)));
+
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID,
                                            rowData.getDouble(DBDefinitions.KEY_PRICE_PAID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,

@@ -88,7 +88,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/author"
-                style="@style/EditText.Button"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:text="@sample/data.json/author/full_name"
                 />
@@ -157,7 +157,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/series_title"
-                style="@style/EditText.Button"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:text="@sample/data.json/series/title_nr"
                 />
@@ -176,7 +176,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/bookshelves"
-                style="@style/EditText.Button"
+                style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:text="@sample/data.json/shelves/name"
                 />

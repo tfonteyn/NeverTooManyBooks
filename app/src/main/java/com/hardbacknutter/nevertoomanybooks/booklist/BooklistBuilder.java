@@ -147,7 +147,7 @@ public class BooklistBuilder
     private final SynchronizedDb mSyncedDb;
     /** Internal ID. Used to create unique names for the temporary tables. */
     private final int mInstanceId;
-    /** Collection of 'extra' domains requested by caller. */
+    /** Collection of 'extra' book level domains requested by caller. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Map<String, VirtualDomain> mBookDomains = new HashMap<>();

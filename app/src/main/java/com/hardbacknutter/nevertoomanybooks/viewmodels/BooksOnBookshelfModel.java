@@ -499,15 +499,15 @@ public class BooksOnBookshelfModel
         final BooklistStyle style = mCurrentBookshelf.getStyle(context, mDb);
 
         // get a new builder and add the required domains
-        final BooklistBuilder blb = new BooklistBuilder(style, mCurrentBookshelf,
-                                                        mRebuildState);
+        final BooklistBuilder blb = new BooklistBuilder(style, mCurrentBookshelf, mRebuildState);
 
         // Add the fixed list of domains we always need.
         for (VirtualDomain domainDetails : FIXED_DOMAIN_LIST) {
             blb.addDomain(domainDetails);
         }
 
-        // Add the conditional domains
+        // Add the conditional domains; global level.
+
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_EDITION_BITMASK)) {
             // The edition bitmask
             blb.addDomain(new VirtualDomain(
@@ -521,11 +521,19 @@ public class BooksOnBookshelfModel
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED)));
         }
 
+        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_BOOK_CONDITION)) {
+            blb.addDomain(new VirtualDomain(
+                    DBDefinitions.DOM_BOOK_CONDITION,
+                    DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_CONDITION)));
+        }
+
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             blb.addDomain(new VirtualDomain(
                     DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
                     DAO.SqlColumns.EXP_LOANEE_AS_BOOLEAN));
         }
+
+        // Add the conditional domains; style level.
 
         if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_BOOKSHELF)) {
             // This collects a CSV list of the bookshelves the book is on.
@@ -569,6 +577,7 @@ public class BooksOnBookshelfModel
                     DBDefinitions.DOM_BOOK_LOCATION,
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
         }
+
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Log.d(TAG, "mSearchCriteria=" + mSearchCriteria);

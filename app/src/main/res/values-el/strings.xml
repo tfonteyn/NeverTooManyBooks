@@ -244,8 +244,8 @@
     <string name="lbl_by_author_s">κατα %1$s</string>
     <string name="lbl_color">χρώμα</string>
     <string name="lbl_condition">Κατάσταση</string>
-    <string name="lbl_condition_dust_cover_missing">Λείπει</string>
-    <string name="lbl_condition_dust_cover_none_or_unknown">Κανένας</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Λείπει</string>
+    <string name="lbl_condition_dust_cover_none">Κανένας</string>
     <string name="lbl_condition_fair">Δεκτός</string>
     <string name="lbl_condition_fine">Ως νέα</string>
     <string name="lbl_condition_good">Καλός</string>

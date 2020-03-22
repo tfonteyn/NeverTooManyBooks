@@ -78,14 +78,16 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.CoverBrowserViewModel;
  * ENHANCE: allow configuring search-sites on the fly
  * ENHANCE: currently supports only a front-cover. Add back-cover support
  */
-public class CoverBrowserFragment
+public class CoverBrowserDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "CoverBrowserFragment";
 
     /** Populated by {@link #showGallery} AND savedInstanceState. */
     @NonNull
     private final ArrayList<String> mAlternativeEditions = new ArrayList<>();
+    /** The adapter for the horizontal scrolling covers list. */
     @Nullable
     private GalleryAdapter mGalleryAdapter;
     /** Indicates dismiss() has been requested. */
@@ -108,9 +110,9 @@ public class CoverBrowserFragment
      * @return the instance
      */
     @NonNull
-    public static CoverBrowserFragment newInstance(@NonNull final String isbn,
-                                                   final int cIdx) {
-        final CoverBrowserFragment frag = new CoverBrowserFragment();
+    public static CoverBrowserDialogFragment newInstance(@NonNull final String isbn,
+                                                         final int cIdx) {
+        final CoverBrowserDialogFragment frag = new CoverBrowserDialogFragment();
         final Bundle args = new Bundle(1);
         args.putString(DBDefinitions.KEY_ISBN, isbn);
         args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
@@ -319,7 +321,7 @@ public class CoverBrowserFragment
         /** Keep an extra copy, to avoid casting. */
         @NonNull
         final ImageView imageView;
-
+        /** Represents the image. */
         @Nullable
         CoverBrowserViewModel.FileInfo fileInfo;
 
@@ -332,7 +334,9 @@ public class CoverBrowserFragment
     class GalleryAdapter
             extends RecyclerView.Adapter<Holder> {
 
+        /** A single image fixed width. */
         private final int mWidth;
+        /** A single image fixed height. */
         private final int mHeight;
 
         /**

@@ -507,6 +507,42 @@
             tools:text="$45"
             />
 
+        <!-- Condition -->
+
+        <TextView
+            android:id="@+id/lbl_condition"
+            style="@style/Label.Field.Inline"
+            android:text="@string/lbl_condition"
+            app:layout_constraintBaseline_toBaselineOf="@id/condition"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            />
+
+        <TextView
+            android:id="@+id/condition"
+            style="@style/Text"
+            app:layout_constraintStart_toEndOf="@id/lbl_condition"
+            app:layout_constraintTop_toBottomOf="@id/price_paid"
+            tools:ignore="SelectableText"
+            tools:text="Very good"
+            />
+
+        <TextView
+            android:id="@+id/lbl_condition_cover"
+            style="@style/Label.Field.Inline"
+            android:text="@string/lbl_dust_cover"
+            app:layout_constraintBaseline_toBaselineOf="@id/condition_cover"
+            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            />
+
+        <TextView
+            android:id="@+id/condition_cover"
+            style="@style/Text"
+            app:layout_constraintStart_toEndOf="@id/lbl_condition_cover"
+            app:layout_constraintTop_toBottomOf="@id/condition"
+            tools:ignore="SelectableText"
+            tools:text="Very good"
+            />
+
         <!-- Start and end of reading -->
 
         <TextView
@@ -521,7 +557,7 @@
             android:id="@+id/read_start"
             style="@style/Text"
             app:layout_constraintStart_toEndOf="@id/lbl_read_start"
-            app:layout_constraintTop_toBottomOf="@id/price_paid"
+            app:layout_constraintTop_toBottomOf="@id/condition_cover"
             tools:ignore="SelectableText"
             tools:text="Nov 10, 2011"
             />

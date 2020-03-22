@@ -182,8 +182,105 @@ public class BooksOnBookshelf
 
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
+    /** Listener for clicks on the list. */
+    private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
+            new BooklistAdapter.OnRowClickedListener() {
+
+                /**
+                 * User clicked on a row.
+                 * <ul>
+                 * <li>Book: open the details screen.</li>
+                 * <li>Not a book: expand/collapse the section as appropriate.</li>
+                 * </ul>
+                 *
+                 * <br><br>{@inheritDoc}
+                 */
+                @Override
+                public void onItemClick(final int position) {
+                    final Cursor cursor = mModel.getListCursor();
+
+                    // Move the cursor, so we can read the data for this row.
+                    // Paranoia: if the user can click it, then this move should be fine.
+                    if (!cursor.moveToPosition(position)) {
+                        return;
+                    }
+
+                    final RowDataHolder rowData = new CursorRow(cursor);
+
+                    // If it's a book, open the details screen.
+                    if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                        final long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
+                        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+                        // Note we (re)create the flat table *every time* the user click a book.
+                        // This guarantees an exact match in rowId'
+                        // (which turns out tricky if we cache the table - ENHANCE: re-implement caching)
+                        final String navTableName = mModel.createFlattenedBooklist();
+                        final Intent intent = new Intent(BooksOnBookshelf.this,
+                                                         BookDetailsActivity.class)
+                                .putExtra(DBDefinitions.KEY_PK_ID, bookId)
+                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
+                                .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
+                        startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
+
+                    } else {
+                        // it's a level, expand/collapse recursively.
+                        final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
+                        final boolean isExpanded = mModel.toggleNode(rowId);
+
+                        // make sure the cursor has valid rows for the new position.
+                        if (cursor.requery()) {
+                            mAdapter.notifyDataSetChanged();
+
+                            if (isExpanded) {
+                                // if the user expanded the line at the bottom of the screen,
+                                final int lastPos = mLayoutManager
+                                        .findLastCompletelyVisibleItemPosition();
+                                if ((position + 1 == lastPos) || (position == lastPos)) {
+                                    // then we move the list a minimum of 2 positions upwards
+                                    // to make the expanded rows visible. Using 3 for comfort.
+                                    mListView.scrollToPosition(position + 3);
+                                }
+                            }
+                        } else {
+                            if (BuildConfig.DEBUG /* always */) {
+                                throw new IllegalStateException("requery() failed");
+                            }
+                        }
+                    }
+                }
+
+                /**
+                 * User long-clicked on a row. Bring up a context menu as appropriate.
+                 *
+                 * <br><br>{@inheritDoc}
+                 */
+                @Override
+                public boolean onItemLongClick(final int position) {
+                    final Cursor cursor = mModel.getListCursor();
+
+                    // Move the cursor, so we can read the data for this row.
+                    // Paranoia: if the user can click it, then this move should be fine.
+                    if (!cursor.moveToPosition(position)) {
+                        return false;
+                    }
+
+                    final RowDataHolder rowData = new CursorRow(cursor);
+
+                    final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
+                    // build/check the menu for this row
+                    if (onCreateContextMenu(menu, rowData)) {
+                        // we have a menu to show, set the title according to the level.
+                        final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+                        final String title = mAdapter.getLevelText(position, level);
+
+                        // bring up the context menu
+                        new MenuPicker<>(BooksOnBookshelf.this, title, menu, position,
+                                         BooksOnBookshelf.this::onContextItemSelected)
+                                .show();
+                    }
+                    return true;
+                }
+            };
 
     /** List header. */
     private TextView mHeaderStyleNameView;
@@ -283,103 +380,9 @@ public class BooksOnBookshelf
                     mModel.buildBookList(BooksOnBookshelf.this);
                 }
             };
-    /** Listener for clicks on the list. */
-    private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener
-            = new BooklistAdapter.OnRowClickedListener() {
-
-        /**
-         * User clicked on a row.
-         * <ul>
-         * <li>Book: open the details screen.</li>
-         * <li>Not a book: expand/collapse the section as appropriate.</li>
-         * </ul>
-         *
-         * <br><br>{@inheritDoc}
-         */
-        @Override
-        public void onItemClick(final int position) {
-            final Cursor cursor = mModel.getListCursor();
-
-            // Move the cursor, so we can read the data for this row.
-            // Paranoia: if the user can click it, then this move should be fine.
-            if (!cursor.moveToPosition(position)) {
-                return;
-            }
-
-            final RowDataHolder rowData = new CursorRow(cursor);
-
-            // If it's a book, open the details screen.
-            if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                final long rowId = rowData.getLong(DBDefinitions.KEY_PK_ID);
-                final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-                // Note we (re)create the flat table *every time* the user click a book.
-                // This guarantees an exact match in rowId'
-                // (which turns out tricky if we cache the table - ENHANCE: re-implement caching)
-                final String navTableName = mModel.createFlattenedBooklist();
-                final Intent intent = new Intent(BooksOnBookshelf.this, BookDetailsActivity.class)
-                        .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                        .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
-                        .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
-
-            } else {
-                // it's a level, expand/collapse recursively.
-                final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-                final boolean isExpanded = mModel.toggleNode(rowId);
-
-                // make sure the cursor has valid rows for the new position.
-                if (cursor.requery()) {
-                    mAdapter.notifyDataSetChanged();
-
-                    if (isExpanded) {
-                        // if the user expanded the line at the bottom of the screen,
-                        final int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                        if ((position + 1 == lastPos) || (position == lastPos)) {
-                            // then we move the list a minimum of 2 positions upwards
-                            // to make the expanded rows visible. Using 3 for comfort.
-                            mListView.scrollToPosition(position + 3);
-                        }
-                    }
-                } else {
-                    if (BuildConfig.DEBUG /* always */) {
-                        throw new IllegalStateException("requery() failed");
-                    }
-                }
-            }
-        }
-
-        /**
-         * User long-clicked on a row. Bring up a context menu as appropriate.
-         *
-         * <br><br>{@inheritDoc}
-         */
-        @Override
-        public boolean onItemLongClick(final int position) {
-            final Cursor cursor = mModel.getListCursor();
-
-            // Move the cursor, so we can read the data for this row.
-            // Paranoia: if the user can click it, then this move should be fine.
-            if (!cursor.moveToPosition(position)) {
-                return false;
-            }
-
-            final RowDataHolder rowData = new CursorRow(cursor);
-
-            final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
-            // build/check the menu for this row
-            if (onCreateContextMenu(menu, rowData)) {
-                // we have a menu to show, set the title according to the level.
-                final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
-                final String title = mAdapter.getLevelText(position, level);
-
-                // bring up the context menu
-                new MenuPicker<>(BooksOnBookshelf.this, title, menu, position,
-                                 BooksOnBookshelf.this::onContextItemSelected)
-                        .show();
-            }
-            return true;
-        }
-    };
+    /** Full progress dialog to show while exporting/importing. */
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
 
     /** Export. */
     private ExportTaskModel mExportModel;
@@ -418,7 +421,6 @@ public class BooksOnBookshelf
                 }
             };
 
-
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
@@ -453,17 +455,23 @@ public class BooksOnBookshelf
                 }
             };
 
+//    private BooksonbookshelfBinding mVb;
+
     @Override
     protected void onSetContentView() {
+//        mVb = BooksonbookshelfBinding.inflate(getLayoutInflater());
+//        setContentView(mVb.getRoot());
         setContentView(R.layout.booksonbookshelf);
-        mProgressBar = findViewById(R.id.progressBar);
-        mListView = findViewById(android.R.id.list);
+
+        mBookshelfSpinner = findViewById(R.id.bookshelf_spinner);
         mHeaderStyleNameView = findViewById(R.id.style_name);
         mHeaderFilterTextView = findViewById(R.id.filter_text);
         mHeaderBookCountView = findViewById(R.id.book_count);
         mHeaderRowLevelTextView[0] = findViewById(R.id.level_1_text);
         mHeaderRowLevelTextView[1] = findViewById(R.id.level_2_text);
-        mBookshelfSpinner = findViewById(R.id.bookshelf_spinner);
+        mListView = findViewById(android.R.id.list);
+
+        mProgressBar = findViewById(R.id.progressBar);
 
         mFabButton = findViewById(R.id.fab);
         mFabOverlay = findViewById(R.id.fabOverlay);
@@ -1783,7 +1791,6 @@ public class BooksOnBookshelf
                 default:
                     throw new UnexpectedValueException("taskId=" + taskId);
             }
-
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
@@ -1832,7 +1839,7 @@ public class BooksOnBookshelf
         final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
-                .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName((this)));
+                .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName(this));
         startActivityForResult(intent, UniqueId.REQ_EXPORT_PICK_URI);
     }
 
@@ -1876,15 +1883,16 @@ public class BooksOnBookshelf
 
         //TODO: LTR
         // slightly misleading. The text currently says "processed" but it's really "exported".
+        final String BULLET = "\n• ";
         if (results.booksExported > 0) {
-            msg.append("\n• ")
+            msg.append(BULLET)
                .append(getString(R.string.info_export_result_n_books_processed,
                                  results.booksExported));
         }
         if (results.coversExported > 0
             || results.coversMissing[0] > 0
             || results.coversMissing[1] > 0) {
-            msg.append("\n• ")
+            msg.append(BULLET)
                .append(getString(R.string.info_export_result_n_covers_processed_m_missing,
                                  results.coversExported,
                                  results.coversMissing[0],
@@ -1892,12 +1900,12 @@ public class BooksOnBookshelf
         }
 
         if (results.styles > 0) {
-            msg.append("\n• ").append(getString(R.string.name_colon_value,
+            msg.append(BULLET).append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));
         }
         if (results.preferences > 0) {
-            msg.append("\n• ").append(getString(R.string.lbl_settings));
+            msg.append(BULLET).append(getString(R.string.lbl_settings));
         }
 
         final Pair<String, Long> uriInfo = FileUtils.getUriInfo(this, uri);

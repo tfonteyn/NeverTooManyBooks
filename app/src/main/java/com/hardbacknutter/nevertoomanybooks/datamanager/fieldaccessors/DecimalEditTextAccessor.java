@@ -46,6 +46,28 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 /**
  * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
  * See class docs: {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils}.
+ *
+ * <pre>
+ *     {@code
+ *             <com.google.android.material.textfield.TextInputLayout
+ *             android:id="@+id/lbl_price_paid"
+ *             style="@style/Envelope.EditText"
+ *             android:hint="@string/lbl_price_paid"
+ *             app:layout_constraintEnd_toEndOf="parent"
+ *             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
+ *             app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
+ *             >
+ *
+ *             <com.google.android.material.textfield.TextInputEditText
+ *                 android:id="@+id/price_paid"
+ *                 style="@style/priceTextEntry"
+ *                 android:layout_width="match_parent"
+ *                 tools:ignore="Autofill"
+ *                 tools:text="12.99"
+ *                 />
+ *
+ *         </com.google.android.material.textfield.TextInputLayout>}
+ * </pre>
  */
 public class DecimalEditTextAccessor
         extends EditTextAccessor<Number> {

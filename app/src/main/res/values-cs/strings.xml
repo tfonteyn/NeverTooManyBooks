@@ -243,8 +243,8 @@
     <string name="lbl_by_author_s">(kým) %1$s</string>
     <string name="lbl_color">Barva</string>
     <string name="lbl_condition">Stav</string>
-    <string name="lbl_condition_dust_cover_missing">Chybějící</string>
-    <string name="lbl_condition_dust_cover_none_or_unknown">Žádný</string>
+    <string name="lbl_condition_dust_cover_missing_or_bad">Chybějící</string>
+    <string name="lbl_condition_dust_cover_none">Žádný</string>
     <string name="lbl_condition_fair">Přijatelný</string>
     <string name="lbl_condition_fine">Jako nový</string>
     <string name="lbl_condition_good">Dobrý</string>

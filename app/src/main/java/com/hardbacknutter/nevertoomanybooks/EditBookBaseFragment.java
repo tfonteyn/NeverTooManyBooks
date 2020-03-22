@@ -200,13 +200,13 @@ public abstract class EditBookBaseFragment
      */
     void addAutocomplete(@IdRes final int fieldId,
                          @NonNull final List<String> list) {
-        Field field = mFragmentVM.getFields().getField(fieldId);
+        final Field field = mFragmentVM.getFields().getField(fieldId);
         // only bother when it's in use and we have a list
         //noinspection ConstantConditions
         if (field.isUsed(getContext()) && !list.isEmpty()) {
-            AutoCompleteTextView view = (AutoCompleteTextView) field.getAccessor().getView();
+            final AutoCompleteTextView view = (AutoCompleteTextView) field.getAccessor().getView();
             //noinspection unchecked
-            Fields.FormattedDiacriticArrayAdapter adapter =
+            final Fields.FormattedDiacriticArrayAdapter adapter =
                     new Fields.FormattedDiacriticArrayAdapter(
                             view.getContext(), list,
                             (FieldFormatter<String>) field.getAccessor().getFormatter());
@@ -227,11 +227,11 @@ public abstract class EditBookBaseFragment
                        @StringRes final int dialogTitleId,
                        final boolean todayIfNone,
                        final boolean isPartial) {
-        Field field = mFragmentVM.getFields().getField(fieldId);
+        final Field field = mFragmentVM.getFields().getField(fieldId);
         // only bother when it's in use
         //noinspection ConstantConditions
         if (field.isUsed(getContext())) {
-            View view = field.getAccessor().getView();
+            final View view = field.getAccessor().getView();
             if (isPartial) {
                 view.setOnClickListener(v -> PartialDatePickerDialogFragment
                         .newInstance(fieldId, dialogTitleId,
@@ -254,7 +254,7 @@ public abstract class EditBookBaseFragment
      */
     void setOnClickListener(@IdRes final int fieldId,
                             @Nullable final View.OnClickListener listener) {
-        Field field = mFragmentVM.getFields().getField(fieldId);
+        final Field field = mFragmentVM.getFields().getField(fieldId);
         // only bother when it's in use
         //noinspection ConstantConditions
         if (field.isUsed(getContext())) {

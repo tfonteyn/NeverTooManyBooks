@@ -260,4 +260,20 @@
         <item>4096</item>
     </string-array>
 
+    <string-array name="conditions_book">
+        <item>@string/unknown</item>
+        <item>@string/lbl_condition_reading_copy</item>
+        <item>@string/lbl_condition_fair</item>
+        <item>@string/lbl_condition_good</item>
+        <item>@string/lbl_condition_very_good</item>
+        <item>@string/lbl_condition_fine</item>
+    </string-array>
+    <string-array name="conditions_dust_cover">
+        <item>@string/unknown</item>
+        <item>@string/lbl_condition_dust_cover_none</item>
+        <item>@string/lbl_condition_dust_cover_missing_or_bad</item>
+        <item>@string/lbl_condition_good</item>
+        <item>@string/lbl_condition_very_good</item>
+        <item>@string/lbl_condition_fine</item>
+    </string-array>
 </resources>

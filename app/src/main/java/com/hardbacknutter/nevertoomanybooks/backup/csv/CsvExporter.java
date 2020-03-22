@@ -105,6 +105,8 @@ public class CsvExporter
             + '"' + CSV_COLUMN_SERIES + "\","
             + '"' + DBDefinitions.KEY_PAGES + "\","
             + '"' + DBDefinitions.KEY_PRIVATE_NOTES + "\","
+            + '"' + DBDefinitions.KEY_BOOK_CONDITION + "\","
+            + '"' + DBDefinitions.KEY_BOOK_CONDITION_COVER + "\","
 
             + '"' + DBDefinitions.KEY_PRICE_LISTED + "\","
             + '"' + DBDefinitions.KEY_PRICE_LISTED_CURRENCY + "\","
@@ -258,6 +260,10 @@ public class CsvExporter
                 writer.write(encode(rowData.getString(DBDefinitions.KEY_PAGES)));
                 writer.write(",");
                 writer.write(encode(rowData.getString(DBDefinitions.KEY_PRIVATE_NOTES)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_BOOK_CONDITION)));
+                writer.write(",");
+                writer.write(encode(rowData.getString(DBDefinitions.KEY_BOOK_CONDITION_COVER)));
                 writer.write(",");
                 writer.write(encode(rowData.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
                 writer.write(",");
