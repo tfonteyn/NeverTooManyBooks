@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import org.jsoup.Jsoup;
@@ -71,12 +70,8 @@ class AmazonHtmlHandlerTest
 
         AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, new AmazonSearchEngine(), doc);
         // we've set the doc, so no internet download will be done.
-        try {
-            boolean[] fetchThumbnail = {false, false};
-            mBookData = handler.parseDoc(fetchThumbnail, mBookData);
-        } catch (@NonNull final SocketTimeoutException e) {
-            fail(e);
-        }
+        boolean[] fetchThumbnail = {false, false};
+        mBookData = handler.parseDoc(fetchThumbnail, mBookData);
 
         assertFalse(mBookData.isEmpty());
 
@@ -124,12 +119,8 @@ class AmazonHtmlHandlerTest
 
         AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, new AmazonSearchEngine(), doc);
         // we've set the doc, so no internet download will be done.
-        try {
-            boolean[] fetchThumbnail = {false, false};
-            mBookData = handler.parseDoc(fetchThumbnail, mBookData);
-        } catch (@NonNull final SocketTimeoutException e) {
-            fail(e);
-        }
+        boolean[] fetchThumbnail = {false, false};
+        mBookData = handler.parseDoc(fetchThumbnail, mBookData);
 
         assertFalse(mBookData.isEmpty());
 
