@@ -554,7 +554,9 @@ public class BooklistAdapter
                 // it's a group; use the display domain as the text
                 final BooklistGroup group = mStyle.getGroupByLevel(level);
                 final String value = mRowData.getString(group.getDisplayDomain().getName());
-                return format(mInflater.getContext(), group.getId(), value, null);
+                if (!value.isEmpty()) {
+                    return format(mInflater.getContext(), group.getId(), value, null);
+                }
             }
         } catch (@NonNull final CursorIndexOutOfBoundsException e) {
             // Seen a number of times. No longer reproducible, but paranoia...
