@@ -1246,8 +1246,13 @@ public class BooksOnBookshelf
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
 
+                    @Nullable
                     final BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                     if (style != null) {
+                        // always save a new style to the database
+                        if (style.getId() == 0) {
+                            mModel.saveStyle(style);
+                        }
                         // save the new bookshelf/style combination
                         mModel.getCurrentBookshelf().setAsPreferred(this);
                         mModel.setCurrentStyle(this, style);

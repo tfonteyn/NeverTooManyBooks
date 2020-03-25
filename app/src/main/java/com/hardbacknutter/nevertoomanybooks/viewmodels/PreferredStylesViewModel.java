@@ -110,7 +110,7 @@ public class PreferredStylesViewModel
     }
 
     @Nullable
-    public BooklistStyle getBooklistStyle(final long styleId) {
+    private BooklistStyle getBooklistStyle(final long styleId) {
 
         for (BooklistStyle style : mList) {
             if (style.getId() == styleId) {
@@ -123,13 +123,16 @@ public class PreferredStylesViewModel
     /**
      * Called after a style has been edited.
      *
-     * @param context Current context
-     * @param style   the (potentially) modified style
+     * @param context    Current context
+     * @param style      the (potentially) modified style
+     * @param templateId id of the original style we cloned (different from current)
+     *                   or edited (same as current).
      *
      * @return position of the style in the list
      */
     public int handleStyleChange(@NonNull final Context context,
-                                 @NonNull final BooklistStyle style) {
+                                 @NonNull final BooklistStyle style,
+                                 final long templateId) {
         mIsDirty = true;
 
         // based on the uuid, find the style in the list.
@@ -175,15 +178,25 @@ public class PreferredStylesViewModel
             }
         }
 
-        // add to the db if the style is a new one.
-        if (style.getId() == 0) {
-            style.save(mDb);
-        }
-
         // Force a refresh of the list of user styles.
         style.updateHelper();
 
+        // check if the style was cloned from a builtin style.
+        if (templateId < 0) {
+            // We're assuming the user wanted to 'replace' the builtin style,
+            // so remove the builtin style from the preferred styles.
+            BooklistStyle templateStyle = getBooklistStyle(templateId);
+            if (templateStyle != null) {
+                templateStyle.setPreferred(false);
+            }
+        }
+
         return editedRow;
+    }
+
+    public void saveStyle(@NonNull final BooklistStyle style) {
+        mIsDirty = true;
+        style.save(mDb);
     }
 
     public void deleteStyle(@NonNull final Context context,
@@ -200,5 +213,9 @@ public class PreferredStylesViewModel
 
     public void purgeBLNS(final long id) {
         mDb.purgeNodeStatesByStyle(id);
+    }
+
+    public DAO getDb() {
+        return mDb;
     }
 }

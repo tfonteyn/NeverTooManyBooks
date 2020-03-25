@@ -349,44 +349,73 @@ public class BooklistStyle
      * @param in Parcel to construct the object from
      */
     private BooklistStyle(@NonNull final Parcel in) {
-        this(false, App.getAppContext(), in);
-    }
-
-    /**
-     * Custom Parcelable constructor which allows cloning/new.
-     *
-     * @param isNew   when set to true, partially override the incoming data so we get
-     *                a 'new' object but with the settings from the Parcel.
-     *                The new id will be 0, and the uuid will be newly generated.
-     * @param context Current context
-     * @param in      Parcel to construct the object from
-     */
-    private BooklistStyle(final boolean isNew,
-                          @NonNull final Context context,
-                          @NonNull final Parcel in) {
         mId = in.readLong();
+        // will be 0 for user defined styles
         mNameResId = in.readInt();
         //noinspection ConstantConditions
         mUuid = in.readString();
-        if (isNew) {
-            mUuid = UUID.randomUUID().toString();
-            context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
-                   .edit().putString(Prefs.PK_STYLE_UUID, mUuid).apply();
-        }
 
-        // only init the prefs once we have a valid id, uuid and name resId
-        initPrefs(context, mNameResId == 0);
+        // now we have a valid uuid and name resId, we can init the preferences.
+        initPrefs(App.getAppContext(), mNameResId == 0);
+
+        // continue to restore from the parcel.
         mName.set(in);
 
-        // create new clone ?
-        if (isNew) {
-            // get a copy of the name first
-            setName(getLabel(context));
-            // now reset the other identifiers.
-            mId = 0;
-            mNameResId = 0;
-        }
+        mIsPreferred.set(in);
+        mDefaultExpansionLevel.set(in);
+        mFontScale.set(in);
+        mThumbnailScale.set(in);
+        mShowHeaderInfo.set(in);
+        mShowAuthorByGivenNameFirst.set(in);
+        mSortAuthorByGivenNameFirst.set(in);
+        mStyleGroups.set(in);
 
+        // the collection is ordered, so we don't need the keys.
+        for (PBoolean bookDetailField : mAllBookDetailFields.values()) {
+            bookDetailField.set(in);
+        }
+        // the collection is ordered, so we don't need the keys.
+        for (Filter filter : mFilters.values()) {
+            filter.set(in);
+        }
+    }
+
+    /**
+     * Custom Parcelable constructor: create a new object but with the settings from the Parcel.
+     * The new id will be 0, and the uuid will be newly generated.
+     *
+     * @param context Current context
+     * @param name    for the new style
+     * @param in      Parcel to construct the object from
+     */
+    private BooklistStyle(@NonNull final Context context,
+                          @NonNull final String name,
+                          @NonNull final Parcel in) {
+
+        // skip mId
+        in.readLong();
+        // skip mNameResId
+        in.readInt();
+        // skip mUuid
+        in.readString();
+
+        // instead use these new identifiers:
+        mId = 0;
+        mNameResId = 0;
+        mUuid = UUID.randomUUID().toString();
+
+        // manually store the new UUID (this will automatically initialise a new xml file)
+        context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
+               .edit().putString(Prefs.PK_STYLE_UUID, mUuid).apply();
+
+        // only init the prefs once we have a valid mId, mUuid and mNameResId
+        initPrefs(context, true);
+
+        // skip, and set the name
+        mName.set(in);
+        mName.set(name);
+
+        // further prefs can be set from the parcel as normal.
         mIsPreferred.set(in);
         mDefaultExpansionLevel.set(in);
         mFontScale.set(in);
@@ -513,7 +542,7 @@ public class BooklistStyle
             throw new IllegalStateException("mUuid.isEmpty()");
         }
 
-        //TODO: revisit... is this to complicated/inefficient?
+        //FIXME: revisit... this is to complicated/inefficient.
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
         byte[] bytes = parcel.marshall();
@@ -522,7 +551,8 @@ public class BooklistStyle
         parcel = Parcel.obtain();
         parcel.unmarshall(bytes, 0, bytes.length);
         parcel.setDataPosition(0);
-        BooklistStyle clone = new BooklistStyle(true, context, parcel);
+
+        BooklistStyle clone = new BooklistStyle(context, getLabel(context), parcel);
         parcel.recycle();
 
         return clone;

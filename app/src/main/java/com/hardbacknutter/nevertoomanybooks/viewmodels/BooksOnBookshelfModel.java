@@ -878,6 +878,10 @@ public class BooksOnBookshelfModel
         mCursor.getBooklistBuilder().saveAllNodes();
     }
 
+    public void saveStyle(@NonNull final BooklistStyle style) {
+        style.save(mDb);
+    }
+
     /**
      * A Spinner entry with a Bookshelf.
      */
