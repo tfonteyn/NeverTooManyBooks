@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * Passing in a style with a valid UUID, settings are read/written to the style specific file.
  * If the uuid is {@code null}, then we're editing the global defaults.
  */
-public class StylePreferenceFragment
+public class StyleFragment
         extends StyleBaseFragment {
 
     /** Fragment manager tag. */
@@ -227,7 +227,8 @@ public class StylePreferenceFragment
             case UniqueId.REQ_EDIT_STYLE_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-                    // replace the current style with the edited copy
+                    // replace the current style with the edited copy;
+                    // do NOT save to the database yet/here
                     mStyle = data.getParcelableExtra(UniqueId.BKEY_STYLE);
                     Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
 

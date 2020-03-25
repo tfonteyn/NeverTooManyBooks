@@ -98,9 +98,9 @@ public class ImportHelperDialogFragment
 
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(mVb.getRoot())
-                .setTitle(R.string.title_import_options)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> onCancelled())
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                .setTitle(R.string.lbl_import_options)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> onCancelled())
+                .setPositiveButton(android.R.string.ok, (d, w) ->
                         onOptionsSet(mModel.getHelper()))
                 .create();
     }

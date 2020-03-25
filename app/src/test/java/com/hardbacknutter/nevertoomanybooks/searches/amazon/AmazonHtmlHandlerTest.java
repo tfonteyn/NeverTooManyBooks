@@ -32,16 +32,17 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -54,6 +55,7 @@ class AmazonHtmlHandlerTest
 
     @Test
     void parse01() {
+        setLocale(Locale.UK);
 
         String locationHeader = "https://www.amazon.co.uk/gp/product/0575090677";
         String filename = "/amazon/0575090677.html";
@@ -71,29 +73,29 @@ class AmazonHtmlHandlerTest
         AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, new AmazonSearchEngine(), doc);
         // we've set the doc, so no internet download will be done.
         boolean[] fetchThumbnail = {false, false};
-        mBookData = handler.parseDoc(fetchThumbnail, mBookData);
+        mRawData = handler.parseDoc(fetchThumbnail, mRawData);
 
-        assertFalse(mBookData.isEmpty());
+        assertFalse(mRawData.isEmpty());
 
-        System.out.println(mBookData);
+        System.out.println(mRawData);
 
-        assertEquals("Bone Silence", mBookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("978-0575090675", mBookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("30 Jan. 2020", mBookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("608", mBookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Hardcover", mBookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("eng", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals(14.49d, mBookData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        assertEquals("GBP", mBookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals("Bone Silence", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("978-0575090675", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("30 Jan. 2020", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("608", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("eng", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals(14.49d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
+        assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
-        ArrayList<Publisher> allPublishers = mBookData
+        ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -103,7 +105,7 @@ class AmazonHtmlHandlerTest
 
     @Test
     void parse02() {
-
+        setLocale(Locale.UK);
         String locationHeader = "https://www.amazon.co.uk/gp/product/1473210208";
         String filename = "/amazon/1473210208.html";
 
@@ -120,28 +122,28 @@ class AmazonHtmlHandlerTest
         AmazonHtmlHandler handler = new AmazonHtmlHandler(mContext, new AmazonSearchEngine(), doc);
         // we've set the doc, so no internet download will be done.
         boolean[] fetchThumbnail = {false, false};
-        mBookData = handler.parseDoc(fetchThumbnail, mBookData);
+        mRawData = handler.parseDoc(fetchThumbnail, mRawData);
 
-        assertFalse(mBookData.isEmpty());
+        assertFalse(mRawData.isEmpty());
 
-        System.out.println(mBookData);
+        System.out.println(mRawData);
 
-        assertEquals("The Medusa Chronicles", mBookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("978-1473210202", mBookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("12 Jan. 2017", mBookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("336", mBookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Paperback", mBookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("eng", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals(5.84d, mBookData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        assertEquals("GBP", mBookData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals("The Medusa Chronicles", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("978-1473210202", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("12 Jan. 2017", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("336", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("Paperback", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("eng", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals(5.84d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
+        assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
-        ArrayList<Publisher> allPublishers = mBookData
+        ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());

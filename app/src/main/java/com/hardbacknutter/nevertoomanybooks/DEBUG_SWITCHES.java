@@ -121,7 +121,7 @@ public final class DEBUG_SWITCHES {
 
     /** dump the style each time it is accessed. Medium length in the log. */
     public static final boolean DUMP_STYLE = false;
-    public static final boolean BOOK_LOCALE = false;
+    public static final boolean LOCALE = false;
 
     /** Log the full flow of {@link Activity#recreate()}. */
     public static final boolean RECREATE_ACTIVITY = false;

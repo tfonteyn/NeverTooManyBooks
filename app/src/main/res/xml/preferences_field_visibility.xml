@@ -35,7 +35,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <com.hardbacknutter.nevertoomanybooks.widgets.ExtPreferenceCategory
         android:icon="@drawable/ic_visibility"
-        android:summary="@string/info_manage_fields"
+        android:summary="@string/txt_manage_fields"
         android:title="@string/pg_ui_field_visibility">
 
 
@@ -197,7 +197,7 @@
             android:key="fields.visibility.read"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_is_read" />
+            android:title="@string/lbl_read" />
 
         <SwitchPreference
             android:defaultValue="true"
@@ -225,7 +225,7 @@
             android:key="fields.visibility.signed"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_is_signed" />
+            android:title="@string/lbl_signed" />
 
         <SwitchPreference
             android:defaultValue="true"

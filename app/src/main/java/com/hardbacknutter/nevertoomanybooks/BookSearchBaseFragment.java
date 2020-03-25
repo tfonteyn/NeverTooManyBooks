@@ -162,9 +162,9 @@ public abstract class BookSearchBaseFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.title_search_failed)
+                    .setTitle(R.string.warning_search_failed)
                     .setMessage(searchErrors)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
 

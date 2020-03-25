@@ -82,14 +82,14 @@ public class AuthorizationResultCheckTask
         String msg;
 
         if (result) {
-            title = R.string.title_authorized;
-            msg = context.getString(R.string.info_authorization_successful,
+            title = R.string.info_authorized;
+            msg = context.getString(R.string.info_site_authorization_successful,
                                     context.getString(R.string.site_goodreads));
 
             Notifier.show(context, Notifier.CHANNEL_INFO, context.getString(title), msg);
 
         } else {
-            title = R.string.title_not_authorized;
+            title = R.string.info_not_authorized;
             if (mException instanceof FormattedMessageException) {
                 msg = ((FormattedMessageException) mException).getLocalizedMessage(context);
 

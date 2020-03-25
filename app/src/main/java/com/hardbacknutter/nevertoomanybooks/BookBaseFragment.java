@@ -150,7 +150,7 @@ public abstract class BookBaseFragment
             Book book = mBookViewModel.getBook();
             if (book.isNew()) {
                 // EDIT NEW book
-                actionBar.setTitle(R.string.title_add_book);
+                actionBar.setTitle(R.string.lbl_add_book);
                 actionBar.setSubtitle(null);
             } else {
                 // VIEW or EDIT existing book

@@ -88,7 +88,7 @@ public class EditBookFragment
     /** The book. Must be in the Activity scope. */
     private BookViewModel mBookViewModel;
 
-    private int mCurrentTab = 0;
+    private int mCurrentTab;
 
     @Override
     @Nullable
@@ -301,19 +301,17 @@ public class EditBookFragment
                     //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
                             .setIconAttribute(android.R.attr.alertDialogIcon)
-                            .setTitle(R.string.title_duplicate_book)
+                            .setTitle(R.string.lbl_duplicate_book)
                             .setMessage(R.string.confirm_duplicate_book_message)
                             // this dialog is important. Make sure the user pays some attention
                             .setCancelable(false)
                             // User aborts this edit
-                            .setNegativeButton(android.R.string.cancel, (dialog, which) ->
+                            .setNegativeButton(android.R.string.cancel, (d, w) ->
                                     getActivity().finish())
                             // User wants to continue editing this book
-                            .setNeutralButton(R.string.edit, (dialog, which) ->
-                                    dialog.dismiss())
+                            .setNeutralButton(R.string.action_edit, (d, w) -> d.dismiss())
                             // User wants to add regardless
-                            .setPositiveButton(R.string.btn_confirm_add, (dialog, which) ->
-                                    saveBook())
+                            .setPositiveButton(R.string.action_add, (d, w) -> saveBook())
                             .create()
                             .show();
                     return;

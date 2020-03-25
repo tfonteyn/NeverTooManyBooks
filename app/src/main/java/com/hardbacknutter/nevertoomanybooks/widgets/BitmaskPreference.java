@@ -237,7 +237,7 @@ public class BitmaskPreference
             // FIXME: the default builder uses a mutually exclusive message/listView.
             // builder.setMessage(getString(R.string.info_bitmask_preference,
             //                    getString(mNotSetString)));
-            builder.setNeutralButton(mNotSetString, (dialog, which) -> mUnused = true);
+            builder.setNeutralButton(mNotSetString, (d, w) -> mUnused = true);
 
             final int entryCount = mEntryValues.length;
             final boolean[] checkedItems = new boolean[entryCount];

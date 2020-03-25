@@ -32,7 +32,7 @@
     <item
         android:id="@id/MENU_DELETE"
         android:icon="@drawable/ic_delete"
-        android:title="@string/menu_delete" />
+        android:title="@string/action_delete" />
 
     <item
         android:id="@id/SUBMENU_THUMB_REPLACE"

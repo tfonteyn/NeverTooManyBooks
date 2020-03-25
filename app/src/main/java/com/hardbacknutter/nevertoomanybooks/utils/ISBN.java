@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,6 +45,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * This class name is a bit of a misnomer by now.
@@ -204,7 +204,7 @@ public class ISBN {
                     }
                 } catch (@NonNull final NumberFormatException e) {
                     if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "str=" + str, e);
+                        Logger.d(TAG, "str=" + str, e);
                     }
                 }
 

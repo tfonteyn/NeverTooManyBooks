@@ -27,51 +27,28 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
-import android.content.Context;
-import android.os.Bundle;
+import java.util.Locale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class FormatMapperTest {
-
-    @Mock
-    protected Context mContext;
-
-    @Mock
-    protected Bundle mBookData;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mBookData = BundleMock.mock();
-        mContext = mock(Context.class);
-
-        when(mContext.getString(R.string.book_format_paperback)).thenReturn("Paperback");
-        when(mContext.getString(R.string.book_format_softcover)).thenReturn("Softcover");
-        when(mContext.getString(R.string.book_format_dimensions)).thenReturn("Dim");
-    }
+class FormatMapperTest
+        extends CommonSetup {
 
     @Test
     void basic() {
+        setLocale(Locale.UK);
         Mapper mapper = new FormatMapper();
         String key = mapper.getKey();
-        mBookData.putString(key, "pb");
-        mapper.map(mContext, mBookData);
-        assertEquals("Paperback", mBookData.getString(key));
+        mRawData.putString(key, "pb");
+        mapper.map(mContext, mRawData);
+        assertEquals("Paperback", mRawData.getString(key));
 
-        mBookData.putString(key, "Dimensions 5x4");
-        mapper.map(mContext, mBookData);
-        assertEquals("Dim 5x4", mBookData.getString(key));
+        mRawData.putString(key, "Dimensions 5x4");
+        mapper.map(mContext, mRawData);
+        assertEquals("Dim 5x4", mRawData.getString(key));
     }
 }

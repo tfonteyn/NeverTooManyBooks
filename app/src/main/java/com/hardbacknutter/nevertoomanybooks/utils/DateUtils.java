@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks.utils;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -150,6 +151,14 @@ public final class DateUtils {
         for (SimpleDateFormat sdf : PARSE_SQL_DATE_FORMATS) {
             sdf.setTimeZone(TZ_UTC);
         }
+    }
+
+    @VisibleForTesting
+    public static void clear() {
+        MONTH_LONG_NAMES.clear();
+        MONTH_SHORT_NAMES.clear();
+        PARSE_DATE_FORMATS.clear();
+        PARSE_SQL_DATE_FORMATS.clear();
     }
 
     /**

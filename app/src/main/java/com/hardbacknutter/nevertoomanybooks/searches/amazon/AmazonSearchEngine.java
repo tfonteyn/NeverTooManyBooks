@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -197,10 +196,6 @@ public final class AmazonSearchEngine
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
             throws IOException {
-
-        if (!SearchSites.ENABLE_AMAZON_AWS) {
-            return new Bundle();
-        }
 
         return new AmazonHtmlHandler(context, this)
                 .fetchByNativeId(nativeId, fetchThumbnail, new Bundle());

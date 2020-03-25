@@ -55,8 +55,7 @@ public class PagesFormatter
 
         } else {
             try {
-                return String.format(context.getString(R.string.lbl_x_pages),
-                                     Integer.parseInt(rawValue));
+                return context.getString(R.string.txt_x_pages, Integer.parseInt(rawValue));
 
             } catch (@NonNull final NumberFormatException ignore) {
                 // don't log, stored pages was alphanumeric.

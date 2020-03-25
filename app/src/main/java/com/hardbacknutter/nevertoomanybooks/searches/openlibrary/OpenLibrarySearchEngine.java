@@ -52,7 +52,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -217,7 +216,7 @@ public class OpenLibrarySearchEngine
 
         // json-ify and handle.
         try {
-            return handleResponse(new JSONObject(response), fetchThumbnail, bookData);
+            return handleResponse(context, new JSONObject(response), fetchThumbnail, bookData);
 
         } catch (@NonNull final JSONException e) {
             // wrap parser exceptions in an IOException
@@ -419,6 +418,8 @@ public class OpenLibrarySearchEngine
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
+     *
+     * @param context       Current context
      * @param jsonObject     the complete book record.
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to populate
@@ -429,7 +430,8 @@ public class OpenLibrarySearchEngine
      */
     @VisibleForTesting
     @NonNull
-    Bundle handleResponse(@NonNull final JSONObject jsonObject,
+    Bundle handleResponse(@NonNull final Context context,
+                          @NonNull final JSONObject jsonObject,
                           @NonNull final boolean[] fetchThumbnail,
                           @NonNull final Bundle bookData)
             throws JSONException {
@@ -440,7 +442,9 @@ public class OpenLibrarySearchEngine
             String topLevelKey = it.next();
             String[] data = topLevelKey.split(":");
             if (data.length == 2 && SUPPORTED_KEYS.contains(data[0])) {
-                return handleBook(data[1], jsonObject.getJSONObject(topLevelKey),
+                return handleBook(context,
+                                  data[1],
+                                  jsonObject.getJSONObject(topLevelKey),
                                   fetchThumbnail,
                                   bookData);
             }
@@ -452,6 +456,8 @@ public class OpenLibrarySearchEngine
     /**
      * Parse the results, and build the bookData bundle.
      *
+     *
+     * @param context       Current context
      * @param isbn           of the book
      * @param result         JSON result data
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
@@ -462,7 +468,8 @@ public class OpenLibrarySearchEngine
      * @throws JSONException upon any error
      */
     @NonNull
-    private Bundle handleBook(@NonNull final String isbn,
+    private Bundle handleBook(@NonNull final Context context,
+                              @NonNull final String isbn,
                               @NonNull final JSONObject result,
                               @NonNull final boolean[] fetchThumbnail,
                               @NonNull final Bundle bookData)
@@ -578,7 +585,7 @@ public class OpenLibrarySearchEngine
                 // we assume that the download will work if there is a url.
                 if (!coverUrl.isEmpty()) {
                     String name = isbn + FILENAME_SUFFIX + "_" + sizeParam;
-                    String fileSpec = ImageUtils.saveImage(App.getAppContext(), coverUrl, name);
+                    String fileSpec = ImageUtils.saveImage(context, coverUrl, name);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
                                 bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);

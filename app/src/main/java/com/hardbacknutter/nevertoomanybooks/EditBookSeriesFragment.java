@@ -239,10 +239,10 @@ public class EditBookSeriesFragment
                                          allBooks);
         new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.title_scope_of_change)
+                .setTitle(R.string.lbl_scope_of_change)
                 .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setNeutralButton(allBooks, (dialog, which) -> {
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setNeutralButton(allBooks, (d, w) -> {
                     // copy all new data
                     series.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
@@ -262,7 +262,7 @@ public class EditBookSeriesFragment
                                 .show();
                     }
                 })
-                .setPositiveButton(R.string.btn_this_book, (dialog, which) -> {
+                .setPositiveButton(R.string.btn_this_book, (d, w) -> {
                     // treat the new data as a new Series; save it so we have a valid id.
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new Series. That's ok, it will get
@@ -294,7 +294,6 @@ public class EditBookSeriesFragment
 
         Holder(@NonNull final View itemView) {
             super(itemView);
-
             seriesView = itemView.findViewById(R.id.row_series);
         }
     }
@@ -380,9 +379,9 @@ public class EditBookSeriesFragment
 
             return new MaterialAlertDialogBuilder(getContext())
                     .setView(mVb.getRoot())
-                    .setTitle(R.string.title_edit_series)
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
-                    .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
+                    .setTitle(R.string.lbl_edit_series)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
+                    .setPositiveButton(R.string.action_save, (d, w) -> {
                         // don't check on anything else here,
                         // we're doing more extensive checks later on.
                         mSeriesTitle = mVb.seriesTitle.getText().toString().trim();

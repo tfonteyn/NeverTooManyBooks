@@ -270,14 +270,14 @@ public final class ScannerManager {
                                                @NonNull final OnResultListener resultListener) {
 
         String msg = context.getString(R.string.error_google_play_store_missing) + '\n'
-                     + context.getString(R.string.info_install_scanner_recommendation);
+                     + context.getString(R.string.txt_install_scanner_recommendation);
 
         new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
                 .setOnCancelListener(d -> resultListener.onResult(false))
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel())
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.cancel())
                 .create()
                 .show();
     }

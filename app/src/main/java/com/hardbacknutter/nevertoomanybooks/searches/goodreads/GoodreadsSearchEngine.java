@@ -35,6 +35,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
@@ -73,6 +74,12 @@ public class GoodreadsSearchEngine
      */
     public GoodreadsSearchEngine() {
         mGoodreadsAuth = new GoodreadsAuth(App.getAppContext());
+        mApiHandler = new GoodreadsHandler(mGoodreadsAuth);
+    }
+
+    @VisibleForTesting
+    public GoodreadsSearchEngine(@NonNull final Context context) {
+        mGoodreadsAuth = new GoodreadsAuth(context);
         mApiHandler = new GoodreadsHandler(mGoodreadsAuth);
     }
 

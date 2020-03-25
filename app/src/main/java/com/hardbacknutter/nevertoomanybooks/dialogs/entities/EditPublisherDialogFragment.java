@@ -128,8 +128,8 @@ public class EditPublisherDialogFragment
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.lbl_publisher)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_save, (d, w) -> {
                     mName = mNameView.getText().toString().trim();
                     if (mName.isEmpty()) {
                         Snackbar.make(mNameView, R.string.warning_missing_name,

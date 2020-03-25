@@ -188,7 +188,7 @@ public class SearchCoordinator
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 mSearchTasksEndTime.put(message.taskId, System.nanoTime());
             }
-            Context context = LocaleUtils.applyLocale(App.getAppContext());
+            final Context context = LocaleUtils.applyLocale(App.getAppContext());
 
             // process the outcome and queue another task as needed.
             int tasksActive = onSearchTaskFinished(context, message);
@@ -256,7 +256,7 @@ public class SearchCoordinator
             synchronized (mSearchProgressMessages) {
                 mSearchProgressMessages.put(message.taskId, message);
             }
-            Context context = LocaleUtils.applyLocale(App.getAppContext());
+            final Context context = LocaleUtils.applyLocale(App.getAppContext());
             // forward the accumulated progress
             mSearchCoordinatorProgressMessage.setValue(accumulateProgress(context));
         }

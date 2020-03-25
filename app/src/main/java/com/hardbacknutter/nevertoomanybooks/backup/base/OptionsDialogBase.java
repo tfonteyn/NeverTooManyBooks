@@ -85,7 +85,7 @@ public abstract class OptionsDialogBase<T>
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(textView.getText())
                 .setMessage(infoButton.getContentDescription())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                 .create()
                 .show();
     }

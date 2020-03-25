@@ -71,7 +71,7 @@
     <Button
         android:id="@+id/isbn_del"
         style="@style/IsbnKeyPad.BackspaceButton"
-        android:contentDescription="@string/menu_delete"
+        android:contentDescription="@string/action_delete"
         app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/lbl_isbn"

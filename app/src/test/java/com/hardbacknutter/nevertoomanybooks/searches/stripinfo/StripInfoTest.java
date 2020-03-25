@@ -35,18 +35,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -61,7 +62,7 @@ class StripInfoTest
 
     @Test
     void parse01() {
-
+        setLocale(Locale.FRANCE);
         String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                 + "/336348_Hauteville_House_14_De_37ste_parallel";
         String filename = "/stripinfo/336348_Hauteville_House_14_De_37ste_parallel.html";
@@ -81,7 +82,7 @@ class StripInfoTest
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
+        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -130,7 +131,7 @@ class StripInfoTest
 
     @Test
     void parse02() {
-
+        setLocale(Locale.FRANCE);
         String locationHeader = "https://www.stripinfo.be/reeks/strip"
                                 + "/2060_De_boom_van_de_twee_lentes_1_De_boom_van_de_twee_lentes";
         String filename = "/stripinfo/2060_De_boom_van_de_twee_lentes_1"
@@ -151,7 +152,7 @@ class StripInfoTest
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
+        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -200,7 +201,7 @@ class StripInfoTest
 
     @Test
     void parseIntegrale() {
-
+        setLocale(Locale.FRANCE);
         String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                 + "316016_Johan_en_Pirrewiet_INT_5_De_integrale_5";
         String filename = "/stripinfo/316016_Johan_en_Pirrewiet_INT_5_De_integrale_5.html";
@@ -220,7 +221,7 @@ class StripInfoTest
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
+        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -276,7 +277,7 @@ class StripInfoTest
 
     @Test
     void parseIntegrale2() {
-
+        setLocale(Locale.FRANCE);
         String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                 + "17030_Comanche_1_Red_Dust";
         String filename = "/stripinfo/17030_Comanche_1_Red_Dust.html";
@@ -296,7 +297,7 @@ class StripInfoTest
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
+        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -349,7 +350,7 @@ class StripInfoTest
 
     @Test
     void parseFavReeks2() {
-
+        setLocale(Locale.FRANCE);
         String locationHeader = "https://www.stripinfo.be/reeks/strip/"
                                 + "8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot";
         String filename = "/stripinfo/8155_De_avonturen_van_de_3L_7_Spoken_in_de_grot.html";
@@ -369,7 +370,7 @@ class StripInfoTest
                 new StripInfoBookHandler(mContext, searchEngine, doc);
         // we've set the doc, so no internet download will be done.
         boolean[] fetchThumbnail = {false, false};
-        Bundle bookData = stripInfoBookHandler.parseDoc(mBookData, fetchThumbnail);
+        Bundle bookData = stripInfoBookHandler.parseDoc(mRawData, fetchThumbnail);
 
         assertFalse(bookData.isEmpty());
         System.out.println(bookData);
@@ -419,6 +420,7 @@ class StripInfoTest
     /** Network access! */
     @Test
     void parseMultiResult() {
+        setLocale(Locale.FRANCE);
         String locationHeader = "https://stripinfo.be/zoek/zoek?zoekstring=pluvi";
         String filename = "/stripinfo/multi-result-pluvi.html";
 
@@ -439,7 +441,7 @@ class StripInfoTest
         Bundle bookData = null;
         try {
             boolean[] fetchThumbnail = {false, false};
-            bookData = stripInfoBookHandler.parseMultiResult(mBookData, fetchThumbnail);
+            bookData = stripInfoBookHandler.parseMultiResult(mRawData, fetchThumbnail);
         } catch (@NonNull final SocketTimeoutException e) {
             fail(e);
         }

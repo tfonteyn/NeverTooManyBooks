@@ -112,7 +112,7 @@ public class XmlImporter
     private static final String ERROR_UNABLE_TO_PROCESS_XML_ENTITY =
             "Unable to process XML entity ";
 
-    /** {@link BufferedReaderNoClose} use. */
+    /** Buffer for the Reader. */
     private static final int BUFFER_SIZE = 65535;
 
     /** Database Access. */

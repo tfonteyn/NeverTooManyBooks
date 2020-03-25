@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 
 public class ImportManager
         implements Parcelable {
@@ -142,9 +143,9 @@ public class ImportManager
         switch (type) {
             case Tar:
             case CsvBooks:
+            case Zip:
                 return true;
 
-            case Zip:
             case Xml:
             case SqLiteDb:
             case Unknown:
@@ -218,11 +219,14 @@ public class ImportManager
                 break;
 
             case Zip:
+                reader = new ZipArchiveReader(context, this);
+                break;
+
             case Xml:
             case SqLiteDb:
             case Unknown:
             default:
-                throw new InvalidArchiveException();
+                throw new InvalidArchiveException("Import not supported");
         }
 
         reader.validate(context);

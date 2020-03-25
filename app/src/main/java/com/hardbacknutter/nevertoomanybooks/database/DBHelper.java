@@ -516,12 +516,12 @@ public final class DBHelper
     @SuppressWarnings("unused")
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
-        Context localContext = LocaleUtils.applyLocale(App.getAppContext());
+        final Context localContext = LocaleUtils.applyLocale(App.getAppContext());
 
         // 'Upgrade' from not being installed. Run this first to avoid racing issues.
         UpgradeMessageManager.setUpgradeAcknowledged(localContext);
 
-        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
+        final SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
         TableDefinition.createTables(db,
                                      // app tables
@@ -597,7 +597,7 @@ public final class DBHelper
                        + "|Upgrading database: " + db.getPath());
         }
 
-        StartupActivity startup = StartupActivity.getActiveActivity();
+        final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
             startup.onProgress(R.string.progress_msg_upgrading);
         }
@@ -616,7 +616,7 @@ public final class DBHelper
             }
         }
 
-        SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
+        final SynchronizedDb syncedDb = new SynchronizedDb(db, sSynchronizer);
 
         int curVersion = oldVersion;
 
@@ -653,7 +653,7 @@ public final class DBHelper
      * This method is supposed to return {@code false} in normal circumstances.
      */
     private boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
-        String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
+        final String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
         // Drop and create table
         db.execSQL(dropTable);
         db.execSQL("CREATE TEMPORARY TABLE collation_cs_check (t text, i integer)");

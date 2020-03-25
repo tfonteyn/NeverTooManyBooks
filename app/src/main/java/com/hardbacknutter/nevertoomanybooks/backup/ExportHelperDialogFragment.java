@@ -85,9 +85,9 @@ public class ExportHelperDialogFragment
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(mVb.getRoot())
-                .setTitle(R.string.title_export_options)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> onCancelled())
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                .setTitle(R.string.lbl_export_options)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> onCancelled())
+                .setPositiveButton(android.R.string.ok, (d, w) ->
                         onOptionsSet(mModel.getHelper()))
                 .create();
     }
@@ -134,15 +134,15 @@ public class ExportHelperDialogFragment
 
         // Check options on position.
         final List<String> list = new ArrayList<>();
-        list.add(getString(R.string.lbl_archive_type_tar, ArchiveContainer.Tar.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Tar.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Zip.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_csv, ArchiveContainer.CsvBooks.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
 
         //noinspection ConstantConditions
         ArrayAdapter archiveFormatAdapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
-        archiveFormatAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
+        archiveFormatAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
         mVb.archiveFormat.setAdapter(archiveFormatAdapter);
         mVb.archiveFormat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -155,7 +155,7 @@ public class ExportHelperDialogFragment
                 switch (position) {
                     case 0:
                         helper.setArchiveContainer(ArchiveContainer.Tar);
-                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_tar_info);
+                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
                         mVb.cbxPrefsAndStyles.setChecked(true);
@@ -165,6 +165,17 @@ public class ExportHelperDialogFragment
                         break;
 
                     case 1:
+                        helper.setArchiveContainer(ArchiveContainer.Zip);
+                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                        mVb.cbxBooks.setChecked(true);
+                        mVb.cbxBooks.setEnabled(true);
+                        mVb.cbxPrefsAndStyles.setChecked(true);
+                        mVb.cbxPrefsAndStyles.setEnabled(true);
+                        mVb.cbxCovers.setChecked(true);
+                        mVb.cbxCovers.setEnabled(true);
+                        break;
+
+                    case 2:
                         helper.setArchiveContainer(ArchiveContainer.CsvBooks);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
                         mVb.cbxBooks.setChecked(true);
@@ -175,7 +186,7 @@ public class ExportHelperDialogFragment
                         mVb.cbxCovers.setEnabled(false);
                         break;
 
-                    case 2:
+                    case 3:
                         helper.setArchiveContainer(ArchiveContainer.Xml);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_xml_info);
                         mVb.cbxBooks.setChecked(true);

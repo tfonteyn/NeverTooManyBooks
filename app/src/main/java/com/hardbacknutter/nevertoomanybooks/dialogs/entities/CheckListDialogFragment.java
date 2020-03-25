@@ -128,7 +128,7 @@ public class CheckListDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mDialogTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+        mDialogTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.action_edit);
         mFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
 
         args = savedInstanceState != null ? savedInstanceState : args;

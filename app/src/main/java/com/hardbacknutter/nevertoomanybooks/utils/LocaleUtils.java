@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -206,10 +207,10 @@ public final class LocaleUtils {
             DateUtils.create(sPreferredLocale, LocaleUtils.getSystemLocale());
         }
 
-        // ALWAYS ALWAYS ALWAYS ALWAYS ALWAYS
+        // Update the JDK usage of Locale
         Locale.setDefault(sPreferredLocale);
-        // ALWAYS ALWAYS ALWAYS ALWAYS ALWAYS
 
+        // Update the Android resource usage of Locale
         Context updatedContext;
         if (Build.VERSION.SDK_INT >= 24) {
             updatedContext = updateResources(context, sPreferredLocale);
@@ -257,6 +258,8 @@ public final class LocaleUtils {
 
     /**
      * Return the device Locale.
+     * <p>
+     * When running a JUnit test, this method will always return {@code Locale.ENGLISH}.
      *
      * @return Locale
      */
@@ -278,29 +281,28 @@ public final class LocaleUtils {
 
     /**
      * Return the user preferred Locale.
+     * <p>
+     * When running a JUnit test, this method will always use the API 24 getLocales().get(0).
      *
      * @param context Current context
      *
      * @return Locale
      */
+    @SuppressLint("NewApi")
     @NonNull
     public static Locale getUserLocale(@NonNull final Context context) {
-        // While running JUnit tests we cannot get access to
-        // context.getResources().getConfiguration().locale
-        // ... so we need to cheat.
-        if (BuildConfig.DEBUG && Logger.isJUnitTest()) {
-            return Locale.ENGLISH;
-        }
-
         Locale locale;
-        if (Build.VERSION.SDK_INT >= 24) {
+        if (Build.VERSION.SDK_INT >= 24 || Logger.isJUnitTest()) {
             locale = context.getResources().getConfiguration().getLocales().get(0);
         } else {
             locale = context.getResources().getConfiguration().locale;
         }
 
-        if (!locale.equals(Locale.getDefault())) {
-            throw new IllegalStateException("user locale != default");
+        // insanity check
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.LOCALE) {
+            if (!Locale.getDefault().equals(locale)) {
+                throw new IllegalStateException("user locale != default");
+            }
         }
         return locale;
     }
@@ -322,7 +324,7 @@ public final class LocaleUtils {
         }
     }
 
-    @TargetApi(24)
+
     @NonNull
     private static Context updateResources(@NonNull final Context context,
                                            @NonNull final Locale locale) {
@@ -333,6 +335,7 @@ public final class LocaleUtils {
         return context.createConfigurationContext(configuration);
     }
 
+    @TargetApi(23)
     @NonNull
     private static Context updateResourcesLegacy(@NonNull final Context context,
                                                  @NonNull final Locale locale) {
@@ -461,7 +464,7 @@ public final class LocaleUtils {
             if (isValid(locale)) {
                 LOCALE_MAP.put(lang, locale);
             } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LOCALE) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.LOCALE) {
                     Log.d(TAG, "getLocale|invalid locale"
                                + "|inputLang=" + inputLang
                                + "|lang=" + lang

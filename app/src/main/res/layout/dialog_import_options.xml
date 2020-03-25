@@ -75,7 +75,7 @@
     <ImageButton
         android:id="@+id/info_btn_rb_books_all"
         style="@style/InfoButton"
-        android:contentDescription="@string/info_import_option_all_books"
+        android:contentDescription="@string/txt_import_option_all_books"
         app:layout_constraintStart_toEndOf="@id/rb_books_all"
         app:layout_constraintTop_toTopOf="@id/rb_books_all"
         />
@@ -93,7 +93,7 @@
     <ImageButton
         android:id="@+id/info_btn_rb_books_sync"
         style="@style/InfoButton"
-        android:contentDescription="@string/info_import_option_new_and_changed_books"
+        android:contentDescription="@string/txt_import_option_new_and_changed_books"
         app:layout_constraintStart_toEndOf="@id/rb_books_sync"
         app:layout_constraintTop_toTopOf="@id/rb_books_sync"
         />
@@ -102,7 +102,7 @@
         android:id="@+id/cbx_covers"
         style="@style/OptionRow.Checkable"
         android:checked="true"
-        android:text="@string/lbl_cover_images"
+        android:text="@string/lbl_covers_long"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rb_books_sync"

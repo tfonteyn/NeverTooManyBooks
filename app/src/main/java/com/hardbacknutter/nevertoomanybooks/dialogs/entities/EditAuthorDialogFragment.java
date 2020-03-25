@@ -146,9 +146,9 @@ public class EditAuthorDialogFragment
         return new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_edit)
                 .setView(mVb.getRoot())
-                .setTitle(R.string.title_edit_author)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
-                .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
+                .setTitle(R.string.lbl_edit_author)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
+                .setPositiveButton(R.string.action_save, (d, w) -> {
                     mFamilyName = mVb.familyName.getText().toString().trim();
                     if (mFamilyName.isEmpty()) {
                         Snackbar.make(mVb.familyName, R.string.warning_missing_name,

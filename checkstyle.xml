@@ -39,23 +39,31 @@
 <module name="Checker">
     <property name="severity"
         value="warning" />
+    <!-- workaround for CheckStyle issue #483 -->
+    <property name="charset"
+        value="UTF-8" />
 
     <!-- ========== Headers ========== -->
     <!--<module name="Header"/>-->
     <!--<module name="RegexpHeader"/>-->
-
 
     <!-- Checks that each Java package has a package-info.java file -->
     <module name="JavadocPackage" />
 
     <!-- Require files to end with newline characters -->
     <module name="NewlineAtEndOfFile">
-        <property name="lineSeparator"
-            value="lf" />
+        <!--        <property name="lineSeparator"-->
+        <!--            value="lf" />-->
     </module>
 
     <!-- Checks for long source files. (default 2000 lines) -->
     <module name="FileLength" />
+
+    <module name="LineLength">
+        <property name="max"
+            value="100" />
+    </module>
+
     <!-- Checks that there are no tab characters -->
     <module name="FileTabCharacter" />
 
@@ -73,7 +81,6 @@
 
     <!--<module name="Translation" />-->
     <module name="UniqueProperties" />
-
 
     <module name="TreeWalker">
         <property name="tabWidth"
@@ -261,10 +268,6 @@
         </module>
         <!--<module name="ExecutableStatementCount"/>-->
         <!--<module name="FileLength" /> on top-level -->
-        <module name="LineLength">
-            <property name="max"
-                value="100" />
-        </module>
         <module name="MethodCount" />
         <module name="MethodLength" />
         <module name="OuterTypeNumber" />

@@ -90,7 +90,7 @@ public class EditBookFieldsFragment
      * wants to.
      * TODO: perhaps make this a preference?
      */
-    private boolean mStrictIsbn = false;
+    private boolean mStrictIsbn;
 
     /** The scanner. */
     @Nullable
@@ -257,7 +257,7 @@ public class EditBookFieldsFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.menu_strict_isbn)
+        menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.lbl_strict_isbn)
             .setCheckable(true)
             .setChecked(mStrictIsbn)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);

@@ -89,7 +89,7 @@
         style="@style/OptionRow.Checkable"
         android:layout_width="0dp"
         android:checked="true"
-        android:text="@string/lbl_cover_images"
+        android:text="@string/lbl_covers_long"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/guideline"
         app:layout_constraintTop_toTopOf="parent"

@@ -25,46 +25,47 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.xml;
+package com.hardbacknutter.nevertoomanybooks.backup.zip;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstractBase;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
- * Implementation of XML-specific writer functions.
- * Uses the default format of {@link ArchiveWriterAbstract}, overriding:
- * Books: XML
- * Covers: not supported
+ * Implementation of ZIP-specific writer functions.
+ * Uses the default format of {@link ArchiveWriterAbstract}
+ * <p>
+ * Compared to tar file, the results are as expected:
+ * - the xml/csv compression is huge
+ * - image compression minimal
  */
-public class XmlArchiveWriter
-        extends ArchiveWriterAbstract {
+public class ZipArchiveWriter
+        extends ArchiveWriterAbstract
+        implements ArchiveWriterAbstractBase.SupportsCovers {
+
+    /** Buffer for {@link #mOutputStream}. */
+    private static final int BUFFER_SIZE = 65535;
 
     /** The output stream for the archive. */
     @NonNull
-    private final OutputStream mOutputStream;
-    /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
-    @Nullable
-    private File mTmpBookXmlFile;
+    private final ZipOutputStream mOutputStream;
 
     /**
      * Constructor.
@@ -72,96 +73,69 @@ public class XmlArchiveWriter
      * @param context Current context
      * @param helper  export configuration
      *
-     * @throws IOException on failure to create / and write the header
+     * @throws IOException on failure
      */
-    public XmlArchiveWriter(@NonNull final Context context,
+    public ZipArchiveWriter(@NonNull final Context context,
                             @NonNull final ExportManager helper)
             throws IOException {
         super(context, helper);
 
-        mOutputStream = new FileOutputStream(mHelper.getTempOutputFile(context));
-
-        String text = XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
-                      + '<' + XmlTags.XML_ROOT + XmlUtils.versionAttr(XmlExporter.VERSION) + ">\n";
-        mOutputStream.write(text.getBytes(StandardCharsets.UTF_8));
+        mOutputStream = new ZipOutputStream(
+                new BufferedOutputStream(
+                        new FileOutputStream(helper.getTempOutputFile(context)),
+                        BUFFER_SIZE));
     }
 
-    /**
-     * Write as a temporary XML file, to be added to the archive in {@link #writeBooks}.
-     *
-     * <br><br>{@inheritDoc}
-     */
     @Override
-    public void prepareBooks(@NonNull final Context context,
-                             @NonNull final ProgressListener progressListener)
+    public void prepareCovers(@NonNull final Context context,
+                              @NonNull final ProgressListener progressListener)
             throws IOException {
-        // Get a temp file and set for delete
-        mTmpBookXmlFile = File.createTempFile("data_xml_", ".tmp");
-        mTmpBookXmlFile.deleteOnExit();
-
-        Exporter exporter = new XmlExporter(context, Options.BOOKS, mHelper.getDateSince());
-        mResults.add(exporter.write(context, mTmpBookXmlFile, progressListener));
+        doCovers(context, true, progressListener);
     }
 
-    /**
-     * Write the file as prepared in {@link #prepareBooks}.
-     *
-     * <br><br>{@inheritDoc}
-     */
     @Override
-    public void writeBooks(@NonNull final Context context,
-                           @NonNull final ProgressListener progressListener)
+    public void writeCovers(@NonNull final Context context,
+                            @NonNull final ProgressListener progressListener)
             throws IOException {
-        try {
-            Objects.requireNonNull(mTmpBookXmlFile);
-            putFile("", mTmpBookXmlFile, true);
-        } finally {
-            FileUtils.delete(mTmpBookXmlFile);
-        }
+        doCovers(context, false, progressListener);
     }
 
-    /**
-     * Supports text files only.
-     *
-     * @param name     ignored
-     * @param file     to store in the archive
-     * @param compress ignored
-     *
-     * @throws IOException on failure
-     */
     @Override
     public void putFile(@NonNull final String name,
                         @NonNull final File file,
                         final boolean compress)
             throws IOException {
+        final ZipEntry entry = new ZipEntry(name);
+        entry.setTime(file.lastModified());
+        entry.setMethod(compress ? ZipEntry.DEFLATED : ZipEntry.STORED);
+        mOutputStream.putNextEntry(entry);
         try (InputStream is = new FileInputStream(file)) {
             FileUtils.copy(is, mOutputStream);
+        } finally {
+            mOutputStream.closeEntry();
         }
     }
 
-    /**
-     *
-     * @param name     ignored
-     * @param bytes    to store in the archive
-     * @param compress ignored
-     *
-     * @throws IOException on failure
-     */
     @Override
     public void putByteArray(@NonNull final String name,
                              @NonNull final byte[] bytes,
                              final boolean compress)
             throws IOException {
+
+        final ZipEntry entry = new ZipEntry(name);
+        entry.setTime(new Date().getTime());
+        entry.setMethod(compress ? ZipEntry.DEFLATED : ZipEntry.STORED);
+        mOutputStream.putNextEntry(entry);
         try (InputStream is = new ByteArrayInputStream(bytes)) {
             FileUtils.copy(is, mOutputStream);
+        } finally {
+            mOutputStream.closeEntry();
         }
     }
 
     @Override
     public void close()
             throws IOException {
-        String text = "</" + XmlTags.XML_ROOT + ">\n";
-        mOutputStream.write(text.getBytes(StandardCharsets.UTF_8));
         mOutputStream.close();
         super.close();
     }

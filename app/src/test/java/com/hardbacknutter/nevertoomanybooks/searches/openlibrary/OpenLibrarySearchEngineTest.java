@@ -32,17 +32,18 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -54,6 +55,7 @@ class OpenLibrarySearchEngineTest
 
     @Test
     void parse() {
+        setLocale(Locale.UK);
 
         // https://openlibrary.org/api/books?jscmd=data&format=json&bibkeys=ISBN:9780980200447
 
@@ -65,45 +67,45 @@ class OpenLibrarySearchEngineTest
             String response = m.readResponseStream(is);
             JSONObject json = new JSONObject(response);
             boolean[] fetchThumbnail = {false, false};
-            mBookData = m.handleResponse(json, fetchThumbnail, mBookData);
+            mRawData = m.handleResponse(mContext, json, fetchThumbnail, mRawData);
 
         } catch (@NonNull final IOException | JSONException e) {
             fail(e);
         }
 
-        assertNotNull(mBookData);
-        assertFalse(mBookData.isEmpty());
+        assertNotNull(mRawData);
+        assertFalse(mRawData.isEmpty());
 
-        assertEquals("Slow reading", mBookData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("9780980200447", mBookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("OL22853304M", mBookData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
-        assertEquals("2008054742", mBookData.getString(DBDefinitions.KEY_EID_LCCN));
-        assertEquals(8071257L, mBookData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
-        assertEquals(6383507L, mBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
-        assertEquals("098020044X", mBookData.getString(DBDefinitions.KEY_EID_ASIN));
-        assertEquals("297222669", mBookData.getString(DBDefinitions.KEY_EID_WORLDCAT));
+        assertEquals("Slow reading", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("9780980200447", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("OL22853304M", mRawData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
+        assertEquals("2008054742", mRawData.getString(DBDefinitions.KEY_EID_LCCN));
+        assertEquals(8071257L, mRawData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
+        assertEquals(6383507L, mRawData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+        assertEquals("098020044X", mRawData.getString(DBDefinitions.KEY_EID_ASIN));
+        assertEquals("297222669", mRawData.getString(DBDefinitions.KEY_EID_WORLDCAT));
 
         assertEquals("Includes bibliographical references and index.",
-                     mBookData.getString(DBDefinitions.KEY_DESCRIPTION));
-        assertEquals("92", mBookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("March 2009", mBookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+                     mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
+        assertEquals("92", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("March 2009", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
 
 
-        ArrayList<Publisher> allPublishers = mBookData
+        ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Miedema", authors.get(0).getFamilyName());
         assertEquals("John", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        ArrayList<TocEntry> tocs = mBookData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(tocs);
         assertEquals(5, tocs.size());
 

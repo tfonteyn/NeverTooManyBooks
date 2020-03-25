@@ -62,7 +62,7 @@ public class CredentialsException
     @Nullable
     @Override
     public String getLocalizedMessage() {
-        Context context = LocaleUtils.applyLocale(App.getAppContext());
+        final Context context = LocaleUtils.applyLocale(App.getAppContext());
         return context.getString(R.string.error_site_authentication_failed,
                                  SearchSites.getName(mSite));
     }

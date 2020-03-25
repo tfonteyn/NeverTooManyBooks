@@ -95,7 +95,7 @@ public class BookSearchByTextFragment
         mVb.publisherGroup.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.title_search_for_books);
+        getActivity().setTitle(R.string.lbl_search_for_books);
 
         copyModel2View();
         populateAuthorList();

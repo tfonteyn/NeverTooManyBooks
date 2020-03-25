@@ -122,7 +122,7 @@ public class CsvImporter
 
     /** Only send progress updates every 200ms. */
     private static final int PROGRESS_UPDATE_INTERVAL = 200;
-    /** {@link BufferedReader} use. */
+    /** Buffer for the Reader. */
     private static final int BUFFER_SIZE = 65535;
 
     private static final String STRINGED_ID = DBDefinitions.KEY_PK_ID;

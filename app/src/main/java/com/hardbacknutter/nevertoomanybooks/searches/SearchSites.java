@@ -79,30 +79,29 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
  */
 public final class SearchSites {
 
-    /**
-     * The Amazon handler.
-     */
-    public static final boolean ENABLE_AMAZON_AWS = true;
     /** Site. */
     @SuppressWarnings("WeakerAccess")
     public static final int GOOGLE_BOOKS = 1;
     /** Site. */
-    @SuppressWarnings("WeakerAccess")
     public static final int AMAZON = 1 << 1;
     /** Site. */
+    @SuppressWarnings("WeakerAccess")
     public static final int LIBRARY_THING = 1 << 2;
     /** Site. */
     public static final int GOODREADS = 1 << 3;
     /** Site: Speculative Fiction only. i.e. Science-Fiction/Fantasy etc... */
     public static final int ISFDB = 1 << 4;
     /** Site. */
+    @SuppressWarnings("WeakerAccess")
     public static final int OPEN_LIBRARY = 1 << 5;
     /** Site: Dutch language books & comics. */
     @SuppressWarnings("WeakerAccess")
     public static final int KB_NL = 1 << 6;
     /** Site: Dutch language (and to an extend French) comics. */
+    @SuppressWarnings("WeakerAccess")
     public static final int STRIP_INFO_BE = 1 << 7;
     /** Mask including all search sources. */
+    @SuppressWarnings("WeakerAccess")
     public static final int SEARCH_FLAG_MASK = GOOGLE_BOOKS | AMAZON | LIBRARY_THING | GOODREADS
                                                | ISFDB | OPEN_LIBRARY
                                                | KB_NL | STRIP_INFO_BE;
@@ -116,7 +115,7 @@ public final class SearchSites {
                 ISFDB
                 + "," + STRIP_INFO_BE
                 + "," + GOODREADS
-                + (ENABLE_AMAZON_AWS ? "," + AMAZON : "")
+                + "," + AMAZON
                 + "," + GOOGLE_BOOKS
                 + "," + LIBRARY_THING
                 + "," + KB_NL
@@ -142,6 +141,8 @@ public final class SearchSites {
      * @param id for the site
      *
      * @return the name
+     *
+     * @throws UnexpectedValueException if the id is invalid
      */
     public static String getName(@Id final int id) {
         switch (id) {
@@ -172,6 +173,8 @@ public final class SearchSites {
      * @param id site id
      *
      * @return instance
+     *
+     * @throws UnexpectedValueException if the id is invalid
      */
     static SearchEngine getSearchEngine(@Id final int id) {
         switch (id) {
@@ -200,6 +203,8 @@ public final class SearchSites {
      * Hardcoded to ISFDB for now, as that's the only site supporting this flag.
      *
      * @param context Current context
+     *
+     * @return flag
      */
     public static boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
@@ -225,9 +230,7 @@ public final class SearchSites {
         // but this gives more control (e.g. language and other defaults).
         switch (type) {
             case Data: {
-                if (ENABLE_AMAZON_AWS) {
-                    list.add(Site.createSite(AMAZON, type, false));
-                }
+                list.add(Site.createSite(AMAZON, type, false));
                 list.add(Site.createSite(GOODREADS, type, true));
                 list.add(Site.createSite(GOOGLE_BOOKS, type, true));
                 list.add(Site.createSite(LIBRARY_THING, type, true));
@@ -252,11 +255,8 @@ public final class SearchSites {
                                          isLang(systemLocale, userLocale, NLD)));
                 list.add(Site.createSite(GOOGLE_BOOKS, type, true));
                 list.add(Site.createSite(GOODREADS, type, true));
-                if (ENABLE_AMAZON_AWS) {
-                    list.add(Site.createSite(AMAZON, type, false));
-                }
-                list.add(Site.createSite(KB_NL, type,
-                                         isLang(systemLocale, userLocale, NLD)));
+                list.add(Site.createSite(AMAZON, type, false));
+                list.add(Site.createSite(KB_NL, type, isLang(systemLocale, userLocale, NLD)));
                 list.add(Site.createSite(LIBRARY_THING, type, false));
                 list.add(Site.createSite(OPEN_LIBRARY, type, false));
                 break;

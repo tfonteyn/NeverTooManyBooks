@@ -25,26 +25,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.searches;
+package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.LocaleList;
+
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.Answer;
 
-import com.hardbacknutter.nevertoomanybooks.BundleMock;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.kbnl.KbNlSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -65,20 +72,53 @@ public class CommonSetup {
     protected Configuration mConfiguration;
 
     @Mock
-    protected Bundle mBookData;
+    protected LocaleList mLocaleList;
+
+    @Mock
+    protected Bundle mRawData;
+
+    /** set during setup() call. */
+    @Nullable
+    protected Locale mLocale0;
+
+    private Locale mJdkLocale;
+
+    /**
+     * @param locale0 to use for
+     *                JDK
+     *                DateUtils.create(locale0)
+     *                context.getResources().getConfiguration().getLocales().get(0)
+     */
+    public void setLocale(@NonNull final Locale locale0) {
+        mLocale0 = locale0;
+        Locale.setDefault(mLocale0);
+        DateUtils.create(mLocale0);
+    }
+
+    /**
+     * Each test <strong>MUST</strong> call {@link #setLocale(Locale)} as needed.
+     */
+    @AfterEach
+    void tearDown() {
+        mLocale0 = null;
+        Locale.setDefault(mJdkLocale);
+        DateUtils.clear();
+    }
 
     @BeforeEach
-    protected void setUp() {
+    @CallSuper
+    public void setUp() {
+        mJdkLocale = Locale.getDefault();
+
         MockitoAnnotations.initMocks(this);
 
-        DateUtils.create(Locale.UK);
-
-        mBookData = BundleMock.mock();
+        mRawData = BundleMock.mock();
 
         mContext = mock(Context.class);
         mResources = mock(Resources.class);
         mSharedPreferences = mock(SharedPreferences.class);
         mConfiguration = mock(Configuration.class);
+        mLocaleList = mock(LocaleList.class);
 
         when(mContext.getApplicationContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
@@ -88,16 +128,24 @@ public class CommonSetup {
 
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
 
+        when(mConfiguration.getLocales()).thenReturn(mLocaleList);
+
+        when(mLocaleList.get(0)).thenAnswer((Answer<Locale>) invocation -> mLocale0);
+
+
         when(mContext.getString(R.string.book_format_paperback)).thenReturn("Paperback");
         when(mContext.getString(R.string.book_format_softcover)).thenReturn("Softcover");
         when(mContext.getString(R.string.book_format_hardcover)).thenReturn("Hardcover");
+        when(mContext.getString(R.string.book_format_dimensions)).thenReturn("Dim");
 
         when(mContext.getString(R.string.unknown)).thenReturn("Unknown");
+
+        when(mSharedPreferences.getString(eq(Prefs.pk_ui_locale), eq(LocaleUtils.SYSTEM_LANGUAGE)))
+                .thenReturn(LocaleUtils.SYSTEM_LANGUAGE);
 
         when(mSharedPreferences.getString(eq("nederlands"), anyString())).thenReturn("nld");
         when(mSharedPreferences.getString(eq("frans"), anyString())).thenReturn("fra");
         when(mSharedPreferences.getString(eq("duits"), anyString())).thenReturn("ger");
-
         when(mSharedPreferences.getString(eq("engels"), anyString())).thenReturn("eng");
         when(mSharedPreferences.getString(eq("english"), anyString())).thenReturn("eng");
 

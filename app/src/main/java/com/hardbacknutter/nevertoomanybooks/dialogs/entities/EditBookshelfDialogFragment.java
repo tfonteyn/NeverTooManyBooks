@@ -124,8 +124,8 @@ public class EditBookshelfDialogFragment
                 .setIcon(R.drawable.ic_edit)
                 .setView(root)
                 .setTitle(R.string.lbl_bookshelf)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
-                .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> doSave())
+                .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
+                .setPositiveButton(R.string.action_save, (d, w) -> doSave())
                 .create();
     }
 
@@ -212,10 +212,10 @@ public class EditBookshelfDialogFragment
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_edit)
-                .setTitle(R.string.title_edit_bookshelf)
+                .setTitle(R.string.lbl_edit_bookshelf)
                 .setMessage(R.string.confirm_merge_bookshelves)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(R.string.btn_confirm_merge, (dialog, which) -> {
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_merge, (d, w) -> {
                     // move all books
                     int booksMoved = mDb.mergeBookshelves(source.getId(), destination.getId());
                     if (mListener.get() != null) {

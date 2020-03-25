@@ -171,24 +171,22 @@ public class PreferredStylesActivity
             case UniqueId.REQ_EDIT_STYLE: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
-                    BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    @Nullable
+                    final BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
 
                     if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
                         if (style != null) {
-                            int position = mModel.handleStyleChange(this, style);
-                            mListAdapter.setSelectedPosition(position);
-                        }
-
-                        // check if the style was cloned from a builtin style.
-                        long templateId =
-                                data.getLongExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, 0);
-                        if (templateId < 0) {
-                            // We're assuming the user wanted to 'replace' the builtin style,
-                            // so remove the builtin style from the preferred styles.
-                            BooklistStyle templateStyle = mModel.getBooklistStyle(templateId);
-                            if (templateStyle != null) {
-                                templateStyle.setPreferred(false);
+                            // save a new style to the database first
+                            if (style.getId() == 0) {
+                                mModel.saveStyle(style);
                             }
+                            // original style we cloned/edited
+                            final long templateId =
+                                    data.getLongExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, 0);
+
+                            // and update the list
+                            final int position = mModel.handleStyleChange(this, style, templateId);
+                            mListAdapter.setSelectedPosition(position);
                         }
 
                         // always update all rows
@@ -256,17 +254,17 @@ public class PreferredStylesActivity
         if (style.isUserDefined()) {
             menu.add(Menu.NONE, R.id.MENU_EDIT,
                      r.getInteger(R.integer.MENU_ORDER_EDIT),
-                     R.string.menu_edit)
+                     R.string.action_edit_ellipsis)
                 .setIcon(R.drawable.ic_edit);
             menu.add(Menu.NONE, R.id.MENU_DELETE,
                      r.getInteger(R.integer.MENU_ORDER_DELETE),
-                     R.string.menu_delete)
+                     R.string.action_delete)
                 .setIcon(R.drawable.ic_delete);
         }
 
         menu.add(Menu.NONE, R.id.MENU_DUPLICATE,
                  r.getInteger(R.integer.MENU_ORDER_DUPLICATE),
-                 R.string.menu_duplicate)
+                 R.string.action_duplicate)
             .setIcon(R.drawable.ic_content_copy);
 
         String title = style.getLabel(this);
@@ -332,7 +330,7 @@ public class PreferredStylesActivity
         // This allows us to handle a new style (id==0) without storing it in the database first.
         // upon returning in onActivityResult, we'll handle the id.
         Intent intent = new Intent(this, SettingsActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StylePreferenceFragment.TAG)
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
                 .putExtra(UniqueId.BKEY_STYLE, style)
                 .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateStyleId);
 

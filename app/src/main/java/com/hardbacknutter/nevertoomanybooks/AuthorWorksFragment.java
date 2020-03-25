@@ -191,7 +191,7 @@ public class AuthorWorksFragment
         final Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_DELETE,
                  r.getInteger(R.integer.MENU_ORDER_DELETE),
-                 R.string.menu_delete)
+                 R.string.action_delete)
             .setIcon(R.drawable.ic_delete);
 
         final String title = item.getLabel(getContext());

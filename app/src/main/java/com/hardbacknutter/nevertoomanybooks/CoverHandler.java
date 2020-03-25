@@ -214,7 +214,7 @@ class CoverHandler {
 
         CharSequence title;
         if (getCoverFile().exists()) {
-            title = mContext.getString(R.string.title_cover);
+            title = mContext.getString(R.string.lbl_cover_long);
         } else {
             // there is no current image; only show the replace menu
             final MenuItem menuItem = menu.findItem(R.id.SUBMENU_THUMB_REPLACE);
@@ -540,7 +540,7 @@ class CoverHandler {
         final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
                 .setType(IMAGE_MIME_TYPE);
         mFragment.startActivityForResult(
-                Intent.createChooser(intent, mContext.getString(R.string.title_select_image)),
+                Intent.createChooser(intent, mContext.getString(R.string.lbl_select_image)),
                 UniqueId.REQ_ACTION_GET_CONTENT);
     }
 
@@ -597,7 +597,7 @@ class CoverHandler {
             }
 
             mFragment.startActivityForResult(
-                    Intent.createChooser(intent, mContext.getString(R.string.edit)),
+                    Intent.createChooser(intent, mContext.getString(R.string.action_edit)),
                     UniqueId.REQ_EDIT_IMAGE);
 
         } else {

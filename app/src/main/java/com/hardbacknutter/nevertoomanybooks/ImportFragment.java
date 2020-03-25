@@ -180,7 +180,7 @@ public class ImportFragment
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         // not found? create it
         if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(R.string.title_importing, false, true, 0);
+            dialog = ProgressDialogFragment.newInstance(R.string.lbl_importing, false, true, 0);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
@@ -216,13 +216,11 @@ public class ImportFragment
         //noinspection ConstantConditions
         final ArchiveContainer container = helper.getContainer(getContext());
         if (!helper.isSupported(container)) {
+            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setMessage(R.string.error_cannot_import)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        //noinspection ConstantConditions
-                        getActivity().finish();
-                    })
+                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
             return;
@@ -232,38 +230,30 @@ public class ImportFragment
             // use more prudent default options for Csv files.
             helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
             // Verify - this can be a dangerous operation
+            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.title_import_book_data)
+                    .setTitle(R.string.lbl_import_book_data)
                     .setMessage(R.string.warning_import_be_cautious)
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                        //noinspection ConstantConditions
-                        getActivity().finish();
-                    })
-                    .setPositiveButton(android.R.string.ok,
-                                       (dialog, which) -> ImportHelperDialogFragment
-                                               .newInstance(helper)
-                                               .show(getChildFragmentManager(),
-                                                     ImportHelperDialogFragment.TAG))
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
+                            .newInstance(helper)
+                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .create()
                     .show();
 
         } else {
             // Show a quick-options dialog first.
             // The user can divert to the full options dialog if needed.
+            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setTitle(R.string.lbl_import)
-                    .setMessage(R.string.info_import_option_all_books)
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
-                        //noinspection ConstantConditions
-                        getActivity().finish();
-                    })
-                    .setNeutralButton(R.string.btn_options,
-                                      (dialog, which) -> ImportHelperDialogFragment
-                                              .newInstance(helper)
-                                              .show(getChildFragmentManager(),
-                                                    ImportHelperDialogFragment.TAG))
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> mImportModel
+                    .setMessage(R.string.txt_import_option_all_books)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                    .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
+                            .newInstance(helper)
+                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> mImportModel
                             .startArchiveImportTask(helper))
                     .create()
                     .show();
@@ -368,7 +358,7 @@ public class ImportFragment
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(titleId)
                 .setMessage(msg)
-                .setPositiveButton(R.string.done, (dialog, which) -> {
+                .setPositiveButton(R.string.done, (d, w) -> {
                     mResultDataModel.putResultData(UniqueId.BKEY_IMPORT_RESULT, options);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK,
@@ -411,10 +401,7 @@ public class ImportFragment
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.error_import_failed)
                 .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                })
+                .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                 .create()
                 .show();
     }

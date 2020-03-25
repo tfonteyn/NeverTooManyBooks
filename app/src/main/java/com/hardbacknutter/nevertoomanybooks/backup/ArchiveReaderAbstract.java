@@ -134,6 +134,7 @@ public abstract class ArchiveReaderAbstract
         int estimatedSteps = 1;
 
         try {
+            // get the archive info; the helper will read it from the concrete archive.
             final ArchiveInfo info = mHelper.getInfo(context);
             Objects.requireNonNull(info);
             estimatedSteps += info.getBookCount();
@@ -222,7 +223,8 @@ public abstract class ArchiveReaderAbstract
                         break;
                     }
                     case PreferencesXml: {
-                        // yes, we have already read them at the start. Leaving the code for now.
+                        // yes, we have already read them at the start.
+                        // Leaving the code as we might support multiple entries in the future.
                         if (readPrefs) {
                             progressListener.onProgressStep(1, mProcessPreferences);
                             try (Importer importer = new XmlImporter(context, Options.PREFS)) {
@@ -234,7 +236,8 @@ public abstract class ArchiveReaderAbstract
                         break;
                     }
                     case BooklistStylesXml: {
-                        // yes, we have already read them at the start. Leaving the code for now.
+                        // yes, we have already read them at the start.
+                        // Leaving the code as we might support multiple entries in the future.
                         if (readStyles) {
                             progressListener.onProgressStep(1, mProcessBooklistStyles);
                             try (Importer importer = new XmlImporter(context, Options.STYLES)) {
@@ -335,7 +338,7 @@ public abstract class ArchiveReaderAbstract
     }
 
     /**
-     * Actual reader should override and close their input.
+     * Concrete reader should override and close its input.
      *
      * @throws IOException on failure
      */

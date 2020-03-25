@@ -242,7 +242,17 @@ public class DataManager
     @Nullable
     public Object get(@NonNull final String key) {
         if (DBDefinitions.MONEY_KEYS.contains(key)) {
-            return getMoney(key);
+            try {
+                return getMoney(key);
+            } catch (@NonNull final NumberFormatException ignore) {
+                //URGENT: should we really ignore this, next step will return raw value.
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.w(TAG, "preprocessExternalIds"
+                                  + "|NumberFormatException"
+                                  + "|name=" + key
+                                  + "|value=`" + mRawData.get(key) + '`');
+                }
+            }
         }
         return mRawData.get(key);
     }
@@ -264,8 +274,11 @@ public class DataManager
      * @param key Key of data object
      *
      * @return a boolean value.
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
-    public boolean getBoolean(@NonNull final String key) {
+    public boolean getBoolean(@NonNull final String key)
+            throws NumberFormatException {
         return ParseUtils.toBoolean(mRawData.get(key));
     }
 
@@ -308,9 +321,12 @@ public class DataManager
      * @param key Key of data object
      *
      * @return a Money value.
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
     @Nullable
-    private Money getMoney(@NonNull final String key) {
+    private Money getMoney(@NonNull final String key)
+            throws NumberFormatException {
         if (mRawData.containsKey(key)) {
             return new Money(getDouble(key),
                              getString(key + DBDefinitions.SUFFIX_KEY_CURRENCY));
@@ -339,8 +355,11 @@ public class DataManager
      * @param key Key of data object
      *
      * @return a double value.
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
-    public double getDouble(@NonNull final String key) {
+    public double getDouble(@NonNull final String key)
+            throws NumberFormatException {
         return ParseUtils.toDouble(mRawData.get(key), null);
     }
 
@@ -361,8 +380,11 @@ public class DataManager
      * @param key Key of data object
      *
      * @return a float value.
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
-    public float getFloat(@NonNull final String key) {
+    public float getFloat(@NonNull final String key)
+            throws NumberFormatException {
         return ParseUtils.toFloat(mRawData.get(key), null);
     }
 
@@ -383,9 +405,12 @@ public class DataManager
      * @param key Key of data object
      *
      * @return an int value; {@code null} or empty becomes 0
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
     @Override
-    public int getInt(@NonNull final String key) {
+    public int getInt(@NonNull final String key)
+            throws NumberFormatException {
         return (int) ParseUtils.toLong(mRawData.get(key));
     }
 
@@ -406,9 +431,12 @@ public class DataManager
      * @param key Key of data object
      *
      * @return a long value; {@code null} or empty becomes 0
+     *
+     * @throws NumberFormatException if the source was not compatible.
      */
     @Override
-    public long getLong(@NonNull final String key) {
+    public long getLong(@NonNull final String key)
+            throws NumberFormatException {
         return ParseUtils.toLong(mRawData.get(key));
     }
 

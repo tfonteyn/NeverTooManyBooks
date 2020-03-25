@@ -37,7 +37,7 @@
     <ImageButton
         android:id="@id/ROW_DELETE_BTN"
         style="@style/RowButton.Delete"
-        android:contentDescription="@string/menu_delete"
+        android:contentDescription="@string/action_delete"
         app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

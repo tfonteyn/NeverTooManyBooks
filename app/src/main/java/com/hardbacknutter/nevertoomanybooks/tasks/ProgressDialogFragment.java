@@ -71,6 +71,7 @@ public class ProgressDialogFragment
 
     /** Type of ProgressBar. */
     private boolean mIsIndeterminate;
+    /** Control FLAG_KEEP_SCREEN_ON. (e.g. during a backup etc...) */
     private boolean mPreventSleep;
     @Nullable
     private ProgressBar mProgressBar;

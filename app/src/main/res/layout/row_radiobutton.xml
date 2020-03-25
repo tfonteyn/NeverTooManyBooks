@@ -32,6 +32,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/button"
     style="@style/OptionRow.Checkable"
-    tools:text="radio button option"
+    tools:text="@sample/data.json/styles/name"
     tools:layout_width="match_parent"
     />

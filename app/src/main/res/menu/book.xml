@@ -48,19 +48,19 @@
         android:id="@id/MENU_BOOK_EDIT"
         android:icon="@drawable/ic_edit"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
-        android:title="@string/menu_edit" />
+        android:title="@string/action_edit_ellipsis" />
 
     <item
         android:id="@id/MENU_BOOK_DUPLICATE"
         android:icon="@drawable/ic_content_copy"
         android:orderInCategory="@integer/MENU_ORDER_DUPLICATE"
-        android:title="@string/menu_duplicate" />
+        android:title="@string/action_duplicate" />
 
     <item
         android:id="@id/MENU_BOOK_DELETE"
         android:icon="@drawable/ic_delete"
         android:orderInCategory="@integer/MENU_ORDER_DELETE"
-        android:title="@string/menu_delete" />
+        android:title="@string/action_delete" />
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"

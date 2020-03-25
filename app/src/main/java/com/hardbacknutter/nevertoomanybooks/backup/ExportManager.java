@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -213,6 +214,9 @@ public class ExportManager
 
             case CsvBooks:
                 return new CsvArchiveWriter(this);
+
+            case Zip:
+                return new ZipArchiveWriter(context, this);
 
             case Tar:
             default:

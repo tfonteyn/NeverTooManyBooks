@@ -77,14 +77,14 @@ public class RequestAuthTask
                               @NonNull final TaskListener<GrStatus> taskListener) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_security)
-                .setTitle(R.string.title_authorized_needed)
+                .setTitle(R.string.info_authorized_needed)
                 .setMessage(R.string.gr_authorization_needed)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setNeutralButton(R.string.btn_tell_me_more, (dialog, which) -> {
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setNeutralButton(R.string.btn_tell_me_more, (d, w) -> {
                     Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
                     context.startActivity(intent);
                 })
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                .setPositiveButton(android.R.string.ok, (d, w) ->
                         new RequestAuthTask(taskListener).execute())
                 .create()
                 .show();

@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs.picker;
+package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -58,13 +58,12 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBaseFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StylePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 
 public class StylePickerDialogFragment
         extends DialogFragment {
@@ -138,29 +137,31 @@ public class StylePickerDialogFragment
         listView.setAdapter(mAdapter);
 
         return new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.title_select_style)
+                .setTitle(R.string.lbl_select_style)
                 .setView(root)
-                .setNeutralButton(R.string.btn_customize, (dialog, which) -> customizeStyle())
+                // not enough space for a 3rd button
+                // .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
+                .setNeutralButton(R.string.btn_customize, (d, w) -> customizeStyle(mCurrentStyle))
                 // see onResume for setting the listener.
                 .setPositiveButton(posBtnTxtId(), null)
                 .create();
     }
 
-    private void customizeStyle() {
+    private void customizeStyle(@NonNull final BooklistStyle currentStyle) {
         // use the activity so we get the results there.
         Activity activity = getActivity();
         Intent intent = new Intent(activity, SettingsActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StylePreferenceFragment.TAG);
+                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleFragment.TAG);
 
-        if (mCurrentStyle.isUserDefined()) {
-            intent.putExtra(UniqueId.BKEY_STYLE, mCurrentStyle);
+        if (currentStyle.isUserDefined()) {
+            intent.putExtra(UniqueId.BKEY_STYLE, currentStyle);
         } else {
             // clone builtin style first
             //noinspection ConstantConditions
-            intent.putExtra(UniqueId.BKEY_STYLE, mCurrentStyle.clone(getContext()));
+            intent.putExtra(UniqueId.BKEY_STYLE, currentStyle.clone(getContext()));
         }
 
-        intent.putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, mCurrentStyle.getId());
+        intent.putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, currentStyle.getId());
         //noinspection ConstantConditions
         activity.startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
     }

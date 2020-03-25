@@ -51,7 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class SearchEditionsTask
         extends TaskBase<Void, ArrayList<String>> {
 
+    /** Log tag. */
     private static final String TAG = "SearchEditionsTask";
+    /** the book to look up. */
     @NonNull
     private final String mIsbn;
 
@@ -97,7 +99,6 @@ public class SearchEditionsTask
             } catch (@NonNull final RuntimeException ignore) {
                 // ignore
             }
-
         }
         return editions;
     }

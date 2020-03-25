@@ -88,6 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO.ListRowDetails;
+import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -101,7 +102,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditPublisherDialog
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditSeriesDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.LendBookDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
-import com.hardbacknutter.nevertoomanybooks.dialogs.picker.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditColorDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditFormatDialog;
 import com.hardbacknutter.nevertoomanybooks.dialogs.simplestring.EditGenreDialog;
@@ -182,6 +182,84 @@ public class BooksOnBookshelf
 
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
+    /** List header. */
+    private TextView mHeaderStyleNameView;
+    /** List header. */
+    private TextView mHeaderFilterTextView;
+    /** List header: The number of books in the current list. */
+    private TextView mHeaderBookCountView;
+    /** The View for the list. */
+    private RecyclerView mListView;
+    private LinearLayoutManager mLayoutManager;
+    /** Multi-type adapter to manage list connection to cursor. */
+    private BooklistAdapter mAdapter;
+    /** The adapter used to fill the mBookshelfSpinner. */
+    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
+    /** The ViewModel. */
+    private BooksOnBookshelfModel mModel;
+    /** Listener for the Bookshelf Spinner. */
+    private final OnItemSelectedListener mOnBookshelfSelectionChanged =
+            new OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(@NonNull final AdapterView<?> parent,
+                                           @NonNull final View view,
+                                           final int position,
+                                           final long id) {
+                    @Nullable
+                    final BooksOnBookshelfModel.BookshelfSpinnerEntry selected =
+                            (BooksOnBookshelfModel.BookshelfSpinnerEntry)
+                                    parent.getItemAtPosition(position);
+
+                    if (selected != null) {
+                        // make the new shelf the current, and build the new list
+                        mModel.setCurrentBookshelf(BooksOnBookshelf.this,
+                                                   selected.getBookshelf());
+                        mModel.buildBookList(BooksOnBookshelf.this);
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(@NonNull final AdapterView<?> parent) {
+                    // Do Nothing
+                }
+            };
+    // ENHANCE: update the modified row without a rebuild.
+    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            Log.d(TAG, "onBookChanged"
+                       + "|bookId=" + bookId
+                       + "|fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
+                       + "|data=" + data);
+        }
+        saveListPosition();
+        // go create
+        mModel.buildBookList(this);
+
+        // changes were made to a single book
+//        if (bookId > 0) {
+//            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
+//                saveListPosition();
+//                initBookList();
+//
+//          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+//                if (data != null) {
+//                    String loanee = data.getString(DBDefinitions.KEY_LOANEE);
+//                }
+//                saveListPosition();
+//                initBookList();
+//
+//            } else if ((fieldsChanged & BookChangedListener.BOOK_DELETED) != 0) {
+//                saveListPosition();
+//                initBookList();
+//            }
+//        } else {
+//            // changes (Author, Series, ...) were made to (potentially) the whole list
+//            if (fieldsChanged != 0) {
+//                saveListPosition();
+//                initBookList();
+//            }
+//        }
+    };
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -281,89 +359,6 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-
-    /** List header. */
-    private TextView mHeaderStyleNameView;
-    /** List header. */
-    private TextView mHeaderFilterTextView;
-    /** List header: The number of books in the current list. */
-    private TextView mHeaderBookCountView;
-    /** The View for the list. */
-    private RecyclerView mListView;
-    private LinearLayoutManager mLayoutManager;
-
-
-    /** Multi-type adapter to manage list connection to cursor. */
-    private BooklistAdapter mAdapter;
-    /** The adapter used to fill the mBookshelfSpinner. */
-    private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
-
-
-    /** The ViewModel. */
-    private BooksOnBookshelfModel mModel;
-    /** Listener for the Bookshelf Spinner. */
-    private final OnItemSelectedListener mOnBookshelfSelectionChanged =
-            new OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(@NonNull final AdapterView<?> parent,
-                                           @NonNull final View view,
-                                           final int position,
-                                           final long id) {
-                    @Nullable
-                    final BooksOnBookshelfModel.BookshelfSpinnerEntry selected =
-                            (BooksOnBookshelfModel.BookshelfSpinnerEntry)
-                                    parent.getItemAtPosition(position);
-
-                    if (selected != null) {
-                        // make the new shelf the current, and build the new list
-                        mModel.setCurrentBookshelf(BooksOnBookshelf.this,
-                                                   selected.getBookshelf());
-                        mModel.buildBookList(BooksOnBookshelf.this);
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(@NonNull final AdapterView<?> parent) {
-                    // Do Nothing
-                }
-            };
-    // ENHANCE: update the modified row without a rebuild.
-    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-            Log.d(TAG, "onBookChanged"
-                       + "|bookId=" + bookId
-                       + "|fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
-                       + "|data=" + data);
-        }
-        saveListPosition();
-        // go create
-        mModel.buildBookList(this);
-
-        // changes were made to a single book
-//        if (bookId > 0) {
-//            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
-//                saveListPosition();
-//                initBookList();
-//
-//          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-//                if (data != null) {
-//                    String loanee = data.getString(DBDefinitions.KEY_LOANEE);
-//                }
-//                saveListPosition();
-//                initBookList();
-//
-//            } else if ((fieldsChanged & BookChangedListener.BOOK_DELETED) != 0) {
-//                saveListPosition();
-//                initBookList();
-//            }
-//        } else {
-//            // changes (Author, Series, ...) were made to (potentially) the whole list
-//            if (fieldsChanged != 0) {
-//                saveListPosition();
-//                initBookList();
-//            }
-//        }
-    };
     /** Apply the style that a user has selected. */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
@@ -553,11 +548,10 @@ public class BooksOnBookshelf
         mListView.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.init(mListView);
 
+        // initialize but do not populate the list;  the latter is done in setBookShelfSpinner
         mBookshelfSpinnerAdapter = new ArrayAdapter<>(
-                this, R.layout.booksonbookshelf_bookshelf_spinner,
-                mModel.getBookshelfSpinnerList());
-        mBookshelfSpinnerAdapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item);
+                this, android.R.layout.simple_spinner_item, mModel.getBookshelfSpinnerList());
+        mBookshelfSpinnerAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
         mBookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
 
         mFabButton.setOnClickListener(v -> showFABMenu(!mFabMenuItems[0].isShown()));
@@ -577,6 +571,7 @@ public class BooksOnBookshelf
             handleStandardSearchIntent(getIntent());
         }
 
+        // auto-start a backup if required.
         if (getIntent().getBooleanExtra(START_BACKUP, false)) {
             exportShowOptions();
 
@@ -864,7 +859,7 @@ public class BooksOnBookshelf
                 if (!rowData.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.menu_edit)
+                             R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -873,7 +868,7 @@ public class BooksOnBookshelf
                 if (!rowData.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.menu_edit)
+                             R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -882,7 +877,7 @@ public class BooksOnBookshelf
                 if (!rowData.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.menu_edit)
+                             R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -891,7 +886,7 @@ public class BooksOnBookshelf
                 if (!rowData.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.menu_edit)
+                             R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -900,7 +895,7 @@ public class BooksOnBookshelf
                 if (!rowData.getString(DBDefinitions.KEY_COLOR).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
-                             R.string.menu_edit)
+                             R.string.action_edit_ellipsis)
                         .setIcon(R.drawable.ic_edit);
                 }
                 break;
@@ -1723,7 +1718,7 @@ public class BooksOnBookshelf
             final int uniqueBooks = mModel.getUniqueBooks();
             final String stringArgs;
             if (uniqueBooks != totalBooks) {
-                stringArgs = getString(R.string.info_displaying_n_books_in_m_entries,
+                stringArgs = getString(R.string.txt_displaying_n_books_in_m_entries,
                                        uniqueBooks, totalBooks);
             } else {
                 stringArgs = getResources().getQuantityString(R.plurals.displaying_n_books,
@@ -1780,12 +1775,12 @@ public class BooksOnBookshelf
             switch (taskId) {
                 case R.id.TASK_ID_EXPORT:
                     dialog = ProgressDialogFragment
-                            .newInstance(R.string.title_backing_up, false, true, 0);
+                            .newInstance(R.string.lbl_backing_up, false, true, 0);
                     break;
 
                 case R.id.TASK_ID_IMPORT:
                     dialog = ProgressDialogFragment
-                            .newInstance(R.string.title_importing, false, true, 0);
+                            .newInstance(R.string.lbl_importing, false, true, 0);
                     break;
 
                 default:
@@ -1816,13 +1811,12 @@ public class BooksOnBookshelf
     private void exportShowOptions() {
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.lbl_backup)
-                .setMessage(R.string.info_export_backup_all)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setNeutralButton(R.string.btn_options, (dialog, which)
-                        -> ExportHelperDialogFragment.newInstance()
-                                                     .show(getSupportFragmentManager(),
-                                                           ExportHelperDialogFragment.TAG))
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                .setMessage(R.string.txt_export_backup_all)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setNeutralButton(R.string.btn_options, (d, w) -> ExportHelperDialogFragment
+                        .newInstance()
+                        .show(getSupportFragmentManager(), ExportHelperDialogFragment.TAG))
+                .setPositiveButton(android.R.string.ok, (d, w) ->
                         exportPickUri(new ExportManager(Options.ALL)))
                 .create()
                 .show();
@@ -1886,14 +1880,14 @@ public class BooksOnBookshelf
         final String BULLET = "\n• ";
         if (results.booksExported > 0) {
             msg.append(BULLET)
-               .append(getString(R.string.info_export_result_n_books_processed,
+               .append(getString(R.string.progress_end_export_result_n_books_processed,
                                  results.booksExported));
         }
         if (results.coversExported > 0
             || results.coversMissing[0] > 0
             || results.coversMissing[1] > 0) {
             msg.append(BULLET)
-               .append(getString(R.string.info_export_result_n_covers_processed_m_missing,
+               .append(getString(R.string.progress_end_export_result_n_covers_processed_m_missing,
                                  results.coversExported,
                                  results.coversMissing[0],
                                  results.coversMissing[1]));
@@ -1985,7 +1979,7 @@ public class BooksOnBookshelf
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.error_backup_failed)
                 .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                 .create()
                 .show();
     }
@@ -2007,14 +2001,14 @@ public class BooksOnBookshelf
                     .setType("plain/text")
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
+            startActivity(Intent.createChooser(intent, getString(R.string.lbl_send_mail)));
 
         } catch (@NonNull final NullPointerException e) {
             Logger.error(this, TAG, e);
             new MaterialAlertDialogBuilder(this)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setMessage(R.string.error_email_failed)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
         }
@@ -2048,7 +2042,7 @@ public class BooksOnBookshelf
             new MaterialAlertDialogBuilder(this)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setMessage(R.string.error_cannot_import)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                     .create()
                     .show();
             return;
@@ -2057,17 +2051,18 @@ public class BooksOnBookshelf
         if (ArchiveContainer.CsvBooks.equals(container)) {
             // use more prudent default options for Csv files.
             helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
+
+            //URGENT URGENT URGENT URGENT URGENT : make a backup before ANY csv import!
+
             // Verify - this can be a dangerous operation
             new MaterialAlertDialogBuilder(this)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.title_import_book_data)
+                    .setTitle(R.string.lbl_import_book_data)
                     .setMessage(R.string.warning_import_be_cautious)
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                    .setPositiveButton(android.R.string.ok,
-                                       (dialog, which) -> ImportHelperDialogFragment
-                                               .newInstance(helper)
-                                               .show(getSupportFragmentManager(),
-                                                     ImportHelperDialogFragment.TAG))
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
+                            .newInstance(helper)
+                            .show(getSupportFragmentManager(), ImportHelperDialogFragment.TAG))
                     .create()
                     .show();
 
@@ -2076,14 +2071,12 @@ public class BooksOnBookshelf
             // The user can divert to the full options dialog if needed.
             new MaterialAlertDialogBuilder(this)
                     .setTitle(R.string.lbl_import)
-                    .setMessage(R.string.info_import_option_all_books)
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                    .setNeutralButton(R.string.btn_options,
-                                      (dialog, which) -> ImportHelperDialogFragment
-                                              .newInstance(helper)
-                                              .show(getSupportFragmentManager(),
-                                                    ImportHelperDialogFragment.TAG))
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> mImportModel
+                    .setMessage(R.string.txt_import_option_all_books)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
+                            .newInstance(helper)
+                            .show(getSupportFragmentManager(), ImportHelperDialogFragment.TAG))
+                    .setPositiveButton(android.R.string.ok, (d, w) -> mImportModel
                             .startArchiveImportTask(helper))
                     .create()
                     .show();
@@ -2186,7 +2179,7 @@ public class BooksOnBookshelf
         new MaterialAlertDialogBuilder(this)
                 .setTitle(titleId)
                 .setMessage(msg)
-                .setPositiveButton(R.string.done, (dialog, which) -> {
+                .setPositiveButton(R.string.done, (d, w) -> {
                     if (options != 0) {
                         if ((options & Options.STYLES) != 0) {
                             // Force a refresh of the list of all user styles.
@@ -2239,7 +2232,7 @@ public class BooksOnBookshelf
         new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.error_import_failed)
                 .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> dialog.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                 .create()
                 .show();
     }

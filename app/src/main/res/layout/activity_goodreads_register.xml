@@ -83,7 +83,7 @@
                 android:id="@+id/authorize"
                 style="@style/MenuButton"
                 android:layout_gravity="center_horizontal"
-                android:text="@string/title_authorized_needed"
+                android:text="@string/info_authorized_needed"
                 app:icon="@drawable/ic_security"
                 />
 

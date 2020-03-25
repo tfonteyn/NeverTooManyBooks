@@ -66,8 +66,8 @@
             android:id="@+id/cbx_read"
             style="@style/CheckboxEntry"
             android:text="@string/lbl_read"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:checked="true"
             />
@@ -203,6 +203,7 @@
                 style="@style/EditText.Spinner"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
+                tools:text="@string/lbl_condition_reading_copy"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -221,6 +222,7 @@
                 style="@style/EditText.Spinner"
                 android:layout_width="match_parent"
                 tools:ignore="LabelFor"
+                tools:text="@string/lbl_condition_dust_cover_missing_or_bad"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -245,6 +247,7 @@
             android:id="@+id/edition"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:chipSpacingVertical="@dimen/edVertChipSpacing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_edition"

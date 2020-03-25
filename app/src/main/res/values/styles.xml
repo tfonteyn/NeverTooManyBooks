@@ -222,11 +222,15 @@
     </style>
 
     <style name="EditText.Spinner">
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
         <item name="android:inputType">none</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:longClickable">false</item>
     </style>
 
-    <!-- A disabled edit text field, on which an onClickListener can be installed.
-        Without the latter, it behaves like a read-only EditText. -->
+    <!-- A disabled edit text field, {@link com.google.android.material.textfield.TextInputEditText}
+        on which an onClickListener can be installed. Without the latter, it behaves like a read-only EditText. -->
     <style name="EditText.ReadOnly">
         <item name="android:clickable">false</item>
         <item name="android:focusable">false</item>

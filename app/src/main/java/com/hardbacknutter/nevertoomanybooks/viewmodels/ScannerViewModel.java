@@ -55,8 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 /**
  * Holds the Scanner and related data.
@@ -187,7 +187,7 @@ public class ScannerViewModel
             int retry = SCANNER_RETRY;
             while (!mScanner.isOperational() && retry > 0) {
                 //noinspection ConstantConditions
-                Snackbar.make(fragment.getView(), R.string.info_waiting_for_scanner,
+                Snackbar.make(fragment.getView(), R.string.txt_waiting_for_scanner,
                               Snackbar.LENGTH_LONG).show();
 
                 try {
@@ -251,8 +251,8 @@ public class ScannerViewModel
      */
     private void noScannerDialog(@NonNull final Fragment fragment) {
 
-        final String msg = fragment.getString(R.string.info_bad_scanner) + '\n'
-                           + fragment.getString(R.string.info_install_scanner_recommendation);
+        final String msg = fragment.getString(R.string.error_bad_scanner) + '\n'
+                           + fragment.getString(R.string.txt_install_scanner_recommendation);
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(fragment.getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
@@ -285,14 +285,14 @@ public class ScannerViewModel
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.pg_barcode_scanner)
                 .setMessage(msg)
-                .setNeutralButton(R.string.lbl_settings, (dialog, which) -> {
+                .setNeutralButton(R.string.lbl_settings, (d, w) -> {
                     final Intent intent = new Intent(fragment.getContext(), SettingsActivity.class)
                             .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                       Prefs.PSK_BARCODE_SCANNER);
 
                     fragment.startActivityForResult(intent, UniqueId.REQ_SETTINGS);
                 })
-                .setPositiveButton(R.string.retry, (d, w) -> {})
+                .setPositiveButton(R.string.action_retry, (d, w) -> {})
                 .create()
                 .show();
     }

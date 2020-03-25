@@ -34,10 +34,16 @@ public class InvalidArchiveException
 
     private static final long serialVersionUID = -3484895935028782830L;
 
-    public InvalidArchiveException() {
+    public InvalidArchiveException(@NonNull final Throwable cause) {
+        super(cause);
     }
 
     public InvalidArchiveException(@NonNull final String message) {
         super(message);
+    }
+
+    public InvalidArchiveException(@NonNull final String message,
+                                   @NonNull final Throwable cause) {
+        super(message, cause);
     }
 }

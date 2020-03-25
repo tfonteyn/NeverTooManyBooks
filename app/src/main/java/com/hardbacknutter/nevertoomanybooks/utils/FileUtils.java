@@ -48,7 +48,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -92,12 +91,9 @@ public final class FileUtils {
             try {
                 //noinspection ResultOfMethodCallIgnored
                 file.delete();
-            } catch (@NonNull final SecurityException e) {
-                Logger.error(App.getAppContext(), TAG, e);
-
-            } catch (@NonNull final RuntimeException e) {
+            } catch (@NonNull final /* SecurityException */ RuntimeException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "failed to delete file=" + file, e);
+                    Logger.e(TAG, "delete|file=" + file, e);
                 }
             }
         }

@@ -232,7 +232,7 @@ public class CoverBrowserDialogFragment
         mGalleryAdapter.notifyDataSetChanged();
 
         // Show help message
-        mVb.statusMessage.setText(R.string.info_tap_on_thumb);
+        mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
     }
 
     /**
@@ -301,7 +301,7 @@ public class CoverBrowserDialogFragment
                 if (bm != null) {
                     mVb.switcher.setImageDrawable(new BitmapDrawable(getResources(), bm));
                     mVb.switcher.setVisibility(View.VISIBLE);
-                    mVb.statusMessage.setText(R.string.info_tap_on_image_to_select);
+                    mVb.statusMessage.setText(R.string.txt_tap_on_image_to_select);
                     return;
                 }
             }
@@ -311,7 +311,7 @@ public class CoverBrowserDialogFragment
         mVb.switcher.setVisibility(View.GONE);
         Snackbar.make(mVb.switcher, R.string.warning_cover_not_found, Snackbar.LENGTH_LONG)
                 .show();
-        mVb.statusMessage.setText(R.string.info_tap_on_thumb);
+        mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
     }
 
     /** Stores and recycles views as they are scrolled off screen. */
@@ -360,7 +360,6 @@ public class CoverBrowserDialogFragment
             final ImageView imageView = new ImageView(parent.getContext());
             // Deliberately keep sizes fixed (square) to prevent gallery constantly changing size.
             imageView.setLayoutParams(new ViewGroup.LayoutParams(mWidth, mHeight));
-            imageView.setBackgroundResource(R.drawable.border);
             return new Holder(imageView);
         }
 

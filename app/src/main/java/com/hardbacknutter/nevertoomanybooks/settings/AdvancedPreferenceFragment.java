@@ -118,14 +118,14 @@ public class AdvancedPreferenceFragment
                 new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.menu_rebuild_fts)
-                        .setMessage(R.string.warning_rebuild_fts)
+                        .setMessage(R.string.confirm_rebuild_fts)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {
                             Scheduler.scheduleFtsRebuild(getContext(), false);
                             p.setSummary(null);
                         })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             Scheduler.scheduleFtsRebuild(getContext(), true);
-                            p.setSummary(R.string.info_rebuild_scheduled);
+                            p.setSummary(R.string.txt_rebuild_scheduled);
                         })
                         .create()
                         .show();
@@ -140,14 +140,14 @@ public class AdvancedPreferenceFragment
                 new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
                         .setTitle(R.string.menu_rebuild_index)
-                        .setMessage(R.string.warning_rebuild_index)
+                        .setMessage(R.string.confirm_rebuild_index)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {
                             Scheduler.scheduleIndexRebuild(getContext(), false);
                             p.setSummary(null);
                         })
                         .setPositiveButton(android.R.string.ok, (d, w) -> {
                             Scheduler.scheduleIndexRebuild(getContext(), true);
-                            p.setSummary(R.string.info_rebuild_scheduled);
+                            p.setSummary(R.string.txt_rebuild_scheduled);
                         })
                         .create()
                         .show();
@@ -160,7 +160,7 @@ public class AdvancedPreferenceFragment
             preference.setOnPreferenceClickListener(p -> {
                 //noinspection ConstantConditions
                 long bytes = AppDir.purge(getContext(), false);
-                String msg = getString(R.string.info_cleanup_files_text,
+                String msg = getString(R.string.txt_cleanup_files,
                                        FileUtils.formatFileSize(getContext(), bytes),
                                        getString(R.string.lbl_send_debug_info));
 
@@ -185,9 +185,8 @@ public class AdvancedPreferenceFragment
                         .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.debug)
                         .setMessage(R.string.debug_send_info_text)
-                        .setNegativeButton(android.R.string.cancel, (dialog, which) ->
-                                dialog.dismiss())
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) -> {
                             if (!DebugReport.sendDebugInfo(getContext())) {
                                 //noinspection ConstantConditions
                                 Snackbar.make(getView(), R.string.error_email_failed,

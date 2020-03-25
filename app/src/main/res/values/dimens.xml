@@ -76,8 +76,10 @@
     <!-- Guideline layout_constraintGuide_begin for indenting a group of fields. -->
     <dimen name="fieldGuidelineIndent">8dp</dimen>
 
-    <!-- Spacing for read-only chips in a ChipGroup -->
-    <dimen name="roChipSpacing">2dp</dimen>
+    <!-- Around Spacing for read-only chips in a ChipGroup -->
+    <dimen name="roVertChipSpacing">2dp</dimen>
+    <!-- Vertical Spacing for edit-mode chips in a ChipGroup -->
+    <dimen name="edVertChipSpacing">8dp</dimen>
 
     <!-- The base size for cover images. Get's multiplied with the image-scale preference. -->
     <dimen name="cover_base_size">30dp</dimen>

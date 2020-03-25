@@ -37,6 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 
 /**
  * Interface provided by every entity read from an archive file.
+ * This class effectively should wrap an archive format specific entry in a format agnostic entry.
+ *
+ * Note we're also forcing the encapsulation of the {@link ArchiveReader} input stream.
  */
 public interface ReaderEntity {
 

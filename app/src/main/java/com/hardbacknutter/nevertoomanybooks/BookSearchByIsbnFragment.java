@@ -116,7 +116,7 @@ public class BookSearchByIsbnFragment
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
 
-        getActivity().setTitle(R.string.title_search_isbn);
+        getActivity().setTitle(R.string.lbl_search_isbn);
 
         // copyModel2View();
         mVb.isbn.setText(mSearchCoordinator.getIsbnSearchText());
@@ -172,7 +172,7 @@ public class BookSearchByIsbnFragment
             .setIcon(R.drawable.ic_barcode)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.menu_strict_isbn)
+        menu.add(Menu.NONE, R.id.MENU_STRICT_ISBN, 0, R.string.lbl_strict_isbn)
             .setCheckable(true)
             .setChecked(mSearchCoordinator.isStrictIsbn())
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
@@ -371,12 +371,12 @@ public class BookSearchByIsbnFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.title_duplicate_book)
+                    .setTitle(R.string.lbl_duplicate_book)
                     .setMessage(R.string.confirm_duplicate_book_message)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
                     // User aborts this isbn
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> {
                         clearPreviousSearchCriteria();
                         if (mScanMode) {
                             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
@@ -384,13 +384,13 @@ public class BookSearchByIsbnFragment
                         }
                     })
                     // User wants to review the existing book
-                    .setNeutralButton(R.string.edit, (dialog, which) -> {
+                    .setNeutralButton(R.string.action_edit, (d, w) -> {
                         final Intent intent = new Intent(getContext(), EditBookActivity.class)
                                 .putExtra(DBDefinitions.KEY_PK_ID, existingId);
                         startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
                     })
                     // User wants to add regardless
-                    .setPositiveButton(R.string.btn_confirm_add, (dialog, which) -> startSearch())
+                    .setPositiveButton(R.string.action_add, (d, w) -> startSearch())
                     .create()
                     .show();
         }

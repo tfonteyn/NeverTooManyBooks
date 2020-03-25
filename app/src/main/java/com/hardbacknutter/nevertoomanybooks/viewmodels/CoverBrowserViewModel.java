@@ -341,11 +341,13 @@ public class CoverBrowserViewModel
         /**
          * Check if a file is an image with an acceptable size.
          *
+         * @param context  Current context
          * @param fileSpec to check
          *
          * @return {@code true} if file is acceptable.
          */
-        private boolean isGood(@Nullable final String fileSpec) {
+        private boolean isGood(@NonNull final Context context,
+                               @Nullable final String fileSpec) {
             if (fileSpec == null || fileSpec.isEmpty()) {
                 return false;
             }
@@ -355,7 +357,7 @@ public class CoverBrowserViewModel
             if (file.exists() && file.length() != 0) {
                 try {
                     // Just read the image files to get file size
-                    BitmapFactory.Options opt = new BitmapFactory.Options();
+                    final BitmapFactory.Options opt = new BitmapFactory.Options();
                     opt.inJustDecodeBounds = true;
                     BitmapFactory.decodeFile(file.getAbsolutePath(), opt);
                     // If too small, it's no good
@@ -363,7 +365,7 @@ public class CoverBrowserViewModel
                 } catch (@NonNull final RuntimeException e) {
                     // Failed to decode; probably not an image
                     ok = false;
-                    Logger.error(App.getAppContext(), TAG, e, "Unable to decode file");
+                    Logger.error(context, TAG, e, "Unable to decode file");
                 }
             }
 
@@ -409,7 +411,7 @@ public class CoverBrowserViewModel
                 FileInfo fileInfo = mFiles.get(key);
 
                 // Do we already have a file and is it good ?
-                if ((fileInfo != null) && isGood(fileInfo.fileSpec)) {
+                if ((fileInfo != null) && isGood(context, fileInfo.fileSpec)) {
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
                         Log.d(TAG, "download|FILESYSTEM|fileInfo=" + fileInfo);
@@ -475,7 +477,7 @@ public class CoverBrowserViewModel
                                   @NonNull final SearchEngine.CoverByIsbn.ImageSize size) {
             @Nullable
             final String fileSpec = searchEngine.getCoverImage(context, isbn, cIdx, size);
-            if (isGood(fileSpec)) {
+            if (isGood(context, fileSpec)) {
                 final String key = isbn + '_' + size;
                 final FileInfo fileInfo = new FileInfo(isbn, size, fileSpec);
                 mFiles.put(key, fileInfo);

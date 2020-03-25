@@ -96,5 +96,42 @@
     {
       "name": "Esperanto"
     }
+  ],
+  "styles": [
+    {
+      "name": "Acquired"
+    },
+    {
+      "name": "Date added"
+    },
+    {
+      "name": "Author, Series"
+    },
+    {
+      "name": "Author,Year"
+    },
+    {
+      "name": "Bookshelf"
+    },
+    {
+      "name": "Compact"
+    },
+    {
+      "name": "Title 1st letter"
+    },
+    {
+      "name": "Series title 1st letter"
+    }
+  ],
+  "style_groups": [
+    {
+      "name": "Author"
+    },
+    {
+      "name": "Series"
+    },
+    {
+      "name": "Language"
+    }
   ]
 }

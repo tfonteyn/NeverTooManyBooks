@@ -49,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 public interface Exporter
         extends Closeable {
 
-    /** {@link BufferedWriter} use. */
+    /** Buffer for the Writer. */
     int BUFFER_SIZE = 65535;
 
     static String getNamePrefix(@NonNull final Context context) {

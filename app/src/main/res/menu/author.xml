@@ -50,7 +50,7 @@
         android:id="@id/MENU_AUTHOR_EDIT"
         android:icon="@drawable/ic_edit"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
-        android:title="@string/menu_edit" />
+        android:title="@string/action_edit_ellipsis" />
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"

@@ -196,20 +196,6 @@ public class EditBookTocFragment
                 }
             };
 
-    private void searchIsfdb() {
-        if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
-            final IsfdbGetBookTask task = new IsfdbGetBookTask(mIsfdbEditions,
-                                                               isAddSeriesFromToc(),
-                                                               mIsfdbGetBookTaskModel
-                                                                       .getTaskListener());
-            mIsfdbGetBookTaskModel.setTask(task);
-            task.execute();
-        } else {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_no_editions, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
         if (ConfirmTocDialogFragment.TAG.equals(childFragment.getTag())) {
@@ -425,11 +411,11 @@ public class EditBookTocFragment
         final Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT,
                  r.getInteger(R.integer.MENU_ORDER_EDIT),
-                 R.string.menu_edit)
+                 R.string.action_edit_ellipsis)
             .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_DELETE,
                  r.getInteger(R.integer.MENU_ORDER_DELETE),
-                 R.string.menu_delete)
+                 R.string.action_delete)
             .setIcon(R.drawable.ic_delete);
 
         final String title = item.getLabel(getContext());
@@ -544,6 +530,20 @@ public class EditBookTocFragment
                                 .getBoolean(IsfdbSearchEngine.PREFS_SERIES_FROM_TOC, false);
     }
 
+    private void searchIsfdb() {
+        if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
+            final IsfdbGetBookTask task = new IsfdbGetBookTask(mIsfdbEditions,
+                                                               isAddSeriesFromToc(),
+                                                               mIsfdbGetBookTaskModel
+                                                                       .getTaskListener());
+            mIsfdbGetBookTaskModel.setTask(task);
+            task.execute();
+        } else {
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.warning_no_editions, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
     /**
      * Dialog that shows the downloaded TOC titles for approval by the user.
      * <p>
@@ -640,7 +640,7 @@ public class EditBookTocFragment
 
             // if we found multiple editions, allow a re-try with the next edition
             if (mHasOtherEditions) {
-                dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.retry),
+                dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.action_retry),
                                  this::onGetNext);
             }
 

@@ -68,15 +68,15 @@ public final class StandardDialogs {
                                     @Nullable final Runnable onExit) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.title_details_have_changed)
+                .setTitle(R.string.lbl_details_have_changed)
                 .setMessage(R.string.confirm_unsaved_edits)
-                .setNeutralButton(R.string.btn_continue_edit, (dialog, which) -> dialog.dismiss());
+                .setNeutralButton(R.string.btn_continue_edit, (d, w) -> d.dismiss());
 
         if (onExit != null) {
-            builder.setNegativeButton(R.string.btn_confirm_exit, (dialog, which) -> onExit.run());
+            builder.setNegativeButton(R.string.action_exit, (d, w) -> onExit.run());
         }
         if (onSave != null) {
-            builder.setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> onSave.run());
+            builder.setPositiveButton(R.string.action_save, (d, w) -> onSave.run());
         }
 
         builder.show();
@@ -94,11 +94,11 @@ public final class StandardDialogs {
                                     @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.title_delete_series)
+                .setTitle(R.string.lbl_delete_series)
                 .setMessage(context.getString(R.string.confirm_delete_series,
                                               series.getLabel(context)))
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -115,12 +115,12 @@ public final class StandardDialogs {
                                       @NonNull final Runnable onConfirm) {
         new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.title_delete_toc_entry)
+                .setTitle(R.string.lbl_delete_toc_entry)
                 .setMessage(context.getString(R.string.confirm_delete_toc_entry,
                                               tocEntry.getLabel(context),
                                               tocEntry.getAuthor().getLabel(context)))
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -160,10 +160,10 @@ public final class StandardDialogs {
 
         new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.title_delete_book)
+                .setTitle(R.string.lbl_delete_book)
                 .setMessage(context.getString(R.string.confirm_delete_book, title, authors))
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -186,19 +186,19 @@ public final class StandardDialogs {
         String site = context.getString(siteResId);
         String message;
         if (required) {
-            message = context.getString(R.string.info_registration_required, site);
+            message = context.getString(R.string.confirm_registration_required, site);
         } else {
-            message = context.getString(R.string.info_registration_benefits, site,
+            message = context.getString(R.string.confirm_registration_benefits, site,
                                         context.getString(R.string.lbl_credentials));
         }
 
         AlertDialog dialog = new MaterialAlertDialogBuilder(context)
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.title_registration)
+                .setTitle(R.string.lbl_registration)
                 .setMessage(message)
-                .setNegativeButton(android.R.string.cancel, (d, which) -> d.dismiss())
-                .setPositiveButton(R.string.btn_tell_me_more, (d, which) ->
-                        context.startActivity(intent))
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.btn_tell_me_more,
+                                   (d, w) -> context.startActivity(intent))
                 .create();
 
         if (!required) {
@@ -231,8 +231,8 @@ public final class StandardDialogs {
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(msg)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> onConfirm.run())
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }

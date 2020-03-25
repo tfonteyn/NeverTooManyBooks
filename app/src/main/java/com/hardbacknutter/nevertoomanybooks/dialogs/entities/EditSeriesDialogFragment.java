@@ -133,9 +133,9 @@ public class EditSeriesDialogFragment
         return new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_edit)
                 .setView(mVb.getRoot())
-                .setTitle(R.string.title_edit_series)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
+                .setTitle(R.string.lbl_edit_series)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(R.string.action_save, (d, w) -> {
                     mTitle = mVb.seriesTitle.getText().toString().trim();
                     if (mTitle.isEmpty()) {
                         Snackbar.make(mVb.seriesTitle, R.string.warning_missing_name,

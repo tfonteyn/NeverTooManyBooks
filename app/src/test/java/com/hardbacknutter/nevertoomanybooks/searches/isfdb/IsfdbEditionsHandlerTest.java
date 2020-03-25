@@ -32,12 +32,13 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,7 +53,7 @@ class IsfdbEditionsHandlerTest
 
     @Test
     void parseMultiEdition() {
-
+        setLocale(Locale.UK);
         String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?11169";
         String filename = "/isfdb/11169-multi-edition.html";
 

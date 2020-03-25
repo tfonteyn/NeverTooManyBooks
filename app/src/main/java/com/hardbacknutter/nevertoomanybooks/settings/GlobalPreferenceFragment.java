@@ -92,7 +92,7 @@ public class GlobalPreferenceFragment
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIconAttribute(android.R.attr.alertDialogIcon)
-                        .setMessage(R.string.warning_rebuild_orderby_columns)
+                        .setMessage(R.string.confirm_rebuild_orderby_columns)
                         // this dialog is important. Make sure the user pays some attention
                         .setCancelable(false)
                         .setNegativeButton(android.R.string.cancel, (d, w) -> {

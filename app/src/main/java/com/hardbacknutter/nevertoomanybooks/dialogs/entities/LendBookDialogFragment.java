@@ -179,8 +179,8 @@ public class LendBookDialogFragment
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(mVb.getRoot())
                 .setTitle(mTitle)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
-                .setNeutralButton(R.string.btn_loan_returned, (dialog, which) -> {
+                .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
+                .setNeutralButton(R.string.btn_loan_returned, (d, w) -> {
                     // the book was returned (inspect it for sub-nano damage),
                     // remove the loan data
                     dismiss();
@@ -195,7 +195,7 @@ public class LendBookDialogFragment
                         }
                     }
                 })
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
                     String newName = mVb.loanedTo.getText().toString().trim();
                     if (newName.isEmpty()) {
                         Snackbar.make(mVb.loanedTo, R.string.warning_missing_name,

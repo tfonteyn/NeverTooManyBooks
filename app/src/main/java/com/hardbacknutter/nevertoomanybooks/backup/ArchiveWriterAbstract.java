@@ -81,7 +81,7 @@ public abstract class ArchiveWriterAbstract
     protected static final int VERSION = 2;
     /** Log tag. */
     private static final String TAG = "ArchiveWriterAbstract";
-    /** {@link BufferedWriter} use. */
+    /** Buffer for the Writer. */
     private static final int BUFFER_SIZE = 65535;
 
     /** progress message. */
@@ -106,7 +106,7 @@ public abstract class ArchiveWriterAbstract
         super(context, helper);
 
         mProgress_msg_covers = context.getString(
-                R.string.info_export_result_n_covers_processed_m_missing);
+                R.string.progress_end_export_result_n_covers_processed_m_missing);
         mProgress_msg_covers_skip = context.getString(
                 R.string.progress_msg_n_covers_processed_m_missing_s_skipped);
     }
@@ -136,7 +136,7 @@ public abstract class ArchiveWriterAbstract
             xmlExporter.writeArchiveInfo(writer, archiveInfo);
         }
         // and store the array
-        putByteArray(ArchiveContainerEntry.InfoHeaderXml.getName(), data.toByteArray());
+        putByteArray(ArchiveContainerEntry.InfoHeaderXml.getName(), data.toByteArray(), true);
     }
 
     /**
@@ -156,7 +156,7 @@ public abstract class ArchiveWriterAbstract
             mResults.add(exporter.write(context, writer, progressListener));
         }
         // and store the array
-        putByteArray(ArchiveContainerEntry.BooklistStylesXml.getName(), data.toByteArray());
+        putByteArray(ArchiveContainerEntry.BooklistStylesXml.getName(), data.toByteArray(), true);
     }
 
     /**
@@ -176,7 +176,7 @@ public abstract class ArchiveWriterAbstract
             exporter.write(context, writer, progressListener);
         }
         // and store the array
-        putByteArray(ArchiveContainerEntry.PreferencesXml.getName(), data.toByteArray());
+        putByteArray(ArchiveContainerEntry.PreferencesXml.getName(), data.toByteArray(), true);
     }
 
     /**
@@ -208,7 +208,7 @@ public abstract class ArchiveWriterAbstract
             throws IOException {
         try {
             Objects.requireNonNull(mTmpBookCsvFile);
-            putFile(ArchiveContainerEntry.BooksCsv.getName(), mTmpBookCsvFile);
+            putFile(ArchiveContainerEntry.BooksCsv.getName(), mTmpBookCsvFile, true);
         } finally {
             FileUtils.delete(mTmpBookCsvFile);
         }
@@ -217,25 +217,30 @@ public abstract class ArchiveWriterAbstract
     /**
      * Write a generic file to the archive.
      *
-     * @param name for the entry;  allows easier overriding of the file name
-     * @param file to store in the archive
+     * @param name     for the entry;  allows easier overriding of the file name
+     * @param file     to store in the archive
+     * @param compress Flag: compress the file if the writer supports it.
      *
      * @throws IOException on failure
      */
     protected abstract void putFile(@NonNull String name,
-                                    @NonNull File file)
+                                    @NonNull File file,
+                                    final boolean compress)
             throws IOException;
 
     /**
      * Write a generic byte array to the archive.
      *
-     * @param name  for the entry
-     * @param bytes to store in the archive
+     * @param name     for the entry
+     * @param bytes    to store in the archive
+     * @param compress Flag: compress the data if the writer supports it.
      *
      * @throws IOException on failure
      */
     protected abstract void putByteArray(@NonNull String name,
-                                         @NonNull byte[] bytes)
+                                         @NonNull byte[] bytes,
+                                         @SuppressWarnings("SameParameterValue")
+                                         final boolean compress)
             throws IOException;
 
     /**
@@ -276,7 +281,9 @@ public abstract class ArchiveWriterAbstract
                     if (cover.exists()) {
                         if (cover.lastModified() > timeFrom) {
                             if (!dryRun) {
-                                putFile(cover.getName(), cover);
+                                // We're using jpg, png.. don't bother compressing.
+                                // Compressing might actually make some image files bigger!
+                                putFile(cover.getName(), cover, false);
                             }
                             exported++;
                         } else {

@@ -69,7 +69,7 @@
         android:textIsSelectable="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_text"
-        tools:text="@string/info_displaying_n_books_in_m_entries"
+        tools:text="@string/txt_displaying_n_books_in_m_entries"
         />
 
     <TextView

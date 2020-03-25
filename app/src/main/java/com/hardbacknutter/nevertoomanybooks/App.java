@@ -335,8 +335,6 @@ public class App
         ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
     }
 
-    /* ########################################################################################## */
-
     /**
      * Ensure to re-apply the user-preferred Locale to the Application (this) object.
      *
@@ -353,13 +351,13 @@ public class App
         super.onConfigurationChanged(newConfig);
 
         if (BuildConfig.DEBUG /* always */) {
-            final Locale locale;
+            Log.d(TAG, "onConfigurationChanged| Locale.getDefault=" + Locale.getDefault());
             if (Build.VERSION.SDK_INT >= 24) {
-                locale = newConfig.getLocales().get(0);
+                Log.d(TAG, "onConfigurationChanged|newConfig.getLocales().get(0)="
+                           + newConfig.getLocales().get(0));
             } else {
-                locale = newConfig.locale;
+                Log.d(TAG, "onConfigurationChanged|newConfig.locale=" + newConfig.locale);
             }
-            Log.d(TAG, "onConfigurationChanged|" + locale);
         }
     }
 

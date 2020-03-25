@@ -33,6 +33,9 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
+import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,9 +44,7 @@ import static org.mockito.Mockito.when;
 class SearchSitesTest
         extends CommonSetup {
 
-
     @BeforeEach
-    @Override
     public void setUp() {
         super.setUp();
 
@@ -100,7 +101,12 @@ class SearchSitesTest
             System.out.println("type=" + type);
 
             for (Site site : sites) {
-                SearchEngine searchEngine = site.getSearchEngine();
+                SearchEngine searchEngine;
+                if (site.id == SearchSites.GOODREADS) {
+                    searchEngine = new GoodreadsSearchEngine(mContext);
+                } else {
+                    searchEngine = site.getSearchEngine();
+                }
                 System.out.println(site + ", locale=" + searchEngine.getLocale(mContext));
             }
         }

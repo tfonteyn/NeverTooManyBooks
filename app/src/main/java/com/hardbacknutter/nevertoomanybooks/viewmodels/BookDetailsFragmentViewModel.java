@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
@@ -59,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.StringAr
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 public class BookDetailsFragmentViewModel
@@ -127,10 +129,12 @@ public class BookDetailsFragmentViewModel
     private void onInitFields(@NonNull final Context context) {
         final Fields fields = getFields();
 
+        final Locale userLocale = LocaleUtils.getUserLocale(context);
+
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
         final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true);
-        final FieldFormatter<Money> moneyFormatter = new MoneyFormatter();
+        final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
         final FieldFormatter<String> languageFormatter = new LanguageFormatter();
 
         // book fields

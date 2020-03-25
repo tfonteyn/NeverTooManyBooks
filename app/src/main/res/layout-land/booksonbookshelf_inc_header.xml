@@ -59,7 +59,7 @@
         app:layout_constraintBottom_toBottomOf="@id/style_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/style_name"
-        tools:text="@string/info_displaying_n_books_in_m_entries"
+        tools:text="@string/txt_displaying_n_books_in_m_entries"
         />
 
     <TextView

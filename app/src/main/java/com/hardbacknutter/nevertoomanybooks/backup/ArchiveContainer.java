@@ -45,18 +45,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
  * Archive formats (partially) supported.
  */
 public enum ArchiveContainer {
-    /** The archive we tried to read from was not identified. */
-    Unknown,
-    /** The default full backup/restore support. NOT compressed. */
+    /** The default/legacy full backup/restore support. NOT compressed. */
     Tar,
-    /** Not supported yet. */
+    /** Full backup/restore support. Text files are compressed, images are not. */
     Zip,
-    /** XML <strong>Export only</strong>. */
-    Xml,
     /** Books as a CSV file; full support for export/import. */
     CsvBooks,
-    /** Database. Export only */
-    SqLiteDb;
+
+    /** XML <strong>Export only</strong>. */
+    Xml,
+    /** Database. <strong>Export only</strong>. */
+    SqLiteDb,
+
+    /** The archive we tried to read from was not identified. */
+    Unknown;
 
     /**
      * Constructor. Determine which type the input file is.
@@ -85,7 +87,7 @@ public enum ArchiveContainer {
                 if (len > 5
                     && b[0] == 0x3c && b[1] == 0x3f && b[2] == 0x78 && b[3] == 0x6d
                     && b[4] == 0x6c && b[5] == 0x20) {
-                    return Zip;
+                    return Xml;
                 }
 
                 // zip file, offset 0, "PK{3}{4}"
@@ -107,8 +109,8 @@ public enum ArchiveContainer {
             // ignore
         }
 
-        // Magic bytes check did not work out.
-        // Check for it being a CSV by looking at the extension.
+        // If the magic bytes check did not work out,
+        // we check for it being a CSV by looking at the extension.
         // Allow some name variations:"file.csv", "file.csv (1)" etc
         final Pair<String, Long> uriInfo = FileUtils.getUriInfo(context, uri);
         if (uriInfo != null && uriInfo.first != null) {
@@ -120,13 +122,14 @@ public enum ArchiveContainer {
                 return CsvBooks;
             }
         }
+        // give up.
         return Unknown;
     }
 
     /**
      * Get the <strong>proposed</strong> archive file extension.
      *
-     * @return file name extension including a '.'
+     * @return file name extension starting with a '.'
      */
     public String getFileExt() {
         switch (this) {

@@ -82,7 +82,10 @@ public class MaterialSpinnerAccessor
     @Override
     public void setView(@NonNull final View view) {
         super.setView(view);
-        ((AutoCompleteTextView) view).setAdapter(mAdapter);
+        final AutoCompleteTextView ac = ((AutoCompleteTextView) view);
+        ac.setAdapter(mAdapter);
+        // FIXME: opening works fine, but a second click closes AND re-opens the MaterialSpinner
+        //ac.setOnClickListener(v -> ac.showDropDown());
         addTouchSignalsDirty(view);
     }
 

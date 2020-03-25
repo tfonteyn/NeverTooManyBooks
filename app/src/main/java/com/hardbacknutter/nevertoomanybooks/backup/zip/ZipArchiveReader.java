@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.tar;
+package com.hardbacknutter.nevertoomanybooks.backup.zip;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -38,9 +38,9 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipInputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveReaderAbstract;
@@ -52,9 +52,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 
 /**
- * Implementation of TAR-specific reader functions.
+ * Implementation of ZIP-specific reader functions.
  */
-public class TarArchiveReader
+public class ZipArchiveReader
         extends ArchiveReaderAbstract {
 
     /** Buffer for {@link #mInputStream}. */
@@ -67,7 +67,7 @@ public class TarArchiveReader
      * Do <strong>NOT</strong> use this directly, see {link #getInputStream()}
      */
     @Nullable
-    private TarArchiveInputStream mInputStream;
+    private ZipInputStream mInputStream;
 
     /** The INFO data read from the start of the archive. */
     @Nullable
@@ -79,7 +79,7 @@ public class TarArchiveReader
      * @param context Current context
      * @param helper  import configuration
      */
-    public TarArchiveReader(@NonNull final Context context,
+    public ZipArchiveReader(@NonNull final Context context,
                             @NonNull final ImportManager helper) {
         super(context, helper);
         mContentResolver = context.getContentResolver();
@@ -100,9 +100,9 @@ public class TarArchiveReader
     public ReaderEntity seek(@NonNull final ArchiveContainerEntry type)
             throws IOException {
 
-        TarArchiveEntry entry;
+        ZipEntry entry;
         while (true) {
-            entry = getInputStream().getNextTarEntry();
+            entry = getInputStream().getNextEntry();
             if (entry == null) {
                 return null;
             }
@@ -110,7 +110,7 @@ public class TarArchiveReader
             // Based on the file name, determine entity type
             ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
             if (type.equals(typeFound)) {
-                return new TarReaderEntity(typeFound, this, entry);
+                return new ZipReaderEntity(typeFound, this, entry);
             }
         }
     }
@@ -120,13 +120,13 @@ public class TarArchiveReader
     public ReaderEntity next()
             throws IOException {
 
-        TarArchiveEntry entry = getInputStream().getNextTarEntry();
+        ZipEntry entry = getInputStream().getNextEntry();
         if (entry == null) {
             return null;
         }
 
         ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
-        return new TarReaderEntity(typeFound, this, entry);
+        return new ZipReaderEntity(typeFound, this, entry);
     }
 
     /**
@@ -139,19 +139,13 @@ public class TarArchiveReader
     public ArchiveInfo readArchiveInfo(@NonNull final Context context)
             throws IOException, InvalidArchiveException {
         if (mInfo == null) {
-            // Tar archive info is stored in an xml file in the archive itself.
+            // Archive info is stored in an xml file in the archive itself.
             // We try and find the InfoHeader entity, and process it with the XMLImporter
             ReaderEntity entity;
             try {
                 entity = seek(ArchiveContainerEntry.InfoHeaderXml);
-            } catch (@NonNull final IOException e) {
-                //VERY annoying... the apache tar library does not throw a unique exception.
-                // We reluctantly look at the message, to give the user better error details
-                if ("Error detected parsing the header".equals(e.getMessage())) {
-                    throw new InvalidArchiveException(e);
-                } else {
-                    throw e;
-                }
+            } catch (@NonNull final ZipException e) {
+                throw new InvalidArchiveException(e);
             }
 
             if (entity == null) {
@@ -180,14 +174,14 @@ public class TarArchiveReader
      * @throws IOException on failure
      */
     @NonNull
-    private TarArchiveInputStream getInputStream()
+    private ZipInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
             InputStream is = mContentResolver.openInputStream(getUri());
             if (is == null) {
                 throw new IOException("InputStream was NULL");
             }
-            mInputStream = new TarArchiveInputStream(new BufferedInputStream(is, BUFFER_SIZE));
+            mInputStream = new ZipInputStream(new BufferedInputStream(is, BUFFER_SIZE));
         }
 
         return mInputStream;
@@ -210,14 +204,14 @@ public class TarArchiveReader
         super.close();
     }
 
-    private static class TarReaderEntity
+    private static class ZipReaderEntity
             implements ReaderEntity {
 
         /** The entity source stream. */
         @NonNull
-        private final TarArchiveReader mReader;
+        private final ZipArchiveReader mReader;
         @NonNull
-        private final TarArchiveEntry mEntry;
+        private final ZipEntry mEntry;
         /** Entity type. */
         @NonNull
         private final ArchiveContainerEntry mType;
@@ -229,9 +223,9 @@ public class TarArchiveReader
          * @param reader Parent
          * @param entry  Corresponding archive entry
          */
-        TarReaderEntity(@NonNull final ArchiveContainerEntry type,
-                        @NonNull final TarArchiveReader reader,
-                        @NonNull final TarArchiveEntry entry) {
+        ZipReaderEntity(@NonNull final ArchiveContainerEntry type,
+                        @NonNull final ZipArchiveReader reader,
+                        @NonNull final ZipEntry entry) {
             mType = type;
             mReader = reader;
             mEntry = entry;
@@ -246,7 +240,13 @@ public class TarArchiveReader
         @NonNull
         @Override
         public Date getDateModified() {
-            return mEntry.getLastModifiedDate();
+            long time = mEntry.getTime();
+            if (time != -1) {
+                return new Date(mEntry.getTime());
+            } else {
+                // just pretend
+                return new Date();
+            }
         }
 
         @NonNull

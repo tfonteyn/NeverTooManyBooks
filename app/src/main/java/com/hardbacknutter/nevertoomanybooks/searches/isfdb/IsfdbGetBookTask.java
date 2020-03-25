@@ -56,11 +56,14 @@ public class IsfdbGetBookTask
     /** Log tag. */
     private static final String TAG = "IsfdbGetBookTask";
 
+    /** Native site book id to get. */
     private final long mIsfdbId;
-    /** whether the TOC should get parsed for Series information. */
-    private final boolean mAddSeriesFromToc;
+    /** Native site book edition(s) to get. */
     @Nullable
     private final List<Edition> mEditions;
+    /** whether the TOC should get parsed for Series information. */
+    private final boolean mAddSeriesFromToc;
+
 
     /**
      * Constructor. Initiate a single book lookup by edition.

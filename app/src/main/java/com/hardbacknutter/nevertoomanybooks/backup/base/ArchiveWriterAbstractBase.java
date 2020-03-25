@@ -223,7 +223,7 @@ public abstract class ArchiveWriterAbstractBase
             throws IOException;
 
     /**
-     * Actual writer should override and close their output.
+     * Concrete writer should override and close its output.
      *
      * @throws IOException on failure
      */

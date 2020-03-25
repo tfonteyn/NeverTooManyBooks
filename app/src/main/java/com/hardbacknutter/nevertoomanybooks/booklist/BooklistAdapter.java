@@ -937,7 +937,8 @@ public class BooklistAdapter
             final String publicationDate;
             if (mInUse.pubDate) {
                 publicationDate = DateUtils.toPrettyDate(mLocale,
-                                                         rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+                                                         rowData.getString(
+                                                                 DBDefinitions.KEY_DATE_PUBLISHED));
             } else {
                 publicationDate = null;
             }
@@ -1040,7 +1041,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
-         * @param adapter  for format callbacks
+         * @param adapter  the hosting adapter
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */
@@ -1089,6 +1090,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param adapter            the hosting adapter
          * @param itemView           the view specific for this holder
          * @param group              the group this holder represents
          * @param checkableColumnKey Column name to use for the boolean 'lock' status
@@ -1129,6 +1131,7 @@ public class BooklistAdapter
         /**
          * Constructor.
          *
+         * @param adapter  the hosting adapter
          * @param itemView the view specific for this holder
          * @param group    the group this holder represents
          */

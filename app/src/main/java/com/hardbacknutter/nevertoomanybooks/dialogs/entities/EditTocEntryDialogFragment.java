@@ -143,7 +143,7 @@ public class EditTocEntryDialogFragment
         return new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
                 .setView(mVb.getRoot())
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
+                .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
                 .setPositiveButton(android.R.string.ok, this::onConfirm)
                 .create();
     }

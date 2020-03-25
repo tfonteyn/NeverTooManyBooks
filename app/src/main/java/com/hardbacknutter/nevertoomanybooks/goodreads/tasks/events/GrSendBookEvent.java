@@ -158,7 +158,8 @@ public class GrSendBookEvent
                                     @NonNull final DAO db) {
 
         // EDIT BOOK
-        menuItems.add(new ContextDialogItem(context.getString(R.string.menu_edit), () -> {
+        menuItems
+                .add(new ContextDialogItem(context.getString(R.string.action_edit_ellipsis), () -> {
             Intent intent = new Intent(context, EditBookActivity.class)
                     .putExtra(DBDefinitions.KEY_PK_ID, mBookId);
             context.startActivity(intent);
@@ -182,7 +183,7 @@ public class GrSendBookEvent
         // RETRY EVENT
         String isbn = db.getBookIsbn(mBookId);
         if (isbn != null && !isbn.isEmpty()) {
-            menuItems.add(new ContextDialogItem(context.getString(R.string.retry), () -> {
+            menuItems.add(new ContextDialogItem(context.getString(R.string.action_retry), () -> {
                 retry(context);
                 QueueManager.getQueueManager().deleteEvent(getId());
             }));

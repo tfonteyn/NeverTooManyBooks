@@ -42,12 +42,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searches.CommonSetup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -64,11 +64,11 @@ class KbNlBookHandlerTest
     private SAXParser mParser;
 
     @BeforeEach
-    protected void setUp() {
+    public void setUp() {
         super.setUp();
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        mHandler = new KbNlBookHandler(mBookData);
+        mHandler = new KbNlBookHandler(mRawData);
         try {
             mParser = factory.newSAXParser();
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -85,15 +85,15 @@ class KbNlBookHandlerTest
             fail(e);
         }
 
-        assertEquals("De buitengewone reis", mBookData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("De buitengewone reis", mRawData.getString(DBDefinitions.KEY_TITLE));
 
-        assertEquals("2019", mBookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("9789463731454", mBookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("paperback", mBookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("48", mBookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("nld", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("2019", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("9789463731454", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("paperback", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
 
-        ArrayList<Publisher> allPublishers = mBookData
+        ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
@@ -101,7 +101,7 @@ class KbNlBookHandlerTest
         assertEquals("Dark Dragon Books", allPublishers.get(0).getName());
 
 
-        List<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        List<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -114,7 +114,7 @@ class KbNlBookHandlerTest
         expectedAuthor = Author.fromString("Mariella Manfré");
         assertEquals(expectedAuthor, authors.get(3));
 
-        List<Series> series = mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        List<Series> series = mRawData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         Series expectedSeries;
@@ -133,22 +133,22 @@ class KbNlBookHandlerTest
             fail(e);
         }
 
-        assertEquals("De Foundation", mBookData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("De Foundation", mRawData.getString(DBDefinitions.KEY_TITLE));
 
-        assertEquals("1983", mBookData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        assertEquals("9022953351", mBookData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("geb.", mBookData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("156", mBookData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("nld", mBookData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("1983", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("9022953351", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("geb.", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals("156", mRawData.getString(DBDefinitions.KEY_PAGES));
+        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
 
-        ArrayList<Publisher> allPublishers = mBookData
+        ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Bruna", allPublishers.get(0).getName());
 
-        List<Author> authors = mBookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        List<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -157,7 +157,7 @@ class KbNlBookHandlerTest
         expectedAuthor = Author.fromString("Jack Kröner");
         assertEquals(expectedAuthor, authors.get(1));
 
-        List<Series> series = mBookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        List<Series> series = mRawData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         Series expectedSeries;

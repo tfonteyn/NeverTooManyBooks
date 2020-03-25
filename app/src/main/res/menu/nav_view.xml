@@ -34,7 +34,7 @@
     <item
         android:id="@+id/nav_manage_bookshelves"
         android:icon="@drawable/ic_library_books"
-        android:title="@string/menu_bookshelves"
+        android:title="@string/lbl_bookshelves_long"
         android:visible="false"
         tools:visible="true" />
 
@@ -42,7 +42,7 @@
     <item
         android:id="@+id/nav_manage_list_styles"
         android:icon="@drawable/ic_details"
-        android:title="@string/menu_booklist_styles"
+        android:title="@string/lbl_styles_long"
         android:visible="false"
         tools:visible="true" />
 
@@ -73,10 +73,10 @@
     <item
         android:id="@+id/nav_settings"
         android:icon="@drawable/ic_settings"
-        android:title="@string/menu_settings" />
+        android:title="@string/lbl_settings" />
 
     <item
         android:id="@+id/nav_about"
         android:icon="@drawable/ic_info_outline"
-        android:title="@string/menu_about" />
+        android:title="@string/lbl_about" />
 </menu>

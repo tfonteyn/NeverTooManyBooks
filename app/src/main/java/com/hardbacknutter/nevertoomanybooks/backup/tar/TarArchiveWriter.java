@@ -31,6 +31,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +57,9 @@ public class TarArchiveWriter
         extends ArchiveWriterAbstract
         implements ArchiveWriterAbstractBase.SupportsCovers {
 
+    /** Buffer for {@link #mOutputStream}. */
+    private static final int BUFFER_SIZE = 65535;
+
     /** The output stream for the archive. */
     @NonNull
     private final TarArchiveOutputStream mOutputStream;
@@ -74,7 +78,9 @@ public class TarArchiveWriter
         super(context, helper);
 
         mOutputStream = new TarArchiveOutputStream(
-                new FileOutputStream(helper.getTempOutputFile(context)));
+                new BufferedOutputStream(
+                        new FileOutputStream(helper.getTempOutputFile(context)),
+                        BUFFER_SIZE));
     }
 
     @Override
@@ -91,9 +97,19 @@ public class TarArchiveWriter
         doCovers(context, false, progressListener);
     }
 
+    /**
+     * Supports text files only.
+     *
+     * @param name     for the entry;  allows easier overriding of the file name
+     * @param file     to store in the archive
+     * @param compress ignored
+     *
+     * @throws IOException on failure
+     */
     @Override
     public void putFile(@NonNull final String name,
-                        @NonNull final File file)
+                        @NonNull final File file,
+                        final boolean compress)
             throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry(new File(name));
         entry.setModTime(file.lastModified());
@@ -106,9 +122,17 @@ public class TarArchiveWriter
         }
     }
 
+    /**
+     * @param name     for the entry
+     * @param bytes    to store in the archive
+     * @param compress ignored
+     *
+     * @throws IOException on failure
+     */
     @Override
     public void putByteArray(@NonNull final String name,
-                             @NonNull final byte[] bytes)
+                             @NonNull final byte[] bytes,
+                             final boolean compress)
             throws IOException {
 
         final TarArchiveEntry entry = new TarArchiveEntry(name);

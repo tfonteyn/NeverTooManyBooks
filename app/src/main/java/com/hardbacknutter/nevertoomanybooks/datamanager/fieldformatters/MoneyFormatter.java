@@ -39,7 +39,6 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 /**
@@ -47,12 +46,29 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * <ul>
  * <li>Multiple fields: <strong>yes</strong></li>
  * </ul>
+ * <p>
+ * English: "[currency] [value]" with 2 decimal digits.
+ * Most other languages: "[value] [currency]" with 2 decimal digits.
  */
+
 public class MoneyFormatter
         implements FieldFormatter<Money> {
 
     /** Log tag. */
     private static final String TAG = "MoneyFormatter";
+    @NonNull
+    private final Locale mLocale;
+
+    /**
+     * Constructor.
+     *
+     * <em>Dev note:</em> we pass the locale so we can mock it.
+     *
+     * @param locale to use
+     */
+    public MoneyFormatter(@NonNull final Locale locale) {
+        mLocale = locale;
+    }
 
     @NonNull
     @Override
@@ -70,8 +86,7 @@ public class MoneyFormatter
         }
 
         try {
-            Locale locale = LocaleUtils.getUserLocale(context);
-            DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
+            DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
             nf.setCurrency(Currency.getInstance(currency));
 
             // the result is rather dire... most currency symbols are shown as 3-char codes

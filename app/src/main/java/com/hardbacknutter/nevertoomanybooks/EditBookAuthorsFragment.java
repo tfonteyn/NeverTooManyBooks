@@ -248,10 +248,10 @@ public class EditBookAuthorsFragment
                                          allBooks);
         new MaterialAlertDialogBuilder(getContext())
                 .setIconAttribute(android.R.attr.alertDialogIcon)
-                .setTitle(R.string.title_scope_of_change)
+                .setTitle(R.string.lbl_scope_of_change)
                 .setMessage(message)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setNeutralButton(allBooks, (d, which) -> {
+                .setNeutralButton(allBooks, (d, w) -> {
                     // copy all new data
                     author.copyFrom(tmpData, true);
                     // This change is done in the database right NOW!
@@ -272,7 +272,7 @@ public class EditBookAuthorsFragment
                                 .show();
                     }
                 })
-                .setPositiveButton(R.string.btn_this_book, (d, which) -> {
+                .setPositiveButton(R.string.btn_this_book, (d, w) -> {
                     // treat the new data as a new Author; save it so we have a valid id.
                     // Note that if the user abandons the entire book edit,
                     // we will orphan this new author. That's ok, it will get
@@ -457,9 +457,9 @@ public class EditBookAuthorsFragment
             return new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_edit)
                     .setView(mVb.getRoot())
-                    .setTitle(R.string.title_edit_author)
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
-                    .setPositiveButton(R.string.btn_confirm_save, (dialog, which) -> {
+                    .setTitle(R.string.lbl_edit_author)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
+                    .setPositiveButton(R.string.action_save, (d, w) -> {
                         // don't check on anything else here,
                         // we're doing more extensive checks later on.
                         mFamilyName = mVb.familyName.getText().toString().trim();

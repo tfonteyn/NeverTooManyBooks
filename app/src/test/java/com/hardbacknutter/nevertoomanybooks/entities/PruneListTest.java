@@ -27,10 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -38,19 +34,13 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,38 +51,18 @@ import static org.mockito.Mockito.when;
  * - 'true' for Author, Bookshelf, TocEntry
  * - 'false' for Series
  */
-class PruneListTest {
+class PruneListTest
+        extends CommonSetup {
 
     private static final String PHILIP_JOSE_FARMER = "Philip Jose Farmer";
     private static final String ISAAC_ASIMOV = "Isaac Asimov";
 
     @Mock
-    Context mContext;
-    @Mock
-    SharedPreferences mSharedPreferences;
-    @Mock
-    Resources mResources;
-
-    @Mock
     DAO mDb;
 
-
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mContext = mock(Context.class);
-        mResources = mock(Resources.class);
-        mSharedPreferences = mock(SharedPreferences.class);
-
-        when(mContext.getApplicationContext()).thenReturn(mContext);
-        when(mContext.getResources()).thenReturn(mResources);
-        when(mContext.createConfigurationContext(any())).thenReturn(mContext);
-        when(mContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);
-
-        when(mSharedPreferences.getString(eq(Prefs.pk_ui_locale),
-                                          eq(LocaleUtils.SYSTEM_LANGUAGE)))
-                .thenReturn(LocaleUtils.SYSTEM_LANGUAGE);
+    public void setUp() {
+        super.setUp();
 
         mDb = mock(DAO.class);
 
@@ -193,8 +163,9 @@ class PruneListTest {
      */
     @Test
     void pruneSeriesList() {
-        List<Series> list = new ArrayList<>();
+        setLocale(Locale.UK);
 
+        List<Series> list = new ArrayList<>();
 
         Series series = Series.fromString("The series (5)");
         series.setId(100);

@@ -113,7 +113,7 @@ public class EditBookshelvesFragment
         mModel.getSelectedPosition().observe(getViewLifecycleOwner(), position ->
                 mAdapter.setSelectedPosition(position));
 
-        getActivity().setTitle(R.string.title_edit_bookshelves);
+        getActivity().setTitle(R.string.lbl_edit_bookshelves);
         //noinspection ConstantConditions
         mAdapter = new BookshelfAdapter(getContext());
 
@@ -180,11 +180,11 @@ public class EditBookshelvesFragment
         final Menu menu = MenuPicker.createMenu(getContext());
         menu.add(Menu.NONE, R.id.MENU_EDIT,
                  r.getInteger(R.integer.MENU_ORDER_EDIT),
-                 R.string.menu_edit)
+                 R.string.action_edit_ellipsis)
             .setIcon(R.drawable.ic_edit);
         menu.add(Menu.NONE, R.id.MENU_DELETE,
                  r.getInteger(R.integer.MENU_ORDER_DELETE),
-                 R.string.menu_delete)
+                 R.string.action_delete)
             .setIcon(R.drawable.ic_delete);
 
         final String title = bookshelf.getName();

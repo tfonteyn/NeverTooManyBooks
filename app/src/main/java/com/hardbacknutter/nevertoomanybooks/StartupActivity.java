@@ -216,7 +216,7 @@ public class StartupActivity
                     .setTitle(R.string.lbl_about_upgrade)
                     .setIcon(R.drawable.ic_info_outline)
                     .setMessage(Html.fromHtml(upgradeMessage))
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
                         UpgradeMessageManager.setUpgradeAcknowledged(this);
                         nextStage();
                     })
@@ -238,9 +238,8 @@ public class StartupActivity
                     .setIcon(R.drawable.ic_help_outline)
                     .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                    .setPositiveButton(android.R.string.ok, (dialog, which) ->
-                            mModel.setBackupRequired())
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> mModel.setBackupRequired())
                     .setOnDismissListener(d -> nextStage())
                     .create()
                     .show();

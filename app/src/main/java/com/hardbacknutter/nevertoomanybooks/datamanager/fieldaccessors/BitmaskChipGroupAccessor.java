@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  *             android:id="@+id/edition"
  *             android:layout_width="0dp"
  *             android:layout_height="wrap_content"
+ *             app:chipSpacing="@dimen/edChipSpacing"
  *             app:layout_constraintEnd_toEndOf="parent"
  *             app:layout_constraintStart_toStartOf="parent"
  *             app:layout_constraintTop_toBottomOf="@id/lbl_edition"

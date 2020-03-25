@@ -78,7 +78,7 @@ public enum GrStatus {
             case AuthorizationAlreadyGranted:
                 return context.getString(R.string.gr_authorization_already_granted);
             case AuthorizationSuccessful:
-                return context.getString(R.string.info_authorization_successful,
+                return context.getString(R.string.info_site_authorization_successful,
                                          context.getString(R.string.site_goodreads));
             case AuthorizationFailed:
                 return context.getString(R.string.error_site_authorization_failed,

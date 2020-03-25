@@ -61,6 +61,8 @@ public final class NetworkUtils {
     /**
      * Check if we have network access; taking into account whether the user permits
      * metered (i.e. pay-per-usage) networks or not.
+     * <p>
+     * When running a JUnit test, this method will always return {@code true}.
      *
      * @param context Application context
      *

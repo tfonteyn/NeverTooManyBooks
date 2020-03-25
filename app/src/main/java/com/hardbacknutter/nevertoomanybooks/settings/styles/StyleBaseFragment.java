@@ -181,9 +181,9 @@ public abstract class StyleBaseFragment
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             if (mStyle.getId() == 0) {
-                actionBar.setTitle(R.string.title_clone_style);
+                actionBar.setTitle(R.string.lbl_clone_style);
             } else {
-                actionBar.setTitle(R.string.title_edit_style);
+                actionBar.setTitle(R.string.lbl_edit_style);
             }
             //noinspection ConstantConditions
             actionBar.setSubtitle(mStyle.getLabel(getContext()));

@@ -180,7 +180,7 @@ public class ExportFragment
                 fm.findFragmentByTag(ProgressDialogFragment.TAG);
         // not found? create it
         if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(R.string.title_backing_up, false, true, 0);
+            dialog = ProgressDialogFragment.newInstance(R.string.lbl_backing_up, false, true, 0);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
@@ -196,16 +196,15 @@ public class ExportFragment
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.lbl_backup)
-                .setMessage(R.string.info_export_backup_all)
-                .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                .setMessage(R.string.txt_export_backup_all)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> {
                     //noinspection ConstantConditions
                     getActivity().finish();
                 })
-                .setNeutralButton(R.string.btn_options, (dialog, which)
-                        -> ExportHelperDialogFragment.newInstance()
-                                                     .show(getChildFragmentManager(),
-                                                           ExportHelperDialogFragment.TAG))
-                .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                .setNeutralButton(R.string.btn_options, (d, w) -> ExportHelperDialogFragment
+                        .newInstance()
+                        .show(getChildFragmentManager(), ExportHelperDialogFragment.TAG))
+                .setPositiveButton(android.R.string.ok, (d, w) ->
                         exportPickUri(new ExportManager(Options.ALL)))
                 .create()
                 .show();
@@ -272,14 +271,14 @@ public class ExportFragment
         // slightly misleading. The text currently says "processed" but it's really "exported".
         if (results.booksExported > 0) {
             msg.append("\n• ")
-               .append(getString(R.string.info_export_result_n_books_processed,
+               .append(getString(R.string.progress_end_export_result_n_books_processed,
                                  results.booksExported));
         }
         if (results.coversExported > 0
             || results.coversMissing[0] > 0
             || results.coversMissing[1] > 0) {
             msg.append("\n• ")
-               .append(getString(R.string.info_export_result_n_covers_processed_m_missing,
+               .append(getString(R.string.progress_end_export_result_n_covers_processed_m_missing,
                                  results.coversExported,
                                  results.coversMissing[0],
                                  results.coversMissing[1]));
@@ -381,10 +380,7 @@ public class ExportFragment
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.error_backup_failed)
                 .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                })
+                .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                 .create()
                 .show();
     }
@@ -406,20 +402,18 @@ public class ExportFragment
                     .setType("plain/text")
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            startActivity(Intent.createChooser(intent, getString(R.string.title_send_mail)));
+            startActivity(Intent.createChooser(intent, getString(R.string.lbl_send_mail)));
             //noinspection ConstantConditions
             getActivity().finish();
 
         } catch (@NonNull final NullPointerException e) {
             //noinspection ConstantConditions
             Logger.error(getContext(), TAG, e);
+            //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setMessage(R.string.error_email_failed)
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        //noinspection ConstantConditions
-                        getActivity().finish();
-                    })
+                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
         }

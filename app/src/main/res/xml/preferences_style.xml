@@ -40,7 +40,7 @@
             android:icon="@drawable/ic_edit"
             android:key="style.booklist.name"
             android:selectAllOnFocus="true"
-            android:title="@string/name"
+            android:title="@string/lbl_name"
             />
 
         <Preference

@@ -94,8 +94,7 @@ public class ValuePicker {
 
         if (showCancel) {
             mDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                              context.getText(android.R.string.cancel),
-                              (dialog, which) -> dialog.cancel());
+                              context.getText(android.R.string.cancel), (d, w) -> d.cancel());
         }
     }
 

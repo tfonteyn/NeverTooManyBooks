@@ -422,7 +422,7 @@ public final class LanguageUtils {
                     getTaskId(), context.getString(R.string.progress_msg_optimizing)));
             try {
 
-                SharedPreferences prefs = getLanguageCache(context);
+                final SharedPreferences prefs = getLanguageCache(context);
 
                 // the one the user is using our app in (can be different from the system one)
                 createLanguageMappingCache(prefs, LocaleUtils.getUserLocale(context));

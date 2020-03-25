@@ -59,7 +59,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_name"
         style="@style/Envelope.AutoCompleteTextView"
-        android:hint="@string/name"
+        android:hint="@string/lbl_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_lend_to"

@@ -47,7 +47,6 @@ import java.util.TimerTask;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdvancedSearchBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
@@ -76,6 +75,8 @@ public class FTSSearchActivity
 
     /** Handle inter-thread messages. */
     private final Handler mHandler = new Handler();
+    /** The results book id list. For sending back to the caller. */
+    private final ArrayList<Long> mBookIdsFound = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;
     /** User entered search text. */
@@ -86,10 +87,6 @@ public class FTSSearchActivity
     private String mSeriesTitleSearchText;
     /** User entered search text. */
     private String mKeywordsSearchText;
-
-    /** The results book id list. For sending back to the caller. */
-    private final ArrayList<Long> mBookIdsFound = new ArrayList<>();
-
     /** Indicates user has changed something since the last search. */
     private boolean mSearchIsDirty;
     /** Timer reset each time the user clicks, in order to detect an idle time. */
@@ -337,8 +334,6 @@ public class FTSSearchActivity
                             mBookIdsFound.add(cursor.getLong(0));
                         }
                     }
-                } catch (@NonNull final RuntimeException e) {
-                    Logger.error(FTSSearchActivity.this, TAG, e);
                 }
 
                 // Update the UI in main thread.

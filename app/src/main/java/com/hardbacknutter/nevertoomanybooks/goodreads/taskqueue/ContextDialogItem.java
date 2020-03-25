@@ -70,8 +70,8 @@ public class ContextDialogItem
             items.toArray(itemArray);
             new MaterialAlertDialogBuilder(context)
                     .setIconAttribute(android.R.attr.alertDialogIcon)
-                    .setTitle(R.string.title_select_an_action)
-                    .setItems(itemArray, (dialog, which) -> itemArray[which].mHandler.run())
+                    .setTitle(R.string.lbl_select_an_action)
+                    .setItems(itemArray, (d, which) -> itemArray[which].mHandler.run())
                     .create()
                     .show();
         }

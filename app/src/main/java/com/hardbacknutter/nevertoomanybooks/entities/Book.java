@@ -176,7 +176,7 @@ public class Book
 //            Uri uri = GenericFileProvider.getUriForFile(context, coverFile);
 //        }
 
-        String text = context.getString(R.string.info_share_book_im_reading,
+        String text = context.getString(R.string.txt_share_book_im_reading,
                                         title, author, series, ratingString);
 
         return Intent.createChooser(new Intent(Intent.ACTION_SEND)
@@ -559,7 +559,7 @@ public class Book
         } else {
             // this is not an issue as such, but helps during debug when the book *should*
             // have a language and did not.
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LOCALE) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.LOCALE) {
                 Log.d(TAG, "getAndUpdateLocale|no language set"
                            + "|id=" + getId()
                            + "|title=" + getString(DBDefinitions.KEY_TITLE),
@@ -761,7 +761,7 @@ public class Book
                                 Logger.warn(context, TAG, "preprocessExternalIds"
                                                           + "|NumberFormatException"
                                                           + "|name=" + key
-                                                          + "|value=" + o);
+                                                          + "|value=`" + o + '`');
                             }
                         }
                         break;

@@ -27,7 +27,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -37,9 +36,9 @@ import java.util.Locale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import com.hardbacknutter.nevertoomanybooks.BundleMock;
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -56,46 +55,45 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.mock;
 
-class BookTest {
+class BookTest
+        extends CommonSetup {
 
-    @Mock
-    protected Bundle mRawData;
     @Mock
     protected Bundle mBundleHelper;
-    @Mock
-    Context mContext;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
+    public void setUp() {
+        super.setUp();
 
-        mRawData = BundleMock.mock();
         mBundleHelper = BundleMock.mock();
-
-        mContext = mock(Context.class);
     }
 
+    /** US english book, price in $. */
     @Test
     void preprocessPrices01() {
+        setLocale(Locale.US);
+
         Book book = new Book(mRawData);
+        book.putString(DBDefinitions.KEY_LANGUAGE, "eng");
         book.putDouble(KEY_PRICE_LISTED, 1.23d);
         book.putString(KEY_PRICE_LISTED_CURRENCY, "$");
 
         final Locale bookLocale = book.getLocale(mContext);
 
-        book.preprocessPrice(bookLocale, KEY_PRICE_LISTED,
-                             KEY_PRICE_LISTED_CURRENCY);
+        book.preprocessPrice(bookLocale, KEY_PRICE_LISTED, KEY_PRICE_LISTED_CURRENCY);
         // dump(book);
 
         assertEquals(1.23d, book.getDouble(KEY_PRICE_LISTED));
         assertEquals("$", book.getString(KEY_PRICE_LISTED_CURRENCY));
     }
 
+    /** US english book, price set, currency not set. */
     @Test
     void preprocessPrices02() {
+        setLocale(Locale.US);
         Book book = new Book(mRawData);
+        book.putString(DBDefinitions.KEY_LANGUAGE, "eng");
         book.putDouble(KEY_PRICE_LISTED, 0d);
         book.putString(KEY_PRICE_LISTED_CURRENCY, "");
         book.putDouble(KEY_PRICE_PAID, 456.789d);
@@ -117,7 +115,10 @@ class BookTest {
 
     @Test
     void preprocessPrices03() {
+        setLocale(Locale.FRANCE);
+
         Book book = new Book(mRawData);
+        book.putString(DBDefinitions.KEY_LANGUAGE, "fra");
         book.putString(KEY_PRICE_LISTED, "");
         book.putString(KEY_PRICE_LISTED_CURRENCY, "EUR");
         book.putString(KEY_PRICE_PAID, "test");
@@ -125,10 +126,8 @@ class BookTest {
 
         final Locale bookLocale = book.getLocale(mContext);
 
-        book.preprocessPrice(bookLocale, KEY_PRICE_LISTED,
-                             KEY_PRICE_LISTED_CURRENCY);
-        book.preprocessPrice(bookLocale, KEY_PRICE_PAID,
-                             KEY_PRICE_PAID_CURRENCY);
+        book.preprocessPrice(bookLocale, KEY_PRICE_LISTED, KEY_PRICE_LISTED_CURRENCY);
+        book.preprocessPrice(bookLocale, KEY_PRICE_PAID, KEY_PRICE_PAID_CURRENCY);
         //dump(book);
 
         assertEquals(0d, book.getDouble(KEY_PRICE_LISTED));
@@ -140,7 +139,9 @@ class BookTest {
 
     @Test
     void preprocessPrices04() {
+        setLocale(Locale.FRANCE);
         Book book = new Book(mRawData);
+        book.putString(DBDefinitions.KEY_LANGUAGE, "eng");
         book.putString(KEY_PRICE_LISTED, "EUR 45");
 
         final Locale bookLocale = book.getLocale(mContext);

@@ -265,14 +265,14 @@ public class PartialDatePickerDialogFragment
             // no listeners. They must be set in the onResume of the fragment.
             setButton(DialogInterface.BUTTON_NEGATIVE, getString(android.R.string.cancel),
                       (DialogInterface.OnClickListener) null);
-            setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.clear),
+            setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.action_clear),
                       (DialogInterface.OnClickListener) null);
             setButton(DialogInterface.BUTTON_POSITIVE, getString(android.R.string.ok),
                       (DialogInterface.OnClickListener) null);
 
             if (args != null) {
                 @StringRes
-                int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.edit);
+                int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.action_edit);
                 if (titleId != 0) {
                     setTitle(titleId);
                 }

@@ -3651,7 +3651,14 @@ public class DAO
     }
 
     /**
-     * Process a single row from the cursor.
+     * Process a <strong>single row</strong> from the cursor.
+     *
+     * @param context    Current context
+     * @param locale     to use for this row
+     * @param reorder    flag whether to reorder or not
+     * @param cursor     positioned on the row to handle
+     * @param table      to update
+     * @param domainName to update
      *
      * @return {@code true} on success
      */
@@ -3997,12 +4004,6 @@ public class DAO
                               + " || ' ' || " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME))
                 + " END";
 
-        public static final String EXP_PRIMARY_SERIES_COUNT_AS_BOOLEAN =
-                "CASE"
-                + " WHEN COALESCE(" + TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION) + ",1)=1"
-                + " THEN 1"
-                + " ELSE 0"
-                + " END";
         /**
          * SQL column: return 1 if the book is available, 0 if not.
          * {@link DBDefinitions#KEY_LOANEE_AS_BOOLEAN}

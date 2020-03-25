@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StylePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
@@ -104,8 +104,8 @@ public class SettingsActivity
                 addFragment(containerViewId, GlobalPreferenceFragment.class, tag);
                 return;
 
-            case StylePreferenceFragment.TAG:
-                addFragment(containerViewId, StylePreferenceFragment.class, tag);
+            case StyleFragment.TAG:
+                addFragment(containerViewId, StyleFragment.class, tag);
                 return;
 
             default:

@@ -302,12 +302,12 @@ public class UpdateFieldsFragment
                     .setIconAttribute(android.R.attr.alertDialogIcon)
                     .setTitle(R.string.menu_update_fields)
                     .setMessage(R.string.confirm_overwrite_thumbnail)
-                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
-                    .setNeutralButton(R.string.no, (dialog, which) -> {
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setNeutralButton(R.string.no, (d, w) -> {
                         covers.setUsage(CopyIfBlank);
                         startUpdate();
                     })
-                    .setPositiveButton(R.string.yes, (dialog, which) -> {
+                    .setPositiveButton(R.string.yes, (d, w) -> {
                         covers.setUsage(Overwrite);
                         startUpdate();
                     })

@@ -76,7 +76,7 @@
         android:id="@+id/cbx_covers"
         style="@style/OptionRow.Checkable"
         android:checked="true"
-        android:text="@string/lbl_cover_images"
+        android:text="@string/lbl_covers_long"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rb_books_since_last_backup"

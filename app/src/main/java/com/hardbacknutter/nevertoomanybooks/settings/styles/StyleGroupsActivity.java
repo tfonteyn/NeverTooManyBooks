@@ -107,7 +107,7 @@ public class StyleGroupsActivity
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(R.string.title_edit_style);
+            actionBar.setTitle(R.string.lbl_edit_style);
             actionBar.setSubtitle(getString(R.string.name_colon_value,
                                             getString(R.string.pg_style_groups),
                                             mModel.getStyle().getLabel(this)));
@@ -131,10 +131,8 @@ public class StyleGroupsActivity
                     .setTitle(R.string.pg_style_groups)
                     .setMessage(R.string.warning_select_at_least_1_group)
                     // cancel button, or cancel dialog
-                    .setNegativeButton(R.string.btn_continue_edit, (dialog, which) ->
-                            dialog.dismiss())
-                    .setPositiveButton(R.string.btn_confirm_exit, (dialog, which) ->
-                            finish())
+                    .setNegativeButton(R.string.btn_continue_edit, (d, w) -> d.dismiss())
+                    .setPositiveButton(R.string.action_exit, (d, w) -> finish())
                     .create()
                     .show();
         } else {

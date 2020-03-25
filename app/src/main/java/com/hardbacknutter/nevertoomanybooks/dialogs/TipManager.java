@@ -369,14 +369,14 @@ public final class TipManager {
             new MaterialAlertDialogBuilder(context)
                     .setView(root)
                     .setTitle(R.string.tip_dialog_title)
-                    .setNeutralButton(R.string.btn_disable_message, (dialog, which) -> {
+                    .setNeutralButton(R.string.btn_disable_message, (d, w) -> {
                         PreferenceManager.getDefaultSharedPreferences(context)
                                          .edit().putBoolean(PREF_TIP + key, false).apply();
                         if (postRun != null) {
                             postRun.run();
                         }
                     })
-                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
                         if (postRun != null) {
                             postRun.run();
                         }

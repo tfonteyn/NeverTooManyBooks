@@ -59,7 +59,6 @@
                     android:id="@+id/bookshelf_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:popupBackground="@drawable/border"
                     tools:entries="@array/tools_placeholder"
                     />
 

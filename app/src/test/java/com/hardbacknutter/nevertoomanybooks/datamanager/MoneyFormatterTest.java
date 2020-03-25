@@ -27,68 +27,93 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager;
 
-import android.content.Context;
+import java.util.Locale;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
+import com.hardbacknutter.nevertoomanybooks.CommonSetup;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-class MoneyFormatterTest {
+/**
+ * Test the variations of currency location (before/after), currency symbol/code,
+ * decimal separator and thousands separator.
+ */
+class MoneyFormatterTest
+        extends CommonSetup {
 
-    @Mock
-    Context mContext;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-        mContext = mock(Context.class);
-        when(mContext.getApplicationContext()).thenReturn(mContext);
+    @Test
+    void format00() {
+        setLocale(Locale.US);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("$1,234.50", f.format(mContext, new Money(1234.50d, "USD")));
     }
 
     @Test
     void format01() {
-        FieldFormatter<Money> f = new MoneyFormatter();
-        assertEquals("$10.50", f.format(mContext, new Money(10.50d, "USD")));
+        setLocale(Locale.UK);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("USD1,234.50", f.format(mContext, new Money(1234.50d, "USD")));
     }
 
     @Test
     void format02() {
-        FieldFormatter<Money> f = new MoneyFormatter();
-        assertEquals("USD10.50", f.format(mContext, new Money(10.50d, "USD")));
+        setLocale(Locale.GERMANY);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("1.234,50 USD", f.format(mContext, new Money(1234.50d, "USD")));
     }
 
-    @Test
-    void format03() {
-        FieldFormatter<Money> f = new MoneyFormatter();
-        assertEquals("10,50 USD", f.format(mContext, new Money(10.50d, "USD")));
-    }
-
-
-    /**
-     * Parsing will fail, we get the source back
-     */
     @Test
     void format10() {
-        FieldFormatter<Money> f = new MoneyFormatter();
-        assertEquals("10,50 €", f.format(mContext, new Money(10.50d, "EUR")));
+        setLocale(Locale.US);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("GBP1,234.50", f.format(mContext, new Money(1234.50d, "GBP")));
     }
 
-    /**
-     * Parsing will fail, we get the source back
-     */
     @Test
     void format11() {
-        FieldFormatter<Money> f = new MoneyFormatter();
-        assertEquals("€10.50", f.format(mContext, new Money(10.50d, "EUR")));
+        setLocale(Locale.UK);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("£1,234.50", f.format(mContext, new Money(1234.50d, "GBP")));
+    }
+
+    @Test
+    void format12() {
+        setLocale(Locale.GERMANY);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("1.234,50 GBP", f.format(mContext, new Money(1234.50d, "GBP")));
+    }
+
+    @Test
+    void format20() {
+        setLocale(Locale.US);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("EUR1,234.50", f.format(mContext, new Money(1234.50d, "EUR")));
+    }
+
+    @Test
+    void format21() {
+        setLocale(Locale.UK);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("€1,234.50", f.format(mContext, new Money(1234.50d, "EUR")));
+    }
+
+    @Test
+    void format22() {
+        setLocale(Locale.GERMANY);
+        //noinspection ConstantConditions
+        FieldFormatter<Money> f = new MoneyFormatter(mLocale0);
+        assertEquals("1.234,50 €", f.format(mContext, new Money(1234.50d, "EUR")));
     }
 }

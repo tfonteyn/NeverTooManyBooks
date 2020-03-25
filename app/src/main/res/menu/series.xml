@@ -45,13 +45,13 @@
         android:id="@id/MENU_SERIES_EDIT"
         android:icon="@drawable/ic_edit"
         android:orderInCategory="@integer/MENU_ORDER_EDIT"
-        android:title="@string/menu_edit" />
+        android:title="@string/action_edit_ellipsis" />
 
     <item
         android:id="@id/MENU_SERIES_DELETE"
         android:icon="@drawable/ic_delete"
         android:orderInCategory="@integer/MENU_ORDER_DELETE"
-        android:title="@string/menu_delete" />
+        android:title="@string/action_delete" />
 
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET"

@@ -235,7 +235,7 @@ public final class DebugReport {
                     .putExtra(Intent.EXTRA_EMAIL, to)
                     .putExtra(Intent.EXTRA_TEXT, bodyText)
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
-            final String chooserText = context.getString(R.string.title_send_mail);
+            final String chooserText = context.getString(R.string.lbl_send_mail);
             context.startActivity(Intent.createChooser(intent, chooserText));
             return true;
 

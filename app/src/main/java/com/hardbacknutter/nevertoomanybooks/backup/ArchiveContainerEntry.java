@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
  * (e.g. StylesXmlV2 etc...) and added to {@link ArchiveReaderAbstract#read}.
  */
 public enum ArchiveContainerEntry {
-    /** Archive header. The archiver decides on the format; the default is XML. */
+    /** Archive information. */
     InfoHeaderXml,
 
     /** CSV book list. */
