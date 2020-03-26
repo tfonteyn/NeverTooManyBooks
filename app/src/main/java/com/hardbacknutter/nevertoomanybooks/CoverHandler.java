@@ -390,6 +390,7 @@ class CoverHandler {
         if (fileLen > ImageUtils.MIN_IMAGE_FILE_SIZE) {
             new ImageUtils.ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, true)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            mCoverView.setBackground(null);
             mBook.putString(UniqueId.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
             return;
         }
