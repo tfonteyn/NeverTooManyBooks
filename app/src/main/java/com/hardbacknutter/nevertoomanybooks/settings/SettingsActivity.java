@@ -95,6 +95,8 @@ public class SettingsActivity
      *
      * @param containerViewId to receive the fragment
      * @param tag             for the required fragment
+     *
+     * @throws UnexpectedValueException if an invalid tag was passed in
      */
     private void addFragment(@SuppressWarnings("SameParameterValue")
                              @IdRes final int containerViewId,

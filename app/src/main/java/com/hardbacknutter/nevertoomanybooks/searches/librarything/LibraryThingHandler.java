@@ -37,12 +37,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * Parser Handler to collect the book data.
@@ -391,7 +391,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * but in both cases, it should be noted that the covers are still available.
  */
 class LibraryThingHandler
-        extends DefaultHandler {
+        extends SearchHandler {
 
     /** some common XML attributes. */
     private static final String XML_ATTR_ID = "id";
@@ -451,7 +451,7 @@ class LibraryThingHandler
     /**
      * Constructor.
      *
-     * @param bookData       Bundle to save results in (passed in to allow mocking)
+     * @param bookData Bundle to save results in (passed in to allow mocking)
      */
     LibraryThingHandler(@NonNull final Bundle bookData) {
         mBookData = bookData;
@@ -488,6 +488,7 @@ class LibraryThingHandler
      * @return Bundle with book data
      */
     @NonNull
+    @Override
     public Bundle getResult() {
         return mBookData;
     }

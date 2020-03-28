@@ -40,7 +40,6 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -51,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * 2019-11: this needs scrapping. See {@link GoogleBooksSearchEngine} class doc.
@@ -166,7 +166,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  * 0340198273
  */
 class GoogleBooksEntryHandler
-        extends DefaultHandler {
+        extends SearchHandler {
 
     /** Log tag. */
     private static final String TAG = "GoogleBooksEntryHandler";
@@ -238,11 +238,14 @@ class GoogleBooksEntryHandler
     @NonNull
     private final ArrayList<Author> mAuthors = new ArrayList<>();
     /** accumulate all Publishers for this book. */
+    @NonNull
     private final ArrayList<Publisher> mPublishers = new ArrayList<>();
 
     /** XML content. */
+    @NonNull
     private final StringBuilder mBuilder = new StringBuilder();
 
+    @NonNull
     private final Locale mLocale;
 
     private boolean mInSuggestedRetailPriceTag;
@@ -267,6 +270,7 @@ class GoogleBooksEntryHandler
      * @return Bundle with book data
      */
     @NonNull
+    @Override
     public Bundle getResult() {
         return mBookData;
     }

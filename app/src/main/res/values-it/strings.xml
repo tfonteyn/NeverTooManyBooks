@@ -654,5 +654,7 @@
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d creati, %3$d aggiornati, %4$d saltate</string>
     <string name="txt_rebuild_scheduled">Ricostruzione programmata</string>
     <string name="lbl_dust_cover">Sovraccoperta</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="amazon_ellipsis">Amazon…</string>
 
 </resources>

@@ -338,6 +338,7 @@ public class BooklistBuilder
     /**
      * Clear and build the temporary list of books.
      * Criteria must be set before calling this method with one or more of the setCriteria calls.
+     *
      * @param context Current context
      */
     public void build(@NonNull final Context context) {
@@ -640,46 +641,45 @@ public class BooklistBuilder
      * @return the target rows, or {@code null} if none.
      */
     @Nullable
-    public ArrayList<RowStateDAO.ListRowDetails> getTargetRows(final long bookId) {
+    public ArrayList<RowStateDAO.Node> getTargetRows(final long bookId) {
         // no input, no output...
         if (bookId == 0) {
             return null;
         }
 
         // get all positions of the book
-        ArrayList<RowStateDAO.ListRowDetails> rows =
-                mRowStateDAO.getBookPositions(mListTable, bookId);
+        ArrayList<RowStateDAO.Node> allNodes = mRowStateDAO.getNodesForBookId(mListTable, bookId);
 
-        if (rows.isEmpty()) {
+        if (allNodes.isEmpty()) {
             return null;
         }
 
         // First, get the ones that are currently visible...
-        ArrayList<RowStateDAO.ListRowDetails> visibleRows = new ArrayList<>();
-        for (RowStateDAO.ListRowDetails row : rows) {
-            if (row.visible) {
-                visibleRows.add(row);
+        ArrayList<RowStateDAO.Node> visibleNodes = new ArrayList<>();
+        for (RowStateDAO.Node node : allNodes) {
+            if (node.isVisible) {
+                visibleNodes.add(node);
             }
         }
 
         // If we have any visible rows, only consider those for the new position
-        if (!visibleRows.isEmpty()) {
-            rows = visibleRows;
+        if (!visibleNodes.isEmpty()) {
+            allNodes = visibleNodes;
 
         } else {
             // Make them all visible
-            for (RowStateDAO.ListRowDetails row : rows) {
-                if (!row.visible && row.rowId >= 0) {
-                    mRowStateDAO.ensureRowIsVisible(row.rowId, row.level);
+            for (RowStateDAO.Node node : allNodes) {
+                if (!node.isVisible && node.rowId >= 0) {
+                    mRowStateDAO.ensureNodeIsVisible(node);
                 }
             }
             // Recalculate all positions
-            for (RowStateDAO.ListRowDetails row : rows) {
-                row.listPosition = mRowStateDAO.getListPosition(row.rowId);
+            for (RowStateDAO.Node node : allNodes) {
+                node.setListPosition(mRowStateDAO.getListPosition(node));
             }
         }
 
-        return rows;
+        return allNodes;
     }
 
     /**
@@ -781,17 +781,6 @@ public class BooklistBuilder
         return mRowStateDAO.countVisibleRows();
     }
 
-    /**
-     * Wrapper for {@link RowStateDAO#getListPosition}.
-     *
-     * @param rowId to check
-     *
-     * @return Actual list position.
-     */
-    public int getListPosition(final long rowId) {
-        return mRowStateDAO.getListPosition(rowId);
-    }
-
     /** Wrapper for {@link RowStateDAO}. */
     public void saveAllNodes() {
         mRowStateDAO.saveAllNodes();
@@ -804,19 +793,25 @@ public class BooklistBuilder
     }
 
     /**
-     * Wrapper for {@link RowStateDAO}.
+     * Toggle (expand/collapse) the given node.
      *
-     * @param leafRowId of the node in the list
+     * @param nodeRowId          of the node in the list
+     * @param relativeChildLevel up to and including this (relative to the node) child level;
      */
-    public boolean toggleNode(final long leafRowId) {
-        // Yes, we could just take the hard coded arguments one level down,
-        // but keeping it this way allows future enhancements.
-        return mRowStateDAO.setNode(leafRowId,
-                                    RowStateDAO.DesiredNodeState.Toggle,
-                                    // if the new state is expand, also expand all children
-                                    true, true,
-                                    // for all child levels
-                                    Integer.MAX_VALUE);
+    public boolean toggleNode(final long nodeRowId,
+                              final int relativeChildLevel) {
+        RowStateDAO.Node node = mRowStateDAO.getNodeByNodeId(nodeRowId);
+        node.setExpanded(RowStateDAO.DesiredNodeState.Toggle);
+
+        // if the new state of the node is expanded, also expand the children
+        mRowStateDAO.setNode(node.rowId, node.level, node.isExpanded,
+                             true, relativeChildLevel);
+
+        return node.isExpanded;
+    }
+
+    public RowStateDAO.Node getNodeByNodeId(final long nodeRowId) {
+        return mRowStateDAO.getNodeByNodeId(nodeRowId);
     }
 
     /**

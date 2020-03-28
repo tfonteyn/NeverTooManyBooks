@@ -179,7 +179,7 @@ public class BooklistStyle
      * When set to the empty string, the global preferences will be used.
      */
     @NonNull
-    private String mUuid;
+    private final String mUuid;
 
     /**
      * Display name of this style.
@@ -752,15 +752,6 @@ public class BooklistStyle
         } else {
             return mName.getValue(context);
         }
-    }
-
-    /**
-     * Set both the internal name and the display-name.
-     *
-     * @param name to set
-     */
-    private void setName(@NonNull final String name) {
-        mName.set(name);
     }
 
     /**
@@ -1928,7 +1919,6 @@ public class BooklistStyle
         }
 
         private static void create(@NonNull final Context context) {
-
 
             // Author/Series
             BooklistStyle style = getDefault(context);

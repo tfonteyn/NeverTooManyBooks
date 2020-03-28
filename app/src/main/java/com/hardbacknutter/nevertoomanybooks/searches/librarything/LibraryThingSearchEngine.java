@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * Handle all aspects of searching (and ultimately synchronizing with) LibraryThing.
@@ -265,7 +266,7 @@ public class LibraryThingSearchEngine
     public Bundle searchByIsbn(@NonNull final Context context,
                                @NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, SearchException {
 
         String url = String.format(BOOK_URL, getDevKey(context), "isbn", validIsbn);
         Bundle bookData = fetchBook(context, url, new Bundle());
@@ -287,7 +288,7 @@ public class LibraryThingSearchEngine
     public Bundle searchByNativeId(@NonNull final Context context,
                                    @NonNull final String nativeId,
                                    @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, SearchException {
 
         String url = String.format(BOOK_URL, getDevKey(context), "id", nativeId);
 
@@ -306,10 +307,11 @@ public class LibraryThingSearchEngine
     private Bundle fetchBook(@NonNull final Context localizedAppContext,
                              @NonNull final String url,
                              @NonNull final Bundle bookData)
-            throws IOException {
+            throws IOException, SearchException {
 
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        LibraryThingHandler handler = new LibraryThingHandler(bookData);
+        SearchHandler handler = new LibraryThingHandler(bookData);
+//        SearchHandler handler = new XmlDumpParser();
 
         // Make sure we follow LibraryThing ToS (no more than 1 request/second).
         THROTTLER.waitUntilRequestAllowed();
@@ -321,6 +323,14 @@ public class LibraryThingSearchEngine
             return handler.getResult();
 
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
+            String msg = e.getMessage();
+            // Horrible hack... but once again the underlying apache class makes life difficult.
+            // Sure, the Locator could be used to see that the line==1 and column==0,
+            // but other then that it does not seem possible to get full details.
+            if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
+                // 2020-03-27. Started getting "APIs Temporarily disabled"
+                throw new SearchException(R.string.site_out_of_order);
+            }
             // wrap parser exceptions in an IOException
             throw new IOException(e);
         }

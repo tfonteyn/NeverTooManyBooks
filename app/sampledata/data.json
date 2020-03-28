@@ -32,13 +32,15 @@
       "title_nr": "Russian Classics"
     },
     {
-      "title_nr": "Foundation (2)"
-    },
-    {
-      "title_nr": "Harry Potter (3)"
-    },
-    {
       "title_nr": "Farmer collection"
+    }
+  ],
+  "series_with_nr": [
+    {
+      "title_nr": "• Foundation (2)"
+    },
+    {
+      "title_nr": "• Harry Potter (3)"
     }
   ],
   "publisher": [
@@ -132,6 +134,20 @@
     },
     {
       "name": "Language"
+    }
+  ],
+  "field": [
+    {
+      "name": "Publisher"
+    },
+    {
+      "name": "Location"
+    },
+    {
+      "name": "Date Acquired"
+    },
+    {
+      "name": "Genre"
     }
   ]
 }

@@ -306,7 +306,7 @@ public class ImportFragment
         // Transform the result data into a user friendly report.
         final StringBuilder msg = new StringBuilder();
 
-        //TODO: LTR
+        //TODO: RTL
         if (results.booksCreated > 0 || results.booksUpdated > 0 || results.booksSkipped > 0) {
             msg.append("\n• ")
                .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,

@@ -149,7 +149,7 @@
     <string name="gr_menu_import_all_from_goodreads">Importeer alles uit Goodreads</string>
     <string name="gr_menu_send_all">Zend alles</string>
     <string name="gr_menu_send_to_goodreads">Zend naar Goodreads</string>
-    <string name="gr_menu_send_updated">Zend bijgewerkte</string>
+    <string name="gr_menu_send_updated">Zend bijgewerkte boeken</string>
     <string name="gr_pt_collect_genre">Gebruik populaire boekenplanknamen als boekgenres</string>
     <string name="gr_send_book_to_goodreads">Zend boek %1$d naar Goodreads</string>
     <string name="gr_title_send_book">Zend boeken naar Goodreads</string>
@@ -657,5 +657,7 @@
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d toegevoegd, %3$d bijgewerkt, %4$d overgeslagen</string>
     <string name="txt_rebuild_scheduled">Herbouw gepland</string>
     <string name="lbl_dust_cover">Stof omslag</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="amazon_ellipsis">Amazon…</string>
 
 </resources>

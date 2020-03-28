@@ -78,6 +78,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 class StripInfoBookHandler
         extends JsoupBase {
 
+    /** file suffix for cover files. */
     private static final String FILENAME_SUFFIX = "_SI";
 
     /** read-timeout. Default is 10_000. */

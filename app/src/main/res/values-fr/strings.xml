@@ -150,7 +150,7 @@
     <string name="gr_menu_import_all_from_goodreads">Tout importer depuis Goodreads</string>
     <string name="gr_menu_send_all">Tout envoyer</string>
     <string name="gr_menu_send_to_goodreads">Envoyer à Goodreads</string>
-    <string name="gr_menu_send_updated">Envoi mis à jour</string>
+    <string name="gr_menu_send_updated">Envoi les livres mis à jour</string>
     <string name="gr_pt_collect_genre">Utiliser des noms d\'étagères populaires comme genres de livres</string>
     <string name="gr_send_book_to_goodreads">Envoyer le livre %1$d à Goodreads</string>
     <string name="gr_title_send_book">Envoyer les livres à Goodreads</string>
@@ -658,5 +658,7 @@
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d ajoutés, %3$d mis à jour, %4$d ignorées</string>
     <string name="txt_rebuild_scheduled">Reconstruction planifiée</string>
     <string name="lbl_dust_cover">Jaquette</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="amazon_ellipsis">Amazon…</string>
 
 </resources>

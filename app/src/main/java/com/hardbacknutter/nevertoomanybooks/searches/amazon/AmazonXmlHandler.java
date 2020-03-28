@@ -38,7 +38,6 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -48,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * An XML handler for the Amazon return.
@@ -217,7 +217,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
  */
 @SuppressWarnings("HtmlTagCanBeJavadocTag")
 class AmazonXmlHandler
-        extends DefaultHandler {
+        extends SearchHandler {
 
     /** Log tag. */
     private static final String TAG = "AmazonXmlHandler";
@@ -345,6 +345,7 @@ class AmazonXmlHandler
      * @return Bundle with book data
      */
     @NonNull
+    @Override
     public Bundle getResult() {
         return mBookData;
     }

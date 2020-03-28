@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 public class EditAuthorDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "EditAuthorDialogFrag";
 
     /** Database Access. */

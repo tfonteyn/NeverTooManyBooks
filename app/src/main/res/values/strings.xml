@@ -50,7 +50,11 @@
     <!-- == order formatters == -->
     <!-- ####################################################################################### -->
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
+    <!-- generic "label: value" -->
     <string name="name_colon_value">%1$s: %2$s</string>
+    <!-- "name #nr" -->
+    <string name="name_hash_nr">%1$s #%2$d</string>
+
     <!-- x and y are numbers; e.g.: 5 of 9 -->
     <string name="x_of_y">%1$d of %2$d</string>
     <!-- When text is displayed in a list (without using HTML) each line will be formatted using this pattern. -->
@@ -614,6 +618,13 @@
     <string name="isfdb_menu_populate_toc">Populate Titles (ISFDB only)</string>
 
     <!-- ####################################################################################### -->
+    <!-- ========== Amazon specific ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- submenu title -->
+    <string name="amazon_ellipsis">Amazon…</string>
+
+    <!-- ####################################################################################### -->
     <!-- ========== Goodreads specific ========== -->
     <!-- ####################################################################################### -->
 
@@ -624,7 +635,7 @@
     <!-- admin menu selection -->
     <string name="gr_menu_import_all_from_goodreads">Import all from Goodreads</string>
     <!-- admin menu selection -->
-    <string name="gr_menu_send_updated">Send updated</string>
+    <string name="gr_menu_send_updated">Send updated books</string>
     <!-- admin menu selection -->
     <string name="gr_menu_send_all">Send all</string>
 
@@ -1632,5 +1643,11 @@
     <string name="info_bitmask_preference">
         Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
     </string>
+    <!--
+     A searchsite did respond to a request, but the response was not valid.
+     We report to the user that the site is not working as expected.
+    -->
+    <string name="site_out_of_order">Site out of order</string>
+    <string name="lbl_level_toggle">Toggle</string>
 
 </resources>

@@ -914,6 +914,8 @@ public class BooklistGroup
          * @param id for the desired group key
          *
          * @return new GroupKey instance
+         *
+         * @throws UnexpectedValueException if an invalid id was passed in
          */
         private static GroupKey createGroupKey(@Id final int id) {
             // NEWTHINGS: GROUP_KEY_x

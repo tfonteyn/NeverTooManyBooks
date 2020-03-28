@@ -4676,41 +4676,6 @@ public class DAO
          */
         static final String GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID =
                 SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND + " WHERE " + KEY_PK_ID + "=?";
-
-        /** Local-search query suggestions. See {@link SqlFTS#SEARCH_SUGGESTIONS}. */
-        static final String SEARCH_SUGGESTIONS =
-                "SELECT * FROM ("
-                // Book Title or ISBN: searches on both, but uses the title for the intent data
-                + "SELECT \"BK\" || " + TBL_BOOKS.dotAs(KEY_PK_ID)
-                + ',' + TBL_BOOKS.dotAs(KEY_TITLE, SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_BOOKS.dotAs(KEY_ISBN, SearchManager.SUGGEST_COLUMN_TEXT_2)
-                + ',' + TBL_BOOKS.dotAs(KEY_TITLE, SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_BOOKS.ref()
-                + " WHERE " + TBL_BOOKS.dot(KEY_TITLE) + " LIKE ?"
-                + " OR " + TBL_BOOKS.dot(KEY_TITLE_OB) + " LIKE ?"
-                + " OR " + TBL_BOOKS.dot(KEY_ISBN) + " LIKE ?"
-
-                + " UNION "
-
-                // Author: searches both family and given names, but will use the family name
-                // for the intent data
-                + " SELECT \"AF\" || " + TBL_AUTHORS.dotAs(KEY_PK_ID)
-                + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_FAMILY_NAME,
-                                          SearchManager.SUGGEST_COLUMN_TEXT_1)
-                + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_GIVEN_NAMES,
-                                          SearchManager.SUGGEST_COLUMN_TEXT_2)
-                + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_FAMILY_NAME,
-                                          SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_AUTHORS.ref()
-                + " WHERE " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME) + " LIKE ?"
-                + " OR " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME_OB) + " LIKE ?"
-                + " OR " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES) + " LIKE ?"
-                + " OR " + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES_OB) + " LIKE ?"
-
-                + " ) AS zzz "
-                + " ORDER BY " + SearchManager.SUGGEST_COLUMN_TEXT_1
-                + ',' + SearchManager.SUGGEST_COLUMN_TEXT_2
-                + COLLATION;
     }
 
     /**

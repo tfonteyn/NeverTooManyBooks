@@ -49,6 +49,7 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
 /**
  * FIXME: migrate to new googlebooks API or drop Google altogether?
@@ -73,7 +74,7 @@ public final class GoogleBooksSearchEngine
                    SearchEngine.ByIsbn,
                    SearchEngine.ByText {
 
-    /** Preferences prefix. */
+    /* Preferences prefix. */
 //    private static final String PREF_PREFIX = "googlebooks.";
 
     private static final String BASE_URL = "https://books.google.com";
@@ -143,8 +144,7 @@ public final class GoogleBooksSearchEngine
             List<String> urlList = handler.getResult();
 
             // The entry handler takes care of an individual book ('entry')
-            GoogleBooksEntryHandler entryHandler =
-                    new GoogleBooksEntryHandler(fetchThumbnail, bookData);
+            SearchHandler entryHandler = new GoogleBooksEntryHandler(fetchThumbnail, bookData);
             if (!urlList.isEmpty()) {
                 // only using the first one found, maybe future enhancement?
                 oneBookUrl = urlList.get(0);

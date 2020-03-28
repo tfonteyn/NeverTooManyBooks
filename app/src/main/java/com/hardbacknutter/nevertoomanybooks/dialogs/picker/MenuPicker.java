@@ -81,12 +81,13 @@ public class MenuPicker<T>
      * <p>
      * The caller can create a menu calling {@link #createMenu(Context)},
      * populate it and pass it here.
-     * @param context          Current context
-     * @param title            (optional) for the dialog/menu
-     * @param message          (optional) message to display above the menu
-     * @param menu             the menu options to show
-     * @param userObject       (optional) a reference free to set/use by the caller
-     * @param listener         callback handler with the MenuItem the user chooses + the userObject
+     *
+     * @param context    Current context
+     * @param title      (optional) for the dialog/menu
+     * @param message    (optional) message to display above the menu
+     * @param menu       the menu options to show
+     * @param userObject (optional) a reference free to set/use by the caller
+     * @param listener   callback handler with the MenuItem the user chooses + the userObject
      */
     private MenuPicker(@NonNull final Context context,
                        @Nullable final CharSequence title,
@@ -135,13 +136,17 @@ public class MenuPicker<T>
     private static class MenuItemListAdapter
             extends RecyclerView.Adapter<Holder> {
 
+        /** ViewType. */
+        static final int DIVIDER = 0;
+        /** ViewType. */
+        static final int MENU_ITEM = 1;
+
         @NonNull
         private final Drawable mSubMenuPointer;
         @NonNull
         private final List<MenuItem> mList = new ArrayList<>();
         @NonNull
         private final LayoutInflater mInflater;
-
         @NonNull
         private final PickListener<MenuItem> mListener;
 
@@ -184,30 +189,46 @@ public class MenuPicker<T>
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
+            View root;
+            if (viewType == MENU_ITEM) {
+                root = mInflater.inflate(R.layout.row_simple_list_item, parent, false);
+            } else {
+                root = mInflater.inflate(R.layout.row_simple_list_divider, parent, false);
+            }
+            return new Holder(viewType, root);
+        }
 
-            View root = mInflater.inflate(R.layout.row_simple_dialog_list_item, parent, false);
-            return new Holder(root);
+        @Override
+        public int getItemViewType(final int position) {
+            if (mList.get(position).getItemId() != R.id.MENU_DIVIDER) {
+                return MENU_ITEM;
+            } else {
+                return DIVIDER;
+            }
         }
 
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            MenuItem item = mList.get(position);
-            holder.textView.setText(item.getTitle());
+            if (holder.viewType == MENU_ITEM) {
+                MenuItem item = mList.get(position);
+                //noinspection ConstantConditions
+                holder.textView.setText(item.getTitle());
 
-            // add a little arrow to indicate sub-menus.
-            if (item.hasSubMenu()) {
-                holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        item.getIcon(), null, mSubMenuPointer, null);
-            } else {
-                holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        item.getIcon(), null, null, null);
-            }
+                // add a little arrow to indicate sub-menus.
+                if (item.hasSubMenu()) {
+                    holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            item.getIcon(), null, mSubMenuPointer, null);
+                } else {
+                    holder.textView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                            item.getIcon(), null, null, null);
+                }
 
-            holder.textView.setEnabled(item.isEnabled());
-            if (item.isEnabled()) {
-                holder.textView.setOnClickListener(v -> mListener.onPicked(item));
+                holder.textView.setEnabled(item.isEnabled());
+                if (item.isEnabled()) {
+                    holder.textView.setOnClickListener(v -> mListener.onPicked(item));
+                }
             }
         }
 
@@ -220,12 +241,21 @@ public class MenuPicker<T>
     static class Holder
             extends RecyclerView.ViewHolder {
 
-        @NonNull
+        final int viewType;
+
+        @Nullable
         final TextView textView;
 
-        Holder(@NonNull final View itemView) {
+        Holder(final int viewType,
+               @NonNull final View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.menu_item);
+            this.viewType = viewType;
+
+            if (viewType == MenuItemListAdapter.MENU_ITEM) {
+                textView = itemView.findViewById(R.id.menu_item);
+            } else {
+                textView = null;
+            }
         }
     }
 }

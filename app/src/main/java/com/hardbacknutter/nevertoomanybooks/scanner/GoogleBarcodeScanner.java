@@ -175,6 +175,7 @@ public class GoogleBarcodeScanner
     public static class PreloadGoogleScanner
             extends TaskBase<Void, Boolean> {
 
+        /** Log tag. */
         private static final String TAG = "PreloadGoogleScanner";
 
         public PreloadGoogleScanner(final int taskId,

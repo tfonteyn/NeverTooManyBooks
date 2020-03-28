@@ -130,6 +130,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class App
         extends Application {
 
+    /** Log tag. */
     private static final String TAG = "App";
     /** don't assume / allow the day-night theme to have a different integer ID. */
     private static final int THEME_INVALID = -1;

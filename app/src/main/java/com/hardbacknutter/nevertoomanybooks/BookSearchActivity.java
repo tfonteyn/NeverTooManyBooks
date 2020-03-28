@@ -76,7 +76,7 @@ public class BookSearchActivity
      * @param containerViewId to receive the fragment
      * @param tag             for the required fragment
      *
-     * @throws UnexpectedValueException if an unknown tag was passed
+     * @throws UnexpectedValueException if an invalid tag was passed in
      */
     private void replaceFragment(@SuppressWarnings("SameParameterValue")
                                  @IdRes final int containerViewId,

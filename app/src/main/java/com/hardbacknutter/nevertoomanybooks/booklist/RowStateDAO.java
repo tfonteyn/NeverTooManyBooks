@@ -36,6 +36,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -103,13 +104,12 @@ public class RowStateDAO {
     /** Statement cache name. */
     private static final String STMT_UPDATE_NODE = "uNS";
     /** Statement cache name. */
-    private static final String STMT_UPDATE_NODES_BETWEEN = "uNSBetween";
-
+    private static final String STMT_UPDATE_NODES_BETWEEN_1 = "uNSBetween1";
+    /** Statement cache name. */
+    private static final String STMT_UPDATE_NODES_BETWEEN_2 = "uNSBetween2";
 
     /** Statement cache name. */
     private static final String STMT_GET_NEXT_NODE_AT_SAME_LEVEL = "next";
-    /** Statement cache name. */
-    private static final String STMT_GET_VISIBILITY = "vis";
     /** Statement cache name. */
     private static final String STMT_COUNT_VIS_ROWS_BEFORE = "cntVisRowsBefore";
     /** Statement cache name. */
@@ -140,10 +140,10 @@ public class RowStateDAO {
      * <strong>Note:</strong> the style/bookshelf the booklist is displaying, determines
      * the list-table and hence the RowStateDAO.
      *
-     * @param syncedDb    database
-     * @param instanceId  unique id to be used as suffix on the table name.
-     * @param style       Booklist style to use;
-     * @param bookshelf to use
+     * @param syncedDb   database
+     * @param instanceId unique id to be used as suffix on the table name.
+     * @param style      Booklist style to use;
+     * @param bookshelf  to use
      */
     RowStateDAO(@NonNull final SynchronizedDb syncedDb,
                 final int instanceId,
@@ -174,7 +174,7 @@ public class RowStateDAO {
      * <strong>Note:</strong> called once at creation time, hence the statements used
      * here are not cached.
      *
-     * @param context Current context
+     * @param context   Current context
      * @param listTable the list-table to be referenced
      * @param listState to use
      */
@@ -390,44 +390,18 @@ public class RowStateDAO {
      * Developer note: we need to count the visible rows between the start of the list,
      * and the given row, to determine the ACTUAL row we want.
      *
-     * @param rowId to check
+     * @param node to check
      *
      * @return Actual (and visible) list position.
      */
-    int getListPosition(final long rowId) {
-
-        boolean isVisible = isVisible(rowId);
-        int count = countVisibleRowsBefore(rowId);
-        if (isVisible) {
-            // If the specified row is visible, then the count is the position.
-            return count;
+    int getListPosition(@NonNull final Node node) {
+        if (node.isVisible) {
+            // If the specified row is visible, then the count _is_ the position.
+            return countVisibleRowsBefore(node.rowId);
         } else {
             // otherwise it's the previous visible row == count-1 (or the top row)
+            int count = countVisibleRowsBefore(node.rowId);
             return count > 0 ? count - 1 : 0;
-        }
-    }
-
-    /**
-     * Check the row is visible.
-     *
-     * @param rowId to check
-     *
-     * @return visibility
-     */
-    private boolean isVisible(final long rowId) {
-
-        SynchronizedStatement stmt = mStatementManager.get(STMT_GET_VISIBILITY);
-        if (stmt == null) {
-            stmt = mStatementManager.add(
-                    STMT_GET_VISIBILITY,
-                    "SELECT " + KEY_BL_NODE_VISIBLE + " FROM " + mTable.getName()
-                    + " WHERE " + KEY_PK_ID + "=?");
-        }
-
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
-            stmt.bindLong(1, rowId);
-            return stmt.simpleQueryForLongOrZero() == 1;
         }
     }
 
@@ -474,17 +448,16 @@ public class RowStateDAO {
     }
 
     /**
-     * Ensure al leaf nodes up to the root node for the given row are visible.
+     * Ensure al nodes up to the root node for the given node (inclusive) are visible.
      *
-     * @param rowId we want to become visible
-     * @param level of that row
+     * @param rootNode we want to become visible
      */
-    void ensureRowIsVisible(final long rowId,
-                            final int level) {
+    void ensureNodeIsVisible(@NonNull final Node rootNode) {
+
+        rootNode.isVisible = true;
 
         String sql = "SELECT " + KEY_PK_ID
                      + ',' + KEY_BL_NODE_EXPANDED
-                     + ',' + KEY_BL_NODE_VISIBLE
                      + " FROM " + mTable.getName()
                      // we'll loop for all levels
                      + " WHERE " + KEY_BL_NODE_LEVEL + "=?"
@@ -493,34 +466,34 @@ public class RowStateDAO {
                      // DESC so we 'walk' upwards
                      + " ORDER BY " + KEY_PK_ID + " DESC LIMIT 1";
 
-        for (int leafLevel = 1; leafLevel < level; leafLevel++) {
+        for (int nodeLevel = 1; nodeLevel < rootNode.level; nodeLevel++) {
 
             try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{
-                    String.valueOf(leafLevel),
-                    String.valueOf(rowId)})) {
+                    String.valueOf(nodeLevel),
+                    String.valueOf(rootNode.rowId)})) {
 
                 if (cursor.moveToFirst()) {
-                    long leafRowId = cursor.getLong(0);
-                    boolean leafIsExpanded = cursor.getLong(1) != 0;
-                    boolean leafIsVisible = cursor.getLong(2) != 0;
+                    long nodeRowId = cursor.getLong(0);
+                    boolean nodeIsExpanded = cursor.getLong(1) != 0;
 
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                         Log.d(TAG, "ensureRowIsVisible"
-                                   + "|rowId=" + rowId
-                                   + "|leafLevel=" + leafLevel
-                                   + "|leafRowId=" + leafRowId
-                                   + "|leafIsExpanded=" + leafIsExpanded
-                                   + "|leafIsVisible=" + leafIsVisible
+                                   + "|rootNode.rowId=" + rootNode.rowId
+                                   + "|nodeLevel=" + nodeLevel
+                                   + "|nodeRowId=" + nodeRowId
+                                   + "|nodeIsExpanded=" + nodeIsExpanded
                                    + "|");
                     }
-                    // If leaf is not the node we are checking, and not currently expanded
-                    if (leafRowId != rowId && !leafIsExpanded) {
-                        // Expand (and make visible) the given node
-                        setNode(leafRowId, true, leafLevel,
-                                // but keep the children collapsed/visible.
-                                false, true,
-                                // do this for only ONE level below the current leaf
-                                leafLevel + 1);
+                    // If the node is not the one we are checking, and it's not currently expanded
+                    if (nodeRowId != rootNode.rowId && !nodeIsExpanded) {
+                        setNode(nodeRowId,
+                                nodeLevel,
+                                // Expand (and make visible) the given node
+                                true,
+                                // keep the children collapsed
+                                false,
+                                // do this for only ONE level below the current node
+                                1);
                     }
                 } else {
                     return;
@@ -535,30 +508,62 @@ public class RowStateDAO {
      *
      * @param bookId the book to find
      *
-     * @return Array of {@link ListRowDetails}. Can be empty, but never {@code null}.
+     * @return Array of {@link Node}. Can be empty, but never {@code null}.
      */
     @NonNull
-    ArrayList<ListRowDetails> getBookPositions(@NonNull final TableDefinition listTable,
-                                               final long bookId) {
-        String sql = "SELECT "
-                     + mTable.dot(KEY_PK_ID)
-                     + ',' + mTable.dot(KEY_BL_NODE_VISIBLE)
+    ArrayList<Node> getNodesForBookId(@NonNull final TableDefinition listTable,
+                                      final long bookId) {
+        String sql = "SELECT " + mTable.dot(KEY_PK_ID)
                      + ',' + mTable.dot(KEY_BL_NODE_LEVEL)
+                     + ',' + mTable.dot(KEY_BL_NODE_EXPANDED)
+                     + ',' + mTable.dot(KEY_BL_NODE_VISIBLE)
                      + " FROM " + listTable.ref() + listTable.join(mTable)
                      + " WHERE " + listTable.dot(KEY_FK_BOOK) + "=?";
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
-            ArrayList<ListRowDetails> rows = new ArrayList<>(cursor.getCount());
+            ArrayList<Node> rows = new ArrayList<>(cursor.getCount());
             while (cursor.moveToNext()) {
                 int rowId = cursor.getInt(0);
-                boolean visible = cursor.getInt(1) == 1;
-                int level = cursor.getInt(2);
-                ListRowDetails rowDetails = new ListRowDetails(rowId, visible, level);
-                rowDetails.listPosition = getListPosition(rowDetails.rowId);
-                rows.add(rowDetails);
+                Node node = new Node(rowId);
+                node.level = cursor.getInt(1);
+                node.isExpanded = cursor.getInt(2) != 0;
+                node.isVisible = cursor.getInt(3) != 0;
+
+                node.setListPosition(getListPosition(node));
+                rows.add(node);
             }
             return rows;
         }
+    }
+
+    /**
+     * Get the node for the the given row id.
+     * It will contain the current state of the node as stored in the database.
+     *
+     * @param rowId to get
+     *
+     * @return the node
+     */
+    @NonNull
+    Node getNodeByNodeId(final long rowId) {
+
+        String sql = "SELECT " + KEY_BL_NODE_LEVEL
+                     + ',' + KEY_BL_NODE_EXPANDED
+                     + ',' + KEY_BL_NODE_VISIBLE
+                     + " FROM " + mTable.getName()
+                     + " WHERE " + KEY_PK_ID + "=?";
+
+        Node node = new Node(rowId);
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(rowId)})) {
+            if (cursor.moveToFirst()) {
+                node.level = cursor.getInt(0);
+                node.isExpanded = cursor.getInt(1) != 0;
+                node.isVisible = cursor.getInt(2) != 0;
+            } else {
+                throw new IllegalStateException("rowId not found: " + rowId);
+            }
+        }
+        return node;
     }
 
     /**
@@ -732,85 +737,34 @@ public class RowStateDAO {
     }
 
     /**
-     * Expand, collapse or toggle the state of passed leaf node.
+     * Expand/collapse the passed node.
      * <br><br>
-     * The leaf node will always be kept visible.<br>
-     * If the resulting state of the leaf node is:<br>
+     * The node will always be kept visible.<br>
+     * If the resulting state of the node is:<br>
      * 'Expand': we set the children to the desired child state/visibility
      * (recurse up to the desired max child level)<br>
      * 'Collapse': all children will be set to Collapse/hidden (recurse ALL child levels)
      *
-     * @param leafRowId of the node in the list
-     * @param leafState one of {@link DesiredNodeState}
-     *
-     * @return {@code true} if the new leaf node state is expanded, {@code false} if collapsed.
+     * @param nodeRowId          of the node in the list
+     * @param nodeLevel          the level of the node
+     *                           <br>
+     * @param expandNode         the state to set for this node
+     * @param expandChild        state to set for the children of the specified leave
+     * @param relativeChildLevel up to and including this (relative to nodeLevel!) child level;
      */
-    boolean setNode(final long leafRowId,
-                    @NonNull final DesiredNodeState leafState,
-                    final boolean childExpand,
-                    final boolean childVisible,
-                    final int maxChildLevel) {
+    void setNode(final long nodeRowId,
+                 final int nodeLevel,
+                 final boolean expandNode,
 
-        // Get the current state of the node for the given row id.
-        String sql = "SELECT " + KEY_BL_NODE_LEVEL + ',' + KEY_BL_NODE_EXPANDED
-                     + " FROM " + mTable.getName()
-                     + " WHERE " + KEY_PK_ID + "=?";
+                 final boolean expandChild,
+                 @IntRange(from = 0) final int relativeChildLevel) {
 
-        int leafLevel;
-        boolean leafIsExpanded;
-
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(leafRowId)})) {
-            if (cursor.moveToFirst()) {
-                leafLevel = cursor.getInt(0);
-                leafIsExpanded = cursor.getInt(1) != 0;
-            } else {
-                throw new IllegalStateException("rowId not found: " + leafRowId);
-            }
+        if (relativeChildLevel > mStyle.getGroupCount()) {
+            throw new IllegalArgumentException(
+                    "mStyle.getGroupCount()=" + mStyle.getGroupCount()
+                    + "|relativeChildLevel=" + relativeChildLevel);
         }
 
-        // Decide what the new state for the leaf node should be.
-        boolean expandLeaf;
-        switch (leafState) {
-            case Collapse:
-                expandLeaf = false;
-                break;
-            case Expand:
-                expandLeaf = true;
-                break;
-
-            case Toggle:
-            default:
-                expandLeaf = !leafIsExpanded;
-                break;
-        }
-
-        setNode(leafRowId, expandLeaf, leafLevel,
-                childExpand, childVisible, maxChildLevel);
-
-        return expandLeaf;
-    }
-
-    /**
-     * Expand/collapse the passed leaf node.
-     * <br><br>
-     * The leaf node will always be kept visible.<br>
-     * If the resulting state of the leaf node is:<br>
-     * 'Expand': we set the children to the desired child state/visibility
-     * (recurse up to the desired max child level)<br>
-     * 'Collapse': all children will be set to Collapse/hidden (recurse ALL child levels)
-     *
-     * <strong>Note:</strong> If the leafLevel is not known, or the state must be toggled,
-     * then call {@link #setNode(long, DesiredNodeState, boolean, boolean, int)} instead.
-     *
-     * @param leafRowId of the node in the list
-     */
-    private void setNode(final long leafRowId,
-                         final boolean leafExpand,
-                         final int leafLevel,
-
-                         final boolean childExpand,
-                         final boolean childVisible,
-                         final int maxChildLevel) {
         Synchronizer.SyncLock txLock = null;
         try {
             if (!mSyncedDb.inTransaction()) {
@@ -818,22 +772,24 @@ public class RowStateDAO {
             }
 
             // expand/collapse the specified row, but always keep it visible.
-            updateNode(leafRowId, leafExpand, true);
+            updateNode(nodeRowId, expandNode, true);
 
             // Find the next row ('after' the given row) at the given level (or lower).
-            long endRowExcl = findNextNode(leafRowId, leafLevel);
+            long endRowExcl = findNextNode(nodeRowId, nodeLevel);
 
-            // and update the rows between the leaf, and the endRow
-            if (leafExpand) {
+            // and update the rows between the node row itself, and the endRow
+            if (expandNode) {
                 // use the desired child state/level
-                updateNodesBetween(leafRowId, endRowExcl, childExpand, childVisible, maxChildLevel);
+                updateNodesBetween(nodeRowId, endRowExcl, true, expandChild,
+                                   nodeLevel + relativeChildLevel);
             } else {
-                // collapsing the leaf, so just collapse/hide all children.
-                updateNodesBetween(leafRowId, endRowExcl, false, false, Integer.MAX_VALUE);
+                // collapsing the node, so just collapse/hide all children.
+                updateNodesBetween(nodeRowId, endRowExcl, false, false,
+                                   Integer.MAX_VALUE);
             }
 
             // Store the state of these nodes.
-            saveNodesBetween(leafRowId, leafLevel, endRowExcl);
+            saveNodesBetween(nodeLevel, nodeRowId, endRowExcl);
 
             if (txLock != null) {
                 mSyncedDb.setTransactionSuccessful();
@@ -922,32 +878,35 @@ public class RowStateDAO {
      *
      * @param startRowExcl between this row
      * @param endRowExcl   and this row
-     * @param expand       state to set
      * @param visible      visibility to set
-     * @param maxLevel     up to and including this level;
-     *                     pass in {@code Integer.MAX_VALUE} for all levels.
+     * @param expand       state to set
+     * @param level        up to and including this level.
      */
     private void updateNodesBetween(final long startRowExcl,
                                     final long endRowExcl,
-                                    final boolean expand,
                                     final boolean visible,
-                                    final int maxLevel) {
+                                    final boolean expand,
+                                    final int level) {
 
-        SynchronizedStatement stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN);
+        int maxLevel = Math.max(level, mStyle.getGroupCount() - 1);
+
+        // handle all levels except the lowest level.
+        SynchronizedStatement stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN_1);
         if (stmt == null) {
             stmt = mStatementManager.add(
-                    STMT_UPDATE_NODES_BETWEEN,
+                    STMT_UPDATE_NODES_BETWEEN_1,
                     "UPDATE " + mTable.getName() + " SET "
-                    + KEY_BL_NODE_EXPANDED + "=?," + KEY_BL_NODE_VISIBLE + "=?"
+                    + KEY_BL_NODE_VISIBLE + "=?,"
+                    + KEY_BL_NODE_EXPANDED + "=?"
                     + " WHERE " + KEY_PK_ID + ">?" + " AND " + KEY_PK_ID + "<?"
-                    + " AND " + KEY_BL_NODE_LEVEL + "<=?");
+                    + " AND " + KEY_BL_NODE_LEVEL + "<?");
         }
 
         int rowsUpdated;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
-            stmt.bindBoolean(1, expand);
-            stmt.bindBoolean(2, visible);
+            stmt.bindBoolean(1, visible);
+            stmt.bindBoolean(2, expand);
 
             stmt.bindLong(3, startRowExcl);
             stmt.bindLong(4, endRowExcl);
@@ -960,10 +919,43 @@ public class RowStateDAO {
             Log.d(TAG, "updateNodesBetween"
                        + "|startRowExcl=" + startRowExcl
                        + "|endRowExcl=" + endRowExcl
-                       + "|expand=" + expand
                        + "|visible=" + visible
+                       + "|expand=" + expand
                        + "|maxLevel=" + maxLevel
                        + "|rowsUpdated=" + rowsUpdated);
+        }
+
+        if (expand) {
+            // the lowest level we want visible should never be expanded.
+            stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN_2);
+            if (stmt == null) {
+                stmt = mStatementManager.add(
+                        STMT_UPDATE_NODES_BETWEEN_2,
+                        "UPDATE " + mTable.getName() + " SET "
+                        + KEY_BL_NODE_VISIBLE + "=?,"
+                        + KEY_BL_NODE_EXPANDED + "=?"
+                        + " WHERE " + KEY_PK_ID + ">?" + " AND " + KEY_PK_ID + "<?"
+                        + " AND " + KEY_BL_NODE_LEVEL + "=?");
+            }
+
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (stmt) {
+                stmt.bindBoolean(1, visible);
+                stmt.bindBoolean(2, false);
+
+                stmt.bindLong(3, startRowExcl);
+                stmt.bindLong(4, endRowExcl);
+
+                stmt.bindLong(5, maxLevel);
+
+                rowsUpdated = stmt.executeUpdateDelete();
+            }
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+                Log.d(TAG, "updateNodesBetween"
+                           + "|visible=" + visible
+                           + "|expand=_false_"
+                           + "|rowsUpdated_2=" + rowsUpdated);
+            }
         }
     }
 
@@ -972,18 +964,18 @@ public class RowStateDAO {
      *
      * <strong>Note:</strong> always uses the current bookshelf/style
      *
-     * @param leafRowId    between this row (inclusive)
-     * @param leafLevel    level
-     * @param nextLeafExcl and this row (exclusive)
+     * @param fromLevel   from this level onwards
+     * @param fromRowIncl between this row (inclusive)
+     * @param endRowExcl  and this row (exclusive)
      */
-    private void saveNodesBetween(final long leafRowId,
-                                  final long leafLevel,
-                                  final long nextLeafExcl) {
+    private void saveNodesBetween(final long fromLevel,
+                                  final long fromRowIncl,
+                                  final long endRowExcl) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
             Log.d(TAG, "saveNodesBetween"
-                       + "|leafRowId=" + leafRowId
-                       + "|leafLevel=" + leafLevel
-                       + "|endRowExcl=" + nextLeafExcl);
+                       + "|fromRowId=" + fromRowIncl
+                       + "|fromLevel=" + fromLevel
+                       + "|endRowExcl=" + endRowExcl);
         }
 
         Synchronizer.SyncLock txLock = null;
@@ -1021,10 +1013,10 @@ public class RowStateDAO {
                 stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
 
-                stmt.bindLong(3, leafLevel);
+                stmt.bindLong(3, fromLevel);
 
-                stmt.bindLong(4, leafRowId);
-                stmt.bindLong(5, nextLeafExcl);
+                stmt.bindLong(4, fromRowIncl);
+                stmt.bindLong(5, endRowExcl);
 
                 int rowsDeleted = stmt.executeUpdateDelete();
 
@@ -1053,8 +1045,8 @@ public class RowStateDAO {
                 stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
 
-                stmt.bindLong(3, leafRowId);
-                stmt.bindLong(4, nextLeafExcl);
+                stmt.bindLong(3, fromRowIncl);
+                stmt.bindLong(4, endRowExcl);
 
                 int rowsInserted = stmt.executeUpdateDelete();
 
@@ -1138,9 +1130,9 @@ public class RowStateDAO {
         super.finalize();
     }
 
+
     /**
-     * The state we want a node to become; as used by
-     * {@link #setNode(long, DesiredNodeState, boolean, boolean, int)}.
+     * The state we want a node to become.
      */
     public enum DesiredNodeState {
         Expand,
@@ -1151,26 +1143,61 @@ public class RowStateDAO {
     /**
      * A value class containing details of a single row as used in the list-view.
      */
-    public static class ListRowDetails {
+    public static class Node {
 
-        @IntRange(from = 1)
-        public final int level;
-        public final boolean visible;
-        /** The row this object represents. */
-        @IntRange(from = 1)
-        final int rowId;
+        final long rowId;
+        public boolean isExpanded;
+        int level;
+        boolean isVisible;
+
         /**
-         * Set at creation time, but can be recalculated/set if the list changed.
+         * Will be calculated/set if the list changed.
          * {@code row.listPosition = RowStateDAO#getListPosition(row.rowId); }
+         * <p>
+         * (it's an Integer, so we can detect when it's not set at all which would be a bug)
          */
-        public Integer listPosition;
+        private Integer mListPosition;
 
-        ListRowDetails(final int rowId,
-                       final boolean visible,
-                       @IntRange(from = 1) final int level) {
+        private Node(final long rowId) {
             this.rowId = rowId;
-            this.visible = visible;
-            this.level = level;
+        }
+
+        public void setExpanded(@NonNull final DesiredNodeState nodeState) {
+            // Decide what the new state for the node should be.
+            switch (nodeState) {
+                case Collapse:
+                    isExpanded = false;
+                    break;
+                case Expand:
+                    isExpanded = true;
+                    break;
+
+                case Toggle:
+                default:
+                    isExpanded = !isExpanded;
+                    break;
+            }
+        }
+
+        public int getListPosition() {
+            Objects.requireNonNull(mListPosition);
+            return mListPosition;
+        }
+
+        void setListPosition(final int listPosition) {
+            this.mListPosition = listPosition;
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "Node{"
+                   + "rowId=" + rowId
+                   + ", level=" + level
+                   + ", isExpanded=" + isExpanded
+                   + ", isVisible=" + isVisible
+                   + ", mListPosition=" + mListPosition
+                   + '}';
         }
     }
 }

@@ -63,7 +63,8 @@ public class SpinnerAccessor
     /**
      * Constructor.
      *
-     * @param list of strings to populate the spinner
+     * @param context Current context
+     * @param list    of strings to populate the spinner
      */
     public SpinnerAccessor(@NonNull final Context context,
                            @NonNull final List<String> list) {

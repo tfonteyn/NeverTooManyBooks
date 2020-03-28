@@ -78,6 +78,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Ove
 public class UpdateFieldsFragment
         extends Fragment {
 
+    /** Log tag. */
     public static final String TAG = "UpdateFieldsFragment";
 
     /** the ViewGroup where we'll add the list of fields. */

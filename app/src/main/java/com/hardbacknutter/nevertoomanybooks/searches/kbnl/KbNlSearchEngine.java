@@ -90,15 +90,14 @@ public class KbNlSearchEngine
      */
     private static final String BOOK_URL =
             "/DB=1/SET=1/TTL=1/LNG=NE/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
+
     /* Response with English labels. */
     //private static final String BOOK_URL =
     //      "/DB=1/SET=1/TTL=1/LNG=EN/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=%1$s";
-
-    /**
-     * param 1: site specific author id.
-     */
+    /* param 1: site specific author id. */
 //    private static final String AUTHOR_URL = getBaseURL(context)
 //    + "/DB=1/SET=1/TTL=1/REL?PPN=%1$s";
+
     @NonNull
     public static String getBaseURL(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)

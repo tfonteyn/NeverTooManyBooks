@@ -131,7 +131,7 @@ public class Book
     }
 
     /**
-     * Creates a chooser with matched apps for sharing some text like:
+     * Creates a chooser with matched apps for sharing some text.
      * <b>"I'm reading " + title + " by " + author + series + " " + ratingString</b>
      *
      * @param context Current context

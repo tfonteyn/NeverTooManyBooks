@@ -59,7 +59,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 
@@ -125,8 +124,8 @@ class Md2PopupBackground
         return true;
     }
 
-    private boolean needMirroring() {
-        return DrawableCompat.getLayoutDirection(this) == View.LAYOUT_DIRECTION_RTL;
+    private boolean isLayoutRTL() {
+        return getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     @Override
@@ -159,7 +158,7 @@ class Md2PopupBackground
         pathArcTo(mPath, o1X, r, r, 45f, 45f);
         mPath.close();
 
-        if (needMirroring()) {
+        if (isLayoutRTL()) {
             mTempMatrix.setScale(-1, 1, width / 2, 0);
         } else {
             mTempMatrix.reset();
@@ -170,7 +169,7 @@ class Md2PopupBackground
 
     @Override
     public boolean getPadding(@NonNull final Rect padding) {
-        if (needMirroring()) {
+        if (isLayoutRTL()) {
             padding.set(mPaddingEnd, 0, mPaddingStart, 0);
         } else {
             padding.set(mPaddingStart, 0, mPaddingEnd, 0);

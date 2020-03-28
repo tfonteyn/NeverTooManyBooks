@@ -221,7 +221,7 @@ public final class DBHelper
                     Logger.error(App.getAppContext(), TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
-                    Logger.error(App.getAppContext(), TAG, e, "Index deletion failed: " + indexName);
+                    Logger.error(App.getAppContext(), TAG, e, "DROP INDEX failed: " + indexName);
                 }
             }
         }

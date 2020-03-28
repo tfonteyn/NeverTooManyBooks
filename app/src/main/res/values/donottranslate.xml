@@ -36,7 +36,7 @@
 
     <string name="app_name" translatable="false">&APP_NAME;</string>
 
-    <string name="url_sourcecode6" translatable="false">
+    <string name="url_sourcecode" translatable="false">
         <![CDATA[
             <a href="https://github.com/tfonteyn/Book-Catalogue/tree/v6">%1s</a>
         ]]>
@@ -47,18 +47,18 @@
     <string name="email_debug" translatable="false">debug@email</string>
 
     <!-- Credits in the 'about' dialog -->
-    <string name="original_creators" translatable="false">"Evan Leybourn &amp; Philip Warner</string>
+    <string name="original_creators" translatable="false">Evan Leybourn &amp; Philip Warner</string>
     <string name="translators" translatable="false">
         Eugenio Davolio, José M. Galdo, Imkal, Dimitris Klisiari, Gideon van Melle, Emir Sarı,
         Nick Silin, Robert Wetzlmayr.
     </string>
 
-    <string name="url_website" translatable="false">
+    <string name="url_bc_website" translatable="false">
         <![CDATA[
             <a href="https://github.com/eleybourn/Book-Catalogue/wiki/">%1s</a>
         ]]>
     </string>
-    <string name="url_sourcecode" translatable="false">
+    <string name="url_bc_sourcecode" translatable="false">
         <![CDATA[
             <a href="https://github.com/eleybourn/Book-Catalogue/">%1s</a>
         ]]>
@@ -76,8 +76,6 @@
     <string name="site_stripinfo" translatable="false">stripinfo.be</string>
 
     <string name="site_amazon" translatable="false">Amazon</string>
-    <!-- specific for a submenu title -->
-    <string name="amazon_ellipsis" translatable="false">Amazon…</string>
 
     <string name="site_google_books" translatable="false">Google Books</string>
     <string name="google_play_services" translatable="false">Google Play Services</string>

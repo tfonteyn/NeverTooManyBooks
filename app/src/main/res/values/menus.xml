@@ -71,6 +71,8 @@
     <integer name="MENU_ORDER_AMAZON_SERIES">910</integer>
     <integer name="MENU_ORDER_AMAZON_AUTHOR_IN_SERIES">915</integer>
 
+    <integer name="MENU_ORDER_LEVEL_TOGGLE">999</integer>
+
 
     <!-- So why not use generic menu ids everywhere?
          Well, having individual menu id's (e.g. multiple 'menu_edit_*')
@@ -124,6 +126,7 @@
     <item name="MENU_LEVEL_PREFERRED_COLLAPSE" type="id" />
     <item name="MENU_LEVEL_EXPAND" type="id" />
     <item name="MENU_LEVEL_COLLAPSE" type="id" />
+    <item name="MENU_LEVEL_TOGGLE" type="id" />
 
     <!-- View a book at an external site.
      NEWTHINGS: add new site specific ID: add a menu id -->
@@ -187,5 +190,6 @@
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
     <item name="MENU_GOODREADS_TASKS" type="id" />
     <item name="MENU_SEARCH" type="id" />
+    <item name="MENU_DIVIDER" type="id" />
 
 </resources>

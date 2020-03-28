@@ -142,7 +142,7 @@ public final class SearchSites {
      *
      * @return the name
      *
-     * @throws UnexpectedValueException if the id is invalid
+     * @throws UnexpectedValueException if an invalid id was passed in
      */
     public static String getName(@Id final int id) {
         switch (id) {
@@ -174,7 +174,7 @@ public final class SearchSites {
      *
      * @return instance
      *
-     * @throws UnexpectedValueException if the id is invalid
+     * @throws UnexpectedValueException if an invalid id was passed in
      */
     static SearchEngine getSearchEngine(@Id final int id) {
         switch (id) {
@@ -282,7 +282,7 @@ public final class SearchSites {
      *
      * @return site id.
      *
-     * @throws UnexpectedValueException if the resId is unknown
+     * @throws UnexpectedValueException if an invalid resId was passed in
      */
     @Id
     public static int getSiteIdFromResId(@IdRes final int resId)
@@ -325,7 +325,7 @@ public final class SearchSites {
      *
      * @return site id.
      *
-     * @throws UnexpectedValueException if the key is unknown
+     * @throws UnexpectedValueException if an invalid key was passed in
      */
     @Id
     public static int getSiteIdFromDBDefinitions(@NonNull final String key)

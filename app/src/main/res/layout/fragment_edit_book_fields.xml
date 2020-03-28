@@ -52,7 +52,7 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_height="@dimen/tools_cover_medium_height"
             tools:layout_width="@dimen/tools_cover_medium_width"
-            tools:src="@drawable/ic_image"
+            tools:src="@sample/covers"
             />
 
         <ImageView
@@ -66,6 +66,7 @@
             tools:layout_height="@dimen/tools_cover_medium_height"
             tools:layout_width="@dimen/tools_cover_medium_width"
             tools:src="@drawable/ic_image"
+            tools:background="@drawable/outline"
             />
 
         <androidx.constraintlayout.widget.Barrier

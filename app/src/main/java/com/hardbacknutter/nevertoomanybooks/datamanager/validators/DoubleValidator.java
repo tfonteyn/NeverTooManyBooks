@@ -50,7 +50,7 @@ public class DoubleValidator
 
     /** Default to apply if the field is {@code null} or empty. */
     private final double mDefaultValue;
-
+    /** Cached system locale. */
     private final Locale mLocale;
 
     /**

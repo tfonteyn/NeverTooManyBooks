@@ -66,7 +66,9 @@ public class GoodreadsSearchEngine
     /** file suffix for cover files. */
     public static final String FILENAME_SUFFIX = "_GR";
 
+    @NonNull
     private final GoodreadsHandler mApiHandler;
+    @NonNull
     private final GoodreadsAuth mGoodreadsAuth;
 
     /**

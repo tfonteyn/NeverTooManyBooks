@@ -119,6 +119,7 @@ public class LibraryThingRegistrationActivity
     private static class ValidateKey
             extends TaskBase<Void, Integer> {
 
+        /** Log tag. */
         private static final String TAG = "LT.ValidateKey";
 
         /**

@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 public class AuthorWorksFragment
         extends Fragment {
 
+    /** Log tag. */
     public static final String TAG = "AuthorWorksFragment";
 
     /** Optional. Show the TOC. Defaults to {@code true}. */
@@ -112,7 +113,7 @@ public class AuthorWorksFragment
         getActivity().setTitle(mModel.getScreenTitle(context));
 
         //noinspection ConstantConditions
-        final RecyclerView listView = getView().findViewById(R.id.authorWorks);
+        final RecyclerView listView = getView().findViewById(R.id.author_works);
         listView.setHasFixedSize(true);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         listView.setLayoutManager(linearLayoutManager);

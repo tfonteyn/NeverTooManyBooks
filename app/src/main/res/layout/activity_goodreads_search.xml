@@ -136,11 +136,12 @@
 
         <Button
             android:id="@+id/btn_search"
-            style="@style/MenuButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/border2"
             android:text="@android:string/search_go"
             app:icon="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_search_text"
             />
 

@@ -67,7 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -177,9 +176,6 @@ public class SearchCoordinator
     private SparseLongArray mSearchTasksStartTime;
     /** DEBUG timer. */
     private SparseLongArray mSearchTasksEndTime;
-
-    /** Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search. */
-    private boolean mPreferIsbn10;
 
     /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
@@ -292,21 +288,18 @@ public class SearchCoordinator
                      @Nullable final Bundle args) {
 
         if (mSiteList == null) {
-
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
                 mSearchTasksStartTime = new SparseLongArray();
                 mSearchTasksEndTime = new SparseLongArray();
             }
 
-            if (FormatMapper.isMappingAllowed(context)) {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            if (FormatMapper.isMappingAllowed(prefs)) {
                 mMappers.add(new FormatMapper());
             }
-            if (ColorMapper.isMappingAllowed(context)) {
+            if (ColorMapper.isMappingAllowed(prefs)) {
                 mMappers.add(new ColorMapper());
             }
-
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            mPreferIsbn10 = prefs.getBoolean(Prefs.pk_search_isbn_prefer_10, false);
 
             if (args != null) {
                 boolean useThumbnails = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_THUMBNAIL);
@@ -795,7 +788,8 @@ public class SearchCoordinator
         } else if (mIsbn.isValid(true)
                    && (searchEngine instanceof SearchEngine.ByIsbn)) {
             how = SearchTask.By.ISBN;
-            if (mPreferIsbn10 && mIsbn.isIsbn10Compat()) {
+            if (((SearchEngine.ByIsbn) searchEngine).isPreferIsbn10(context)
+                && mIsbn.isIsbn10Compat()) {
                 task.setIsbn(mIsbn.asText(ISBN.Type.ISBN10));
             } else {
                 task.setIsbn(mIsbn.asText());
@@ -1219,16 +1213,5 @@ public class SearchCoordinator
 
         return new TaskListener.ProgressMessage(R.id.TASK_ID_SEARCH_COORDINATOR, null,
                                                 progressCount, progressMax, sb.toString());
-    }
-
-    public enum Searching {
-        /** All is well, task started. */
-        Started,
-        /** The SearchCoordinator is shutting down. */
-        Cancelled,
-        /** The SearchEngine for this site is not available. */
-        NotAvailable,
-        /** The search criteria are invalid and/or the SearchEngine does not support them. */
-        CannotSearch
     }
 }

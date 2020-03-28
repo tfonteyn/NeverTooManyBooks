@@ -68,7 +68,7 @@ public interface Exporter
     int getVersion();
 
     /**
-     * Wrapper for {@link #write(Context, Writer, ProgressListener)}
+     * Wrapper for {@link #write(Context, Writer, ProgressListener)}.
      *
      * @param context          Current context
      * @param file             File to write to
@@ -102,8 +102,8 @@ public interface Exporter
      * @throws IOException on failure
      */
     @WorkerThread
-    ExportResults write(@NonNull final Context context,
-                        @NonNull final Writer writer,
-                        @NonNull final ProgressListener progressListener)
+    ExportResults write(@NonNull Context context,
+                        @NonNull Writer writer,
+                        @NonNull ProgressListener progressListener)
             throws IOException;
 }

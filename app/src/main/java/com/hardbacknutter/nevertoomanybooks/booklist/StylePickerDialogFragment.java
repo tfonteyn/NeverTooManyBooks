@@ -83,6 +83,7 @@ public class StylePickerDialogFragment
     /**
      * Constructor.
      *
+     * @param fm           the FragmentManager to use
      * @param currentStyle the currently active style
      * @param all          if {@code true} show all styles, otherwise only the preferred ones.
      */

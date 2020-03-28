@@ -235,7 +235,7 @@ public class DiacriticArrayAdapter<T>
      * @param textArrayResId The identifier of the array to use as the data source.
      * @param textViewResId  The identifier of the layout used to create views.
      *
-     * @return An DiacriticArrayAdapter<CharSequence>.
+     * @return a DiacriticArrayAdapter&lt;CharSequence&gt;.
      */
     @SuppressWarnings({"WeakerAccess", "unused"})
     @NonNull
@@ -504,7 +504,7 @@ public class DiacriticArrayAdapter<T>
                                                + " in item layout");
                 }
             }
-        } catch (ClassCastException e) {
+        } catch (@NonNull final ClassCastException e) {
             Log.e("DiacriticArrayAdapter", "You must supply a resource ID for a TextView");
             throw new IllegalStateException(
                     "DiacriticArrayAdapter requires the resource ID to be a TextView", e);

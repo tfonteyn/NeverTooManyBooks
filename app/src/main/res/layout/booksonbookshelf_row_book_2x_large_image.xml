@@ -96,7 +96,7 @@
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:layout_height="@dimen/tools_cover_2x_large_height"
             tools:layout_width="@dimen/tools_cover_2x_large_width"
-            tools:src="@drawable/ic_image"
+            tools:src="@sample/covers"
             />
 
         <!-- A View, and not a 'Space' as this must be clickable. -->

@@ -52,7 +52,6 @@ public abstract class MapperBase
             Integer resId = null;
             String lcValue = value.toLowerCase(LocaleUtils.getUserLocale(context));
             int len = 0;
-//            resId = MAPPER.get(lcValue);
             for (final Map.Entry<String, Integer> entry : MAPPER.entrySet()) {
                 if (lcValue.startsWith(entry.getKey())) {
                     resId = entry.getValue();

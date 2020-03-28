@@ -141,6 +141,10 @@ public class XmlExporter
 
     /**
      * Constructor.
+     *
+     * @param context Current context
+     * @param options what to export
+     * @param since   (optional) date to use as cut-off for the last-updated date
      */
     public XmlExporter(@NonNull final Context context,
                        final int options,

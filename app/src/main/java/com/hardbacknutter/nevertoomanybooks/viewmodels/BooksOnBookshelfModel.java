@@ -147,7 +147,7 @@ public class BooksOnBookshelfModel
                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EID_OPEN_LIBRARY)));
 
     /** The result of a successful build of the booklist. */
-    private final MutableLiveData<List<RowStateDAO.ListRowDetails>> mBuilderSuccess =
+    private final MutableLiveData<List<RowStateDAO.Node>> mBuilderSuccess =
             new MutableLiveData<>();
     /** The result of a failed build of the booklist. */
     private final MutableLiveData<Cursor> mBuilderFailed = new MutableLiveData<>();
@@ -620,7 +620,7 @@ public class BooksOnBookshelfModel
      * @return the target rows to position the list
      */
     @NonNull
-    public MutableLiveData<List<RowStateDAO.ListRowDetails>> onBuilderSuccess() {
+    public MutableLiveData<List<RowStateDAO.Node>> onBuilderSuccess() {
         return mBuilderSuccess;
     }
 
@@ -833,21 +833,28 @@ public class BooksOnBookshelfModel
      * @return the target rows, or {@code null} if none.
      */
     @Nullable
-    public ArrayList<RowStateDAO.ListRowDetails> getTargetRows() {
+    public ArrayList<RowStateDAO.Node> getTargetRows() {
         if (mDesiredCentralBookId == 0) {
             return null;
         }
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
-        ArrayList<RowStateDAO.ListRowDetails> targetRows =
+        ArrayList<RowStateDAO.Node> targetRows =
                 mCursor.getBooklistBuilder().getTargetRows(mDesiredCentralBookId);
 
         mDesiredCentralBookId = 0;
         return targetRows;
     }
 
-    public boolean toggleNode(final long rowId) {
+    /**
+     * Toggle (expand/collapse) the given node.
+     *
+     * @param rowId              of the node in the list
+     * @param relativeChildLevel up to and including this (relative to the node) child level;
+     */
+    public boolean toggleNode(final long rowId,
+                              final int relativeChildLevel) {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
-        return mCursor.getBooklistBuilder().toggleNode(rowId);
+        return mCursor.getBooklistBuilder().toggleNode(rowId, relativeChildLevel);
     }
 
     @NonNull
@@ -860,11 +867,6 @@ public class BooksOnBookshelfModel
     public String createFlattenedBooklist() {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().createFlattenedBooklist();
-    }
-
-    public int getListPosition(final long rowId) {
-        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
-        return mCursor.getBooklistBuilder().getListPosition(rowId);
     }
 
     public void expandAllNodes(final int topLevel,
@@ -880,6 +882,11 @@ public class BooksOnBookshelfModel
 
     public void saveStyle(@NonNull final BooklistStyle style) {
         style.save(mDb);
+    }
+
+    public RowStateDAO.Node getNode(final long rowId) {
+        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
+        return mCursor.getBooklistBuilder().getNodeByNodeId(rowId);
     }
 
     /**
@@ -1213,10 +1220,10 @@ public class BooksOnBookshelfModel
          * Should be ignored if resultListCursor is {@code null}
          */
         @Nullable
-        ArrayList<RowStateDAO.ListRowDetails> targetRows;
+        ArrayList<RowStateDAO.Node> targetRows;
 
         @Nullable
-        public List<RowStateDAO.ListRowDetails> getTargetRows() {
+        public List<RowStateDAO.Node> getTargetRows() {
             return targetRows;
         }
 

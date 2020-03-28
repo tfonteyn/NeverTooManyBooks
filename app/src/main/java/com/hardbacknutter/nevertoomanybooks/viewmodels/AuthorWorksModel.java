@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -144,6 +145,8 @@ public class AuthorWorksModel
     }
 
     public String getScreenTitle(@NonNull final Context context) {
-        return mAuthor.getLabel(context) + " #" + getTocEntries().size();
+        return context.getString(R.string.name_hash_nr,
+                                 mAuthor.getLabel(context),
+                                 getTocEntries().size());
     }
 }

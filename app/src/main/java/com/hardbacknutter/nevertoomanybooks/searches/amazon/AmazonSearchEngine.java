@@ -58,7 +58,6 @@ public final class AmazonSearchEngine
         implements SearchEngine,
                    SearchEngine.ByNativeId,
                    SearchEngine.ByIsbn {
-
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
 

@@ -181,7 +181,7 @@ public class FieldPicker<T>
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,
                                          final int viewType) {
 
-            View root = mInflater.inflate(R.layout.row_simple_dialog_list_item, parent, false);
+            View root = mInflater.inflate(R.layout.row_simple_list_item, parent, false);
             return new Holder(root);
         }
 

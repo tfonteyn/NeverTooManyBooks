@@ -117,7 +117,7 @@ public class About
 
         view = findViewById(R.id.sourcecode6);
         view.setText(LinkifyUtils.fromHtml(
-                getString(R.string.url_sourcecode6, getString(R.string.lbl_about_sourcecode))));
+                getString(R.string.url_sourcecode, getString(R.string.lbl_about_sourcecode))));
         view.setMovementMethod(LinkMovementMethod.getInstance());
 
         findViewById(R.id.icon).setOnClickListener(v -> {
@@ -141,7 +141,6 @@ public class About
 //        view = findViewById(R.id.contact2);
 //        view.setOnClickListener(v -> sendContactEmail(R.string.email_contact2));
 //
-//        // Information to original creators site.
 //        view = findViewById(R.id.website);
 //        view.setText(LinkifyUtils.fromHtml(
 //                getString(R.string.url_website, getString(R.string.lbl_about_website))));

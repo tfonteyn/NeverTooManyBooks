@@ -85,7 +85,6 @@
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
         app:constraint_referenced_ids="cbx_selected,author,btn_retry"
-        tools:layout_editor_absoluteY="48dp"
         />
 
     <TextView

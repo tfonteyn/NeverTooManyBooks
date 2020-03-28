@@ -650,5 +650,7 @@
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d oluşturuldu, %3$d güncellendi, %4$d atlandı</string>
     <string name="txt_rebuild_scheduled">Yeniden planlandı</string>
     <string name="lbl_dust_cover">Toz ceket</string>
+    <string name="name_hash_nr">%1$s #%2$d</string>
+    <string name="amazon_ellipsis">Amazon…</string>
 
 </resources>

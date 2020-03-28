@@ -267,7 +267,7 @@ public class ExportFragment
         // Transform the result data into a user friendly report.
         final StringBuilder msg = new StringBuilder();
 
-        //TODO: LTR
+        //TODO: RTL
         // slightly misleading. The text currently says "processed" but it's really "exported".
         if (results.booksExported > 0) {
             msg.append("\n• ")

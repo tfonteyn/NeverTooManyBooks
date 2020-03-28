@@ -223,7 +223,8 @@ public class SearchTask
             }
             return bookData;
 
-        } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
+        } catch (@NonNull final CredentialsException | IOException
+                | SearchEngine.SearchException | RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
             return null;

@@ -28,6 +28,7 @@
 package com.hardbacknutter.nevertoomanybooks.searches;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -37,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,9 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 /**
  * The interface a search engine for a {@link Site} needs to implement.
@@ -228,7 +232,7 @@ public interface SearchEngine {
         Bundle searchByNativeId(@NonNull Context context,
                                 @NonNull String nativeId,
                                 @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException;
+                throws CredentialsException, IOException, SearchException;
     }
 
     /** Optional. */
@@ -253,7 +257,24 @@ public interface SearchEngine {
         Bundle searchByIsbn(@NonNull Context context,
                             @NonNull String validIsbn,
                             @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException;
+                throws CredentialsException, IOException, SearchException;
+
+        /**
+         * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
+         * <p>
+         * By default, we search on the ISBN entered by the user.
+         * A preference setting per site can override this.
+         * If set, and an ISBN13 is passed in, it will be translated to an ISBN10 before starting
+         * the search.
+         * <p>
+         * This default implementation returns the global setting.
+         *
+         * @return {@code true} if ISBN10 should be preferred.
+         */
+        default boolean isPreferIsbn10(@NonNull final Context context) {
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            return prefs.getBoolean(Prefs.pk_search_isbn_prefer_10, false);
+        }
     }
 
     /**
@@ -284,7 +305,7 @@ public interface SearchEngine {
         default Bundle searchByBarcode(@NonNull Context context,
                                        @NonNull String barcode,
                                        @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException {
+                throws CredentialsException, IOException, SearchException {
             return searchByIsbn(context, barcode, fetchThumbnail);
         }
     }
@@ -323,7 +344,7 @@ public interface SearchEngine {
                       @Nullable String title,
                       @Nullable String publisher,
                       @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException;
+                throws CredentialsException, IOException, SearchException;
     }
 
     /** Optional. */
@@ -460,7 +481,7 @@ public interface SearchEngine {
                     return destination.getAbsolutePath();
                 }
 
-            } catch (@NonNull final CredentialsException | IOException e) {
+            } catch (@NonNull final CredentialsException | IOException | SearchException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "", e);
                 }
@@ -498,5 +519,21 @@ public interface SearchEngine {
         @NonNull
         List<String> getAlternativeEditions(@NonNull Context appContext,
                                             @NonNull String isbn);
+    }
+
+    /**
+     * An engine should throw this exception when throwing an IOException is to heavy.
+     * e.g. if the IOException is recognised at the engine level, it can/should
+     * be masked by a user friendly SearchException.
+     */
+    class SearchException
+            extends FormattedMessageException {
+
+        private static final long serialVersionUID = 915010765930247859L;
+
+        public SearchException(@StringRes final int stringId,
+                               @Nullable final Object... args) {
+            super(stringId, args);
+        }
     }
 }

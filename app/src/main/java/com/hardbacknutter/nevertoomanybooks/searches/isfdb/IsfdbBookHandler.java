@@ -1035,7 +1035,7 @@ class IsfdbBookHandler
 
             // no author found, set to 'unknown, unknown'
             // example when this happens: ISBN=044100590X
-            // <li> 475 • <a href="http://www.isfdb.org/cgi-bin/title.cgi?1659151" dir="ltr">
+            // <li> 475 • <a href="http://www.isfdb.org/cgi-bin/title.cgi?1659151">
             //      Appendixes (Dune)</a> • essay by uncredited
             // </li>
             if (author == null) {

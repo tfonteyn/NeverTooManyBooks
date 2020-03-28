@@ -25,19 +25,22 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database;
+package com.hardbacknutter.nevertoomanybooks.utils.xml;
+
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
-/**
- * Debug exception to make it clear when we've got SQL issues...
- */
-public class ColumnNotPresentException
-        extends RuntimeException {
+import org.xml.sax.helpers.DefaultHandler;
 
-    private static final long serialVersionUID = -5065796313450875326L;
+public abstract class SearchHandler
+        extends DefaultHandler {
 
-    public ColumnNotPresentException(@NonNull final String columnName) {
-        super("Column `" + columnName + "` not present in cursor");
-    }
+    /**
+     * Get the results.
+     *
+     * @return Bundle with book data
+     */
+    @NonNull
+    public abstract Bundle getResult();
 }

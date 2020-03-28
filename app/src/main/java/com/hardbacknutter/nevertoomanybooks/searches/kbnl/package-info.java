@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,12 +63,13 @@
  * LNG=EN  : english
  * <p>
  * ISBN form:
- *
+ * <pre>{@code
  * <form class="form" method="GET" action="CMD">
  * ACT="SRCHA"
  * IKT="1007"
  * SRT="YOP"
  * TRM="978-9-46373-145-4"
+ * }</pre>
  * <p>
  * http://opc4.kb.nl/DB=1/SET=1/TTL=1/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=978-9-46373-145-4
  * http://opc4.kb.nl/DB=1/SET=1/TTL=1/CMD?ACT=SRCHA&IKT=1007&SRT=YOP&TRM=9022990559

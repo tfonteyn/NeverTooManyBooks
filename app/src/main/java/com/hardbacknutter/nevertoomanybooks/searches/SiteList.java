@@ -69,7 +69,7 @@ public class SiteList
 
     private static final String SEP = ",";
     /** Cached copy of the users preferred site order. */
-    private static final EnumMap<Type, SiteList> sLists = new EnumMap<>(Type.class);
+    private static final EnumMap<Type, SiteList> SITE_LIST_MAP = new EnumMap<>(Type.class);
     /** Type of this list. */
     @NonNull
     private final Type mType;
@@ -151,7 +151,7 @@ public class SiteList
                                    @NonNull final Locale userLocale,
                                    @NonNull final Type type) {
         // already loaded ?
-        SiteList list = sLists.get(type);
+        SiteList list = SITE_LIST_MAP.get(type);
         if (list != null) {
             return new SiteList(list);
         }
@@ -161,7 +161,7 @@ public class SiteList
         newList.loadPrefs(context, systemLocale);
 
         // cache the list for reuse
-        sLists.put(type, newList);
+        SITE_LIST_MAP.put(type, newList);
 
         return new SiteList(newList);
     }
@@ -187,7 +187,7 @@ public class SiteList
         newList.update(context, systemLocale);
 
         // cache the list for reuse
-        sLists.put(type, newList);
+        SITE_LIST_MAP.put(type, newList);
 
         return new SiteList(newList);
     }
@@ -200,7 +200,7 @@ public class SiteList
      */
     public void update(@NonNull final Context context,
                        @NonNull final Locale systemLocale) {
-        sLists.put(mType, this);
+        SITE_LIST_MAP.put(mType, this);
         savePrefs(context, systemLocale);
     }
 
