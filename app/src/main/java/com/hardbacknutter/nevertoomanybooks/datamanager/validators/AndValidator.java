@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,6 @@ public class AndValidator
             throws ValidatorException {
 
         for (DataValidator validator : this) {
-            // Only set the Bundle for the last in the list
             validator.validate(context, dataManager, key, errorLabelId);
         }
     }

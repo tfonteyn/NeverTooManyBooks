@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.datamanager.validators;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
@@ -38,10 +40,27 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageExc
 public class ValidatorException
         extends FormattedMessageException {
 
-    private static final long serialVersionUID = -4513432350373482017L;
+    private static final long serialVersionUID = 6008774357227588993L;
+    @StringRes
+    private int mErrorLabelId;
 
-    public ValidatorException(@StringRes final int stringId,
-                              @NonNull final Object... args) {
-        super(stringId, args);
+    public ValidatorException(@StringRes final int msgId) {
+        super(msgId);
+    }
+
+    public ValidatorException(@StringRes final int msgId,
+                              @StringRes final int errorLabelId) {
+        super(msgId);
+        mErrorLabelId = errorLabelId;
+    }
+
+    @NonNull
+    @Override
+    public String getLocalizedMessage(@NonNull final Context context) {
+        if (mErrorLabelId != 0) {
+            return context.getString(mMsgId, context.getString(mErrorLabelId));
+        } else {
+            return context.getString(mMsgId);
+        }
     }
 }

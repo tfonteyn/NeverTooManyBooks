@@ -41,7 +41,7 @@ public class ImportException
     private static final long serialVersionUID = -1890286839718300179L;
 
     public ImportException(@StringRes final int stringId) {
-        super(stringId, (Object) null);
+        super(stringId);
     }
 
     public ImportException(@StringRes final int stringId,

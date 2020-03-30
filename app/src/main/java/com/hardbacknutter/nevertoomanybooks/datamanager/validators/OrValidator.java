@@ -33,10 +33,9 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * 'Meta' Validator to evaluate a list of validators; any one being {@code true} is OK.
@@ -69,23 +68,15 @@ public class OrValidator
         for (DataValidator validator : this) {
             try {
                 validator.validate(context, dataManager, key, errorLabelId);
-                // as soon as one is reporting 'ok', we're done.
+                // as soon as one is reporting 'ok' by NOT throwing an exception, we're done.
                 return;
             } catch (@NonNull final ValidatorException e) {
                 // Do nothing...try next validator
                 lastException = e;
             }
         }
-
-        if (lastException != null) {
-            throw lastException;
-        } else {
-            // This should never happen (flw)
-            Logger.warnWithStackTrace(context, TAG, "validate",
-                                      "no exceptions were thrown in the validator?",
-                                      "key=" + key);
-            throw new ValidatorException(R.string.vldt_failed_for_x,
-                                         context.getString(errorLabelId));
-        }
+        // satisfy lint / paranoia; it should NEVER be null
+        Objects.requireNonNull(lastException);
+        throw lastException;
     }
 }

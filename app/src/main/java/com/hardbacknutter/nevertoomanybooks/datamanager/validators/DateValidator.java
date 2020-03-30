@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,8 +73,7 @@ public class DateValidator
             if (date != null) {
                 value = DateUtils.utcSqlDateTime(date);
             } else {
-                throw new ValidatorException(R.string.vldt_date_expected_for_x,
-                                             context.getString(errorLabelId));
+                throw new ValidatorException(R.string.vldt_date_expected_for_x, errorLabelId);
             }
         }
         dataManager.putString(key, value);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,6 @@ public class BlankValidator
             dataManager.putString(key, s);
             return;
         }
-        throw new ValidatorException(R.string.vldt_blank_required_for_x,
-                                     context.getString(errorLabelId));
+        throw new ValidatorException(R.string.vldt_blank_required_for_x, errorLabelId);
     }
 }

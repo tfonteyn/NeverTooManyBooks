@@ -86,8 +86,7 @@ public class DoubleValidator
                     value = ParseUtils.parseDouble(stringValue, mLocale);
 
                 } catch (@NonNull final NumberFormatException e) {
-                    throw new ValidatorException(R.string.vldt_real_expected_for_x,
-                                                 context.getString(errorLabelId));
+                    throw new ValidatorException(R.string.vldt_real_expected_for_x, errorLabelId);
                 }
             }
         }

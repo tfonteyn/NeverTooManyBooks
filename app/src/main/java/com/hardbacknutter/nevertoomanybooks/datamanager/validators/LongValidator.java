@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -85,7 +85,7 @@ public class LongValidator
                     value = Long.parseLong(stringValue);
                 } catch (@NonNull final NumberFormatException e) {
                     throw new ValidatorException(R.string.vldt_integer_expected_for_x,
-                                                 context.getString(errorLabelId));
+                                                 errorLabelId);
                 }
             }
         }

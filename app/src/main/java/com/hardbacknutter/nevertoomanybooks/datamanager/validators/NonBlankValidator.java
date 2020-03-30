@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,17 +51,14 @@ public class NonBlankValidator
 
         Object o = dataManager.get(key);
         if (o == null) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x,
-                                         context.getString(errorLabelId));
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
 
         } else if ((o instanceof String) && (dataManager.getString(key).trim().isEmpty())) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x,
-                                         context.getString(errorLabelId));
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
 
         } else if ((o instanceof ArrayList)
                    && (dataManager.getParcelableArrayList(key).isEmpty())) {
-            throw new ValidatorException(R.string.vldt_non_blank_required_for_x,
-                                         context.getString(errorLabelId));
+            throw new ValidatorException(R.string.vldt_non_blank_required_for_x, errorLabelId);
         }
     }
 }

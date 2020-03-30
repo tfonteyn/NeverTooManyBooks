@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -70,8 +70,7 @@ public class BooleanValidator
         try {
             ParseUtils.toBoolean(o);
         } catch (@NonNull final NumberFormatException e) {
-            throw new ValidatorException(R.string.vldt_boolean_expected_for_x,
-                                         context.getString(errorLabelId));
+            throw new ValidatorException(R.string.vldt_boolean_expected_for_x, errorLabelId);
         }
     }
 }

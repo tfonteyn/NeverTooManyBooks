@@ -45,14 +45,18 @@ public abstract class FormattedMessageException
 
     private static final long serialVersionUID = -3293646971416799528L;
     @StringRes
-    private final int mStringId;
+    protected final int mMsgId;
     /** Args to pass to format function. */
     @Nullable
-    private final Object[] mArgs;
+    private Object[] mArgs;
 
-    public FormattedMessageException(@StringRes final int stringId,
+    public FormattedMessageException(@StringRes final int msgId) {
+        mMsgId = msgId;
+    }
+
+    public FormattedMessageException(@StringRes final int msgId,
                                      @Nullable final Object... args) {
-        mStringId = stringId;
+        mMsgId = msgId;
         mArgs = args;
     }
 
@@ -67,9 +71,9 @@ public abstract class FormattedMessageException
     @NonNull
     public String getLocalizedMessage(@NonNull final Context context) {
         if (mArgs != null) {
-            return context.getString(mStringId, mArgs);
+            return context.getString(mMsgId, mArgs);
         } else {
-            return context.getString(mStringId);
+            return context.getString(mMsgId);
         }
     }
 }
