@@ -37,13 +37,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.DecimalEditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DoubleNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 /**

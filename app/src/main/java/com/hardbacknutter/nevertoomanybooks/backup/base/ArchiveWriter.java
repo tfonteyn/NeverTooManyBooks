@@ -53,8 +53,7 @@ public interface ArchiveWriter
      * <p>
      * See {@link ArchiveWriterAbstract} for a default implementation.
      *
-     *
-     * @param context          Current context
+     * @param context     Current context
      * @param archiveInfo header
      *
      * @throws IOException on failure
@@ -73,6 +72,8 @@ public interface ArchiveWriter
      *
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
+     *
+     * @return the export results summary
      *
      * @throws IOException on failure
      */

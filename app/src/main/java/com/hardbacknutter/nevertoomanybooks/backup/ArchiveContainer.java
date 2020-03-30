@@ -130,6 +130,8 @@ public enum ArchiveContainer {
      * Get the <strong>proposed</strong> archive file extension.
      *
      * @return file name extension starting with a '.'
+     *
+     * @throws UnexpectedValueException if the type is unknown.
      */
     public String getFileExt() {
         switch (this) {

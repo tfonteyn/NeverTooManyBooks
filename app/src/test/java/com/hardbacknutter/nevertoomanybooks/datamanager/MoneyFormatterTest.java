@@ -32,8 +32,8 @@ import java.util.Locale;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.MoneyFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

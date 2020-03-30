@@ -45,9 +45,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.DatePickerDialogFragment;
@@ -55,6 +52,9 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.picker.DatePickerResultsList
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 
@@ -72,14 +72,14 @@ public abstract class EditBookBaseFragment
         Field<List<Entity>> field = mFragmentVM.getFields().getField(fieldId);
         mBookViewModel.getBook().putParcelableArrayList(field.getKey(), value);
         field.getAccessor().setValue(value);
-        field.onChanged();
+        field.onChanged(true);
     };
 
     private final DatePickerResultsListener
             mDatePickerResultsListener = (fieldId, value) -> {
         Field<String> field = mFragmentVM.getFields().getField(fieldId);
         field.getAccessor().setValue(value);
-        field.onChanged();
+        field.onChanged(true);
     };
 
     @Override
@@ -194,8 +194,7 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * Setup an adapter for the AutoCompleteTextView, using the (optional)
-     * formatter.
+     * Setup an adapter for the AutoCompleteTextView, using the (optional) formatter.
      *
      * @param fieldId view to connect
      * @param list    with auto complete values

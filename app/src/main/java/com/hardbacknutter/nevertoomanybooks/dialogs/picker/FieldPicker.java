@@ -42,7 +42,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
@@ -74,7 +74,7 @@ public class FieldPicker<T>
             dismiss();
             // Update, display and notify
             field.getAccessor().setValue(item);
-            field.onChanged();
+            field.onChanged(true);
         });
         setAdapter(adapter, adapter.getPreSelectedPosition());
     }

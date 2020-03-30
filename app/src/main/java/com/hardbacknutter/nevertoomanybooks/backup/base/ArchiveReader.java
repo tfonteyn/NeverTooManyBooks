@@ -80,6 +80,8 @@ public interface ArchiveReader
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
      *
+     * @return the import results summary
+     *
      * @throws IOException             on failure
      * @throws ImportException         on failure
      * @throws InvalidArchiveException on failure to recognise a supported archive

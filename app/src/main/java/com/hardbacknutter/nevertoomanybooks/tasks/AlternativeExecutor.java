@@ -48,8 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.CoverBrowserDialogFragment;
  * This allows to run specific tasks that we don't want to submit (and wait on) the
  * shared one in AsyncTask.
  * <p>
- * <br>Example: {@link CoverBrowserDialogFragment} uses the default one to get thumbnails, but uses this
- * alternative one to get the larger preview image without waiting in the shared queue.
+ * <br>Example: {@link CoverBrowserDialogFragment} uses the default one
+ * to get thumbnails, but uses this alternative one to get the larger
+ * preview image without waiting in the shared queue.
  */
 public final class AlternativeExecutor {
 

@@ -205,8 +205,8 @@ public abstract class ArchiveWriterAbstractBase
      * @throws IOException on failure
      */
     @WorkerThread
-    public abstract void prepareBooks(@NonNull final Context context,
-                                      @NonNull final ProgressListener progressListener)
+    public abstract void prepareBooks(@NonNull Context context,
+                                      @NonNull ProgressListener progressListener)
             throws IOException;
 
     /**
@@ -218,8 +218,8 @@ public abstract class ArchiveWriterAbstractBase
      * @throws IOException on failure
      */
     @WorkerThread
-    public abstract void writeBooks(@NonNull final Context context,
-                                    @NonNull final ProgressListener progressListener)
+    public abstract void writeBooks(@NonNull Context context,
+                                    @NonNull ProgressListener progressListener)
             throws IOException;
 
     /**
@@ -269,8 +269,8 @@ public abstract class ArchiveWriterAbstractBase
          *
          * @throws IOException on failure
          */
-        void writePreferences(@NonNull final Context context,
-                              @NonNull final ProgressListener progressListener)
+        void writePreferences(@NonNull Context context,
+                              @NonNull ProgressListener progressListener)
                 throws IOException;
     }
 
@@ -291,8 +291,8 @@ public abstract class ArchiveWriterAbstractBase
          * @throws IOException on failure
          */
         @WorkerThread
-        void prepareCovers(@NonNull final Context context,
-                           @NonNull final ProgressListener progressListener)
+        void prepareCovers(@NonNull Context context,
+                           @NonNull ProgressListener progressListener)
                 throws IOException;
 
         /**
@@ -307,8 +307,8 @@ public abstract class ArchiveWriterAbstractBase
          * @throws IOException on failure
          */
         @WorkerThread
-        void writeCovers(@NonNull final Context context,
-                         @NonNull final ProgressListener progressListener)
+        void writeCovers(@NonNull Context context,
+                         @NonNull ProgressListener progressListener)
                 throws IOException;
     }
 }

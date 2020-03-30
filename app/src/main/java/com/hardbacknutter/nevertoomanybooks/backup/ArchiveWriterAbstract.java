@@ -225,7 +225,7 @@ public abstract class ArchiveWriterAbstract
      */
     protected abstract void putFile(@NonNull String name,
                                     @NonNull File file,
-                                    final boolean compress)
+                                    boolean compress)
             throws IOException;
 
     /**
@@ -240,7 +240,7 @@ public abstract class ArchiveWriterAbstract
     protected abstract void putByteArray(@NonNull String name,
                                          @NonNull byte[] bytes,
                                          @SuppressWarnings("SameParameterValue")
-                                         final boolean compress)
+                                                 boolean compress)
             throws IOException;
 
     /**

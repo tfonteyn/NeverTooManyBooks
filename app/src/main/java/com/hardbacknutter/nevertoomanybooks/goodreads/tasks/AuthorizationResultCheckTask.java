@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageExc
 public class AuthorizationResultCheckTask
         extends AsyncTask<Void, Void, Boolean> {
 
+    /** Log tag. */
     private static final String TAG = "GR.AuthResultCheck";
     @Nullable
     private Exception mException;

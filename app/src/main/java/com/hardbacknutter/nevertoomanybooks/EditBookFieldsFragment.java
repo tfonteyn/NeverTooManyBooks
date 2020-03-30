@@ -49,20 +49,20 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.TextAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.AuthorListFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.CsvFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.SeriesListFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldvalidators.FieldValidator;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldvalidators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
+import com.hardbacknutter.nevertoomanybooks.fields.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -77,14 +77,13 @@ public class EditBookFieldsFragment
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
-
+    /** re-usable validator. */
+    private static final FieldValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
-
     /**
      * Set to {@code true} limits to using ISBN-10/13.
      * Otherwise we also allow UPC/EAN codes.
@@ -93,15 +92,11 @@ public class EditBookFieldsFragment
      * TODO: perhaps make this a preference?
      */
     private boolean mStrictIsbn;
-
     /** The scanner. */
     @Nullable
     private ScannerViewModel mScannerModel;
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
-
-    /** re-usable validator. */
-    private static final FieldValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
 
     @Override
     @Nullable
@@ -152,7 +147,8 @@ public class EditBookFieldsFragment
                                                                   true, false)),
                        DBDefinitions.KEY_FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author)
-                  .setFieldValidator(R.id.lbl_author, NON_BLANK_VALIDATOR);
+                  .setErrorViewId(R.id.lbl_author)
+                  .setFieldValidator(NON_BLANK_VALIDATOR);
 
             fields.add(R.id.series_title, UniqueId.BKEY_SERIES_ARRAY,
                        new TextAccessor<>(new SeriesListFormatter(Series.Details.Short,
@@ -162,7 +158,8 @@ public class EditBookFieldsFragment
         }
 
         fields.add(R.id.title, DBDefinitions.KEY_TITLE, new EditTextAccessor<String>())
-              .setFieldValidator(R.id.lbl_title, NON_BLANK_VALIDATOR);
+              .setErrorViewId(R.id.lbl_title)
+              .setFieldValidator(NON_BLANK_VALIDATOR);
 
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_description);

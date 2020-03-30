@@ -57,10 +57,12 @@ public class AnalyzeDbTask
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-
+    /** Flag: also do the covers database (or not). */
     private final boolean mDoCoversDb;
 
     /**
+     * Constructor.
+     *
      * @param taskId       a task identifier, will be returned in the task finished listener.
      * @param db           Database Access
      * @param doCoversDb   Flag: also do the covers database (or not)

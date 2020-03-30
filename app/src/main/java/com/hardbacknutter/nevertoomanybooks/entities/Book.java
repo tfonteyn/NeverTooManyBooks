@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseArray;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -59,9 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 
@@ -339,30 +336,6 @@ public class Book
     }
 
     /**
-     * Get a map with all valid native ids for this book.
-     * All values will be cast to String.
-     *
-     * @return map, can be empty.
-     */
-    @NonNull
-    public SparseArray<String> getNativeIds() {
-        SparseArray<String> nativeIds = new SparseArray<>();
-        for (String key : DBDefinitions.NATIVE_ID_KEYS) {
-            String value = getString(key);
-            if (!value.isEmpty() && !"0".equals(value)) {
-                nativeIds.put(SearchSites.getSiteIdFromDBDefinitions(key), value);
-            }
-        }
-
-        // explicitly add Amazon if we have a valid ISBN
-        ISBN isbn = ISBN.createISBN(getString(DBDefinitions.KEY_ISBN));
-        if (isbn.isValid(true)) {
-            nativeIds.put(SearchSites.AMAZON, isbn.asText());
-        }
-        return nativeIds;
-    }
-
-    /**
      * Using the id, reload *all* other data for this book.
      *
      * @param db Database Access
@@ -488,15 +461,6 @@ public class Book
     @NonNull
     public String getLabel(@NonNull final Context context) {
         return reorderTitleForDisplaying(context, getLocale(context));
-    }
-
-    public ISBN getValidIsbnOrNull() {
-        ISBN isbn = ISBN.createISBN(getString(DBDefinitions.KEY_ISBN));
-        if (isbn.isValid(true)) {
-            return isbn;
-        } else {
-            return null;
-        }
     }
 
     /**
@@ -828,6 +792,7 @@ public class Book
         return setRead(db, !getBoolean(DBDefinitions.KEY_READ));
     }
 
+    @SuppressWarnings("unused")
     public void deleteLoan(@NonNull final DAO db) {
         remove(DBDefinitions.KEY_LOANEE);
         db.deleteLoan(getId());
