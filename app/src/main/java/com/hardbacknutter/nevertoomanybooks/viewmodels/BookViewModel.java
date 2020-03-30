@@ -87,14 +87,15 @@ public class BookViewModel
      * <p>
      * Loads the book data upon first start.
      *
-     * @param context Current context, will not get cached.
-     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context    Current context, will not get cached.
+     * @param args       {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param isEditMode flag
      */
     public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
+                     @Nullable final Bundle args,
+                     final boolean isEditMode) {
         if (mDb == null) {
             mDb = new DAO(TAG);
-
 
             if (args != null) {
                 // 1. Do we have a bundle?
@@ -121,6 +122,11 @@ public class BookViewModel
             // If the new book is not on any Bookshelf, add the preferred/current bookshelf
             if (mBook.isNew()) {
                 ensureBookshelf(context);
+            }
+
+            if (isEditMode) {
+                // these are DATA validator (not field validators)
+                mBook.addValidators();
             }
         }
     }

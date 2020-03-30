@@ -110,7 +110,7 @@ public class EditBookFragment
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments());
+        mBookViewModel.init(getContext(), getArguments(), true);
 
         mViewPagerAdapter = new TabAdapter(this, mTabList);
         mViewPager.setAdapter(mViewPagerAdapter);
@@ -210,7 +210,6 @@ public class EditBookFragment
      *                             unfinished edits.
      */
     private void prepareSave(final boolean checkUnfinishedEdits) {
-
         final Book book = mBookViewModel.getBook();
         final Collection<String> unfinishedEdits = mBookViewModel.getUnfinishedEdits();
 

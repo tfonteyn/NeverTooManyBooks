@@ -34,7 +34,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -104,13 +103,11 @@ public class Book
      * Public Constructor.
      */
     public Book() {
-        addValidators();
     }
 
     @VisibleForTesting
     public Book(@NonNull final Bundle rawData) {
         super(rawData);
-        addValidators();
     }
 
     /**
@@ -124,7 +121,6 @@ public class Book
      */
     public Book(final long bookId,
                 @NonNull final DAO db) {
-        addValidators();
         if (bookId > 0) {
             reload(db, bookId);
         }
@@ -322,16 +318,6 @@ public class Book
         }
 
         return old;
-    }
-
-    /**
-     * Erase everything in this instance and reset the special handlers.
-     */
-    @Override
-    @CallSuper
-    public void clear() {
-        super.clear();
-        addValidators();
     }
 
     /**
@@ -591,19 +577,22 @@ public class Book
      * <p>
      * ENHANCE: add (partial) date validators ? any other validators needed ?
      */
-    private void addValidators() {
+    public void addValidators() {
 
-        addValidator(DBDefinitions.KEY_TITLE, NON_BLANK_VALIDATOR, R.string.lbl_title);
-        addValidator(UniqueId.BKEY_AUTHOR_ARRAY, NON_BLANK_VALIDATOR, R.string.lbl_author);
+        addValidator(DBDefinitions.KEY_TITLE,
+                     NON_BLANK_VALIDATOR, R.string.lbl_title);
+        addValidator(UniqueId.BKEY_AUTHOR_ARRAY,
+                     NON_BLANK_VALIDATOR, R.string.lbl_author);
 
-        addValidator(DBDefinitions.KEY_EDITION_BITMASK, LONG_VALIDATOR, R.string.lbl_edition);
-        addValidator(DBDefinitions.KEY_TOC_BITMASK, LONG_VALIDATOR,
-                     R.string.lbl_table_of_content);
+        addValidator(DBDefinitions.KEY_EDITION_BITMASK,
+                     LONG_VALIDATOR, R.string.lbl_edition);
+        addValidator(DBDefinitions.KEY_TOC_BITMASK,
+                     LONG_VALIDATOR, R.string.lbl_table_of_content);
 
-        addValidator(DBDefinitions.KEY_PRICE_LISTED, BLANK_OR_DOUBLE_VALIDATOR,
-                     R.string.lbl_price_listed);
-        addValidator(DBDefinitions.KEY_PRICE_PAID, BLANK_OR_DOUBLE_VALIDATOR,
-                     R.string.lbl_price_paid);
+        addValidator(DBDefinitions.KEY_PRICE_LISTED,
+                     BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_listed);
+        addValidator(DBDefinitions.KEY_PRICE_PAID,
+                     BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_paid);
 
         addCrossValidator(book -> {
             String start = book.getString(DBDefinitions.KEY_READ_START);
