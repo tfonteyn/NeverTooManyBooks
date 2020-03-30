@@ -196,6 +196,7 @@ public class BooksOnBookshelf
     private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
+
     /** Listener for the Bookshelf Spinner. */
     private final OnItemSelectedListener mOnBookshelfSelectionChanged =
             new OnItemSelectedListener() {
@@ -222,6 +223,7 @@ public class BooksOnBookshelf
                     // Do Nothing
                 }
             };
+
     // ENHANCE: update the modified row without a rebuild.
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
@@ -259,6 +261,7 @@ public class BooksOnBookshelf
 //            }
 //        }
     };
+
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -275,13 +278,11 @@ public class BooksOnBookshelf
                 @Override
                 public void onItemClick(final int position) {
                     final Cursor cursor = mModel.getListCursor();
-
                     // Move the cursor, so we can read the data for this row.
                     // Paranoia: if the user can click it, then this move should be fine.
                     if (!cursor.moveToPosition(position)) {
                         return;
                     }
-
                     final RowDataHolder rowData = new CursorRow(cursor);
 
                     // If it's a book, open the details screen.
@@ -314,19 +315,16 @@ public class BooksOnBookshelf
                 @Override
                 public boolean onItemLongClick(final int position) {
                     final Cursor cursor = mModel.getListCursor();
-
                     // Move the cursor, so we can read the data for this row.
                     // Paranoia: if the user can click it, then this move should be fine.
                     if (!cursor.moveToPosition(position)) {
                         return false;
                     }
-
                     final RowDataHolder rowData = new CursorRow(cursor);
 
+                    // build the menu for this row
                     final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
-                    // build/check the menu for this row
-                    onCreateContextMenu(menu, rowData);
-                    if (menu.size() != 0) {
+                    if (onCreateContextMenu(menu, rowData)) {
                         // we have a menu to show, set the title according to the level.
                         final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
                         final String title = mAdapter.getLevelText(position, level);
@@ -339,7 +337,11 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-    /** Apply the style that a user has selected. */
+
+    /**
+     * Apply the style that a user has selected.
+     * Called from {@link StylePickerDialogFragment}.
+     */
     private final StylePickerDialogFragment.StyleChangedListener mStyleChangedListener =
             new StylePickerDialogFragment.StyleChangedListener() {
                 public void onStyleChanged(@NonNull final BooklistStyle style) {
@@ -351,13 +353,14 @@ public class BooksOnBookshelf
                     // do since we *may* come back to a similar list.
                     saveListPosition();
                     // and do a rebuild
-                    // go create
                     mModel.buildBookList(BooksOnBookshelf.this);
                 }
             };
+
     /** Full progress dialog to show while exporting/importing. */
     @Nullable
     private ProgressDialogFragment mProgressDialog;
+
     /** Export. */
     private ExportTaskModel mExportModel;
     private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
@@ -371,10 +374,12 @@ public class BooksOnBookshelf
                     mImportModel.startArchiveImportTask(options);
                 }
             };
+
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
     /** Whether to show level-header - this depends on the current style. */
     private boolean mShowLevelHeaders;
+
     /** Define a scroller to update header detail when the top row changes. */
     private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
             new RecyclerView.OnScrollListener() {
@@ -391,12 +396,14 @@ public class BooksOnBookshelf
                     }
                 }
             };
+
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
     private ExtendedFloatingActionButton[] mFabMenuItems;
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
     private View mFabOverlay;
+
     /** Define a scroller to show, or collapse/hide the FAB. */
     private final RecyclerView.OnScrollListener mUpdateFABVisibility =
             new RecyclerView.OnScrollListener() {
@@ -413,9 +420,8 @@ public class BooksOnBookshelf
                 @Override
                 public void onScrollStateChanged(@NonNull final RecyclerView recyclerView,
                                                  final int newState) {
-                    // TODO: this is not called when the fast scroller stops scrolling
-                    // but that can be ignored for now...
-                    // the slighted swipe of the user brings the FAB back.
+                    // This method is not called when the fast scroller stops scrolling but
+                    // we can ignore that as in practice a minuscule swipe brings the FAB back.
                     if (newState == RecyclerView.SCROLL_STATE_IDLE
                         || newState == RecyclerView.SCROLL_STATE_SETTLING) {
                         showFABMenu(false);
@@ -734,7 +740,8 @@ public class BooksOnBookshelf
 
         switch (item.getItemId()) {
             case R.id.MENU_SORT: {
-                TipManager.display(this, R.string.tip_booklist_style_menu, this::showStylePicker);
+                StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
+                                                      mModel.getCurrentStyle(this), false);
                 return true;
             }
             case R.id.MENU_LEVEL_PREFERRED_COLLAPSE: {
@@ -770,9 +777,11 @@ public class BooksOnBookshelf
      *
      * @param menu    to populate
      * @param rowData current cursorRow
+     *
+     * @return {@code true} if there is a menu to show
      */
-    private void onCreateContextMenu(@NonNull final Menu menu,
-                                     @NonNull final RowDataHolder rowData) {
+    private boolean onCreateContextMenu(@NonNull final Menu menu,
+                                        @NonNull final RowDataHolder rowData) {
         menu.clear();
 
         final int rowGroupId = rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
@@ -877,28 +886,22 @@ public class BooksOnBookshelf
             }
         }
 
-        // if it's a level, add the expand/collapse option
+        // if it's a level, add the expand option
         if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
-            if (menu.size() > 0) {
-                menu.add(Menu.NONE, R.id.MENU_DIVIDER,
-                         getResources().getInteger(R.integer.MENU_ORDER_LEVEL_TOGGLE) - 1,
-                         "")
-                    .setEnabled(false);
-            }
             final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
             RowStateDAO.Node node = mModel.getNode(rowId);
             if (node.isExpanded) {
-                menu.add(Menu.NONE, R.id.MENU_LEVEL_TOGGLE,
-                         getResources().getInteger(R.integer.MENU_ORDER_LEVEL_TOGGLE),
-                         R.string.lbl_level_collapse)
+                int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_LEVEL_TOGGLE);
+                if (menu.size() > 0) {
+                    menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder - 1, "")
+                        .setEnabled(false);
+                }
+                menu.add(Menu.NONE, R.id.MENU_LEVEL_TOGGLE, menuOrder, R.string.lbl_level_collapse)
                     .setIcon(R.drawable.ic_unfold_less);
-            } else {
-                menu.add(Menu.NONE, R.id.MENU_LEVEL_TOGGLE,
-                         getResources().getInteger(R.integer.MENU_ORDER_LEVEL_TOGGLE),
-                         R.string.lbl_level_expand)
-                    .setIcon(R.drawable.ic_unfold_more);
             }
         }
+
+        return menu.size() > 0;
     }
 
     /**
@@ -1434,11 +1437,6 @@ public class BooksOnBookshelf
         startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
     }
 
-    private void showStylePicker() {
-        StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
-                                              mModel.getCurrentStyle(this), false);
-    }
-
     /**
      * Expand/Collapse the current position in the list.
      *
@@ -1462,7 +1460,42 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Display the passed cursor in the ListView.
+     * Toggle (expand/collapse) the given node.
+     * Called when the user taps on a level-row, or from the row context menu.
+     *
+     * @param position           of the row in the list view
+     * @param rowId              of the node in the list
+     * @param relativeChildLevel up to and including this (relative to the node) child level;
+     */
+    public void toggleNode(final int position,
+                           final long rowId,
+                           final int relativeChildLevel) {
+
+        // update the row DAO table
+        final boolean isExpanded = mModel.toggleNode(rowId, relativeChildLevel);
+
+        // make sure the cursor has valid rows for the new position.
+        Cursor cursor = mModel.getListCursor();
+        if (cursor.requery()) {
+            mAdapter.notifyDataSetChanged();
+            if (isExpanded) {
+                // if the user expanded the line at the bottom of the screen,
+                final int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                if ((position + 1 == lastPos) || (position == lastPos)) {
+                    // then we move the list a minimum of 2 positions upwards
+                    // to make the expanded rows visible. Using 3 for comfort.
+                    mListView.scrollToPosition(position + 3);
+                }
+            }
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                throw new IllegalStateException("requery() failed");
+            }
+        }
+    }
+
+    /**
+     * Display the current cursor in the ListView.
      *
      * @param targetRows (optional) change the position to targetRows.
      */
@@ -1561,41 +1594,6 @@ public class BooksOnBookshelf
             }
 
             mModel.saveListPosition(this, position, rowId, topViewOffset);
-        }
-    }
-
-    /**
-     * Toggle (expand/collapse) the given node.
-     * Called when the user taps on a level-row, or from the row context menu.
-     *
-     * @param position           of the row in the list view
-     * @param rowId              of the node in the list
-     * @param relativeChildLevel up to and including this (relative to the node) child level;
-     */
-    public void toggleNode(final int position,
-                           final long rowId,
-                           final int relativeChildLevel) {
-
-        // update the row DAO table
-        final boolean isExpanded = mModel.toggleNode(rowId, relativeChildLevel);
-
-        // make sure the cursor has valid rows for the new position.
-        Cursor cursor = mModel.getListCursor();
-        if (cursor.requery()) {
-            mAdapter.notifyDataSetChanged();
-            if (isExpanded) {
-                // if the user expanded the line at the bottom of the screen,
-                final int lastPos = mLayoutManager.findLastCompletelyVisibleItemPosition();
-                if ((position + 1 == lastPos) || (position == lastPos)) {
-                    // then we move the list a minimum of 2 positions upwards
-                    // to make the expanded rows visible. Using 3 for comfort.
-                    mListView.scrollToPosition(position + 3);
-                }
-            }
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                throw new IllegalStateException("requery() failed");
-            }
         }
     }
 

@@ -73,14 +73,13 @@
 
     <integer name="MENU_ORDER_LEVEL_TOGGLE">999</integer>
 
+    <item name="MENU_DIVIDER" type="id" />
 
-    <!-- So why not use generic menu ids everywhere?
-         Well, having individual menu id's (e.g. multiple 'menu_edit_*')
-         makes the code much more readable and up to a point foolproof.  -->
     <item name="MENU_EDIT" type="id" />
     <item name="MENU_DELETE" type="id" />
     <item name="MENU_DUPLICATE" type="id" />
     <item name="MENU_SHOW_ALL" type="id" />
+    <item name="MENU_SEARCH" type="id" />
 
     <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
 
@@ -118,6 +117,7 @@
 
     <item name="MENU_SHARE" type="id" />
     <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id" />
+    <item name="MENU_GOODREADS_TASKS" type="id" />
     <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
 
     <!-- standard Booklist options menu -->
@@ -188,8 +188,6 @@
     <item name="MENU_DEBUG_SQ_SHELL" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
-    <item name="MENU_GOODREADS_TASKS" type="id" />
-    <item name="MENU_SEARCH" type="id" />
-    <item name="MENU_DIVIDER" type="id" />
+
 
 </resources>
