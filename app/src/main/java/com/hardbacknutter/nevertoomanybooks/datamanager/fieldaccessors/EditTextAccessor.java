@@ -91,7 +91,7 @@ public class EditTextAccessor<T>
     /**
      * Constructor.
      *
-     * @param enableReformat flag
+     * @param enableReformat flag: reformat after every user-change.
      */
     public EditTextAccessor(@NonNull final FieldFormatter<T> formatter,
                             final boolean enableReformat) {

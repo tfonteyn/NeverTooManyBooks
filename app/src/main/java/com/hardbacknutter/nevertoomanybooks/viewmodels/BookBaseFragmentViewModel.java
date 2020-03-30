@@ -29,15 +29,12 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -53,8 +50,7 @@ public abstract class BookBaseFragmentViewModel
         extends ViewModel
         implements BookBaseFragment.FieldsViewModel {
 
-    private AtomicInteger INST = new AtomicInteger();
-
+    /** Log tag. */
     private static final String TAG = "BookBaseFragmentVM";
 
     private final MutableLiveData<String> mUserMessage = new MutableLiveData<>();
@@ -83,8 +79,6 @@ public abstract class BookBaseFragmentViewModel
         if (mDb == null) {
             mDb = new DAO(TAG);
         }
-
-        Log.d(this.getClass().getName(), "INST=" + INST.incrementAndGet());
     }
 
     @NonNull

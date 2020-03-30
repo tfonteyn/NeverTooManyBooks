@@ -38,6 +38,8 @@ public interface FieldValidator {
 
     /**
      * Validation method.
+     *
+     * @param field to validate
      */
     <T> boolean validate(@NonNull Field<T> field);
 }

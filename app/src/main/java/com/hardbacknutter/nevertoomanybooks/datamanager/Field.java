@@ -98,6 +98,7 @@ public class Field<T> {
     @Nullable
     @IdRes
     private int[] mRelatedFields;
+    @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
     private int mErrorViewId;
     @Nullable
@@ -293,6 +294,7 @@ public class Field<T> {
                + ", mIsUsedKey='" + mIsUsedKey + '\''
                + ", mKey='" + mKey + '\''
                + ", mFieldDataAccessor=" + mFieldDataAccessor
+               + ", mValidator=" + mValidator
                + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
                + '}';
     }
