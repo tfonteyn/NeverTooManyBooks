@@ -1649,6 +1649,5 @@
      We report to the user that the site is not working as expected.
     -->
     <string name="site_out_of_order">Site out of order</string>
-    <string name="lbl_level_toggle">Toggle</string>
 
 </resources>

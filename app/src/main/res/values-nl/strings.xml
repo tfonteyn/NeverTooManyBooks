@@ -607,13 +607,13 @@
     <string name="lbl_send_mail">Bericht versturen…</string>
     <string name="unknown">Onbekend</string>
     <string name="unused">ongebruikt</string>
-    <string name="vldt_blank_required_for_x">Waardeveld moet leeg zijn voor „%1$s”</string>
+    <string name="vldt_blank_required_for_x">Veld moet leeg zijn voor „%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Verwachtte een boolean waarde (0,1,t,f,true,false) voor „%1$s”</string>
     <string name="vldt_date_expected_for_x">Verwachtte een datum voor „%1$s”</string>
     <string name="vldt_failed_for_x">Validatie mislukt voor „%1$s”</string>
     <string name="vldt_failure">Validatiefout.</string>
     <string name="vldt_integer_expected_for_x">Verwachtte een numerieke waarde voor „%1$s”</string>
-    <string name="vldt_non_blank_required_for_x">Waardeveld mag niet leeg zijn voor „%1$s”</string>
+    <string name="vldt_non_blank_required_for_x">Veld mag niet leeg zijn voor „%1$s”</string>
     <string name="vldt_read_start_after_end">De begindatum moet vóór de einddatum liggen.</string>
     <string name="vldt_real_expected_for_x">Verwachtte een echt nummer voor „%1$s”</string>
     <string name="warning_author_already_in_list">Auteur staat al in de lijst</string>
@@ -632,7 +632,7 @@
     <string name="warning_import_csv_failed_lines_some">CSV-parsering is mislukt voor regels \n%1$s\n</string>
     <string name="warning_import_old_archive">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
     <string name="warning_import_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
-    <string name="warning_missing_name">Naamveld mag niet leeg zijn</string>
+    <string name="warning_missing_name">De naam mag niet leeg zijn</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="warning_no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
@@ -659,5 +659,6 @@
     <string name="lbl_dust_cover">Stof omslag</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="amazon_ellipsis">Amazon…</string>
+    <string name="vldt_non_blank_required">Veld mag niet leeg zijn</string>
 
 </resources>

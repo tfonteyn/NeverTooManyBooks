@@ -660,4 +660,5 @@
     <string name="lbl_dust_cover">Schutzumschlag</string>
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="amazon_ellipsis">Amazon…</string>
+    <string name="vldt_non_blank_required">Es ist ein Wert erforderlich</string>
 </resources>
