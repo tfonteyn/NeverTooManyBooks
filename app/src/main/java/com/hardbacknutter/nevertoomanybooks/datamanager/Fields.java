@@ -190,6 +190,7 @@ public class Fields {
             Field field = mAllFields.valueAt(f);
             if (field.isAutoPopulated()) {
                 field.getAccessor().getValue(dataManager);
+                field.validate();
             }
         }
     }
@@ -239,6 +240,13 @@ public class Fields {
         }
     }
 
+    @Override
+    @NonNull
+    public String toString() {
+        return "Fields{"
+               + "mAllFields=" + mAllFields
+               + '}';
+    }
 
     public interface AfterChangeListener {
 

@@ -25,35 +25,27 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.datamanager;
+package com.hardbacknutter.nevertoomanybooks.datamanager.fieldvalidators;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.FieldViewAccessor;
 
-/**
- * Interface supported by an editor object.
- *
- * @param <T> type of DataManager; normally a {@link Book}
- */
-public interface DataEditor<T extends DataManager> {
+public class NonBlankValidator
+        implements FieldValidator {
 
-    /**
-     * Save the contents of all Fields to the {@link DataManager}.
-     *
-     * @param dataManager to save the data to
-     */
-    void onSaveFields(@NonNull T dataManager);
-
-    /**
-     * Check for unfinished user edits.
-     * <p>
-     * Independent of the data stored in {@link #onSaveFields}, an editor
-     * can have fields with data in it which are not directly linked with a {@link DataManager}.
-     *
-     * @return {@code true} if there are
-     */
-    default boolean hasUnfinishedEdits() {
-        return false;
+    @Override
+    public <T> boolean validate(@NonNull final Field<T> field) {
+        final FieldViewAccessor<T> accessor = field.getAccessor();
+        if (accessor.isEmpty()) {
+            accessor.setError(accessor.getView().getContext()
+                                      .getString(R.string.vldt_non_blank_required));
+            return false;
+        } else {
+            accessor.setError(null);
+            return true;
+        }
     }
 }

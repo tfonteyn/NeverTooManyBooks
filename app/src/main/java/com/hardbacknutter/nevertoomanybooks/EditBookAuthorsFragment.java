@@ -123,6 +123,11 @@ public class EditBookAuthorsFragment
                 getContext(), R.layout.dropdown_menu_popup_item,
                 mFragmentVM.getAuthorNames());
         mVb.author.setAdapter(nameAdapter);
+        mVb.author.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                mVb.lblAuthor.setError(null);
+            }
+        });
 
         // set up the list view. The adapter is setup in onPopulateViews
         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -157,6 +162,12 @@ public class EditBookAuthorsFragment
 
         // The list is not a 'real' field. Hence the need to store it manually here.
         book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mList);
+        // A book should always have an Author.
+        if (mList.isEmpty()) {
+            mVb.lblAuthor.setError(getString(R.string.warning_requires_at_least_1_author));
+        } else {
+            mVb.lblAuthor.setError(null);
+        }
     }
 
     @Override
@@ -186,7 +197,8 @@ public class EditBookAuthorsFragment
         // add the new one to the list. It is NOT saved at this point!
         mList.add(newAuthor);
         mListAdapter.notifyDataSetChanged();
-
+        // clear any previous error
+        mVb.lblAuthor.setError(null);
         // and clear the form for next entry.
         mVb.author.setText("");
     }
@@ -556,7 +568,7 @@ public class EditBookAuthorsFragment
         }
     }
 
-    protected class AuthorListAdapter
+    private class AuthorListAdapter
             extends RecyclerViewAdapterBase<Author, Holder> {
 
         @NonNull

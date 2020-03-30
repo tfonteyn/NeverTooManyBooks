@@ -63,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  *
  *         </com.google.android.material.textfield.TextInputLayout>}
  * </pre>
+ *
  * @param <T> type of Field value.
  */
 public class TextAccessor<T>
@@ -86,18 +87,10 @@ public class TextAccessor<T>
         return mFormatter;
     }
 
-    @NonNull
+    @Nullable
     @Override
     public T getValue() {
-        if (mRawValue != null) {
-            return mRawValue;
-        } else {
-            // all non-String field should have formatters.
-            // This means at this point that <T> MUST be a String.
-            // If we get an Exception here then the developer made a boo-boo.
-            //noinspection unchecked
-            return (T) "";
-        }
+        return mRawValue;
     }
 
     @Override

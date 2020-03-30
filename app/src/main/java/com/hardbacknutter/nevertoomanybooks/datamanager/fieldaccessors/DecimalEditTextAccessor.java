@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class DecimalEditTextAccessor
         extends EditTextAccessor<Number> {
 
-    public DecimalEditTextAccessor(@Nullable final FieldFormatter<Number> formatter,
+    public DecimalEditTextAccessor(@NonNull final FieldFormatter<Number> formatter,
                                    final boolean enableReformat) {
         super(formatter, enableReformat);
     }

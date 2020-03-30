@@ -89,13 +89,13 @@ public class DataManager
     private static final String TAG = "DataManager";
     /** DataValidators. */
     private final Map<String, DataValidator> mValidatorsMap = new UniqueMap<>();
-    /** DataValidators. Sake key as mValidatorsMap; value: @StringRes. */
+    /** DataValidators. Same key as mValidatorsMap; value: @StringRes. */
     @SuppressWarnings("FieldNotUsedInToString")
     private final Map<String, Integer> mValidatorErrorIdMap = new UniqueMap<>();
 
     /** A list of cross-validators to apply if all fields pass simple validation. */
     private final Collection<DataCrossValidator> mCrossValidators = new ArrayList<>();
-    /** The last validator exception caught by this object. */
+    /** The validator exceptions caught by this object. */
     private final Collection<ValidatorException> mValidationExceptions = new ArrayList<>();
 
     /** Raw data storage. */
@@ -115,6 +115,7 @@ public class DataManager
      */
     public void clear() {
         mRawData.clear();
+
         mValidatorsMap.clear();
         mValidatorErrorIdMap.clear();
         mCrossValidators.clear();

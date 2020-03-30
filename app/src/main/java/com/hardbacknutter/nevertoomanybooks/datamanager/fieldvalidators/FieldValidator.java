@@ -25,35 +25,19 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.datamanager;
+package com.hardbacknutter.nevertoomanybooks.datamanager.fieldvalidators;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
 
 /**
- * Interface supported by an editor object.
- *
- * @param <T> type of DataManager; normally a {@link Book}
+ * Interface for all field-level validators.
  */
-public interface DataEditor<T extends DataManager> {
+public interface FieldValidator {
 
     /**
-     * Save the contents of all Fields to the {@link DataManager}.
-     *
-     * @param dataManager to save the data to
+     * Validation method.
      */
-    void onSaveFields(@NonNull T dataManager);
-
-    /**
-     * Check for unfinished user edits.
-     * <p>
-     * Independent of the data stored in {@link #onSaveFields}, an editor
-     * can have fields with data in it which are not directly linked with a {@link DataManager}.
-     *
-     * @return {@code true} if there are
-     */
-    default boolean hasUnfinishedEdits() {
-        return false;
-    }
+    <T> boolean validate(@NonNull Field<T> field);
 }

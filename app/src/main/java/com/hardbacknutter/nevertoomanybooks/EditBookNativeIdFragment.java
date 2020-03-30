@@ -73,19 +73,19 @@ public class EditBookNativeIdFragment
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 
         fields.add(R.id.site_goodreads, DBDefinitions.KEY_EID_GOODREADS_BOOK,
-                   new EditTextAccessor<>(longNumberFormatter))
+                   new EditTextAccessor<>(longNumberFormatter, true))
               .setRelatedFields(R.id.lbl_site_goodreads);
 
         fields.add(R.id.site_isfdb, DBDefinitions.KEY_EID_ISFDB,
-                   new EditTextAccessor<>(longNumberFormatter))
+                   new EditTextAccessor<>(longNumberFormatter, true))
               .setRelatedFields(R.id.lbl_site_isfdb);
 
         fields.add(R.id.site_library_thing, DBDefinitions.KEY_EID_LIBRARY_THING,
-                   new EditTextAccessor<>(longNumberFormatter))
+                   new EditTextAccessor<>(longNumberFormatter, true))
               .setRelatedFields(R.id.lbl_site_library_thing);
 
         fields.add(R.id.site_strip_info_be, DBDefinitions.KEY_EID_STRIP_INFO_BE,
-                   new EditTextAccessor<>(longNumberFormatter))
+                   new EditTextAccessor<>(longNumberFormatter, true))
               .setRelatedFields(R.id.lbl_site_strip_info_be);
 
         fields.add(R.id.site_open_library, DBDefinitions.KEY_EID_OPEN_LIBRARY,

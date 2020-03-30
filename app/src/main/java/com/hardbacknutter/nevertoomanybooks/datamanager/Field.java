@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.FieldViewAccessor;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldvalidators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
@@ -97,6 +98,10 @@ public class Field<T> {
     @Nullable
     @IdRes
     private int[] mRelatedFields;
+    @IdRes
+    private int mErrorViewId;
+    @Nullable
+    private FieldValidator mValidator;
 
     /**
      * Constructor.
@@ -128,7 +133,7 @@ public class Field<T> {
      * Called from {@link BookBaseFragment} #loadFields() (from onResume())
      * to set the View for the field.
      * <p>
-     * Unused fields will be hidden after this step.
+     * Unused fields (as configured in the user preferences) will be hidden after this step.
      *
      * @param parentView of the field View
      */
@@ -136,6 +141,10 @@ public class Field<T> {
         mFieldDataAccessor.setView(parentView.findViewById(mId));
         if (!isUsed(parentView.getContext())) {
             mFieldDataAccessor.getView().setVisibility(View.GONE);
+        } else {
+            if (mErrorViewId != 0) {
+                mFieldDataAccessor.setErrorView(parentView.findViewById(mErrorViewId));
+            }
         }
     }
 
@@ -223,6 +232,22 @@ public class Field<T> {
         }
     }
 
+    @SuppressWarnings("UnusedReturnValue")
+    public Field<T> setFieldValidator(@IdRes final int errorViewId,
+                                      @NonNull final FieldValidator validator) {
+        mErrorViewId = errorViewId;
+        mValidator = validator;
+        return this;
+    }
+
+    public boolean validate() {
+        if (mValidator != null) {
+            return mValidator.validate(this);
+        } else {
+            return true;
+        }
+    }
+
     @NonNull
     public String getKey() {
         return mKey;
@@ -271,5 +296,4 @@ public class Field<T> {
                + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
                + '}';
     }
-
 }

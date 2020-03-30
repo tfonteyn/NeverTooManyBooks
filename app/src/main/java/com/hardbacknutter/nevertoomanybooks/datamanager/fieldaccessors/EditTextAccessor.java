@@ -71,19 +71,21 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class EditTextAccessor<T>
         extends TextAccessor<T> {
 
+    /** Log tag. */
     private static final String TAG = "EditTextAccessor";
 
-    private TextWatcher mReformatTextWatcher;
+    /**
+     * Triggers reformatting (if {@link #mEnableReformat} is set)
+     * and propagates the fact a field was changed.
+     */
+    private TextWatcher mChangedTextWatcher;
     /** Enable or disable the formatting text watcher. */
     private boolean mEnableReformat;
 
     /**
      * Constructor.
-     * <p>
-     * The reformatting text watcher is enabled.
      */
     public EditTextAccessor() {
-        mEnableReformat = true;
     }
 
     /**
@@ -91,27 +93,8 @@ public class EditTextAccessor<T>
      *
      * @param enableReformat flag
      */
-    EditTextAccessor(final boolean enableReformat) {
-        mEnableReformat = enableReformat;
-    }
-
-    /**
-     * Constructor.
-     * <p>
-     * The reformatting text watcher is enabled.
-     */
-    public EditTextAccessor(@Nullable final FieldFormatter<T> formatter) {
-        super(formatter);
-        mEnableReformat = true;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param enableReformat flag
-     */
-    public EditTextAccessor(@Nullable final FieldFormatter<T> formatter,
-                     final boolean enableReformat) {
+    public EditTextAccessor(@NonNull final FieldFormatter<T> formatter,
+                            final boolean enableReformat) {
         super(formatter);
         mEnableReformat = enableReformat;
     }
@@ -121,14 +104,11 @@ public class EditTextAccessor<T>
         super.setView(view);
         TextView textView = (TextView) view;
 
-        // If the user can type in this field, watch it.
-        if (mFormatter instanceof EditFieldFormatter) {
-            mReformatTextWatcher = new ChangedTextWatcher(mField, textView, mEnableReformat);
-            textView.addTextChangedListener(mReformatTextWatcher);
-        }
+        mChangedTextWatcher = new ChangedTextWatcher(mField, textView, mEnableReformat);
+        textView.addTextChangedListener(mChangedTextWatcher);
     }
 
-    @NonNull
+    @Nullable
     @Override
     public T getValue() {
         TextView view = (TextView) getView();
@@ -141,8 +121,8 @@ public class EditTextAccessor<T>
                 return super.getValue();
             }
         } else {
-            // all non-String field should have formatters.
-            // This means at this point that <T> MUST be a String.
+            // Without a formatter, we MUST assume <T> to be a String,
+            // and SHOULD just get the value from the field as-is.
             // If we get an Exception here then the developer made a boo-boo.
             //noinspection unchecked
             return (T) view.getText().toString().trim();
@@ -177,27 +157,31 @@ public class EditTextAccessor<T>
         // Second step set the view but ...
 
         // Disable the ChangedTextWatcher. Any decimal watcher can stay enabled.
-        if (mReformatTextWatcher != null) {
-            view.removeTextChangedListener(mReformatTextWatcher);
+        if (mChangedTextWatcher != null) {
+            view.removeTextChangedListener(mChangedTextWatcher);
         }
 
         if (view instanceof AutoCompleteTextView) {
             // prevent auto-completion to kick in / stop the dropdown from opening.
-            // this happened if the field had the focus when we'd be populating it.
             ((AutoCompleteTextView) view).setText(text, false);
         } else {
             view.setText(text);
         }
 
         // finally re-enable the watcher
-        if (mReformatTextWatcher != null) {
-            view.addTextChangedListener(mReformatTextWatcher);
+        if (mChangedTextWatcher != null) {
+            view.addTextChangedListener(mChangedTextWatcher);
         }
     }
 
     /**
-     * TextWatcher for TextView fields. Lets the Field know it's changed.
-     * If needed, reformats the on-screen value after each change.
+     * TextWatcher for TextView fields.
+     *
+     * <ol>
+     * <li>Re-formats if needed/allowed</li>
+     * <li>clears any previous error</li>
+     * <li>propagate the fact that the field changed</li>
+     * </ol>
      */
     class ChangedTextWatcher
             implements TextWatcher {
@@ -210,7 +194,7 @@ public class EditTextAccessor<T>
 
         private boolean mOnChangeCalled;
 
-        private long lastChange;
+        private long mLastChange;
 
         ChangedTextWatcher(@NonNull final Field<T> field,
                            @NonNull final TextView textView,
@@ -236,8 +220,9 @@ public class EditTextAccessor<T>
 
         @Override
         public void afterTextChanged(@NonNull final Editable editable) {
-            long interval = System.currentTimeMillis() - lastChange;
-            // react every 0.5 seconds is good enough and easier on the user.
+            long interval = System.currentTimeMillis() - mLastChange;
+
+            // reformat every 0.5 seconds is good enough and easier on the user.
             if (interval > 500) {
                 // reformat if allowed and needed.
                 if (mEnableReformat
@@ -255,14 +240,18 @@ public class EditTextAccessor<T>
                         mTextView.addTextChangedListener(this);
                     }
                 }
-
-                // only broadcast a change once.
-                if (!mOnChangeCalled) {
-                    mOnChangeCalled = true;
-                    mField.onChanged();
-                }
             }
-            lastChange = System.currentTimeMillis();
+
+            // Clear any previous error. The new content will be re-checked at validation time.
+            mField.getAccessor().setError(null);
+
+            // broadcast a change only once.
+            if (!mOnChangeCalled) {
+                mOnChangeCalled = true;
+                mField.onChanged();
+            }
+
+            mLastChange = System.currentTimeMillis();
         }
     }
 }

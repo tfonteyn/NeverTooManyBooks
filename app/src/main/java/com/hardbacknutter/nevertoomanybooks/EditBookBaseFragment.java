@@ -69,7 +69,7 @@ public abstract class EditBookBaseFragment
 
     private final CheckListDialogFragment.CheckListResultsListener
             mCheckListResultsListener = (fieldId, value) -> {
-        Field<List<Entity>> field = getFields().getField(fieldId);
+        Field<List<Entity>> field = mFragmentVM.getFields().getField(fieldId);
         mBookViewModel.getBook().putParcelableArrayList(field.getKey(), value);
         field.getAccessor().setValue(value);
         field.onChanged();
@@ -185,6 +185,8 @@ public abstract class EditBookBaseFragment
      * <p>
      * Called from {@link #onPause()}.
      * Override as needed.
+     * <p>
+     * {@inheritDoc}
      */
     @CallSuper
     public void onSaveFields(@NonNull final Book book) {

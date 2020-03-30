@@ -428,6 +428,7 @@
     </string>
 
     <!-- Some fields have to be blank or non-blank. -->
+    <string name="vldt_non_blank_required">Non-empty value required</string>
     <string name="vldt_non_blank_required_for_x">Non-empty value required for “%1$s”</string>
     <string name="vldt_blank_required_for_x">Empty value required for “%1$s”</string>
 

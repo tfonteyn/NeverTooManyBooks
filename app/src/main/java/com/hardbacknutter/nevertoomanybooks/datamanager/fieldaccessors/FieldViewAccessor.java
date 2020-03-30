@@ -47,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.FieldFor
  */
 public interface FieldViewAccessor<T> {
 
+    View getView();
+
     /**
      * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
      * <strong>Implementation note</strong>: we don't provide a onCreateViewHolder()
@@ -55,7 +57,9 @@ public interface FieldViewAccessor<T> {
      */
     void setView(@NonNull View view);
 
-    View getView();
+    void setErrorView(@Nullable View errorView);
+
+    void setError(@Nullable String errorText);
 
     void setField(@NonNull Field<T> field);
 
@@ -76,13 +80,9 @@ public interface FieldViewAccessor<T> {
     /**
      * Get the value from the view associated with the Field and return it as an Object.
      *
-     * <strong>Note:</strong> an implementation should always return a value.
-     * This would/should usually be the default the Widget.
-     * e.g. a text based widget should return "" even if the value was never set.
-     *
      * @return the value
      */
-    @NonNull
+    @Nullable
     T getValue();
 
     /**
@@ -116,6 +116,7 @@ public interface FieldViewAccessor<T> {
      * <p>
      * This default implementation considers
      * <ul>
+     * <li>{@code null}</li>
      * <li>Number == 0</li>
      * <li>Boolean == false</li>
      * <li>empty Collection</li>
@@ -130,7 +131,8 @@ public interface FieldViewAccessor<T> {
      */
     default boolean isEmpty() {
         final T value = getValue();
-        return value instanceof Number && ((Number) value).doubleValue() == 0.0d
+        return value == null
+               || value instanceof Number && ((Number) value).doubleValue() == 0.0d
                || value instanceof Boolean && !(Boolean) value
                || value instanceof Collection && ((Collection) value).isEmpty()
                || value instanceof Checkable && !((Checkable) value).isChecked()

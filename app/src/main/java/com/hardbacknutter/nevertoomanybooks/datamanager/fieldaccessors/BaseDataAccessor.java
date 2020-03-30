@@ -30,9 +30,12 @@ package com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors;
 import android.annotation.SuppressLint;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
 
@@ -49,9 +52,14 @@ public abstract class BaseDataAccessor<T>
     Field<T> mField;
     @Nullable
     T mRawValue;
+
     boolean mIsEditable;
     @Nullable
     private WeakReference<View> mViewReference;
+    @Nullable
+    private WeakReference<View> mErrorViewReference;
+    @Nullable
+    private String mErrorText;
 
     @Override
     public void setField(@NonNull final Field<T> field) {
@@ -74,6 +82,44 @@ public abstract class BaseDataAccessor<T>
     @Override
     public void setView(@NonNull final View view) {
         mViewReference = new WeakReference<>(view);
+    }
+
+    @Override
+    public void setErrorView(@Nullable final View errorView) {
+        if (errorView != null) {
+            mErrorViewReference = new WeakReference<>(errorView);
+            if (mErrorText != null) {
+                setError(mErrorText);
+            }
+        } else {
+            mErrorViewReference = null;
+        }
+    }
+
+    /**
+     * Supports setting the text on an {@link TextInputLayout} or {@link TextView}.
+     * Fails silently if the view is no present.
+     *
+     * @param errorText to show
+     */
+    @Override
+    public void setError(@Nullable final String errorText) {
+        mErrorText = errorText;
+        // Don't complain if the view is not there. We can get called when
+        // the field is not on display.
+        if (mErrorViewReference != null) {
+            View errorView = mErrorViewReference.get();
+            if (errorView != null) {
+                if (errorView instanceof TextInputLayout) {
+                    TextInputLayout til = (TextInputLayout) errorView;
+                    til.setErrorEnabled(errorText != null);
+                    til.setError(errorText);
+                } else if (errorView instanceof TextView) {
+                    TextView textView = (TextView) errorView;
+                    textView.setText(errorText);
+                }
+            }
+        }
     }
 
     /**

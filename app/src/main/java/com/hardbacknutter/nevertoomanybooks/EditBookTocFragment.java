@@ -340,6 +340,7 @@ public class EditBookTocFragment
                     mVb.cbxMultipleAuthors.isChecked());
 
         // The toc list is not a 'real' field. Hence the need to store it manually here.
+        // It requires no special validation.
         book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
     }
 

@@ -55,6 +55,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.TextAcces
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.AuthorListFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.SeriesListFormatter;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldvalidators.FieldValidator;
+import com.hardbacknutter.nevertoomanybooks.datamanager.fieldvalidators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
@@ -97,6 +99,9 @@ public class EditBookFieldsFragment
     private ScannerViewModel mScannerModel;
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
+
+    /** re-usable validator. */
+    private static final FieldValidator NON_BLANK_VALIDATOR = new NonBlankValidator();
 
     @Override
     @Nullable
@@ -146,7 +151,8 @@ public class EditBookFieldsFragment
                        new TextAccessor<>(new AuthorListFormatter(Author.Details.Short,
                                                                   true, false)),
                        DBDefinitions.KEY_FK_AUTHOR)
-                  .setRelatedFields(R.id.lbl_author);
+                  .setRelatedFields(R.id.lbl_author)
+                  .setFieldValidator(R.id.lbl_author, NON_BLANK_VALIDATOR);
 
             fields.add(R.id.series_title, UniqueId.BKEY_SERIES_ARRAY,
                        new TextAccessor<>(new SeriesListFormatter(Series.Details.Short,
@@ -155,7 +161,8 @@ public class EditBookFieldsFragment
                   .setRelatedFields(R.id.lbl_series);
         }
 
-        fields.add(R.id.title, DBDefinitions.KEY_TITLE, new EditTextAccessor<String>());
+        fields.add(R.id.title, DBDefinitions.KEY_TITLE, new EditTextAccessor<String>())
+              .setFieldValidator(R.id.lbl_title, NON_BLANK_VALIDATOR);
 
         fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION, new EditTextAccessor<String>())
               .setRelatedFields(R.id.lbl_description);
@@ -172,7 +179,7 @@ public class EditBookFieldsFragment
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
         fields.add(R.id.bookshelves, UniqueId.BKEY_BOOKSHELF_ARRAY,
-                   new EditTextAccessor<>(new CsvFormatter()),
+                   new EditTextAccessor<>(new CsvFormatter(), true),
                    DBDefinitions.KEY_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
@@ -211,6 +218,16 @@ public class EditBookFieldsFragment
 
         // the super will trigger the population of all defined Fields and their Views.
         super.onResume();
+
+        if (!showAuthSeriesOnTabs) {
+            // Always validate author here. We do this for the following scenario:
+            // User opens book, and clicks on the author field.
+            // -> new fragment overlays, user empties the author list and clicks 'back'
+            // --> we need to flag up that the author list is empty.
+            // Note that this does mean we will flag up the author as empty when
+            // we get here when the user simply wants to add a book. Oh well...
+            getFields().getField(R.id.author).validate();
+        }
 
         // With all Views populated, (re-)add the helpers
         addAutocomplete(R.id.genre, mFragmentVM.getGenres());

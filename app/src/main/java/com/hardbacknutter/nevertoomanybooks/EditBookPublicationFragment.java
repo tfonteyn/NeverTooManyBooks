@@ -84,7 +84,7 @@ public class EditBookPublicationFragment
               .setRelatedFields(R.id.lbl_color);
 
         fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE,
-                   new EditTextAccessor<>(new LanguageFormatter()))
+                   new EditTextAccessor<>(new LanguageFormatter(), true))
               .setRelatedFields(R.id.lbl_language);
 
         fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER, new EditTextAccessor<String>())
