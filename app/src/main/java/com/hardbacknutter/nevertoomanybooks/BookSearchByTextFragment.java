@@ -92,7 +92,7 @@ public class BookSearchByTextFragment
 
         //noinspection ConstantConditions
         final boolean usePublisher = SearchSites.usePublisher(getContext());
-        mVb.publisherGroup.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
+        mVb.lblPublisher.setVisibility(usePublisher ? View.VISIBLE : View.GONE);
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_for_books);
