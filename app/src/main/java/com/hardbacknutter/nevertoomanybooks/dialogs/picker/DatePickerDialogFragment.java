@@ -53,13 +53,15 @@ public class DatePickerDialogFragment
 
     public static DialogFragment newInstance(@IdRes final int fieldId,
                                              @StringRes final int dialogTitleId,
-                                             @NonNull final String currentValue,
+                                             @Nullable final String currentValue,
                                              final boolean todayIfNone) {
         String date;
-        if (todayIfNone && currentValue.isEmpty()) {
+        if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
             date = DateUtils.localSqlDateForToday();
-        } else {
+        } else if (currentValue != null) {
             date = currentValue;
+        } else {
+            date = "";
         }
 
         DatePickerDialogFragment frag = new DatePickerDialogFragment();

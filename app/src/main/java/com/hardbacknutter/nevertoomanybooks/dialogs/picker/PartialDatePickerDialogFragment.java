@@ -86,13 +86,15 @@ public class PartialDatePickerDialogFragment
      */
     public static DialogFragment newInstance(@IdRes final int fieldId,
                                              @StringRes final int dialogTitleId,
-                                             @NonNull final String currentValue,
+                                             @Nullable final String currentValue,
                                              final boolean todayIfNone) {
         String date;
-        if (todayIfNone && currentValue.isEmpty()) {
+        if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
             date = DateUtils.localSqlDateForToday();
-        } else {
+        } else if (currentValue != null) {
             date = currentValue;
+        } else {
+            date = "";
         }
 
         PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
@@ -161,9 +163,9 @@ public class PartialDatePickerDialogFragment
     class PartialDatePickerDialog
             extends AlertDialog {
 
-        private final NumberPicker mDayPicker;
         /** Used for reading month names + calculating number of days in a month. */
         final Calendar mCalendarForCalculations;
+        private final NumberPicker mDayPicker;
         /** This listener is called after <strong>any change</strong> made to the pickers. */
         @SuppressWarnings("FieldCanBeLocal")
         private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
