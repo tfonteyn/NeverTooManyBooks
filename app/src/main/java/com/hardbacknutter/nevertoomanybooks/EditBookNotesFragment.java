@@ -38,17 +38,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Field;
-import com.hardbacknutter.nevertoomanybooks.datamanager.Fields;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.BitmaskChipGroupAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.CompoundButtonAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.DecimalEditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.MaterialSpinnerAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldaccessors.RatingBarAccessor;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DateFieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.datamanager.fieldformatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.CompoundButtonAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.MaterialSpinnerAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
@@ -57,6 +58,38 @@ import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
  */
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
+
+    /**
+     * The cross validator for read-start and read-end date fields.
+     * The error is always shown on the 'end' field.
+     */
+    private final FieldValidator<String> mReadStartEndValidator = field -> {
+        // we ignore the passed field, so we can use this validator for both fields.
+        Field<String> startField = getFields().getField(R.id.read_start);
+        Field<String> endField = getFields().getField(R.id.read_end);
+
+        String start = startField.getAccessor().getValue();
+        if (start == null || start.isEmpty()) {
+            startField.getAccessor().setError(null);
+            endField.getAccessor().setError(null);
+            return;
+        }
+
+        String end = endField.getAccessor().getValue();
+        if (end == null || end.isEmpty()) {
+            startField.getAccessor().setError(null);
+            endField.getAccessor().setError(null);
+            return;
+        }
+
+        if (start.compareToIgnoreCase(end) > 0) {
+            endField.getAccessor().setError(getString(R.string.vldt_read_start_after_end));
+
+        } else {
+            startField.getAccessor().setError(null);
+            endField.getAccessor().setError(null);
+        }
+    };
 
     @Override
     @Nullable
@@ -118,10 +151,15 @@ public class EditBookNotesFragment
 
         fields.add(R.id.read_start, DBDefinitions.KEY_READ_START,
                    new EditTextAccessor<>(new DateFieldFormatter(), false))
-              .setRelatedFields(R.id.lbl_read_start);
+              .setRelatedFields(R.id.lbl_read_start)
+              .setErrorViewId(R.id.lbl_read_start)
+              .setFieldValidator(mReadStartEndValidator);
+
         fields.add(R.id.read_end, DBDefinitions.KEY_READ_END,
                    new EditTextAccessor<>(new DateFieldFormatter(), false))
-              .setRelatedFields(R.id.lbl_read_end);
+              .setRelatedFields(R.id.lbl_read_end)
+              .setErrorViewId(R.id.lbl_read_end)
+              .setFieldValidator(mReadStartEndValidator);
     }
 
     @Override
@@ -149,7 +187,7 @@ public class EditBookNotesFragment
                     String value = DateUtils.localSqlDateForToday();
                     // Update, display and notify
                     readEnd.getAccessor().setValue(value);
-                    readEnd.onChanged();
+                    readEnd.onChanged(true);
                 }
             }
         });
