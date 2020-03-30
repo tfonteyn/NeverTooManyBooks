@@ -1146,7 +1146,7 @@ public class RowStateDAO {
     public static class Node {
 
         final long rowId;
-        public boolean isExpanded;
+        boolean isExpanded;
         int level;
         boolean isVisible;
 

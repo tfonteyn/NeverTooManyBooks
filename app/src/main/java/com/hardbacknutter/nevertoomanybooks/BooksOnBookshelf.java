@@ -303,7 +303,7 @@ public class BooksOnBookshelf
                     } else {
                         // it's a level, expand/collapse.
                         final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-                        toggleNode(position, rowId, 1);
+                        toggleNode(position, rowId, RowStateDAO.DesiredNodeState.Toggle, 1);
                     }
                 }
 
@@ -888,17 +888,13 @@ public class BooksOnBookshelf
 
         // if it's a level, add the expand option
         if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
-            final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-            RowStateDAO.Node node = mModel.getNode(rowId);
-            if (node.isExpanded) {
-                int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_LEVEL_TOGGLE);
-                if (menu.size() > 0) {
-                    menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder - 1, "")
-                        .setEnabled(false);
-                }
-                menu.add(Menu.NONE, R.id.MENU_LEVEL_TOGGLE, menuOrder, R.string.lbl_level_collapse)
-                    .setIcon(R.drawable.ic_unfold_less);
+            int menuOrder = getResources().getInteger(R.integer.MENU_ORDER_LEVEL_TOGGLE);
+            if (menu.size() > 0) {
+                menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder++, "")
+                    .setEnabled(false);
             }
+            menu.add(Menu.NONE, R.id.MENU_LEVEL_EXPAND, menuOrder, R.string.lbl_level_expand)
+                .setIcon(R.drawable.ic_unfold_more);
         }
 
         return menu.size() > 0;
@@ -1168,9 +1164,10 @@ public class BooksOnBookshelf
                 return true;
             }
 
-            case R.id.MENU_LEVEL_TOGGLE: {
+            case R.id.MENU_LEVEL_EXPAND: {
                 final long rowId = rowData.getInt(DBDefinitions.KEY_BL_LIST_VIEW_ROW_ID);
-                toggleNode(position, rowId, mModel.getCurrentStyle(this).getGroupCount());
+                toggleNode(position, rowId, RowStateDAO.DesiredNodeState.Expand,
+                           mModel.getCurrentStyle(this).getGroupCount());
                 return true;
             }
             default:
@@ -1460,19 +1457,21 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Toggle (expand/collapse) the given node.
+     * Set the desired state on the given node.
      * Called when the user taps on a level-row, or from the row context menu.
      *
      * @param position           of the row in the list view
      * @param rowId              of the node in the list
+     * @param desiredNodeState   the state to set the node to
      * @param relativeChildLevel up to and including this (relative to the node) child level;
      */
     public void toggleNode(final int position,
                            final long rowId,
+                           final RowStateDAO.DesiredNodeState desiredNodeState,
                            final int relativeChildLevel) {
 
         // update the row DAO table
-        final boolean isExpanded = mModel.toggleNode(rowId, relativeChildLevel);
+        final boolean isExpanded = mModel.toggleNode(rowId, desiredNodeState, relativeChildLevel);
 
         // make sure the cursor has valid rows for the new position.
         Cursor cursor = mModel.getListCursor();
