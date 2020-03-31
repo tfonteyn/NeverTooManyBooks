@@ -657,5 +657,8 @@
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="amazon_ellipsis">Amazon…</string>
     <string name="vldt_non_blank_required">Απαιτείται μη κενή τιμή</string>
+    <string name="confirm_rebuild_fts">Τα δεδομένα του ευρετηρίου αναζήτησης θα ξαναφτιάξουν κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
+    <string name="confirm_rebuild_index">Τα ευρετήρια θα ξαναχτίζονται κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
+    <string name="error_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
 
 </resources>

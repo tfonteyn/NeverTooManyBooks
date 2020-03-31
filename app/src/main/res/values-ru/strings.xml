@@ -652,5 +652,8 @@
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="amazon_ellipsis">Amazon…</string>
     <string name="vldt_non_blank_required">Требуется не пустое значение</string>
+    <string name="confirm_rebuild_fts">Данные поискового индекса будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
+    <string name="confirm_rebuild_index">Индексы будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
+    <string name="error_site_has_problems">На сайте есть проблемы.</string>
 
 </resources>

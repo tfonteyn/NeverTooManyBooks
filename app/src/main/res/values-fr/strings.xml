@@ -661,5 +661,8 @@
     <string name="name_hash_nr">%1$s #%2$d</string>
     <string name="amazon_ellipsis">Amazon…</string>
     <string name="vldt_non_blank_required">Valeur non vide attendue</string>
+    <string name="confirm_rebuild_fts">Les données de l\'index de recherche seront reconstruites au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
+    <string name="confirm_rebuild_index">Les index seront reconstruits au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
+    <string name="error_site_has_problems">Le site Web a des problèmes.</string>
 
 </resources>

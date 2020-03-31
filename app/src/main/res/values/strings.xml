@@ -136,6 +136,10 @@
 
     <string name="error_not_available">%1$s is not available.</string>
 
+    <!-- A website did respond to a request, but the response was not valid.
+         We report to the user that the site is not working as expected. -->
+    <string name="error_site_has_problems">The website has problems.</string>
+
     <!-- A search on a specific website failed, with the specified reason.
          param 1: site name; param 2: message
       -->
@@ -399,18 +403,13 @@
     <!-- offer to send the exported file as an email attachment -->
     <string name="confirm_email_export">Would you like to send this export as an email?</string>
 
-    <!-- displayed when the user changes their sorting preference.
-    When doing this, the sorting information in the database needs to be rebuild.
--->
-    <string name="confirm_rebuild_orderby_columns">
-        This will rebuild the sorting data when the app is restarted. Are you sure you want to continue ?
-    </string>
-    <string name="confirm_rebuild_fts">
-        This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?
-    </string>
-    <string name="confirm_rebuild_index">
-        This will rebuild the indexes when the app is restarted. Are you sure you want to continue ?
-    </string>
+    <!-- Displayed when the user changes their sorting preference.
+         When doing this, the sorting information in the database needs to be rebuild.
+    -->
+    <string name="confirm_rebuild_orderby_columns">This will rebuild the sorting data when the app is restarted. Are you sure you want to continue ?</string>
+
+    <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?</string>
+    <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue ?</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== ValidatorException error messages ========== -->
@@ -423,9 +422,7 @@
     <string name="vldt_integer_expected_for_x">Expected an integer value for “%1$s”</string>
     <string name="vldt_real_expected_for_x">Expected a real number for “%1$s”</string>
     <string name="vldt_date_expected_for_x">Expected a date for “%1$s”</string>
-    <string name="vldt_boolean_expected_for_x">
-        Expected a boolean value (0,1,t,f,true,false) for “%1$s”
-    </string>
+    <string name="vldt_boolean_expected_for_x">Expected a boolean value (0,1,t,f,true,false) for “%1$s”</string>
 
     <!-- Some fields have to be blank or non-blank. -->
     <string name="vldt_non_blank_required">Non-empty value required</string>
@@ -1644,10 +1641,6 @@
     <string name="info_bitmask_preference">
         Select 0 or more options and tap “OK” to apply them, or tap “%1$s” to disregard all of them.
     </string>
-    <!--
-     A searchsite did respond to a request, but the response was not valid.
-     We report to the user that the site is not working as expected.
-    -->
-    <string name="site_out_of_order">Site out of order</string>
+
 
 </resources>
