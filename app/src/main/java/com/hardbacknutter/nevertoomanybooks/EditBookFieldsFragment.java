@@ -142,41 +142,42 @@ public class EditBookFieldsFragment
         // The buttons to bring up the fragment to edit Authors / Series.
         // Not shown if the user preferences are set to use an extra tab for this.
         if (!showAuthSeriesOnTabs) {
-            fields.add(R.id.author, UniqueId.BKEY_AUTHOR_ARRAY,
-                       new TextAccessor<>(new AuthorListFormatter(Author.Details.Short,
-                                                                  true, false)),
+            fields.add(R.id.author, new TextAccessor<>(new AuthorListFormatter(Author.Details.Short,
+                                                                               true, false)),
+                       UniqueId.BKEY_AUTHOR_ARRAY,
                        DBDefinitions.KEY_FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author)
                   .setErrorViewId(R.id.lbl_author)
                   .setFieldValidator(NON_BLANK_VALIDATOR);
 
-            fields.add(R.id.series_title, UniqueId.BKEY_SERIES_ARRAY,
+            fields.add(R.id.series_title,
                        new TextAccessor<>(new SeriesListFormatter(Series.Details.Short,
                                                                   true, false)),
+                       UniqueId.BKEY_SERIES_ARRAY,
                        DBDefinitions.KEY_SERIES_TITLE)
                   .setRelatedFields(R.id.lbl_series);
         }
 
-        fields.add(R.id.title, DBDefinitions.KEY_TITLE, new EditTextAccessor<String>())
+        fields.add(R.id.title, new EditTextAccessor<String>(), DBDefinitions.KEY_TITLE)
               .setErrorViewId(R.id.lbl_title)
               .setFieldValidator(NON_BLANK_VALIDATOR);
 
-        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION, new EditTextAccessor<String>())
+        fields.add(R.id.description, new EditTextAccessor<String>(), DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        fields.add(R.id.isbn, DBDefinitions.KEY_ISBN, new EditTextAccessor<String>())
+        fields.add(R.id.isbn, new EditTextAccessor<String>(), DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
-        fields.add(R.id.genre, DBDefinitions.KEY_GENRE, new EditTextAccessor<String>())
+        fields.add(R.id.genre, new EditTextAccessor<String>(), DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
         // Personal fields
 
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
-        fields.add(R.id.bookshelves, UniqueId.BKEY_BOOKSHELF_ARRAY,
-                   new EditTextAccessor<>(new CsvFormatter(), true),
+        fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter(), true),
+                   UniqueId.BKEY_BOOKSHELF_ARRAY,
                    DBDefinitions.KEY_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }

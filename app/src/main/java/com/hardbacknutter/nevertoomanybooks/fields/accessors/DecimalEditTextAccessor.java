@@ -94,6 +94,7 @@ public class DecimalEditTextAccessor
             implements TextWatcher {
 
         private static final String DIGITS = "0123456789";
+        @NonNull
         private final String mDecimalSeparator;
 
         /**

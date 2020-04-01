@@ -56,13 +56,12 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
  * <strong>IMPORTANT:</strong> only gets the types from the table passed to {@link #getType}
  */
 class ExtCursor
-        // disable or enable tracking
         extends SynchronizedCursor {
-//        extends TrackedCursor {
 
     /** database reference so we can get table/column info. */
     @Nullable
     private SynchronizedDb mSyncedDb;
+    /** The primary table. */
     @Nullable
     private TableDefinition mTableDefinition;
     /** Populated on first use. */

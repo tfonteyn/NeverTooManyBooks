@@ -176,7 +176,7 @@
     <string name="hint_empty_author">(Ο συγγραφέας λείπει)</string>
     <string name="hint_empty_field">(Κενή)</string>
     <string name="hint_empty_language">(Δεν υπάρχει πλήρης γλώσσα)</string>
-    <string name="hint_empty_month">(Δεν συμπληρώθηκε μήνα)</string>
+    <string name="X_hint_empty_month">(Δεν συμπληρώθηκε μήνα)</string>
     <string name="hint_empty_rating">(δεν έχει αξιολογηθεί)</string>
     <string name="hint_empty_read_status">(Ανάγνωση άγνωστης κατάστασης)</string>
     <string name="hint_empty_series">(Χωρίς σειρά)</string>

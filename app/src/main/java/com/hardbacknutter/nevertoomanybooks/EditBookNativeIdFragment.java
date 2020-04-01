@@ -72,24 +72,29 @@ public class EditBookNativeIdFragment
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 
-        fields.add(R.id.site_goodreads, DBDefinitions.KEY_EID_GOODREADS_BOOK,
-                   new EditTextAccessor<>(longNumberFormatter, true))
+        fields.add(R.id.site_goodreads, new EditTextAccessor<>(longNumberFormatter, true),
+                   DBDefinitions.KEY_EID_GOODREADS_BOOK
+                  )
               .setRelatedFields(R.id.lbl_site_goodreads);
 
-        fields.add(R.id.site_isfdb, DBDefinitions.KEY_EID_ISFDB,
-                   new EditTextAccessor<>(longNumberFormatter, true))
+        fields.add(R.id.site_isfdb, new EditTextAccessor<>(longNumberFormatter, true),
+                   DBDefinitions.KEY_EID_ISFDB
+                  )
               .setRelatedFields(R.id.lbl_site_isfdb);
 
-        fields.add(R.id.site_library_thing, DBDefinitions.KEY_EID_LIBRARY_THING,
-                   new EditTextAccessor<>(longNumberFormatter, true))
+        fields.add(R.id.site_library_thing, new EditTextAccessor<>(longNumberFormatter, true),
+                   DBDefinitions.KEY_EID_LIBRARY_THING
+                  )
               .setRelatedFields(R.id.lbl_site_library_thing);
 
-        fields.add(R.id.site_strip_info_be, DBDefinitions.KEY_EID_STRIP_INFO_BE,
-                   new EditTextAccessor<>(longNumberFormatter, true))
+        fields.add(R.id.site_strip_info_be, new EditTextAccessor<>(longNumberFormatter, true),
+                   DBDefinitions.KEY_EID_STRIP_INFO_BE
+                  )
               .setRelatedFields(R.id.lbl_site_strip_info_be);
 
-        fields.add(R.id.site_open_library, DBDefinitions.KEY_EID_OPEN_LIBRARY,
-                   new EditTextAccessor<String>())
+        fields.add(R.id.site_open_library, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_EID_OPEN_LIBRARY
+                  )
               .setRelatedFields(R.id.lbl_site_open_library);
     }
 

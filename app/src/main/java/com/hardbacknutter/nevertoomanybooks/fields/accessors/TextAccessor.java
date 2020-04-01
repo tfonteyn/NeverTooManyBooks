@@ -69,8 +69,10 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 public class TextAccessor<T>
         extends BaseDataAccessor<T> {
 
+    /** Log tag. */
     private static final String TAG = "TextAccessor";
 
+    /** Optional formatter. */
     @Nullable
     final FieldFormatter<T> mFormatter;
 

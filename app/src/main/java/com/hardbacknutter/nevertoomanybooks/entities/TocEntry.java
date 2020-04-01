@@ -168,6 +168,8 @@ public class TocEntry
     }
 
     /**
+     * Get the type of this entry.
+     *
      * @return type
      */
     @NonNull
@@ -175,6 +177,11 @@ public class TocEntry
         return mType;
     }
 
+    /**
+     * Get the number of books this entry appears in.
+     *
+     * @return #books
+     */
     public int getBookCount() {
         return mBookCount;
     }

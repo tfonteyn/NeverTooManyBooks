@@ -91,6 +91,7 @@ public class EditTextAccessor<T>
     /**
      * Constructor.
      *
+     * @param formatter      to use
      * @param enableReformat flag: reformat after every user-change.
      */
     public EditTextAccessor(@NonNull final FieldFormatter<T> formatter,
@@ -196,10 +197,18 @@ public class EditTextAccessor<T>
 
         private long mLastChange;
 
+        /**
+         * Constructor.
+         *
+         * @param field          to watch
+         * @param textView       the view used by the field
+         * @param enableReformat flag: reformat after every user-change.
+         */
         ChangedTextWatcher(@NonNull final Field<T> field,
                            @NonNull final TextView textView,
                            final boolean enableReformat) {
             mField = field;
+            //mTextView = (TextView) field.getAccessor().getView();
             mTextView = textView;
             mEnableReformat = enableReformat;
         }

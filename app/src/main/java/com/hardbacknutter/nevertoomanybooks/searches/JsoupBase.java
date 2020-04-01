@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 public abstract class JsoupBase {
 
     /**
-     * RELEASE: Chrome 2020-01-17. Continuously update to latest version.
+     * RELEASE: Chrome 2020-03-31. Continuously update to latest version.
      * - KBNL site does not return full data unless the user agent is set to a valid browser.
      * <p>
      * Set by default. Call {@link #setUserAgent(String)} to override.
@@ -67,11 +67,10 @@ public abstract class JsoupBase {
     private static final String USER_AGENT_VALUE =
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
             + " AppleWebKit/537.36 (KHTML, like Gecko)"
-            + " Chrome/79.0.3945.117 Safari/537.36";
+            + " Chrome/80.0.3987.149 Safari/537.36";
 
     /** Log tag. */
     private static final String TAG = "JsoupBase";
-
 
     /** The parsed downloaded web page. */
     protected Document mDoc;
@@ -79,9 +78,13 @@ public abstract class JsoupBase {
     /** If the site drops connection, we retry once. */
     private boolean mRetry = true;
 
-    private int mConnectTimeout;
-    private int mReadTimeout;
+    /** The user agent to send. */
     private String mUserAgent = USER_AGENT_VALUE;
+    /** Initial connection timeout. */
+    private int mConnectTimeout;
+    /** Timeout for individual reads. */
+    private int mReadTimeout;
+
 
     /** {@code null} by default: for Jsoup to figure it out. */
     private String mCharSetName;
@@ -127,6 +130,7 @@ public abstract class JsoupBase {
      *
      * @param userAgent string to use
      */
+    @SuppressWarnings({"WeakerAccess", "unused"})
     protected void setUserAgent(@Nullable final String userAgent) {
         mUserAgent = userAgent;
     }

@@ -54,6 +54,8 @@ public interface FieldViewAccessor<T> {
      * <strong>Implementation note</strong>: we don't provide a onCreateViewHolder()
      * method on purpose.
      * Using that would need to deal with {@code null} values.
+     *
+     * @param view to use
      */
     void setView(@NonNull View view);
 

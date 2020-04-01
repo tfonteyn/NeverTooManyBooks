@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class MenuPicker<T>
         extends ValuePicker {
 
+    @NonNull
     private MenuItemListAdapter mAdapter;
 
     /**
@@ -151,6 +152,8 @@ public class MenuPicker<T>
         private final PickListener<MenuItem> mListener;
 
         /**
+         * Constructor.
+         *
          * @param context  Current context
          * @param menu     Menu (list of items) to display
          * @param listener Callback handler

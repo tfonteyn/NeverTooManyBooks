@@ -51,7 +51,6 @@ public class SearchSuggestionProvider
     /** Log tag. */
     private static final String TAG = "SearchSuggestions";
 
-    private static final String sSuggestions = "suggestions";
     /** Uri and query support. Arbitrary code to indicate a match. */
     private static final int URI_MATCH_SUGGEST = 1;
     /** Uri and query support. */
@@ -79,7 +78,6 @@ public class SearchSuggestionProvider
                         @Nullable final String sortOrder) {
 
         if (mUriMatcher.match(uri) == URI_MATCH_SUGGEST) {
-
             if (selectionArgs == null || selectionArgs[0] == null || selectionArgs[0].isEmpty()) {
                 return null;
             }
@@ -88,11 +86,12 @@ public class SearchSuggestionProvider
                 // lazy init
                 mDb = new DAO(TAG);
             }
+
             Cursor cursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
-//            if (cursor != null) {
-//                //noinspection ConstantConditions
-//                cursor.setNotificationUri(getContext().getContentResolver(), uri);
-//            }
+            //  if (cursor != null) {
+            //      //noinspection ConstantConditions
+            //     cursor.setNotificationUri(getContext().getContentResolver(), uri);
+            //  }
             return cursor;
         }
 
@@ -110,7 +109,7 @@ public class SearchSuggestionProvider
         int length = uri.getPathSegments().size();
         if (length >= 1) {
             String base = uri.getPathSegments().get(0);
-            if (base.equals(sSuggestions)) {
+            if ("suggestions".equals(base)) {
                 if (length == 1) {
                     return "vnd.android.cursor.dir/suggestion";
                 } else if (length == 2) {

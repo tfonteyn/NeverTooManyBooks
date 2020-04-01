@@ -81,7 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
  *      ...
  *      public void onActivityResult(final int requestCode,
  *                                   final int resultCode,
- *                                   @Nullable final Intent data) {
+ *                                   final Intent data) {
  *          case UniqueId.REQ_SCAN_BARCODE: {
  *              mScannerModel.setScannerStarted(false);
  *              if (resultCode == Activity.RESULT_OK) {*

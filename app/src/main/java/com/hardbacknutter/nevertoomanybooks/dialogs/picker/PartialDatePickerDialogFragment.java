@@ -164,7 +164,9 @@ public class PartialDatePickerDialogFragment
             extends AlertDialog {
 
         /** Used for reading month names + calculating number of days in a month. */
-        final Calendar mCalendarForCalculations;
+        @NonNull
+        private final Calendar mCalendarForCalculations;
+        @NonNull
         private final NumberPicker mDayPicker;
         /** This listener is called after <strong>any change</strong> made to the pickers. */
         @SuppressWarnings("FieldCanBeLocal")
@@ -323,7 +325,7 @@ public class PartialDatePickerDialogFragment
                 // This actually throws exception in some versions of Android, specifically when
                 // the Locale specific date format has the day name (EEE) in it. So we exit and
                 // just use our default order in these cases.
-                // See Issue #712.
+                // See BC Issue #712.
                 order = DateFormat.getDateFormatOrder(getContext());
             } catch (@NonNull final RuntimeException e) {
                 return;

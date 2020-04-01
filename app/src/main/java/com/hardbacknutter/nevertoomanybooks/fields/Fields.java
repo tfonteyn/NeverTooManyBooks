@@ -105,22 +105,26 @@ public class Fields {
     /**
      * Add a Field.
      *
-     * @param id  for the field/view
-     * @param key Key used to access a {@link DataManager}
+     * @param <T>      type of Field value.
+     * @param id       for the field/view
+     * @param accessor to use
+     * @param key      Key used to access a {@link DataManager}
      *
      * @return The resulting Field.
      */
     @NonNull
     public <T> Field<T> add(@IdRes final int id,
-                            @NonNull final String key,
-                            @NonNull final FieldViewAccessor<T> accessor) {
-        return add(id, key, accessor, key);
+                            @NonNull final FieldViewAccessor<T> accessor,
+                            @NonNull final String key) {
+        return add(id, accessor, key, key);
     }
 
     /**
      * Add an Array based Field.
      *
+     * @param <T>       type of Field value.
      * @param id        for the field/view
+     * @param accessor  to use
      * @param key       Key used to access a {@link DataManager}
      * @param entityKey The preference key to check if this Field is used or not
      *
@@ -128,8 +132,8 @@ public class Fields {
      */
     @NonNull
     public <T> Field<T> add(@IdRes final int id,
-                            @NonNull final String key,
                             @NonNull final FieldViewAccessor<T> accessor,
+                            @NonNull final String key,
                             @NonNull final String entityKey) {
 
         if (BuildConfig.DEBUG /* always */) {

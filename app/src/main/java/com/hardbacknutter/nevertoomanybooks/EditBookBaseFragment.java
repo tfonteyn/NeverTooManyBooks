@@ -189,6 +189,7 @@ public abstract class EditBookBaseFragment
      * {@inheritDoc}
      */
     @CallSuper
+    @Override
     public void onSaveFields(@NonNull final Book book) {
         mFragmentVM.getFields().getAll(book);
     }

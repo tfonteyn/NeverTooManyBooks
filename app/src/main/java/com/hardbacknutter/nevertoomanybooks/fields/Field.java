@@ -89,7 +89,7 @@ public class Field<T> {
 
     /** Accessor to use. Encapsulates the formatter. */
     @NonNull
-    private final FieldViewAccessor<T> mFieldDataAccessor;
+    private final FieldViewAccessor<T> mFieldViewAccessor;
 
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
@@ -109,12 +109,13 @@ public class Field<T> {
      * Constructor.
      *
      * @param id        for this field.
+     * @param accessor  to use
      * @param key       Key used to access a {@link DataManager}
      *                  Set to "" to suppress all access.
      * @param entityKey The preference key to check if this Field is used or not
      */
     Field(final int id,
-          @NonNull final FieldViewAccessor<T> fieldDataAccessor,
+          @NonNull final FieldViewAccessor<T> accessor,
           @NonNull final String key,
           @NonNull final String entityKey) {
 
@@ -122,13 +123,13 @@ public class Field<T> {
         mKey = key;
         mIsUsedKey = entityKey;
 
-        mFieldDataAccessor = fieldDataAccessor;
-        mFieldDataAccessor.setField(this);
+        mFieldViewAccessor = accessor;
+        mFieldViewAccessor.setField(this);
     }
 
     @NonNull
     public FieldViewAccessor<T> getAccessor() {
-        return mFieldDataAccessor;
+        return mFieldViewAccessor;
     }
 
     /**
@@ -140,12 +141,12 @@ public class Field<T> {
      * @param parentView of the field View
      */
     void setParentView(@NonNull final View parentView) {
-        mFieldDataAccessor.setView(parentView.findViewById(mId));
+        mFieldViewAccessor.setView(parentView.findViewById(mId));
         if (!isUsed(parentView.getContext())) {
-            mFieldDataAccessor.getView().setVisibility(View.GONE);
+            mFieldViewAccessor.getView().setVisibility(View.GONE);
         } else {
             if (mErrorViewId != 0) {
-                mFieldDataAccessor.setErrorView(parentView.findViewById(mErrorViewId));
+                mFieldViewAccessor.setErrorView(parentView.findViewById(mErrorViewId));
             }
         }
     }
@@ -183,7 +184,7 @@ public class Field<T> {
                        final boolean hideIfEmpty,
                        final boolean keepHidden) {
 
-        View view = mFieldDataAccessor.getView();
+        View view = mFieldViewAccessor.getView();
 
         if ((view instanceof ImageView)
             || (view.getVisibility() == View.GONE && keepHidden)) {
@@ -191,7 +192,7 @@ public class Field<T> {
             // 3. When 'keepHidden' is set, hidden fields stay hidden.
             // do nothing.
 
-        } else if (mFieldDataAccessor.isEmpty() && hideIfEmpty) {
+        } else if (mFieldViewAccessor.isEmpty() && hideIfEmpty) {
             // 4. When 'hideIfEmpty' is set, empty fields are hidden.
             view.setVisibility(View.GONE);
 
@@ -212,7 +213,7 @@ public class Field<T> {
     public void setVisibility(@NonNull final View parent,
                               final int visibility) {
 
-        mFieldDataAccessor.getView().setVisibility(visibility);
+        mFieldViewAccessor.getView().setVisibility(visibility);
         setRelatedFieldsVisibility(parent, visibility);
     }
 
@@ -319,7 +320,7 @@ public class Field<T> {
                + "mId=" + mId
                + ", mIsUsedKey='" + mIsUsedKey + '\''
                + ", mKey='" + mKey + '\''
-               + ", mFieldDataAccessor=" + mFieldDataAccessor
+               + ", mFieldDataAccessor=" + mFieldViewAccessor
                + ", mValidator=" + mValidator
                + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
                + '}';

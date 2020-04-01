@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 public class EditPublisherDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "EditPublisherDialogFrag";
 
     /** Database Access. */
@@ -142,8 +143,9 @@ public class EditPublisherDialogFragment
                     }
                     mDb.updatePublisher(mPublisher.getName(), mName);
 
-//                    Bundle data = new Bundle();
-//                    data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
+                    // and spread the news of the changes.
+                    //  Bundle data = new Bundle();
+                    //  data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
                     if (mBookChangedListener.get() != null) {
                         mBookChangedListener
                                 .get().onBookChanged(0, BookChangedListener.PUBLISHER, null);

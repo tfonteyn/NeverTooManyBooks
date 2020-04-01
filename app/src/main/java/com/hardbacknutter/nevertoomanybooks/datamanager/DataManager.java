@@ -214,7 +214,7 @@ public class DataManager
 //            //noinspection unchecked
 //            putParcelableArrayList(key, (ArrayList<Parcelable>) value);
 
-        } else if ((value instanceof ArrayList)) {
+        } else if (value instanceof ArrayList) {
             //noinspection unchecked
             putParcelableArrayList(key, (ArrayList<Parcelable>) value);
 
@@ -246,9 +246,9 @@ public class DataManager
             try {
                 return getMoney(key);
             } catch (@NonNull final NumberFormatException ignore) {
-                //URGENT: should we really ignore this, next step will return raw value.
+                //TEST: should we really ignore this, next step will return raw value.
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.w(TAG, "preprocessExternalIds"
+                    Logger.w(TAG, "get"
                                   + "|NumberFormatException"
                                   + "|name=" + key
                                   + "|value=`" + mRawData.get(key) + '`');

@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 public class EditSeriesDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "EditSeriesDialogFrag";
 
     /** Database Access. */
@@ -159,8 +160,8 @@ public class EditSeriesDialogFragment
                                              LocaleUtils.getUserLocale(getContext()), mSeries);
 
                     // and spread the news of the changes.
-//                    Bundle data = new Bundle();
-//                    data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
+                    //  Bundle data = new Bundle();
+                    //  data.putLong(DBDefinitions.KEY_SERIES_TITLE, mSeries.getId());
                     if (mBookChangedListener.get() != null) {
                         mBookChangedListener.get()
                                             .onBookChanged(0, BookChangedListener.SERIES, null);

@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 public class AuthorListFormatter
         extends HtmlFormatter<List<Author>> {
 
+    @NonNull
     private final Author.Details mDetails;
     private final boolean mSingleLine;
 

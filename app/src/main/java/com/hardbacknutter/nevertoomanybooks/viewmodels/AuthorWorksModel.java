@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
 public class AuthorWorksModel
         extends ResultDataModel {
 
+    /** Log tag. */
     private static final String TAG = "AuthorWorksModel";
 
     /** Database Access. */

@@ -1193,21 +1193,23 @@
          Copy from android-29#keyguard_accessibility_widget_empty_slot -->
     <string name="hint_empty_field">(Not Set)</string>
 
-    <!-- specific place holder text for Rating rows. -->
-    <string name="hint_empty_rating">(Not rated)</string>
+    <!-- specific place holder text for Author rows.
+     Theoretically this string will never be shown unless there is ever bad data. -->
+    <string name="hint_empty_author">(The author is missing)</string>
+
     <!-- specific place holder text for Series rows. -->
     <string name="hint_empty_series">(No Series)</string>
-    <!-- specific place holder text for Month rows. -->
-    <string name="hint_empty_month">(No month set)</string>
     <!-- specific place holder text for Language rows. -->
     <string name="hint_empty_language">(No language set)</string>
 
     <!-- specific place holder text for Read/Unread rows.
          Theoretically this string will never be shown unless there is ever bad data. -->
     <string name="hint_empty_read_status">(Read status unknown)</string>
-    <!-- specific place holder text for Author rows.
-         Theoretically this string will never be shown unless there is ever bad data. -->
-    <string name="hint_empty_author">(The author is missing)</string>
+    <!-- specific place holder text for Rating rows. -->
+    <string name="hint_empty_rating">(Not rated)</string>
+
+    <!-- specific place holder text for Month rows. -->
+    <string name="X_hint_empty_month">(No month set)</string>
 
     <!-- ####################################################################################### -->
     <!-- == Size measurements; for now only file-sizes.  == -->

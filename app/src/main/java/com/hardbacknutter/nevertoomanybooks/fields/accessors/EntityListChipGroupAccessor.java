@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -73,7 +74,8 @@ public class EntityListChipGroupAccessor
     @NonNull
     private final List<Entity> mAll;
 
-    private final View.OnClickListener filterChipListener;
+    @Nullable
+    private final View.OnClickListener mFilterChipListener;
 
     public EntityListChipGroupAccessor(@NonNull final List<Entity> allValues,
                                        final boolean isEditable) {
@@ -81,7 +83,7 @@ public class EntityListChipGroupAccessor
         mIsEditable = isEditable;
 
         if (mIsEditable) {
-            filterChipListener = v -> {
+            mFilterChipListener = v -> {
                 Entity current = (Entity) v.getTag();
                 if (((Checkable) v).isChecked()) {
                     //noinspection ConstantConditions
@@ -92,7 +94,7 @@ public class EntityListChipGroupAccessor
                 }
             };
         } else {
-            filterChipListener = null;
+            mFilterChipListener = null;
         }
     }
 
@@ -153,7 +155,7 @@ public class EntityListChipGroupAccessor
             // here in code, it won't take effect.
             chip.setCheckable(true);
             chip.setChecked(initialState);
-            chip.setOnClickListener(filterChipListener);
+            chip.setOnClickListener(mFilterChipListener);
         }
         return chip;
     }

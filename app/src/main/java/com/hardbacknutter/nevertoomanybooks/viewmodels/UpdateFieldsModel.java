@@ -362,6 +362,8 @@ public class UpdateFieldsModel
     }
 
     /**
+     * Move the cursor forward and update the next book.
+     *
      * @param context Current context
      *
      * @return {@code true} if a search was started.
@@ -492,6 +494,11 @@ public class UpdateFieldsModel
     }
 
     /**
+     * Process the search-result data.
+     *
+     * @param context  Current context
+     * @param bookData the result-data to process
+     *
      * @return {@code true} if a search was started.
      */
     public boolean processSearchResults(@NonNull final Context context,

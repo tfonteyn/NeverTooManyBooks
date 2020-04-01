@@ -124,9 +124,9 @@ public class CursorRow
         if (col == -1) {
             throw new ColumnNotPresentException(domainName);
         }
-//        if (mCursor.isNull(col)) {
-//            return null; // 0
-//        }
+        // if (mCursor.isNull(col)) {
+        //     return null; // 0
+        // }
         return mCursor.getInt(col);
     }
 
@@ -144,9 +144,9 @@ public class CursorRow
         if (col == -1) {
             throw new ColumnNotPresentException(domainName);
         }
-//        if (mCursor.isNull(col)) {
-//            return null; // 0
-//        }
+        // if (mCursor.isNull(col)) {
+        //     return null; // 0
+        // }
         return mCursor.getLong(col);
     }
 
@@ -164,9 +164,9 @@ public class CursorRow
         if (col == -1) {
             throw new ColumnNotPresentException(domainName);
         }
-//        if (mCursor.isNull(col)) {
-//            return null; // 0
-//        }
+        // if (mCursor.isNull(col)) {
+        //     return null; // 0
+        // }
         return mCursor.getDouble(col);
     }
 

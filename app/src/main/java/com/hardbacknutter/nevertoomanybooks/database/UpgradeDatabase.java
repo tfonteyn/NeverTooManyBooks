@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
-public final class UpgradeDatabase {
+final class UpgradeDatabase {
 
     private UpgradeDatabase() {
     }

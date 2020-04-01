@@ -74,38 +74,44 @@ public class EditBookPublicationFragment
         super.onInitFields();
         final Fields fields = mFragmentVM.getFields();
 
-        fields.add(R.id.pages, DBDefinitions.KEY_PAGES, new EditTextAccessor<String>())
+        fields.add(R.id.pages, new EditTextAccessor<String>(), DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
-        fields.add(R.id.format, DBDefinitions.KEY_FORMAT, new EditTextAccessor<String>())
+        fields.add(R.id.format, new EditTextAccessor<String>(), DBDefinitions.KEY_FORMAT)
               .setRelatedFields(R.id.lbl_format);
 
-        fields.add(R.id.color, DBDefinitions.KEY_COLOR, new EditTextAccessor<String>())
+        fields.add(R.id.color, new EditTextAccessor<String>(), DBDefinitions.KEY_COLOR)
               .setRelatedFields(R.id.lbl_color);
 
-        fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE,
-                   new EditTextAccessor<>(new LanguageFormatter(), true))
+        fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(), true),
+                   DBDefinitions.KEY_LANGUAGE
+                  )
               .setRelatedFields(R.id.lbl_language);
 
-        fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER, new EditTextAccessor<String>())
+        fields.add(R.id.publisher, new EditTextAccessor<String>(), DBDefinitions.KEY_PUBLISHER)
               .setRelatedFields(R.id.lbl_publisher);
 
-        fields.add(R.id.print_run, DBDefinitions.KEY_PRINT_RUN, new EditTextAccessor<String>())
+        fields.add(R.id.print_run, new EditTextAccessor<String>(), DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED,
-                   new EditTextAccessor<>(new DateFieldFormatter(), false))
+        fields.add(R.id.date_published, new EditTextAccessor<>(new DateFieldFormatter(), false),
+                   DBDefinitions.KEY_DATE_PUBLISHED
+                  )
               .setRelatedFields(R.id.lbl_date_published);
 
-        fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                   new EditTextAccessor<>(new DateFieldFormatter(), false))
+        fields.add(R.id.first_publication, new EditTextAccessor<>(new DateFieldFormatter(), false),
+                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION
+                  )
               .setRelatedFields(R.id.lbl_first_publication);
 
         // MUST be defined before the currency.
-        fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED,
-                   new DecimalEditTextAccessor(new DoubleNumberFormatter(), false));
-        fields.add(R.id.price_listed_currency, DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                   new EditTextAccessor<String>())
+        fields.add(R.id.price_listed,
+                   new DecimalEditTextAccessor(new DoubleNumberFormatter(), false),
+                   DBDefinitions.KEY_PRICE_LISTED
+                  );
+        fields.add(R.id.price_listed_currency, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_PRICE_LISTED_CURRENCY
+                  )
               .setRelatedFields(R.id.lbl_price_listed,
                                 R.id.lbl_price_listed_currency, R.id.price_listed_currency);
     }

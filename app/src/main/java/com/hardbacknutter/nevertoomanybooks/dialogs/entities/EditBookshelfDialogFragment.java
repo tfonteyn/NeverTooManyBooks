@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public class EditBookshelfDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "EditBookshelfDialogFrag";
 
     /** Database Access. */

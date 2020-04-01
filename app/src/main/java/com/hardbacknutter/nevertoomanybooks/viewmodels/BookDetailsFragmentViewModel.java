@@ -138,93 +138,103 @@ public class BookDetailsFragmentViewModel
         final FieldFormatter<String> languageFormatter = new LanguageFormatter();
 
         // book fields
-        fields.add(R.id.title, DBDefinitions.KEY_TITLE, new TextAccessor<String>());
+        fields.add(R.id.title, new TextAccessor<String>(), DBDefinitions.KEY_TITLE);
 
-        fields.add(R.id.author, UniqueId.BKEY_AUTHOR_ARRAY,
+        fields.add(R.id.author,
                    new TextAccessor<>(new AuthorListFormatter(Author.Details.Full, false, true)),
+                   UniqueId.BKEY_AUTHOR_ARRAY,
                    DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author);
 
-        fields.add(R.id.series_title, UniqueId.BKEY_SERIES_ARRAY,
+        fields.add(R.id.series_title,
                    new TextAccessor<>(new SeriesListFormatter(Series.Details.Full, false, true)),
+                   UniqueId.BKEY_SERIES_ARRAY,
                    DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
-        fields.add(R.id.isbn, DBDefinitions.KEY_ISBN, new TextAccessor<String>())
+        fields.add(R.id.isbn, new TextAccessor<String>(), DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
-        fields.add(R.id.description, DBDefinitions.KEY_DESCRIPTION,
-                   new TextAccessor<>(htmlFormatter))
+        fields.add(R.id.description, new TextAccessor<>(htmlFormatter),
+                   DBDefinitions.KEY_DESCRIPTION
+                  )
               .setRelatedFields(R.id.lbl_description);
 
-        fields.add(R.id.genre, DBDefinitions.KEY_GENRE, new TextAccessor<String>())
+        fields.add(R.id.genre, new TextAccessor<String>(), DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
-        fields.add(R.id.language, DBDefinitions.KEY_LANGUAGE,
-                   new TextAccessor<>(languageFormatter))
+        fields.add(R.id.language, new TextAccessor<>(languageFormatter), DBDefinitions.KEY_LANGUAGE
+                  )
               .setRelatedFields(R.id.lbl_language);
 
-        fields.add(R.id.pages, DBDefinitions.KEY_PAGES, new TextAccessor<>(new PagesFormatter()));
-        fields.add(R.id.format, DBDefinitions.KEY_FORMAT, new TextAccessor<String>());
-        fields.add(R.id.color, DBDefinitions.KEY_COLOR, new TextAccessor<String>());
-        fields.add(R.id.publisher, DBDefinitions.KEY_PUBLISHER, new TextAccessor<String>());
+        fields.add(R.id.pages, new TextAccessor<>(new PagesFormatter()), DBDefinitions.KEY_PAGES);
+        fields.add(R.id.format, new TextAccessor<String>(), DBDefinitions.KEY_FORMAT);
+        fields.add(R.id.color, new TextAccessor<String>(), DBDefinitions.KEY_COLOR);
+        fields.add(R.id.publisher, new TextAccessor<String>(), DBDefinitions.KEY_PUBLISHER);
 
-        fields.add(R.id.date_published, DBDefinitions.KEY_DATE_PUBLISHED,
-                   new TextAccessor<>(dateFormatter))
+        fields.add(R.id.date_published, new TextAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_DATE_PUBLISHED
+                  )
               .setRelatedFields(R.id.lbl_date_published);
 
-        fields.add(R.id.first_publication, DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                   new TextAccessor<>(dateFormatter))
+        fields.add(R.id.first_publication, new TextAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION
+                  )
               .setRelatedFields(R.id.lbl_first_publication);
 
-        fields.add(R.id.print_run, DBDefinitions.KEY_PRINT_RUN, new TextAccessor<String>())
+        fields.add(R.id.print_run, new TextAccessor<String>(), DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        fields.add(R.id.price_listed, DBDefinitions.KEY_PRICE_LISTED,
-                   new TextAccessor<>(moneyFormatter))
+        fields.add(R.id.price_listed, new TextAccessor<>(moneyFormatter),
+                   DBDefinitions.KEY_PRICE_LISTED
+                  )
               .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
         // Personal fields
-        fields.add(R.id.bookshelves, UniqueId.BKEY_BOOKSHELF_ARRAY,
+        fields.add(R.id.bookshelves,
                    new EntityListChipGroupAccessor(new ArrayList<>(mDb.getBookshelves()), false),
+                   UniqueId.BKEY_BOOKSHELF_ARRAY,
                    DBDefinitions.KEY_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
 
-        fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED,
-                   new TextAccessor<>(dateFormatter))
+        fields.add(R.id.date_acquired, new TextAccessor<>(dateFormatter),
+                   DBDefinitions.KEY_DATE_ACQUIRED
+                  )
               .setRelatedFields(R.id.lbl_date_acquired);
 
-        fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK, new BitmaskChipGroupAccessor(
-                Book.Edition.getEditions(context), false));
+        fields.add(R.id.edition, new BitmaskChipGroupAccessor(
+                Book.Edition.getEditions(context), false), DBDefinitions.KEY_EDITION_BITMASK);
 
-        fields.add(R.id.location, DBDefinitions.KEY_LOCATION, new TextAccessor<String>())
+        fields.add(R.id.location, new TextAccessor<String>(), DBDefinitions.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-        fields.add(R.id.rating, DBDefinitions.KEY_RATING, new RatingBarAccessor())
+        fields.add(R.id.rating, new RatingBarAccessor(), DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.add(R.id.condition, DBDefinitions.KEY_BOOK_CONDITION, new TextAccessor<>(
-                new StringArrayResFormatter(context, R.array.conditions_book)))
+        fields.add(R.id.condition, new TextAccessor<>(
+                           new StringArrayResFormatter(context, R.array.conditions_book)),
+                   DBDefinitions.KEY_BOOK_CONDITION)
               .setRelatedFields(R.id.lbl_condition);
-        fields.add(R.id.condition_cover, DBDefinitions.KEY_BOOK_CONDITION_COVER, new TextAccessor<>(
-                new StringArrayResFormatter(context, R.array.conditions_dust_cover)))
+        fields.add(R.id.condition_cover, new TextAccessor<>(
+                           new StringArrayResFormatter(context, R.array.conditions_dust_cover)),
+                   DBDefinitions.KEY_BOOK_CONDITION_COVER)
               .setRelatedFields(R.id.lbl_condition_cover);
 
-        fields.add(R.id.notes, DBDefinitions.KEY_PRIVATE_NOTES, new TextAccessor<>(htmlFormatter))
+        fields.add(R.id.notes, new TextAccessor<>(htmlFormatter), DBDefinitions.KEY_PRIVATE_NOTES)
               .setRelatedFields(R.id.lbl_notes);
 
-        fields.add(R.id.read_start, DBDefinitions.KEY_READ_START, new TextAccessor<>(dateFormatter))
+        fields.add(R.id.read_start, new TextAccessor<>(dateFormatter), DBDefinitions.KEY_READ_START)
               .setRelatedFields(R.id.lbl_read_start);
-        fields.add(R.id.read_end, DBDefinitions.KEY_READ_END, new TextAccessor<>(dateFormatter))
+        fields.add(R.id.read_end, new TextAccessor<>(dateFormatter), DBDefinitions.KEY_READ_END)
               .setRelatedFields(R.id.lbl_read_end);
 
-        fields.add(R.id.cbx_read, DBDefinitions.KEY_READ, new CompoundButtonAccessor());
+        fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
 
-        fields.add(R.id.cbx_signed, DBDefinitions.KEY_SIGNED, new CompoundButtonAccessor())
+        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED)
               .setRelatedFields(R.id.lbl_signed);
 
-        fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID,
-                   new TextAccessor<>(moneyFormatter))
+        fields.add(R.id.price_paid, new TextAccessor<>(moneyFormatter), DBDefinitions.KEY_PRICE_PAID
+                  )
               .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -125,6 +125,8 @@ public class FieldUsage {
      *
      * @param fieldId      key
      * @param nameStringId label to show to the user.
+     *
+     * @return a FieldUsage record for the given field.
      */
     public FieldUsage createRelatedField(@NonNull final String fieldId,
                                          @StringRes final int nameStringId) {

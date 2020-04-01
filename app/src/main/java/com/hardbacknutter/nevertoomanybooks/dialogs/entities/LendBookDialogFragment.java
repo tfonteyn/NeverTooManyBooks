@@ -70,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 public class LendBookDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "LendBookDialogFrag";
 
     private static final String[] PROJECTION = {
@@ -266,6 +267,8 @@ public class LendBookDialogFragment
 
     /**
      * Auto complete list comes from your Contacts.
+     *
+     * @return list of names, can be {@code null}
      */
     @Nullable
     private ArrayList<String> getPhoneContacts() {

@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -62,7 +63,8 @@ public class BitmaskChipGroupAccessor
     @NonNull
     private final Map<Integer, String> mAll;
 
-    private final View.OnClickListener filterChipListener;
+    @Nullable
+    private final View.OnClickListener mFilterChipListener;
 
     public BitmaskChipGroupAccessor(@NonNull final Map<Integer, String> allValues,
                                     final boolean isEditable) {
@@ -70,7 +72,7 @@ public class BitmaskChipGroupAccessor
         mIsEditable = isEditable;
 
         if (mIsEditable) {
-            filterChipListener = v -> {
+            mFilterChipListener = v -> {
                 Integer current = (Integer) v.getTag();
                 if (((Checkable) v).isChecked()) {
                     // add
@@ -81,7 +83,7 @@ public class BitmaskChipGroupAccessor
                 }
             };
         } else {
-            filterChipListener = null;
+            mFilterChipListener = null;
         }
     }
 
@@ -142,7 +144,7 @@ public class BitmaskChipGroupAccessor
             // here in code, it won't take effect.
             chip.setCheckable(true);
             chip.setChecked(initialState);
-            chip.setOnClickListener(filterChipListener);
+            chip.setOnClickListener(mFilterChipListener);
         }
         return chip;
     }

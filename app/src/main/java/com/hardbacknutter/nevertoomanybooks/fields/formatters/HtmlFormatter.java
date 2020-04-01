@@ -41,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LinkifyUtils;
  * <ul>
  * <li>Multiple fields: <strong>yes</strong> as long as 'html' has the same value...</li>
  * </ul>
+ *
+ * @param <T> type of Field value.
  */
 public class HtmlFormatter<T>
         implements FieldFormatter<T> {

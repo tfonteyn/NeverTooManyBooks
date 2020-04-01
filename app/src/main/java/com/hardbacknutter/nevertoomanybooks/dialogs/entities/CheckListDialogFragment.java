@@ -79,9 +79,9 @@ public class CheckListDialogFragment
     private ArrayList<Entity> mAllItems;
     /** The list of items to display. */
     private ArrayList<Entity> mSelectedItems;
-    private final View.OnClickListener filterChipListener = v -> {
-        Entity current = (Entity) v.getTag();
-        if (((Checkable) v).isChecked()) {
+    private final View.OnClickListener filterChipListener = view -> {
+        Entity current = (Entity) view.getTag();
+        if (((Checkable) view).isChecked()) {
             mSelectedItems.add(current);
         } else {
             mSelectedItems.remove(current);

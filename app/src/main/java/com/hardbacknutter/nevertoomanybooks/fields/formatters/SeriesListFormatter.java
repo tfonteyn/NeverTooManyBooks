@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 public class SeriesListFormatter
         extends HtmlFormatter<List<Series>> {
 
+    @NonNull
     private final Series.Details mDetails;
     private final boolean mSingleLine;
 

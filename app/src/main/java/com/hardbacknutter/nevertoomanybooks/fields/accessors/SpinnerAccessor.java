@@ -121,4 +121,10 @@ public class SpinnerAccessor
     public void getValue(@NonNull final DataManager target) {
         target.putInt(mField.getKey(), getValue());
     }
+
+    @Override
+    public boolean isEmpty() {
+        // Our spinner is never empty by design.
+        return false;
+    }
 }

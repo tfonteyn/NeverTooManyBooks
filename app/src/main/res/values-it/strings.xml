@@ -176,7 +176,7 @@
     <string name="hint_empty_author">(L\'autore è mancante)</string>
     <string name="hint_empty_field">(Vuoto)</string>
     <string name="hint_empty_language">(Nessuna lingua compilata)</string>
-    <string name="hint_empty_month">(Nessun mese compilato)</string>
+    <string name="X_hint_empty_month">(Nessun mese compilato)</string>
     <string name="hint_empty_rating">(Non valutato)</string>
     <string name="hint_empty_read_status">(Leggi lo stato sconosciuto)</string>
     <string name="hint_empty_series">(Nessuna serie)</string>

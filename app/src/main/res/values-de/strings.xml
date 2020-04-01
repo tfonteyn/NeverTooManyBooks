@@ -179,7 +179,7 @@
     <string name="hint_empty_author">(Der Autor fehlt)</string>
     <string name="hint_empty_field">(Leer)</string>
     <string name="hint_empty_language">(Keine Sprache ausgefüllt)</string>
-    <string name="hint_empty_month">(Kein Monat ausgefüllt)</string>
+    <string name="X_hint_empty_month">(Kein Monat ausgefüllt)</string>
     <string name="hint_empty_rating">(nicht bewertet)</string>
     <string name="hint_empty_read_status">(Lesestatus unbekannt)</string>
     <string name="hint_empty_series">(Keine Serie)</string>

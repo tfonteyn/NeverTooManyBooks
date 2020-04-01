@@ -241,7 +241,7 @@ public class BooklistAdapter
             case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH:
             case BooklistGroup.DATE_READ_MONTH: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_month);
+                    return context.getString(R.string.hint_empty_field);
                 } else {
                     try {
                         int m = Integer.parseInt(text);

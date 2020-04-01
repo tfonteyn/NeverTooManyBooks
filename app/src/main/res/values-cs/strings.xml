@@ -175,7 +175,7 @@
     <string name="hint_empty_author">(Chybí autor)</string>
     <string name="hint_empty_field">(Prázdné)</string>
     <string name="hint_empty_language">(Není vyplněn žádný jazyk)</string>
-    <string name="hint_empty_month">(Není vyplněn žádný měsíc)</string>
+    <string name="X_hint_empty_month">(Není vyplněn žádný měsíc)</string>
     <string name="hint_empty_rating">(Nehodnoceno)</string>
     <string name="hint_empty_read_status">(Stav čtení neznámý)</string>
     <string name="hint_empty_series">(Bez série)</string>

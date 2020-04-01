@@ -179,7 +179,7 @@
     <string name="hint_empty_author">(De auteur ontbreekt)</string>
     <string name="hint_empty_field">(Leeg)</string>
     <string name="hint_empty_language">(Geen taal ingevuld)</string>
-    <string name="hint_empty_month">(Geen maand ingevuld)</string>
+    <string name="X_hint_empty_month">(Geen maand ingevuld)</string>
     <string name="hint_empty_rating">(niet beoordeeld)</string>
     <string name="hint_empty_read_status">(Leesstatus onbekend)</string>
     <string name="hint_empty_series">(Geen reeks)</string>

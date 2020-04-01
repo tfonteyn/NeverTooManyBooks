@@ -4168,7 +4168,7 @@ public class DAO
                    + " THEN SUBSTR(" + fieldSpec + ",9,1)"
                    + " WHEN " + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",8,1)"
-                   + " ELSE " + fieldSpec
+                   + " ELSE ''"
                    + " END";
         }
 

@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  *         }
  *         ...
  *     }
+ *     }
  * </pre>
  */
 public class SqlStatementManager
@@ -134,6 +135,7 @@ public class SqlStatementManager
             try {
                 stmt.close();
             } catch (@NonNull final RuntimeException ignored) {
+                // ignored
             }
         }
         mStatements.clear();

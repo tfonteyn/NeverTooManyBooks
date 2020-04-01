@@ -168,17 +168,18 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 public class BooksOnBookshelf
         extends BaseActivity {
 
+    /** The maximum file size for an export file for which we'll offer to send it as an email. */
+    public static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
     public static final String START_BACKUP = TAG + ":startBackup";
-
+    private static final String BULLET = "\n• ";
     /**
      * List header.
      * Views for the current row level-text.
      * These are shown in the header of the list (just below the bookshelf spinner) while scrolling.
      */
     private final TextView[] mHeaderRowLevelTextView = new TextView[2];
-
     /** simple indeterminate progress spinner to show while getting the list of books. */
     private ProgressBar mProgressBar;
     /** List header. */
@@ -196,7 +197,6 @@ public class BooksOnBookshelf
     private ArrayAdapter<BooksOnBookshelfModel.BookshelfSpinnerEntry> mBookshelfSpinnerAdapter;
     /** The ViewModel. */
     private BooksOnBookshelfModel mModel;
-
     /** Listener for the Bookshelf Spinner. */
     private final OnItemSelectedListener mOnBookshelfSelectionChanged =
             new OnItemSelectedListener() {
@@ -223,7 +223,6 @@ public class BooksOnBookshelf
                     // Do Nothing
                 }
             };
-
     // ENHANCE: update the modified row without a rebuild.
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
@@ -261,7 +260,6 @@ public class BooksOnBookshelf
 //            }
 //        }
     };
-
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -337,7 +335,6 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-
     /**
      * Apply the style that a user has selected.
      * Called from {@link StylePickerDialogFragment}.
@@ -356,11 +353,9 @@ public class BooksOnBookshelf
                     mModel.buildBookList(BooksOnBookshelf.this);
                 }
             };
-
     /** Full progress dialog to show while exporting/importing. */
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-
     /** Export. */
     private ExportTaskModel mExportModel;
     private final OptionsDialogBase.OptionsListener<ExportManager> mExportOptionsListener =
@@ -374,12 +369,10 @@ public class BooksOnBookshelf
                     mImportModel.startArchiveImportTask(options);
                 }
             };
-
     /** The dropdown button to select a Bookshelf. */
     private Spinner mBookshelfSpinner;
     /** Whether to show level-header - this depends on the current style. */
     private boolean mShowLevelHeaders;
-
     /** Define a scroller to update header detail when the top row changes. */
     private final RecyclerView.OnScrollListener mUpdateHeaderScrollListener =
             new RecyclerView.OnScrollListener() {
@@ -396,7 +389,6 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
     /** The normal FAB button; opens or closes the FAB menu. */
     private FloatingActionButton mFabButton;
     /** Array with the submenu FAB buttons. Element 0 shows at the bottom. */
@@ -404,6 +396,7 @@ public class BooksOnBookshelf
     /** Overlay enabled while the FAB menu is shown to intercept clicks and close the FAB menu. */
     private View mFabOverlay;
 
+//    private BooksonbookshelfBinding mVb;
     /** Define a scroller to show, or collapse/hide the FAB. */
     private final RecyclerView.OnScrollListener mUpdateFABVisibility =
             new RecyclerView.OnScrollListener() {
@@ -430,8 +423,6 @@ public class BooksOnBookshelf
                     super.onScrollStateChanged(recyclerView, newState);
                 }
             };
-
-//    private BooksonbookshelfBinding mVb;
 
     @Override
     protected void onSetContentView() {
@@ -1920,7 +1911,6 @@ public class BooksOnBookshelf
 
         //TODO: RTL
         // slightly misleading. The text currently says "processed" but it's really "exported".
-        final String BULLET = "\n• ";
         if (results.booksExported > 0) {
             msg.append(BULLET)
                .append(getString(R.string.progress_end_export_result_n_books_processed,
@@ -1963,7 +1953,7 @@ public class BooksOnBookshelf
             fileSize = 0;
         }
         // up to 5mb
-        boolean offerEmail = fileSize > 0 && fileSize < 5_000_000;
+        boolean offerEmail = fileSize > 0 && fileSize < MAX_FILE_SIZE_FOR_EMAIL;
 
         if (offerEmail) {
             msg.append("\n\n").append(getString(R.string.confirm_email_export));
@@ -2174,7 +2164,7 @@ public class BooksOnBookshelf
 
         //TODO: RTL
         if (results.booksCreated > 0 || results.booksUpdated > 0 || results.booksSkipped > 0) {
-            msg.append("\n• ")
+            msg.append(BULLET)
                .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
                                  getString(R.string.lbl_books),
                                  results.booksCreated,
@@ -2182,7 +2172,7 @@ public class BooksOnBookshelf
                                  results.booksSkipped));
         }
         if (results.coversCreated > 0 || results.coversUpdated > 0 || results.coversSkipped > 0) {
-            msg.append("\n• ")
+            msg.append(BULLET)
                .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
                                  getString(R.string.lbl_covers),
                                  results.coversCreated,
@@ -2190,12 +2180,12 @@ public class BooksOnBookshelf
                                  results.coversSkipped));
         }
         if (results.styles > 0) {
-            msg.append("\n• ").append(getString(R.string.name_colon_value,
+            msg.append(BULLET).append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));
         }
         if (results.preferences > 0) {
-            msg.append("\n• ").append(getString(R.string.lbl_settings));
+            msg.append(BULLET).append(getString(R.string.lbl_settings));
         }
 
         int failed = results.failedLinesNr.size();

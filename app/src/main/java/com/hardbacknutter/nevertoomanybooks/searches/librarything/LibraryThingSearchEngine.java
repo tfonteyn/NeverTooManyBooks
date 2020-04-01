@@ -329,7 +329,7 @@ public class LibraryThingSearchEngine
             // but other then that it does not seem possible to get full details.
             if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
                 // 2020-03-27. Started getting "APIs Temporarily disabled"
-                throw new SearchException(R.string.site_out_of_order);
+                throw new SearchException(R.string.error_site_has_problems);
             }
             // wrap parser exceptions in an IOException
             throw new IOException(e);

@@ -113,50 +113,61 @@ public class EditBookNotesFragment
         super.onInitFields();
         final Fields fields = mFragmentVM.getFields();
 
-        fields.add(R.id.cbx_read, DBDefinitions.KEY_READ, new CompoundButtonAccessor());
-        fields.add(R.id.cbx_signed, DBDefinitions.KEY_SIGNED, new CompoundButtonAccessor());
+        fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
+        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED);
 
-        fields.add(R.id.rating, DBDefinitions.KEY_RATING, new RatingBarAccessor())
+        fields.add(R.id.rating, new RatingBarAccessor(), DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.add(R.id.notes, DBDefinitions.KEY_PRIVATE_NOTES, new EditTextAccessor<String>())
+        fields.add(R.id.notes, new EditTextAccessor<String>(), DBDefinitions.KEY_PRIVATE_NOTES)
               .setRelatedFields(R.id.lbl_notes);
 
         // MUST be defined before the currency.
-        fields.add(R.id.price_paid, DBDefinitions.KEY_PRICE_PAID,
-                   new DecimalEditTextAccessor(new DoubleNumberFormatter(), false));
-        fields.add(R.id.price_paid_currency, DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                   new EditTextAccessor<String>())
+        fields.add(R.id.price_paid, new DecimalEditTextAccessor(new DoubleNumberFormatter(), false),
+                   DBDefinitions.KEY_PRICE_PAID
+                  );
+        fields.add(R.id.price_paid_currency, new EditTextAccessor<String>(),
+                   DBDefinitions.KEY_PRICE_PAID_CURRENCY
+                  )
               .setRelatedFields(R.id.lbl_price_paid,
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
         //noinspection ConstantConditions
-        fields.add(R.id.condition, DBDefinitions.KEY_BOOK_CONDITION,
-                   new MaterialSpinnerAccessor(getContext(), R.array.conditions_book))
+        fields.add(R.id.condition,
+                   new MaterialSpinnerAccessor(getContext(), R.array.conditions_book),
+                   DBDefinitions.KEY_BOOK_CONDITION
+                  )
               .setRelatedFields(R.id.lbl_condition);
-        fields.add(R.id.condition_cover, DBDefinitions.KEY_BOOK_CONDITION_COVER,
-                   new MaterialSpinnerAccessor(getContext(), R.array.conditions_dust_cover))
+        fields.add(R.id.condition_cover,
+                   new MaterialSpinnerAccessor(getContext(), R.array.conditions_dust_cover),
+                   DBDefinitions.KEY_BOOK_CONDITION_COVER
+                  )
               .setRelatedFields(R.id.lbl_condition_cover);
 
-        fields.add(R.id.location, DBDefinitions.KEY_LOCATION, new EditTextAccessor<String>())
+        fields.add(R.id.location, new EditTextAccessor<String>(), DBDefinitions.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-        fields.add(R.id.edition, DBDefinitions.KEY_EDITION_BITMASK,
-                   new BitmaskChipGroupAccessor(Book.Edition.getEditions(getContext()), true))
+        fields.add(R.id.edition,
+                   new BitmaskChipGroupAccessor(Book.Edition.getEditions(getContext()), true),
+                   DBDefinitions.KEY_EDITION_BITMASK
+                  )
               .setRelatedFields(R.id.lbl_edition);
 
-        fields.add(R.id.date_acquired, DBDefinitions.KEY_DATE_ACQUIRED,
-                   new EditTextAccessor<>(new DateFieldFormatter(), false))
+        fields.add(R.id.date_acquired, new EditTextAccessor<>(new DateFieldFormatter(), false),
+                   DBDefinitions.KEY_DATE_ACQUIRED
+                  )
               .setRelatedFields(R.id.lbl_date_acquired);
 
-        fields.add(R.id.read_start, DBDefinitions.KEY_READ_START,
-                   new EditTextAccessor<>(new DateFieldFormatter(), false))
+        fields.add(R.id.read_start, new EditTextAccessor<>(new DateFieldFormatter(), false),
+                   DBDefinitions.KEY_READ_START
+                  )
               .setRelatedFields(R.id.lbl_read_start)
               .setErrorViewId(R.id.lbl_read_start)
               .setFieldValidator(mReadStartEndValidator);
 
-        fields.add(R.id.read_end, DBDefinitions.KEY_READ_END,
-                   new EditTextAccessor<>(new DateFieldFormatter(), false))
+        fields.add(R.id.read_end, new EditTextAccessor<>(new DateFieldFormatter(), false),
+                   DBDefinitions.KEY_READ_END
+                  )
               .setRelatedFields(R.id.lbl_read_end)
               .setErrorViewId(R.id.lbl_read_end)
               .setFieldValidator(mReadStartEndValidator);

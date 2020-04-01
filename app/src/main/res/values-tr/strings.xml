@@ -174,7 +174,7 @@
     <string name="hint_empty_author">(Yazar eksik)</string>
     <string name="hint_empty_field">(Boş)</string>
     <string name="hint_empty_language">(Doldurulmuş dil yok)</string>
-    <string name="hint_empty_month">(Hiçbir ay doldurulmadı)</string>
+    <string name="X_hint_empty_month">(Hiçbir ay doldurulmadı)</string>
     <string name="hint_empty_rating">(Oylanmamış)</string>
     <string name="hint_empty_read_status">(Okuma durumu bilinmiyor)</string>
     <string name="hint_empty_series">(Seri yok)</string>

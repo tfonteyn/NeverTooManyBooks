@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 public class BaseDatePickerDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "BaseDatePickerDialog";
 
     /** a standard sql style date string, must be correct. */

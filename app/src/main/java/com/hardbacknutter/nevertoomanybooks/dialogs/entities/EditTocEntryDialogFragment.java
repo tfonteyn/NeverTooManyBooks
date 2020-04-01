@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 public class EditTocEntryDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
 
     private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";

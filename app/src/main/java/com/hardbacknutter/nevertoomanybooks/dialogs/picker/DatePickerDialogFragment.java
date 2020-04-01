@@ -48,7 +48,7 @@ public class DatePickerDialogFragment
         extends BaseDatePickerDialogFragment
         implements DatePickerDialog.OnDateSetListener {
 
-    /* Log tag. */
+    /** Log tag. */
     public static final String TAG = "DatePickerDialog";
 
     public static DialogFragment newInstance(@IdRes final int fieldId,

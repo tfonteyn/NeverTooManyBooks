@@ -649,8 +649,8 @@ public final class DBHelper
      * and we needed to check for collation case-sensitivity.
      * <p>
      * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
-     * <p>
-     * This method is supposed to return {@code false} in normal circumstances.
+     *
+     * @return This method is supposed to return {@code false} in normal circumstances.
      */
     private boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
         final String dropTable = "DROP TABLE IF EXISTS collation_cs_check";

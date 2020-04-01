@@ -120,7 +120,9 @@ public class Author
     /** ARTIST: cover inking (if different from above). */
     public static final int TYPE_COVER_INKING = 1 << 9;
 
-//    public static final int TYPE_ = 1 << 10;
+    // unused for now
+    // public static final int TYPE_ = 1 << 10;
+
     /** COLOR: cover. */
     public static final int TYPE_COVER_COLORIST = 1 << 11;
 
@@ -130,7 +132,8 @@ public class Author
     /** ARTIST: art work inking (if different from above). */
     public static final int TYPE_INKING = 1 << 13;
 
-//    public static final int TYPE_ = 1 << 14;
+    // unused for now
+    // public static final int TYPE_ = 1 << 14;
 
     /** COLOR: internal colorist. */
     public static final int TYPE_COLORIST = 1 << 15;
@@ -141,11 +144,9 @@ public class Author
      */
     public static final int TYPE_PSEUDONYM = 1 << 16;
 
-    //    14 more bits available in the higher word (minus the sign-bit)
-
-
     /** String encoding use: separator between family name and given-names. */
     public static final char NAME_SEPARATOR = ',';
+    /** Maps the type-bit to a string resource for the type-label. */
     private static final Map<Integer, Integer> TYPES = new LinkedHashMap<>();
     /** All valid bits for the type. */
     private static final int TYPE_MASK =
@@ -385,12 +386,22 @@ public class Author
                                 .getBoolean(Prefs.pk_show_author_name_given_first, false);
     }
 
+    /**
+     * Get the 'complete' status of the Author.
+     *
+     * @return {@code true} if the Author is complete
+     */
     public boolean isComplete() {
         return mIsComplete;
     }
 
-    public void setComplete(final boolean complete) {
-        mIsComplete = complete;
+    /**
+     * Set the 'complete' status of the Author.
+     *
+     * @param isComplete Flag indicating the user considers this Author to be 'complete'
+     */
+    public void setComplete(final boolean isComplete) {
+        mIsComplete = isComplete;
     }
 
     @Type

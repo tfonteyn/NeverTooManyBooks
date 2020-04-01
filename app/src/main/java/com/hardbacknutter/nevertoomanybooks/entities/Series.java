@@ -172,7 +172,7 @@ public class Series
             Pattern.compile(TITLE_NUMBER_REGEXP, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Remove extraneous text from Series number. Used by {@link #fromString)}.
+     * Remove extraneous text from Series number. Used by {@link #fromString}.
      */
     private static final Pattern NUMBER_CLEANUP_PATTERN =
             Pattern.compile("^\\s*" + NUMBER_REGEXP + "\\s*$",
@@ -488,6 +488,8 @@ public class Series
     }
 
     /**
+     * Get the 'complete' status of the Series.
+     *
      * @return {@code true} if the Series is complete
      */
     public boolean isComplete() {
@@ -495,7 +497,7 @@ public class Series
     }
 
     /**
-     * Sets the 'complete' status of the Series.
+     * Set the 'complete' status of the Series.
      *
      * @param isComplete Flag indicating the user considers this Series to be 'complete'
      */
@@ -580,7 +582,9 @@ public class Series
     }
 
     /**
-     * @return the unformatted title
+     * Get the unformatted title.
+     *
+     * @return title
      */
     @NonNull
     @Override
@@ -588,12 +592,19 @@ public class Series
         return mTitle;
     }
 
+    /**
+     * Set the unformatted title; as entered manually by the user.
+     *
+     * @param title to use
+     */
     public void setTitle(@NonNull final String title) {
         mTitle = title;
     }
 
     /**
-     * @return the unformatted number
+     * Get the unformatted number.
+     *
+     * @return number (as a string)
      */
     @NonNull
     public String getNumber() {

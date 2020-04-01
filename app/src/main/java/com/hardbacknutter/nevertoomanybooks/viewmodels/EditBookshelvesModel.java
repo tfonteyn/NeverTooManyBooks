@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public class EditBookshelvesModel
         extends ViewModel {
 
+    /** Log tag. */
     private static final String TAG = "EditBookshelvesModel";
 
     public static final String BKEY_CURRENT_BOOKSHELF = TAG + ":current";
@@ -53,6 +54,7 @@ public class EditBookshelvesModel
     private DAO mDb;
     /** Shelf as set by the caller. Can be {@code 0}. */
     private long mInitialBookshelfId;
+    @Nullable
     private Bookshelf mSelectedBookshelf;
 
     /** The list we're editing. */
