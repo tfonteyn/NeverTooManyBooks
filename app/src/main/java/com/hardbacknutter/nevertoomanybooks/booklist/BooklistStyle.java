@@ -2049,6 +2049,7 @@ public class BooklistStyle
                                       BooklistGroup.DATE_READ_YEAR,
                                       BooklistGroup.DATE_READ_MONTH,
                                       BooklistGroup.AUTHOR);
+            style.setFilter(Prefs.pk_style_filter_read, true);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
