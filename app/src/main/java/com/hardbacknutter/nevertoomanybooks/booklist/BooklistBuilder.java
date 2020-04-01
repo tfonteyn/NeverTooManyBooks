@@ -1265,7 +1265,9 @@ public class BooklistBuilder
                 orderBy.append(sd.getSortedExpression()).append(',');
             }
 
-            return orderBy.append(KEY_BL_NODE_LEVEL).toString();
+            final int len = orderBy.length();
+            return orderBy.delete(len - 1, len).toString();
+//            return orderBy.append(KEY_BL_NODE_LEVEL).toString();
         }
 
         /**
@@ -1281,7 +1283,9 @@ public class BooklistBuilder
                 }
                 indexCols.append(sd.getSortedExpression()).append(',');
             }
-            return indexCols.append(KEY_BL_NODE_LEVEL).toString();
+            final int len = indexCols.length();
+            return indexCols.delete(len - 1, len).toString();
+//            return indexCols.append(KEY_BL_NODE_LEVEL).toString();
         }
     }
 }
