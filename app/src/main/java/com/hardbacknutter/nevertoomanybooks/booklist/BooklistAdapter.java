@@ -233,6 +233,26 @@ public class BooklistAdapter
                     return text;
                 }
             }
+            case BooklistGroup.ON_LOAN: {
+                if (text == null || text.isEmpty()) {
+                    return context.getString(R.string.lbl_available);
+                } else {
+                    return text;
+                }
+            }
+
+            case BooklistGroup.DATE_ACQUIRED_YEAR:
+            case BooklistGroup.DATE_ADDED_YEAR:
+            case BooklistGroup.DATE_LAST_UPDATE_YEAR:
+            case BooklistGroup.DATE_PUBLISHED_YEAR:
+            case BooklistGroup.DATE_FIRST_PUBLICATION_YEAR:
+            case BooklistGroup.DATE_READ_YEAR: {
+                if (text == null || text.isEmpty()) {
+                    return context.getString(R.string.hint_empty_year);
+                } else {
+                    return text;
+                }
+            }
 
             case BooklistGroup.DATE_ACQUIRED_MONTH:
             case BooklistGroup.DATE_ADDED_MONTH:
@@ -241,7 +261,7 @@ public class BooklistAdapter
             case BooklistGroup.DATE_FIRST_PUBLICATION_MONTH:
             case BooklistGroup.DATE_READ_MONTH: {
                 if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.hint_empty_field);
+                    return context.getString(R.string.hint_empty_month);
                 } else {
                     try {
                         int m = Integer.parseInt(text);
@@ -264,6 +284,23 @@ public class BooklistAdapter
                 }
             }
 
+            case BooklistGroup.DATE_ACQUIRED_DAY:
+            case BooklistGroup.DATE_ADDED_DAY:
+            case BooklistGroup.DATE_LAST_UPDATE_DAY:
+            case BooklistGroup.DATE_READ_DAY: {
+                if (text == null || text.isEmpty()) {
+                    return context.getString(R.string.hint_empty_day);
+                } else {
+                    return text;
+                }
+            }
+
+            case BooklistGroup.FORMAT:
+            case BooklistGroup.GENRE:
+            case BooklistGroup.PUBLISHER:
+            case BooklistGroup.LOCATION:
+            case BooklistGroup.BOOKSHELF:
+            case BooklistGroup.COLOR:
             default: {
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.hint_empty_field);

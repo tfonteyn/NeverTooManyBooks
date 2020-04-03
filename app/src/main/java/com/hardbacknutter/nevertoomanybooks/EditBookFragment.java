@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
@@ -291,31 +290,24 @@ public class EditBookFragment
             return;
         }
 
-        // If this is a new Book, check if it already exists based on ISBN
-        if (book.isNew()) {
-            final String isbnStr = book.getString(DBDefinitions.KEY_ISBN);
-            if (!isbnStr.isEmpty()) {
-                final ISBN isbn = ISBN.createISBN(isbnStr);
-                if (mBookViewModel.getDb().getBookIdFromIsbn(isbn) > 0) {
-                    //noinspection ConstantConditions
-                    new MaterialAlertDialogBuilder(getContext())
-                            .setIconAttribute(android.R.attr.alertDialogIcon)
-                            .setTitle(R.string.lbl_duplicate_book)
-                            .setMessage(R.string.confirm_duplicate_book_message)
-                            // this dialog is important. Make sure the user pays some attention
-                            .setCancelable(false)
-                            // User aborts this edit
-                            .setNegativeButton(android.R.string.cancel, (d, w) ->
-                                    getActivity().finish())
-                            // User wants to continue editing this book
-                            .setNeutralButton(R.string.action_edit, (d, w) -> d.dismiss())
-                            // User wants to add regardless
-                            .setPositiveButton(R.string.action_add, (d, w) -> saveBook())
-                            .create()
-                            .show();
-                    return;
-                }
-            }
+        // Check if the book already exists
+        if (mBookViewModel.bookExists()) {
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.lbl_duplicate_book)
+                    .setMessage(R.string.confirm_duplicate_book_message)
+                    // this dialog is important. Make sure the user pays some attention
+                    .setCancelable(false)
+                    // User aborts this edit
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                    // User wants to continue editing this book
+                    .setNeutralButton(R.string.action_edit, (d, w) -> d.dismiss())
+                    // User wants to add regardless
+                    .setPositiveButton(R.string.action_add, (d, w) -> saveBook())
+                    .create()
+                    .show();
+            return;
         }
 
         // No special actions required...just do it.

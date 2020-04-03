@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * FieldFormatter for 'page' fields. If the value is numerical, output "x pages"
  * Otherwise outputs the original source value.
  * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong></li>
  * </ul>
  */
 public class PagesFormatter

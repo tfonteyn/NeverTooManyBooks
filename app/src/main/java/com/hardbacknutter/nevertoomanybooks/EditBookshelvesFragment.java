@@ -49,7 +49,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
@@ -77,15 +76,14 @@ public class EditBookshelvesFragment
                     mModel.reloadList(bookshelfId);
                 }
             };
+    /** View Binding. */
+    private FragmentEditBookshelvesBinding mVb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
-
-    /** View Binding. */
-    private FragmentEditBookshelvesBinding mVb;
 
     @Override
     @Nullable
@@ -120,8 +118,7 @@ public class EditBookshelvesFragment
         final FloatingActionButton fabButton = getActivity().findViewById(R.id.fab);
         fabButton.setImageResource(R.drawable.ic_add);
         fabButton.setVisibility(View.VISIBLE);
-        fabButton.setOnClickListener(v -> editItem(
-                new Bookshelf("", BooklistStyle.getDefault(getContext(), mModel.getDb()))));
+        fabButton.setOnClickListener(v -> editItem(mModel.createNewBookshelf(getContext())));
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mVb.bookshelfList.setLayoutManager(linearLayoutManager);
@@ -160,8 +157,8 @@ public class EditBookshelvesFragment
                 final Bookshelf bookshelf = mModel.getSelectedBookshelf();
                 if (bookshelf != null) {
                     //noinspection ConstantConditions
-                    StandardDialogs.purgeBLNS(getContext(), R.string.lbl_bookshelf, bookshelf, () ->
-                            mModel.getDb().purgeNodeStatesByBookshelf(bookshelf.getId()));
+                    StandardDialogs.purgeBLNS(getContext(), R.string.lbl_bookshelf,
+                                              bookshelf, () -> mModel.purgeBLNS());
                 }
                 return true;
             }

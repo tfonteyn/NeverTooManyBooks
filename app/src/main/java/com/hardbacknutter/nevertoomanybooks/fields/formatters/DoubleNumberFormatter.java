@@ -42,8 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * This includes the {@link Money} class.
  *
  * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
- * <li>Extract: <strong>View</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Extract: <strong>View</strong></li>
  * </ul>
  */
 public class DoubleNumberFormatter

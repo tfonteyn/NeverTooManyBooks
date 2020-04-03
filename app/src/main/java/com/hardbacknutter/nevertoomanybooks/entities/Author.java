@@ -303,8 +303,8 @@ public class Author
      * <p>
      * Recognised pre/suffixes: see {@link #FAMILY_NAME_PREFIX} and {@link #FAMILY_NAME_SUFFIX}
      * <ul>Not covered:
-     * <li>multiple, and not concatenated, family names.</li>
-     * <li>more than 1 un-encoded comma.</li>
+     *      <li>multiple, and not concatenated, family names.</li>
+     *      <li>more than 1 un-encoded comma.</li>
      * </ul>
      *
      * <strong>Note:</strong> uses a simple String decoder.
@@ -626,8 +626,8 @@ public class Author
      * An Author with a given set of Family and Given-names is defined by a unique ID.<br>
      * The other fields are not significant in a list of Authors.
      * <ul>
-     * <li>The 'isComplete' is a user setting.</li>
-     * <li>The 'type' is on a per book basis.</li>
+     *      <li>The 'isComplete' is a user setting.</li>
+     *      <li>The 'type' is on a per book basis.</li>
      * </ul>
      */
     @SuppressWarnings("SameReturnValue")
@@ -649,10 +649,10 @@ public class Author
     /**
      * Equality: <strong>id, family and given-names</strong>.
      * <p>
-     * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
-     * AND family/given-names are equal</li>
-     * <li>if both are 'new' check if family/given-names are equal</li>
+     *      <li>it's the same Object</li>
+     *      <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
+     *          AND family/given-names are equal</li>
+     *      <li>if both are 'new' check if family/given-names are equal</li>
      * <p>
      * <strong>Compare is CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.<br>

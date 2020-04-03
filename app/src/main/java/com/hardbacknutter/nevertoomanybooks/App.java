@@ -70,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
  */
 @AcraMailSender(
         mailTo = "",
-//        mailTo = "debug@email",
+        // mailTo = "debug@email",
         reportFileName = "NeverTooManyBooks-acra-report.txt")
 @AcraToast(
         //optional, displayed as soon as the crash occurs,
@@ -140,11 +140,11 @@ public class App
     /**
      * NEWTHINGS: APP THEME: adding
      * <ol>
-     * <li>add it to themes.xml</li>
-     * <li>add it to R.array.pv_ui_theme, the array order must match the APP_THEMES order</li>
-     * <li>make sure the integer list in R.array.pv_ui_theme matches the number of themes</li>
-     * <li>The default integer must be set in res/xml/preferences.xml on the App.Theme element.</li>
-     * <li>The default name must be set in the manifest application tag.</li>
+     *      <li>add it to themes.xml</li>
+     *      <li>add it to R.array.pv_ui_theme, the array order must match the APP_THEMES order</li>
+     *      <li>make sure the int list in R.array.pv_ui_theme matches the number of themes</li>
+     *      <li>The default must be set in res/xml/preferences.xml on the App.Theme element.</li>
+     *      <li>The default name must be set in the manifest application tag.</li>
      * </ol>
      * The preferences choice will be build according to the string-array list/order.
      * <p>
@@ -155,9 +155,9 @@ public class App
     /**
      * As defined in res/themes.xml.
      * <ul>
-     * <li>MODE_NIGHT_AUTO_BATTERY (API < 27) / MODE_NIGHT_FOLLOW_SYSTEM (API 28+)</li>
-     * <li>MODE_NIGHT_YES</li>
-     * <li>MODE_NIGHT_NO</li>
+     *      <li>MODE_NIGHT_AUTO_BATTERY (API < 27) / MODE_NIGHT_FOLLOW_SYSTEM (API 28+)</li>
+     *      <li>MODE_NIGHT_YES</li>
+     *      <li>MODE_NIGHT_NO</li>
      * </ul>
      */
     private static final int[] APP_THEMES = {

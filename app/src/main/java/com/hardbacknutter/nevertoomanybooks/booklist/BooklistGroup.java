@@ -136,11 +136,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * <p>
  * How to add a new Group:
  * <ol>
- * <li>add it to {@link GroupKey} and update {@link #GROUP_KEY_MAX}</li>
- * <li>if necessary add new domain to {@link DBDefinitions}</li>
- * <li>modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains</li>
- * <li>modify {@link BooklistAdapter#onCreateViewHolder} ; If it is just a string field it can
- * use a {@link BooklistAdapter.GenericStringHolder} otherwise add a new holder</li>
+ *      <li>add it to {@link GroupKey} and update {@link #GROUP_KEY_MAX}</li>
+ *      <li>if necessary add new domain to {@link DBDefinitions}</li>
+ *      <li>modify {@link BooklistBuilder#build} to add the necessary grouped/sorted domains</li>
+ *      <li>modify {@link BooklistAdapter#onCreateViewHolder} ; If it is just a string field it can
+ *          use a {@link BooklistAdapter.GenericStringHolder} otherwise add a new holder</li>
  * </ol>
  */
 public class BooklistGroup
@@ -172,7 +172,7 @@ public class BooklistGroup
     public static final int GENRE = 3;
     public static final int PUBLISHER = 4;
     public static final int READ_STATUS = 5;
-    public static final int LOANED = 6;
+    public static final int ON_LOAN = 6;
     public static final int DATE_PUBLISHED_YEAR = 7;
     public static final int DATE_PUBLISHED_MONTH = 8;
     public static final int BOOK_TITLE_LETTER = 9;
@@ -475,7 +475,7 @@ public class BooklistGroup
              BOOKSHELF,
              READ_STATUS,
 
-             LOANED,
+             ON_LOAN,
 
              BOOK_TITLE_LETTER,
              SERIES_TITLE_LETTER,
@@ -1042,7 +1042,7 @@ public class BooklistGroup
                 }
 
                 // the others here below are custom key domains
-                case LOANED: {
+                case ON_LOAN: {
                     return new GroupKey(R.string.lbl_loaned, "l",
                                         DOM_LOANEE, DAO.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
                                         VirtualDomain.Sorted.Asc);

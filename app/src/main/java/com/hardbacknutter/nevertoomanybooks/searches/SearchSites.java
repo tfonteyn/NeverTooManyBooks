@@ -57,21 +57,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
  * <br>NEWTHINGS: adding a new search engine:
  * To make it available, follow these steps:
  * <ol>
- * <li>Implement {@link SearchEngine} to create the new engine (class).
- * <br>It needs a no-arguments constructor.</li>
- * <li>Add an identifier (bit) in this class and
- * add it to {@link #SEARCH_FLAG_MASK} and {@link Id}</li>
- * <li>Add a name for it to {@link #getName}.<br>
- * This should be a hardcoded, single word, no spaces, and will be user visible.<br>
- * It will be used in SharedPreferences so should never be changed.</li>
- * <li>Add the new SearchEngine to {@link #getSearchEngine}</li>
- * <li>Add a new {@link Site} instance to the list(s) in {@link #createSiteList}
- * and to {@link #DATA_RELIABILITY_ORDER}</li>
- *
- * <li>Add the new SearchEngine to {@link #getSiteUrls}</li>
- * <li>Optional: add a preference fragment if needed.<br>
- * See the {@link IsfdbPreferencesFragment} example: a class, an xml file, and an entry
- * in res/xml/preferences.xml.</li>
+ *      <li>Implement {@link SearchEngine} to create the new engine (class).<br>
+ *          It needs a no-arguments constructor.</li>
+ *      <li>Add an identifier (bit) in this class and add it to {@link #SEARCH_FLAG_MASK}
+ *          and {@link Id}</li>
+ *      <li>Add a name for it to {@link #getName}.<br>
+ *          This should be a hardcoded, single word, no spaces, and will be user visible.<br>
+ *          It will be used in SharedPreferences so should never be changed.</li>
+ *      <li>Add the new SearchEngine to {@link #getSearchEngine}</li>
+ *      <li>Add a new {@link Site} instance to the list(s) in {@link #createSiteList}
+ *          and to {@link #DATA_RELIABILITY_ORDER}</li>
+ *      <li>Add the new SearchEngine to {@link #getSiteUrls}</li>
+ *      <li>Optional: add a preference fragment if needed.<br>
+ *          See the {@link IsfdbPreferencesFragment} example: a class, an xml file, and an entry
+ *          in res/xml/preferences.xml.</li>
  * </ol>
  *
  * <strong>Note:</strong> NEVER change the identifiers (bit flag) of the sites,
@@ -129,8 +128,8 @@ public final class SearchSites {
      * Return the name for the site. This should/is a hardcoded single word.
      * It is used for:
      * <ol>
-     * <li>As the key into the actual preferences.</li>
-     * <li>User-visible name in the app settings.</li>
+     *      <li>As the key into the actual preferences.</li>
+     *      <li>User-visible name in the app settings.</li>
      * </ol>
      * <p>
      * As it's used as a prefs key, it should never be changed.

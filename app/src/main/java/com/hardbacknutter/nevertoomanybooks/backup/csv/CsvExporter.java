@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * <ul>Supports:
- * <li>{@link ArchiveContainerEntry#BooksCsv}</li>
+ *      <li>{@link ArchiveContainerEntry#BooksCsv}</li>
  * </ul>
  * <p>
  * All books will have full toc, author, series and bookshelf information.

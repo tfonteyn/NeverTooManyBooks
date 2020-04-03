@@ -61,10 +61,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  * Default implementation of format-specific methods.
  *
  * <ol>This writes in order:
- * <li>XML Archive info</li>
- * <li>XML Styles</li>
- * <li>XML Preferences</li>
- * <li>CSV Books</li>
+ *      <li>XML Archive info</li>
+ *      <li>XML Styles</li>
+ *      <li>XML Preferences</li>
+ *      <li>CSV Books</li>
  * </ol>
  * <p>
  * Covers are implemented in {@link #doCovers} but support depends on the concrete class.

@@ -51,13 +51,14 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * access to the data that each view represents should be handled via this class
  * (and its related classes) where possible.
  * <ul>Features provides are:
- * <li> handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
- * <li> understanding of kinds of views (setting a Checkbox (Checkable) value to 'true' will work
- * as expected as will setting the value of a Spinner). As new view types are added, it
- * will be necessary to add new {@link FieldViewAccessor} implementations.
- * In some specific circumstances, an accessor can be defined manually.</li>
- * <li> Custom data accessors and formatter to provide application-specific data rules.</li>
- * <li> simplified extraction of data.</li>
+ *      <li>Handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
+ *      <li>Understanding of kinds of views (setting a Checkbox (Checkable) value to 'true'
+ *          will work as expected as will setting the value of a Spinner).
+ *          As new view types are added, it will be necessary to add new {@link FieldViewAccessor}
+ *          implementations.
+ *          In some specific circumstances, an accessor can be defined manually.</li>
+ *      <li> Custom data accessors and formatter to provide application-specific data rules.</li>
+ *      <li> simplified extraction of data.</li>
  * </ul>
  * <p>
  * Formatter and Accessors
@@ -73,24 +74,24 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  * without side-effects.
  *
  * <ul>Data flows to and from a view as follows:
- * <li>IN  (no formatter ):<br>
- * {@link FieldViewAccessor#setValue(DataManager)} ->
- * {@link FieldViewAccessor#setValue(Object)} ->
- * populates the View.
- * </li>
- * <li>IN  (with formatter):<br>
- * {@link FieldViewAccessor#setValue(DataManager)} ->
- * {@link FieldViewAccessor#setValue(Object)} ->
- * {@link FieldFormatter#apply} ->
- * populates the View..
- * </li>
- * <li>OUT (no formatter ):
- * View -> {@link FieldViewAccessor#getValue()} ->  {@link FieldViewAccessor#getValue(DataManager)}
- * </li>
- * <li>OUT (with formatter):
- * View ->  {@link EditFieldFormatter#extract} ->
- * {@link FieldViewAccessor#getValue()} -> {@link FieldViewAccessor#getValue(DataManager)}
- * </li>
+ *      <li>IN  (no formatter ):<br>
+ *          {@link FieldViewAccessor#setValue(DataManager)} ->
+ *          {@link FieldViewAccessor#setValue(Object)} ->
+ *          populates the View.</li>
+ *      <li>IN  (with formatter):<br>
+ *          {@link FieldViewAccessor#setValue(DataManager)} ->
+ *          {@link FieldViewAccessor#setValue(Object)} ->
+ *          {@link FieldFormatter#apply} ->
+ *          populates the View.</li>
+ *       <li>OUT (no formatter ):
+ *          View ->
+ *          {@link FieldViewAccessor#getValue()} ->
+ *          {@link FieldViewAccessor#getValue(DataManager)}</li>
+ *      <li>OUT (with formatter):
+ *          View ->
+ *          {@link EditFieldFormatter#extract} ->
+ *          {@link FieldViewAccessor#getValue()} ->
+ *          {@link FieldViewAccessor#getValue(DataManager)}</li>
  * </ul>
  */
 public class Fields {
@@ -219,8 +220,8 @@ public class Fields {
     /**
      * Prepare all fields.
      * <ol>
-     * <li>Find/update their View from the passed parent View</li>
-     * <li>Disable the {@link AfterChangeListener} in preparation of bulk loading the Views</li>
+     *      <li>Find/update their View from the passed parent View</li>
+     *      <li>Disables the {@link AfterChangeListener}</li>
      * </ol>
      *
      * @param parentView for the view of each field

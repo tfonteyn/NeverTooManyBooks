@@ -49,9 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * Construction is done in two steps:
  * <ol>
- * <li>Create the table, fill it with data<br>
- * {@link #createTable}</li>
- * <li>Use the normal constructor with the table name from step 1 to start using the table</li>
+ *      <li>Create the table, fill it with data, using {@link #createTable}</li>
+ *      <li>Use the constructor with the table name from step 1 to start using the table</li>
  * </ol>
  * Reminder: moveNext/Prev SQL concatenates/splits two columns.
  * This is to get around the limitation of {@link SQLiteStatement}

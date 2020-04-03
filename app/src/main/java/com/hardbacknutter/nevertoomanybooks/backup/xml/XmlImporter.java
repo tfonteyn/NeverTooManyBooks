@@ -93,9 +93,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
  * <ul>Supports:
- * <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
- * <li>{@link ArchiveContainerEntry#BooklistStylesXml}</li>
- * <li>{@link ArchiveContainerEntry#PreferencesXml}</li>
+ *      <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
+ *      <li>{@link ArchiveContainerEntry#BooklistStylesXml}</li>
+ *      <li>{@link ArchiveContainerEntry#PreferencesXml}</li>
  * </ul>
  *
  * <strong>Important</strong>: The sax parser closes streams, which is not good

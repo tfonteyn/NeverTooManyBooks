@@ -724,9 +724,9 @@ public class BooklistStyle
     /**
      * Accessor.
      * <ul>
-     * <li>Positive ID's: user-defined styles</li>
-     * <li>Negative ID's: builtin styles</li>
-     * <li>0: a user-defined style which has not been saved yet</li>
+     *      <li>Positive ID's: user-defined styles</li>
+     *      <li>Negative ID's: builtin styles</li>
+     *      <li>0: a user-defined style which has not been saved yet</li>
      * </ul>
      */
     @Override
@@ -912,11 +912,11 @@ public class BooklistStyle
      * With the header set to two lines, the toolbar fully visible,
      * on a full-HD (1920-1080 pixels) we get:
      * <ul>
-     * <li>32sp: 10 lines; or 2 books</li>
-     * <li>28sp: 11 lines</li>
-     * <li>24sp: 12 lines</li>
-     * <li>18sp: 13 lines; or 5-6 books</li>
-     * <li>14sp: 19 lines; or 7 books</li>
+     *      <li>32sp: 10 lines; or 2 books</li>
+     *      <li>28sp: 11 lines</li>
+     *      <li>24sp: 12 lines</li>
+     *      <li>18sp: 13 lines; or 5-6 books</li>
+     *      <li>14sp: 19 lines; or 7 books</li>
      * </ul>
      *
      * @param context Current context
@@ -1975,7 +1975,7 @@ public class BooklistStyle
                                       LENDING_ID,
                                       LENDING_UUID,
                                       R.string.style_builtin_loaned,
-                                      BooklistGroup.LOANED,
+                                      BooklistGroup.ON_LOAN,
                                       BooklistGroup.AUTHOR,
                                       BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
@@ -2049,8 +2049,8 @@ public class BooklistStyle
                                       BooklistGroup.DATE_READ_YEAR,
                                       BooklistGroup.DATE_READ_MONTH,
                                       BooklistGroup.AUTHOR);
-            style.setFilter(Prefs.pk_style_filter_read, true);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
+            style.setFilter(Prefs.pk_style_filter_read, true);
 
             // Location
             style = new BooklistStyle(context,

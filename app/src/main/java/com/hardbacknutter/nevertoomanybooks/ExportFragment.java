@@ -78,7 +78,9 @@ public class ExportFragment
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
-
+    /** The maximum file size for an export file for which we'll offer to send it as an email. */
+    private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
+    private static final String BULLET = "\n• ";
     /** ViewModel. */
     private ResultDataModel mResultDataModel;
     /** Export. */
@@ -222,7 +224,7 @@ public class ExportFragment
         final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
-                .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName((getContext())));
+                .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName(getContext()));
         startActivityForResult(intent, UniqueId.REQ_EXPORT_PICK_URI);
     }
 
@@ -270,14 +272,14 @@ public class ExportFragment
         //TODO: RTL
         // slightly misleading. The text currently says "processed" but it's really "exported".
         if (results.booksExported > 0) {
-            msg.append("\n• ")
+            msg.append(BULLET)
                .append(getString(R.string.progress_end_export_result_n_books_processed,
                                  results.booksExported));
         }
         if (results.coversExported > 0
             || results.coversMissing[0] > 0
             || results.coversMissing[1] > 0) {
-            msg.append("\n• ")
+            msg.append(BULLET)
                .append(getString(R.string.progress_end_export_result_n_covers_processed_m_missing,
                                  results.coversExported,
                                  results.coversMissing[0],
@@ -285,12 +287,12 @@ public class ExportFragment
         }
 
         if (results.styles > 0) {
-            msg.append("\n• ").append(getString(R.string.name_colon_value,
+            msg.append(BULLET).append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));
         }
         if (results.preferences > 0) {
-            msg.append("\n• ").append(getString(R.string.lbl_settings));
+            msg.append(BULLET).append(getString(R.string.lbl_settings));
         }
 
         //noinspection ConstantConditions
@@ -312,7 +314,7 @@ public class ExportFragment
             fileSize = 0;
         }
         // up to 5mb
-        boolean offerEmail = fileSize > 0 && fileSize < 5_000_000;
+        boolean offerEmail = fileSize > 0 && fileSize < MAX_FILE_SIZE_FOR_EMAIL;
 
         if (offerEmail) {
             msg.append("\n\n").append(getString(R.string.confirm_email_export));

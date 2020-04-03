@@ -51,6 +51,16 @@ public class DatePickerDialogFragment
     /** Log tag. */
     public static final String TAG = "DatePickerDialog";
 
+    /**
+     * Constructor.
+     *
+     * @param fieldId       the field whose content we want to edit
+     * @param dialogTitleId resource id for the dialog title
+     * @param currentValue  the current value of the field
+     * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
+     *
+     * @return the new instance
+     */
     public static DialogFragment newInstance(@IdRes final int fieldId,
                                              @StringRes final int dialogTitleId,
                                              @Nullable final String currentValue,

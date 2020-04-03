@@ -36,7 +36,7 @@
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
     <string name="X_export_info_success_archive_details">Файл %3$s с именем %2$s был создан в папке «%1$s».\n\nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
-    <string name="X_lbl_available">Доступно</string>
+    <string name="lbl_available">Доступно</string>
     <string name="X_lbl_data_import_export">Резервное копирование и импорт</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>
     <string name="X_menu_show_all">Показать все</string>
@@ -174,7 +174,7 @@
     <string name="hint_empty_author">(Автор отсутствует)</string>
     <string name="hint_empty_field">(Пусто)</string>
     <string name="hint_empty_language">(Язык не указан)</string>
-    <string name="X_hint_empty_month">(Месяц не заполнен)</string>
+    <string name="hint_empty_month">(Месяц не установлен)</string>
     <string name="hint_empty_rating">(без рейтинга)</string>
     <string name="hint_empty_read_status">(Статус чтения неизвестен)</string>
     <string name="hint_empty_series">(Нет серии)</string>
@@ -655,5 +655,7 @@
     <string name="confirm_rebuild_fts">Данные поискового индекса будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
     <string name="confirm_rebuild_index">Индексы будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
     <string name="error_site_has_problems">На сайте есть проблемы.</string>
+    <string name="hint_empty_day">(День не назначен)</string>
+    <string name="hint_empty_year">(Год не указан)</string>
 
 </resources>

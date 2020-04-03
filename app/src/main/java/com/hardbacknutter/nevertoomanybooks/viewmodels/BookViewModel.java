@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.SelectableEntity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
@@ -211,6 +212,23 @@ public class BookViewModel
     }
 
     /**
+     * Check if the book already exists in the database.
+     *
+     * @return {@code true} if it does
+     */
+    public boolean bookExists() {
+        if (mBook.isNew()) {
+            final String isbnStr = mBook.getString(DBDefinitions.KEY_ISBN);
+            if (!isbnStr.isEmpty()) {
+                final ISBN isbn = ISBN.createISBN(isbnStr);
+                return mDb.getBookIdFromIsbn(isbn) > 0;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get the current loanee.
      *
      * @return the one who shall not be mentioned, or {@code null} if none
@@ -353,10 +371,6 @@ public class BookViewModel
             list.add(new SelectableEntity(bookshelf, selected));
         }
         return list;
-    }
-
-    public DAO getDb() {
-        return mDb;
     }
 
     public void refreshSeriesList(@NonNull final Context context) {

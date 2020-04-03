@@ -747,8 +747,8 @@ public class Book
      * Helper for {@link #preprocessForStoring(Context, boolean)}.
      *
      * <ul>Fields in this Book, which have a default in the database and
-     * <li>which are not allowed to be blank but are</li>
-     * <li>which are not allowed to be null but are</li>
+     *      <li>which are not allowed to be blank but are</li>
+     *      <li>which are not allowed to be null but are</li>
      * </ul>
      * <p>
      * For new books, remove those keys.

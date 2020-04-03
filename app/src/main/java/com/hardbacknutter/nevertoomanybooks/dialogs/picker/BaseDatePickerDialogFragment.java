@@ -121,10 +121,10 @@ public class BaseDatePickerDialogFragment
     /**
      * Private helper, NOT a public accessor.
      * <ul>Allows partial dates:
-     * <li>yyyy-mm-dd time</li>
-     * <li>yyyy-mm-dd</li>
-     * <li>yyyy-mm</li>
-     * <li>yyyy</li>
+     *      <li>yyyy-mm-dd time</li>
+     *      <li>yyyy-mm-dd</li>
+     *      <li>yyyy-mm</li>
+     *       <li>yyyy</li>
      * </ul>
      *
      * @param dateString SQL formatted (partial) date, can be {@code null}.

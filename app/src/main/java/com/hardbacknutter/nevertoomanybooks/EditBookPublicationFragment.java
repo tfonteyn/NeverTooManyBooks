@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
@@ -84,8 +85,7 @@ public class EditBookPublicationFragment
               .setRelatedFields(R.id.lbl_color);
 
         fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(), true),
-                   DBDefinitions.KEY_LANGUAGE
-                  )
+                   DBDefinitions.KEY_LANGUAGE)
               .setRelatedFields(R.id.lbl_language);
 
         fields.add(R.id.publisher, new EditTextAccessor<String>(), DBDefinitions.KEY_PUBLISHER)
@@ -94,24 +94,19 @@ public class EditBookPublicationFragment
         fields.add(R.id.print_run, new EditTextAccessor<String>(), DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        fields.add(R.id.date_published, new EditTextAccessor<>(new DateFieldFormatter(), false),
-                   DBDefinitions.KEY_DATE_PUBLISHED
-                  )
+        fields.add(R.id.date_published, new TextAccessor<>(new DateFieldFormatter()),
+                   DBDefinitions.KEY_DATE_PUBLISHED)
               .setRelatedFields(R.id.lbl_date_published);
 
-        fields.add(R.id.first_publication, new EditTextAccessor<>(new DateFieldFormatter(), false),
-                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION
-                  )
+        fields.add(R.id.first_publication, new TextAccessor<>(new DateFieldFormatter()),
+                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
               .setRelatedFields(R.id.lbl_first_publication);
 
-        // MUST be defined before the currency.
-        fields.add(R.id.price_listed,
-                   new DecimalEditTextAccessor(new DoubleNumberFormatter(), false),
-                   DBDefinitions.KEY_PRICE_LISTED
-                  );
+        // MUST be defined before the currency field is defined.
+        fields.add(R.id.price_listed, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
+                   DBDefinitions.KEY_PRICE_LISTED);
         fields.add(R.id.price_listed_currency, new EditTextAccessor<String>(),
-                   DBDefinitions.KEY_PRICE_LISTED_CURRENCY
-                  )
+                   DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
               .setRelatedFields(R.id.lbl_price_listed,
                                 R.id.lbl_price_listed_currency, R.id.price_listed_currency);
     }

@@ -412,13 +412,13 @@ public class GoodreadsHandler {
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
      * <ul>The book has to have:
-     * <li>{@link DBDefinitions#KEY_PK_ID}</li>
-     * <li>{@link DBDefinitions#KEY_EID_GOODREADS_BOOK}</li>
-     * <li>{@link DBDefinitions#KEY_ISBN}</li>
-     * <li>{@link DBDefinitions#KEY_READ}</li>
-     * <li>{@link DBDefinitions#KEY_READ_START}</li>
-     * <li>{@link DBDefinitions#KEY_READ_END}</li>
-     * <li>{@link DBDefinitions#KEY_RATING}</li>
+     *      <li>{@link DBDefinitions#KEY_PK_ID}</li>
+     *      <li>{@link DBDefinitions#KEY_EID_GOODREADS_BOOK}</li>
+     *      <li>{@link DBDefinitions#KEY_ISBN}</li>
+     *      <li>{@link DBDefinitions#KEY_READ}</li>
+     *      <li>{@link DBDefinitions#KEY_READ_START}</li>
+     *      <li>{@link DBDefinitions#KEY_READ_END}</li>
+     *      <li>{@link DBDefinitions#KEY_RATING}</li>
      * </ul>
      * <p>
      * See {@link DAO#fetchBookForExportToGoodreads}

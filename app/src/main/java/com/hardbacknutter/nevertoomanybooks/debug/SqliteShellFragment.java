@@ -54,7 +54,7 @@ public class SqliteShellFragment
         extends Fragment {
 
     /** Log tag. */
-    static final String TAG = "SqliteShellFragment";
+    public static final String TAG = "SqliteShellFragment";
 
     public static final String BKEY_ALLOW_UPDATES = TAG + ":upd";
 

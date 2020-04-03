@@ -3175,8 +3175,8 @@ public class DAO
      * Return a ContentValues collection containing only those values from 'source'
      * that match columns in 'dest'.
      * <ul>
-     * <li>Exclude the primary key from the list of columns.</li>
-     * <li>data will be transformed based on the intended type of the underlying column
+     *      <li>Exclude the primary key from the list of columns.</li>
+     *      <li>data will be transformed based on the intended type of the underlying column
      * based on column definition (based on actual storage class of SQLite)
      * e.g. if a columns says it's Integer, an incoming boolean will be transformed to 0/1</li>
      * </ul>
@@ -3722,9 +3722,9 @@ public class DAO
     /**
      * Construct the SQL to get a list of books.
      * <ol>
-     * <li>{@link #withAllAuthorsAndSeries}: Books linked with Authors and Series</li>
-     * <li>{@link #withPrimaryAuthorAndSeries}: Books with a primary Author and<br>
-     * (if they have one) primary Series</li>
+     *      <li>{@link #withAllAuthorsAndSeries}: Books linked with Authors and Series</li>
+     *      <li>{@link #withPrimaryAuthorAndSeries}: Books with a primary Author and<br>
+     *          (if they have one) primary Series</li>
      * </ol>
      * <p>
      * We use ORDER BY position LIMIT 1, instead of "AND position=1",

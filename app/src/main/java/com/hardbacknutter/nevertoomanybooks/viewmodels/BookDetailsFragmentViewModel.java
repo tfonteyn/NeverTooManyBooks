@@ -140,14 +140,14 @@ public class BookDetailsFragmentViewModel
         // book fields
         fields.add(R.id.title, new TextAccessor<String>(), DBDefinitions.KEY_TITLE);
 
-        fields.add(R.id.author,
-                   new TextAccessor<>(new AuthorListFormatter(Author.Details.Full, false, true)),
+        fields.add(R.id.author, new TextAccessor<>(
+                           new AuthorListFormatter(Author.Details.Full, false, true)),
                    UniqueId.BKEY_AUTHOR_ARRAY,
                    DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author);
 
-        fields.add(R.id.series_title,
-                   new TextAccessor<>(new SeriesListFormatter(Series.Details.Full, false, true)),
+        fields.add(R.id.series_title, new TextAccessor<>(
+                           new SeriesListFormatter(Series.Details.Full, false, true)),
                    UniqueId.BKEY_SERIES_ARRAY,
                    DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
@@ -156,15 +156,14 @@ public class BookDetailsFragmentViewModel
               .setRelatedFields(R.id.lbl_isbn);
 
         fields.add(R.id.description, new TextAccessor<>(htmlFormatter),
-                   DBDefinitions.KEY_DESCRIPTION
-                  )
+                   DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
 
         fields.add(R.id.genre, new TextAccessor<String>(), DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
-        fields.add(R.id.language, new TextAccessor<>(languageFormatter), DBDefinitions.KEY_LANGUAGE
-                  )
+        fields.add(R.id.language, new TextAccessor<>(languageFormatter),
+                   DBDefinitions.KEY_LANGUAGE)
               .setRelatedFields(R.id.lbl_language);
 
         fields.add(R.id.pages, new TextAccessor<>(new PagesFormatter()), DBDefinitions.KEY_PAGES);
@@ -173,21 +172,18 @@ public class BookDetailsFragmentViewModel
         fields.add(R.id.publisher, new TextAccessor<String>(), DBDefinitions.KEY_PUBLISHER);
 
         fields.add(R.id.date_published, new TextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_PUBLISHED
-                  )
+                   DBDefinitions.KEY_DATE_PUBLISHED)
               .setRelatedFields(R.id.lbl_date_published);
 
         fields.add(R.id.first_publication, new TextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION
-                  )
+                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
               .setRelatedFields(R.id.lbl_first_publication);
 
         fields.add(R.id.print_run, new TextAccessor<String>(), DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
         fields.add(R.id.price_listed, new TextAccessor<>(moneyFormatter),
-                   DBDefinitions.KEY_PRICE_LISTED
-                  )
+                   DBDefinitions.KEY_PRICE_LISTED)
               .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
         // Personal fields
@@ -198,8 +194,7 @@ public class BookDetailsFragmentViewModel
               .setRelatedFields(R.id.lbl_bookshelves);
 
         fields.add(R.id.date_acquired, new TextAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_ACQUIRED
-                  )
+                   DBDefinitions.KEY_DATE_ACQUIRED)
               .setRelatedFields(R.id.lbl_date_acquired);
 
         fields.add(R.id.edition, new BitmaskChipGroupAccessor(
@@ -233,8 +228,8 @@ public class BookDetailsFragmentViewModel
         fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED)
               .setRelatedFields(R.id.lbl_signed);
 
-        fields.add(R.id.price_paid, new TextAccessor<>(moneyFormatter), DBDefinitions.KEY_PRICE_PAID
-                  )
+        fields.add(R.id.price_paid, new TextAccessor<>(moneyFormatter),
+                   DBDefinitions.KEY_PRICE_PAID)
               .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
     }
 

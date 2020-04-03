@@ -85,7 +85,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public abstract class BaseActivity
         extends AppCompatActivity {
 
-
     /** Log tag. */
     private static final String TAG = "BaseActivity";
     /**
@@ -138,6 +137,40 @@ public abstract class BaseActivity
     }
 
     /**
+     * Check if the Locale/Theme was changed, which will trigger the Activity to be recreated.
+     *
+     * @return {@code true} if a recreate was triggered.
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    private boolean maybeRecreate() {
+        final boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
+        if (localeChanged) {
+            LocaleUtils.onLocaleChanged();
+        }
+
+        if (sActivityRecreateStatus == ActivityStatus.NeedsRecreating
+            || App.isThemeChanged(this, mInitialThemeId) || localeChanged) {
+            setIsRecreating();
+            recreate();
+
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Recreate!");
+            }
+
+            return true;
+
+        } else {
+            // this is the second time we got here, so we have been re-created.
+            sActivityRecreateStatus = ActivityStatus.Running;
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
+                Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Resuming");
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * apply the user-preferred Locale before onCreate is called.
      */
     protected void attachBaseContext(@NonNull final Context base) {
@@ -175,66 +208,6 @@ public abstract class BaseActivity
         }
         // Normal setup of the action bar now
         updateActionBar(isTaskRoot());
-    }
-
-    public void updateActionBar(final boolean isRoot) {
-        mHomeIsRootMenu = isRoot;
-        final ActionBar bar = getSupportActionBar();
-        if (bar != null) {
-            // default on all activities is to show the "up" (back) button
-            bar.setDisplayHomeAsUpEnabled(true);
-
-            if (mHomeIsRootMenu) {
-                bar.setHomeAsUpIndicator(R.drawable.ic_menu);
-            } else {
-                bar.setHomeAsUpIndicator(null);
-            }
-        }
-    }
-
-    /**
-     * When resuming, recreate activity if needed.
-     */
-    @Override
-    @CallSuper
-    protected void onResume() {
-        super.onResume();
-
-        maybeRecreate();
-    }
-
-    /**
-     * Check if the Locale/Theme was changed, which will trigger the Activity to be recreated.
-     *
-     * @return {@code true} if a recreate was triggered.
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean maybeRecreate() {
-        final boolean localeChanged = LocaleUtils.isChanged(this, mInitialLocaleSpec);
-        if (localeChanged) {
-            LocaleUtils.onLocaleChanged();
-        }
-
-        if (sActivityRecreateStatus == ActivityStatus.NeedsRecreating
-            || App.isThemeChanged(this, mInitialThemeId) || localeChanged) {
-            setIsRecreating();
-            recreate();
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Recreate!");
-            }
-
-            return true;
-
-        } else {
-            // this is the second time we got here, so we have been re-created.
-            sActivityRecreateStatus = ActivityStatus.Running;
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.RECREATE_ACTIVITY) {
-                Log.d(TAG, "EXIT|BaseActivity.maybeRecreate|Resuming");
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -295,23 +268,50 @@ public abstract class BaseActivity
 
         final FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(tag) == null) {
-            Fragment frag;
+            Fragment fragment;
             try {
-                frag = (Fragment) fragmentClass.newInstance();
+                fragment = (Fragment) fragmentClass.newInstance();
             } catch (IllegalAccessException | InstantiationException e) {
-                throw new IllegalStateException("not a fragment class: " + fragmentClass.getName());
+                throw new IllegalStateException("Not a fragment: " + fragmentClass.getName());
             }
-            frag.setArguments(getIntent().getExtras());
+            fragment.setArguments(getIntent().getExtras());
             final FragmentTransaction ft =
-                    fm.beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    fm.beginTransaction()
+                      .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
             if (isAdd) {
-                ft.add(containerViewId, frag, tag);
+                ft.add(containerViewId, fragment, tag);
             } else {
-                ft.replace(containerViewId, frag, tag);
+                ft.replace(containerViewId, fragment, tag);
             }
             ft.commit();
         }
+    }
+
+    public void updateActionBar(final boolean isRoot) {
+        mHomeIsRootMenu = isRoot;
+        final ActionBar bar = getSupportActionBar();
+        if (bar != null) {
+            // default on all activities is to show the "up" (back) button
+            bar.setDisplayHomeAsUpEnabled(true);
+
+            if (mHomeIsRootMenu) {
+                bar.setHomeAsUpIndicator(R.drawable.ic_menu);
+            } else {
+                bar.setHomeAsUpIndicator(null);
+            }
+        }
+    }
+
+    /**
+     * When resuming, recreate activity if needed.
+     */
+    @Override
+    @CallSuper
+    protected void onResume() {
+        super.onResume();
+
+        maybeRecreate();
     }
 
     /**
@@ -427,7 +427,7 @@ public abstract class BaseActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(final Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         MenuHandler.setupSearch(this, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -452,13 +452,6 @@ public abstract class BaseActivity
                 onBackPressed();
                 return true;
             }
-
-//            case R.id.MENU_SEARCH: {
-//                // Not using SearchView as an action view,
-//                // as there simply is not enough space in our toolbar.
-//                onSearchRequested();
-//                return true;
-//            }
 
             default:
                 return super.onOptionsItemSelected(item);

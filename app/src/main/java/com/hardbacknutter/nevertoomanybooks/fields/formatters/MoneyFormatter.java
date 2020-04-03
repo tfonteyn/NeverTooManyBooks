@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 /**
  * FieldFormatter for {@link Money} fields.
  * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong></li>
  * </ul>
  * <p>
  * English: "[currency] [value]" with 2 decimal digits.

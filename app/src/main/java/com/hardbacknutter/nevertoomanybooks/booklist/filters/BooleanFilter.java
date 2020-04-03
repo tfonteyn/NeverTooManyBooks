@@ -36,9 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * Used for {@link androidx.preference.ListPreference} mimicking a nullable Boolean
  * and supporting an SQL WHERE clause expression.
  * <ul>
- * <li>value==1 -> true</li>
- * <li>value==0 -> false</li>
- * <li>value==-1 -> do not use the filter</li>
+ *      <li>value==1 -> true</li>
+ *      <li>value==0 -> false</li>
+ *      <li>value==-1 -> do not use the filter</li>
  * </ul>
  * <p>
  * Syntax sugar for {@link IntStringFilter}.

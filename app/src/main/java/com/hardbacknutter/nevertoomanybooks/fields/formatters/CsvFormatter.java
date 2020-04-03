@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 /**
  * FieldFormatter for a list field. Formats the Entity's as a CSV String.
  * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong></li>
  * </ul>
  */
 public class CsvFormatter

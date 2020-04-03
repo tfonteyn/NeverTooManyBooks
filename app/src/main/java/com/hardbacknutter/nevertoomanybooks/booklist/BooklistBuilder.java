@@ -1137,12 +1137,13 @@ public class BooklistBuilder
         /**
          * Create the FROM clause based on the groups and extra criteria.
          * <ul>Always joined are:
-         * <li>{@link DBDefinitions#TBL_BOOK_AUTHOR}<br>{@link DBDefinitions#TBL_AUTHORS}</li>
-         * <li>{@link DBDefinitions#TBL_BOOK_SERIES}<br>{@link DBDefinitions#TBL_SERIES}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_AUTHOR}<br>{@link DBDefinitions#TBL_AUTHORS}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_SERIES}<br>{@link DBDefinitions#TBL_SERIES}</li>
          * </ul>
          * <ul>Optionally joined with:
-         * <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}<br>{@link DBDefinitions#TBL_BOOKSHELF}</li>
-         * <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}<br>
+         *          {@link DBDefinitions#TBL_BOOKSHELF}</li>
+         *      <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
          * </ul>
          *
          * @param context Current context

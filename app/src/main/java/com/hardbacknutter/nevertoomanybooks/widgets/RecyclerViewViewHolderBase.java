@@ -47,16 +47,16 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.ItemTouchHelperVie
 /**
  * Holder pattern for each row in a RecyclerView.
  * <ul>Extends the original with support for:
- * <li>typed encapsulated item</li>
- * <li>a 'delete' button</li>
- * <li>a 'checkable' button</li>
- * <li>{@link ItemTouchHelperViewHolder}</li>
+ *      <li>typed encapsulated item</li>
+ *      <li>a 'delete' button</li>
+ *      <li>a 'checkable' button</li>
+ *      <li>{@link ItemTouchHelperViewHolder}</li>
  * </ul>
  * <ul>Uses pre-defined ID's:
- * <li>R.id.TLV_ROW_DETAILS</li>
- * <li>R.id.TLV_ROW_DELETE</li>
- * <li>R.id.TLV_ROW_CHECKABLE</li>
- * <li>R.id.TLV_ROW_GRABBER</li>
+ *      <li>R.id.TLV_ROW_DETAILS</li>
+ *      <li>R.id.TLV_ROW_DELETE</li>
+ *      <li>R.id.TLV_ROW_CHECKABLE</li>
+ *      <li>R.id.TLV_ROW_GRABBER</li>
  * </ul>
  */
 public class RecyclerViewViewHolderBase

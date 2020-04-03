@@ -68,13 +68,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  * The second check on DEBUG build in this class is only to catch the lack-of in other places.
  * <p>
  * <ul>{@link #error}, {@link #warn} and {@link #warnWithStackTrace} will write to
- * <li>the log file when NOT in debug/junit mode</li>
- * <li>redirect to the below {@link #e} and {@link #w} methods otherwise</li>
+ *      <li>the log file when NOT in debug/junit mode</li>
+ *      <li>redirect to the below {@link #e} and {@link #w} methods otherwise</li>
  * </ul>
  * <p>
  * <ul>{@link #e}, {@link #w} and {@link #d} will write to
- * <li>the console when in debug mode</li>
- * <li>System.out when running in JUnit</li>
+ *      <li>the console when in debug mode</li>
+ *      <li>System.out when running in JUnit</li>
  * </ul>
  */
 public final class Logger {

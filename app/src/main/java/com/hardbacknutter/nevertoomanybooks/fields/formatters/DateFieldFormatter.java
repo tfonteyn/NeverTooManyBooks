@@ -36,21 +36,35 @@ import androidx.annotation.Nullable;
 import java.util.Date;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.dialogs.picker.BaseDatePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
  * FieldFormatter for 'date' fields.
  * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
- * <li>Extract: <strong>View</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Extract: <strong>View</strong></li>
  * </ul>
+ * <p>
+ * This class can be used in two ways:
+ * <ol>
+ *     <li>with a {@link TextAccessor}: the value is stored in the accessor,<br>
+ *         This is meant to be used with a {@link BaseDatePickerDialogFragment}.</li>
+ *     <li>with an {@link EditTextAccessor}: the value will be extracted from the View.<br>
+ *         This is meant to be used as a free-entry field (i.e. the user types in the date).<br>
+ *         A partial date consisting of Month+Year, will always get a day==1 added.</li>
+ * </ol>
  */
 public class DateFieldFormatter
         implements EditFieldFormatter<String> {
 
     /**
      * Display as a human-friendly date, local timezone.
+     *
+     * {@inheritDoc}
      */
     @NonNull
     @Override
@@ -77,7 +91,7 @@ public class DateFieldFormatter
             return text;
         }
 
-        // URGENT: a partial date consisting of Month+Year, will automatically get a day==1 added.
+        // FIXME:a partial date consisting of Month+Year, will always get a day==1 added.
         Date d = DateUtils.parseDate(text);
         if (d != null) {
             return DateUtils.utcSqlDate(d);

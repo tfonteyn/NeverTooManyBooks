@@ -61,8 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
  * <ul>
- * <li>book.show  —   Get the reviews for a book given a Goodreads book id.</li>
- * <li>book.show_by_isbn   —   Get the reviews for a book given an ISBN.</li>
+ *      <li>book.show  —   Get the reviews for a book given a Goodreads book id.</li>
+ *      <li>book.show_by_isbn   —   Get the reviews for a book given an ISBN.</li>
  * </ul>
  * <p>
  * This is an abstract class designed to be used by other classes that implement specific

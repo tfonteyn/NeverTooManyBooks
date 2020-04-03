@@ -75,8 +75,7 @@ public abstract class EditBookBaseFragment
         field.onChanged(true);
     };
 
-    private final DatePickerResultsListener
-            mDatePickerResultsListener = (fieldId, value) -> {
+    private final DatePickerResultsListener mDatePickerResultsListener = (fieldId, value) -> {
         Field<String> field = mFragmentVM.getFields().getField(fieldId);
         field.getAccessor().setValue(value);
         field.onChanged(true);

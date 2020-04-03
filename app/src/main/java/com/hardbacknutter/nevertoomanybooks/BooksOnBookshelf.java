@@ -36,7 +36,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.system.ErrnoException;
 import android.system.OsConstants;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -89,7 +88,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -145,9 +143,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  *
  * <ol>Standard:
  *     <li>User clicks option menu search icon</li>
- *      <li>onSearchRequested() shows the search widget, user types</li>
- *      <li>#onNewIntent() gets called with the query data</li>
- *      <li>build the list</li>
+ *     <li>onSearchRequested() shows the search widget, user types</li>
+ *     <li>#onNewIntent() gets called with the query data</li>
+ *     <li>build the list</li>
  * </ol>
  * <p>
  * We check if we have search criteria, if not we just build and are done.<br>
@@ -267,8 +265,8 @@ public class BooksOnBookshelf
                 /**
                  * User clicked on a row.
                  * <ul>
-                 * <li>Book: open the details screen.</li>
-                 * <li>Not a book: expand/collapse the section as appropriate.</li>
+                 *      <li>Book: open the details screen.</li>
+                 *      <li>Not a book: expand/collapse the section as appropriate.</li>
                  * </ul>
                  *
                  * <br><br>{@inheritDoc}
@@ -1678,9 +1676,18 @@ public class BooksOnBookshelf
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
 
-        setHeaderStyleName();
-        setHeaderFilterText();
-        setHeaderBookCount();
+        String text;
+        text = mModel.getHeaderStyleName(this);
+        mHeaderStyleNameView.setText(text);
+        mHeaderStyleNameView.setVisibility(text != null ? View.VISIBLE : View.GONE);
+
+        text = mModel.getHeaderFilterText(this);
+        mHeaderFilterTextView.setText(text);
+        mHeaderFilterTextView.setVisibility(text != null ? View.VISIBLE : View.GONE);
+
+        text = mModel.getHeaderBookCount(this);
+        mHeaderBookCountView.setText(text);
+        mHeaderBookCountView.setVisibility(text != null ? View.VISIBLE : View.GONE);
 
         final BooklistStyle style = mModel.getCurrentStyle(this);
 
@@ -1700,69 +1707,6 @@ public class BooksOnBookshelf
         }
 
         return atLeastOne;
-    }
-
-    /**
-     * Display or hide the style name field in the header.
-     */
-    private void setHeaderStyleName() {
-        if (mModel.getCurrentStyle(this).showHeader(this, BooklistStyle.HEADER_SHOW_STYLE_NAME)) {
-            mHeaderStyleNameView.setText(mModel.getCurrentStyle(this).getLabel(this));
-            mHeaderStyleNameView.setVisibility(View.VISIBLE);
-        } else {
-            mHeaderStyleNameView.setVisibility(View.GONE);
-        }
-    }
-
-    /**
-     * Display or hide the search/filter text field in the header.
-     */
-    private void setHeaderFilterText() {
-        if (mModel.getCurrentStyle(this).showHeader(this, BooklistStyle.HEADER_SHOW_FILTER)) {
-            final Collection<String> filterText = new ArrayList<>();
-            final Collection<Filter> filters = mModel.getCurrentBookshelf()
-                                                     .getStyle(this, mModel.getDb())
-                                                     .getActiveFilters(this);
-            for (Filter f : filters) {
-                filterText.add(f.getLabel(this));
-            }
-
-            final String ftsSearchText = mModel.getSearchCriteria().getFtsSearchText();
-            if (!ftsSearchText.isEmpty()) {
-                filterText.add('"' + ftsSearchText + '"');
-            }
-
-            if (!filterText.isEmpty()) {
-                mHeaderFilterTextView.setText(getString(R.string.lbl_search_filtered_on_x,
-                                                        TextUtils.join(", ", filterText)));
-                mHeaderFilterTextView.setVisibility(View.VISIBLE);
-                return;
-            }
-        }
-
-        mHeaderFilterTextView.setVisibility(View.GONE);
-    }
-
-    /**
-     * Display or hide the number of books in the current list.
-     */
-    private void setHeaderBookCount() {
-        if (mModel.getCurrentStyle(this).showHeader(this, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
-            final int totalBooks = mModel.getTotalBooks();
-            final int uniqueBooks = mModel.getUniqueBooks();
-            final String stringArgs;
-            if (uniqueBooks != totalBooks) {
-                stringArgs = getString(R.string.txt_displaying_n_books_in_m_entries,
-                                       uniqueBooks, totalBooks);
-            } else {
-                stringArgs = getResources().getQuantityString(R.plurals.displaying_n_books,
-                                                              uniqueBooks, uniqueBooks);
-            }
-            mHeaderBookCountView.setText(stringArgs);
-            mHeaderBookCountView.setVisibility(View.VISIBLE);
-        } else {
-            mHeaderBookCountView.setVisibility(View.GONE);
-        }
     }
 
     /**
@@ -2085,7 +2029,7 @@ public class BooksOnBookshelf
             // use more prudent default options for Csv files.
             helper.setOptions(Options.BOOKS | ImportManager.IMPORT_ONLY_NEW_OR_UPDATED);
 
-            //URGENT URGENT URGENT URGENT URGENT : make a backup before ANY csv import!
+            //URGENT: make a backup before ANY csv import!
 
             // Verify - this can be a dangerous operation
             new MaterialAlertDialogBuilder(this)

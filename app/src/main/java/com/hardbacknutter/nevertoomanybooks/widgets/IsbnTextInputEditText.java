@@ -46,9 +46,9 @@ import com.google.android.material.textfield.TextInputEditText;
  * This hides & facilitates the internal needs for the inputType, and the virtual keyboard.
  * <ul>
  *     <li>Sets a DigitsKeyListener to workaround the inputType issue;
- *     see {@link #getInputType()}</li>
- * <li><strong>Deliberately</strong> not adding a TextWatcher here to keep this flexible</li>
- * <li>the virtual keyboard can only add one 'X' character in the entire field</li>
+ *          see {@link #getInputType()}</li>
+ *      <li><strong>Deliberately</strong> not adding a TextWatcher here to keep this flexible</li>
+ *      <li>the virtual keyboard can only add one 'X' character in the entire field</li>
  * </ul>
  * <p>
  * <strong>Notes on the virtual keyboard:</strong>

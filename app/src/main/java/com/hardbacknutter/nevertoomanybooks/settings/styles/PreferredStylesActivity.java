@@ -73,8 +73,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * Activity to edit the list of styles.
  * <ul>
- * <li>Enable/disable their presence in the styles menu</li>
- * <li>Individual context menus allow cloning/editing/deleting of styles</li>
+ *      <li>Enable/disable their presence in the styles menu</li>
+ *      <li>Individual context menus allow cloning/editing/deleting of styles</li>
  * </ul>
  * All changes are saved immediately.
  */

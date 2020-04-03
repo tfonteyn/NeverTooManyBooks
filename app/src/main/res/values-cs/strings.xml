@@ -36,7 +36,7 @@
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
     <string name="X_export_info_success_archive_details">Soubor %3$s nazvaný „%2$s“ byl vytvořen v adresáři „%1$s“ a měli byste jej ručně zkopírovat jinam, aby byla data chráněna v případě poškození, ztráty nebo odcizení zařízení.</string>
-    <string name="X_lbl_available">Dostupný</string>
+    <string name="lbl_available">Dostupný</string>
     <string name="X_lbl_data_import_export">Zálohování a import</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>
     <string name="X_menu_show_all">Ukázat vše</string>
@@ -175,7 +175,7 @@
     <string name="hint_empty_author">(Chybí autor)</string>
     <string name="hint_empty_field">(Prázdné)</string>
     <string name="hint_empty_language">(Není vyplněn žádný jazyk)</string>
-    <string name="X_hint_empty_month">(Není vyplněn žádný měsíc)</string>
+    <string name="hint_empty_month">(Měsíc není nastaven)</string>
     <string name="hint_empty_rating">(Nehodnoceno)</string>
     <string name="hint_empty_read_status">(Stav čtení neznámý)</string>
     <string name="hint_empty_series">(Bez série)</string>
@@ -656,5 +656,7 @@
     <string name="confirm_rebuild_fts">Po restartování aplikace se data indexu vyhledávání znovu vytvoří. Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_rebuild_index">Po restartování aplikace se indexy znovu sestaví. Jste si jistý, že chcete pokračovat ?</string>
     <string name="error_site_has_problems">Web má problémy.</string>
+    <string name="hint_empty_day">(Den není nastaven)</string>
+    <string name="hint_empty_year">(Rok není nastaven)</string>
 
 </resources>

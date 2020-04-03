@@ -191,10 +191,10 @@ public class Synchronizer {
     /**
      * Return when exclusive access is available.
      * <ol>
-     * <li>take a lock on the collection</li>
-     * <li>see if there are any other locks</li>
-     * <li>if not, return with the lock still held -- this prevents more EX or SH locks.</li>
-     * <li>if there are other SH locks, wait for one to be release and loop.</li>
+     *      <li>take a lock on the collection</li>
+     *      <li>see if there are any other locks</li>
+     *      <li>if not, return with the lock still held -- this prevents more EX or SH locks.</li>
+     *      <li>if there are other SH locks, wait for one to be release and loop.</li>
      * </ol>
      */
     @NonNull

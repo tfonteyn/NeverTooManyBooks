@@ -320,10 +320,10 @@ public class TocEntry
     /**
      * Equality: <strong>id, Author(id) and Title</strong>.
      * <p>
-     * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     * AND all other fields are equal</li>
-     * <li>if both are 'new' check if title/author are equal</li>
+     *      <li>it's the same Object</li>
+     *      <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     *          AND all other fields are equal</li>
+     *      <li>if both are 'new' check if title/author are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */

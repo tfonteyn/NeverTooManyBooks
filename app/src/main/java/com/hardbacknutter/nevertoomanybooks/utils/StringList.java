@@ -251,9 +251,9 @@ public class StringList<E> {
         /**
          * Encode a string by 'escaping' all instances of:
          * <ul>
-         * <li>{@link #getElementSeparator()}</li>
-         * <li>{@link #getObjectSeparator()}</li>
-         * <li>any additional 'escapeChars'</li>
+         *      <li>{@link #getElementSeparator()}</li>
+         *      <li>{@link #getObjectSeparator()}</li>
+         *      <li>any additional 'escapeChars'</li>
          * </ul>
          * The escape char is '\'.
          *

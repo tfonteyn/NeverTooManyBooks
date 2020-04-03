@@ -84,10 +84,10 @@ public class SearchTask
     /**
      * Constructor. Will search according to passed parameters.
      * <ol>
-     * <li>native id</li>
-     * <li>valid ISBN</li>
-     * <li>valid barcode</li>
-     * <li>text</li>
+     *      <li>native id</li>
+     *      <li>valid ISBN</li>
+     *      <li>valid barcode</li>
+     *      <li>text</li>
      * </ol>
      *
      * @param context      Localized context

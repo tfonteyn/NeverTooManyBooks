@@ -35,7 +35,7 @@
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
     <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
     <string name="X_export_info_success_archive_details">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” map.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
-    <string name="X_lbl_available">Beschikbaar</string>
+    <string name="lbl_available">Beschikbaar</string>
     <string name="X_lbl_data_import_export">Back-up &amp; import</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="X_menu_show_all">Toon alles</string>
@@ -178,8 +178,10 @@
     <string name="hint_developer_key">Ontwikkelaarssleutel</string>
     <string name="hint_empty_author">(De auteur ontbreekt)</string>
     <string name="hint_empty_field">(Leeg)</string>
-    <string name="hint_empty_language">(Geen taal ingevuld)</string>
-    <string name="X_hint_empty_month">(Geen maand ingevuld)</string>
+    <string name="hint_empty_language">(Taal niet ingevuld)</string>
+    <string name="hint_empty_day">(Dag niet ingevuld)</string>
+    <string name="hint_empty_month">(Maand niet ingevuld)</string>
+    <string name="hint_empty_year">(Jaar niet ingevuld)</string>
     <string name="hint_empty_rating">(niet beoordeeld)</string>
     <string name="hint_empty_read_status">(Leesstatus onbekend)</string>
     <string name="hint_empty_series">(Geen reeks)</string>

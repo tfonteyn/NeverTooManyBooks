@@ -62,9 +62,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageExc
  * The interface a search engine for a {@link Site} needs to implement.
  * At least one of the sub-interfaces needs to be implemented:
  * <ul>
- * <li>{@link ByNativeId}</li>
- * <li>{@link ByIsbn}</li>
- * <li>{@link ByText}</li>
+ *      <li>{@link ByNativeId}</li>
+ *      <li>{@link ByIsbn}</li>
+ *      <li>{@link ByText}</li>
  * </ul>
  * and if the site supports fetching images by ISBN: {@link CoverByIsbn}.
  * The latter is used to get covers for alternative editions in {@link CoverBrowserDialogFragment}.

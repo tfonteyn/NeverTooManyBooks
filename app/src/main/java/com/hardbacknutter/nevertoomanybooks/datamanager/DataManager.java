@@ -68,9 +68,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
  * It's basically an extended Bundle.
  *
  * <ul>
- * <li>mRawData: stores the actual data</li>
- * <li>mValidatorsMap: validators applied at 'save' time</li>
- * <li>mCrossValidators: cross-validators applied at 'save' time</li>
+ *      <li>mRawData: stores the actual data</li>
+ *      <li>mValidatorsMap: validators applied at 'save' time</li>
+ *      <li>mCrossValidators: cross-validators applied at 'save' time</li>
  * </ul>
  */
 public class DataManager
@@ -142,10 +142,10 @@ public class DataManager
      * See the comments on methods in {@link android.database.CursorWindow}
      * for info on type conversions which explains our use of getLong/getDouble.
      * <ul>
-     * <li>booleans -> long (0,1)</li>
-     * <li>int -> long</li>
-     * <li>float -> double</li>
-     * <li>date -> string</li>
+     *      <li>booleans -> long (0,1)</li>
+     *      <li>int -> long</li>
+     *      <li>float -> double</li>
+     *      <li>date -> string</li>
      * </ul>
      *
      * @param cursor to read from

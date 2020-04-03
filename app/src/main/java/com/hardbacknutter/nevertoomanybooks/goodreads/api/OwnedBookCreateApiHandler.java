@@ -98,13 +98,13 @@ class OwnedBookCreateApiHandler
      * URL: http://www.goodreads.com/owned_books.xml<br>
      * HTTP method: POST
      * <ul>Parameters:
-     * <li>owned_book[book_id]: id of the book (required)</li>
-     * <li>owned_book[condition_code]: one of 10 (brand new), 20 (like new),<br>
-     * 30 (very good), 40 (good), 50 (acceptable), 60 (poor)</li>
-     * <li>owned_book[condition_description]: description of book's condition</li>
-     * <li>owned_book[original_purchase_date]: when book was purchased</li>
-     * <li>owned_book[original_purchase_location]: where this book was purchased</li>
-     * <li>owned_book[unique_code]: BookCrossing id (BCID)</li>
+     *      <li>owned_book[book_id]: id of the book (required)</li>
+     *      <li>owned_book[condition_code]: one of 10 (brand new), 20 (like new),<br>
+     *          30 (very good), 40 (good), 50 (acceptable), 60 (poor)</li>
+     *      <li>owned_book[condition_description]: description of book's condition</li>
+     *      <li>owned_book[original_purchase_date]: when book was purchased</li>
+     *      <li>owned_book[original_purchase_location]: where this book was purchased</li>
+     *      <li>owned_book[unique_code]: BookCrossing id (BCID)</li>
      * </ul>
      *
      * @param grBookId     Goodreads book id

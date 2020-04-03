@@ -36,7 +36,7 @@
     <string name="X_btn_do_not_show_again">No volver a mostrar</string>
     <string name="X_error_file_must_contain_column">El fichero debe tener una columna con el nombre %1$s</string>
     <string name="X_export_info_success_archive_details">Se ha creado un fichero de %3$s llamado %2$s en el directorio «%1$s».\n\nDebe copiarlo a otro lugar para proteger los datos en caso de que su dispositivo resulte dañado, se pierda o sea robado.</string>
-    <string name="X_lbl_available">Disponible</string>
+    <string name="lbl_available">Disponible</string>
     <string name="X_lbl_data_import_export">Copia de seguridad e importación</string>
     <string name="X_lbl_select_fields_to_update">Seleccione campos para actualizar</string>
     <string name="X_menu_show_all">Mostrar todo</string>
@@ -177,7 +177,7 @@
     <string name="hint_empty_author">(Falta el autor)</string>
     <string name="hint_empty_field">(Vacío)</string>
     <string name="hint_empty_language">(Sin idioma)</string>
-    <string name="X_hint_empty_month">(Sin mes completado)</string>
+    <string name="hint_empty_month">(Mes no establecido)</string>
     <string name="hint_empty_rating">(no calificado)</string>
     <string name="hint_empty_read_status">(Estado de lectura desconocido)</string>
     <string name="hint_empty_series">(Sin serie)</string>
@@ -661,5 +661,7 @@
     <string name="confirm_rebuild_fts">Los datos del índice de búsqueda se reconstruirán cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
     <string name="confirm_rebuild_index">Los índices se reconstruirán cuando se reinicie la aplicación. Estás seguro de que quieres continuar ?</string>
     <string name="error_site_has_problems">El sitio web tiene problemas.</string>
+    <string name="hint_empty_day">(Día no establecido)</string>
+    <string name="hint_empty_year">(Año no establecido)</string>
 
 </resources>

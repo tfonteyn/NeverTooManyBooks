@@ -68,9 +68,9 @@ public interface PPref<T> {
     /**
      * Implementations should return in order below.
      * <ol>
-     * <li>The user preference if set</li>
-     * <li>The global preference if set</li>
-     * <li>The default value as set at creation time of the preference Object.</li>
+     *      <li>The user preference if set</li>
+     *      <li>The global preference if set</li>
+     *      <li>The default value as set at creation time of the preference Object.</li>
      * </ol>
      *
      * @param context Current context
@@ -83,8 +83,8 @@ public interface PPref<T> {
     /**
      * Implementations should return in order below.
      * <ol>
-     * <li>The global preference if set</li>
-     * <li>The default value as set at creation time of the preference Object.</li>
+     *      <li>The global preference if set</li>
+     *      <li>The default value as set at creation time of the preference Object.</li>
      * </ol>
      *
      * @param context Current context

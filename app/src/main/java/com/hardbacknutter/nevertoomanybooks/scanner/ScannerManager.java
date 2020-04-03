@@ -60,15 +60,14 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <p>
  * Pro and cons for the Scanners.
  * <ul>
- * <li>embedded: easiest for the user; developer must support/upgrade it</li>
- * <li>Google Play Services: near automatic install.<br>
- * But won't work on devices without Google.<br>
- * Decoding is done AFTER the picture was taken so might force the user to repeat.</li>
- * <li>ZXing scanner: user must install manually.<br>
- * App is no longer updated (since early 2019)on the Google store,
- * and the ZXing github site docs state the project in is maintenance mode.
- * </li>
- * <li>Pic2Shop: allegedly better than ZXing. Comments on the app not that good however.</li>
+ *      <li>embedded: easiest for the user; developer must support/upgrade it</li>
+ *      <li>Google Play Services: near automatic install.<br>
+ *          But won't work on devices without Google.<br>
+ *          Decoding is done AFTER the picture was taken so might force the user to repeat.</li>
+ *      <li>ZXing scanner: user must install manually.<br>
+ *          App is no longer updated (since early 2019)on the Google store,
+ *          and the ZXing github site docs state the project in is maintenance mode.</li>
+ *      <li>Pic2Shop: allegedly better than ZXing. Comments on the app not that good however.</li>
  * </ul>
  * <p>
  * NEWTHINGS: adding a scanner

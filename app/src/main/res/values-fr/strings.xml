@@ -37,7 +37,7 @@
     <string name="X_btn_do_not_show_again">Ne plus montrer</string>
     <string name="X_error_file_must_contain_column">Le fichier doit contenir une colonne nommée %1$s</string>
     <string name="X_export_info_success_archive_details">Le fichier %2$s (%3$s) a été créé dans le répertoire «%1$s».\n\nVous devriez le copier sur un autre média comme sauvegarde en cas de perte, vol ou destruction de votre équipement.</string>
-    <string name="X_lbl_available">Disponible</string>
+    <string name="lbl_available">Disponible</string>
     <string name="X_lbl_data_import_export">Sauvegarde et importation</string>
     <string name="X_lbl_select_fields_to_update">Sélection des champs à mettre à jour</string>
     <string name="X_menu_show_all">Montre tout</string>
@@ -180,7 +180,7 @@
     <string name="hint_empty_author">(L\'auteur est manquant)</string>
     <string name="hint_empty_field">(Vide)</string>
     <string name="hint_empty_language">(Aucune langue renseignée)</string>
-    <string name="X_hint_empty_month">(Pas de mois renseigné)</string>
+    <string name="hint_empty_month">(Mois non défini)</string>
     <string name="hint_empty_rating">(Non classé)</string>
     <string name="hint_empty_read_status">(Statut lu inconnu)</string>
     <string name="hint_empty_series">(Pas de série)</string>
@@ -664,5 +664,7 @@
     <string name="confirm_rebuild_fts">Les données de l\'index de recherche seront reconstruites au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_rebuild_index">Les index seront reconstruits au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
     <string name="error_site_has_problems">Le site Web a des problèmes.</string>
+    <string name="hint_empty_day">(Jour non défini)</string>
+    <string name="hint_empty_year">(Année non définie)</string>
 
 </resources>

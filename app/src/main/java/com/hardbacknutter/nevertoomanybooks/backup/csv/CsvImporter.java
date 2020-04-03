@@ -77,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 /**
  * Implementation of {@link Importer} that reads a CSV file.
  * <ul>Supports:
- * <li>{@link ArchiveContainerEntry#BooksCsv}</li>
+ *      <li>{@link ArchiveContainerEntry#BooksCsv}</li>
  * </ul>
  * <p>
  * A CSV file which was not written by this app, should be careful about encoding the following
@@ -86,28 +86,26 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <strong>DOUBLE escape the '*' character; i.e. '*' should be encoded as \\\\*</strong>
  *
  * <ul>Always <strong>escape:</strong>
- * <li>"</li>
- * <li>'</li>
- * <li>\</li>
- * <li>\r</li>
- * <li>\n</li>
- * <li>\t</li>
- * <li>|</li>
- * <li>(</li>
- * <li>)</li>
+ *      <li>"</li>
+ *      <li>'</li>
+ *      <li>\</li>
+ *      <li>\r</li>
+ *      <li>\n</li>
+ *      <li>\t</li>
+ *      <li>|</li>
+ *      <li>(</li>
+ *      <li>)</li>
  * </ul>
  *
  * <ul>Unescaped special characters:
- * <li>',' is recognised/used in an Author name: "family, given-names",<br>
- * and as a list separator in a list of Bookshelf names.
- * </li>
- * <li>'|' is used as an element separator for fields that take more than one value.<br>
- * e.g. a list of Author names, Series, ...
- * </li>
- * <li>'*' is used in few places where an element itself can consist of multiple parts.
- * e.g. See Author and Series object encoding. (for advanced usage)</li>
- * <li>'(' and ')' are used to add numbers or dates (between the brackets) to items.
- * e.g. TOC entries can contain a date, Series will have the book number,... </li>
+ *      <li>',' is recognised/used in an Author name: "family, given-names",<br>
+ *          and as a list separator in a list of Bookshelf names.</li>
+ *      <li>'|' is used as an element separator for fields that take more than one value.<br>
+ *          e.g. a list of Author names, Series, ...</li>
+ *      <li>'*' is used in few places where an element itself can consist of multiple parts.
+ *          e.g. See Author and Series object encoding. (for advanced usage)</li>
+ *      <li>'(' and ')' are used to add numbers or dates (between the brackets) to items.
+ *          e.g. TOC entries can contain a date, Series will have the book number,... </li>
  * </ul>
  * <p>
  * Space characters are encoded for Authors names while exporting,

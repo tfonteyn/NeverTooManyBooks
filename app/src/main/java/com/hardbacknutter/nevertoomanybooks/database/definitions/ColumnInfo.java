@@ -117,10 +117,10 @@ public class ColumnInfo {
      * <p>
      * The returned field types are:
      * <ul>
-     * <li>{@link Cursor#FIELD_TYPE_INTEGER}</li>
-     * <li>{@link Cursor#FIELD_TYPE_FLOAT}</li>
-     * <li>{@link Cursor#FIELD_TYPE_STRING}</li>
-     * <li>{@link Cursor#FIELD_TYPE_BLOB}</li>
+     *      <li>{@link Cursor#FIELD_TYPE_INTEGER}</li>
+     *      <li>{@link Cursor#FIELD_TYPE_FLOAT}</li>
+     *      <li>{@link Cursor#FIELD_TYPE_STRING}</li>
+     *      <li>{@link Cursor#FIELD_TYPE_BLOB}</li>
      * </ul>
      * </p>
      * <p>

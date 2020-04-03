@@ -214,8 +214,4 @@ public class PreferredStylesViewModel
     public void purgeBLNS(final long id) {
         mDb.purgeNodeStatesByStyle(id);
     }
-
-    public DAO getDb() {
-        return mDb;
-    }
 }

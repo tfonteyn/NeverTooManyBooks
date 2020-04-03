@@ -76,10 +76,18 @@ public class TextAccessor<T>
     @Nullable
     final FieldFormatter<T> mFormatter;
 
+    /**
+     * Constructor.
+     */
     public TextAccessor() {
         mFormatter = null;
     }
 
+    /**
+     * Constructor.
+     *
+     * @param formatter to use
+     */
     public TextAccessor(@Nullable final FieldFormatter<T> formatter) {
         mFormatter = formatter;
     }

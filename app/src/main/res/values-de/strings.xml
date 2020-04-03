@@ -37,7 +37,7 @@
     <string name="X_btn_do_not_show_again">Nicht mehr anzeigen</string>
     <string name="X_error_file_must_contain_column">Die Datei muss eine Spalte mit dem Namen %1$s enthalten</string>
     <string name="X_export_info_success_archive_details">Eine %3$s-Datei namens %2$s wurde im Verzeichnis „%1$s“ erzeugt.\n\nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor Beschädigung, Verlust oder Diebstahl zu schützen.</string>
-    <string name="X_lbl_available">Verfügbar</string>
+    <string name="lbl_available">Verfügbar</string>
     <string name="X_lbl_data_import_export">Sichern &amp; Importieren</string>
     <string name="X_lbl_select_fields_to_update">Felder für Aktualisierung auswählen</string>
     <string name="X_menu_show_all">Zeige alles</string>
@@ -179,7 +179,7 @@
     <string name="hint_empty_author">(Der Autor fehlt)</string>
     <string name="hint_empty_field">(Leer)</string>
     <string name="hint_empty_language">(Keine Sprache ausgefüllt)</string>
-    <string name="X_hint_empty_month">(Kein Monat ausgefüllt)</string>
+    <string name="hint_empty_month">(Monat nicht festgelegt)</string>
     <string name="hint_empty_rating">(nicht bewertet)</string>
     <string name="hint_empty_read_status">(Lesestatus unbekannt)</string>
     <string name="hint_empty_series">(Keine Serie)</string>
@@ -664,4 +664,6 @@
     <string name="confirm_rebuild_fts">Die Suchindexdaten werden beim Neustart der App neu erstellt. Bist du dir sicher, dass du weitermachen willst ?</string>
     <string name="confirm_rebuild_index">Die Indizes werden beim Neustart der App neu erstellt. Bist du dir sicher, dass du weitermachen willst ?</string>
     <string name="error_site_has_problems">Die Website hat Probleme.</string>
+    <string name="hint_empty_day">(Tag nicht festgelegt)</string>
+    <string name="hint_empty_year">(Jahr nicht festgelegt)</string>
 </resources>

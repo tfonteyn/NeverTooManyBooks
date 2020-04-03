@@ -71,22 +71,24 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
  * <a href="https://openlibrary.org/dev/docs/api/books">API books</a>
  * - allows searching by all identifiers. Example isbn:  bibkeys=ISBN:0201558025
  * <ul>
- * <li> response format: jscmd=data:<br>
- * Does not return all the info that is known to be present.
- * (use the website itself to look up an isbn)
- * Example: "physical_format": "Paperback" is NOT part of the response.</li>
- * <li>response format: jscmd=detail:<br>
- * The docs state: "It is advised to use jscmd=data instead of this as that is more stable format."
- * The response seems to (mostly?) contain the same info as from 'data' but with additional fields.
- * Some fields have a different schema: "identifiers" with "data" has sub object with all
- * identifiers (including isbn). But "identifiers" with "detail" has no isbn's.
- * Instead isbn's are on the same level as "identifiers" itself.</li>
+ *      <li>response format: jscmd=data:<br>
+ *          Does not return all the info that is known to be present.
+ *          (use the website itself to look up an isbn)
+ *          Example: "physical_format": "Paperback" is NOT part of the response.</li>
+ *      <li>response format: jscmd=detail:<br>
+ *          The docs state: "It is advised to use jscmd=data instead of this as that is
+ *          more stable format."
+ *          The response seems to (mostly?) contain the same info as from 'data' but with
+ *          additional fields. Some fields have a different schema: "identifiers" with
+ *          "data" has sub object with all identifiers (including isbn).
+ *          But "identifiers" with "detail" has no isbn's.
+ *          Instead isbn's are on the same level as "identifiers" itself.</li>
  * </ul>
  * <ul>Problems:
- * <li>"data" does not contain all information that the site has.</li>
- * <li>"details" seems, by their own admission, not to be stable yet.</li>
- * <li>both: dates are not structured, but {@link DateUtils} can work around that.</li>
- * <li>last update dates on the website & api docs are sometimes from years ago.
+ *      <li>"data" does not contain all information that the site has.</li>
+ *      <li>"details" seems, by their own admission, not to be stable yet.</li>
+ *      <li>both: dates are not structured, but {@link DateUtils} can work around that.</li>
+ *      <li>last update dates on the website & api docs are sometimes from years ago.
  * Is this still developed ?</li>
  * </ul>
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
@@ -418,8 +420,7 @@ public class OpenLibrarySearchEngine
      * The keys (jsonObject.keys()) are:
      * "ISBN:9780980200447"
      *
-     *
-     * @param context       Current context
+     * @param context        Current context
      * @param jsonObject     the complete book record.
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to populate
@@ -456,8 +457,7 @@ public class OpenLibrarySearchEngine
     /**
      * Parse the results, and build the bookData bundle.
      *
-     *
-     * @param context       Current context
+     * @param context        Current context
      * @param isbn           of the book
      * @param result         JSON result data
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails

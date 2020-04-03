@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAcce
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.MaterialSpinnerAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
@@ -123,25 +124,21 @@ public class EditBookNotesFragment
               .setRelatedFields(R.id.lbl_notes);
 
         // MUST be defined before the currency.
-        fields.add(R.id.price_paid, new DecimalEditTextAccessor(new DoubleNumberFormatter(), false),
-                   DBDefinitions.KEY_PRICE_PAID
-                  );
+        fields.add(R.id.price_paid, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
+                   DBDefinitions.KEY_PRICE_PAID);
         fields.add(R.id.price_paid_currency, new EditTextAccessor<String>(),
-                   DBDefinitions.KEY_PRICE_PAID_CURRENCY
-                  )
+                   DBDefinitions.KEY_PRICE_PAID_CURRENCY)
               .setRelatedFields(R.id.lbl_price_paid,
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
         //noinspection ConstantConditions
         fields.add(R.id.condition,
                    new MaterialSpinnerAccessor(getContext(), R.array.conditions_book),
-                   DBDefinitions.KEY_BOOK_CONDITION
-                  )
+                   DBDefinitions.KEY_BOOK_CONDITION)
               .setRelatedFields(R.id.lbl_condition);
         fields.add(R.id.condition_cover,
                    new MaterialSpinnerAccessor(getContext(), R.array.conditions_dust_cover),
-                   DBDefinitions.KEY_BOOK_CONDITION_COVER
-                  )
+                   DBDefinitions.KEY_BOOK_CONDITION_COVER)
               .setRelatedFields(R.id.lbl_condition_cover);
 
         fields.add(R.id.location, new EditTextAccessor<String>(), DBDefinitions.KEY_LOCATION)
@@ -149,25 +146,21 @@ public class EditBookNotesFragment
 
         fields.add(R.id.edition,
                    new BitmaskChipGroupAccessor(Book.Edition.getEditions(getContext()), true),
-                   DBDefinitions.KEY_EDITION_BITMASK
-                  )
+                   DBDefinitions.KEY_EDITION_BITMASK)
               .setRelatedFields(R.id.lbl_edition);
 
-        fields.add(R.id.date_acquired, new EditTextAccessor<>(new DateFieldFormatter(), false),
-                   DBDefinitions.KEY_DATE_ACQUIRED
-                  )
+        fields.add(R.id.date_acquired, new TextAccessor<>(new DateFieldFormatter()),
+                   DBDefinitions.KEY_DATE_ACQUIRED)
               .setRelatedFields(R.id.lbl_date_acquired);
 
-        fields.add(R.id.read_start, new EditTextAccessor<>(new DateFieldFormatter(), false),
-                   DBDefinitions.KEY_READ_START
-                  )
+        fields.add(R.id.read_start, new TextAccessor<>(new DateFieldFormatter()),
+                   DBDefinitions.KEY_READ_START)
               .setRelatedFields(R.id.lbl_read_start)
               .setErrorViewId(R.id.lbl_read_start)
               .setFieldValidator(mReadStartEndValidator);
 
-        fields.add(R.id.read_end, new EditTextAccessor<>(new DateFieldFormatter(), false),
-                   DBDefinitions.KEY_READ_END
-                  )
+        fields.add(R.id.read_end, new TextAccessor<>(new DateFieldFormatter()),
+                   DBDefinitions.KEY_READ_END)
               .setRelatedFields(R.id.lbl_read_end)
               .setErrorViewId(R.id.lbl_read_end)
               .setFieldValidator(mReadStartEndValidator);

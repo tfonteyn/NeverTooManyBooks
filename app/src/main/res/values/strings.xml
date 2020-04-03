@@ -1200,7 +1200,7 @@
     <!-- specific place holder text for Series rows. -->
     <string name="hint_empty_series">(No Series)</string>
     <!-- specific place holder text for Language rows. -->
-    <string name="hint_empty_language">(No language set)</string>
+    <string name="hint_empty_language">(Language not set)</string>
 
     <!-- specific place holder text for Read/Unread rows.
          Theoretically this string will never be shown unless there is ever bad data. -->
@@ -1208,9 +1208,12 @@
     <!-- specific place holder text for Rating rows. -->
     <string name="hint_empty_rating">(Not rated)</string>
 
+    <!-- specific place holder text for Year rows. -->
+    <string name="hint_empty_year">(Year not set)</string>
     <!-- specific place holder text for Month rows. -->
-    <string name="X_hint_empty_month">(No month set)</string>
-
+    <string name="hint_empty_month">(Month not set)</string>
+    <!-- specific place holder text for Day rows. -->
+    <string name="hint_empty_day">(Day not set)</string>
     <!-- ####################################################################################### -->
     <!-- == Size measurements; for now only file-sizes.  == -->
     <!-- ####################################################################################### -->
@@ -1501,6 +1504,7 @@
     <!-- a one line label, with the name of the person appended -->
     <string name="lbl_loaned_to_name">On Loan to %1$s</string>
     <string name="lbl_loaned">On Loan</string>
+    <string name="lbl_available">Available</string>
 
     <!-- Search on keywords entered. -->
     <string name="lbl_keywords">Keywords</string>
@@ -1617,7 +1621,6 @@
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
     <string name="X_btn_do_not_show_again">Do not show again</string>
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
-    <string name="X_lbl_available">Available</string>
     <string name="X_anthology_titles">Anthology Titles</string>
     <string name="X_use_default_setting">Use default values</string>
     <string name="X_menu_show_all">Show all</string>

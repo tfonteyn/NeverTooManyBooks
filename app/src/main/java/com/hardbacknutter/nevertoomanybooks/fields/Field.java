@@ -66,13 +66,12 @@ public class Field<T> {
     /**
      * Key used to access a {@link DataManager} or {@code Bundle}.
      * <ul>
-     * <li>key is set<br>
-     * Data is fetched from the {@link DataManager} (or Bundle), and populated on the screen.
-     * Extraction depends on the formatter in use.
-     * </li>
-     * <li>key is not set ("")<br>
-     * field is defined, but data handling must be done manually.
-     * </li>
+     *      <li>key is set<br>
+     *          Data is fetched from the {@link DataManager} (or Bundle),
+     *          and populated on the screen.
+     *          Extraction depends on the formatter in use.</li>
+     *      <li>key is not set ("")<br>
+     *          field is defined, but data handling must be done manually.</li>
      * </ul>
      * <p>
      * See {@link #isAutoPopulated()}.

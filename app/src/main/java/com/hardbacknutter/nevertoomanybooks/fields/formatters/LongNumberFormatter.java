@@ -37,8 +37,8 @@ import androidx.annotation.Nullable;
  * FieldFormatter for 'Number' fields with the value being a 'long'.
  *
  * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
- * <li>Extract: <strong>View</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Extract: <strong>View</strong></li>
  * </ul>
  */
 public class LongNumberFormatter

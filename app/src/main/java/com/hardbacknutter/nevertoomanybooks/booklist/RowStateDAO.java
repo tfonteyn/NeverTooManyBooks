@@ -83,9 +83,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TB
  * We use rowId everywhere <strong>except where directly interacting with the view</strong>
  *
  * <ul>Naming:
- * <li>expandABC: entry points into this class to expand/collapse node</li>
- * <li>updateABC: private methods that write to the in-memory table</li>
- * <li>saveABC: private methods that write to the database</li>
+ *      <li>expandABC: entry points into this class to expand/collapse node</li>
+ *      <li>updateABC: private methods that write to the in-memory table</li>
+ *      <li>saveABC: private methods that write to the database</li>
  * </ul>
  */
 public class RowStateDAO {

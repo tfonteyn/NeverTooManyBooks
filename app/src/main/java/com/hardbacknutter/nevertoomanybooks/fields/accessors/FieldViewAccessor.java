@@ -118,12 +118,12 @@ public interface FieldViewAccessor<T> {
      * <p>
      * This default implementation considers
      * <ul>
-     * <li>{@code null}</li>
-     * <li>Number == 0</li>
-     * <li>Boolean == false</li>
-     * <li>empty Collection</li>
-     * <li>checkable not checked</li>
-     * <li>empty String</li>
+     *      <li>{@code null}</li>
+     *      <li>Number == 0</li>
+     *      <li>Boolean == false</li>
+     *      <li>empty Collection</li>
+     *      <li>checkable not checked</li>
+     *      <li>empty String</li>
      * </ul>
      * to be empty.
      * If the test can be optimized (i.e. if {@link #getValue} can be shortcut),

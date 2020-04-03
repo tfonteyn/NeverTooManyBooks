@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 /**
  * Languages.
  * <ul>
- * <li>ISO 639-1: two-letter codes, one per language</li>
- * <li>ISO 639-2: three-letter codes, for the same languages as 639-1</li>
+ *      <li>ISO 639-1: two-letter codes, one per language</li>
+ *      <li>ISO 639-2: three-letter codes, for the same languages as 639-1</li>
  * </ul>
  * The JDK uses "ISO3" for the 3-character ISO 639-2 format (not to be confused with ISO 639-3)
  */

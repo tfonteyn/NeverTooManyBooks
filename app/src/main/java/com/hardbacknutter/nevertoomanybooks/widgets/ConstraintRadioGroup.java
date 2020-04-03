@@ -60,6 +60,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 public final class ConstraintRadioGroup
         extends ConstraintHelper {
 
+    /** All radio buttons in this group. */
     @NonNull
     private final SparseArray<RadioButton> mRadioButtons = new SparseArray<>();
 
@@ -67,7 +68,7 @@ public final class ConstraintRadioGroup
     @Nullable
     private OnCheckedChangeListener mOnCheckedChangeListener;
     /** Stop the individual button listeners from infinite recursion. */
-    private boolean mProtectFromCheckedChange = false;
+    private boolean mProtectFromCheckedChange;
     /** The currently checked radio button id. */
     private int mCheckedId = View.NO_ID;
     /** individual button listener. */

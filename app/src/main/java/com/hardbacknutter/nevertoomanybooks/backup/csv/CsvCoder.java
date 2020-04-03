@@ -72,11 +72,11 @@ final class CsvCoder {
     /**
      * StringList factory for a Author.
      * <ul>Format:
-     * <li>authorName * {json}</li>
+     *      <li>authorName * {json}</li>
      * </ul>
      * <ul>With authorName:
-     * <li>writing out: "family, givenNames"</li>
-     * <li>reading in: see {@link Author#fromString(String)}</li>
+     *      <li>writing out: "family, givenNames"</li>
+     *      <li>reading in: see {@link Author#fromString(String)}</li>
      * </ul>
      *
      * @return StringList factory
@@ -131,8 +131,8 @@ final class CsvCoder {
     /**
      * StringList factory for a Series.
      * <ul>Format:
-     * <li>title (number) * {json}</li>
-     * <li>title * {json}</li>
+     *      <li>title (number) * {json}</li>
+     *      <li>title * {json}</li>
      * </ul>
      * number: alpha-numeric, a proposed format is "1","1.0","1a", "1|omnibus" etc.
      * i.e. starting with a number (int or float) with optional alphanumeric characters trailing.
@@ -189,8 +189,8 @@ final class CsvCoder {
     /**
      * StringList factory for a TocEntry.
      * <ul>Format:
-     * <li>title (date) * authorName * {json}</li>
-     * <li>title * authorName * {json}</li>
+     *      <li>title (date) * authorName * {json}</li>
+     *      <li>title * authorName * {json}</li>
      * </ul>
      * authorName: see {@link #getAuthorCoder()}
      * date: see {@link #DATE_PATTERN}.
@@ -205,16 +205,16 @@ final class CsvCoder {
             /**
              * Attempts to parse a single string into an TocEntry.
              * <ul>The date *must* match a patter of a (partial) SQL date string:
-             * <li>(YYYY)</li>
-             * <li>(YYYY-MM)</li>
-             * <li>(YYYY-MM-DD)</li>
-             * <li>(YYYY-DD-MM) might work depending on the user's Locale. Not tested.</li>
+             *      <li>(YYYY)</li>
+             *      <li>(YYYY-MM)</li>
+             *      <li>(YYYY-MM-DD)</li>
+             *      <li>(YYYY-DD-MM) might work depending on the user's Locale. Not tested.</li>
              * </ul>
              * BookCatalogue had no dates: Giants In The Sky * Blish, James
              * <ul>We now also accept:
-             * <li>Giants In The Sky (1952) * Blish, James</li>
-             * <li>Giants In The Sky (1952-03) * Blish, James</li>
-             * <li>Giants In The Sky (1952-03-22) * Blish, James</li>
+             *      <li>Giants In The Sky (1952) * Blish, James</li>
+             *      <li>Giants In The Sky (1952-03) * Blish, James</li>
+             *      <li>Giants In The Sky (1952-03-22) * Blish, James</li>
              * </ul>
              */
             @Override
@@ -264,7 +264,7 @@ final class CsvCoder {
     /**
      * StringList factory for a Bookshelf.
      * <ul>Format:
-     * <li>shelfName * {json}</li>
+     *      <li>shelfName * {json}</li>
      * </ul>
      */
     public static class BookshelfCoderFactory

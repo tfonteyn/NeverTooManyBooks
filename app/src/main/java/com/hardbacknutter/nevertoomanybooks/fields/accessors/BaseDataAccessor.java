@@ -50,6 +50,7 @@ public abstract class BaseDataAccessor<T>
         implements FieldViewAccessor<T> {
 
     Field<T> mField;
+
     @Nullable
     T mRawValue;
 

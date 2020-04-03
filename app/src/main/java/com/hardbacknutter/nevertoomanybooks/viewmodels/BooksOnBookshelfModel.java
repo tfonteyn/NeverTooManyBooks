@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
@@ -606,14 +607,6 @@ public class BooksOnBookshelfModel
                 .execute();
     }
 
-    public int getTotalBooks() {
-        return mTotalBooks;
-    }
-
-    public int getUniqueBooks() {
-        return mUniqueBooks;
-    }
-
     /**
      * The result of {@link GetBookListTask}.
      *
@@ -886,9 +879,56 @@ public class BooksOnBookshelfModel
         style.save(mDb);
     }
 
+    @NonNull
     public RowStateDAO.Node getNode(final long rowId) {
         Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
         return mCursor.getBooklistBuilder().getNodeByNodeId(rowId);
+    }
+
+    @Nullable
+    public String getHeaderFilterText(@NonNull final Context context) {
+        BooklistStyle style = getCurrentStyle(context);
+        if (style.showHeader(context, BooklistStyle.HEADER_SHOW_FILTER)) {
+            final Collection<String> filterText = new ArrayList<>();
+            for (Filter filter : style.getActiveFilters(context)) {
+                filterText.add(filter.getLabel(context));
+            }
+
+            final String ftsSearchText = mSearchCriteria.getFtsSearchText();
+            if (!ftsSearchText.isEmpty()) {
+                filterText.add('"' + ftsSearchText + '"');
+            }
+
+            if (!filterText.isEmpty()) {
+                return context.getString(R.string.lbl_search_filtered_on_x,
+                                         TextUtils.join(", ", filterText));
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public String getHeaderStyleName(@NonNull final Context context) {
+        BooklistStyle style = getCurrentStyle(context);
+        if (style.showHeader(context, BooklistStyle.HEADER_SHOW_STYLE_NAME)) {
+            return style.getLabel(context);
+        }
+        return null;
+    }
+
+    @Nullable
+    public String getHeaderBookCount(@NonNull final Context context) {
+        BooklistStyle style = getCurrentStyle(context);
+        if (style.showHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
+            if (mUniqueBooks != mTotalBooks) {
+                return context.getString(R.string.txt_displaying_n_books_in_m_entries,
+                                         mUniqueBooks, mTotalBooks);
+            } else {
+                return context.getResources().getQuantityString(R.plurals.displaying_n_books,
+                                                                mUniqueBooks, mUniqueBooks);
+            }
+        }
+        return null;
     }
 
     /**
@@ -987,7 +1027,7 @@ public class BooksOnBookshelfModel
          * @return csv string, can be empty, but never {@code null}.
          */
         @NonNull
-        public String getFtsSearchText() {
+        String getFtsSearchText() {
             final Collection<String> list = new ArrayList<>();
 
             if (ftsAuthor != null && !ftsAuthor.isEmpty()) {

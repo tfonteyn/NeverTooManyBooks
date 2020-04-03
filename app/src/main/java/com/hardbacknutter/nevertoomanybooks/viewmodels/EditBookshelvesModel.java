@@ -27,6 +27,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -38,6 +39,7 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -75,7 +77,6 @@ public class EditBookshelvesModel
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@Nullable final Bundle args) {
-
         if (mDb == null) {
             mDb = new DAO(TAG);
             mList = mDb.getBookshelves();
@@ -83,10 +84,6 @@ public class EditBookshelvesModel
                 mInitialBookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
             }
         }
-    }
-
-    public DAO getDb() {
-        return mDb;
     }
 
     /**
@@ -118,8 +115,14 @@ public class EditBookshelvesModel
         return mList;
     }
 
+    @NonNull
     public Bookshelf getBookshelf(final int position) {
         return mList.get(position);
+    }
+
+    @NonNull
+    public Bookshelf createNewBookshelf(@NonNull final Context context) {
+        return new Bookshelf("", BooklistStyle.getDefault(context, mDb));
     }
 
     /** Observable. */
@@ -139,6 +142,12 @@ public class EditBookshelvesModel
                 mSelectedBookshelf = bookshelf;
                 break;
             }
+        }
+    }
+
+    public void purgeBLNS() {
+        if (mSelectedBookshelf != null) {
+            mDb.purgeNodeStatesByBookshelf(mSelectedBookshelf.getId());
         }
     }
 

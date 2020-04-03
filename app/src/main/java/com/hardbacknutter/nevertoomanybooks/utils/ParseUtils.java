@@ -67,8 +67,8 @@ public final class ParseUtils {
     /**
      * Encode a string by 'escaping' all instances of:
      * <ul>
-     * <li>'\\', '\r', '\n', '\t'</li>
-     * <li>any additional 'escapeChars'</li>
+     *      <li>'\\', '\r', '\n', '\t'</li>
+     *      <li>any additional 'escapeChars'</li>
      * </ul>
      * The escape char is '\'.
      *

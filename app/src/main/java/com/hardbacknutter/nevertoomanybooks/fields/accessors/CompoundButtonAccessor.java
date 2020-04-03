@@ -39,10 +39,10 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * CompoundButton accessor.
  *
  * <ul>{@link CompoundButton} covers more then just a Checkbox:
- * <li>CheckBox</li>
- * <li>RadioButton</li>
- * <li>Switch</li>
- * <li>ToggleButton</li>
+ *      <li>CheckBox</li>
+ *      <li>RadioButton</li>
+ *      <li>Switch</li>
+ *      <li>ToggleButton</li>
  * </ul>
  * <p>
  * NOT covered is {@code CheckedTextView extends TextView}'

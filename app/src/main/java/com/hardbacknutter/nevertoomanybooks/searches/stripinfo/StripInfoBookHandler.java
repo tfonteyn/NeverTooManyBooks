@@ -71,8 +71,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 /**
  * Currently we access the site without authenticating.
  * <ul>
- * <li>no access (or sync) to user data</li>
- * <li>"mature" covers are not accessible.</li>
+ *      <li>no access (or sync) to user data</li>
+ *      <li>"mature" covers are not accessible.</li>
  * </ul>
  */
 class StripInfoBookHandler
@@ -884,9 +884,9 @@ class StripInfoBookHandler
     /**
      * Found the description element. Consists of a number of sections which we combine.
      * <ul>
-     * <li>Covertekst</li>
-     * <li>Opmerking uitgave</li>
-     * <li>Opmerking inhoud</li>
+     *      <li>Covertekst</li>
+     *      <li>Opmerking uitgave</li>
+     *      <li>Opmerking inhoud</li>
      * </ul>
      *
      * <strong>Note:</strong> the description sometimes contains a TOC (solely,

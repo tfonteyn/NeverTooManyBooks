@@ -76,13 +76,11 @@ public class ImportFragment
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
-
+    private static final String BULLET = "\n• ";
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-
     /** ViewModel. */
     private ResultDataModel mResultDataModel;
-
     /** Import. */
     private ImportTaskModel mImportModel;
     private final OptionsDialogBase.OptionsListener<ImportManager> mImportOptionsListener =
@@ -196,10 +194,10 @@ public class ImportFragment
     private void importPickUri() {
         // Import
         // This does not allow multiple saved files like "foo.tar (1)", "foo.tar (2)"
-//        String[] mimeTypes = {"application/x-tar", "text/csv"};
+        // String[] mimeTypes = {"application/x-tar", "text/csv"};
         final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
-//                .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+                // .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
                 .setType("*/*");
         startActivityForResult(intent, UniqueId.REQ_IMPORT_PICK_URI);
     }
@@ -308,7 +306,7 @@ public class ImportFragment
 
         //TODO: RTL
         if (results.booksCreated > 0 || results.booksUpdated > 0 || results.booksSkipped > 0) {
-            msg.append("\n• ")
+            msg.append(BULLET)
                .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
                                  getString(R.string.lbl_books),
                                  results.booksCreated,
@@ -316,7 +314,7 @@ public class ImportFragment
                                  results.booksSkipped));
         }
         if (results.coversCreated > 0 || results.coversUpdated > 0 || results.coversSkipped > 0) {
-            msg.append("\n• ")
+            msg.append(BULLET)
                .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
                                  getString(R.string.lbl_covers),
                                  results.coversCreated,
@@ -324,12 +322,12 @@ public class ImportFragment
                                  results.coversSkipped));
         }
         if (results.styles > 0) {
-            msg.append("\n• ").append(getString(R.string.name_colon_value,
+            msg.append(BULLET).append(getString(R.string.name_colon_value,
                                                 getString(R.string.lbl_styles),
                                                 String.valueOf(results.styles)));
         }
         if (results.preferences > 0) {
-            msg.append("\n• ").append(getString(R.string.lbl_settings));
+            msg.append(BULLET).append(getString(R.string.lbl_settings));
         }
 
         int failed = results.failedLinesNr.size();

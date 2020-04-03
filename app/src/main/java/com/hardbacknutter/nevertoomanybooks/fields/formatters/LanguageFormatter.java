@@ -38,8 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
 /**
  * FieldFormatter for language fields.
  * <ul>
- * <li>Multiple fields: <strong>yes</strong></li>
- * <li>Extract: <strong>View</strong></li>
+ *      <li>Multiple fields: <strong>yes</strong></li>
+ *      <li>Extract: <strong>View</strong></li>
  * </ul>
  */
 public class LanguageFormatter

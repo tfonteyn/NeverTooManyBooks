@@ -72,36 +72,36 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlUtils;
 
 /**
  * <ul>Supports:
- * <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
- * <li>{@link ArchiveContainerEntry#BooklistStylesXml}</li>
- * <li>{@link ArchiveContainerEntry#PreferencesXml}</li>
- * <li>{@link ArchiveContainerEntry#BooksXml}</li>
+ *      <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
+ *      <li>{@link ArchiveContainerEntry#BooklistStylesXml}</li>
+ *      <li>{@link ArchiveContainerEntry#PreferencesXml}</li>
+ *      <li>{@link ArchiveContainerEntry#BooksXml}</li>
  * </ul>
  *
  * <strong>WARNING: EXPERIMENTAL</strong> There are two types of XML here.
  * <ul>Type based, where the tag name is the type. Used by:
- * <li>{@link ArchiveInfo}</li>
- * <li>{@link android.content.SharedPreferences}</li>
- * <li>{@link BooklistStyle}</li>
+ *      <li>{@link ArchiveInfo}</li>
+ *      <li>{@link android.content.SharedPreferences}</li>
+ *      <li>{@link BooklistStyle}</li>
  * </ul>
  * <ul>Reason:
- * <li>more or less flat objects (Bundle or Bundle-like)</li>
- * <li>can be generically written (and read), so future adding/remove
- * entries requires no changes here</li>
- * <li>really only useful to the application itself</li>
- * <li>write and read support</li>
+ *      <li>more or less flat objects (Bundle or Bundle-like)</li>
+ *      <li>can be generically written (and read), so future adding/remove
+ *          entries requires no changes here</li>
+ *      <li>really only useful to the application itself</li>
+ *      <li>write and read support</li>
  * </ul>
  * <ul>Database column name based. Used by:
- * <li>{@link Bookshelf}</li>
- * <li>{@link Author}</li>
- * <li>{@link Series}</li>
- * <li>{@link Book}</li>
+ *      <li>{@link Bookshelf}</li>
+ *      <li>{@link Author}</li>
+ *      <li>{@link Series}</li>
+ *      <li>{@link Book}</li>
  * </ul>
  * <ul>Reason:
- * <li>EXPERIMENTAL - format can/will change</li>
- * <li>meant for loading on a computer to create reports or whatever...</li>
- * <li>not bound to the application itself.</li>
- * <li>write (export) only.</li>
+ *      <li>EXPERIMENTAL - format can/will change</li>
+ *      <li>meant for loading on a computer to create reports or whatever...</li>
+ *      <li>not bound to the application itself.</li>
+ *      <li>write (export) only.</li>
  * </ul>
  */
 public class XmlExporter

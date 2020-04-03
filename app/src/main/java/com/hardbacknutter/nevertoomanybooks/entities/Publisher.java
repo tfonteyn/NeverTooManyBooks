@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -123,10 +123,10 @@ public class Publisher
     /**
      * Equality.
      * <p>
-     * <li>it's the same Object</li>
-     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     * AND the names are equal</li>
-     * <li>if both are 'new' check if family/given-names are equal</li>
+     *      <li>it's the same Object</li>
+     *      <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     *          AND the names are equal</li>
+     *      <li>if both are 'new' check if family/given-names are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */

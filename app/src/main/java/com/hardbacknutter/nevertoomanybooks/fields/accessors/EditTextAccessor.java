@@ -179,9 +179,9 @@ public class EditTextAccessor<T>
      * TextWatcher for TextView fields.
      *
      * <ol>
-     * <li>Re-formats if needed/allowed</li>
-     * <li>clears any previous error</li>
-     * <li>propagate the fact that the field changed</li>
+     *      <li>Re-formats if needed/allowed</li>
+     *      <li>clears any previous error</li>
+     *      <li>propagate the fact that the field changed</li>
      * </ol>
      */
     class ChangedTextWatcher

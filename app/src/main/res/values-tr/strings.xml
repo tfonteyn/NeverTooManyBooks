@@ -36,7 +36,7 @@
     <string name="X_btn_do_not_show_again">Bir daha gösterme</string>
     <string name="X_error_file_must_contain_column">Dosya adı %1$s adında bir sütun içermeli</string>
     <string name="X_export_info_success_archive_details">%2$s adında bir %3$s dosyası SD kartınızın “%1$s” dizininde oluşturuldu.\n\nBu dosyayı el ile başka bir yere yedeklemeniz aygıtınızın hasar görmesi, kaybolması veya çalınması durumunda verilerinizin korunması için tavsiye edilir.</string>
-    <string name="X_lbl_available">Uygun</string>
+    <string name="lbl_available">Uygun</string>
     <string name="X_lbl_data_import_export">Yedekleme ve İçe Aktarma</string>
     <string name="X_lbl_select_fields_to_update">Güncellenecek alanları seçin</string>
     <string name="X_menu_show_all">Hepsini Göster</string>
@@ -174,7 +174,7 @@
     <string name="hint_empty_author">(Yazar eksik)</string>
     <string name="hint_empty_field">(Boş)</string>
     <string name="hint_empty_language">(Doldurulmuş dil yok)</string>
-    <string name="X_hint_empty_month">(Hiçbir ay doldurulmadı)</string>
+    <string name="hint_empty_month">(Ay ayarlanmadı)</string>
     <string name="hint_empty_rating">(Oylanmamış)</string>
     <string name="hint_empty_read_status">(Okuma durumu bilinmiyor)</string>
     <string name="hint_empty_series">(Seri yok)</string>
@@ -656,5 +656,7 @@
     <string name="confirm_rebuild_index">Uygulama yeniden başlatıldığında dizinler yeniden oluşturulur. Devam etmek istediğine emin misin ?</string>
     <string name="confirm_rebuild_fts">Uygulama yeniden başlatıldığında arama dizini verileri yeniden oluşturulur. Devam etmek istediğine emin misin ?</string>
     <string name="error_site_has_problems">Web sitesinde sorunlar var.</string>
+    <string name="hint_empty_day">(Gün ayarlanmadı)</string>
+    <string name="hint_empty_year">(Yıl ayarlanmadı)</string>
 
 </resources>

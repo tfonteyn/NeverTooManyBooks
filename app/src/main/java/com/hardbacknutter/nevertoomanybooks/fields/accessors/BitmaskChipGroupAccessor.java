@@ -44,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
+ * A {@link ChipGroup} where each {@link Chip} represents one bit in a bitmask.
+ *
  * <pre>
  *     {@code
  *             <com.google.android.material.chip.ChipGroup
@@ -66,6 +68,12 @@ public class BitmaskChipGroupAccessor
     @Nullable
     private final View.OnClickListener mFilterChipListener;
 
+    /**
+     * Constructor.
+     *
+     * @param allValues  a map with all <strong>possible</strong> values
+     * @param isEditable flag
+     */
     public BitmaskChipGroupAccessor(@NonNull final Map<Integer, String> allValues,
                                     final boolean isEditable) {
         mAll = allValues;

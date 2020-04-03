@@ -33,10 +33,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueExce
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
- * Hosting activity for Preference editing.
+ * Hosting activity for top-level Preference editing.
  */
 public class SettingsActivity
         extends BaseActivity
@@ -86,32 +86,28 @@ public class SettingsActivity
             tag = GlobalPreferenceFragment.TAG;
         }
 
-        // add! not replace!
-        addFragment(R.id.main_fragment, tag);
-    }
+        final FragmentManager fm = getSupportFragmentManager();
+        if (fm.findFragmentByTag(tag) == null) {
+            Fragment frag;
+            switch (tag) {
+                case GlobalPreferenceFragment.TAG:
+                    frag = new GlobalPreferenceFragment();
+                    break;
 
-    /**
-     * Create a fragment based on the given tag.
-     *
-     * @param containerViewId to receive the fragment
-     * @param tag             for the required fragment
-     *
-     * @throws UnexpectedValueException if an invalid tag was passed in
-     */
-    private void addFragment(@SuppressWarnings("SameParameterValue")
-                             @IdRes final int containerViewId,
-                             @NonNull final String tag) {
-        switch (tag) {
-            case GlobalPreferenceFragment.TAG:
-                addFragment(containerViewId, GlobalPreferenceFragment.class, tag);
-                return;
+                case StyleFragment.TAG:
+                    frag = new StyleFragment();
+                    break;
 
-            case StyleFragment.TAG:
-                addFragment(containerViewId, StyleFragment.class, tag);
-                return;
+                default:
+                    throw new UnexpectedValueException(tag);
+            }
 
-            default:
-                throw new UnexpectedValueException(tag);
+            frag.setArguments(getIntent().getExtras());
+            fm.beginTransaction()
+              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              // add! not replace!
+              .add(R.id.main_fragment, frag, tag)
+              .commit();
         }
     }
 
@@ -135,9 +131,16 @@ public class SettingsActivity
     @Override
     public boolean onPreferenceStartFragment(@NonNull final PreferenceFragmentCompat caller,
                                              @NonNull final Preference pref) {
-        // Instantiate the new Fragment
-        final Fragment fragment = getSupportFragmentManager()
-                .getFragmentFactory().instantiate(getClassLoader(), pref.getFragment());
+
+        final FragmentManager fm = getSupportFragmentManager();
+
+        /* Instantiate the new Fragment
+         *
+         * Proguard rule needed:
+         * -keep public class * extends androidx.preference.PreferenceFragmentCompat
+         */
+        final Fragment fragment =
+                fm.getFragmentFactory().instantiate(getClassLoader(), pref.getFragment());
 
         // combine the original extras with any new ones (the latter can override the former)
         Bundle args = getIntent().getExtras();
@@ -149,11 +152,11 @@ public class SettingsActivity
         fragment.setArguments(args);
 
         // Replace the existing Fragment with the new Fragment
-        getSupportFragmentManager().beginTransaction()
-                                   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                                   .addToBackStack(null)
-                                   .replace(R.id.main_fragment, fragment)
-                                   .commit();
+        fm.beginTransaction()
+          .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+          .addToBackStack(null)
+          .replace(R.id.main_fragment, fragment)
+          .commit();
         return true;
     }
 
@@ -161,7 +164,7 @@ public class SettingsActivity
     /**
      * If any of the child preference fragments have an xml configuration with nested
      * PreferenceScreen elements, then a click on those will trigger this method.
-     *
+     * TODO: check and remove
      * <br><br>{@inheritDoc}
      *
      * @deprecated android docs claim nested PreferenceScreen tags are no longer supported.

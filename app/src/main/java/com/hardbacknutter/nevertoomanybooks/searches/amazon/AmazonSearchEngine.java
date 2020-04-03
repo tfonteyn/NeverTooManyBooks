@@ -73,11 +73,11 @@ public final class AmazonSearchEngine
      * The search url.
      *
      * <ul>Fields that can be added to the /gp URL
-     * <li>&field-isbn</li>
-     * <li>&field-author</li>
-     * <li>&field-title</li>
-     * <li>&field-publisher</li>
-     * <li>&field-keywords</li>
+     *      <li>&field-isbn</li>
+     *      <li>&field-author</li>
+     *      <li>&field-title</li>
+     *      <li>&field-publisher</li>
+     *      <li>&field-keywords</li>
      * </ul>
      */
     private static final String SEARCH_SUFFIX = "/gp/search?index=books";

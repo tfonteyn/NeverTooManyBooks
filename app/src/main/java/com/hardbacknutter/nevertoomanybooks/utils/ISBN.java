@@ -232,10 +232,10 @@ public class ISBN {
      * Constructor.
      *
      * <ul>Accepts as valid:
-     * <li>ISBN-10</li>
-     * <li>ISBN-13</li>
-     * <li>EAN-13</li>
-     * <li>generic UPC_A</li>
+     *      <li>ISBN-10</li>
+     *      <li>ISBN-13</li>
+     *      <li>EAN-13</li>
+     *      <li>generic UPC_A</li>
      * </ul>
      * <p>
      * Accepts (and removes) ' ' and '-' characters.
@@ -253,13 +253,13 @@ public class ISBN {
      * Constructor.
      *
      * <ul>Accepts as valid:
-     * <li>ISBN-10</li>
-     * <li>ISBN-13</li>
-     * <li>UPC_A <strong>if convertible to ISBN-10</strong></li>
+     *      <li>ISBN-10</li>
+     *      <li>ISBN-13</li>
+     *      <li>UPC_A <strong>if convertible to ISBN-10</strong></li>
      * </ul>
      * <ul>Rejects as invalid:
-     * <li>EAN-13</li>
-     * <li>generic UPC_A</li>
+     *      <li>EAN-13</li>
+     *      <li>generic UPC_A</li>
      * </ul>
      * <p>
      * Accepts (and removes) ' ' and '-' characters.
@@ -721,12 +721,12 @@ public class ISBN {
     /**
      * Two ISBN objects are equal if they match these checks (in this order).
      * <ol>
-     * <li>objects being '==' ? MATCH</li>
-     * <li>Either or both == null ? no match</li>
-     * <li>Incoming object is not an ISBN ? no match</li>
-     * <li>Either or both invalid, compare their digits for exact match</li>
-     * <li>Same length, compare their digits for exact match</li>
-     * <li>compare the 9 significant isbn digits for equality.</li>
+     *      <li>objects being '==' ? MATCH</li>
+     *      <li>Either or both == null ? no match</li>
+     *      <li>Incoming object is not an ISBN ? no match</li>
+     *      <li>Either or both invalid, compare their digits for exact match</li>
+     *      <li>Same length, compare their digits for exact match</li>
+     *      <li>compare the 9 significant isbn digits for equality.</li>
      * </ol>
      *
      * <strong>Note:</strong> hash codes are done over the {@link #mDigits} objects.

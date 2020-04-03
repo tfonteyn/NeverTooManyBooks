@@ -84,6 +84,7 @@ public class EditBookFieldsFragment
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
+
     /**
      * Set to {@code true} limits to using ISBN-10/13.
      * Otherwise we also allow UPC/EAN codes.
@@ -142,19 +143,16 @@ public class EditBookFieldsFragment
         // The buttons to bring up the fragment to edit Authors / Series.
         // Not shown if the user preferences are set to use an extra tab for this.
         if (!showAuthSeriesOnTabs) {
-            fields.add(R.id.author, new TextAccessor<>(new AuthorListFormatter(Author.Details.Short,
-                                                                               true, false)),
-                       UniqueId.BKEY_AUTHOR_ARRAY,
-                       DBDefinitions.KEY_FK_AUTHOR)
+            fields.add(R.id.author, new TextAccessor<>(
+                               new AuthorListFormatter(Author.Details.Short, true, false)),
+                       UniqueId.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author)
                   .setErrorViewId(R.id.lbl_author)
                   .setFieldValidator(NON_BLANK_VALIDATOR);
 
-            fields.add(R.id.series_title,
-                       new TextAccessor<>(new SeriesListFormatter(Series.Details.Short,
-                                                                  true, false)),
-                       UniqueId.BKEY_SERIES_ARRAY,
-                       DBDefinitions.KEY_SERIES_TITLE)
+            fields.add(R.id.series_title, new TextAccessor<>(
+                               new SeriesListFormatter(Series.Details.Short, true, false)),
+                       UniqueId.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
                   .setRelatedFields(R.id.lbl_series);
         }
 
@@ -177,8 +175,7 @@ public class EditBookFieldsFragment
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
         fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter(), true),
-                   UniqueId.BKEY_BOOKSHELF_ARRAY,
-                   DBDefinitions.KEY_BOOKSHELF)
+                   UniqueId.BKEY_BOOKSHELF_ARRAY, DBDefinitions.KEY_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
 
@@ -336,7 +333,7 @@ public class EditBookFieldsFragment
             }
 
             default: {
-                int cIdx = mFragmentVM.getCurrentCoverHandlerIndex();
+                final int cIdx = mFragmentVM.getCurrentCoverHandlerIndex();
                 // handle any cover image request codes
                 if (cIdx >= -1) {
                     final boolean handled = mCoverHandler[cIdx]

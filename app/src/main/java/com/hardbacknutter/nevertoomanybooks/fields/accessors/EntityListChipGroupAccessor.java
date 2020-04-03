@@ -46,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
+ * A {@link ChipGroup} where each {@link Chip} represents one {@link Entity} in a list.
+ *
  * <pre>
  *     {@code
  *             <com.google.android.material.textfield.TextInputLayout
@@ -77,6 +79,12 @@ public class EntityListChipGroupAccessor
     @Nullable
     private final View.OnClickListener mFilterChipListener;
 
+    /**
+     * Constructor.
+     *
+     * @param allValues  a list with all <strong>possible</strong> values
+     * @param isEditable flag
+     */
     public EntityListChipGroupAccessor(@NonNull final List<Entity> allValues,
                                        final boolean isEditable) {
         mAll = allValues;

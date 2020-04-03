@@ -36,7 +36,7 @@
     <string name="X_btn_do_not_show_again">Non mostrare più</string>
     <string name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
     <string name="X_export_info_success_archive_details">Un %3$s file chiamato %2$s è stato creato nella cartella «%1$s».\n\nTi raccomandiamo di tenerne copia da qualche altra parte a protezione dei dati in caso il tuo apparecchio venga danneggiato, perso o rubato.</string>
-    <string name="X_lbl_available">Disponibile</string>
+    <string name="lbl_available">Disponibile</string>
     <string name="X_lbl_data_import_export">Backup e importazione</string>
     <string name="X_lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>
     <string name="X_menu_show_all">Mostra tutto</string>
@@ -176,7 +176,7 @@
     <string name="hint_empty_author">(L\'autore è mancante)</string>
     <string name="hint_empty_field">(Vuoto)</string>
     <string name="hint_empty_language">(Nessuna lingua compilata)</string>
-    <string name="X_hint_empty_month">(Nessun mese compilato)</string>
+    <string name="hint_empty_month">(Mese non impostato)</string>
     <string name="hint_empty_rating">(Non valutato)</string>
     <string name="hint_empty_read_status">(Leggi lo stato sconosciuto)</string>
     <string name="hint_empty_series">(Nessuna serie)</string>
@@ -660,5 +660,7 @@
     <string name="confirm_rebuild_fts">I dati dell\'indice di ricerca verranno ricostruiti al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
     <string name="confirm_rebuild_index">Gli indici verranno ricostruiti al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
     <string name="error_site_has_problems">Il sito Web ha problemi.</string>
+    <string name="hint_empty_day">(Giorno non impostato)</string>
+    <string name="hint_empty_year">(Anno non impostato)</string>
 
 </resources>

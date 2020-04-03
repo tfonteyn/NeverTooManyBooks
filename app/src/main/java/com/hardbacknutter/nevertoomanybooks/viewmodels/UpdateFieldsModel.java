@@ -613,9 +613,9 @@ public class UpdateFieldsModel
      * Cleanup up and report the final outcome.
      *
      * <ul>Callers:
-     * <li>when we've not started a search (for whatever reason, including we're all done)</li>
-     * <li>when an exception is thrown</li>
-     * <li>when we're cancelled</li>
+     *      <li>when we've not started a search (for whatever reason, including we're all done)</li>
+     *      <li>when an exception is thrown</li>
+     *      <li>when we're cancelled</li>
      * </ul>
      *
      * @param e (optional) exception
