@@ -126,7 +126,9 @@ public class FastScrollerOverlay
             StringBuilder popupText = new StringBuilder(popupLines[0]);
             if (popupLines.length > 1) {
                 for (int line = 1; line < popupLines.length; line++) {
-                    popupText.append('\n').append(popupLines[line]);
+                    if (popupLines[line] != null) {
+                        popupText.append('\n').append(popupLines[line]);
+                    }
                 }
             }
 
