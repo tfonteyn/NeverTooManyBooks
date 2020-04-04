@@ -25,7 +25,6 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.content.Context;
@@ -40,6 +39,9 @@ import androidx.annotation.NonNull;
 
 @SuppressWarnings("unused")
 public final class AttrUtils {
+
+    private AttrUtils() {
+    }
 
     /**
      * Get the resource id for the given attribute.
@@ -100,8 +102,5 @@ public final class AttrUtils {
         ta.recycle();
 
         return textSize;
-    }
-
-    private AttrUtils() {
     }
 }
