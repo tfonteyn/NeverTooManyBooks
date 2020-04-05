@@ -417,8 +417,8 @@
     <string name="pe_bob_list_rebuild_state_preserve">Mevcut durumu koru</string>
     <string name="pe_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
     <string name="pe_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">Donanım</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">Yazılım</string>
+    <string name="pe_cropper_layer_type_hardware">Donanım</string>
+    <string name="pe_cropper_layer_type_software">Yazılım</string>
     <string name="pe_ui_theme_dark">Karanlık</string>
     <string name="pe_ui_theme_day_night">Gündüz / Gece</string>
     <string name="pe_ui_theme_light">ışık</string>
@@ -432,7 +432,7 @@
     <string name="pg_image_cache">Görüntüler önbelleği</string>
     <string name="pg_internet_search">Web aramaları</string>
     <string name="pg_style_groups">Öbeklemeler</string>
-    <string name="pg_thumbnails">Ufak resimler</string>
+    <string name="lbl_thumbnails">Ufak resimler</string>
     <string name="pg_ui">Kullanıcı arayüzü</string>
     <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="progress_end_backup_success">Yedekleme başarılı!</string>
@@ -490,10 +490,10 @@
     <string name="pt_site_settings">Web sitesi ayarları</string>
     <string name="pt_sort_author_name_given_first">Yazar adı sıralama</string>
     <string name="pt_sort_title_reordered">Başlıkları sırala</string>
-    <string name="pt_thumbnail_cropper_layer_type">Küçük resmi kırp “Layer Type”</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için “Donanım” için “Yazılım” deneyin, ancak daha hızlı</string>
+    <string name="pt_cropper_layer_type">Küçük resmi kırp “Layer Type”</string>
+    <string name="pt_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için “Donanım” için “Yazılım” deneyin, ancak daha hızlı</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
+    <string name="pt_cropper_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
     <string name="pt_thumbnails_rotate_auto">Fotoğrafları döndür</string>
     <string name="pt_ui_language">Dil</string>
     <string name="pt_ui_system_locale">Sistem Yerel Ayarı</string>
@@ -658,5 +658,6 @@
     <string name="error_site_has_problems">Web sitesinde sorunlar var.</string>
     <string name="hint_empty_day">(Gün ayarlanmadı)</string>
     <string name="hint_empty_year">(Yıl ayarlanmadı)</string>
+    <string name="lbl_all_bookshelves">Tüm raflardan</string>
 
 </resources>

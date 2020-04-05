@@ -372,8 +372,7 @@
         are you sure you want to add another copy?
     </string>
     <string name="confirm_overwrite_thumbnail">
-        This will update the selected fields as shown, but images can optionally be downloaded
-        for ALL books.\n
+        This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n
         \nDo you want to overwrite all existing images? Warning, this may take a long time.
     </string>
 
@@ -817,11 +816,6 @@
     <string name="pt_camera_next_action">Action after taking a picture</string>
 
     <!-- Preference Category -->
-    <string name="pg_thumbnails">Thumbnails</string>
-    <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Default crop frame is whole image</string>
-
-    <!-- Preference Category -->
     <string name="pg_image_cache">Image cache</string>
     <!-- SwitchPreference - Thumbnails are cached in a database to avoid resizing all the time -->
     <string name="pt_thumbnails_cache_resized">Resized images are cached</string>
@@ -831,17 +825,20 @@
     <string name="pe_thumbnails_cache_resized_stored">
         Cache resized images (scrolling will be faster, uses more storage)
     </string>
-    <!-- ListPreference - Degrees by which to rotate camera images automatically -->
+    <!-- ListPreference - Degrees by which to rotate camera pictures automatically -->
     <string name="pt_thumbnails_rotate_auto">Rotate pictures</string>
+
+    <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
+    <string name="pt_cropper_frame_is_whole_image">Default crop frame is whole image</string>
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
-    <string name="pt_thumbnail_cropper_layer_type">Cropping “Layer Type”</string>
+    <string name="pt_cropper_layer_type">Cropping “Layer Type”</string>
     <!-- TODO: “Use default”+“Software”+“Hardware”  should be parameters. But that means modifying the Tip class -->
-    <string name="pt_thumbnail_cropper_layer_type_summary">
+    <string name="pt_cropper_layer_type_summary">
         Leave this setting on “Use default” unless you experience crashes while cropping images.
         Try “Software” for safer but slower or force “Hardware” for less safe, but faster.
     </string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
+    <string name="pe_cropper_layer_type_hardware">Hardware</string>
+    <string name="pe_cropper_layer_type_software">Software</string>
 
     <!-- category: search sites -->
     <string name="pg_internet_search">Web Searches</string>
@@ -1416,6 +1413,7 @@
     <string name="lbl_bookshelves">Shelves</string>
     <!-- Multiple Bookshelves. Long label. -->
     <string name="lbl_bookshelves_long">Bookshelves</string>
+    <string name="lbl_all_bookshelves">All bookshelves</string>
 
     <!-- Single book cover - Short label. -->
     <string name="lbl_cover">Cover</string>
@@ -1425,6 +1423,8 @@
     <string name="lbl_covers">Covers</string>
     <!-- Multiple book covers. Long label. -->
     <string name="lbl_covers_long">Cover images</string>
+    <!-- Preference Category -->
+    <string name="lbl_thumbnails">Thumbnails</string>
 
     <!-- number of pages; this is a field-label. -->
     <string name="lbl_pages">Pages</string>

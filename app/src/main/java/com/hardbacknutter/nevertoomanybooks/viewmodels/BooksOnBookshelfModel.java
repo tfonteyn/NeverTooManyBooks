@@ -313,7 +313,8 @@ public class BooksOnBookshelfModel
         mItemPosition = prefs.getInt(PREF_BOB_TOP_ITEM_POSITION, RecyclerView.NO_POSITION);
         mTopViewOffset = prefs.getInt(PREF_BOB_TOP_VIEW_OFFSET, 0);
         // and set the last/preferred bookshelf
-        mCurrentBookshelf = Bookshelf.getPreferredBookshelf(context, mDb, true);
+        mCurrentBookshelf =
+                Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
     }
 
     /**
@@ -340,7 +341,7 @@ public class BooksOnBookshelfModel
     public int initBookshelfNameList(@NonNull final Context context) {
         mBookshelfNameList.clear();
         mBookshelfNameList.add(new BookshelfSpinnerEntry(
-                Bookshelf.getBookshelfAllBooks(context, mDb)));
+                Bookshelf.getBookshelf(context, mDb, Bookshelf.ALL_BOOKS, Bookshelf.ALL_BOOKS)));
         // default to 'All Books'
         int currentPos = 0;
         // start at 1, as position 0 is 'All Books'
@@ -367,7 +368,8 @@ public class BooksOnBookshelfModel
                                     final long id) {
         mCurrentBookshelf = mDb.getBookshelf(id);
         if (mCurrentBookshelf == null) {
-            mCurrentBookshelf = Bookshelf.getPreferredBookshelf(context, mDb, true);
+            mCurrentBookshelf =
+                    Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         }
         mCurrentBookshelf.setAsPreferred(context);
     }
@@ -763,7 +765,8 @@ public class BooksOnBookshelfModel
 
     @SuppressWarnings("UnusedReturnValue")
     public boolean reloadCurrentBookshelf(@NonNull final Context context) {
-        final Bookshelf newBookshelf = Bookshelf.getPreferredBookshelf(context, mDb, true);
+        final Bookshelf newBookshelf =
+                Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         if (!newBookshelf.equals(mCurrentBookshelf)) {
             // if it was.. switch to it.
             mCurrentBookshelf = newBookshelf;

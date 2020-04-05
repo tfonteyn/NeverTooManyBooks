@@ -42,6 +42,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -55,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
@@ -103,14 +106,14 @@ public class AuthorWorksFragment
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
-        mModel.init(requireArguments());
-
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        getActivity().setTitle(mModel.getScreenTitle(context));
+        mModel = new ViewModelProvider(getActivity()).get(AuthorWorksModel.class);
+        //noinspection ConstantConditions
+        mModel.init(context, requireArguments());
+
+        updateScreenTitle();
 
         //noinspection ConstantConditions
         final RecyclerView listView = getView().findViewById(R.id.author_works);
@@ -127,6 +130,16 @@ public class AuthorWorksFragment
 
         if (savedInstanceState == null) {
             TipManager.display(context, R.string.tip_authors_works, null);
+        }
+    }
+
+    private void updateScreenTitle() {
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            //noinspection ConstantConditions
+            actionBar.setTitle(mModel.getScreenTitle(getContext()));
+            actionBar.setSubtitle(mModel.getScreenSubtitle());
         }
     }
 
@@ -156,25 +169,45 @@ public class AuthorWorksFragment
     }
 
     @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        MenuItem all = menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES);
+        // hide if a specific INITIAL bookshelf was set.
+        all.setVisible(mModel.getBookshelfId() != Bookshelf.ALL_BOOKS);
+        // check if the user overrules the initial
+        all.setChecked(mModel.isAllBookshelves());
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
         switch (item.getItemId()) {
             case R.id.MENU_AUTHOR_WORKS_ALL: {
                 item.setChecked(true);
-                mModel.loadTocEntries(true, true);
+                mModel.reloadTocEntries(true, true);
                 mAdapter.notifyDataSetChanged();
                 return true;
             }
             case R.id.MENU_AUTHOR_WORKS_TOC: {
                 item.setChecked(true);
-                mModel.loadTocEntries(true, false);
+                mModel.reloadTocEntries(true, false);
                 mAdapter.notifyDataSetChanged();
                 return true;
             }
             case R.id.MENU_AUTHOR_WORKS_BOOKS: {
                 item.setChecked(true);
-                mModel.loadTocEntries(false, true);
+                mModel.reloadTocEntries(false, true);
                 mAdapter.notifyDataSetChanged();
+                return true;
+            }
+
+            case R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES: {
+                final boolean checked = !item.isChecked();
+                item.setChecked(checked);
+                mModel.setAllBookshelves(checked);
+                mModel.reloadTocEntries();
+                mAdapter.notifyDataSetChanged();
+                updateScreenTitle();
                 return true;
             }
 

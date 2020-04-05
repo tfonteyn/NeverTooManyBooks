@@ -66,13 +66,16 @@ public class Bookshelf
                 }
             };
     /** the 'first' bookshelf created at install time. We allow renaming it, but not deleting. */
-    public static final int DEFAULT_ID = 1;
+    public static final int DEFAULT = 1;
     /**
      * the virtual 'All Books' representing our complete library.
      * Note we use -1, as {@code 0} is generally used for a 'new' item.
      * i.e. when the user creates a new shelf, it has id==0 before it's saved.
      */
     public static final int ALL_BOOKS = -1;
+    /** The user preferred shelf as stored in preferences. */
+    public static final int PREFERRED = -2;
+
     /**
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
@@ -158,59 +161,61 @@ public class Bookshelf
     }
 
     /**
-     * Get the named bookshelf with fallback to Default/AllBooks as needed.
+     * Get the specified (by id) bookshelf.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param name    of bookshelf to get
-     * @param useAll  set to {@code true} to return the AllBooks shelf,
-     *                if the desired shelf was not found.
+     * @param context    Current context
+     * @param db         Database Access
+     * @param id         of bookshelf to get
+     * @param fallbackId to use if the bookshelf does not exist
+     *                   should be either {@link #DEFAULT} or {@link #ALL_BOOKS}
      *
      * @return the bookshelf.
      */
     @NonNull
     public static Bookshelf getBookshelf(@NonNull final Context context,
                                          @NonNull final DAO db,
-                                         @Nullable final String name,
-                                         final boolean useAll) {
-        if (name != null && !name.isEmpty()) {
-            Bookshelf bookshelf = db.getBookshelfByName(name);
-            if (bookshelf != null) {
-                return bookshelf;
-            } else if (useAll) {
-                // Caller wants "AllBooks" (instead of the default Bookshelf)
-                return getBookshelfAllBooks(context, db);
-            }
+                                         final long id,
+                                         final long fallbackId) {
+
+        Bookshelf bookshelf = getBookshelf(context, db, id);
+        if (bookshelf != null) {
+            return bookshelf;
         }
 
-        return new Bookshelf(DEFAULT_ID, context.getString(R.string.bookshelf_my_books),
-                             BooklistStyle.getDefault(context, db));
-    }
-
-    @NonNull
-    public static Bookshelf getBookshelfAllBooks(@NonNull final Context context,
-                                                 @NonNull final DAO db) {
-        return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
-                             BooklistStyle.getDefault(context, db));
+        return Objects.requireNonNull(getBookshelf(context, db, fallbackId));
     }
 
     /**
-     * Get the preferred bookshelf with fallback to Default/AllBooks as needed.
+     * Get the specified bookshelf. If not found, returns the {@code null}.
      *
      * @param context Current context
      * @param db      Database Access
-     * @param useAll  set to {@code true} to return the AllBooks shelf,
-     *                if the desired shelf was not found.
      *
-     * @return the bookshelf.
+     * @return the bookshelf, or {@code null} if not found
      */
-    @NonNull
-    public static Bookshelf getPreferredBookshelf(@NonNull final Context context,
-                                                  @NonNull final DAO db,
-                                                  final boolean useAll) {
-        String name = PreferenceManager.getDefaultSharedPreferences(context)
-                                       .getString(PREF_BOOKSHELF_CURRENT, null);
-        return getBookshelf(context, db, name, useAll);
+    @Nullable
+    private static Bookshelf getBookshelf(@NonNull final Context context,
+                                          @NonNull final DAO db,
+                                          final long id) {
+        if (id == ALL_BOOKS) {
+            return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
+                                 BooklistStyle.getDefault(context, db));
+
+        } else if (id == DEFAULT) {
+            return new Bookshelf(DEFAULT, context.getString(R.string.bookshelf_my_books),
+                                 BooklistStyle.getDefault(context, db));
+
+        } else if (id == PREFERRED) {
+            String name = PreferenceManager.getDefaultSharedPreferences(context)
+                                           .getString(PREF_BOOKSHELF_CURRENT, null);
+            if (name != null && !name.isEmpty()) {
+                return db.getBookshelfByName(name);
+            }
+            return null;
+
+        } else {
+            return db.getBookshelf(id);
+        }
     }
 
     /**
@@ -276,16 +281,6 @@ public class Bookshelf
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;
-    }
-
-    /**
-     * Do <strong>NOT</strong> call for anything else but export to a CSV file.
-     *
-     * @return the uuid of the style
-     */
-    @NonNull
-    public String getStyleUuid() {
-        return mStyleUuid;
     }
 
     /**
@@ -391,9 +386,9 @@ public class Bookshelf
     /**
      * Equality.
      * <p>
-     *      <li>it's the same Object</li>
-     *      <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     *          AND all other fields are equal</li>
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     * AND all other fields are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
      */

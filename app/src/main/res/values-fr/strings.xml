@@ -243,7 +243,7 @@
     <string name="lbl_book">Livre</string>
     <string name="lbl_books">Livres</string>
     <string name="lbl_bookshelf">Bibliothèque</string>
-    <string name="lbl_bookshelves">Rayons</string>
+    <string name="lbl_bookshelves">Bibliothèques</string>
     <string name="lbl_bookshelves_long">Bibliothèques</string>
     <string name="lbl_by_author_s">par %1$s</string>
     <string name="lbl_color">Couleur</string>
@@ -422,8 +422,8 @@
     <string name="pe_bob_list_rebuild_state_preserve">Préserver l\'état actuel</string>
     <string name="pe_thumbnails_cache_resized_each_time">Redimensionner à chaque fois que nécessaire (moins d\'espace nécessaire, défilement des listes plus lent)</string>
     <string name="pe_thumbnails_cache_resized_stored">Mettre les miniatures en cache (plus d\'espace nécessaire, défilement des listes plus rapide)</string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">Matériel</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">Logiciel</string>
+    <string name="pe_cropper_layer_type_hardware">Matériel</string>
+    <string name="pe_cropper_layer_type_software">Logiciel</string>
     <string name="pe_ui_theme_dark">Noir</string>
     <string name="pe_ui_theme_day_night">Jour / Nuit</string>
     <string name="pe_ui_theme_light">Clair</string>
@@ -437,7 +437,7 @@
     <string name="pg_image_cache">Cache d\'images</string>
     <string name="pg_internet_search">Recherches sur le web</string>
     <string name="pg_style_groups">Groupes</string>
-    <string name="pg_thumbnails">Miniatures</string>
+    <string name="lbl_thumbnails">Miniatures</string>
     <string name="pg_ui">Interface utilisateur</string>
     <string name="pg_ui_field_visibility">Gérer la visibilité des champs</string>
     <string name="progress_end_backup_success">Sauvegarde réussie</string>
@@ -497,10 +497,10 @@
     <string name="pt_site_settings">Paramètres du site</string>
     <string name="pt_sort_author_name_given_first">Tri par nom d\'auteur</string>
     <string name="pt_sort_title_reordered">Trier les titres par</string>
-    <string name="pt_thumbnail_cropper_layer_type">Recadrage «Layer Type»</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez «Logiciel» pour plus sûr mais plus lentement, ou forcez «Matériel» pour moins sûr, mais plus rapide.</string>
+    <string name="pt_cropper_layer_type">Recadrage «Layer Type»</string>
+    <string name="pt_cropper_layer_type_summary">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez «Logiciel» pour plus sûr mais plus lentement, ou forcez «Matériel» pour moins sûr, mais plus rapide.</string>
     <string name="pt_thumbnails_cache_resized">Mettre les miniatures en cache</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
+    <string name="pt_cropper_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
     <string name="pt_thumbnails_rotate_auto">Faire pivoter les images</string>
     <string name="pt_ui_language">Langue</string>
     <string name="pt_ui_system_locale">Paramètres de langue du système</string>
@@ -666,5 +666,6 @@
     <string name="error_site_has_problems">Le site Web a des problèmes.</string>
     <string name="hint_empty_day">(Jour non défini)</string>
     <string name="hint_empty_year">(Année non définie)</string>
+    <string name="lbl_all_bookshelves">Toutes les bibliothèques</string>
 
 </resources>

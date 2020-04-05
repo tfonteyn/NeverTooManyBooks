@@ -102,6 +102,7 @@
     <item name="MENU_AUTHOR_WORKS_ALL" type="id" />
     <item name="MENU_AUTHOR_WORKS_TOC" type="id" />
     <item name="MENU_AUTHOR_WORKS_BOOKS" type="id" />
+    <item name="MENU_AUTHOR_WORKS_ALL_BOOKSHELVES" type="id" />
 
     <item name="MENU_SERIES_DELETE" type="id" />
     <item name="MENU_SERIES_EDIT" type="id" />

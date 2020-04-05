@@ -27,7 +27,8 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group
         android:checkableBehavior="single">
@@ -47,4 +48,10 @@
 
     </group>
 
+    <item
+        android:id="@id/MENU_AUTHOR_WORKS_ALL_BOOKSHELVES"
+        android:checkable="true"
+        android:title="@string/lbl_all_bookshelves"
+        app:showAsAction="never"
+        />
 </menu>

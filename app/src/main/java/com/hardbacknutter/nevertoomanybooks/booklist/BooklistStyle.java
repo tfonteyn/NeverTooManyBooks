@@ -1137,7 +1137,7 @@ public class BooklistStyle
 
         //noinspection ConstantConditions
         if (mAllBookDetailFields.get(DBDefinitions.KEY_THUMBNAIL).isTrue(context)) {
-            labels.add(context.getString(R.string.pt_bob_thumbnails_show));
+            labels.add(context.getString(R.string.lbl_thumbnails));
         }
         //noinspection ConstantConditions
         if (mAllBookDetailFields.get(DBDefinitions.KEY_BOOKSHELF_NAME).isTrue(context)) {

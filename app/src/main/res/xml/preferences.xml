@@ -165,7 +165,7 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferenceFragment"
             android:icon="@drawable/ic_image"
             android:key="psk_thumbnails"
-            android:title="@string/pg_thumbnails"
+            android:title="@string/lbl_thumbnails"
             />
 
         <Preference

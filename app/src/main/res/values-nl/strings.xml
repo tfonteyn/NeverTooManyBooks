@@ -423,8 +423,8 @@
     <string name="pe_bob_list_rebuild_state_preserve">Huidige status behouden</string>
     <string name="pe_thumbnails_cache_resized_each_time">Herschaal elke keer als ze nodig zijn (gebruikt minder opslagruimte, scrollen zal langzamer gaan)</string>
     <string name="pe_thumbnails_cache_resized_stored">Cache herschaalde miniaturen (gebruikt meer opslagruimte, scrollen van de lijst gaat sneller)</string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
+    <string name="pe_cropper_layer_type_hardware">Hardware</string>
+    <string name="pe_cropper_layer_type_software">Software</string>
     <string name="pe_ui_theme_dark">Donker</string>
     <string name="pe_ui_theme_day_night">Dag / Nacht</string>
     <string name="pe_ui_theme_light">Helder</string>
@@ -438,7 +438,7 @@
     <string name="pg_image_cache">Afbeeldingencache</string>
     <string name="pg_internet_search">Internet Zoekopdrachten</string>
     <string name="pg_style_groups">Groeperingen</string>
-    <string name="pg_thumbnails">Miniaturen</string>
+    <string name="lbl_thumbnails">Miniaturen</string>
     <string name="pg_ui">Gebruikersinterface</string>
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="progress_end_backup_success">Back-up gelukt</string>
@@ -498,10 +498,10 @@
     <string name="pt_site_settings">Website instellingen</string>
     <string name="pt_sort_author_name_given_first">Sorteren op auteursnaam</string>
     <string name="pt_sort_title_reordered">Sorteer titels op</string>
-    <string name="pt_thumbnail_cropper_layer_type">Bijsnijden „Layer Type”</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Gebruik de aanbevolen optie, tenzij de applicatie problemen geeft tijdens het bijsnijden van een afbeelding. Gebruik „Software” voor veiliger maar trager, of forceer „Hardware” voor sneller, maar misschien minder stabiel.</string>
+    <string name="pt_cropper_layer_type">Bijsnijden „Layer Type”</string>
+    <string name="pt_cropper_layer_type_summary">Gebruik de aanbevolen optie, tenzij de applicatie problemen geeft tijdens het bijsnijden van een afbeelding. Gebruik „Software” voor veiliger maar trager, of forceer „Hardware” voor sneller, maar misschien minder stabiel.</string>
     <string name="pt_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
+    <string name="pt_cropper_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
     <string name="pt_thumbnails_rotate_auto">Roteer afbeeldingen</string>
     <string name="pt_ui_language">Taal</string>
     <string name="pt_ui_system_locale">Systeem taal</string>
@@ -665,5 +665,6 @@
     <string name="confirm_rebuild_fts">De zoekindexgegevens worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="confirm_rebuild_index">De indexen worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="error_site_has_problems">De website heeft problemen.</string>
+    <string name="lbl_all_bookshelves">Alle boekenplanken</string>
 
 </resources>

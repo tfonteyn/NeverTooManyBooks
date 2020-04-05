@@ -1058,7 +1058,9 @@ public class BooksOnBookshelf
             case R.id.MENU_AUTHOR_WORKS: {
                 final Intent intent = new Intent(this, AuthorWorksActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID,
-                                  rowData.getLong(DBDefinitions.KEY_FK_AUTHOR));
+                                  rowData.getLong(DBDefinitions.KEY_FK_AUTHOR))
+                        .putExtra(DBDefinitions.KEY_FK_BOOKSHELF,
+                                  mModel.getCurrentBookshelf().getId());
                 startActivityForResult(intent, UniqueId.REQ_AUTHOR_WORKS);
                 return true;
             }
@@ -1213,7 +1215,7 @@ public class BooksOnBookshelf
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     // the last edited/inserted shelf
                     final long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
-                                                               Bookshelf.DEFAULT_ID);
+                                                               Bookshelf.DEFAULT);
                     if (bookshelfId != mModel.getCurrentBookshelf().getId()) {
                         mModel.setCurrentBookshelf(this, bookshelfId);
                         mModel.setForceRebuildInOnResume(true);

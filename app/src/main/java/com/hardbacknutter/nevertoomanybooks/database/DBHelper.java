@@ -561,7 +561,7 @@ public final class DBHelper
                    + ',' + KEY_BOOKSHELF_NAME
                    + ',' + KEY_FK_STYLE
                    + ") VALUES ("
-                   + Bookshelf.DEFAULT_ID
+                   + Bookshelf.DEFAULT
                    + ",'" + localContext.getString(R.string.bookshelf_my_books)
                    + "'," + BooklistStyle.DEFAULT_STYLE_ID
                    + ')');

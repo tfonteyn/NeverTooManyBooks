@@ -238,7 +238,7 @@
     <string name="lbl_book">Kniha</string>
     <string name="lbl_books">Knihy</string>
     <string name="lbl_bookshelf">Knihovna</string>
-    <string name="lbl_bookshelves">Police</string>
+    <string name="lbl_bookshelves">Knihovny</string>
     <string name="lbl_bookshelves_long">Zvolte knihovnu</string>
     <string name="lbl_by_author_s">(kým) %1$s</string>
     <string name="lbl_color">Barva</string>
@@ -417,8 +417,8 @@
     <string name="pe_bob_list_rebuild_state_preserve">Zachovat aktuální stav</string>
     <string name="pe_thumbnails_cache_resized_each_time">Změna velikosti obrázků pokaždé, když je potřeba (používá méně paměti, rolování bude pomalejší)</string>
     <string name="pe_thumbnails_cache_resized_stored">Obrázky se změnou velikosti mezipaměti (rolování bude rychlejší, využívá více paměti)</string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
+    <string name="pe_cropper_layer_type_hardware">Hardware</string>
+    <string name="pe_cropper_layer_type_software">Software</string>
     <string name="pe_ui_theme_dark">Temný</string>
     <string name="pe_ui_theme_day_night">Den / Noc</string>
     <string name="pe_ui_theme_light">Světlo</string>
@@ -432,7 +432,7 @@
     <string name="pg_image_cache">Obrázky mezipaměti</string>
     <string name="pg_internet_search">Vyhledávání na webu</string>
     <string name="pg_style_groups">Seskupení</string>
-    <string name="pg_thumbnails">Náhledy</string>
+    <string name="lbl_thumbnails">Náhledy</string>
     <string name="pg_ui">Uživatelské rozhraní</string>
     <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
     <string name="progress_end_backup_success">Zálohování úspěšně dokončeno</string>
@@ -490,10 +490,10 @@
     <string name="pt_site_settings">Nastavení webových stránek</string>
     <string name="pt_sort_author_name_given_first">Třídění autorských jmen</string>
     <string name="pt_sort_title_reordered">Seřadit tituly podle</string>
-    <string name="pt_thumbnail_cropper_layer_type">Oříznout „Layer Type“</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Toto nastavení ponechte na „Použít výchozí“, pokud se při oříznutí obrázků nezdaří. Vyzkoušejte „Software“ pro bezpečnější, ale pomalejší nebo použití „Hardware“ pro méně bezpečné, ale rychlejší</string>
+    <string name="pt_cropper_layer_type">Oříznout „Layer Type“</string>
+    <string name="pt_cropper_layer_type_summary">Toto nastavení ponechte na „Použít výchozí“, pokud se při oříznutí obrázků nezdaří. Vyzkoušejte „Software“ pro bezpečnější, ale pomalejší nebo použití „Hardware“ pro méně bezpečné, ale rychlejší</string>
     <string name="pt_thumbnails_cache_resized">Změněné snímky jsou uloženy do mezipaměti</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Výchozí rámeček oříznutí je celý obraz</string>
+    <string name="pt_cropper_frame_is_whole_image">Výchozí rámeček oříznutí je celý obraz</string>
     <string name="pt_thumbnails_rotate_auto">Otočit obrázky</string>
     <string name="pt_ui_language">Jazyk</string>
     <string name="pt_ui_system_locale">Národní prostředí systému</string>
@@ -658,5 +658,6 @@
     <string name="error_site_has_problems">Web má problémy.</string>
     <string name="hint_empty_day">(Den není nastaven)</string>
     <string name="hint_empty_year">(Rok není nastaven)</string>
+    <string name="lbl_all_bookshelves">Všechny knihovny</string>
 
 </resources>

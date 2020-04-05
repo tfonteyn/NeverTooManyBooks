@@ -155,7 +155,7 @@ public class BookViewModel
         final ArrayList<Bookshelf> list =
                 mBook.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
         if (list.isEmpty()) {
-            list.add(Bookshelf.getPreferredBookshelf(context, mDb, false));
+            list.add(Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
             mBook.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
         }
     }

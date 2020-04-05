@@ -134,8 +134,8 @@
     <!-- ListPreference - Compatibility / bug workaround for some devices -->
     <string-array name="pe_thumbnails_cropper_layer_type">
         <item>@string/pe_use_recommended_option</item>
-        <item>@string/pe_thumbnails_cropper_layer_type_hardware</item>
-        <item>@string/pe_thumbnails_cropper_layer_type_software</item>
+        <item>@string/pe_cropper_layer_type_hardware</item>
+        <item>@string/pe_cropper_layer_type_software</item>
     </string-array>
     <string-array name="pv_thumbnails_cropper_layer_type">
         <item>-1</item>

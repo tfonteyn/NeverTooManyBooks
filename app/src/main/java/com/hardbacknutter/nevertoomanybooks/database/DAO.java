@@ -630,6 +630,7 @@ public class DAO
      * Return all the {@link TocEntry} for the given {@link Author}.
      *
      * @param author         to retrieve
+     * @param bookshelfId    limit the list to books on this shelf (pass -1 for all shelves)
      * @param withTocEntries add the toc entries
      * @param withBooks      add books without TOC as well; i.e. the toc of a book without a toc,
      *                       is the book title itself. (makes sense?)
@@ -638,34 +639,66 @@ public class DAO
      */
     @NonNull
     public ArrayList<TocEntry> getTocEntryByAuthor(@NonNull final Author author,
+                                                   final long bookshelfId,
                                                    final boolean withTocEntries,
                                                    final boolean withBooks) {
 
+        // sanity check
+        if (!withTocEntries && !withBooks) {
+            throw new IllegalArgumentException("Must specify what to fetch");
+        }
+
+        boolean byShelf = bookshelfId != Bookshelf.ALL_BOOKS;
+
         // rawQuery wants String[] as bind parameters
         String authorIdStr = String.valueOf(author.getId());
-        String sql;
-        String[] params;
+        String bookshelfIdStr = String.valueOf(bookshelfId);
+
+        String sql = "";
+        List<String> paramList = new ArrayList<>();
+
+        // MUST be toc first, books second; otherwise the GROUP BY is done on the whole
+        // UNION instead of on the toc only; and SqLite rejects () around the sub selects.
+        if (withTocEntries) {
+            sql += SqlSelectList.TOC_ENTRIES_BY_AUTHOR_ID
+                   // join with the books, so we can group by toc id, and get the number of books.
+                   + " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
+                   + (byShelf ? " JOIN " + TBL_BOOK_BOOKSHELF.ref()
+                                + " ON (" + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_BOOK)
+                                + '=' + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK) + ")"
+                              : "")
+                   + " WHERE " + TBL_TOC_ENTRIES.dot(KEY_FK_AUTHOR) + "=?"
+                   + (byShelf ? " AND " + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF) + "=?"
+                              : "")
+                   + " GROUP BY " + TBL_TOC_ENTRIES.dot(KEY_PK_ID);
+            paramList.add(authorIdStr);
+            if (byShelf) {
+                paramList.add(bookshelfIdStr);
+            }
+        }
 
         if (withBooks && withTocEntries) {
-            sql = SqlSelectList.WORKS_BY_AUTHOR_ID;
-            params = new String[]{authorIdStr, authorIdStr};
+            sql += " UNION ";
+        }
 
-        } else if (withTocEntries) {
-            sql = SqlSelectList.TOC_ENTRIES_BY_AUTHOR_ID;
-            params = new String[]{authorIdStr};
-
-        } else if (withBooks) {
-            sql = SqlSelectList.BOOK_TITLES_BY_AUTHOR_ID;
-            params = new String[]{authorIdStr};
-
-        } else {
-            throw new IllegalArgumentException("Must specify what to fetch");
+        if (withBooks) {
+            sql += SqlSelectList.BOOK_TITLES_BY_AUTHOR_ID
+                   + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
+                   + (byShelf ? TBL_BOOKS.join(TBL_BOOK_BOOKSHELF)
+                              : "")
+                   + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?"
+                   + (byShelf ? " AND " + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF) + "=?"
+                              : "");
+            paramList.add(authorIdStr);
+            if (byShelf) {
+                paramList.add(bookshelfIdStr);
+            }
         }
 
         sql += " ORDER BY " + KEY_TITLE_OB + COLLATION;
 
         ArrayList<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = sSyncedDb.rawQuery(sql, params)) {
+        try (Cursor cursor = sSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
             final RowDataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 TocEntry tocEntry = new TocEntry(rowData.getLong(KEY_PK_ID),
@@ -2258,6 +2291,8 @@ public class DAO
 
     /**
      * Return the bookshelf based on the given id.
+     *
+     * <strong>Don't call directly; instead use a static method in {@link Bookshelf}</strong>.
      *
      * @param id of bookshelf to find
      *
@@ -4442,7 +4477,7 @@ public class DAO
         /**
          * All TocEntry's for an Author.
          * <p>
-         * Order By clause NOT added here, as this statement is used in a union as well.
+         * ORDER BY clause NOT added here, as this statement is used in a union as well.
          * <p>
          * We need KEY_TITLE_OB as it will be used to ORDER BY
          */
@@ -4453,16 +4488,12 @@ public class DAO
                 + ',' + TBL_TOC_ENTRIES.dot(KEY_TITLE_OB)
                 + ',' + TBL_TOC_ENTRIES.dot(KEY_DATE_FIRST_PUBLICATION)
                 // count the number of books this TOC entry is present in.
-                + ", COUNT(" + TBL_TOC_ENTRIES.dot(KEY_PK_ID) + ") AS " + KEY_BOOK_COUNT
-
-                + " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
-                + " WHERE " + TBL_TOC_ENTRIES.dot(KEY_FK_AUTHOR) + "=?"
-                + " GROUP BY " + KEY_PK_ID;
+                + ", COUNT(" + TBL_TOC_ENTRIES.dot(KEY_PK_ID) + ") AS " + KEY_BOOK_COUNT;
 
         /**
          * All Book titles and their first pub. date, for an Author..
          * <p>
-         * Order By clause NOT added here, as this statement is used in a union as well.
+         * ORDER BY clause NOT added here, as this statement is used in a union as well.
          * <p>
          * We need KEY_TITLE_OB as it will be used to ORDER BY
          */
@@ -4472,18 +4503,7 @@ public class DAO
                 + ',' + TBL_BOOKS.dot(KEY_TITLE)
                 + ',' + TBL_BOOKS.dot(KEY_TITLE_OB)
                 + ',' + TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION)
-                + ",1 AS " + KEY_BOOK_COUNT
-
-                + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
-                + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?";
-
-        /**
-         * All TocEntry's + book titles for an Author; ordered by title.
-         */
-        private static final String WORKS_BY_AUTHOR_ID =
-                // MUST be toc first, books second; otherwise the GROUP BY is done on the whole
-                // UNION instead of on the toc only
-                TOC_ENTRIES_BY_AUTHOR_ID + " UNION " + BOOK_TITLES_BY_AUTHOR_ID;
+                + ",1 AS " + KEY_BOOK_COUNT;
     }
 
     /**

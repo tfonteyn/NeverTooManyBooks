@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -61,7 +61,7 @@
             android:key="image.cropper.frame.whole"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_thumbnails_crop_frame_is_whole_image" />
+            android:title="@string/pt_cropper_frame_is_whole_image" />
 
     </PreferenceCategory>
 
@@ -95,7 +95,7 @@
             android:entryValues="@array/pv_thumbnails_cropper_layer_type"
             android:icon="@drawable/ic_manage"
             android:key="compat.image.cropper.viewlayertype"
-            android:title="@string/pt_thumbnail_cropper_layer_type" />
+            android:title="@string/pt_cropper_layer_type" />
 
     </PreferenceCategory>
 </PreferenceScreen>

@@ -43,8 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
@@ -53,20 +53,19 @@ public class AuthorWorksModel
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksModel";
-
+    private final ArrayList<TocEntry> mTocEntries = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;
-
     /** Author is set in {@link #init}. */
     @SuppressWarnings("NullableProblems")
     @NonNull
     private Author mAuthor;
-    @Nullable
-    private ArrayList<TocEntry> mTocEntries;
+    private Bookshelf mBookshelf;
     /** Initially we get toc entries and books. */
     private boolean mWithTocEntries = true;
     /** Initially we get toc entries and books. */
     private boolean mWithBooks = true;
+    private boolean mAllBookshelves;
 
     @Override
     protected void onCleared() {
@@ -78,9 +77,11 @@ public class AuthorWorksModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @NonNull final Bundle args) {
 
         if (mDb == null) {
             mDb = new DAO(TAG);
@@ -90,22 +91,48 @@ public class AuthorWorksModel
                 throw new IllegalArgumentException("Author id must be passed in args");
             }
             mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId));
+
+            final long bookshelfId = args.getLong(DBDefinitions.KEY_FK_BOOKSHELF,
+                                                  Bookshelf.ALL_BOOKS);
+            mBookshelf = Bookshelf.getBookshelf(context, mDb, bookshelfId, Bookshelf.ALL_BOOKS);
+
+            mAllBookshelves = mBookshelf.getId() == Bookshelf.ALL_BOOKS;
+
             mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, mWithTocEntries);
             mWithBooks = args.getBoolean(AuthorWorksFragment.BKEY_WITH_BOOKS, mWithBooks);
-            mTocEntries = mDb.getTocEntryByAuthor(mAuthor, mWithTocEntries, mWithBooks);
+            reloadTocEntries();
         }
     }
 
-    public void loadTocEntries(final boolean withTocEntries,
-                               final boolean withBooks) {
+    public void reloadTocEntries(final boolean withTocEntries,
+                                 final boolean withBooks) {
         mWithTocEntries = withTocEntries;
         mWithBooks = withBooks;
-        mTocEntries = mDb.getTocEntryByAuthor(mAuthor, mWithTocEntries, mWithBooks);
+        reloadTocEntries();
+    }
+
+    public void reloadTocEntries() {
+        mTocEntries.clear();
+        mTocEntries.addAll(mDb.getTocEntryByAuthor(mAuthor,
+                                                   mAllBookshelves ? Bookshelf.ALL_BOOKS
+                                                                   : mBookshelf.getId(),
+                                                   mWithTocEntries, mWithBooks));
+    }
+
+    public long getBookshelfId() {
+        return mBookshelf.getId();
+    }
+
+    public boolean isAllBookshelves() {
+        return mAllBookshelves;
+    }
+
+    public void setAllBookshelves(final boolean all) {
+        mAllBookshelves = all;
     }
 
     @NonNull
     public ArrayList<TocEntry> getTocEntries() {
-        Objects.requireNonNull(mTocEntries, ErrorMsg.NULL_TOC_ENTRY);
         return mTocEntries;
     }
 
@@ -116,7 +143,6 @@ public class AuthorWorksModel
 
     public void delTocEntry(@NonNull final Context context,
                             @NonNull final TocEntry item) {
-        Objects.requireNonNull(mTocEntries, ErrorMsg.NULL_TOC_ENTRY);
         switch (item.getType()) {
             case Toc:
                 if (mDb.deleteTocEntry(item.getId()) == 1) {
@@ -140,5 +166,14 @@ public class AuthorWorksModel
         return context.getString(R.string.name_hash_nr,
                                  mAuthor.getLabel(context),
                                  getTocEntries().size());
+    }
+
+    @Nullable
+    public String getScreenSubtitle() {
+        if (mAllBookshelves) {
+            return null;
+        } else {
+            return "" + mBookshelf.getName();
+        }
     }
 }

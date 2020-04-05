@@ -96,9 +96,9 @@
     </PreferenceCategory>
 
     <!-- technically speaking, thumbnails fall under 'Extra Book Details'
-        But ths is more user-friendly. -->
+        But this is more user-friendly. -->
     <PreferenceCategory
-        android:title="@string/pg_thumbnails"
+        android:title="@string/lbl_thumbnails"
         >
 
         <SwitchPreference

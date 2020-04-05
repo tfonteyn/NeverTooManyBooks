@@ -416,8 +416,8 @@
     <string name="pe_bob_list_rebuild_state_preserve">Сохранить текущее состояние</string>
     <string name="pe_thumbnails_cache_resized_each_time">Не кэшировать (используется меньше места, но пролистывание будет медленнее)</string>
     <string name="pe_thumbnails_cache_resized_stored">Кэшировать(используется больше места, но пролистывание быстрее)</string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">аппаратные средства</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">Программного обеспечения</string>
+    <string name="pe_cropper_layer_type_hardware">аппаратные средства</string>
+    <string name="pe_cropper_layer_type_software">Программного обеспечения</string>
     <string name="pe_ui_theme_dark">темный</string>
     <string name="pe_ui_theme_day_night">День / Ночь</string>
     <string name="pe_ui_theme_light">свет</string>
@@ -431,7 +431,7 @@
     <string name="pg_image_cache">Кэш изображений</string>
     <string name="pg_internet_search">веб-поиск</string>
     <string name="pg_style_groups">Группирование</string>
-    <string name="pg_thumbnails">Миниатюры</string>
+    <string name="lbl_thumbnails">Миниатюры</string>
     <string name="pg_ui">Пользовательский интерфейс</string>
     <string name="pg_ui_field_visibility">Видимость полей</string>
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
@@ -489,10 +489,10 @@
     <string name="pt_site_settings">Настройки сайта</string>
     <string name="pt_sort_author_name_given_first">Сортировка имени автора</string>
     <string name="pt_sort_title_reordered">Сортировать названия по</string>
-    <string name="pt_thumbnail_cropper_layer_type">Обрезать «Layer Type»</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
+    <string name="pt_cropper_layer_type">Обрезать «Layer Type»</string>
+    <string name="pt_cropper_layer_type_summary">Оставьте этот параметр по умолчанию, если вы не столкнетесь с падениями при кадрировании изображений. Попробуйте «программное обеспечение» для более безопасного, но медленного или принудительного «оборудования» для менее безопасного, но быстрее</string>
     <string name="pt_thumbnails_cache_resized">Миниатюры кэша с измененным размером</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
+    <string name="pt_cropper_frame_is_whole_image">Рамка по умолчанию: всё изображение</string>
     <string name="pt_thumbnails_rotate_auto">Повернуть фотографии</string>
     <string name="pt_ui_language">язык</string>
     <string name="pt_ui_system_locale">Локаль системы</string>
@@ -657,5 +657,6 @@
     <string name="error_site_has_problems">На сайте есть проблемы.</string>
     <string name="hint_empty_day">(День не назначен)</string>
     <string name="hint_empty_year">(Год не указан)</string>
+    <string name="lbl_all_bookshelves">Все книжные полки</string>
 
 </resources>

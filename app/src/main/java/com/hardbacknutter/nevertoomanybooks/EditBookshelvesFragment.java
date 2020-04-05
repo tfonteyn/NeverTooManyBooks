@@ -208,7 +208,7 @@ public class EditBookshelvesFragment
                 return true;
 
             case R.id.MENU_DELETE:
-                if (bookshelf.getId() > Bookshelf.DEFAULT_ID) {
+                if (bookshelf.getId() > Bookshelf.DEFAULT) {
                     mModel.deleteBookshelf(bookshelf);
                     mAdapter.notifyDataSetChanged();
 

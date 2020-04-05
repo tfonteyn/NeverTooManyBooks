@@ -418,8 +418,8 @@
     <string name="pe_bob_list_rebuild_state_preserve">Διατηρήστε την τρέχουσα κατάσταση</string>
     <string name="pe_thumbnails_cache_resized_each_time">Αλλαγή μεγέθους όποτε χρειάζεται (χρήση λιγότερου αποθηκευτικού χώρου, πιο αργό scrolling)</string>
     <string name="pe_thumbnails_cache_resized_stored">Αποθήκευση μικρογραφιών αλλαγμένου μεγέθους στην προσωρινή μνήμη (χρήση περισσότερου αποθηλευτικού χώρου, πιο γρήγορο scrolling στις λίστες)</string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">υλισμικό</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">λογισμικού</string>
+    <string name="pe_cropper_layer_type_hardware">υλισμικό</string>
+    <string name="pe_cropper_layer_type_software">λογισμικού</string>
     <string name="pe_ui_theme_dark">Σκούρο</string>
     <string name="pe_ui_theme_day_night">Ημέρα / Νύχτα</string>
     <string name="pe_ui_theme_light">Φως</string>
@@ -433,7 +433,7 @@
     <string name="pg_image_cache">Cache εικόνας</string>
     <string name="pg_internet_search">αναζητήσεις στο διαδίκτυο</string>
     <string name="pg_style_groups">Ομαδοποιήσεις</string>
-    <string name="pg_thumbnails">Μικρογραφίες</string>
+    <string name="lbl_thumbnails">Μικρογραφίες</string>
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
@@ -493,10 +493,10 @@
     <string name="pt_site_settings">Ρυθμίσεις ιστοτόπου</string>
     <string name="pt_sort_author_name_given_first">Ταξινόμηση ονόματος συγγραφέα</string>
     <string name="pt_sort_title_reordered">Ταξινόμηση τίτλων με βάση</string>
-    <string name="pt_thumbnail_cropper_layer_type">Περικοπή μικρογραφίας «Layer Type»</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το «Λογισμικό» για ασφαλέστερο αλλά πιο αργό ή για «υλισμικό» για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
+    <string name="pt_cropper_layer_type">Περικοπή μικρογραφίας «Layer Type»</string>
+    <string name="pt_cropper_layer_type_summary">Αφήστε αυτή τη ρύθμιση στην προεπιλεγμένη τιμή, εκτός εάν παρουσιάσετε σφάλματα κατά την περικοπή εικόνων. Δοκιμάστε το «Λογισμικό» για ασφαλέστερο αλλά πιο αργό ή για «υλισμικό» για λιγότερο ασφαλές αλλά πιο γρήγορο</string>
     <string name="pt_thumbnails_cache_resized">Η μνήμη cache επέστρεψε τις μικρογραφίες</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Η προεπιλεγμένη περικοπή πλαισίου είναι ολόκληρη η εικόνα</string>
+    <string name="pt_cropper_frame_is_whole_image">Η προεπιλεγμένη περικοπή πλαισίου είναι ολόκληρη η εικόνα</string>
     <string name="pt_thumbnails_rotate_auto">Περιστρέψτε τις εικόνες</string>
     <string name="pt_ui_language">Γλώσσα</string>
     <string name="pt_ui_system_locale">Τοπικό σύστημα</string>
@@ -662,5 +662,6 @@
     <string name="error_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
     <string name="hint_empty_day">(Ημέρα δεν έχει οριστεί)</string>
     <string name="hint_empty_year">(Το έτος δεν έχει οριστεί)</string>
+    <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
 
 </resources>

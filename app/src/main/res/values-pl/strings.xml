@@ -416,8 +416,8 @@
     <string name="pe_bob_list_rebuild_state_preserve">Zachowaj obecny stan</string>
     <string name="pe_thumbnails_cache_resized_each_time">Zmień rozmiar obrazów za każdym razem, gdy są potrzebne (zużywa mniej pamięci, przewijanie będzie wolniejsze)</string>
     <string name="pe_thumbnails_cache_resized_stored">Buforuj obrazy o zmienionym rozmiarze (przewijanie będzie szybsze, zużyje więcej pamięci)</string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">Sprzęt komputerowy</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">Oprogramowanie</string>
+    <string name="pe_cropper_layer_type_hardware">Sprzęt komputerowy</string>
+    <string name="pe_cropper_layer_type_software">Oprogramowanie</string>
     <string name="pe_ui_theme_dark">Ciemny</string>
     <string name="pe_ui_theme_day_night">Dzień / Noc</string>
     <string name="pe_ui_theme_light">Światło</string>
@@ -431,7 +431,7 @@
     <string name="pg_image_cache">Pamięć podręczna zdjęć</string>
     <string name="pg_internet_search">Wyszukiwania w Internecie</string>
     <string name="pg_style_groups">Grupowanie</string>
-    <string name="pg_thumbnails">Miniatury</string>
+    <string name="lbl_thumbnails">Miniatury</string>
     <string name="pg_ui">Interfejs użytkownika</string>
     <string name="pg_ui_field_visibility">Dostosuj widoczność pól</string>
     <string name="progress_end_backup_success">Kopia zapasowa wykonana</string>
@@ -489,10 +489,10 @@
     <string name="pt_site_settings">Ustawienia strony internetowej</string>
     <string name="pt_sort_author_name_given_first">Sortowanie nazwisk autorów</string>
     <string name="pt_sort_title_reordered">Sortuj tytuły według</string>
-    <string name="pt_thumbnail_cropper_layer_type">przytnij obraz „Layer Type”</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Pozostaw to ustawienie na „Użyj domyślnych”, chyba że wystąpią awarie podczas kadrowania zdjęć. Wypróbuj „Oprogramowanie”, aby być bezpieczniejszym, ale wolniejszym lub wymusić „Sprzęt”, aby był mniej bezpieczny, ale szybszy</string>
+    <string name="pt_cropper_layer_type">przytnij obraz „Layer Type”</string>
+    <string name="pt_cropper_layer_type_summary">Pozostaw to ustawienie na „Użyj domyślnych”, chyba że wystąpią awarie podczas kadrowania zdjęć. Wypróbuj „Oprogramowanie”, aby być bezpieczniejszym, ale wolniejszym lub wymusić „Sprzęt”, aby był mniej bezpieczny, ale szybszy</string>
     <string name="pt_thumbnails_cache_resized">Zmienione obrazy są buforowane</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Domyślna ramka przycinania to cały obraz</string>
+    <string name="pt_cropper_frame_is_whole_image">Domyślna ramka przycinania to cały obraz</string>
     <string name="pt_thumbnails_rotate_auto">Obracaj zdjęcia</string>
     <string name="pt_ui_language">Język</string>
     <string name="pt_ui_system_locale">Ustawienia regionalne systemu</string>
@@ -657,4 +657,5 @@
     <string name="error_site_has_problems">Witryna ma problemy.</string>
     <string name="hint_empty_day">(Nie ustawiono dnia)</string>
     <string name="hint_empty_year">(Rok nieustawiony)</string>
+    <string name="lbl_all_bookshelves">Wszystkie półki na książki</string>
 </resources>

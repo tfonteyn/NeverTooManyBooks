@@ -422,8 +422,8 @@
     <string name="pe_bob_list_rebuild_state_preserve">Darstellung beibehalten</string>
     <string name="pe_thumbnails_cache_resized_each_time">Größe bei Bedarf ändern (geringerer Speicherverbrauch, langsamerer Bildlauf)</string>
     <string name="pe_thumbnails_cache_resized_stored">Cover-Bilder zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
-    <string name="pe_thumbnails_cropper_layer_type_hardware">Hardware</string>
-    <string name="pe_thumbnails_cropper_layer_type_software">Software</string>
+    <string name="pe_cropper_layer_type_hardware">Hardware</string>
+    <string name="pe_cropper_layer_type_software">Software</string>
     <string name="pe_ui_theme_dark">Dunkel</string>
     <string name="pe_ui_theme_day_night">Tag / Nacht</string>
     <string name="pe_ui_theme_light">Licht</string>
@@ -437,7 +437,7 @@
     <string name="pg_image_cache">Bilder-Cache</string>
     <string name="pg_internet_search">Websuchen</string>
     <string name="pg_style_groups">Gruppierung</string>
-    <string name="pg_thumbnails">Umschlagbilder</string>
+    <string name="lbl_thumbnails">Umschlagbilder</string>
     <string name="pg_ui">Benutzeroberfläche</string>
     <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
@@ -497,10 +497,10 @@
     <string name="pt_site_settings">Website-Einstellungen</string>
     <string name="pt_sort_author_name_given_first">Autorennamen sortieren</string>
     <string name="pt_sort_title_reordered">Titel sortieren nach</string>
-    <string name="pt_thumbnail_cropper_layer_type">Zuschneiden „Layer Type“</string>
-    <string name="pt_thumbnail_cropper_layer_type_summary">Behalten Sie diese Einstellung bei „Standardeinstellung“ bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie „Software“ aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie „Hardware“ für weniger Sicherheit, aber schneller.</string>
+    <string name="pt_cropper_layer_type">Zuschneiden „Layer Type“</string>
+    <string name="pt_cropper_layer_type_summary">Behalten Sie diese Einstellung bei „Standardeinstellung“ bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie „Software“ aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie „Hardware“ für weniger Sicherheit, aber schneller.</string>
     <string name="pt_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
-    <string name="pt_thumbnails_crop_frame_is_whole_image">Standardbeschnitt besteht aus dem gesamten Bild</string>
+    <string name="pt_cropper_frame_is_whole_image">Standardbeschnitt besteht aus dem gesamten Bild</string>
     <string name="pt_thumbnails_rotate_auto">Bilder drehen</string>
     <string name="pt_ui_language">Bediensprache</string>
     <string name="pt_ui_system_locale">System Locale</string>
@@ -666,4 +666,5 @@
     <string name="error_site_has_problems">Die Website hat Probleme.</string>
     <string name="hint_empty_day">(Tag nicht festgelegt)</string>
     <string name="hint_empty_year">(Jahr nicht festgelegt)</string>
+    <string name="lbl_all_bookshelves">Alle Bücherregale</string>
 </resources>

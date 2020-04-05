@@ -126,7 +126,7 @@ public final class TipManager {
                 case R.string.tip_book_search_by_text:
                     tip = new Tip(id, "book_search_by_text");
                     break;
-                case R.string.pt_thumbnail_cropper_layer_type_summary:
+                case R.string.pt_cropper_layer_type_summary:
                     tip = new Tip(id, "thumbnail_cropper_layer_type_summary");
                     break;
                 case R.string.tip_update_fields_from_internet:
