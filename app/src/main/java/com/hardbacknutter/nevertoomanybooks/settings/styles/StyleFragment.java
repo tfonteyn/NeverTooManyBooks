@@ -181,7 +181,7 @@ public class StyleFragment
             case Prefs.pk_style_book_show_thumbnails:
             case Prefs.PSK_STYLE_SHOW_DETAILS: {
                 // the 'extra' fields in use.
-                Preference preference = findPreference(key);
+                Preference preference = findPreference(Prefs.PSK_STYLE_SHOW_DETAILS);
                 if (preference != null) {
                     //noinspection ConstantConditions
                     List<String> labels = mStyle.getBookDetailsFieldLabels(getContext());
