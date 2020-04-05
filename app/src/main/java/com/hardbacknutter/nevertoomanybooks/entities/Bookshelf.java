@@ -140,7 +140,7 @@ public class Bookshelf
     public Bookshelf(final long id,
                      @NonNull final RowDataHolder rowData) {
         mId = id;
-        mName = rowData.getString(DBDefinitions.KEY_BOOKSHELF);
+        mName = rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
         mStyleUuid = rowData.getString(DBDefinitions.KEY_UUID);
     }
 

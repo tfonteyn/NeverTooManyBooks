@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.UpgradeMessageManager;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
@@ -547,7 +547,7 @@ public final class DBHelper
         // inserts a 'All Books' bookshelf with _id==-1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
                    + '(' + KEY_PK_ID
-                   + ',' + KEY_BOOKSHELF
+                   + ',' + KEY_BOOKSHELF_NAME
                    + ',' + KEY_FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
@@ -558,7 +558,7 @@ public final class DBHelper
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
         db.execSQL("INSERT INTO " + TBL_BOOKSHELF
                    + '(' + KEY_PK_ID
-                   + ',' + KEY_BOOKSHELF
+                   + ',' + KEY_BOOKSHELF_NAME
                    + ',' + KEY_FK_STYLE
                    + ") VALUES ("
                    + Bookshelf.DEFAULT_ID

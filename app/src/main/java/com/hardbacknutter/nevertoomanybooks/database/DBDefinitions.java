@@ -143,7 +143,7 @@ public final class DBDefinitions {
      */
     public static final Domain DOM_FK_BL_ROW_ID;
     /** {@link #TBL_BOOKSHELF}. */
-    public static final Domain DOM_BOOKSHELF;
+    public static final Domain DOM_BOOKSHELF_NAME;
 
     /* ======================================================================================
      * Domain definitions.
@@ -380,7 +380,7 @@ public final class DBDefinitions {
 //                DBDefinitions.KEY_EID_LCCN
     };
     /** {@link #TBL_BOOKSHELF}. */
-    public static final String KEY_BOOKSHELF = "bookshelf";
+    public static final String KEY_BOOKSHELF_NAME = "bookshelf";
     /** Alias. */
     public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
     /** Alias. */
@@ -607,8 +607,8 @@ public final class DBDefinitions {
          *  Bookshelf domains
          * ====================================================================================== */
 
-        DOM_BOOKSHELF =
-                new Domain.Builder(KEY_BOOKSHELF, ColumnInfo.TYPE_TEXT)
+        DOM_BOOKSHELF_NAME =
+                new Domain.Builder(KEY_BOOKSHELF_NAME, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
         DOM_BOOKSHELF_NAME_CSV =
@@ -1033,10 +1033,10 @@ public final class DBDefinitions {
 
         TBL_BOOKSHELF.addDomains(DOM_PK_ID,
                                  DOM_FK_STYLE,
-                                 DOM_BOOKSHELF)
+                                 DOM_BOOKSHELF_NAME)
                      .setPrimaryKey(DOM_PK_ID)
                      .addReference(TBL_BOOKLIST_STYLES, DOM_FK_STYLE)
-                     .addIndex(KEY_BOOKSHELF, true, DOM_BOOKSHELF);
+                     .addIndex(KEY_BOOKSHELF_NAME, true, DOM_BOOKSHELF_NAME);
         ALL_TABLES.put(TBL_BOOKSHELF.getName(), TBL_BOOKSHELF);
 
 

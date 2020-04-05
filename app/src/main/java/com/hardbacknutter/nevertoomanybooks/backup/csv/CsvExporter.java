@@ -100,7 +100,7 @@ public class CsvExporter
             + '"' + DBDefinitions.KEY_DATE_FIRST_PUBLICATION + "\","
             + '"' + DBDefinitions.KEY_EDITION_BITMASK + "\","
             + '"' + DBDefinitions.KEY_RATING + "\","
-            + '"' + DBDefinitions.KEY_BOOKSHELF + "\","
+            + '"' + DBDefinitions.KEY_BOOKSHELF_NAME + "\","
             + '"' + DBDefinitions.KEY_READ + "\","
             + '"' + CSV_COLUMN_SERIES + "\","
             + '"' + DBDefinitions.KEY_PAGES + "\","

@@ -190,7 +190,7 @@ public class BookDetailsFragmentViewModel
         fields.add(R.id.bookshelves,
                    new EntityListChipGroupAccessor(new ArrayList<>(mDb.getBookshelves()), false),
                    UniqueId.BKEY_BOOKSHELF_ARRAY,
-                   DBDefinitions.KEY_BOOKSHELF)
+                   DBDefinitions.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
 
         fields.add(R.id.date_acquired, new TextAccessor<>(dateFormatter),

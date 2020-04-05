@@ -536,7 +536,7 @@ public class BooksOnBookshelfModel
 
         // Add the conditional domains; style level.
 
-        if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_BOOKSHELF)) {
+        if (style.isBookDetailUsed(context, prefs, DBDefinitions.KEY_BOOKSHELF_NAME)) {
             // This collects a CSV list of the bookshelves the book is on.
             blb.addDomain(new VirtualDomain(
                     DBDefinitions.DOM_BOOKSHELF_NAME_CSV,

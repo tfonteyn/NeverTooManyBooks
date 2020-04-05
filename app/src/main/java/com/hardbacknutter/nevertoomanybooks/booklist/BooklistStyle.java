@@ -601,7 +601,7 @@ public class BooklistStyle
                                               mUuid, isUserDefined,
                                               true));
 
-        mAllBookDetailFields.put(DBDefinitions.KEY_BOOKSHELF,
+        mAllBookDetailFields.put(DBDefinitions.KEY_BOOKSHELF_NAME,
                                  new PBoolean(Prefs.pk_style_book_show_bookshelves,
                                               mUuid, isUserDefined));
 
@@ -1140,7 +1140,7 @@ public class BooklistStyle
             labels.add(context.getString(R.string.pt_bob_thumbnails_show));
         }
         //noinspection ConstantConditions
-        if (mAllBookDetailFields.get(DBDefinitions.KEY_BOOKSHELF).isTrue(context)) {
+        if (mAllBookDetailFields.get(DBDefinitions.KEY_BOOKSHELF_NAME).isTrue(context)) {
             labels.add(context.getString(R.string.lbl_bookshelves));
         }
         //noinspection ConstantConditions

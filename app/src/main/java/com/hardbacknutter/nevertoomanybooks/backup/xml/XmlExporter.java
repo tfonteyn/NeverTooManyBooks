@@ -362,8 +362,8 @@ public class XmlExporter
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 writer.write('<' + XmlTags.TAG_BOOKSHELF);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOKSHELF,
-                                           rowData.getString(DBDefinitions.KEY_BOOKSHELF)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOKSHELF_NAME,
+                                           rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_STYLE,
                                            rowData.getString(DBDefinitions.KEY_UUID)));
                 writer.write("/>\n");

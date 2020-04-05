@@ -175,7 +175,7 @@ public class EditBookFieldsFragment
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
         fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter(), true),
-                   UniqueId.BKEY_BOOKSHELF_ARRAY, DBDefinitions.KEY_BOOKSHELF)
+                   UniqueId.BKEY_BOOKSHELF_ARRAY, DBDefinitions.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
 

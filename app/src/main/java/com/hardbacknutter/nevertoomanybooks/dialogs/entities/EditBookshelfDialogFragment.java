@@ -105,7 +105,7 @@ public class EditBookshelfDialogFragment
         if (savedInstanceState == null) {
             mName = mBookshelf.getName();
         } else {
-            mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF);
+            mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
         }
     }
 
@@ -133,7 +133,7 @@ public class EditBookshelfDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_BOOKSHELF, mName);
+        outState.putString(DBDefinitions.KEY_BOOKSHELF_NAME, mName);
     }
 
     private void doSave() {

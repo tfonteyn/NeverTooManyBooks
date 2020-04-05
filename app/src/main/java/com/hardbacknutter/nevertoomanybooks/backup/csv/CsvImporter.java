@@ -478,8 +478,8 @@ public class CsvImporter
         // but old files might contain LEGACY_BOOKSHELF_TEXT_COLUMN (and LEGACY_BOOKSHELF_ID)
         // Both are CSV formatted
         String encodedList = null;
-        if (book.contains(DBDefinitions.KEY_BOOKSHELF)) {
-            encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF);
+        if (book.contains(DBDefinitions.KEY_BOOKSHELF_NAME)) {
+            encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
 
         } else if (book.contains(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
             encodedList = book.getString(LEGACY_BOOKSHELF_TEXT_COLUMN);
@@ -493,7 +493,7 @@ public class CsvImporter
                 book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bookshelves);
             }
         }
-        book.remove(DBDefinitions.KEY_BOOKSHELF);
+        book.remove(DBDefinitions.KEY_BOOKSHELF_NAME);
         book.remove(LEGACY_BOOKSHELF_TEXT_COLUMN);
         book.remove(LEGACY_BOOKSHELF_ID);
     }

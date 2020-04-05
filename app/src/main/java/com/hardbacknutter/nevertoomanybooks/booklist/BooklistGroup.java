@@ -70,7 +70,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_SORT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
@@ -94,7 +94,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
@@ -929,7 +929,7 @@ public class BooklistGroup
 
                 // Data with a linked table use the foreign key ID as the key domain.
                 case AUTHOR: {
-                    // We must use the foreign ID to create the key.
+                    // We use the foreign ID to create the key.
                     // We override the display domain in the BooklistGroup.
                     // We do not sort on the key domain but add the OB column in the BooklistGroup.
                     return new GroupKey(
@@ -946,7 +946,7 @@ public class BooklistGroup
                                                       TBL_AUTHORS.dot(KEY_AUTHOR_IS_COMPLETE)));
                 }
                 case SERIES: {
-                    // We must use the foreign ID to create the key.
+                    // We use the foreign ID to create the key.
                     // We override the display domain in the BooklistGroup.
                     // We do not sort on the key domain but add the OB column instead
                     return new GroupKey(
@@ -987,10 +987,12 @@ public class BooklistGroup
 
                 }
                 case BOOKSHELF: {
-                    // We must use the foreign ID to create the key.
-                    // The linked data can be used directly to display.
+                    // We do NOT use the foreign ID to create the key.
+                    // The linked data is used directly to display.
+                    // If we ever create a dedicated BooklistGroup for Bookshelf,
+                    // this can/should be changed.
                     return new GroupKey(R.string.lbl_bookshelf, "shelf",
-                                        DOM_BOOKSHELF, TBL_BOOKSHELF.dot(KEY_BOOKSHELF),
+                                        DOM_BOOKSHELF_NAME, TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
                                         VirtualDomain.Sorted.Asc);
                 }
 

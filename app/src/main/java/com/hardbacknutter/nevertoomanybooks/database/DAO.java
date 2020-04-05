@@ -97,7 +97,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
@@ -425,7 +425,7 @@ public class DAO
     public void purgeNodeStatesByBookshelf(final long bookshelfId) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 _DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
-                + " WHERE " + KEY_BOOKSHELF + "=?")) {
+                + " WHERE " + KEY_FK_BOOKSHELF + "=?")) {
             stmt.bindLong(1, bookshelfId);
             stmt.executeUpdateDelete();
         }
@@ -2287,7 +2287,7 @@ public class DAO
                                    final long styleId) {
 
         ContentValues cv = new ContentValues();
-        cv.put(KEY_BOOKSHELF, bookshelf.getName());
+        cv.put(KEY_BOOKSHELF_NAME, bookshelf.getName());
         cv.put(KEY_FK_STYLE, styleId);
 
         return 0 < sSyncedDb.update(TBL_BOOKSHELF.getName(), cv,
@@ -2348,7 +2348,7 @@ public class DAO
     public Cursor fetchBookshelves() {
         String sql = SqlSelectFullTable.BOOKSHELVES
                      + " WHERE " + TBL_BOOKSHELF.dot(KEY_PK_ID) + ">0"
-                     + " ORDER BY " + KEY_BOOKSHELF + COLLATION;
+                     + " ORDER BY " + KEY_BOOKSHELF_NAME + COLLATION;
         return sSyncedDb.rawQuery(sql, null);
     }
 
@@ -4043,7 +4043,7 @@ public class DAO
          */
         public static final String EXP_BOOKSHELF_NAME_CSV =
                 "("
-                + "SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')"
+                + "SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + ",', ')"
                 + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
                 + " WHERE " + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
                 + ")";
@@ -4208,7 +4208,7 @@ public class DAO
         /** {@link Bookshelf} all columns. */
         private static final String BOOKSHELVES =
                 "SELECT " + TBL_BOOKSHELF.dot(KEY_PK_ID)
-                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF)
+                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME)
                 + ',' + TBL_BOOKSHELF.dot(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(KEY_UUID)
                 + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
@@ -4340,7 +4340,7 @@ public class DAO
         private static final String BOOKSHELVES_BY_BOOK_ID =
                 "SELECT DISTINCT "
                 + TBL_BOOKSHELF.dot(KEY_PK_ID)
-                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF)
+                + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME)
                 + ',' + TBL_BOOKSHELF.dot(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(KEY_UUID)
 
@@ -4348,7 +4348,7 @@ public class DAO
                 + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
                 + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES)
                 + " WHERE " + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK) + "=?"
-                + " ORDER BY " + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + COLLATION;
+                + " ORDER BY " + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + COLLATION;
 
         /**
          * All Authors for a Book; ordered by position, family, given.
@@ -4524,7 +4524,7 @@ public class DAO
 
         static final String BOOKSHELF_ID_BY_NAME =
                 "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKSHELF.getName()
-                + " WHERE " + KEY_BOOKSHELF + "=?" + COLLATION;
+                + " WHERE " + KEY_BOOKSHELF_NAME + "=?" + COLLATION;
 
         /**
          * Get the id of a {@link Series} by its Title.
@@ -4603,7 +4603,7 @@ public class DAO
          */
         static final String BOOKSHELF_BY_NAME =
                 SqlSelectFullTable.BOOKSHELVES
-                + " WHERE " + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + "=?" + COLLATION;
+                + " WHERE " + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + "=?" + COLLATION;
 
         /**
          * Get an {@link Author} by its id.
@@ -4685,7 +4685,7 @@ public class DAO
 
         static final String BOOKSHELF =
                 "INSERT INTO " + TBL_BOOKSHELF.getName()
-                + '(' + KEY_BOOKSHELF
+                + '(' + KEY_BOOKSHELF_NAME
                 + ',' + KEY_FK_STYLE
                 + ") VALUES (?,?)";
 
@@ -4724,7 +4724,7 @@ public class DAO
         static final String BOOK_BOOKSHELF =
                 "INSERT INTO " + TBL_BOOK_BOOKSHELF.getName()
                 + '(' + KEY_FK_BOOK
-                + ',' + KEY_BOOKSHELF
+                + ',' + KEY_FK_BOOKSHELF
                 + ") VALUES (?,?)";
 
         static final String BOOK_AUTHOR =
