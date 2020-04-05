@@ -27,12 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
  * Value class to report back what was imported.
@@ -55,12 +60,11 @@ public class ImportResults
             return new ImportResults[size];
         }
     };
-
+    private static final String BULLET = "\n• ";
     /** Keeps track of failed import lines in a text file. */
     public final ArrayList<Integer> failedLinesNr = new ArrayList<>();
     /** Keeps track of failed import lines in a text file. */
     public final ArrayList<String> failedLinesMessage = new ArrayList<>();
-
     /** The total #books that were present in the import data. */
     public int booksProcessed;
     /** #books we created. */
@@ -69,7 +73,6 @@ public class ImportResults
     public int booksUpdated;
     /** #books we skipped. (yes, we could use failedLinesNr.size()) */
     public int booksSkipped;
-
     /** The total #covers that were present in the import data. */
     public int coversProcessed;
     /** #covers we created. */
@@ -78,7 +81,6 @@ public class ImportResults
     public int coversUpdated;
     /** #covers we skipped. */
     public int coversSkipped;
-
     /** #styles we imported. */
     public int styles;
     /** #preferences we imported. */
@@ -173,5 +175,66 @@ public class ImportResults
                + ", failedLinesNr=" + failedLinesNr
                + ", failedLinesMessage=" + failedLinesMessage
                + '}';
+    }
+
+    /**
+     * Transform the result data into a user friendly report.
+     *
+     * @param context Current context
+     *
+     * @return report string
+     */
+    public String createReport(@NonNull final Context context) {
+        //
+        final StringBuilder msg = new StringBuilder();
+
+        //TODO: RTL
+        if (booksCreated > 0 || booksUpdated > 0 || booksSkipped > 0) {
+            msg.append(BULLET)
+               .append(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                         context.getString(R.string.lbl_books),
+                                         booksCreated,
+                                         booksUpdated,
+                                         booksSkipped));
+        }
+        if (coversCreated > 0 || coversUpdated > 0 || coversSkipped > 0) {
+            msg.append(BULLET)
+               .append(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                         context.getString(R.string.lbl_covers),
+                                         coversCreated,
+                                         coversUpdated,
+                                         coversSkipped));
+        }
+        if (styles > 0) {
+            msg.append(BULLET).append(context.getString(R.string.name_colon_value,
+                                                        context.getString(R.string.lbl_styles),
+                                                        String.valueOf(styles)));
+        }
+        if (preferences > 0) {
+            msg.append(BULLET).append(context.getString(R.string.lbl_settings));
+        }
+
+        int failed = failedLinesNr.size();
+        if (failed > 0) {
+            final int fs;
+            final Collection<String> msgList = new ArrayList<>();
+
+            if (failed > 10) {
+                // keep it sensible, list maximum 10 lines.
+                failed = 10;
+                fs = R.string.warning_import_csv_failed_lines_lots;
+            } else {
+                fs = R.string.warning_import_csv_failed_lines_some;
+            }
+            for (int i = 0; i < failed; i++) {
+                msgList.add(context.getString(R.string.a_bracket_b_bracket,
+                                              String.valueOf(failedLinesNr.get(i)),
+                                              failedLinesMessage.get(i)));
+            }
+
+            msg.append("\n").append(context.getString(fs, Csv.textList(context, msgList, null)));
+        }
+
+        return msg.toString();
     }
 }

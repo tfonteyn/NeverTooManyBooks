@@ -28,12 +28,9 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.system.ErrnoException;
-import android.system.OsConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +38,6 @@ import android.view.ViewGroup;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -50,13 +46,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -64,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportTaskModel;
 
@@ -78,9 +71,6 @@ public class ExportFragment
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
-    /** The maximum file size for an export file for which we'll offer to send it as an email. */
-    private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
-    private static final String BULLET = "\n• ";
     /** ViewModel. */
     private ResultDataModel mResultDataModel;
     /** Export. */
@@ -229,7 +219,7 @@ public class ExportFragment
     }
 
     /**
-     * Export finished/failed: Step 1: Process the result.
+     * Export finished/failed: Process the result.
      *
      * @param message to process
      */
@@ -242,8 +232,31 @@ public class ExportFragment
 
         switch (message.status) {
             case Success: {
-                onExportFinished(message.result.getResults(),
-                                 message.result.getUri());
+                //noinspection ConstantConditions
+                MaterialAlertDialogBuilder dialogBuilder =
+                        new MaterialAlertDialogBuilder(getContext())
+                                .setTitle(R.string.progress_end_backup_success)
+                                .setPositiveButton(R.string.done, (d, which) -> {
+                                    //noinspection ConstantConditions
+                                    getActivity().finish();
+                                });
+
+                final Uri uri = message.result.getUri();
+                final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
+                String msg = message.result.getResults().createReport(getContext(), uriInfo);
+                if (message.result.offerEmail(uriInfo)) {
+                    msg += "\n\n" + getString(R.string.confirm_email_export);
+                    dialogBuilder.setNeutralButton(R.string.btn_email,
+                                                   (d, which) -> onExportEmail(uri));
+                }
+
+                dialogBuilder
+                        .setMessage(msg)
+                        .create()
+                        .show();
+
+                //noinspection ConstantConditions
+                getActivity().setResult(Activity.RESULT_OK, mResultDataModel.getResultData());
                 break;
             }
             case Cancelled: {
@@ -255,136 +268,18 @@ public class ExportFragment
                 break;
             }
             case Failed: {
-                onExportFailed(message.exception);
+                //noinspection ConstantConditions
+                String msg = message.result.createExceptionReport(getContext(), message.exception);
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle(R.string.error_backup_failed)
+                        .setMessage(msg)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                        .create()
+                        .show();
                 break;
             }
         }
-    }
-
-    /**
-     * Export finished: Step 2: Inform the user.
-     */
-    private void onExportFinished(@NonNull final ExportResults results,
-                                  @NonNull final Uri uri) {
-        // Transform the result data into a user friendly report.
-        final StringBuilder msg = new StringBuilder();
-
-        //TODO: RTL
-        // slightly misleading. The text currently says "processed" but it's really "exported".
-        if (results.booksExported > 0) {
-            msg.append(BULLET)
-               .append(getString(R.string.progress_end_export_result_n_books_processed,
-                                 results.booksExported));
-        }
-        if (results.coversExported > 0
-            || results.coversMissing[0] > 0
-            || results.coversMissing[1] > 0) {
-            msg.append(BULLET)
-               .append(getString(R.string.progress_end_export_result_n_covers_processed_m_missing,
-                                 results.coversExported,
-                                 results.coversMissing[0],
-                                 results.coversMissing[1]));
-        }
-
-        if (results.styles > 0) {
-            msg.append(BULLET).append(getString(R.string.name_colon_value,
-                                                getString(R.string.lbl_styles),
-                                                String.valueOf(results.styles)));
-        }
-        if (results.preferences > 0) {
-            msg.append(BULLET).append(getString(R.string.lbl_settings));
-        }
-
-        //noinspection ConstantConditions
-        final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
-        // The below works, but we cannot get the folder name for the file.
-        // Disabling for now. We'd need to change the descriptive string not to include the folder.
-        if (uriInfo != null && uriInfo.first != null && uriInfo.second != null) {
-            msg.append("\n\n")
-               .append(getString(R.string.X_export_info_success_archive_details,
-                                 "",
-                                 uriInfo.first,
-                                 FileUtils.formatFileSize(getContext(), uriInfo.second)));
-        }
-
-        final long fileSize;
-        if (uriInfo != null && uriInfo.second != null) {
-            fileSize = uriInfo.second;
-        } else {
-            fileSize = 0;
-        }
-        // up to 5mb
-        boolean offerEmail = fileSize > 0 && fileSize < MAX_FILE_SIZE_FOR_EMAIL;
-
-        if (offerEmail) {
-            msg.append("\n\n").append(getString(R.string.confirm_email_export));
-        }
-
-        AlertDialog dialog = new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.progress_end_backup_success)
-                .setMessage(msg)
-                .setPositiveButton(R.string.done, (d, which) -> {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                })
-                .create();
-
-        if (offerEmail) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.btn_email),
-                             (d, which) -> onExportEmail(uri));
-        }
-
-        dialog.show();
-
-        //noinspection ConstantConditions
-        getActivity().setResult(Activity.RESULT_OK, mResultDataModel.getResultData());
-    }
-
-    /**
-     * Export failed: Step 2: Inform the user.
-     *
-     * @param e the Exception as returned from the export task
-     */
-    private void onExportFailed(@Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof IOException) {
-            // see if we can find the exact cause
-            if (e.getCause() instanceof ErrnoException) {
-                final int errno = ((ErrnoException) e.getCause()).errno;
-                // write failed: ENOSPC (No space left on device)
-                if (errno == OsConstants.ENOSPC) {
-                    msg = getString(R.string.error_storage_no_space_left);
-                } else {
-                    // write to logfile for future reporting enhancements.
-                    //noinspection ConstantConditions
-                    Logger.warn(getContext(), TAG, "onExportFailed|errno=" + errno);
-                }
-            }
-
-            // generic IOException message
-            if (msg == null) {
-                msg = getString(R.string.error_storage_not_writable) + "\n\n"
-                      + getString(R.string.error_if_the_problem_persists,
-                                  getString(R.string.lbl_send_debug_info));
-            }
-        } else if (e instanceof FormattedMessageException) {
-            //noinspection ConstantConditions
-            msg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = getString(R.string.error_unexpected_error);
-        }
-
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.error_backup_failed)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                .create()
-                .show();
     }
 
     /**

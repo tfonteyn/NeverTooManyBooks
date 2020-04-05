@@ -31,9 +31,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.system.ErrnoException;
+import android.system.OsConstants;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
@@ -42,6 +45,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
@@ -50,10 +54,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 public class ExportManager
         implements Parcelable {
@@ -89,6 +95,8 @@ public class ExportManager
     private static final String TEMP_FILE_NAME = TAG + ".tmp";
     /** Last full backup date. */
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
+    /** The maximum file size for an export file for which we'll offer to send it as an email. */
+    private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
     /**
      * Bitmask.
      * Contains the user selected options before doing the import/export.
@@ -355,5 +363,51 @@ public class ExportManager
                + ", mDateFrom=" + mDateFrom
                + ", mResults=" + mResults
                + '}';
+    }
+
+    public boolean offerEmail(@Nullable final Pair<String, Long> uriInfo) {
+        final long fileSize;
+        if (uriInfo != null && uriInfo.second != null) {
+            fileSize = uriInfo.second;
+        } else {
+            fileSize = 0;
+        }
+
+        return fileSize > 0 && fileSize < MAX_FILE_SIZE_FOR_EMAIL;
+    }
+
+    public String createExceptionReport(@NonNull final Context context,
+                                        @Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof IOException) {
+            // see if we can find the exact cause
+            if (e.getCause() instanceof ErrnoException) {
+                final int errno = ((ErrnoException) e.getCause()).errno;
+                // write failed: ENOSPC (No space left on device)
+                if (errno == OsConstants.ENOSPC) {
+                    msg = context.getString(R.string.error_storage_no_space_left);
+                } else {
+                    // write to logfile for future reporting enhancements.
+                    Logger.warn(context, TAG, "onExportFailed|errno=" + errno);
+                }
+            }
+
+            // generic IOException message
+            if (msg == null) {
+                msg = context.getString(R.string.error_storage_not_writable) + "\n\n"
+                      + context.getString(R.string.error_if_the_problem_persists,
+                                          context.getString(R.string.lbl_send_debug_info));
+            }
+        } else if (e instanceof FormattedMessageException) {
+            msg = ((FormattedMessageException) e).getLocalizedMessage(context);
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = context.getString(R.string.error_unexpected_error);
+        }
+
+        return msg;
     }
 }

@@ -45,24 +45,18 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ImportTaskModel;
 
@@ -76,7 +70,6 @@ public class ImportFragment
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
-    private static final String BULLET = "\n• ";
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** ViewModel. */
@@ -284,7 +277,15 @@ public class ImportFragment
                 break;
             }
             case Failed: {
-                onImportFailed(message.exception);
+                //noinspection ConstantConditions
+                String msg = message.result.createExceptionReport(getContext(), message.exception);
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setTitle(R.string.error_import_failed)
+                        .setMessage(msg)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                        .create()
+                        .show();
                 break;
             }
         }
@@ -295,67 +296,16 @@ public class ImportFragment
      *
      * @param titleId for the dialog title; reports success or cancelled.
      * @param options what was actually imported
-     * @param results what was imported
+     * @param results details of the import
      */
     private void onImportFinished(@StringRes final int titleId,
                                   final int options,
                                   @NonNull final ImportResults results) {
 
-        // Transform the result data into a user friendly report.
-        final StringBuilder msg = new StringBuilder();
-
-        //TODO: RTL
-        if (results.booksCreated > 0 || results.booksUpdated > 0 || results.booksSkipped > 0) {
-            msg.append(BULLET)
-               .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                 getString(R.string.lbl_books),
-                                 results.booksCreated,
-                                 results.booksUpdated,
-                                 results.booksSkipped));
-        }
-        if (results.coversCreated > 0 || results.coversUpdated > 0 || results.coversSkipped > 0) {
-            msg.append(BULLET)
-               .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                 getString(R.string.lbl_covers),
-                                 results.coversCreated,
-                                 results.coversUpdated,
-                                 results.coversSkipped));
-        }
-        if (results.styles > 0) {
-            msg.append(BULLET).append(getString(R.string.name_colon_value,
-                                                getString(R.string.lbl_styles),
-                                                String.valueOf(results.styles)));
-        }
-        if (results.preferences > 0) {
-            msg.append(BULLET).append(getString(R.string.lbl_settings));
-        }
-
-        int failed = results.failedLinesNr.size();
-        if (failed > 0) {
-            final int fs;
-            final Collection<String> msgList = new ArrayList<>();
-
-            if (failed > 10) {
-                // keep it sensible, list maximum 10 lines.
-                failed = 10;
-                fs = R.string.warning_import_csv_failed_lines_lots;
-            } else {
-                fs = R.string.warning_import_csv_failed_lines_some;
-            }
-            for (int i = 0; i < failed; i++) {
-                msgList.add(getString(R.string.a_bracket_b_bracket,
-                                      String.valueOf(results.failedLinesNr.get(i)),
-                                      results.failedLinesMessage.get(i)));
-            }
-
-            //noinspection ConstantConditions
-            msg.append("\n").append(getString(fs, Csv.textList(getContext(), msgList, null)));
-        }
-
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setTitle(titleId)
-                .setMessage(msg)
+                .setMessage(results.createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
                     mResultDataModel.putResultData(UniqueId.BKEY_IMPORT_RESULT, options);
                     //noinspection ConstantConditions
@@ -367,40 +317,4 @@ public class ImportFragment
                 .show();
     }
 
-    /**
-     * Import failed: Step 2: Inform the user.
-     *
-     * @param e the Exception as returned from the import task
-     */
-    private void onImportFailed(@Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof InvalidArchiveException) {
-            msg = getString(R.string.error_import_invalid_archive);
-
-        } else if (e instanceof IOException) {
-            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
-            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
-            msg = getString(R.string.error_storage_not_readable) + "\n\n"
-                  + getString(R.string.error_if_the_problem_persists,
-                              getString(R.string.lbl_send_debug_info));
-
-        } else if (e instanceof FormattedMessageException) {
-            //noinspection ConstantConditions
-            msg = ((FormattedMessageException) e).getLocalizedMessage(getContext());
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = getString(R.string.error_unexpected_error);
-        }
-
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.error_import_failed)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                .create()
-                .show();
-    }
 }

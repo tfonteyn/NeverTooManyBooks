@@ -29,13 +29,10 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.system.ErrnoException;
-import android.system.OsConstants;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,7 +49,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -65,9 +61,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -76,9 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelperDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
@@ -118,9 +110,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -166,12 +156,9 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 public class BooksOnBookshelf
         extends BaseActivity {
 
-    /** The maximum file size for an export file for which we'll offer to send it as an email. */
-    public static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelf";
     public static final String START_BACKUP = TAG + ":startBackup";
-    private static final String BULLET = "\n• ";
     /**
      * List header.
      * Views for the current row level-text.
@@ -1816,7 +1803,7 @@ public class BooksOnBookshelf
     }
 
     /**
-     * Export finished/failed: Step 1: Process the result.
+     * Export finished/failed: Process the result.
      *
      * @param message to process
      */
@@ -1829,8 +1816,24 @@ public class BooksOnBookshelf
 
         switch (message.status) {
             case Success: {
-                onExportFinished(message.result.getResults(),
-                                 message.result.getUri());
+                MaterialAlertDialogBuilder dialogBuilder =
+                        new MaterialAlertDialogBuilder(this)
+                                .setTitle(R.string.progress_end_backup_success)
+                                .setPositiveButton(R.string.done, (d, which) -> d.dismiss());
+
+                final Uri uri = message.result.getUri();
+                final Pair<String, Long> uriInfo = FileUtils.getUriInfo(this, uri);
+                String msg = message.result.getResults().createReport(this, uriInfo);
+                if (message.result.offerEmail(uriInfo)) {
+                    msg += "\n\n" + getString(R.string.confirm_email_export);
+                    dialogBuilder.setNeutralButton(R.string.btn_email,
+                                                   (d, which) -> onExportEmail(uri));
+                }
+
+                dialogBuilder
+                        .setMessage(msg)
+                        .create()
+                        .show();
                 break;
             }
             case Cancelled: {
@@ -1839,126 +1842,16 @@ public class BooksOnBookshelf
                 break;
             }
             case Failed: {
-                onExportFailed(message.exception);
+                String msg = message.result.createExceptionReport(this, message.exception);
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.error_backup_failed)
+                        .setMessage(msg)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                        .create()
+                        .show();
                 break;
             }
         }
-    }
-
-    /**
-     * Export finished: Step 2: Inform the user.
-     */
-    private void onExportFinished(@NonNull final ExportResults results,
-                                  @NonNull final Uri uri) {
-        // Transform the result data into a user friendly report.
-        final StringBuilder msg = new StringBuilder();
-
-        //TODO: RTL
-        // slightly misleading. The text currently says "processed" but it's really "exported".
-        if (results.booksExported > 0) {
-            msg.append(BULLET)
-               .append(getString(R.string.progress_end_export_result_n_books_processed,
-                                 results.booksExported));
-        }
-        if (results.coversExported > 0
-            || results.coversMissing[0] > 0
-            || results.coversMissing[1] > 0) {
-            msg.append(BULLET)
-               .append(getString(R.string.progress_end_export_result_n_covers_processed_m_missing,
-                                 results.coversExported,
-                                 results.coversMissing[0],
-                                 results.coversMissing[1]));
-        }
-
-        if (results.styles > 0) {
-            msg.append(BULLET).append(getString(R.string.name_colon_value,
-                                                getString(R.string.lbl_styles),
-                                                String.valueOf(results.styles)));
-        }
-        if (results.preferences > 0) {
-            msg.append(BULLET).append(getString(R.string.lbl_settings));
-        }
-
-        final Pair<String, Long> uriInfo = FileUtils.getUriInfo(this, uri);
-        // The below works, but we cannot get the folder name for the file.
-        // Disabling for now. We'd need to change the descriptive string not to include the folder.
-        if (uriInfo != null && uriInfo.first != null && uriInfo.second != null) {
-            msg.append("\n\n")
-               .append(getString(R.string.X_export_info_success_archive_details,
-                                 "",
-                                 uriInfo.first,
-                                 FileUtils.formatFileSize(this, uriInfo.second)));
-        }
-
-        final long fileSize;
-        if (uriInfo != null && uriInfo.second != null) {
-            fileSize = uriInfo.second;
-        } else {
-            fileSize = 0;
-        }
-        // up to 5mb
-        boolean offerEmail = fileSize > 0 && fileSize < MAX_FILE_SIZE_FOR_EMAIL;
-
-        if (offerEmail) {
-            msg.append("\n\n").append(getString(R.string.confirm_email_export));
-        }
-
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.progress_end_backup_success)
-                .setMessage(msg)
-                .setPositiveButton(R.string.done, (d, which) -> d.dismiss())
-                .create();
-
-        if (offerEmail) {
-            dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getString(R.string.btn_email),
-                             (d, which) -> onExportEmail(uri));
-        }
-
-        dialog.show();
-    }
-
-    /**
-     * Export failed: Step 2: Inform the user.
-     *
-     * @param e the Exception as returned from the export task
-     */
-    private void onExportFailed(@Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof IOException) {
-            // see if we can find the exact cause
-            if (e.getCause() instanceof ErrnoException) {
-                final int errno = ((ErrnoException) e.getCause()).errno;
-                // write failed: ENOSPC (No space left on device)
-                if (errno == OsConstants.ENOSPC) {
-                    msg = getString(R.string.error_storage_no_space_left);
-                } else {
-                    // write to logfile for future reporting enhancements.
-                    Logger.warn(this, TAG, "onExportFailed|errno=" + errno);
-                }
-            }
-
-            // generic IOException message
-            if (msg == null) {
-                msg = getString(R.string.error_storage_not_writable) + "\n\n"
-                      + getString(R.string.error_if_the_problem_persists,
-                                  getString(R.string.lbl_send_debug_info));
-            }
-        } else if (e instanceof FormattedMessageException) {
-            msg = ((FormattedMessageException) e).getLocalizedMessage(this);
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = getString(R.string.error_unexpected_error);
-        }
-
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.error_backup_failed)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                .create()
-                .show();
     }
 
     /**
@@ -2086,7 +1979,13 @@ public class BooksOnBookshelf
                 break;
             }
             case Failed: {
-                onImportFailed(message.exception);
+                String msg = message.result.createExceptionReport(this, message.exception);
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.error_import_failed)
+                        .setMessage(msg)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                        .create()
+                        .show();
                 break;
             }
         }
@@ -2097,65 +1996,15 @@ public class BooksOnBookshelf
      *
      * @param titleId for the dialog title; reports success or cancelled.
      * @param options what was actually imported
-     * @param results what was imported
+     * @param results details of the import
      */
     private void onImportFinished(@StringRes final int titleId,
                                   final int options,
                                   @NonNull final ImportResults results) {
 
-        // Transform the result data into a user friendly report.
-        final StringBuilder msg = new StringBuilder();
-
-        //TODO: RTL
-        if (results.booksCreated > 0 || results.booksUpdated > 0 || results.booksSkipped > 0) {
-            msg.append(BULLET)
-               .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                 getString(R.string.lbl_books),
-                                 results.booksCreated,
-                                 results.booksUpdated,
-                                 results.booksSkipped));
-        }
-        if (results.coversCreated > 0 || results.coversUpdated > 0 || results.coversSkipped > 0) {
-            msg.append(BULLET)
-               .append(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                 getString(R.string.lbl_covers),
-                                 results.coversCreated,
-                                 results.coversUpdated,
-                                 results.coversSkipped));
-        }
-        if (results.styles > 0) {
-            msg.append(BULLET).append(getString(R.string.name_colon_value,
-                                                getString(R.string.lbl_styles),
-                                                String.valueOf(results.styles)));
-        }
-        if (results.preferences > 0) {
-            msg.append(BULLET).append(getString(R.string.lbl_settings));
-        }
-
-        int failed = results.failedLinesNr.size();
-        if (failed > 0) {
-            final int fs;
-            final Collection<String> msgList = new ArrayList<>();
-
-            if (failed > 10) {
-                // keep it sensible, list maximum 10 lines.
-                failed = 10;
-                fs = R.string.warning_import_csv_failed_lines_lots;
-            } else {
-                fs = R.string.warning_import_csv_failed_lines_some;
-            }
-            for (int i = 0; i < failed; i++) {
-                msgList.add(getString(R.string.a_bracket_b_bracket,
-                                      String.valueOf(results.failedLinesNr.get(i)),
-                                      results.failedLinesMessage.get(i)));
-            }
-
-            msg.append("\n").append(getString(fs, Csv.textList(this, msgList, null)));
-        }
-
         new MaterialAlertDialogBuilder(this)
                 .setTitle(titleId)
-                .setMessage(msg)
+                .setMessage(results.createReport(this))
                 .setPositiveButton(R.string.done, (d, w) -> {
                     if (options != 0) {
                         if ((options & Options.STYLES) != 0) {
@@ -2175,41 +2024,6 @@ public class BooksOnBookshelf
                     }
 
                 })
-                .create()
-                .show();
-    }
-
-    /**
-     * Import failed: Step 2: Inform the user.
-     *
-     * @param e the Exception as returned from the import task
-     */
-    private void onImportFailed(@Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof InvalidArchiveException) {
-            msg = getString(R.string.error_import_invalid_archive);
-
-        } else if (e instanceof IOException) {
-            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
-            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
-            msg = getString(R.string.error_storage_not_readable) + "\n\n"
-                  + getString(R.string.error_if_the_problem_persists,
-                              getString(R.string.lbl_send_debug_info));
-
-        } else if (e instanceof FormattedMessageException) {
-            msg = ((FormattedMessageException) e).getLocalizedMessage(this);
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = getString(R.string.error_unexpected_error);
-        }
-
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.error_import_failed)
-                .setMessage(msg)
-                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                 .create()
                 .show();
     }

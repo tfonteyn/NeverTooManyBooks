@@ -27,10 +27,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Value class to report back what was exported.
@@ -51,6 +57,8 @@ public class ExportResults
             return new ExportResults[size];
         }
     };
+    private static final String BULLET = "\n• ";
+
     /** #books that did not have a front-cover [0] / back-cover [1]. */
     @NonNull
     public final int[] coversMissing;
@@ -98,6 +106,59 @@ public class ExportResults
 
         styles += results.styles;
         preferences += results.preferences;
+    }
+
+    /**
+     * Transform the result data into a user friendly report.
+     *
+     * @param context Current context
+     *
+     * @return report string
+     */
+    public String createReport(@NonNull final Context context,
+                               @Nullable final Pair<String, Long> uriInfo) {
+        // Transform the result data into a user friendly report.
+        final StringBuilder msg = new StringBuilder();
+
+        //TODO: RTL
+        // slightly misleading. The text currently says "processed" but it's really "exported".
+        if (booksExported > 0) {
+            msg.append(BULLET)
+               .append(context.getString(R.string.progress_end_export_result_n_books_processed,
+                                         booksExported));
+        }
+        if (coversExported > 0
+            || coversMissing[0] > 0
+            || coversMissing[1] > 0) {
+            msg.append(BULLET)
+               .append(context.getString(
+                       R.string.progress_end_export_result_n_covers_processed_m_missing,
+                       coversExported,
+                       coversMissing[0],
+                       coversMissing[1]));
+        }
+
+        if (styles > 0) {
+            msg.append(BULLET).append(context.getString(R.string.name_colon_value,
+                                                        context.getString(R.string.lbl_styles),
+                                                        String.valueOf(styles)));
+        }
+        if (preferences > 0) {
+            msg.append(BULLET).append(context.getString(R.string.lbl_settings));
+        }
+
+
+        // The below works, but we cannot get the folder name for the file.
+        // Disabling for now. We'd need to change the descriptive string not to include the folder.
+        if (uriInfo != null && uriInfo.first != null && uriInfo.second != null) {
+            msg.append("\n\n")
+               .append(context.getString(R.string.X_export_info_success_archive_details,
+                                         "",
+                                         uriInfo.first,
+                                         FileUtils.formatFileSize(context, uriInfo.second)));
+        }
+
+        return msg.toString();
     }
 
     @Override

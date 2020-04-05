@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
@@ -47,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
 
 public class ImportManager
         implements Parcelable {
@@ -275,5 +277,31 @@ public class ImportManager
                + ", mArchiveInfo=" + mArchiveInfo
                + ", mResults=" + mResults
                + '}';
+    }
+
+    public String createExceptionReport(@NonNull final Context context,
+                                        @Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof InvalidArchiveException) {
+            msg = context.getString(R.string.error_import_invalid_archive);
+
+        } else if (e instanceof IOException) {
+            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
+            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
+            msg = context.getString(R.string.error_storage_not_readable) + "\n\n"
+                  + context.getString(R.string.error_if_the_problem_persists,
+                                      context.getString(R.string.lbl_send_debug_info));
+
+        } else if (e instanceof FormattedMessageException) {
+            msg = ((FormattedMessageException) e).getLocalizedMessage(context);
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = context.getString(R.string.error_unexpected_error);
+        }
+
+        return msg;
     }
 }
