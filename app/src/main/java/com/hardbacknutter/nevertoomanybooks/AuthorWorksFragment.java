@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -37,7 +38,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -307,6 +307,8 @@ public class AuthorWorksFragment
                             // which can be quite confusing to the user.
                             .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
                                       BooklistBuilder.PREF_REBUILD_ALWAYS_EXPANDED);
+
+
                     startActivity(intent);
                     break;
                 }
@@ -326,8 +328,6 @@ public class AuthorWorksFragment
         final TextView authorView;
         @Nullable
         final TextView firstPublicationView;
-        @Nullable
-        final CompoundButton multipleBooksView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
@@ -336,8 +336,6 @@ public class AuthorWorksFragment
             authorView = itemView.findViewById(R.id.author);
             // optional
             firstPublicationView = itemView.findViewById(R.id.year);
-            // optional icon to indicate a story appears in more than one book
-            multipleBooksView = itemView.findViewById(R.id.cbx_multiple_books);
         }
     }
 
@@ -347,6 +345,10 @@ public class AuthorWorksFragment
 
         /** Caching the inflater. */
         private final LayoutInflater mInflater;
+        /** Row indicator icon. */
+        private final ColorStateList mDrawableOn;
+        /** Row indicator icon. */
+        private final ColorStateList mDrawableOff;
 
         /**
          * Constructor.
@@ -356,6 +358,10 @@ public class AuthorWorksFragment
         TocAdapter(@NonNull final Context context) {
             super();
             mInflater = LayoutInflater.from(context);
+            mDrawableOn = context.getResources().getColorStateList(
+                    R.color.primaryColor, context.getTheme());
+            mDrawableOff = context.getResources().getColorStateList(
+                    android.R.color.transparent, context.getTheme());
         }
 
         @NonNull
@@ -407,12 +413,13 @@ public class AuthorWorksFragment
                     holder.firstPublicationView.setVisibility(View.VISIBLE);
                 }
             }
-            // optional
-            if (holder.multipleBooksView != null) {
-                boolean isSet = tocEntry.getBookCount() > 1;
-                holder.multipleBooksView.setChecked(isSet);
-                // Using INVISIBLE, to get the proper margin just like other rows.
-                holder.multipleBooksView.setVisibility(isSet ? View.VISIBLE : View.INVISIBLE);
+
+            if (tocEntry.getType().equals(TocEntry.Type.Toc)) {
+                if (tocEntry.getBookCount() > 1) {
+                    holder.titleView.setCompoundDrawableTintList(mDrawableOn);
+                } else {
+                    holder.titleView.setCompoundDrawableTintList(mDrawableOff);
+                }
             }
 
             // click -> get the book(s) for that entry and display.

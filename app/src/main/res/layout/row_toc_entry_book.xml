@@ -38,6 +38,7 @@
         android:id="@+id/title"
         style="@style/Text.BookTitle"
         android:drawableStart="@drawable/ic_book"
+        android:drawablePadding="@dimen/indent1"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"
@@ -51,8 +52,9 @@
         style="@style/Text.Small"
         android:layout_marginStart="@dimen/indent2"
         android:textIsSelectable="false"
+        app:layout_constraintBaseline_toBaselineOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         tools:text="(1971)"
         />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

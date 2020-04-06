@@ -34,23 +34,15 @@
     style="@style/OptionRow"
     >
 
-    <CheckBox
-        android:id="@+id/cbx_multiple_books"
-        style="@style/Flag.MultipleBooks"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBaseline_toBaselineOf="@id/title"
-        tools:visibility="visible"
-        tools:checked="true"
-        />
-
     <TextView
         android:id="@+id/title"
         style="@style/Text"
+        android:drawableStart="@drawable/ic_library_books"
+        android:drawablePadding="@dimen/indent1"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"
-        app:layout_constraintStart_toEndOf="@id/cbx_multiple_books"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@sample/data.json/book/title"
         />
