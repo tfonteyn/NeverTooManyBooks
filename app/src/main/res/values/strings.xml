@@ -1035,8 +1035,8 @@
     <!-- options menu checkbox -->
     <string name="lbl_strict_isbn">Strict ISBN</string>
 
-    <!-- menu option -->
-    <string name="lbl_search_local">Local Search</string>
+    <!-- menu option URGENT: upd translations -->
+    <string name="lbl_search_local">Advanced Local Search</string>
     <!-- menu option -->
     <string name="lbl_about">About</string>
 

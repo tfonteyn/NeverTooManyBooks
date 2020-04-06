@@ -106,7 +106,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.RequestAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -124,7 +123,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  * <p>
  * Notes on the local-search:
  * <ol>Advanced:
- *     <li>User clicks option menu search icon</li>
+ *     <li>User clicks navigation panel menu search option</li>
  *     <li>FTSSearch Activity is started</li>
  *     <li>FTS activity returns an id-list and the fts search terms</li>
  *     <li>#onActivityResult sets the incoming fts criteria</li>
@@ -132,8 +131,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  * </ol>
  *
  * <ol>Standard:
- *     <li>User clicks option menu search icon</li>
- *     <li>onSearchRequested() shows the search widget, user types</li>
+ *     <li>User clicks option menu search iconF</li>
+ *     <li>shows the search widget, user types</li>
  *     <li>#onNewIntent() gets called with the query data</li>
  *     <li>build the list</li>
  * </ol>
@@ -520,13 +519,13 @@ public class BooksOnBookshelf
             mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
         }
 
-        // for standard (system) local search only
-        if (!Prefs.isAdvancedSearch(this)) {
-            // Popup the search widget when the user starts to type.
-            setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-            // check & get search text coming from a system search intent
-            handleStandardSearchIntent(getIntent());
-        }
+//        // for standard (system) local search only
+//        if (!Prefs.isAdvancedSearch(this)) {
+        // Popup the search widget when the user starts to type.
+        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+        // check & get search text coming from a system search intent
+        handleStandardSearchIntent(getIntent());
+//        }
 
         // auto-start a backup if required.
         if (getIntent().getBooleanExtra(START_BACKUP, false)) {
@@ -655,6 +654,13 @@ public class BooksOnBookshelf
     protected boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
         switch (item.getItemId()) {
+            case R.id.nav_advanced_search: {
+                // overridden, so we can pass the current criteria
+                Intent searchIntent = new Intent(this, FTSSearchActivity.class);
+                mModel.getSearchCriteria().to(searchIntent);
+                startActivityForResult(searchIntent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+                return true;
+            }
             case R.id.nav_manage_bookshelves: {
                 // overridden, so we can pass the current bookshelf id.
                 final Intent intent = new Intent(this, EditBookshelvesActivity.class)
@@ -1173,6 +1179,7 @@ public class BooksOnBookshelf
             case UniqueId.REQ_ADVANCED_LOCAL_SEARCH:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (mModel.setSearchCriteria(data.getExtras(), true)) {
+                        //URGENT: switch bookshelf? all-books?
                         mModel.setForceRebuildInOnResume(true);
                     }
                 }

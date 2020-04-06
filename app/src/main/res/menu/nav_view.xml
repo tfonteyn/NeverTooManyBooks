@@ -30,6 +30,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <item
+        android:id="@+id/nav_advanced_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/lbl_search_local" />
+
     <!-- visibility set from code. -->
     <item
         android:id="@+id/nav_manage_bookshelves"

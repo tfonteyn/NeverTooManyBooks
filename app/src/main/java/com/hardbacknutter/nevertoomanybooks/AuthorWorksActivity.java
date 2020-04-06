@@ -33,7 +33,6 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 
@@ -54,11 +53,8 @@ public class AuthorWorksActivity
 
         replaceFragment(R.id.main_fragment, AuthorWorksFragment.class, AuthorWorksFragment.TAG);
 
-        // for standard (system) local search only
-        if (!Prefs.isAdvancedSearch(this)) {
-            // Popup the search widget when the user starts to type.
-            setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-        }
+        // Popup the search widget when the user starts to type.
+        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
     }
 
     @Override

@@ -345,6 +345,11 @@ public abstract class BaseActivity
         closeNavigationDrawer();
 
         switch (item.getItemId()) {
+            case R.id.nav_advanced_search: {
+                Intent searchIntent = new Intent(this, FTSSearchActivity.class);
+                startActivityForResult(searchIntent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+                return true;
+            }
             case R.id.nav_manage_bookshelves: {
                 Intent intent = new Intent(this, EditBookshelvesActivity.class);
                 startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
@@ -392,6 +397,9 @@ public abstract class BaseActivity
         }
     }
 
+    /**
+     * https://developer.android.com/guide/topics/search/search-dialog#InvokingTheSearchDialog
+     */
     @Override
     public boolean onSearchRequested() {
         if (Prefs.isAdvancedSearch(this)) {
