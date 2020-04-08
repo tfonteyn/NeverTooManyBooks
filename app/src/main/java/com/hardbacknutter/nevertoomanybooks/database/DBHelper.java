@@ -70,7 +70,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EI
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_STRIP_INFO_BE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOKS_PK;
@@ -101,7 +100,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -251,7 +250,7 @@ public final class DBHelper
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
             for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
                 stmt.bindLong(1, id);
-                stmt.bindString(2, BooklistStyle.Builtin.ID_UUID[-id]);
+                stmt.bindString(2, BooklistStyle.Builtin.getUuidById(-id));
 
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
                 if (BuildConfig.DEBUG /* always */) {
@@ -270,8 +269,8 @@ public final class DBHelper
      * <p>
      * set Book dirty when:
      * - Author: delete, update.
-     * - Bookshelf: delete, update.
      * - Series: delete, update.
+     * - Bookshelf: delete.
      * - Loan: delete, update, insert.
      *
      * <p>
@@ -309,24 +308,6 @@ public final class DBHelper
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
-               + " END";
-
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
-
-        /*
-         * Updating a {@link Bookshelf}.
-         *
-         * Update the books last-update-date (aka 'set dirty', aka 'flag for backup').
-         */
-        name = "after_update_on" + TBL_BOOKSHELF.getName();
-        body = " AFTER UPDATE ON " + TBL_BOOKSHELF.getName() + " FOR EACH ROW\n"
-               + " BEGIN\n"
-               + "  UPDATE " + TBL_BOOKS.getName()
-               + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + " IN \n"
-               + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_BOOKSHELF.getName()
-               + " WHERE " + KEY_FK_BOOKSHELF + "=Old." + KEY_PK_ID + ");\n"
                + " END";
 
         syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
@@ -625,10 +606,15 @@ public final class DBHelper
             UpgradeDatabase.toDb2(syncedDb);
         }
         if (curVersion < newVersion && curVersion == 2) {
-            //noinspection UnusedAssignment
             curVersion = 3;
             UpgradeDatabase.toDb3(syncedDb);
         }
+        if (curVersion < newVersion && curVersion == 3) {
+            //noinspection UnusedAssignment
+            curVersion = 4;
+            UpgradeDatabase.toDb4(syncedDb);
+        }
+
 
         // Rebuild all indices
         recreateIndices(syncedDb);

@@ -1912,6 +1912,14 @@ public class BooklistStyle
             return sDefaultStyle;
         }
 
+        @NonNull
+        public static String getUuidById(final int id) {
+            if (id < 1 || id >= ID_UUID.length) {
+                throw new IllegalArgumentException();
+            }
+            return ID_UUID[id];
+        }
+
         @Nullable
         static BooklistStyle getByUuid(@NonNull final Context context,
                                        @NonNull final String uuid) {

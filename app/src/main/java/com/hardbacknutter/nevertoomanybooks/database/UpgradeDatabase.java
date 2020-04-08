@@ -188,4 +188,10 @@ final class UpgradeDatabase {
         DBDefinitions.TBL_BOOKS.alterTableAddColumn(syncedDb,
                                                     DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER);
     }
+
+    static void toDb4(@NonNull final SynchronizedDb syncedDb) {
+        // bug fix: this was modifying the books last update-date each time a bookshelf
+        // changed its current style.
+        syncedDb.execSQL("DROP TRIGGER IF EXISTS after_update_onbookshelf");
+    }
 }
