@@ -973,9 +973,8 @@ public class BooklistAdapter
         String getPublisherAndPubDateText(@NonNull final RowDataHolder rowData) {
             final String publicationDate;
             if (mInUse.pubDate) {
-                publicationDate = DateUtils.toPrettyDate(mLocale,
-                                                         rowData.getString(
-                                                                 DBDefinitions.KEY_DATE_PUBLISHED));
+                publicationDate = DateUtils.toPrettyDate(
+                        mLocale, rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
             } else {
                 publicationDate = null;
             }
@@ -987,17 +986,21 @@ public class BooklistAdapter
                 publisher = null;
             }
 
-            if (publisher != null) {
-                if (publicationDate != null) {
-                    // Combine Publisher and date
-                    return String.format(mX_bracket_Y_bracket, publisher, publicationDate);
-                } else {
-                    // there was no date, just use the publisher
-                    return publisher;
-                }
-            } else {
-                // return the date (or null)
+            if (publisher != null && !publisher.isEmpty()
+                && publicationDate != null && !publicationDate.isEmpty()) {
+                // Combine Publisher and date
+                return String.format(mX_bracket_Y_bracket, publisher, publicationDate);
+            } else if (publisher != null && !publisher.isEmpty()) {
+                // there was no date, just use the publisher
+                return publisher;
+
+            } else if (publicationDate != null && !publicationDate.isEmpty()) {
+                // there was no publisher, just use the date
                 return publicationDate;
+
+            } else {
+                // Neither is present
+                return null;
             }
         }
 
