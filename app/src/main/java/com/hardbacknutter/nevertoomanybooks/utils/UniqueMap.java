@@ -1,15 +1,16 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
  *
  * In August 2018, this project was forked from:
- * Book Catalogue 5.2.2 @copyright 2010 Philip Warner & Evan Leybourn
+ * Book Catalogue 5.2.2 @2016 Philip Warner & Evan Leybourn
  *
- * Without their original creation, this project would not exist in its current form.
- * It was however largely rewritten/refactored and any comments on this fork
- * should be directed at HardBackNutter and not at the original creator.
+ * Without their original creation, this project would not exist in its
+ * current form. It was however largely rewritten/refactored and any
+ * comments on this fork should be directed at HardBackNutter and not
+ * at the original creators.
  *
  * NeverTooManyBooks is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,20 +33,18 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 
 /**
- * Subclass of HashMap with an add(...) method that ensures values are unique.
+ * Wraps a HashMap with an add(...) method that ensures values are unique.
  *
  * @param <K> Type of Key values
  * @param <V> Type of data values
  */
 public class UniqueMap<K, V>
-        extends HashMap<K, V> {
+        extends WrappedMap<K, V> {
 
-    private static final long serialVersionUID = 425468000396955263L;
+    public UniqueMap() {
+        super(new HashMap<>());
+    }
 
-    /**
-     * @param key   Key for new value
-     * @param value Data for new value
-     */
     @Override
     @NonNull
     @CallSuper
