@@ -68,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 public class StylePickerDialogFragment
         extends DialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "StylePickerDialogFrag";
 
     private static final String BKEY_SHOW_ALL_STYLES = TAG + ":showAllStyles";

@@ -420,7 +420,7 @@ class StripInfoBookHandler
         }
 
         if (primarySeriesTitle != null && !primarySeriesTitle.isEmpty()) {
-            Series series = Series.fromString3(primarySeriesTitle);
+            Series series = Series.from3(primarySeriesTitle);
             series.setNumber(primarySeriesBookNr);
             // add to the top as this is the primary series.
             mSeries.add(0, series);
@@ -804,7 +804,7 @@ class StripInfoBookHandler
             Elements as = dataElement.select("a");
             for (int i = 0; i < as.size(); i++) {
                 String name = as.get(i).text();
-                Author currentAuthor = Author.fromString(name);
+                Author currentAuthor = Author.from(name);
                 boolean add = true;
                 // check if already present
                 for (Author author : mAuthors) {
@@ -838,7 +838,7 @@ class StripInfoBookHandler
             Elements as = dataElement.select("a");
             for (int i = 0; i < as.size(); i++) {
                 String text = cleanText(as.get(i).text());
-                Series currentSeries = Series.fromString3(text);
+                Series currentSeries = Series.from3(text);
                 // check if already present
                 for (Series series : mSeries) {
                     if (series.equals(currentSeries)) {
@@ -866,7 +866,7 @@ class StripInfoBookHandler
             Elements aas = dataElement.select("a");
             for (int i = 0; i < aas.size(); i++) {
                 String name = cleanText(aas.get(i).text());
-                Publisher currentPublisher = Publisher.fromString(name);
+                Publisher currentPublisher = Publisher.from(name);
                 // check if already present
                 for (Publisher publisher : mPublishers) {
                     if (publisher.equals(currentPublisher)) {

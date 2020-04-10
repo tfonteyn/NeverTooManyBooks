@@ -183,7 +183,7 @@ public class EditBookAuthorsFragment
             return;
         }
 
-        final Author newAuthor = Author.fromString(name);
+        final Author newAuthor = Author.from(name);
 
         // see if it already exists
         //noinspection ConstantConditions

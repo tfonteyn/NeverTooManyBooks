@@ -95,31 +95,17 @@ public class Domain
     /**
      * Full, private constructor.
      *
-     * @param name               column name
-     * @param isPrimaryKey       Flag
-     * @param type               column type (text, int, float, ...)
-     * @param isNotNull          {@code true} if this column should never be {@code null}
-     * @param defaultClause      (optional) a DEFAULT clause
-     * @param references         (optional) a table and action reference (ON UPDATE... etc...)
-     * @param prePreparedOrderBy {@code true} if this domain is in fact pre-prepared for sorting.
-     *                           i.e. the values are stripped of spaces etc.. before being stored.
+     * @param builder to use
      */
-    protected Domain(@NonNull final String name,
-                     final boolean isPrimaryKey,
-                     @NonNull final String type,
-                     final boolean isNotNull,
-                     @Nullable final String defaultClause,
-                     @Nullable final String references,
-                     final boolean isCollationLocalized,
-                     final boolean prePreparedOrderBy) {
-        mName = name;
-        mIsPrimaryKey = isPrimaryKey;
-        mType = type;
-        mIsNotNull = isNotNull;
-        mDefaultClause = defaultClause;
-        mReferences = references;
-        mIsCollationLocalized = isCollationLocalized;
-        mIsPrePreparedOrderBy = prePreparedOrderBy;
+    private Domain(@NonNull final Builder builder) {
+        mName = builder.mName;
+        mIsPrimaryKey = builder.mIsPrimaryKey;
+        mType = builder.mType;
+        mIsNotNull = builder.mIsNotNull;
+        mDefaultClause = builder.mDefaultClause;
+        mReferences = builder.mReferences;
+        mIsCollationLocalized = builder.mIsCollationLocalized;
+        mIsPrePreparedOrderBy = builder.mIsPrePreparedOrderBy;
 
         mIsNotBlank = mDefaultClause != null && !"''".equals(mDefaultClause);
     }
@@ -326,6 +312,12 @@ public class Domain
         private boolean mIsPrePreparedOrderBy;
         private boolean mIsCollationLocalized;
 
+        /**
+         * Constructor.
+         *
+         * @param name column name
+         * @param type column type (text, int, float, ...)
+         */
         public Builder(@NonNull final String name,
                        @NonNull final String type) {
             mName = name;
@@ -423,6 +415,12 @@ public class Domain
             return this;
         }
 
+        /**
+         * if this domain is in fact pre-prepared for sorting.
+         * i.e. the values are stripped of spaces etc.. before being stored.
+         *
+         * @return Builder (for chaining)
+         */
         @NonNull
         public Builder prePreparedOrderBy() {
             mIsPrePreparedOrderBy = true;
@@ -430,6 +428,8 @@ public class Domain
         }
 
         /**
+         * (optional) a table and action reference (ON UPDATE... etc...).
+         *
          * @param table   to reference
          * @param actions 'on delete...' etc...
          *
@@ -454,10 +454,7 @@ public class Domain
          */
         @NonNull
         public Domain build() {
-            return new Domain(mName, mIsPrimaryKey, mType,
-                              mIsNotNull, mDefaultClause, mReferences,
-                              mIsCollationLocalized,
-                              mIsPrePreparedOrderBy);
+            return new Domain(this);
         }
     }
 }

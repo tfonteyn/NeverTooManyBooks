@@ -315,7 +315,7 @@ public class Author
      * @return Author
      */
     @NonNull
-    public static Author fromString(@NonNull final String name) {
+    public static Author from(@NonNull final String name) {
         String uName = ParseUtils.unEscape(name);
 
         List<String> tmp = StringList.newInstance().decode(uName, NAME_SEPARATOR, true);

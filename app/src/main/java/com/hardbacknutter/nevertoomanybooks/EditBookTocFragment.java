@@ -173,6 +173,7 @@ public class EditBookTocFragment
                     searchIsfdb();
                 }
             };
+
     private final EditTocEntryDialogFragment.EditTocEntryResults mEditTocEntryResultsListener =
             new EditTocEntryDialogFragment.EditTocEntryResults() {
                 /**
@@ -491,7 +492,7 @@ public class EditBookTocFragment
     private void onAdd() {
         final Author author;
         if (mVb.cbxMultipleAuthors.isChecked()) {
-            author = Author.fromString(mVb.author.getText().toString().trim());
+            author = Author.from(mVb.author.getText().toString().trim());
         } else {
             author = mBookAuthor;
         }
@@ -533,10 +534,12 @@ public class EditBookTocFragment
 
     private void searchIsfdb() {
         if (mIsfdbEditions != null && !mIsfdbEditions.isEmpty()) {
-            final IsfdbGetBookTask task = new IsfdbGetBookTask(mIsfdbEditions,
-                                                               isAddSeriesFromToc(),
-                                                               mIsfdbGetBookTaskModel
-                                                                       .getTaskListener());
+            //noinspection ConstantConditions
+            Snackbar.make(getView(), R.string.progress_msg_connecting,
+                          Snackbar.LENGTH_LONG).show();
+            final IsfdbGetBookTask task =
+                    new IsfdbGetBookTask(mIsfdbEditions, isAddSeriesFromToc(),
+                                         mIsfdbGetBookTaskModel.getTaskListener());
             mIsfdbGetBookTaskModel.setTask(task);
             task.execute();
         } else {

@@ -492,7 +492,7 @@ public class OpenLibrarySearchEngine
                 o = a.optJSONObject(ai);
                 String name = o.optString("name");
                 if (!name.isEmpty()) {
-                    authors.add(Author.fromString(name));
+                    authors.add(Author.from(name));
                 }
             }
         }
@@ -606,7 +606,7 @@ public class OpenLibrarySearchEngine
                 o = a.optJSONObject(ai);
                 String name = o.optString("name");
                 if (!name.isEmpty()) {
-                    publishers.add(Publisher.fromString(name));
+                    publishers.add(Publisher.from(name));
                 }
             }
         }

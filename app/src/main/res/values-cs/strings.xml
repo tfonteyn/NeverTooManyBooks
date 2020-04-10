@@ -386,7 +386,7 @@
     <string name="menu_loan_return_book">Vypůjčená kniha je zpět</string>
     <string name="menu_rebuild_fts">Obnovit FTS</string>
     <string name="menu_rebuild_index">Znovu vytvořit index</string>
-    <string name="lbl_search_local">Místní vyhledávání</string>
+    <string name="lbl_local_search">Rozšířené místní vyhledávání</string>
     <string name="menu_set_complete">Nastavit na „kompletní“</string>
     <string name="menu_set_incomplete">Nastaveno na „neúplné“</string>
     <string name="menu_set_read">Nastavit jako čtení</string>

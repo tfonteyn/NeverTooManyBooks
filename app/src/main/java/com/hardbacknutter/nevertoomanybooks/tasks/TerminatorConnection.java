@@ -36,6 +36,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedInputStream;
+import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -89,7 +90,7 @@ public final class TerminatorConnection
     @Nullable
     private Thread closingThread;
     private boolean isOpen;
-    /** DEBUG: Indicates close() has been called. */
+    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
     /**

@@ -140,6 +140,7 @@ public class ImportManager
      *
      * @return {@code true} if supported
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isSupported(@NonNull final ArchiveContainer type) {
 
         switch (type) {

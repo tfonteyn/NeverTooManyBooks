@@ -385,7 +385,7 @@
     <string name="menu_loan_return_book">Заимствованная книга возвращается</string>
     <string name="menu_rebuild_fts">Переобрать FTS</string>
     <string name="menu_rebuild_index">Перестроить индекс</string>
-    <string name="lbl_search_local">Локальный поиск</string>
+    <string name="lbl_local_search">Расширенный локальный поиск</string>
     <string name="menu_set_complete">Отметка завершена</string>
     <string name="menu_set_incomplete">Отметить не полностью</string>
     <string name="menu_set_read">Марк читать</string>

@@ -289,7 +289,7 @@ class KbNlBookHandler
                 return;
             }
 
-            Author author = Author.fromString(cleanedString);
+            Author author = Author.from(cleanedString);
             author.setType(type);
             mAuthors.add(author);
         }
@@ -308,9 +308,9 @@ class KbNlBookHandler
      */
     private void processSeries(@NonNull final List<String> currentData) {
         if (currentData.size() > 2) {
-            mSeries.add(Series.fromString(currentData.get(0), currentData.get(2)));
+            mSeries.add(Series.from(currentData.get(0), currentData.get(2)));
         } else {
-            mSeries.add(Series.fromString(currentData.get(0)));
+            mSeries.add(Series.from(currentData.get(0)));
         }
     }
 
@@ -327,7 +327,7 @@ class KbNlBookHandler
         String title = mBookData.getString(DBDefinitions.KEY_TITLE);
         // should never happen, but paranoia...
         if (title != null) {
-            Series series = Series.fromString(title, currentData.get(0));
+            Series series = Series.from(title, currentData.get(0));
             mSeries.add(series);
         }
     }
@@ -405,7 +405,7 @@ class KbNlBookHandler
         if (publisherName.contains(":")) {
             publisherName = publisherName.split(":")[1].trim();
         }
-        mPublishers.add(Publisher.fromString(publisherName));
+        mPublishers.add(Publisher.from(publisherName));
     }
 
     /**

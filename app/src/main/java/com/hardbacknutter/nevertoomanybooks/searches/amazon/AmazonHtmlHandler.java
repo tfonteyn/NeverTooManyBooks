@@ -199,7 +199,7 @@ class AmazonHtmlHandler
             if (a != null) {
                 String href = a.attr("href");
                 if (href != null && href.contains("byline")) {
-                    Author author = Author.fromString(a.text());
+                    Author author = Author.from(a.text());
 
                     Element typeElement = span.selectFirst("span.contribution");
                     if (typeElement != null) {
@@ -284,7 +284,7 @@ class AmazonHtmlHandler
                             if (pubName.contains(";")) {
                                 pubName = pubName.split(";")[0];
                             }
-                            Publisher publisher = Publisher.fromString(pubName.trim());
+                            Publisher publisher = Publisher.from(pubName.trim());
                             mPublishers.add(publisher);
                             addedPublisher = true;
                         }
@@ -294,7 +294,7 @@ class AmazonHtmlHandler
                     }
 
                     if (!addedPublisher) {
-                        Publisher publisher = Publisher.fromString(data);
+                        Publisher publisher = Publisher.from(data);
                         mPublishers.add(publisher);
                     }
                     break;

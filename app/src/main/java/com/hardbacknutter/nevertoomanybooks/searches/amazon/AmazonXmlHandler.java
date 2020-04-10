@@ -509,13 +509,13 @@ class AmazonXmlHandler
 
         } else if (mInItem) {
             if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-                mAuthors.add(Author.fromString(mBuilder.toString()));
+                mAuthors.add(Author.from(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_TITLE)) {
                 addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PUBLISHER)) {
-                mPublishers.add(Publisher.fromString(mBuilder.toString()));
+                mPublishers.add(Publisher.from(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
                 addIfNotPresent(mBookData, DBDefinitions.KEY_DATE_PUBLISHED,

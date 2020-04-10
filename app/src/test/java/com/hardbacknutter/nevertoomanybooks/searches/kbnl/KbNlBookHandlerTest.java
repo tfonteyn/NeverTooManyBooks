@@ -105,13 +105,13 @@ class KbNlBookHandlerTest
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
-        expectedAuthor = Author.fromString("Silvio Camboni");
+        expectedAuthor = Author.from("Silvio Camboni");
         assertEquals(expectedAuthor, authors.get(0));
-        expectedAuthor = Author.fromString("Denis-Pierre Filippi");
+        expectedAuthor = Author.from("Denis-Pierre Filippi");
         assertEquals(expectedAuthor, authors.get(1));
-        expectedAuthor = Author.fromString("Gaspard Yvan");
+        expectedAuthor = Author.from("Gaspard Yvan");
         assertEquals(expectedAuthor, authors.get(2));
-        expectedAuthor = Author.fromString("Mariella Manfré");
+        expectedAuthor = Author.from("Mariella Manfré");
         assertEquals(expectedAuthor, authors.get(3));
 
         List<Series> series = mRawData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
@@ -152,9 +152,9 @@ class KbNlBookHandlerTest
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
-        expectedAuthor = Author.fromString("Isaak Judovič Ozimov");
+        expectedAuthor = Author.from("Isaak Judovič Ozimov");
         assertEquals(expectedAuthor, authors.get(0));
-        expectedAuthor = Author.fromString("Jack Kröner");
+        expectedAuthor = Author.from("Jack Kröner");
         assertEquals(expectedAuthor, authors.get(1));
 
         List<Series> series = mRawData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);

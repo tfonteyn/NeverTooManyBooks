@@ -528,7 +528,7 @@ public class CsvImporter
             if (book.contains(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
                 String a = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
                 if (!a.isEmpty()) {
-                    authors.add(Author.fromString(a));
+                    authors.add(Author.from(a));
                 }
                 book.remove(DBDefinitions.KEY_AUTHOR_FORMATTED);
 
@@ -545,7 +545,7 @@ public class CsvImporter
             } else if (book.contains(OLD_STYLE_AUTHOR_NAME)) {
                 String a = book.getString(OLD_STYLE_AUTHOR_NAME);
                 if (!a.isEmpty()) {
-                    authors.add(Author.fromString(a));
+                    authors.add(Author.from(a));
                 }
                 book.remove(OLD_STYLE_AUTHOR_NAME);
             }

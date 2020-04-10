@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class AuthorStringListTest {
 
     /**
-     * String suited to be used with Author.fromString(),
+     * String suited to be used with {@link Author#from},
      * as tested in com.hardbacknutter.nevertoomanybooks.entities.AuthorTest.
      */
     private static final String[] AUTHORS = {
@@ -86,7 +86,7 @@ class AuthorStringListTest {
     void setUp() {
         mAuthor = new ArrayList<>();
         for (String s : AUTHORS) {
-            mAuthor.add(Author.fromString(s));
+            mAuthor.add(Author.from(s));
         }
         mAuthor.get(5).setType(Author.TYPE_ARTIST | Author.TYPE_COLORIST);
         mAuthor.get(6).setType(Author.TYPE_TRANSLATOR);
@@ -148,7 +148,7 @@ class AuthorStringListTest {
 
     @Test
     void encode01() {
-        Author author = Author.fromString("Charles Emerson Winchester");
+        Author author = Author.from("Charles Emerson Winchester");
         String authorStr = CsvCoder.getAuthorCoder().encodeElement(author);
 
         assertEquals("Winchester, Charles\\ Emerson", authorStr);

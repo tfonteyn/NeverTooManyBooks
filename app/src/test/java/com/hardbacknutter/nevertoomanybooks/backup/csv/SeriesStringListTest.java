@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SeriesStringListTest {
 
     /**
-     * String suited to be used with Series.fromString(),
+     * String suited to be used with {@link Series#from},
      * as tested in com.hardbacknutter.nevertoomanybooks.entities.SeriesTest.
      */
     private static final String[] SERIES = {
@@ -77,7 +77,7 @@ class SeriesStringListTest {
     void setUp() {
         mSeries = new ArrayList<>();
         for (String s : SERIES) {
-            mSeries.add(Series.fromString(s));
+            mSeries.add(Series.from(s));
         }
         mSeries.get(1).setComplete(true);
         mSeries.get(2).setComplete(true);

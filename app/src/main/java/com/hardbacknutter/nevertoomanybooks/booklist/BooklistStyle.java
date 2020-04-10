@@ -1836,7 +1836,7 @@ public class BooklistStyle
         private static final String DATE_LAST_UPDATE_UUID
                 = "427a0da5-0779-44b6-89e9-82772e5ad5ef";
         /** Use the NEGATIVE builtin style id to get the UUID for it. Element 0 is not used. */
-        public static final String[] ID_UUID = {
+        private static final String[] ID_UUID = {
                 "",
                 AUTHOR_THEN_SERIES_UUID,
                 UNREAD_AUTHOR_THEN_SERIES_UUID,
@@ -1881,9 +1881,6 @@ public class BooklistStyle
 
         /**
          * Static method to get all builtin styles.
-         * <p>
-         * <strong>Note:</strong> Do NOT call this in static initialization of application.
-         * This method requires the application context to be present.
          *
          * @param context Current context
          *

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,39 +87,39 @@ class PruneListTest
         List<Author> authorList = new ArrayList<>();
 
         // Keep
-        Author author = Author.fromString(ISAAC_ASIMOV);
+        Author author = Author.from(ISAAC_ASIMOV);
         author.setId(100);
         authorList.add(author);
 
         // discard even with isComplete==true
-        author = Author.fromString(ISAAC_ASIMOV);
+        author = Author.from(ISAAC_ASIMOV);
         author.setId(100);
         author.setComplete(true);
         authorList.add(author);
 
         // discard even with different name
-        author = Author.fromString("bogus name");
+        author = Author.from("bogus name");
         author.setId(100);
         authorList.add(author);
 
         // keep
-        author = Author.fromString(PHILIP_JOSE_FARMER);
+        author = Author.from(PHILIP_JOSE_FARMER);
         author.setId(200);
         author.setComplete(true);
         authorList.add(author);
 
         // discard even with setComplete==false
-        author = Author.fromString(PHILIP_JOSE_FARMER);
+        author = Author.from(PHILIP_JOSE_FARMER);
         author.setId(200);
         authorList.add(author);
 
         // discard
-        author = Author.fromString(PHILIP_JOSE_FARMER);
+        author = Author.from(PHILIP_JOSE_FARMER);
         author.setId(200);
         authorList.add(author);
 
         // discard, even with setComplete==true, and type != 0
-        author = Author.fromString(PHILIP_JOSE_FARMER);
+        author = Author.from(PHILIP_JOSE_FARMER);
         author.setId(200);
         author.setComplete(true);
         author.setType(Author.TYPE_CONTRIBUTOR);
@@ -167,25 +167,25 @@ class PruneListTest
 
         List<Series> list = new ArrayList<>();
 
-        Series series = Series.fromString("The series (5)");
+        Series series = Series.from("The series (5)");
         series.setId(100);
         list.add(series);
-        series = Series.fromString("The series");
+        series = Series.from("The series");
         series.setId(100);
         list.add(series);
-        series = Series.fromString("De reeks");
+        series = Series.from("De reeks");
         series.setId(200);
         list.add(series);
-        series = Series.fromString("De reeks");
+        series = Series.from("De reeks");
         series.setId(200);
         list.add(series);
-        series = Series.fromString("De reeks (1)");
+        series = Series.from("De reeks (1)");
         series.setId(200);
         list.add(series);
-        series = Series.fromString("The series (5)");
+        series = Series.from("The series (5)");
         series.setId(100);
         list.add(series);
-        series = Series.fromString("The series (6)");
+        series = Series.from("The series (6)");
         series.setId(100);
         list.add(series);
 

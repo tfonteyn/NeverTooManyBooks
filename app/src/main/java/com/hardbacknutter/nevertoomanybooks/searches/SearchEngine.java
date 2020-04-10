@@ -199,7 +199,7 @@ public interface SearchEngine {
                     // add to the TOP of the list. This is based on translated books/comics
                     // on Goodreads where the Series is in the original language, but the
                     // Series name embedded in the title is in the same language as the title.
-                    seriesList.add(0, Series.fromString(seriesTitleWithNumber));
+                    seriesList.add(0, Series.from(seriesTitleWithNumber));
 
                     // store Series back
                     bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);

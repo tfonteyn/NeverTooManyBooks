@@ -387,7 +387,7 @@
     <string name="menu_loan_return_book">Il libro preso in prestito è tornato</string>
     <string name="menu_rebuild_fts">Ricrea FTS</string>
     <string name="menu_rebuild_index">Ricostruisci indice</string>
-    <string name="lbl_search_local">Ricerca locale</string>
+    <string name="lbl_local_search">Ricerca locale avanzata</string>
     <string name="menu_set_complete">Contrassegna come completo</string>
     <string name="menu_set_incomplete">Contrassegna come incompleto</string>
     <string name="menu_set_read">Contrassegna come letto</string>

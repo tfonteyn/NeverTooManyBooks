@@ -197,7 +197,7 @@ public class EditTocEntryDialogFragment
         //noinspection ConstantConditions
         mTocEntry.setFirstPublication(mVb.firstPublication.getText().toString().trim());
         if (mHasMultipleAuthors) {
-            mTocEntry.setAuthor(Author.fromString(mVb.author.getText().toString().trim()));
+            mTocEntry.setAuthor(Author.from(mVb.author.getText().toString().trim()));
         }
     }
 

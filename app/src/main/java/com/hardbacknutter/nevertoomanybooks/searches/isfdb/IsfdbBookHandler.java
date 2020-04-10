@@ -507,7 +507,7 @@ class IsfdbBookHandler
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            Author author = Author.fromString(a.text());
+                            Author author = Author.from(a.text());
                             // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mAuthors.add(author);
                         }
@@ -547,7 +547,7 @@ class IsfdbBookHandler
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            Publisher publisher = Publisher.fromString(a.text());
+                            Publisher publisher = Publisher.from(a.text());
                             // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mPublishers.add(publisher);
                         }
@@ -557,7 +557,7 @@ class IsfdbBookHandler
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            Series series = Series.fromString(a.text());
+                            Series series = Series.from(a.text());
                             // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mSeries.add(series);
                         }
@@ -607,7 +607,7 @@ class IsfdbBookHandler
                         if (as.size() > 1) {
                             // Cover artist
                             Element a = as.get(1);
-                            Author author = Author.fromString(a.text());
+                            Author author = Author.from(a.text());
                             author.setType(Author.TYPE_COVER_ARTIST);
                             // author.setIsfDbId(stripNumber(a.attr("href"),'?'));
                             mAuthors.add(author);
@@ -622,7 +622,7 @@ class IsfdbBookHandler
                     Elements as = li.select("a");
                     if (as != null) {
                         for (Element a : as) {
-                            Author author = Author.fromString(a.text());
+                            Author author = Author.from(a.text());
                             author.setType(Author.TYPE_EDITOR);
                             // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mAuthors.add(author);
@@ -1011,10 +1011,10 @@ class IsfdbBookHandler
                     //ENHANCE: tackle 'variant' titles later
 
                 } else if (author == null && href.contains(IsfdbSearchEngine.URL_EA_CGI)) {
-                    author = Author.fromString(cleanUpName(a.text()));
+                    author = Author.from(cleanUpName(a.text()));
 
                 } else if (addSeriesFromToc && href.contains(IsfdbSearchEngine.URL_PE_CGI)) {
-                    Series series = Series.fromString(a.text());
+                    Series series = Series.from(a.text());
 
                     //  • 4] • (1987) • novel by
                     String nr = a.nextSibling().toString();

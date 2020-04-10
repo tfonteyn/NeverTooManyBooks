@@ -43,6 +43,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Closeable;
 import java.io.File;
 import java.text.Normalizer;
 import java.util.ArrayList;
@@ -295,7 +296,7 @@ public class DAO
     private final SqlStatementManager mSqlStatementManager;
     @NonNull
     private final String mInstanceName;
-    /** used by finalize so close does not get called twice. */
+    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
     /**

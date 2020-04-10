@@ -66,7 +66,7 @@ public class SynchronizedStatement
     private final boolean mIsReadOnly;
     /** DEBUG: Indicates this is a 'count' statement. */
     private boolean mIsCount;
-    /** DEBUG: Indicates close() has been called. */
+    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
     /**

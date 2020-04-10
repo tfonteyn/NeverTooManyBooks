@@ -72,8 +72,8 @@ public abstract class ArchiveWriterAbstractBase
      * @param context Current context
      * @param helper  export configuration
      */
-    public ArchiveWriterAbstractBase(@SuppressWarnings("unused") @NonNull final Context context,
-                                     @NonNull final ExportManager helper) {
+    protected ArchiveWriterAbstractBase(@SuppressWarnings("unused") @NonNull final Context context,
+                                        @NonNull final ExportManager helper) {
         mHelper = helper;
         mDb = new DAO(TAG);
     }
@@ -205,8 +205,8 @@ public abstract class ArchiveWriterAbstractBase
      * @throws IOException on failure
      */
     @WorkerThread
-    public abstract void prepareBooks(@NonNull Context context,
-                                      @NonNull ProgressListener progressListener)
+    protected abstract void prepareBooks(@NonNull Context context,
+                                         @NonNull ProgressListener progressListener)
             throws IOException;
 
     /**

@@ -79,8 +79,12 @@ public class Publisher
         mName = in.readString();
     }
 
-
-    public static Publisher fromString(@NonNull final String name) {
+    /**
+     * Constructor.
+     *
+     * @param name of publisher.
+     */
+    public static Publisher from(@NonNull final String name) {
         return new Publisher(name);
     }
 

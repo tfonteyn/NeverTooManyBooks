@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * Provides encoding/decoding of specific objects to/from a string format
  * as used by the CSV format for <strong>export/import</strong>.
  * <p>
- * This extends the internally used #fromString(String) constructor.
+ * This extends the internally used #from(String) constructor.
  *
  * <strong>Note:</strong> In the format definition, the " * {json}" suffix is optional
  * and can be missing.
@@ -76,7 +76,7 @@ final class CsvCoder {
      * </ul>
      * <ul>With authorName:
      *      <li>writing out: "family, givenNames"</li>
-     *      <li>reading in: see {@link Author#fromString(String)}</li>
+     *      <li>reading in: see {@link Author#from(String)}</li>
      * </ul>
      *
      * @return StringList factory
@@ -90,7 +90,7 @@ final class CsvCoder {
             @NonNull
             public Author decode(@NonNull final String element) {
                 List<String> parts = StringList.newInstance().decodeElement(element);
-                Author author = Author.fromString(parts.get(0));
+                Author author = Author.from(parts.get(0));
                 if (parts.size() > 1) {
                     try {
                         JSONObject details = new JSONObject(parts.get(1));
@@ -148,7 +148,7 @@ final class CsvCoder {
             @NonNull
             public Series decode(@NonNull final String element) {
                 List<String> parts = StringList.newInstance().decodeElement(element);
-                Series series = Series.fromString(parts.get(0));
+                Series series = Series.from(parts.get(0));
                 if (parts.size() > 1) {
                     try {
                         JSONObject details = new JSONObject(parts.get(1));
@@ -222,7 +222,7 @@ final class CsvCoder {
             public TocEntry decode(@NonNull final String element) {
                 List<String> parts = StringList.newInstance().decodeElement(element);
                 String title = parts.get(0);
-                Author author = Author.fromString(parts.get(1));
+                Author author = Author.from(parts.get(1));
 
                 Matcher matcher = DATE_PATTERN.matcher(title);
                 if (matcher.find()) {

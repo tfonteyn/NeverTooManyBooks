@@ -92,7 +92,7 @@ public class BooklistCursor
     /** Number of 'pages' a cursor has to 'away' to be considered for purging. */
     private static final int PAGES_AWAY_FOR_PURGE = 3;
     /** Number of rows to return in each cursor. No tuning has been done to pick this number. */
-    private static final int PAGE_SIZE = 20;
+    private static final int PAGE_SIZE = 30;
     /** Size of MRU list. Not based on tuning; just set to more than 2*3+1. */
     private static final int MRU_LIST_SIZE = 8;
     /** Collection of current cursors. */
@@ -103,6 +103,7 @@ public class BooklistCursor
     @NonNull
     private final int[] mMruList = new int[MRU_LIST_SIZE];
 
+    /** Back reference to the builder which produced this cursor. */
     @NonNull
     private final BooklistBuilder mBooklistBuilder;
     /** The Currently active cursor. */

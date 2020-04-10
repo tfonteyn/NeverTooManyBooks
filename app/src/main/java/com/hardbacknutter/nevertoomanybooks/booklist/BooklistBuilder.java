@@ -36,6 +36,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.Closeable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -184,7 +185,7 @@ public class BooklistBuilder
     /** used in debug. */
     @SuppressWarnings("FieldNotUsedInToString")
     private boolean mDebugReferenceDecremented;
-    /** DEBUG: Indicates close() has been called. */
+    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
     /**
@@ -810,10 +811,6 @@ public class BooklistBuilder
                              true, relativeChildLevel);
 
         return node.isExpanded;
-    }
-
-    public RowStateDAO.Node getNodeByNodeId(final long nodeRowId) {
-        return mRowStateDAO.getNodeByNodeId(nodeRowId);
     }
 
     /**

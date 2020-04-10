@@ -587,7 +587,7 @@ class ImportLegacyTask
         for (Bundle grAuthor : grAuthors) {
             String name = grAuthor.getString(ReviewField.AUTHOR_NAME_GF);
             if (name != null && !name.trim().isEmpty()) {
-                Author author = Author.fromString(name);
+                Author author = Author.from(name);
                 String role = grAuthor.getString(ReviewField.AUTHOR_ROLE);
                 if (role != null && !role.trim().isEmpty()) {
                     author.setType(AuthorTypeMapper.map(bookLocale, role));
@@ -618,7 +618,7 @@ class ImportLegacyTask
                             seriesList = db.getSeriesByBookId(bookId);
                         }
 
-                        Series newSeries = Series.fromString(seriesTitleWithNumber);
+                        Series newSeries = Series.from(seriesTitleWithNumber);
                         seriesList.add(newSeries);
                         bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 

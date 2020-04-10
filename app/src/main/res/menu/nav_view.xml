@@ -33,7 +33,7 @@
     <item
         android:id="@+id/nav_advanced_search"
         android:icon="@drawable/ic_search"
-        android:title="@string/lbl_search_local" />
+        android:title="@string/lbl_local_search" />
 
     <!-- visibility set from code. -->
     <item

@@ -385,7 +385,7 @@
     <string name="menu_loan_return_book">Pożyczona książka powraca</string>
     <string name="menu_rebuild_fts">Odbuduj FTS</string>
     <string name="menu_rebuild_index">Przebuduj indeks</string>
-    <string name="lbl_search_local">Wyszukiwanie lokalne</string>
+    <string name="lbl_local_search">Zaawansowane wyszukiwanie lokalne</string>
     <string name="menu_set_complete">Ustaw na „uzupełnij”</string>
     <string name="menu_set_incomplete">Ustaw na „niekompletny”</string>
     <string name="menu_set_read">Ustaw jako „czytaj”</string>

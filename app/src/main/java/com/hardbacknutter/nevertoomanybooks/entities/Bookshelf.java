@@ -31,10 +31,13 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -75,7 +78,6 @@ public class Bookshelf
     public static final int ALL_BOOKS = -1;
     /** The user preferred shelf as stored in preferences. */
     public static final int PREFERRED = -2;
-
     /**
      * Preference name - the bookshelf to load next time we startup.
      * Storing the name and not the id. If you export/import... the id will be different.
@@ -96,18 +98,6 @@ public class Bookshelf
     /**
      * Constructor without ID.
      *
-     * @param name      for the Bookshelf
-     * @param styleUuid the style to apply to this shelf
-     */
-    public Bookshelf(@NonNull final String name,
-                     @NonNull final String styleUuid) {
-        mName = name.trim();
-        mStyleUuid = styleUuid;
-    }
-
-    /**
-     * Constructor without ID.
-     *
      * @param name  for the Bookshelf
      * @param style the style to apply to this shelf
      */
@@ -119,13 +109,13 @@ public class Bookshelf
     }
 
     /**
-     * Full Constructor.
+     * Full Constructor for {@link PredefinedBookshelf} instances.
      *
-     * @param id    the Bookshelf id
+     * @param id    the Bookshelf id; one of {@link PredefinedBookshelf}
      * @param name  for the Bookshelf
      * @param style the style to apply to this shelf
      */
-    private Bookshelf(final long id,
+    private Bookshelf(@PredefinedBookshelf final long id,
                       @NonNull final String name,
                       @NonNull final BooklistStyle style) {
         mId = id;
@@ -161,13 +151,13 @@ public class Bookshelf
     }
 
     /**
-     * Get the specified (by id) bookshelf.
+     * Get the specified bookshelf.
      *
      * @param context    Current context
      * @param db         Database Access
      * @param id         of bookshelf to get
      * @param fallbackId to use if the bookshelf does not exist
-     *                   should be either {@link #DEFAULT} or {@link #ALL_BOOKS}
+     *                   should be one of {@link PredefinedBookshelf}
      *
      * @return the bookshelf.
      */
@@ -175,7 +165,7 @@ public class Bookshelf
     public static Bookshelf getBookshelf(@NonNull final Context context,
                                          @NonNull final DAO db,
                                          final long id,
-                                         final long fallbackId) {
+                                         @PredefinedBookshelf final long fallbackId) {
 
         Bookshelf bookshelf = getBookshelf(context, db, id);
         if (bookshelf != null) {
@@ -190,6 +180,7 @@ public class Bookshelf
      *
      * @param context Current context
      * @param db      Database Access
+     * @param id      of bookshelf to get
      *
      * @return the bookshelf, or {@code null} if not found
      */
@@ -416,5 +407,11 @@ public class Bookshelf
                + ", mName=`" + mName + '`'
                + ", mStyleUuid=" + mStyleUuid
                + '}';
+    }
+
+    @IntDef({DEFAULT, ALL_BOOKS, PREFERRED})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface PredefinedBookshelf {
+
     }
 }

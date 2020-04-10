@@ -578,7 +578,7 @@ class LibraryThingHandler
             mFieldType = FieldTypes.None;
 
         } else if (localName.equalsIgnoreCase(XML_AUTHOR)) {
-            mAuthors.add(Author.fromString(mBuilder.toString()));
+            mAuthors.add(Author.from(mBuilder.toString()));
 
         } else if (localName.equalsIgnoreCase(XML_TITLE)) {
             addIfNotPresent(mBookData, DBDefinitions.KEY_TITLE, mBuilder.toString());
@@ -590,13 +590,13 @@ class LibraryThingHandler
                     break;
 
                 case Series:
-                    mSeries.add(Series.fromString(mBuilder.toString()));
+                    mSeries.add(Series.from(mBuilder.toString()));
                     break;
 
                 case PubSeries:
                     // don't do this. The site does not differentiate between "this"
                     // edition of the book and all others.
-//                    mSeries.add(Series.fromString(mBuilder.toString()));
+//                    mSeries.add(Series.from(mBuilder.toString()));
                     break;
 
                 case Description:

@@ -217,10 +217,10 @@ public abstract class ShowBookApiHandler
                 mSeries = new ArrayList<>();
             }
             if (mCurrSeriesPosition != null) {
-                mSeries.add(Series.fromString(mCurrSeriesName,
-                                              String.valueOf(mCurrSeriesPosition)));
+                mSeries.add(Series.from(mCurrSeriesName,
+                                        String.valueOf(mCurrSeriesPosition)));
             } else {
-                mSeries.add(Series.fromString(mCurrSeriesName));
+                mSeries.add(Series.from(mCurrSeriesName));
             }
             mCurrSeriesName = null;
             mCurrSeriesPosition = null;
@@ -238,7 +238,7 @@ public abstract class ShowBookApiHandler
             if (mAuthors == null) {
                 mAuthors = new ArrayList<>();
             }
-            Author author = Author.fromString(mCurrAuthorName);
+            Author author = Author.from(mCurrAuthorName);
             if (mCurrAuthorRole != null && !mCurrAuthorRole.isEmpty()) {
                 author.setType(AuthorTypeMapper.map(getLocale(), mCurrAuthorRole));
             }
@@ -372,7 +372,7 @@ public abstract class ShowBookApiHandler
                         if (mSeries == null) {
                             mSeries = new ArrayList<>();
                         }
-                        Series newSeries = Series.fromString(seriesTitleWithNumber);
+                        Series newSeries = Series.from(seriesTitleWithNumber);
                         mSeries.add(newSeries);
                         // It's tempting to replace KEY_TITLE with ORIG_TITLE, but that does
                         // bad things to translations (it uses the original language)

@@ -62,6 +62,7 @@ public interface ProgressListener {
      *
      * @return {@code true} if operation was cancelled.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean isCancelled();
 
     /**

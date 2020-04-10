@@ -882,12 +882,6 @@ public class BooksOnBookshelfModel
         style.save(mDb);
     }
 
-    @NonNull
-    public RowStateDAO.Node getNode(final long rowId) {
-        Objects.requireNonNull(mCursor, ErrorMsg.NULL_CURSOR);
-        return mCursor.getBooklistBuilder().getNodeByNodeId(rowId);
-    }
-
     @Nullable
     public String getHeaderFilterText(@NonNull final Context context) {
         BooklistStyle style = getCurrentStyle(context);

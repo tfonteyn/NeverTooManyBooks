@@ -392,7 +392,7 @@
     <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
     <string name="menu_rebuild_fts">FTS opnieuw opbouwen</string>
     <string name="menu_rebuild_index">Index opnieuw opbouwen</string>
-    <string name="lbl_search_local">Lokaal zoeken</string>
+    <string name="lbl_local_search">Geavanceerd lokaal zoeken</string>
     <string name="menu_set_complete">Markeer als volledig</string>
     <string name="menu_set_incomplete">Markeer als onvolledig</string>
     <string name="menu_set_read">Markeer als gelezen</string>

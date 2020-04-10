@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
@@ -62,9 +63,9 @@ public class ImportResults
     };
     private static final String BULLET = "\n• ";
     /** Keeps track of failed import lines in a text file. */
-    public final ArrayList<Integer> failedLinesNr = new ArrayList<>();
+    public final List<Integer> failedLinesNr = new ArrayList<>();
     /** Keeps track of failed import lines in a text file. */
-    public final ArrayList<String> failedLinesMessage = new ArrayList<>();
+    public final List<String> failedLinesMessage = new ArrayList<>();
     /** The total #books that were present in the import data. */
     public int booksProcessed;
     /** #books we created. */

@@ -391,7 +391,7 @@
     <string name="menu_loan_return_book">Geliehenes Buch ist zurück</string>
     <string name="menu_rebuild_fts">FTS neu aufbauen</string>
     <string name="menu_rebuild_index">Index neu erstellen</string>
-    <string name="lbl_search_local">Lokale Suche</string>
+    <string name="lbl_local_search">Erweiterte lokale Suche</string>
     <string name="menu_set_complete">Als abgeschlossen markieren</string>
     <string name="menu_set_incomplete">Als unvollständig markieren</string>
     <string name="menu_set_read">Als gelesen markieren</string>

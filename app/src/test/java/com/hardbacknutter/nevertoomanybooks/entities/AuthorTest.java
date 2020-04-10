@@ -1,5 +1,5 @@
 /*
- * @Copyright 2019 HardBackNutter
+ * @Copyright 2020 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,13 +33,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Test the regular expressions used by {@link Author#fromString}.
+ * Test the regular expressions used by {@link Author#from}.
  */
 class AuthorTest {
 
     @Test
     void fromString00() {
-        Author author = Author.fromString("Asimov, Isaac");
+        Author author = Author.from("Asimov, Isaac");
         assertNotNull(author);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
@@ -47,7 +47,7 @@ class AuthorTest {
 
     @Test
     void fromString01() {
-        Author author = Author.fromString("Isaac Asimov");
+        Author author = Author.from("Isaac Asimov");
         assertNotNull(author);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
@@ -55,7 +55,7 @@ class AuthorTest {
 
     @Test
     void fromString09() {
-        Author author = Author.fromString("James Tiptree, Jr.");
+        Author author = Author.from("James Tiptree, Jr.");
         assertNotNull(author);
         assertEquals("Tiptree Jr.", author.getFamilyName());
         assertEquals("James", author.getGivenNames());
@@ -63,7 +63,7 @@ class AuthorTest {
 
     @Test
     void fromString10() {
-        Author author = Author.fromString("Ursula Le Guin");
+        Author author = Author.from("Ursula Le Guin");
         assertNotNull(author);
         assertEquals("Le Guin", author.getFamilyName());
         assertEquals("Ursula", author.getGivenNames());
@@ -71,7 +71,7 @@ class AuthorTest {
 
     @Test
     void fromString11() {
-        Author author = Author.fromString("Charles Emerson Winchester");
+        Author author = Author.from("Charles Emerson Winchester");
         assertNotNull(author);
         assertEquals("Winchester", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());
@@ -80,7 +80,7 @@ class AuthorTest {
     @Test
     void fromString12() {
         // yes, there REALLY is a book with an author named like this...
-        Author author = Author.fromString("Don (*3)");
+        Author author = Author.from("Don (*3)");
         assertNotNull(author);
         assertEquals("(*3)", author.getFamilyName());
         assertEquals("Don", author.getGivenNames());
@@ -88,7 +88,7 @@ class AuthorTest {
 
     @Test
     void fromString20() {
-        Author author = Author.fromString("Charles Emerson Winchester III");
+        Author author = Author.from("Charles Emerson Winchester III");
         assertNotNull(author);
         assertEquals("Winchester III", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());
@@ -96,7 +96,7 @@ class AuthorTest {
 
     @Test
     void fromString21() {
-        Author author = Author.fromString("Charles Emerson Winchester, jr.");
+        Author author = Author.from("Charles Emerson Winchester, jr.");
         assertNotNull(author);
         assertEquals("Winchester jr.", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());
@@ -104,7 +104,7 @@ class AuthorTest {
 
     @Test
     void fromString22() {
-        Author author = Author.fromString("Charles Emerson Winchester jr.");
+        Author author = Author.from("Charles Emerson Winchester jr.");
         assertNotNull(author);
         assertEquals("Winchester jr.", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());

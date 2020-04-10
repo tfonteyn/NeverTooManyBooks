@@ -140,8 +140,9 @@ public class Series
 
             // roman numerals prefixed by either '(' or whitespace
             + /* */ "\\s[(]?"
-            // roman numerals allowing for .-_
-            + /* */ "[ivxlcm.\\-_]+"
+            // roman numerals
+            + "(?=.)M*(C[MD]|D?C{0,3})(X[CL]|L?X{0,3})(I[XV]|V?I{0,3})"
+//            + /* */ "[ivxlcm.]+"
             // must be suffixed by either ')' or EOL
             // no alphanumeric suffix
             + /* */ "[)]?$"
@@ -149,7 +150,7 @@ public class Series
             + ")";
 
     /**
-     * Parse a string into title + number. Used by {@link #fromString(String)}.
+     * Parse a string into title + number. Used by {@link #from(String)}.
      * Formats supported: see unit test for this class.
      * <p>
      * FAIL: "Blake's 7" and similar Series titles will fail UNLESS there is an actual number:
@@ -172,7 +173,7 @@ public class Series
             Pattern.compile(TITLE_NUMBER_REGEXP, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
     /**
-     * Remove extraneous text from Series number. Used by {@link #fromString}.
+     * Remove extraneous text from Series number. Used by {@link #from}.
      */
     private static final Pattern NUMBER_CLEANUP_PATTERN =
             Pattern.compile("^\\s*" + NUMBER_REGEXP + "\\s*$",
@@ -256,14 +257,14 @@ public class Series
      * @return the Series
      */
     @NonNull
-    public static Series fromString(@NonNull final String text) {
+    public static Series from(@NonNull final String text) {
         // First check if we can simplify the decoding.
         // This makes the pattern easier to maintain.
         Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(text);
         if (matcher.find()) {
             String g1 = matcher.group(1);
             if (g1 != null) {
-                return fromString(g1, matcher.group(2));
+                return from(g1, matcher.group(2));
             }
         }
 
@@ -295,14 +296,14 @@ public class Series
     }
 
     /**
-     * Variant of {@link Series#fromString(String)} allowing 3 parts.
+     * Variant of {@link Series#from(String)} allowing 3 parts.
      * <p>
      * "Some Title (I) 12"  ==> "Some Title", "1.12"
      * "Some Title (II) 13"  ==> "Some Title", "2.13"
      * "Some Title (III) 14"  ==> "Some Title", "3.14"
      * "Some Title (Special) 15"  ==> "Some Title (Special)", "15"
      *
-     * <strong>Note:</strong> we could make this method the default {@link Series#fromString}
+     * <strong>Note:</strong> we could make this method the default {@link Series#from}
      * but that would add overhead for most sites.
      *
      * @param text string to decode
@@ -310,7 +311,7 @@ public class Series
      * @return the Series
      */
     @NonNull
-    public static Series fromString3(@NonNull final String text) {
+    public static Series from3(@NonNull final String text) {
         Series series;
 
         // Detect "title (middle) number" and "title (number)"
@@ -323,7 +324,7 @@ public class Series
             if (prefix != null) {
                 if (suffix != null && !suffix.isEmpty()) {
                     // the suffix group is the number.
-                    series = fromString(prefix, suffix);
+                    series = from(prefix, suffix);
 
                     // Cover a special case were the middle group is potentially
                     // a roman numeral which should be prefixed to the number.
@@ -342,13 +343,13 @@ public class Series
 
                 } else {
                     // the middle group is the number.
-                    return fromString(prefix, middle);
+                    return from(prefix, middle);
                 }
             }
         }
 
         // did't match the specific pattern, handle as normal.
-        return fromString(text);
+        return from(text);
     }
 
     /**
@@ -360,8 +361,8 @@ public class Series
      * @return the Series
      */
     @NonNull
-    public static Series fromString(@NonNull final String title,
-                                    @Nullable final String number) {
+    public static Series from(@NonNull final String title,
+                              @Nullable final String number) {
         String uTitle = ParseUtils.unEscape(title);
         String uNumber = ParseUtils.unEscape(number);
 
@@ -706,10 +707,10 @@ public class Series
     /**
      * Equality: <strong>id, title, number</strong>.
      * <p>
-     *      <li>it's the same Object</li>
-     *      <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
-     *          AND title are equal</li>
-     *      <li>if both are 'new' check if title/number are equal</li>
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same ID<br>
+     * AND title are equal</li>
+     * <li>if both are 'new' check if title/number are equal</li>
      * <p>
      * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical ID.
      */

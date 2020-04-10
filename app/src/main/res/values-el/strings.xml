@@ -387,7 +387,7 @@
     <string name="menu_loan_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
     <string name="menu_rebuild_fts">Ανακατασκευή FTS</string>
     <string name="menu_rebuild_index">Αναδημιουργία ευρετηρίου</string>
-    <string name="lbl_search_local">Τοπική αναζήτηση</string>
+    <string name="lbl_local_search">Προηγμένη τοπική αναζήτηση</string>
     <string name="menu_set_complete">Ορίστε να «ολοκληρώσετε»</string>
     <string name="menu_set_incomplete">Ρυθμίστε σε «ατελές»</string>
     <string name="menu_set_read">Ορίστε ως «διαβάσετε»</string>

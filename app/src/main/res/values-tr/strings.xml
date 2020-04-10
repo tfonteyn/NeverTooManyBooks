@@ -386,7 +386,7 @@
     <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="menu_rebuild_fts">FTS\'yi yeniden yapıla</string>
     <string name="menu_rebuild_index">Dizini yeniden oluştur</string>
-    <string name="lbl_search_local">Bölgesel arama</string>
+    <string name="lbl_local_search">Gelişmiş Yerel Arama</string>
     <string name="menu_set_complete">“Tamamla” olarak ayarla</string>
     <string name="menu_set_incomplete">Eksik ayarla</string>
     <string name="menu_set_read">Okundu olarak işaretle</string>

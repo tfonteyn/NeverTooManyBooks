@@ -412,11 +412,11 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_AUTHOR:
-                mAuthors.add(Author.fromString(mBuilder.toString()));
+                mAuthors.add(Author.from(mBuilder.toString()));
                 break;
 
             case XML_PUBLISHER:
-                mPublishers.add(Publisher.fromString(mBuilder.toString()));
+                mPublishers.add(Publisher.from(mBuilder.toString()));
                 break;
 
             case XML_DATE_PUBLISHED:

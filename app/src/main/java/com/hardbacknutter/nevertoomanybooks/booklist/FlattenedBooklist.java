@@ -33,6 +33,8 @@ import android.util.Log;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import java.io.Closeable;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -86,7 +88,7 @@ public class FlattenedBooklist
     private long mRowId = -1;
     /** Book id at the currently selected row. */
     private long mBookId;
-    /** DEBUG: Indicates close() has been called. */
+    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
     /**
