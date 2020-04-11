@@ -2611,6 +2611,7 @@ public class DAO
 
     /**
      * Returns a unique list of all languages in the database.
+     * The list is ordered by {@link DBDefinitions#KEY_DATE_LAST_UPDATED}.
      *
      * @return The list; normally all ISO codes
      */
@@ -4318,7 +4319,7 @@ public class DAO
         private static final String LANGUAGES =
                 "SELECT DISTINCT " + KEY_LANGUAGE
                 + " FROM " + TBL_BOOKS.getName()
-                + " ORDER BY " + KEY_LANGUAGE + COLLATION;
+                + " ORDER BY " + KEY_DATE_LAST_UPDATED + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LOCATIONS =

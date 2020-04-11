@@ -85,6 +85,7 @@ public class EditBookFragmentViewModel
      * Load a language list.
      * <p>
      * Returns a unique list of all languages in the database.
+     * The list is ordered by {@link DBDefinitions#KEY_DATE_LAST_UPDATED}.
      *
      * @return The list of ISO 639-2 codes
      */

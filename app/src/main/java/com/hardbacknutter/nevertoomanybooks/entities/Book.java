@@ -548,6 +548,9 @@ public class Book
         addValidator(UniqueId.BKEY_AUTHOR_ARRAY,
                      NON_BLANK_VALIDATOR, R.string.lbl_author);
 
+        addValidator(DBDefinitions.KEY_LANGUAGE,
+                     NON_BLANK_VALIDATOR, R.string.lbl_language);
+
         addValidator(DBDefinitions.KEY_EDITION_BITMASK,
                      LONG_VALIDATOR, R.string.lbl_edition);
         addValidator(DBDefinitions.KEY_TOC_BITMASK,

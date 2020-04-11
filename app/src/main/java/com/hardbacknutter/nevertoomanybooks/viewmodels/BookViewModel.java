@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class BookViewModel
         extends ResultDataModel {
 
+    /** Log tag. */
     private static final String TAG = "BookViewModel";
 
     /** key: fragmentTag. */
@@ -132,10 +133,14 @@ public class BookViewModel
         }
     }
 
+    /**
+     * Add any fields the book does not have yet (does not overwrite existing ones).
+     *
+     * @param context Current context
+     * @param args    to check
+     */
     public void addFieldsFromBundle(@NonNull final Context context,
                                     @Nullable final Bundle args) {
-
-        // Add any fields the book does not have yet (do not overwrite existing ones).
         if (args != null) {
             final Bundle rawData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
             if (rawData != null) {
@@ -151,6 +156,11 @@ public class BookViewModel
         ensureBookshelf(context);
     }
 
+    /**
+     * Ensure the book has a bookshelf.
+     *
+     * @param context Current context
+     */
     private void ensureBookshelf(@NonNull final Context context) {
         final ArrayList<Bookshelf> list =
                 mBook.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
@@ -178,6 +188,11 @@ public class BookViewModel
         mIsDirty = isDirty;
     }
 
+    /**
+     * Get the list of fragments (their tags) which have unfinished edits.
+     *
+     * @return list
+     */
     public Collection<String> getUnfinishedEdits() {
         return mFragmentsWithUnfinishedEdits;
     }
@@ -392,7 +407,7 @@ public class BookViewModel
         if (list.isEmpty()) {
             String searchText = mBook.getString(UniqueId.BKEY_SEARCH_AUTHOR);
             if (!searchText.isEmpty()) {
-                list.add(Author.fromString(searchText));
+                list.add(Author.from(searchText));
                 mBook.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
                 mBook.remove(UniqueId.BKEY_SEARCH_AUTHOR);
                 mIsDirty = true;

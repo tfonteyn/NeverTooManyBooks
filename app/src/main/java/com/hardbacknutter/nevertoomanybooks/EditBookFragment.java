@@ -74,6 +74,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 public class EditBookFragment
         extends Fragment {
 
+    /** Log tag. */
     public static final String TAG = "EditBookFragment";
     private static final String BKEY_TAB = TAG + ":tab";
 

@@ -81,31 +81,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_language"
-            style="@style/Envelope.AutoCompleteTextView"
-            android:hint="@string/lbl_language"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_color"
-            >
-
-            <AutoCompleteTextView
-                android:id="@+id/language"
-                style="@style/languageTextEntry"
-                android:layout_width="match_parent"
-                tools:ignore="LabelFor"
-                tools:text="@sample/data.json/language/name"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
             style="@style/Envelope.AutoCompleteTextView"
             android:hint="@string/lbl_publisher"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_language"
+            app:layout_constraintTop_toBottomOf="@id/lbl_color"
             >
 
             <AutoCompleteTextView

@@ -77,7 +77,7 @@ public final class LanguageUtils {
      * Try to convert a Language ISO code to the display name.
      *
      * @param context Current context
-     * @param iso3     the ISO code
+     * @param iso3    the ISO code
      *
      * @return the display name for the language,
      * or the input string itself if it was an invalid ISO code
@@ -368,6 +368,8 @@ public final class LanguageUtils {
      * Convenience method to get the language SharedPreferences file.
      *
      * @param context Current context
+     *
+     * @return the SharedPreferences representing the language mapper
      */
     private static SharedPreferences getLanguageCache(@NonNull final Context context) {
         return context.getSharedPreferences(LANGUAGE_MAP, Context.MODE_PRIVATE);
@@ -396,8 +398,10 @@ public final class LanguageUtils {
     public static class BuildLanguageMappingsTask
             extends TaskBase<Void, Boolean> {
 
+        /** Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "BuildLanguageMappings";
+
         /**
          * Constructor.
          *

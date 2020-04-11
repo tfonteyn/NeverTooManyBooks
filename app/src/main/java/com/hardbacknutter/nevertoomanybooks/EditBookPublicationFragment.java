@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
-import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 
 /**
@@ -83,10 +82,6 @@ public class EditBookPublicationFragment
 
         fields.add(R.id.color, new EditTextAccessor<String>(), DBDefinitions.KEY_COLOR)
               .setRelatedFields(R.id.lbl_color);
-
-        fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(), true),
-                   DBDefinitions.KEY_LANGUAGE)
-              .setRelatedFields(R.id.lbl_language);
 
         fields.add(R.id.publisher, new EditTextAccessor<String>(), DBDefinitions.KEY_PUBLISHER)
               .setRelatedFields(R.id.lbl_publisher);
@@ -128,7 +123,6 @@ public class EditBookPublicationFragment
         // With all Views populated, (re-)add the helpers
         addAutocomplete(R.id.format, mFragmentVM.getFormats());
         addAutocomplete(R.id.color, mFragmentVM.getColors());
-        addAutocomplete(R.id.language, mFragmentVM.getLanguagesCodes());
         addAutocomplete(R.id.publisher, mFragmentVM.getPublishers());
         addAutocomplete(R.id.price_listed_currency, mFragmentVM.getListPriceCurrencyCodes());
 

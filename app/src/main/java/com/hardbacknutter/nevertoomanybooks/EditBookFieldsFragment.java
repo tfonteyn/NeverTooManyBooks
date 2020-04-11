@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.NonBlankValidator;
@@ -167,6 +168,11 @@ public class EditBookFieldsFragment
         fields.add(R.id.isbn, new EditTextAccessor<String>(), DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
+        fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(), true),
+                   DBDefinitions.KEY_LANGUAGE)
+              .setRelatedFields(R.id.lbl_language)
+              .setFieldValidator(NON_BLANK_VALIDATOR);
+
         fields.add(R.id.genre, new EditTextAccessor<String>(), DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
@@ -226,6 +232,7 @@ public class EditBookFieldsFragment
 
         // With all Views populated, (re-)add the helpers
         addAutocomplete(R.id.genre, mFragmentVM.getGenres());
+        addAutocomplete(R.id.language, mFragmentVM.getLanguagesCodes());
 
         mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(mVb.lblIsbn, mVb.isbn,
                                                                     mStrictIsbn);
