@@ -34,8 +34,12 @@ import android.util.Log;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 
+import java.io.Closeable;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -90,6 +94,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TMP_TB
  */
 public class RowStateDAO {
 
+    /** Log tag. */
     private static final String TAG = "RowStateDAO";
 
     /** Statement cache name. */
@@ -131,7 +136,7 @@ public class RowStateDAO {
     private final long mBookshelfId;
     @NonNull
     private final BooklistStyle mStyle;
-    /** used by finalize so close does not get called twice. */
+    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
     /**
@@ -194,37 +199,37 @@ public class RowStateDAO {
         mTable.create(mSyncedDb, true, false);
 
         // the table is ordered at insert time, so the row id *is* the order.
-        String baseSql = "INSERT INTO " + mTable.getName()
-                         + " (" + KEY_FK_BL_ROW_ID
-                         + ',' + KEY_BL_NODE_KEY
+        final String baseSql = "INSERT INTO " + mTable.getName()
+                               + " (" + KEY_FK_BL_ROW_ID
+                               + ',' + KEY_BL_NODE_KEY
 
-                         + ',' + KEY_BL_NODE_LEVEL
-                         + ',' + KEY_BL_NODE_GROUP
+                               + ',' + KEY_BL_NODE_LEVEL
+                               + ',' + KEY_BL_NODE_GROUP
 
-                         + ',' + KEY_BL_NODE_VISIBLE
-                         + ',' + KEY_BL_NODE_EXPANDED
-                         + ')'
-                         + " SELECT DISTINCT "
-                         + listTable.dot(KEY_PK_ID)
-                         + ',' + listTable.dot(KEY_BL_NODE_KEY)
+                               + ',' + KEY_BL_NODE_VISIBLE
+                               + ',' + KEY_BL_NODE_EXPANDED
+                               + ')'
+                               + " SELECT DISTINCT "
+                               + listTable.dot(KEY_PK_ID)
+                               + ',' + listTable.dot(KEY_BL_NODE_KEY)
 
-                         + ',' + listTable.dot(KEY_BL_NODE_LEVEL)
-                         + ',' + listTable.dot(KEY_BL_NODE_GROUP)
-                         + "\n";
+                               + ',' + listTable.dot(KEY_BL_NODE_LEVEL)
+                               + ',' + listTable.dot(KEY_BL_NODE_GROUP)
+                               + "\n";
 
         // On first-time builds, get the Preferences-based list
         switch (listState) {
             case PREF_REBUILD_ALWAYS_EXPANDED: {
-                String sql = baseSql
-                             // KEY_BL_NODE_VISIBLE: all visible
-                             + ",1"
-                             // KEY_BL_NODE_EXPANDED: all expanded
-                             + ",1"
-                             + " FROM " + listTable.ref()
-                             + " ORDER BY " + listTable.dot(KEY_PK_ID);
+                final String sql = baseSql
+                                   // KEY_BL_NODE_VISIBLE: all visible
+                                   + ",1"
+                                   // KEY_BL_NODE_EXPANDED: all expanded
+                                   + ",1"
+                                   + " FROM " + listTable.ref()
+                                   + " ORDER BY " + listTable.dot(KEY_PK_ID);
 
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    int rowsUpdated = stmt.executeUpdateDelete();
+                    final int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                         Log.d(TAG, "PREF_REBUILD_ALWAYS_EXPANDED"
                                    + "|rowsUpdated=" + rowsUpdated
@@ -234,25 +239,25 @@ public class RowStateDAO {
                 break;
             }
             case PREF_REBUILD_ALWAYS_COLLAPSED: {
-                String sql = baseSql
-                             // KEY_BL_NODE_VISIBLE:
-                             + ",CASE"
-                             // level 1 visible
-                             + " WHEN " + KEY_BL_NODE_LEVEL + "=1 THEN 1"
-                             // and all other levels invisible.
-                             + " ELSE 0"
-                             + " END"
-                             // 'AS' for SQL readability/debug only
-                             + " AS " + KEY_BL_NODE_VISIBLE
+                final String sql = baseSql
+                                   // KEY_BL_NODE_VISIBLE:
+                                   + ",CASE"
+                                   // level 1 visible
+                                   + " WHEN " + KEY_BL_NODE_LEVEL + "=1 THEN 1"
+                                   // and all other levels invisible.
+                                   + " ELSE 0"
+                                   + " END"
+                                   // 'AS' for SQL readability/debug only
+                                   + " AS " + KEY_BL_NODE_VISIBLE
 
-                             // KEY_BL_NODE_EXPANDED: all nodes collapsed
-                             + ",0"
-                             + "\n"
-                             + " FROM " + listTable.ref()
-                             + " ORDER BY " + listTable.dot(KEY_PK_ID);
+                                   // KEY_BL_NODE_EXPANDED: all nodes collapsed
+                                   + ",0"
+                                   + "\n"
+                                   + " FROM " + listTable.ref()
+                                   + " ORDER BY " + listTable.dot(KEY_PK_ID);
 
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    int rowsUpdated = stmt.executeUpdateDelete();
+                    final int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                         Log.d(TAG, "PREF_REBUILD_ALWAYS_COLLAPSED"
                                    + "|rowsUpdated=" + rowsUpdated
@@ -266,7 +271,7 @@ public class RowStateDAO {
                 // IMPORTANT: we concat the sql with the bookshelf and style id's.
                 // should bind those obviously, but current (and non-functional) mRebuildStmts
                 // requires statements without parameters.
-                String sql =
+                final String sql =
                         baseSql
                         // KEY_BL_NODE_VISIBLE
                         + ",CASE"
@@ -314,7 +319,7 @@ public class RowStateDAO {
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
                     stmt.bindLong(1, mBookshelfId);
                     stmt.bindLong(2, mStyle.getId());
-                    int rowsUpdated = stmt.executeUpdateDelete();
+                    final int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                         Log.d(TAG, "PREF_REBUILD_SAVED_STATE"
                                    + "|rowsUpdated=" + rowsUpdated
@@ -325,10 +330,10 @@ public class RowStateDAO {
             }
             case PREF_REBUILD_PREFERRED_STATE: {
                 // Run the INSERT first, the state does not matter, for simplicity expand all
-                String sql = baseSql + ",1,1 FROM " + listTable.ref()
-                             + " ORDER BY " + listTable.dot(KEY_PK_ID);
+                final String sql = baseSql + ",1,1 FROM " + listTable.ref()
+                                   + " ORDER BY " + listTable.dot(KEY_PK_ID);
                 try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-                    int rowsUpdated = stmt.executeUpdateDelete();
+                    final int rowsUpdated = stmt.executeUpdateDelete();
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                         Log.d(TAG, "PREF_REBUILD_PREFERRED_STATE"
                                    + "|rowsUpdated=" + rowsUpdated
@@ -372,13 +377,14 @@ public class RowStateDAO {
                            @SuppressWarnings("SameParameterValue") final int pageSize) {
 
         // Build the SQL, adding an alias for TMP_TBL_BOOK_LIST_ROW_STATE#KEY_PK_ID
-        String sql = "SELECT "
-                     + Csv.join(listTable.getDomains(), domain -> listTable.dot(domain.getName()))
-                     + ',' + mTable.dotAs(KEY_PK_ID, KEY_BL_LIST_VIEW_ROW_ID)
-                     + " FROM " + listTable.ref() + listTable.join(mTable)
-                     + " WHERE " + mTable.dot(KEY_BL_NODE_VISIBLE) + "=1"
-                     + " ORDER BY " + mTable.dot(KEY_PK_ID)
-                     + " LIMIT " + pageSize + " OFFSET " + position;
+        final String sql = "SELECT "
+                           + Csv.join(listTable.getDomains(),
+                                      domain -> listTable.dot(domain.getName()))
+                           + ',' + mTable.dotAs(KEY_PK_ID, KEY_BL_LIST_VIEW_ROW_ID)
+                           + " FROM " + listTable.ref() + listTable.join(mTable)
+                           + " WHERE " + mTable.dot(KEY_BL_NODE_VISIBLE) + "=1"
+                           + " ORDER BY " + mTable.dot(KEY_PK_ID)
+                           + " LIMIT " + pageSize + " OFFSET " + position;
 
         return mSyncedDb.rawQuery(sql, null);
     }
@@ -400,7 +406,7 @@ public class RowStateDAO {
             return countVisibleRowsBefore(node.rowId);
         } else {
             // otherwise it's the previous visible row == count-1 (or the top row)
-            int count = countVisibleRowsBefore(node.rowId);
+            final int count = countVisibleRowsBefore(node.rowId);
             return count > 0 ? count - 1 : 0;
         }
     }
@@ -418,7 +424,7 @@ public class RowStateDAO {
                                          + " WHERE " + KEY_BL_NODE_VISIBLE + "=1"
                                          + " AND " + KEY_PK_ID + "<?");
         }
-        int count;
+        final int count;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, rowId);
@@ -439,7 +445,7 @@ public class RowStateDAO {
                                          "SELECT COUNT(*) FROM " + mTable.getName()
                                          + " WHERE " + KEY_BL_NODE_VISIBLE + "=1");
         }
-        int count;
+        final int count;
         // no params here, so don't need synchronized... but leave as reminder
         //        synchronized (stmt) {
         count = (int) stmt.count();
@@ -448,57 +454,42 @@ public class RowStateDAO {
     }
 
     /**
-     * Ensure al nodes up to the root node for the given node (inclusive) are visible.
+     * Ensure al nodes up to the root node for the given (book) node (inclusive) are visible.
      *
-     * @param rootNode we want to become visible
+     * @param bookNode we want to become visible
      */
-    void ensureNodeIsVisible(@NonNull final Node rootNode) {
+    void ensureNodeIsVisible(@NonNull final Node bookNode) {
 
-        rootNode.isVisible = true;
+        final String sql = "SELECT " + KEY_PK_ID + " FROM " + mTable.getName()
+                           // follow the node hierarchy
+                           + " WHERE " + KEY_BL_NODE_KEY + " LIKE ?"
+                           // we'll loop for all levels
+                           + " AND " + KEY_BL_NODE_LEVEL + "=?";
 
-        String sql = "SELECT " + KEY_PK_ID
-                     + ',' + KEY_BL_NODE_EXPANDED
-                     + " FROM " + mTable.getName()
-                     // we'll loop for all levels
-                     + " WHERE " + KEY_BL_NODE_LEVEL + "=?"
-                     // before the given row
-                     + " AND " + KEY_PK_ID + "<=?"
-                     // DESC so we 'walk' upwards
-                     + " ORDER BY " + KEY_PK_ID + " DESC LIMIT 1";
+        String nodeKey = bookNode.key;
 
-        for (int nodeLevel = 1; nodeLevel < rootNode.level; nodeLevel++) {
-
+        // levels are 1.. based; start with lowest level above books, working up to root.
+        final Deque<Pair<Long, Integer>> nodes = new ArrayDeque<>();
+        for (int level = bookNode.level - 1; level >= 1; level--) {
             try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{
-                    String.valueOf(nodeLevel),
-                    String.valueOf(rootNode.rowId)})) {
-
-                if (cursor.moveToFirst()) {
-                    long nodeRowId = cursor.getLong(0);
-                    boolean nodeIsExpanded = cursor.getLong(1) != 0;
-
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                        Log.d(TAG, "ensureRowIsVisible"
-                                   + "|rootNode.rowId=" + rootNode.rowId
-                                   + "|nodeLevel=" + nodeLevel
-                                   + "|nodeRowId=" + nodeRowId
-                                   + "|nodeIsExpanded=" + nodeIsExpanded
-                                   + "|");
-                    }
-                    // If the node is not the one we are checking, and it's not currently expanded
-                    if (nodeRowId != rootNode.rowId && !nodeIsExpanded) {
-                        setNode(nodeRowId,
-                                nodeLevel,
-                                // Expand (and make visible) the given node
-                                true,
-                                // keep the children collapsed
-                                false,
-                                // do this for only ONE level below the current node
-                                1);
-                    }
-                } else {
-                    return;
+                    nodeKey + "%", String.valueOf(level)})) {
+                while (cursor.moveToNext()) {
+                    final long rowId = cursor.getLong(0);
+                    nodes.push(new Pair<>(rowId, level));
                 }
             }
+            nodeKey = nodeKey.substring(0, nodeKey.lastIndexOf('/'));
+        }
+
+        // Now process the collected nodes from the root downwards.
+        for (Pair<Long, Integer> node : nodes) {
+            // setNode(nodeRowId, level,
+            //noinspection ConstantConditions
+            setNode(node.first, node.second,
+                    // Expand (and make visible) the given node
+                    true,
+                    // do this for only ONE level below the current node
+                    1);
         }
     }
 
@@ -513,22 +504,14 @@ public class RowStateDAO {
     @NonNull
     ArrayList<Node> getNodesForBookId(@NonNull final TableDefinition listTable,
                                       final long bookId) {
-        String sql = "SELECT " + mTable.dot(KEY_PK_ID)
-                     + ',' + mTable.dot(KEY_BL_NODE_LEVEL)
-                     + ',' + mTable.dot(KEY_BL_NODE_EXPANDED)
-                     + ',' + mTable.dot(KEY_BL_NODE_VISIBLE)
-                     + " FROM " + listTable.ref() + listTable.join(mTable)
-                     + " WHERE " + listTable.dot(KEY_FK_BOOK) + "=?";
+        final String sql = "SELECT " + Node.getColumns(mTable)
+                           + " FROM " + listTable.ref() + listTable.join(mTable)
+                           + " WHERE " + listTable.dot(KEY_FK_BOOK) + "=?";
 
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(bookId)})) {
             ArrayList<Node> rows = new ArrayList<>(cursor.getCount());
             while (cursor.moveToNext()) {
-                int rowId = cursor.getInt(0);
-                Node node = new Node(rowId);
-                node.level = cursor.getInt(1);
-                node.isExpanded = cursor.getInt(2) != 0;
-                node.isVisible = cursor.getInt(3) != 0;
-
+                final Node node = new Node(cursor);
                 node.setListPosition(getListPosition(node));
                 rows.add(node);
             }
@@ -537,7 +520,7 @@ public class RowStateDAO {
     }
 
     /**
-     * Get the node for the the given row id.
+     * Get the node for the the given row id (any row, not limited to books).
      * It will contain the current state of the node as stored in the database.
      *
      * @param rowId to get
@@ -546,24 +529,17 @@ public class RowStateDAO {
      */
     @NonNull
     Node getNodeByNodeId(final long rowId) {
+        final String sql = "SELECT " + Node.getColumns(mTable)
+                           + " FROM " + mTable.ref()
+                           + " WHERE " + mTable.dot(KEY_PK_ID) + "=?";
 
-        String sql = "SELECT " + KEY_BL_NODE_LEVEL
-                     + ',' + KEY_BL_NODE_EXPANDED
-                     + ',' + KEY_BL_NODE_VISIBLE
-                     + " FROM " + mTable.getName()
-                     + " WHERE " + KEY_PK_ID + "=?";
-
-        Node node = new Node(rowId);
         try (Cursor cursor = mSyncedDb.rawQuery(sql, new String[]{String.valueOf(rowId)})) {
             if (cursor.moveToFirst()) {
-                node.level = cursor.getInt(0);
-                node.isExpanded = cursor.getInt(1) != 0;
-                node.isVisible = cursor.getInt(2) != 0;
+                return new Node(cursor);
             } else {
                 throw new IllegalStateException("rowId not found: " + rowId);
             }
         }
-        return node;
     }
 
     /**
@@ -583,6 +559,7 @@ public class RowStateDAO {
 
             final long t0 = System.nanoTime();
 
+            // code could be condensed somewhat, but leaving as-is making it easier to read.
             if (topLevel == 1) {
                 if (expand) {
                     // expand and show all levels
@@ -643,11 +620,11 @@ public class RowStateDAO {
         }
 
         //Note to self: levelOperand is concatenated, so do not cache this stmt.
-        String sql = "UPDATE " + mTable.getName() + " SET "
-                     + KEY_BL_NODE_EXPANDED + "=?," + KEY_BL_NODE_VISIBLE + "=?"
-                     + " WHERE " + KEY_BL_NODE_LEVEL + levelOperand + "?";
+        final String sql = "UPDATE " + mTable.getName() + " SET "
+                           + KEY_BL_NODE_EXPANDED + "=?," + KEY_BL_NODE_VISIBLE + "=?"
+                           + " WHERE " + KEY_BL_NODE_LEVEL + levelOperand + "?";
 
-        int rowsUpdated;
+        final int rowsUpdated;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindBoolean(1, expand);
             stmt.bindBoolean(2, visible);
@@ -692,7 +669,7 @@ public class RowStateDAO {
                 stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
 
-                int rowsDeleted = stmt.executeUpdateDelete();
+                final int rowsDeleted = stmt.executeUpdateDelete();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                     Log.d(TAG, "saveAllNodes"
@@ -711,7 +688,7 @@ public class RowStateDAO {
                 stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
 
-                int rowsUpdated = stmt.executeUpdateDelete();
+                final int rowsUpdated = stmt.executeUpdateDelete();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                     Log.d(TAG, "saveAllNodes"
@@ -739,7 +716,8 @@ public class RowStateDAO {
     /**
      * Expand/collapse the passed node.
      * <br><br>
-     * The node will always be kept visible.<br>
+     * The node will always be kept visible.
+     * <p>
      * If the resulting state of the node is:<br>
      * 'Expand': we set the children to the desired child state/visibility
      * (recurse up to the desired max child level)<br>
@@ -747,16 +725,12 @@ public class RowStateDAO {
      *
      * @param nodeRowId          of the node in the list
      * @param nodeLevel          the level of the node
-     *                           <br>
      * @param expandNode         the state to set for this node
-     * @param expandChild        state to set for the children of the specified leave
-     * @param relativeChildLevel up to and including this (relative to nodeLevel!) child level;
+     * @param relativeChildLevel up to and including this (relative to nodeLevel!) child level.
      */
     void setNode(final long nodeRowId,
                  final int nodeLevel,
                  final boolean expandNode,
-
-                 final boolean expandChild,
                  @IntRange(from = 0) final int relativeChildLevel) {
 
         if (relativeChildLevel > mStyle.getGroupCount()) {
@@ -776,16 +750,18 @@ public class RowStateDAO {
 
             // Find the next row ('after' the given row) at the given level (or lower).
             long endRowExcl = findNextNode(nodeRowId, nodeLevel);
-
-            // and update the rows between the node row itself, and the endRow
-            if (expandNode) {
-                // use the desired child state/level
-                updateNodesBetween(nodeRowId, endRowExcl, true, expandChild,
-                                   nodeLevel + relativeChildLevel);
-            } else {
-                // collapsing the node, so just collapse/hide all children.
-                updateNodesBetween(nodeRowId, endRowExcl, false, false,
-                                   Integer.MAX_VALUE);
+            // are there actually any rows in between?
+            if ((endRowExcl - nodeRowId) > 1) {
+                // update the rows between the node row itself, and the endRow
+                if (expandNode) {
+                    // use the desired child state/level
+                    updateNodesBetween(nodeRowId, endRowExcl, true,
+                                       nodeLevel + relativeChildLevel);
+                } else {
+                    // collapsing the node, so just collapse/hide all children.
+                    updateNodesBetween(nodeRowId, endRowExcl, false,
+                                       Integer.MAX_VALUE);
+                }
             }
 
             // Store the state of these nodes.
@@ -821,7 +797,7 @@ public class RowStateDAO {
                     + " ORDER BY " + KEY_PK_ID + " LIMIT 1");
         }
 
-        long nextRowId;
+        final long nextRowId;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindLong(1, rowId);
@@ -831,7 +807,7 @@ public class RowStateDAO {
 
         // if there was no next node, use the end of the list.
         if (nextRowId <= 0) {
-            nextRowId = Long.MAX_VALUE;
+            return Long.MAX_VALUE;
         }
         return nextRowId;
     }
@@ -855,7 +831,7 @@ public class RowStateDAO {
                     + " WHERE " + KEY_PK_ID + "=?");
         }
 
-        int rowsUpdated;
+        final int rowsUpdated;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
             stmt.bindBoolean(1, expand);
@@ -876,19 +852,17 @@ public class RowStateDAO {
      * Update the nodes <strong>between</strong> the two given rows;
      * i.e. <strong>excluding</strong> the start and end row.
      *
-     * @param startRowExcl between this row
-     * @param endRowExcl   and this row
-     * @param visible      visibility to set
-     * @param expand       state to set
-     * @param level        up to and including this level.
+     * @param startRowExcl     between this row
+     * @param endRowExcl       and this row
+     * @param expandAndVisible expand/visibility to set
+     * @param level            up to and including this level.
      */
     private void updateNodesBetween(final long startRowExcl,
                                     final long endRowExcl,
-                                    final boolean visible,
-                                    final boolean expand,
+                                    final boolean expandAndVisible,
                                     final int level) {
-
-        int maxLevel = Math.max(level, mStyle.getGroupCount() - 1);
+        // sanity check
+        final int maxLevel = Math.max(level, mStyle.getGroupCount() - 1);
 
         // handle all levels except the lowest level.
         SynchronizedStatement stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN_1);
@@ -905,8 +879,8 @@ public class RowStateDAO {
         int rowsUpdated;
         //noinspection SynchronizationOnLocalVariableOrMethodParameter
         synchronized (stmt) {
-            stmt.bindBoolean(1, visible);
-            stmt.bindBoolean(2, expand);
+            stmt.bindBoolean(1, expandAndVisible);
+            stmt.bindBoolean(2, expandAndVisible);
 
             stmt.bindLong(3, startRowExcl);
             stmt.bindLong(4, endRowExcl);
@@ -919,13 +893,12 @@ public class RowStateDAO {
             Log.d(TAG, "updateNodesBetween"
                        + "|startRowExcl=" + startRowExcl
                        + "|endRowExcl=" + endRowExcl
-                       + "|visible=" + visible
-                       + "|expand=" + expand
+                       + "|expandAndVisible=" + expandAndVisible
                        + "|maxLevel=" + maxLevel
                        + "|rowsUpdated=" + rowsUpdated);
         }
 
-        if (expand) {
+        if (expandAndVisible) {
             // the lowest level we want visible should never be expanded.
             stmt = mStatementManager.get(STMT_UPDATE_NODES_BETWEEN_2);
             if (stmt == null) {
@@ -940,7 +913,7 @@ public class RowStateDAO {
 
             //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (stmt) {
-                stmt.bindBoolean(1, visible);
+                stmt.bindBoolean(1, true);
                 stmt.bindBoolean(2, false);
 
                 stmt.bindLong(3, startRowExcl);
@@ -948,13 +921,7 @@ public class RowStateDAO {
 
                 stmt.bindLong(5, maxLevel);
 
-                rowsUpdated = stmt.executeUpdateDelete();
-            }
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
-                Log.d(TAG, "updateNodesBetween"
-                           + "|visible=" + visible
-                           + "|expand=_false_"
-                           + "|rowsUpdated_2=" + rowsUpdated);
+                stmt.executeUpdateDelete();
             }
         }
     }
@@ -1018,7 +985,7 @@ public class RowStateDAO {
                 stmt.bindLong(4, fromRowIncl);
                 stmt.bindLong(5, endRowExcl);
 
-                int rowsDeleted = stmt.executeUpdateDelete();
+                final int rowsDeleted = stmt.executeUpdateDelete();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                     Log.d(TAG, "saveNodesBetween|rowsDeleted=" + rowsDeleted);
@@ -1048,7 +1015,7 @@ public class RowStateDAO {
                 stmt.bindLong(3, fromRowIncl);
                 stmt.bindLong(4, endRowExcl);
 
-                int rowsInserted = stmt.executeUpdateDelete();
+                final int rowsInserted = stmt.executeUpdateDelete();
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
                     Log.d(TAG, "saveNodesBetween|rowsInserted=" + rowsInserted);
@@ -1146,8 +1113,10 @@ public class RowStateDAO {
     public static class Node {
 
         final long rowId;
+        @NonNull
+        final String key;
+        final int level;
         boolean isExpanded;
-        int level;
         boolean isVisible;
 
         /**
@@ -1158,8 +1127,32 @@ public class RowStateDAO {
          */
         private Integer mListPosition;
 
-        private Node(final long rowId) {
-            this.rowId = rowId;
+        /**
+         * Constructor which expects a full cursor row.
+         *
+         * @param cursor to read from
+         */
+        Node(@NonNull final Cursor cursor) {
+            rowId = cursor.getInt(0);
+            key = cursor.getString(1);
+            level = cursor.getInt(2);
+            isExpanded = cursor.getInt(3) != 0;
+            isVisible = cursor.getInt(4) != 0;
+        }
+
+        /**
+         * Get a select clause (column list) with all the fields for a node.
+         *
+         * @param table to use
+         *
+         * @return CSV list of node columns
+         */
+        static String getColumns(@NonNull final TableDefinition table) {
+            return table.dot(KEY_PK_ID)
+                   + ',' + table.dot(KEY_BL_NODE_KEY)
+                   + ',' + table.dot(KEY_BL_NODE_LEVEL)
+                   + ',' + table.dot(KEY_BL_NODE_EXPANDED)
+                   + ',' + table.dot(KEY_BL_NODE_VISIBLE);
         }
 
         public void setExpanded(@NonNull final DesiredNodeState nodeState) {
@@ -1193,6 +1186,7 @@ public class RowStateDAO {
         public String toString() {
             return "Node{"
                    + "rowId=" + rowId
+                   + ", key=" + key
                    + ", level=" + level
                    + ", isExpanded=" + isExpanded
                    + ", isVisible=" + isVisible

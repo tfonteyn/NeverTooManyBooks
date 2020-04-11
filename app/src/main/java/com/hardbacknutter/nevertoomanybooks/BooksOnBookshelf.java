@@ -519,13 +519,10 @@ public class BooksOnBookshelf
             mFabMenuItems[4].setOnClickListener(v -> addBySearch(BookSearchByNativeIdFragment.TAG));
         }
 
-//        // for standard (system) local search only
-//        if (!Prefs.isAdvancedSearch(this)) {
         // Popup the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
         // check & get search text coming from a system search intent
         handleStandardSearchIntent(getIntent());
-//        }
 
         // auto-start a backup if required.
         if (getIntent().getBooleanExtra(START_BACKUP, false)) {
@@ -568,7 +565,7 @@ public class BooksOnBookshelf
             // The ACTION_VIEW as set in res/xml/searchable.xml/searchSuggestIntentAction
             query = intent.getDataString();
         } else {
-            query = "";
+            query = null;
         }
         // actioning on the criteria wil happen automatically at list building time.
         mModel.getSearchCriteria().setKeywords(query);
@@ -1344,24 +1341,30 @@ public class BooksOnBookshelf
             return;
         }
 
-        // Update the list of bookshelves + set the current bookshelf.
-        final boolean bookshelfChanged = setBookShelfSpinner();
-
         // clear the adapter; we'll prepare a new one and meanwhile the view/adapter
         // should obviously NOT try to display the old list.
         // We don't clear the cursor on the model, so we have the option of re-using it.
         mListView.setAdapter(null);
         mAdapter = null;
 
-        // This long if/else is to be able to debug/log *why* we're rebuilding
+
+        // Update the list of bookshelves + set the current bookshelf.
+        // If the shelf was changed, it will have triggered a rebuild.
+        // This also takes care of the initial build.
+        final boolean bookshelfChanged = setBookShelfSpinner();
+
+        final boolean forceRebuildInOnResume = mModel.isForceRebuildInOnResume();
+        // always reset for next iteration.
+        mModel.setForceRebuildInOnResume(false);
+
+        // This if/else is to be able to debug/log *why* we're rebuilding
         if (bookshelfChanged) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
                 Log.d(TAG, "onResume|bookshelfChanged");
             }
-            // go create
-            mModel.buildBookList(this);
+            // DO NOTHING. THE CHANGE IN BOOKSHELF ALREADY TRIGGERED A REBUILD.
 
-        } else if (mModel.isForceRebuildInOnResume()) {
+        } else if (forceRebuildInOnResume) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
                 Log.d(TAG, "onResume|isForceRebuildInOnResume");
             }
@@ -1369,23 +1372,21 @@ public class BooksOnBookshelf
             mModel.buildBookList(this);
 
         } else if (!mModel.isListLoaded()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
+            //FIXME: this branch is almost certainly never reached.
+            if (BuildConfig.DEBUG) {
                 Log.d(TAG, "onResume|initial build");
             }
             // go create
             mModel.buildBookList(this);
 
         } else {
-            // no rebuild needed
+            // no rebuild needed/done, just re-display
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
                 Log.d(TAG, "onResume|reusing existing list");
             }
             mModel.createNewListCursor();
             displayList(mModel.getTargetRows());
         }
-
-        // always reset for next iteration.
-        mModel.setForceRebuildInOnResume(false);
     }
 
     /**
@@ -1613,20 +1614,30 @@ public class BooksOnBookshelf
                 best = ri;
             }
         }
-        // If the 'best' row is not in view, or at the edge, scroll it into view.
-        if (best <= firstVisibleItemPosition || lastVisibleItemPosition <= best) {
-            mLayoutManager.scrollToPosition(best);
-
-            // Without this call some positioning may be off by one row.
-            final int newPos = best;
-            mListView.post(() -> {
-                mListView.smoothScrollToPosition(newPos);
-                // not entirely sure this is needed
-                mModel.saveAllNodes();
-                // but this is
-                saveListPosition();
-            });
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+            Log.d(TAG, "scrollToTarget"
+                       + "|targetRows=" + targetRows
+                       + "|best=" + best);
         }
+
+        // If the 'best' row is not in view, or at the edge, scroll it into view.
+        if (best <= firstVisibleItemPosition) {
+            mLayoutManager.scrollToPosition(best - 1);
+        } else if (best >= lastVisibleItemPosition) {
+            mLayoutManager.scrollToPosition(best + 1);
+        }
+        saveListPosition();
+
+//            // Without this call some positioning may be off by one row.
+//            final int newPos = best;
+//            mListView.post(() -> {
+//                mListView.smoothScrollToPosition(newPos);
+//                // not entirely sure this is needed
+//                mModel.saveAllNodes();
+//                // but this is
+//                saveListPosition();
+//            });
+//        }
     }
 
     /**
@@ -1647,6 +1658,7 @@ public class BooksOnBookshelf
         mBookshelfSpinnerAdapter.notifyDataSetChanged();
         // Set the current bookshelf.
         mBookshelfSpinner.setSelection(currentPos);
+        // See onResume: the listener WILL get triggered!!
         // (re-)enable the listener
         mBookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
 

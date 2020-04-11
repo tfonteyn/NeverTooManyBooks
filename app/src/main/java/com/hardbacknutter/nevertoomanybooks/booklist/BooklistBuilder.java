@@ -66,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
@@ -203,7 +202,8 @@ public class BooklistBuilder
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Log.d(TAG, "ENTER|BooklistBuilder"
                        + "|style=" + style.getUuid()
-                       + "|instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet());
+                       + "|instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet(),
+                  new Throwable());
         }
         // Allocate ID
         mInstanceId = ID_COUNTER.incrementAndGet();
@@ -359,23 +359,22 @@ public class BooklistBuilder
         // Start building the table domains
         final BuildHelper helper = new BuildHelper(context, mListTable, mStyle, mBookshelf);
 
-        // always sort by level first
+        // add the basic book domains
+
+        // Always sort by level first; no expression, as this does not represent a value.
         helper.addDomain(new VirtualDomain(DOM_BL_NODE_LEVEL, null, VirtualDomain.Sorted.Asc),
                          false);
-
-        // add the basic book domains
-        // The book id itself
-        helper.addDomain(new VirtualDomain(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID)),
-                         false);
-        // The level for the book, always 1 below the #groups obviously
-        helper.addDomain(
-                new VirtualDomain(DOM_BL_NODE_LEVEL, String.valueOf(mStyle.getGroupCount() + 1)),
-                false);
+        // The level expression; for a book this is always 1 below the #groups obviously
+        helper.addDomain(new VirtualDomain(DOM_BL_NODE_LEVEL,
+                                           String.valueOf(mStyle.getGroupCount() + 1)), false);
         // The group is the book group (duh)
         helper.addDomain(new VirtualDomain(DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)),
                          false);
+
+        // The book id itself
+        helper.addDomain(new VirtualDomain(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID)), false);
         // each row has a book count, for books this is obviously always == 1.
-        helper.addDomain(new VirtualDomain(DOM_BL_BOOK_COUNT, "1"), false);
+        //helper.addDomain(new VirtualDomain(DOM_BL_BOOK_COUNT, "1"), false);
 
         // add style-specified groups
         for (BooklistGroup group : mStyle.getGroups()) {
@@ -406,8 +405,7 @@ public class BooklistBuilder
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             //IMPORTANT: withConstraints MUST BE false
-            mListTable.recreate(mSyncedDb, false)
-                      .createIndices(mSyncedDb);
+            mListTable.recreate(mSyncedDb, false);
 
             //TEST: index on list table.
             if (!DBHelper.isCollationCaseSensitive()) {
@@ -508,7 +506,7 @@ public class BooklistBuilder
                 if (valuesColumns.length() > 0) {
                     valuesColumns.append(",");
                 }
-                valuesColumns.append("New.").append(sdi.getName());
+                valuesColumns.append("NEW.").append(sdi.getName());
                 mTriggerHelperTable.addDomain(sdi.getDomain());
             }
         }
@@ -525,7 +523,7 @@ public class BooklistBuilder
 
         /*
          * For each grouping, starting with the lowest, build a trigger to update the next
-         * level up as necessary
+         * level up as necessary. i.o.w. each level has a dedicated trigger.
          */
         for (int index = mStyle.getGroupCount() - 1; index >= 0; index--) {
             // Get the level number for this group
@@ -544,7 +542,7 @@ public class BooklistBuilder
             StringBuilder listValues = new StringBuilder()
                     .append(level)
                     .append(',').append(group.getId())
-                    .append(",New.").append(KEY_BL_NODE_KEY);
+                    .append(",NEW.").append(KEY_BL_NODE_KEY);
 
             // Create the where-clause to detect if the next level up is already defined
             // (by checking the 'current' record/table)
@@ -552,8 +550,8 @@ public class BooklistBuilder
 
             //noinspection ConstantConditions
             for (Domain groupDomain : group.getAccumulatedDomains()) {
-                listColumns.append(',').append(groupDomain);
-                listValues.append(", New.").append(groupDomain);
+                listColumns.append(',').append(groupDomain.getName());
+                listValues.append(", NEW.").append(groupDomain.getName());
 
                 // Only add to the where-clause if the group is part of the SORT list
                 if (sortedDomainNames.contains(groupDomain.getName())) {
@@ -562,7 +560,9 @@ public class BooklistBuilder
                     }
                     whereClause.append("COALESCE(")
                                .append(mTriggerHelperTable.dot(groupDomain.getName()))
-                               .append(",'')=COALESCE(New.").append(groupDomain).append(",'')")
+                               .append(",'')=COALESCE(NEW.")
+                               .append(groupDomain.getName())
+                               .append(",'')")
                                .append(DAO.COLLATION);
                 }
             }
@@ -573,7 +573,7 @@ public class BooklistBuilder
             String levelTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + levelTgName
                     + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                    + "\n WHEN New." + KEY_BL_NODE_LEVEL + '=' + (level + 1)
+                    + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + (level + 1)
                     + " AND NOT EXISTS("
                     + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + " WHERE " + whereClause
                     + /* */ ')'
@@ -587,18 +587,18 @@ public class BooklistBuilder
             }
         }
 
-        // Create a trigger to maintain the 'current' value -- just delete and insert
+        // Create a trigger to maintain the 'current' value
         String currentValueTgName = mListTable.getName() + "_TG_CURRENT";
         mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + currentValueTgName);
-
+        // This is a single row only, so delete the previous value, and insert the current one
         String currentValueTgSql =
                 "\nCREATE TEMPORARY TRIGGER " + currentValueTgName
                 + " AFTER INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                + "\n WHEN New." + KEY_BL_NODE_LEVEL + '=' + mStyle.getGroupCount()
+                + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + mStyle.getGroupCount()
                 + "\n BEGIN"
-                + "\n   DELETE FROM " + mTriggerHelperTable.getName() + ';'
-                + "\n   INSERT INTO " + mTriggerHelperTable.getName()
-                + /*               */ " VALUES (" + valuesColumns + ");"
+                + "\n  DELETE FROM " + mTriggerHelperTable.getName() + ';'
+                + "\n  INSERT INTO " + mTriggerHelperTable.getName()
+                + /*              */ " VALUES (" + valuesColumns + ");"
                 + "\n END";
 
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(currentValueTgSql)) {
@@ -649,15 +649,15 @@ public class BooklistBuilder
         }
 
         // get all positions of the book
-        ArrayList<RowStateDAO.Node> allNodes = mRowStateDAO.getNodesForBookId(mListTable, bookId);
+        ArrayList<RowStateDAO.Node> bookNodes = mRowStateDAO.getNodesForBookId(mListTable, bookId);
 
-        if (allNodes.isEmpty()) {
+        if (bookNodes.isEmpty()) {
             return null;
         }
 
         // First, get the ones that are currently visible...
         ArrayList<RowStateDAO.Node> visibleNodes = new ArrayList<>();
-        for (RowStateDAO.Node node : allNodes) {
+        for (RowStateDAO.Node node : bookNodes) {
             if (node.isVisible) {
                 visibleNodes.add(node);
             }
@@ -665,22 +665,22 @@ public class BooklistBuilder
 
         // If we have any visible rows, only consider those for the new position
         if (!visibleNodes.isEmpty()) {
-            allNodes = visibleNodes;
+            return visibleNodes;
 
         } else {
             // Make them all visible
-            for (RowStateDAO.Node node : allNodes) {
+            for (RowStateDAO.Node node : bookNodes) {
                 if (!node.isVisible && node.rowId >= 0) {
                     mRowStateDAO.ensureNodeIsVisible(node);
                 }
             }
             // Recalculate all positions
-            for (RowStateDAO.Node node : allNodes) {
+            for (RowStateDAO.Node node : bookNodes) {
                 node.setListPosition(mRowStateDAO.getListPosition(node));
             }
-        }
 
-        return allNodes;
+            return bookNodes;
+        }
     }
 
     /**
@@ -805,11 +805,7 @@ public class BooklistBuilder
                               final int relativeChildLevel) {
         RowStateDAO.Node node = mRowStateDAO.getNodeByNodeId(nodeRowId);
         node.setExpanded(desiredNodeState);
-
-        // if the new state of the node is expanded, also expand the children
-        mRowStateDAO.setNode(node.rowId, node.level, node.isExpanded,
-                             true, relativeChildLevel);
-
+        mRowStateDAO.setNode(node.rowId, node.level, node.isExpanded, relativeChildLevel);
         return node.isExpanded;
     }
 
