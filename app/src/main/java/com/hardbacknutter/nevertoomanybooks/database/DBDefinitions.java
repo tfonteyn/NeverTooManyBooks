@@ -464,12 +464,12 @@ public final class DBDefinitions {
      */
     public static final String KEY_FK_BL_ROW_ID = "real_row_id";
     /** {@link #TBL_BOOK_LIST_NODE_STATE}. */
-    public static final String KEY_BL_NODE_KEY = "root_key";
+    public static final String KEY_BL_NODE_KEY = "node_key";
     /** {@link #TBL_BOOK_LIST_NODE_STATE} + {@link #TMP_TBL_BOOK_LIST_ROW_STATE}. */
-    public static final String KEY_BL_NODE_LEVEL = "level";
-    public static final String KEY_BL_NODE_GROUP = "kind";
-    public static final String KEY_BL_NODE_VISIBLE = "visible";
-    public static final String KEY_BL_NODE_EXPANDED = "expanded";
+    public static final String KEY_BL_NODE_LEVEL = "node_level";
+    public static final String KEY_BL_NODE_GROUP = "node_group";
+    public static final String KEY_BL_NODE_VISIBLE = "node_visible";
+    public static final String KEY_BL_NODE_EXPANDED = "node_expanded";
     /**
      * All money keys.
      * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.

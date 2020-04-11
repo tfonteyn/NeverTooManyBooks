@@ -211,21 +211,18 @@ public class TableDefinition
     /**
      * Syntax sugar; meant for recreating temporary tables.
      * <p>
-     * Drop this table (if it exists) and (re)create it.
-     * Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
+     * Drop this table (if it exists) and (re)create it including its indexes.
      *
      * @param db              Database in which to drop/create table
      * @param withConstraints Indicates if fields should have constraints applied
-     *
-     * @return TableDefinition (for chaining)
      */
-    @NonNull
-    public TableDefinition recreate(@NonNull final SynchronizedDb db,
-                                    final boolean withConstraints) {
+    public void recreate(@NonNull final SynchronizedDb db,
+                         final boolean withConstraints) {
         // Drop the table in case there is an orphaned instance with the same name.
         db.drop(mName);
         db.execSQL(def(mName, withConstraints, true, false));
-        return this;
+
+        createIndices(db);
     }
 
     /**

@@ -178,20 +178,4 @@ final class UpgradeDatabase {
             }
         }
     }
-
-    static void toDb2(@NonNull final SynchronizedDb syncedDb) {
-        DBDefinitions.TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_COLOR);
-    }
-
-    static void toDb3(@NonNull final SynchronizedDb syncedDb) {
-        DBDefinitions.TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_CONDITION);
-        DBDefinitions.TBL_BOOKS.alterTableAddColumn(syncedDb,
-                                                    DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER);
-    }
-
-    static void toDb4(@NonNull final SynchronizedDb syncedDb) {
-        // bug fix: this was modifying the books last update-date each time a bookshelf
-        // changed its current style.
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS after_update_onbookshelf");
-    }
 }

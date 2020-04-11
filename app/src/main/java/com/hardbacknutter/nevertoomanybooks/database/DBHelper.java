@@ -100,7 +100,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -603,18 +603,25 @@ public final class DBHelper
 
         if (curVersion < newVersion && curVersion == 1) {
             curVersion = 2;
-            UpgradeDatabase.toDb2(syncedDb);
+            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_COLOR);
         }
         if (curVersion < newVersion && curVersion == 2) {
             curVersion = 3;
-            UpgradeDatabase.toDb3(syncedDb);
+            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_CONDITION);
+            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER);
         }
         if (curVersion < newVersion && curVersion == 3) {
-            //noinspection UnusedAssignment
             curVersion = 4;
-            UpgradeDatabase.toDb4(syncedDb);
+            // bug fix: this was modifying the books last update-date each time a bookshelf
+            // changed its current style.
+            syncedDb.execSQL("DROP TRIGGER IF EXISTS after_update_onbookshelf");
         }
-
+        if (curVersion < newVersion && curVersion == 4) {
+            //noinspection UnusedAssignment
+            curVersion = 5;
+            // changed column names; just scrap the old data
+            TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
+        }
 
         // Rebuild all indices
         recreateIndices(syncedDb);
