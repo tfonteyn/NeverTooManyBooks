@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
@@ -72,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.RowDataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -588,7 +588,7 @@ public class BooksOnBookshelfModel
 
         // if we have a list of ID's, ignore other criteria
         if (mSearchCriteria.hasIdList()) {
-            blb.setFilterOnBookIdList(mSearchCriteria.bookList);
+            blb.setFilterOnBookIdList(mSearchCriteria.bookIdList);
 
         } else {
             // Criteria supported by FTS
@@ -962,13 +962,26 @@ public class BooksOnBookshelfModel
      */
     public static class SearchCriteria {
 
+        /** Log tag. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+        private static final String TAG = "SearchCriteria";
+
+        /** Bundle key for generic search text. */
+        public static final String BKEY_SEARCH_TEXT_KEYWORDS = TAG + ":keywords";
+
+        /**
+         * Bundle key for Author search text
+         * (all DB KEY's and the ARRAY key is for authors with verified names).
+         */
+        public static final String BKEY_SEARCH_TEXT_AUTHOR = TAG + ":author";
+
         /**
          * List of book ids to display.
          * The RESULT of a search with {@link FTSSearchActivity}
          * which can be re-used for the builder.
          */
         @Nullable
-        ArrayList<Long> bookList;
+        ArrayList<Long> bookIdList;
 
         /**
          * Author to use in FTS search query.
@@ -1015,7 +1028,7 @@ public class BooksOnBookshelfModel
             ftsSeries = null;
             loanee = null;
 
-            bookList = null;
+            bookIdList = null;
         }
 
         /**
@@ -1066,12 +1079,12 @@ public class BooksOnBookshelfModel
             }
             boolean isSet = false;
 
-            if (bundle.containsKey(UniqueId.BKEY_SEARCH_TEXT)) {
-                setKeywords(bundle.getString(UniqueId.BKEY_SEARCH_TEXT));
+            if (bundle.containsKey(BKEY_SEARCH_TEXT_KEYWORDS)) {
+                setKeywords(bundle.getString(BKEY_SEARCH_TEXT_KEYWORDS));
                 isSet = true;
             }
-            if (bundle.containsKey(UniqueId.BKEY_SEARCH_AUTHOR)) {
-                ftsAuthor = bundle.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+            if (bundle.containsKey(BKEY_SEARCH_TEXT_AUTHOR)) {
+                ftsAuthor = bundle.getString(BKEY_SEARCH_TEXT_AUTHOR);
                 isSet = true;
             }
             if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
@@ -1087,9 +1100,9 @@ public class BooksOnBookshelfModel
                 loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
                 isSet = true;
             }
-            if (bundle.containsKey(UniqueId.BKEY_ID_LIST)) {
+            if (bundle.containsKey(Book.BKEY_BOOK_ID_ARRAY)) {
                 //noinspection unchecked
-                bookList = (ArrayList<Long>) bundle.getSerializable(UniqueId.BKEY_ID_LIST);
+                bookIdList = (ArrayList<Long>) bundle.getSerializable(Book.BKEY_BOOK_ID_ARRAY);
                 isSet = true;
             }
 
@@ -1102,13 +1115,13 @@ public class BooksOnBookshelfModel
          * @param intent which will be used for a #startActivityForResult call
          */
         public void to(@NonNull final Intent intent) {
-            intent.putExtra(UniqueId.BKEY_SEARCH_TEXT, ftsKeywords)
-                  .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, ftsAuthor)
+            intent.putExtra(BKEY_SEARCH_TEXT_KEYWORDS, ftsKeywords)
+                  .putExtra(BKEY_SEARCH_TEXT_AUTHOR, ftsAuthor)
                   .putExtra(DBDefinitions.KEY_TITLE, ftsTitle)
                   .putExtra(DBDefinitions.KEY_SERIES_TITLE, ftsSeries)
 
                   .putExtra(DBDefinitions.KEY_LOANEE, loanee)
-                  .putExtra(UniqueId.BKEY_ID_LIST, bookList);
+                  .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList);
         }
 
         public boolean isEmpty() {
@@ -1118,11 +1131,11 @@ public class BooksOnBookshelfModel
                    && (ftsSeries == null || ftsSeries.isEmpty())
 
                    && (loanee == null || loanee.isEmpty())
-                   && (bookList == null || bookList.isEmpty());
+                   && (bookIdList == null || bookIdList.isEmpty());
         }
 
         boolean hasIdList() {
-            return bookList != null && !bookList.isEmpty();
+            return bookIdList != null && !bookIdList.isEmpty();
         }
 
         @Override
@@ -1134,7 +1147,7 @@ public class BooksOnBookshelfModel
                    + ", ftsSeries=`" + ftsSeries + '`'
                    + ", loanee=`" + loanee + '`'
                    + ", ftsKeywords=`" + ftsKeywords + '`'
-                   + ", bookList=" + bookList
+                   + ", bookList=" + bookIdList
                    + '}';
         }
     }

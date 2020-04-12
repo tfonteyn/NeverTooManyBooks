@@ -78,26 +78,30 @@ android {
 
     // another site: https://gs.statcounter.com/
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2020-02-29 world wide:
-    // 10.0      7.33
-    // 9.0      48.74
-    // 8.1      60.95
-    // 8.0      68.93
-    // 7.0      75.65
-    // 6.0      85.80
+    // 2020-04-01 world wide:
+    // 10.0     12.45
+    // 9.0      51.02
+    // 8.1      62.84
+    // 8.0      70.46
+    // 7.0      76.89
+    // 6.0      86.26
 
-    //  May 7, 2019.: https://developer.android.com/about/dashboards/
+    //  2020-04-11.: from Android Studio 'new project' page
     //  A       API     %
-    // 10       29
-    //  9       28
-    //  8.1     27
-    //  8       26      38.7
-    //  7.1     25      46.5
-    //  7       24      57.9
-    //  6       23      74.8‬
+    // 10       29       8.2
+    //  9       28      39.5
+    //  8.1     27      53.5
+    //  8       26      60.8
+    //  7.1     25      66.2
+    //  7       24      73.7
+    //  6       23      84.9‬
     //
     // Java 8 streams needs API 24
     // https://developer.android.com/studio/write/java8-support
+    // But Studio 4 will support them on lower versions:
+    // https://developer.android.com/studio/preview/features#j8-desugar
+    //
+    // The scanner library for pre-24 API is no longer updated.
     //
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
@@ -183,7 +187,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.0-alpha02'
 
     // barcode decoder using https://developers.google.com/android/guides/setup
-    implementation 'com.google.android.gms:play-services-vision:19.0.0'
+    implementation 'com.google.android.gms:play-services-vision:20.0.0'
 
     implementation 'ch.acra:acra-mail:5.5.0'
     implementation 'ch.acra:acra-toast:5.5.0'
@@ -197,10 +201,6 @@ dependencies {
     implementation 'commons-codec:commons-codec:1.13'
 
     // jsoup HTML parser library @ https://jsoup.org/
-    // don't upgrade... 1.12.1 is hitting #990 alike situation, while 1.11.3 works ok.
-//    implementation 'org.jsoup:jsoup:1.11.3'
-//    implementation 'org.jsoup:jsoup:1.12.1'
-//    implementation 'org.jsoup:jsoup:1.12.2'
     implementation 'org.jsoup:jsoup:1.13.1'
 
     // Embedded ZXing: https://github.com/journeyapps/zxing-android-embedded
@@ -211,7 +211,7 @@ dependencies {
     //implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
 
     testImplementation 'org.mockito:mockito-core:3.3.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
     testImplementation 'org.json:json:20190722'
 }
 

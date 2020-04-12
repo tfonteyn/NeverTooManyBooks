@@ -138,6 +138,7 @@ public final class FileUtils {
      * @return File written to (the one passed in), or {@code null} if writing failed.
      *
      * @throws IOException on failure
+     * @throws ExternalStorageException if the Shared Storage media is not available
      */
     @Nullable
     public static File copyInputStream(@NonNull final Context context,

@@ -51,7 +51,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -137,7 +137,7 @@ public class StyleGroupsActivity
                     .show();
         } else {
             Intent resultData = new Intent()
-                    .putExtra(UniqueId.BKEY_STYLE, mModel.getStyle());
+                    .putExtra(BooklistStyle.BKEY_STYLE, mModel.getStyle());
             setResult(Activity.RESULT_OK, resultData);
             super.onBackPressed();
         }

@@ -46,10 +46,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupBase;
@@ -318,13 +318,13 @@ class AmazonHtmlHandler
         }
 
         if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
         if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
         if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
 
         // optional fetch of the cover.
@@ -359,12 +359,12 @@ class AmazonHtmlHandler
             String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, imageUrl, name);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
-                        bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                        bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
                 imageList.add(fileSpec);
-                bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
             }
         }
         return bookData;

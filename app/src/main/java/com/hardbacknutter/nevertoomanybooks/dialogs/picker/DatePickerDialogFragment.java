@@ -40,7 +40,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.Calendar;
 
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -76,8 +76,8 @@ public class DatePickerDialogFragment
 
         DatePickerDialogFragment frag = new DatePickerDialogFragment();
         Bundle args = new Bundle(3);
-        args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
+        args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
+        args.putInt(StandardDialogs.BKEY_DIALOG_FIELD_ID, fieldId);
         args.putString(BKEY_DATE, date);
         frag.setArguments(args);
         return frag;

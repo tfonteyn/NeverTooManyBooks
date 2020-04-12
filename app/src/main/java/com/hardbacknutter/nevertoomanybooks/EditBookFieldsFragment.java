@@ -146,14 +146,14 @@ public class EditBookFieldsFragment
         if (!showAuthSeriesOnTabs) {
             fields.add(R.id.author, new TextAccessor<>(
                                new AuthorListFormatter(Author.Details.Short, true, false)),
-                       UniqueId.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
+                       Book.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author)
                   .setErrorViewId(R.id.lbl_author)
                   .setFieldValidator(NON_BLANK_VALIDATOR);
 
             fields.add(R.id.series_title, new TextAccessor<>(
                                new SeriesListFormatter(Series.Details.Short, true, false)),
-                       UniqueId.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
+                       Book.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
                   .setRelatedFields(R.id.lbl_series);
         }
 
@@ -181,7 +181,7 @@ public class EditBookFieldsFragment
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
         fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter(), true),
-                   UniqueId.BKEY_BOOKSHELF_ARRAY, DBDefinitions.KEY_FK_BOOKSHELF)
+                   Book.BKEY_BOOKSHELF_ARRAY, DBDefinitions.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
 
@@ -245,14 +245,14 @@ public class EditBookFieldsFragment
 
         mVb.btnScan.setOnClickListener(v -> {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-            mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+            mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         });
 
         setOnClickListener(R.id.bookshelves, v -> CheckListDialogFragment
                 .newInstance(R.string.lbl_bookshelves_long, R.id.bookshelves,
                              new ArrayList<>(mFragmentVM.getDb().getBookshelves()),
                              new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
-                                     UniqueId.BKEY_BOOKSHELF_ARRAY)))
+                                     Book.BKEY_BOOKSHELF_ARRAY)))
                 .show(getChildFragmentManager(), CheckListDialogFragment.TAG));
 
 
@@ -319,7 +319,7 @@ public class EditBookFieldsFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case UniqueId.REQ_SCAN_BARCODE: {
+            case RequestCode.SCAN_BARCODE: {
                 Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {

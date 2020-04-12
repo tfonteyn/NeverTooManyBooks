@@ -38,7 +38,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
@@ -79,7 +78,7 @@ public class PreferredStylesViewModel
             mDb = new DAO(TAG);
             mList = new ArrayList<>(BooklistStyle.Helper.getStyles(context, mDb, true).values());
 
-            mInitialStyleId = args.getLong(UniqueId.BKEY_STYLE_ID, 0);
+            mInitialStyleId = args.getLong(BooklistStyle.BKEY_STYLE_ID, 0);
             if (mInitialStyleId == 0) {
                 throw new IllegalStateException("Style id must be passed in args");
             }

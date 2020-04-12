@@ -44,6 +44,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByNativeIdBinding;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
@@ -123,8 +124,8 @@ public class BookSearchByNativeIdFragment
     @Override
     void onSearchResults(@NonNull final Bundle bookData) {
         final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                .putExtra(Book.BKEY_BOOK_DATA, bookData);
+        startActivityForResult(intent, RequestCode.BOOK_EDIT);
         clearPreviousSearchCriteria();
     }
 

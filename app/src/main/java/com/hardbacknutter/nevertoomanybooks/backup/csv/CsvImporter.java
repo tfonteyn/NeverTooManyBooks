@@ -50,7 +50,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
@@ -490,7 +489,7 @@ public class CsvImporter
             if (!bookshelves.isEmpty()) {
                 // Do not run in batch
                 ItemWithFixableId.pruneList(bookshelves, context, db, mUserLocale, false);
-                book.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bookshelves);
+                book.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bookshelves);
             }
         }
         book.remove(DBDefinitions.KEY_BOOKSHELF_NAME);
@@ -555,7 +554,7 @@ public class CsvImporter
         if (authors.isEmpty()) {
             authors.add(Author.createUnknownAuthor(context));
         }
-        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+        book.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
     }
 
     /**
@@ -601,7 +600,7 @@ public class CsvImporter
         }
 
         if (!series.isEmpty()) {
-            book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, series);
+            book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, series);
         }
     }
 
@@ -627,7 +626,7 @@ public class CsvImporter
             if (!toc.isEmpty()) {
                 // Do not run in batch
                 ItemWithFixableId.pruneList(toc, context, db, book.getLocale(context), false);
-                book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
+                book.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, toc);
             }
         }
     }

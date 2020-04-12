@@ -53,7 +53,6 @@ import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -673,18 +672,18 @@ class IsfdbBookHandler
         // the table of content
         ArrayList<TocEntry> tocEntries = getTocList(context, bookData, addSeriesFromToc);
         if (!tocEntries.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, tocEntries);
+            bookData.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, tocEntries);
         }
 
         // store accumulated ArrayList's, do this *after* we got the TOC
         if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
 
         // Anthology type: make sure TOC_MULTIPLE_AUTHORS is correct.
@@ -868,12 +867,12 @@ class IsfdbBookHandler
 
         if (fileSpec != null) {
             ArrayList<String> imageList =
-                    bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                    bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
             if (imageList == null) {
                 imageList = new ArrayList<>();
             }
             imageList.add(fileSpec);
-            bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+            bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
         }
 
     }

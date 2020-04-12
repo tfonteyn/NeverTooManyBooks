@@ -37,7 +37,7 @@ import androidx.preference.Preference;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -68,7 +68,7 @@ public class WebSearchesPreferenceFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), SearchAdminActivity.class);
-                startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
+                startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
                 return true;
             });
         }
@@ -84,7 +84,7 @@ public class WebSearchesPreferenceFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case UniqueId.REQ_PREFERRED_SEARCH_SITES:
+            case RequestCode.PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mResultDataModel.putResultData(data);
                 }

@@ -48,7 +48,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
@@ -140,7 +140,7 @@ public class CameraHelper {
 
         } else {
             ((PermissionsHelper.RequestHandler) fragment).addPermissionCallback(
-                    UniqueId.REQ_ANDROID_PERMISSIONS, (perms, grantResults) -> {
+                    RequestCode.ANDROID_PERMISSIONS, (perms, grantResults) -> {
                         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                             startCamera(mFragment, mRequestCode);
                         }
@@ -148,7 +148,7 @@ public class CameraHelper {
             //noinspection ConstantConditions
             ActivityCompat.requestPermissions(fragment.getActivity(),
                                               new String[]{Manifest.permission.CAMERA},
-                                              UniqueId.REQ_ANDROID_PERMISSIONS);
+                                              RequestCode.ANDROID_PERMISSIONS);
         }
     }
 

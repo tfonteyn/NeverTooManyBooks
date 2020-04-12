@@ -41,9 +41,9 @@ import java.util.regex.Matcher;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -398,11 +398,11 @@ public abstract class ShowBookApiHandler
         }
 
         if (mAuthors != null && !mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
 
         if (mSeries != null && !mSeries.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+            mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
 
         // these are Goodreads shelves, not ours.
@@ -439,12 +439,12 @@ public abstract class ShowBookApiHandler
             String fileSpec = ImageUtils.saveImage(appContext, coverUrl, name);
             if (fileSpec != null) {
                 ArrayList<String> list =
-                        mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                        mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
                 if (list == null) {
                     list = new ArrayList<>();
                 }
                 list.add(fileSpec);
-                mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, list);
+                mBookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], list);
             }
         }
     }

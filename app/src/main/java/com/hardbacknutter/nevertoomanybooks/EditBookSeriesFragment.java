@@ -126,7 +126,7 @@ public class EditBookSeriesFragment
     void onPopulateViews(@NonNull final Book book) {
         super.onPopulateViews(book);
 
-        mList = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        mList = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
 
         //noinspection ConstantConditions
         mListAdapter = new SeriesListAdapter(getContext(), mList,
@@ -146,7 +146,7 @@ public class EditBookSeriesFragment
 
         // The list is not a 'real' field. Hence the need to store it manually here.
         // It requires no special validation.
-        book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mList);
+        book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mList);
     }
 
     @Override

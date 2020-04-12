@@ -134,7 +134,7 @@ public class ImportFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case UniqueId.REQ_IMPORT_PICK_URI: {
+            case RequestCode.IMPORT_PICK_URI: {
                 // The user selected a file to import from. Next step asks for the options.
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
@@ -192,7 +192,7 @@ public class ImportFragment
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 // .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
                 .setType("*/*");
-        startActivityForResult(intent, UniqueId.REQ_IMPORT_PICK_URI);
+        startActivityForResult(intent, RequestCode.IMPORT_PICK_URI);
     }
 
     /**
@@ -307,7 +307,7 @@ public class ImportFragment
                 .setTitle(titleId)
                 .setMessage(results.createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
-                    mResultDataModel.putResultData(UniqueId.BKEY_IMPORT_RESULT, options);
+                    mResultDataModel.putResultData(ImportResults.BKEY_IMPORT_RESULTS, options);
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK,
                                             mResultDataModel.getResultData());

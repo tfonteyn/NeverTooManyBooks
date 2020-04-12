@@ -40,7 +40,6 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -106,13 +105,13 @@ class IsfdbBookHandlerTest
         assertEquals("Month from Locus1", mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
 
         ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Methuen", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Russell", authors.get(0).getFamilyName());
@@ -127,7 +126,7 @@ class IsfdbBookHandlerTest
 //        assertEquals("Hugi", authors.get(1).getFamilyName());
 //        assertEquals("Maurice G.", authors.get(1).getGivenNames());
 
-        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(toc);
         //7 • Allamagoosa • (1955) • short story by Eric Frank Russell
         //24 • Hobbyist • (1947) • novelette by Eric Frank Russell
@@ -186,13 +185,13 @@ class IsfdbBookHandlerTest
         assertEquals("NOVEL", mRawData.getString(IsfdbBookHandler.BookField.BOOK_TYPE));
 
         ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Pratchett", authors.get(0).getFamilyName());
@@ -203,14 +202,14 @@ class IsfdbBookHandlerTest
         assertEquals("Joe", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
-        ArrayList<Series> series = mRawData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertEquals(2, series.size());
         assertEquals("The Discworld Collector's Library", series.get(0).getTitle());
         assertEquals("Discworld", series.get(1).getTitle());
         assertEquals("4", series.get(1).getNumber());
 
-        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(toc);
         assertEquals(1, toc.size());
         TocEntry entry = toc.get(0);
@@ -261,13 +260,13 @@ class IsfdbBookHandlerTest
         assertEquals("B00W2EBY8O", mRawData.getString(DBDefinitions.KEY_EID_ASIN));
 
         ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Harper", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Pratchett", authors.get(0).getFamilyName());
@@ -278,13 +277,13 @@ class IsfdbBookHandlerTest
         assertEquals("Jim", authors.get(1).getGivenNames());
         assertEquals(Author.TYPE_COVER_ARTIST, authors.get(1).getType());
 
-        ArrayList<Series> series = mRawData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertEquals(1, series.size());
         assertEquals("Tiffany Aching", series.get(0).getTitle());
         assertEquals("41", series.get(0).getNumber());
 
-        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(toc);
         assertEquals(2, toc.size());
         TocEntry entry = toc.get(0);

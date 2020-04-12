@@ -57,7 +57,7 @@ public class AdminActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
+        String tag = getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG);
         Objects.requireNonNull(tag);
         replaceFragment(R.id.main_fragment, tag);
     }

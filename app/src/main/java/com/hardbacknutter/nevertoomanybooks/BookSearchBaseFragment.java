@@ -135,7 +135,7 @@ public abstract class BookSearchBaseFragment
                                   (Parcelable) SiteList.Type.Data)
                         .putExtra(SiteList.Type.Data.getBundleKey(),
                                   mSearchCoordinator.getSiteList());
-                startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
+                startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
                 return true;
             }
 
@@ -270,7 +270,7 @@ public abstract class BookSearchBaseFragment
         }
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
-            case UniqueId.REQ_PREFERRED_SEARCH_SITES: {
+            case RequestCode.PREFERRED_SEARCH_SITES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
                     if (siteList != null) {
@@ -279,7 +279,7 @@ public abstract class BookSearchBaseFragment
                 }
                 break;
             }
-            case UniqueId.REQ_BOOK_EDIT: {
+            case RequestCode.BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mResultDataModel.putResultData(data);
                 }

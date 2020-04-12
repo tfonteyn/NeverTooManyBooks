@@ -50,7 +50,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
@@ -226,7 +226,7 @@ public final class ScannerManager {
 
         } else {
             Dialog dialog = gApi.getErrorDialog(activity, status,
-                                                UniqueId.REQ_UPDATE_GOOGLE_PLAY_SERVICES,
+                                                RequestCode.UPDATE_GOOGLE_PLAY_SERVICES,
                                                 d -> {
                                                     setPreferredScanner(activity, ZXING_COMPATIBLE);
                                                     resultListener.onResult(false);

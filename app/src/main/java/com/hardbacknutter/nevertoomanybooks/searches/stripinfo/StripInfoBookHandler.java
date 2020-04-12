@@ -55,7 +55,6 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -428,18 +427,18 @@ class StripInfoBookHandler
 
         ArrayList<TocEntry> toc = processAnthology();
         if (toc != null && !toc.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
+            bookData.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, toc);
             bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
         }
 
         if (!mAuthors.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+            bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
 
         if (fetchThumbnail[0]) {
@@ -566,18 +565,13 @@ class StripInfoBookHandler
                 }
             }
 
-            if (cIdx == 0) {
-                String key = UniqueId.BKEY_FILE_SPEC_ARRAY;
-                ArrayList<String> imageList = bookData.getStringArrayList(key);
-                if (imageList == null) {
-                    imageList = new ArrayList<>();
-                }
-                imageList.add(fileSpec);
-                bookData.putStringArrayList(key, imageList);
-
-            } else {
-                bookData.putString(UniqueId.BKEY_FILE_SPEC[1], fileSpec);
+            String key = Book.BKEY_FILE_SPEC_ARRAY[cIdx];
+            ArrayList<String> imageList = bookData.getStringArrayList(key);
+            if (imageList == null) {
+                imageList = new ArrayList<>();
             }
+            imageList.add(fileSpec);
+            bookData.putStringArrayList(key, imageList);
         }
     }
 

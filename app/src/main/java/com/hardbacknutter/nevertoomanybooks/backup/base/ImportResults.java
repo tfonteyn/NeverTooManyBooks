@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.utils.Csv;
 
 /**
@@ -61,6 +62,15 @@ public class ImportResults
             return new ImportResults[size];
         }
     };
+
+    /**
+     * The resulting {@link ImportManager} options flags after an import.
+     * <p>
+     * <br>type: {@code int} (bitmask)
+     * setResult
+     */
+    public static final String BKEY_IMPORT_RESULTS = "importResults";
+
     private static final String BULLET = "\n• ";
     /** Keeps track of failed import lines in a text file. */
     public final List<Integer> failedLinesNr = new ArrayList<>();

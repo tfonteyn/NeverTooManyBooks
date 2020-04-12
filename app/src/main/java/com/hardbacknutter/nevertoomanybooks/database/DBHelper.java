@@ -200,6 +200,56 @@ public final class DBHelper
     }
 
     /**
+     * Method to detect if collation implementations are case sensitive.
+     * This was built because ICS broke the UNICODE collation (making it case sensitive (CS))
+     * and we needed to check for collation case-sensitivity.
+     * <p>
+     * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
+     *
+     * @return This method is supposed to return {@code false} in normal circumstances.
+     */
+    private boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
+        final String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
+        // Drop and create table
+        db.execSQL(dropTable);
+        db.execSQL("CREATE TEMPORARY TABLE collation_cs_check (t text, i integer)");
+        try {
+            // Row that *should* be returned first assuming 'a' <=> 'A'
+            db.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");
+            // Row that *should* be returned second assuming 'a' <=> 'A';
+            // will be returned first if 'A' < 'a'.
+            db.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
+
+            String s;
+            try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
+                                        + " ORDER BY t " + DAO.COLLATION + ",i",
+                                        null)) {
+                c.moveToFirst();
+                s = c.getString(0);
+            }
+
+            boolean cs = !"a".equals(s);
+            if (cs) {
+                Log.e(TAG, "\n=============================================="
+                           + "\n========== CASE SENSITIVE COLLATION =========="
+                           + "\n==============================================");
+            }
+            return cs;
+
+        } catch (@NonNull final SQLException e) {
+            // bad sql is a developer issue... die!
+            Logger.error(App.getAppContext(), TAG, e);
+            throw e;
+        } finally {
+            try {
+                db.execSQL(dropTable);
+            } catch (@NonNull final SQLException e) {
+                Logger.error(App.getAppContext(), TAG, e);
+            }
+        }
+    }
+
+    /**
      * This method should only be called at the *END* of onCreate/onUpdate.
      * <p>
      * (re)Creates the indexes as defined on the tables.
@@ -554,11 +604,10 @@ public final class DBHelper
     }
 
     /**
-     * This function is called each time the database is upgraded.
-     * It will run all upgrade scripts between the oldVersion and the newVersion.
+     * Called when the database needs to be upgraded..
      * <p>
-     * REMINDER: do not use [column].ref() or [table].create/createAll.
-     * The 'current' definition might not match the upgraded definition!
+     * This method executes within a transaction. If an exception is thrown, all changes
+     * will automatically be rolled back.
      *
      * @param db         The SQLiteDatabase to be upgraded
      * @param oldVersion The current version number of the SQLiteDatabase
@@ -633,56 +682,6 @@ public final class DBHelper
     public void onOpen(@NonNull final SQLiteDatabase db) {
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive(db);
-        }
-    }
-
-    /**
-     * Method to detect if collation implementations are case sensitive.
-     * This was built because ICS broke the UNICODE collation (making it case sensitive (CS))
-     * and we needed to check for collation case-sensitivity.
-     * <p>
-     * This bug was introduced in ICS and present in 4.0-4.0.3, at least.
-     *
-     * @return This method is supposed to return {@code false} in normal circumstances.
-     */
-    private boolean collationIsCaseSensitive(@NonNull final SQLiteDatabase db) {
-        final String dropTable = "DROP TABLE IF EXISTS collation_cs_check";
-        // Drop and create table
-        db.execSQL(dropTable);
-        db.execSQL("CREATE TEMPORARY TABLE collation_cs_check (t text, i integer)");
-        try {
-            // Row that *should* be returned first assuming 'a' <=> 'A'
-            db.execSQL("INSERT INTO collation_cs_check VALUES('a', 1)");
-            // Row that *should* be returned second assuming 'a' <=> 'A';
-            // will be returned first if 'A' < 'a'.
-            db.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
-
-            String s;
-            try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
-                                        + " ORDER BY t " + DAO.COLLATION + ",i",
-                                        null)) {
-                c.moveToFirst();
-                s = c.getString(0);
-            }
-
-            boolean cs = !"a".equals(s);
-            if (cs) {
-                Log.e(TAG, "\n=============================================="
-                           + "\n========== CASE SENSITIVE COLLATION =========="
-                           + "\n==============================================");
-            }
-            return cs;
-
-        } catch (@NonNull final SQLException e) {
-            // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e);
-            throw e;
-        } finally {
-            try {
-                db.execSQL(dropTable);
-            } catch (@NonNull final SQLException e) {
-                Logger.error(App.getAppContext(), TAG, e);
-            }
         }
     }
 }

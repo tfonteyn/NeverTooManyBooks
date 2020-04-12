@@ -39,9 +39,9 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -92,20 +92,20 @@ class OpenLibrarySearchEngineTest
 
 
         ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Litwin Books", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Miedema", authors.get(0).getFamilyName());
         assertEquals("John", authors.get(0).getGivenNames());
         assertEquals(Author.TYPE_UNKNOWN, authors.get(0).getType());
 
-        ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> tocs = mRawData.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
         assertNotNull(tocs);
         assertEquals(5, tocs.size());
 

@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.FlattenedBooklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -142,13 +141,13 @@ public class BookDetailsFragmentViewModel
 
         fields.add(R.id.author, new TextAccessor<>(
                            new AuthorListFormatter(Author.Details.Full, false, true)),
-                   UniqueId.BKEY_AUTHOR_ARRAY,
+                   Book.BKEY_AUTHOR_ARRAY,
                    DBDefinitions.KEY_FK_AUTHOR)
               .setRelatedFields(R.id.lbl_author);
 
         fields.add(R.id.series_title, new TextAccessor<>(
                            new SeriesListFormatter(Series.Details.Full, false, true)),
-                   UniqueId.BKEY_SERIES_ARRAY,
+                   Book.BKEY_SERIES_ARRAY,
                    DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
@@ -189,7 +188,7 @@ public class BookDetailsFragmentViewModel
         // Personal fields
         fields.add(R.id.bookshelves,
                    new EntityListChipGroupAccessor(new ArrayList<>(mDb.getBookshelves()), false),
-                   UniqueId.BKEY_BOOKSHELF_ARRAY,
+                   Book.BKEY_BOOKSHELF_ARRAY,
                    DBDefinitions.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
 

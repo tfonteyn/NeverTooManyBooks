@@ -54,6 +54,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
@@ -126,9 +127,10 @@ public class UpdateFieldsFragment
                           .observe(getViewLifecycleOwner(), this::onTaskFinished);
 
         // optional activity title
-        if (getArguments() != null && getArguments().containsKey(UniqueId.BKEY_DIALOG_TITLE)) {
+        if (getArguments() != null && getArguments()
+                .containsKey(StandardDialogs.BKEY_DIALOG_TITLE)) {
             //noinspection ConstantConditions
-            activity.setTitle(getArguments().getString(UniqueId.BKEY_DIALOG_TITLE));
+            activity.setTitle(getArguments().getString(StandardDialogs.BKEY_DIALOG_TITLE));
         } else {
             //noinspection ConstantConditions
             activity.setTitle(R.string.lbl_select_fields);
@@ -195,7 +197,7 @@ public class UpdateFieldsFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
-            case UniqueId.REQ_PREFERRED_SEARCH_SITES:
+            case RequestCode.PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     final SiteList sites =
                             data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
@@ -239,7 +241,7 @@ public class UpdateFieldsFragment
                                   (Parcelable) SiteList.Type.Data)
                         .putExtra(SiteList.Type.Data.getBundleKey(),
                                   mUpdateFieldsModel.getSiteList());
-                startActivityForResult(intent, UniqueId.REQ_PREFERRED_SEARCH_SITES);
+                startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
                 return true;
             }
             case R.id.MENU_RESET: {

@@ -39,6 +39,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
@@ -63,7 +64,7 @@ public class BookSearchActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
+        String tag = getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG);
         if (tag == null) {
             tag = BookSearchByIsbnFragment.TAG;
         }
@@ -112,7 +113,7 @@ public class BookSearchActivity
         }
 
         // Settings initiated from the navigation panel.
-        if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
+        if (requestCode == RequestCode.NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
                 final SiteList siteList =
@@ -128,7 +129,7 @@ public class BookSearchActivity
                 // Other then using memory, this is fine.
                 // We assume if the user explicitly went to settings to change the scanner
                 // they want to use it.
-                if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
+                if (data.getBooleanExtra(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED, false)) {
                     final ScannerViewModel model =
                             new ViewModelProvider(this).get(ScannerViewModel.class);
                     model.resetScanner();

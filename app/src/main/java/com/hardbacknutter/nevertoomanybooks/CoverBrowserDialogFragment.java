@@ -63,6 +63,7 @@ import java.util.concurrent.RejectedExecutionException;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
@@ -178,7 +179,7 @@ public class CoverBrowserDialogFragment
             if (mSelectedFileSpec != null) {
                 int cIdx = mModel.getImageIndex();
                 Intent resultData = new Intent()
-                        .putExtra(UniqueId.BKEY_FILE_SPEC[cIdx], mSelectedFileSpec);
+                        .putExtra(Book.BKEY_FILE_SPEC[cIdx], mSelectedFileSpec);
                 //noinspection ConstantConditions
                 getTargetFragment()
                         .onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, resultData);

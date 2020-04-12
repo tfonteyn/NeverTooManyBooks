@@ -818,6 +818,8 @@ public final class ImageUtils {
         private final int mMaxHeight;
 
         /**
+         * Constructor.
+         *
          * @param imageView to populate
          * @param uuid      UUID of the book
          * @param cIdx      0..n image index

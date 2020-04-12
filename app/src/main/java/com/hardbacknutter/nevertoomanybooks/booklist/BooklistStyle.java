@@ -97,6 +97,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 public class BooklistStyle
         implements Parcelable, Entity {
 
+    /** log tag. */
+    private static final String TAG = "BooklistStyle";
+
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR =
             new Creator<BooklistStyle>() {
@@ -129,6 +132,34 @@ public class BooklistStyle
     /** the amount of details to show in the header. */
     public static final int HEADER_SHOW_FILTER = 1 << 4;
     public static final int[] HEADER_LEVELS = {HEADER_SHOW_LEVEL_1, HEADER_SHOW_LEVEL_2};
+
+    /**
+     * A BooklistStyle <strong>ID</strong>.
+     * <p>
+     * <br>type: {@code long}
+     */
+    public static final String BKEY_STYLE_ID = TAG + ":id";
+
+    /**
+     * A parcelled BooklistStyle.
+     * <p>
+     * <br>type: {@link BooklistStyle}
+     */
+    public static final String BKEY_STYLE = TAG + ":style";
+
+    /**
+     * Styles related data was modified (or not).
+     * This includes a Style being modified or deleted,
+     * or the order of the preferred styles modified,
+     * or the selected style changed,
+     * or ...
+     * ENHANCE: make this fine grained and reduce unneeded rebuilds
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
+
     /**
      * Text Scaling.
      * NEVER change these values, they get stored in preferences.

@@ -34,9 +34,9 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -77,13 +77,13 @@ class KbNlBookHandler
     @Override
     public void endDocument() {
         if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+            mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
         // As kb.nl is dutch, and there is no 'language' field,
         // we're going to assume that all books are in Dutch.

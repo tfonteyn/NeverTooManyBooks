@@ -241,8 +241,8 @@ public class BookDetailsFragment
         }
 
         switch (requestCode) {
-            case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
-            case UniqueId.REQ_BOOK_EDIT:
+            case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
+            case RequestCode.BOOK_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
                         // pass the data up
@@ -253,7 +253,7 @@ public class BookDetailsFragment
                 }
                 break;
 
-            case UniqueId.REQ_BOOK_DUPLICATE:
+            case RequestCode.BOOK_DUPLICATE:
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
                         // pass the data up
@@ -404,7 +404,7 @@ public class BookDetailsFragment
         mVb.tocButton.setChecked(false);
 
         final ArrayList<TocEntry> tocList =
-                book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+                book.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
 
         if (!tocList.isEmpty()) {
 
@@ -531,7 +531,7 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_DELETE: {
                 final String title = book.getString(DBDefinitions.KEY_TITLE);
                 final List<Author> authors =
-                        book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+                        book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
                 //noinspection ConstantConditions
                 StandardDialogs.deleteBook(getContext(), title, authors, () -> {
                     mBookViewModel.deleteBook(getContext());
@@ -544,8 +544,8 @@ public class BookDetailsFragment
             }
             case R.id.MENU_BOOK_DUPLICATE: {
                 final Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
-                startActivityForResult(dupIntent, UniqueId.REQ_BOOK_DUPLICATE);
+                        .putExtra(Book.BKEY_BOOK_DATA, book.duplicate());
+                startActivityForResult(dupIntent, RequestCode.BOOK_DUPLICATE);
                 return true;
             }
             case R.id.MENU_BOOK_READ:
@@ -591,7 +591,7 @@ public class BookDetailsFragment
     private void startEditBook() {
         final Intent editIntent = new Intent(getContext(), EditBookActivity.class)
                 .putExtra(DBDefinitions.KEY_PK_ID, mBookViewModel.getBook().getId());
-        startActivityForResult(editIntent, UniqueId.REQ_BOOK_EDIT);
+        startActivityForResult(editIntent, RequestCode.BOOK_EDIT);
     }
 
     @Override

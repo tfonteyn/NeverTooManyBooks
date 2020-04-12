@@ -142,7 +142,7 @@ public class EditBookAuthorsFragment
     void onPopulateViews(@NonNull final Book book) {
         super.onPopulateViews(book);
 
-        mList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        mList = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
 
         //noinspection ConstantConditions
         mListAdapter = new AuthorListAdapter(getContext(), mList,
@@ -161,7 +161,7 @@ public class EditBookAuthorsFragment
         super.onSaveFields(book);
 
         // The list is not a 'real' field. Hence the need to store it manually here.
-        book.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mList);
+        book.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mList);
         // A book should always have an Author.
         if (mList.isEmpty()) {
             mVb.lblAuthor.setError(getString(R.string.warning_requires_at_least_1_author));

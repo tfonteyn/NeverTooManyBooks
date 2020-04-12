@@ -41,9 +41,9 @@ import org.xml.sax.Attributes;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LanguageUtils;
@@ -410,19 +410,19 @@ class AmazonXmlHandler
             String fileSpec = ImageUtils.saveImage(mLocalizedAppContext, mCoverUrl, name);
             if (fileSpec != null) {
                 ArrayList<String> imageList =
-                        mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                        mBookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
                 imageList.add(fileSpec);
-                mBookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+                mBookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
             }
         }
         if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
         if (!mPublishers.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, mPublishers);
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
         }
     }
 

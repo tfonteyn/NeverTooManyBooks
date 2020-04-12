@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -145,12 +145,12 @@ public class PreferredStylesActivity
     @Override
     public void onBackPressed() {
         Intent resultData = new Intent()
-                .putExtra(UniqueId.BKEY_STYLE_MODIFIED, mModel.isDirty());
+                .putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
 
         // return the currently selected style, so the caller can apply it.
         BooklistStyle selectedStyle = mListAdapter.getSelected();
         if (selectedStyle != null) {
-            resultData.putExtra(UniqueId.BKEY_STYLE, selectedStyle);
+            resultData.putExtra(BooklistStyle.BKEY_STYLE, selectedStyle);
         }
 
         setResult(Activity.RESULT_OK, resultData);
@@ -168,13 +168,13 @@ public class PreferredStylesActivity
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case UniqueId.REQ_EDIT_STYLE: {
+            case RequestCode.EDIT_STYLE: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     @Nullable
-                    final BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
 
-                    if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
+                    if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
                         if (style != null) {
                             // save a new style to the database first
                             if (style.getId() == 0) {
@@ -330,11 +330,11 @@ public class PreferredStylesActivity
         // This allows us to handle a new style (id==0) without storing it in the database first.
         // upon returning in onActivityResult, we'll handle the id.
         Intent intent = new Intent(this, SettingsActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
-                .putExtra(UniqueId.BKEY_STYLE, style)
+                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
+                .putExtra(BooklistStyle.BKEY_STYLE, style)
                 .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateStyleId);
 
-        startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
+        startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }
 
     /**

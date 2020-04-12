@@ -41,7 +41,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
@@ -74,7 +73,7 @@ public abstract class StyleBaseFragment
 
         Bundle args = getArguments();
         if (args != null) {
-            mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+            mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
             mTemplateId = args.getLong(BKEY_TEMPLATE_ID);
         }
 
@@ -167,7 +166,7 @@ public abstract class StyleBaseFragment
         // so even if the user makes no changes, we still send it back!
         // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
         if (!mStyle.isGlobal()) {
-            mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
+            mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
         }
 
         // always pass the template id back if we had one.
@@ -197,7 +196,7 @@ public abstract class StyleBaseFragment
         super.onSharedPreferenceChanged(sharedPreferences, key);
 
         // set the result (and again and again...)
-        mResultDataModel.putResultData(UniqueId.BKEY_STYLE_MODIFIED, true);
-        mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
+        mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
+        mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
     }
 }

@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
@@ -294,7 +294,7 @@ public class LendBookDialogFragment
             //noinspection ConstantConditions
             ActivityCompat.requestPermissions(getActivity(),
                                               new String[]{Manifest.permission.READ_CONTACTS},
-                                              UniqueId.REQ_ANDROID_PERMISSIONS);
+                                              RequestCode.ANDROID_PERMISSIONS);
             return null;
         }
     }

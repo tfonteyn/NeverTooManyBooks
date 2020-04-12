@@ -54,10 +54,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -94,7 +95,7 @@ public class StylePickerDialogFragment
 
         StylePickerDialogFragment smf = new StylePickerDialogFragment();
         Bundle args = new Bundle(2);
-        args.putParcelable(UniqueId.BKEY_STYLE, currentStyle);
+        args.putParcelable(BooklistStyle.BKEY_STYLE, currentStyle);
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
         smf.setArguments(args);
         smf.show(fm, TAG);
@@ -114,7 +115,7 @@ public class StylePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mCurrentStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+        mCurrentStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
         Objects.requireNonNull(mCurrentStyle, ErrorMsg.ARGS_MISSING_STYLE);
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
 
@@ -153,19 +154,19 @@ public class StylePickerDialogFragment
         // use the activity so we get the results there.
         Activity activity = getActivity();
         Intent intent = new Intent(activity, SettingsActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, StyleFragment.TAG);
+                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG);
 
         if (currentStyle.isUserDefined()) {
-            intent.putExtra(UniqueId.BKEY_STYLE, currentStyle);
+            intent.putExtra(BooklistStyle.BKEY_STYLE, currentStyle);
         } else {
             // clone builtin style first
             //noinspection ConstantConditions
-            intent.putExtra(UniqueId.BKEY_STYLE, currentStyle.clone(getContext()));
+            intent.putExtra(BooklistStyle.BKEY_STYLE, currentStyle.clone(getContext()));
         }
 
         intent.putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, currentStyle.getId());
         //noinspection ConstantConditions
-        activity.startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE);
+        activity.startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }
 
     @StringRes

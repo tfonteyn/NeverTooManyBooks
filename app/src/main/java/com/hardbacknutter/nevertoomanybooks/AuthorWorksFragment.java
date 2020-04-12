@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
@@ -290,18 +291,18 @@ public class AuthorWorksFragment
                 break;
             }
             case Toc: {
-                final ArrayList<Long> bookIds = mModel.getBookIds(item);
-                if (bookIds.size() == 1) {
+                final ArrayList<Long> bookIdList = mModel.getBookIds(item);
+                if (bookIdList.size() == 1) {
                     // open new activity to show the book, 'back' will return to this one.
                     Intent intent = new Intent(getContext(), BookDetailsActivity.class)
-                            .putExtra(DBDefinitions.KEY_PK_ID, bookIds.get(0));
+                            .putExtra(DBDefinitions.KEY_PK_ID, bookIdList.get(0));
                     startActivity(intent);
                     break;
 
                 } else {
                     // multiple books, open the list as a NEW ACTIVITY
                     Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
-                            .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                            .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList)
                             // Open the list expanded, as otherwise you end up with
                             // the author as a single line, and no books shown at all,
                             // which can be quite confusing to the user.

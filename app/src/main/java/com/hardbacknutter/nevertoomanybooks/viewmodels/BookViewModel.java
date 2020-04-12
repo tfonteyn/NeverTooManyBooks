@@ -42,7 +42,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -64,6 +63,31 @@ public class BookViewModel
 
     /** Log tag. */
     private static final String TAG = "BookViewModel";
+
+    /**
+     * One <strong>or more</strong> books were created (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_BOOK_CREATED = TAG + ":created";
+
+    /**
+     * One <strong>or more</strong> books and/or global data (author etc) was modified (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_BOOK_MODIFIED = TAG + ":modified";
+
+    /**
+     * One <strong>or more</strong> books were deleted (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_BOOK_DELETED = TAG + ":deleted";
+
 
     /** key: fragmentTag. */
     private final Collection<String> mFragmentsWithUnfinishedEdits = new HashSet<>();
@@ -101,7 +125,7 @@ public class BookViewModel
 
             if (args != null) {
                 // 1. Do we have a bundle?
-                final Bundle bookData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
+                final Bundle bookData = args.getBundle(Book.BKEY_BOOK_DATA);
                 if (bookData != null) {
                     // if we have a populated bundle, e.g. after an internet search, use that.
                     mBook = new Book();
@@ -142,7 +166,7 @@ public class BookViewModel
     public void addFieldsFromBundle(@NonNull final Context context,
                                     @Nullable final Bundle args) {
         if (args != null) {
-            final Bundle rawData = args.getBundle(UniqueId.BKEY_BOOK_DATA);
+            final Bundle rawData = args.getBundle(Book.BKEY_BOOK_DATA);
             if (rawData != null) {
                 for (String key : rawData.keySet()) {
                     if (!mBook.contains(key)) {
@@ -163,10 +187,10 @@ public class BookViewModel
      */
     private void ensureBookshelf(@NonNull final Context context) {
         final ArrayList<Bookshelf> list =
-                mBook.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+                mBook.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
         if (list.isEmpty()) {
             list.add(Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
-            mBook.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, list);
+            mBook.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, list);
         }
     }
 
@@ -271,7 +295,7 @@ public class BookViewModel
      */
     public void deleteBook(@NonNull final Context context) {
         mDb.deleteBook(context, mBook.getId());
-        putResultData(UniqueId.BKEY_BOOK_DELETED, true);
+        putResultData(BKEY_BOOK_DELETED, true);
         mBook = null;
     }
 
@@ -322,7 +346,7 @@ public class BookViewModel
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
     public boolean toggleRead() {
-        putResultData(UniqueId.BKEY_BOOK_MODIFIED, true);
+        putResultData(BKEY_BOOK_MODIFIED, true);
         return mBook.toggleRead(mDb);
     }
 
@@ -348,9 +372,11 @@ public class BookViewModel
             throws DAO.DaoWriteException {
         if (mBook.isNew()) {
             final long id = mDb.insertBook(context, 0, mBook);
+            putResultData(BKEY_BOOK_CREATED, true);
+
             // if the user added a cover to the new book, make it permanent
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                final String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
+                final String fileSpec = mBook.getString(Book.BKEY_FILE_SPEC[cIdx]);
                 if (!fileSpec.isEmpty()) {
                     final String uuid = mDb.getBookUuid(id);
                     if (uuid != null) {
@@ -363,10 +389,10 @@ public class BookViewModel
             }
         } else {
             mDb.updateBook(context, mBook.getId(), mBook, 0);
+            putResultData(BKEY_BOOK_MODIFIED, true);
         }
 
         putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
-        putResultData(UniqueId.BKEY_BOOK_MODIFIED, true);
     }
 
     /**
@@ -379,7 +405,7 @@ public class BookViewModel
         final ArrayList<SelectableEntity> list = new ArrayList<>();
         // get the list of all shelves the book is currently on.
         final List<Bookshelf> currentShelves =
-                mBook.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+                mBook.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
         // Loop through all bookshelves in the database and build the list for this book
         for (Bookshelf bookshelf : mDb.getBookshelves()) {
             final boolean selected = currentShelves.contains(bookshelf);
@@ -398,18 +424,19 @@ public class BookViewModel
 
     public void prepareAuthorsAndSeries(@NonNull final Context context) {
         // Prune any duplicates.
-        pruneList(context, UniqueId.BKEY_AUTHOR_ARRAY, LocaleUtils.getUserLocale(context));
-        pruneList(context, UniqueId.BKEY_SERIES_ARRAY, mBook.getLocale(context));
+        pruneList(context, Book.BKEY_AUTHOR_ARRAY, LocaleUtils.getUserLocale(context));
+        pruneList(context, Book.BKEY_SERIES_ARRAY, mBook.getLocale(context));
 
         // No authors ? Fallback to a potential failed search result
         // which would contain whatever the user searched for.
-        ArrayList<Author> list = mBook.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = mBook.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         if (list.isEmpty()) {
-            String searchText = mBook.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+            String searchText = mBook.getString(
+                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             if (!searchText.isEmpty()) {
                 list.add(Author.from(searchText));
-                mBook.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
-                mBook.remove(UniqueId.BKEY_SEARCH_AUTHOR);
+                mBook.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, list);
+                mBook.remove(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
                 mIsDirty = true;
             }
         }

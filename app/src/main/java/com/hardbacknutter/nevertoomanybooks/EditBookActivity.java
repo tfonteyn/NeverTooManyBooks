@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
@@ -92,7 +93,7 @@ public class EditBookActivity
         }
 
         // Settings initiated from the navigation panel.
-        if (requestCode == UniqueId.REQ_NAV_PANEL_SETTINGS) {
+        if (requestCode == RequestCode.NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.
                 // SiteList siteList = data.getParcelableExtra(SiteList.Type.Data.getBundleKey());
@@ -107,7 +108,7 @@ public class EditBookActivity
                 // Other then using memory, this is fine.
                 // We assume if the user explicitly went to settings to change the scanner
                 // they want to use it.
-                if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
+                if (data.getBooleanExtra(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED, false)) {
                     final ScannerViewModel model =
                             new ViewModelProvider(this).get(ScannerViewModel.class);
                     model.resetScanner();

@@ -34,7 +34,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
@@ -43,6 +42,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
  */
 public class BarcodePreferenceFragment
         extends BasePreferenceFragment {
+
+    /**
+     * The user modified the scanner in preferences (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_SCANNER_MODIFIED = "scannerModified";
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState,
@@ -64,7 +71,7 @@ public class BarcodePreferenceFragment
                         ScannerManager.setDefaultScanner(getContext());
                     }
                 });
-                mResultDataModel.putResultData(UniqueId.BKEY_SHOULD_INIT_SCANNER, true);
+                mResultDataModel.putResultData(BKEY_SCANNER_MODIFIED, true);
                 break;
 
             case Prefs.pk_sounds_scan_found_barcode:

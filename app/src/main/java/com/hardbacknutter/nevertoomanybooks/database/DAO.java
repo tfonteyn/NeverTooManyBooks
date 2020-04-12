@@ -61,7 +61,6 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
@@ -1230,7 +1229,7 @@ public class DAO
             book.preprocessForStoring(context, true);
 
             // Make sure we have at least one author
-            List<Author> authors = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+            List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
             if (authors.isEmpty()) {
                 throw new DaoWriteException("No authors for book=" + book);
             }
@@ -1419,21 +1418,21 @@ public class DAO
                                       final long bookId,
                                       @NonNull final Book book) {
 
-        if (book.contains(UniqueId.BKEY_BOOKSHELF_ARRAY)) {
+        if (book.contains(Book.BKEY_BOOKSHELF_ARRAY)) {
             insertBookBookshelf(context, bookId, book);
         }
 
-        if (book.contains(UniqueId.BKEY_AUTHOR_ARRAY)) {
+        if (book.contains(Book.BKEY_AUTHOR_ARRAY)) {
             insertBookAuthors(context, bookId,
-                              book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
+                              book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY));
         }
 
-        if (book.contains(UniqueId.BKEY_SERIES_ARRAY)) {
+        if (book.contains(Book.BKEY_SERIES_ARRAY)) {
             insertBookSeries(context, bookId, book.getLocale(context),
-                             book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY));
+                             book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY));
         }
 
-        if (book.contains(UniqueId.BKEY_TOC_ENTRY_ARRAY)) {
+        if (book.contains(Book.BKEY_TOC_ENTRY_ARRAY)) {
             // update: toc entries are two steps away; they can exist in other books
             updateOrInsertTOC(context, bookId, book);
         }
@@ -1625,7 +1624,7 @@ public class DAO
             throw new TransactionException(ERROR_REQUIRES_TRANSACTION);
         }
 
-        ArrayList<TocEntry> list = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> list = book.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
 
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.
@@ -1850,7 +1849,7 @@ public class DAO
         }
 
         ArrayList<Bookshelf> bookshelves =
-                book.getParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY);
+                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY);
 
         // Need to delete the current records because they may have been reordered and a simple
         // set of updates could result in unique key or index violations.

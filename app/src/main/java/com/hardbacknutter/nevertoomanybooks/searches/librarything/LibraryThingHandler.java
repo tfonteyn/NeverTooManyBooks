@@ -38,9 +38,9 @@ import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.SearchHandler;
 
@@ -499,10 +499,10 @@ class LibraryThingHandler
     @Override
     public void endDocument() {
         if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            mBookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, mSeries);
+            mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
         }
     }
 

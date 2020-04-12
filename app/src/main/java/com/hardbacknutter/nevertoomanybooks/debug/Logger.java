@@ -55,7 +55,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -288,16 +288,16 @@ public final class Logger {
             Bundle extras = ((Activity) fragmentOrActivity).getIntent().getExtras();
             if (extras != null) {
                 d(tag, methodName + "|extras=" + extras);
-                if (extras.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    d(tag, methodName + "|extras=" + extras.getBundle(UniqueId.BKEY_BOOK_DATA));
+                if (extras.containsKey(Book.BKEY_BOOK_DATA)) {
+                    d(tag, methodName + "|extras=" + extras.getBundle(Book.BKEY_BOOK_DATA));
                 }
             }
         } else if (fragmentOrActivity instanceof Fragment) {
             Bundle args = ((Fragment) fragmentOrActivity).getArguments();
             if (args != null) {
                 d(tag, methodName + "|args=" + args);
-                if (args.containsKey(UniqueId.BKEY_BOOK_DATA)) {
-                    d(tag, methodName + "|args=" + args.getBundle(UniqueId.BKEY_BOOK_DATA));
+                if (args.containsKey(Book.BKEY_BOOK_DATA)) {
+                    d(tag, methodName + "|args=" + args.getBundle(Book.BKEY_BOOK_DATA));
                 }
             }
         }

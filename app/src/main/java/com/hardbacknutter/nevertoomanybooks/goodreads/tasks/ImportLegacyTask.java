@@ -52,7 +52,6 @@ import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -462,7 +461,7 @@ class ImportLegacyTask
         try {
             final long id = db.insertBook(context, 0, book);
             for (int cIdx = 0; cIdx < 2; cIdx++) {
-                String fileSpec = book.getString(UniqueId.BKEY_FILE_SPEC[cIdx]);
+                String fileSpec = book.getString(Book.BKEY_FILE_SPEC[cIdx]);
                 if (!fileSpec.isEmpty()) {
                     File downloadedFile = new File(fileSpec);
                     String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
@@ -596,7 +595,7 @@ class ImportLegacyTask
 
             }
         }
-        bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+        bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
 
         /*
          * Cleanup the title by splitting off the Series (if present).
@@ -623,7 +622,7 @@ class ImportLegacyTask
                         bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
 
                         Series.pruneList(seriesList, context, db, bookLocale, true);
-                        bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
+                        bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
                     }
                 }
             }
@@ -666,7 +665,7 @@ class ImportLegacyTask
             ItemWithFixableId.pruneList(bsList, context, db, userLocale, false);
             //--- end 2019-02-04 ---
 
-            bookData.putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY, bsList);
+            bookData.putParcelableArrayList(Book.BKEY_BOOKSHELF_ARRAY, bsList);
         }
 
         /*
@@ -697,7 +696,7 @@ class ImportLegacyTask
                               + GoodreadsSearchEngine.FILENAME_SUFFIX + "_" + sizeSuffix;
                 String fileSpec = ImageUtils.saveImage(context, coverUrl, name);
                 if (fileSpec != null) {
-                    bookData.putString(UniqueId.BKEY_FILE_SPEC[0], fileSpec);
+                    bookData.putString(Book.BKEY_FILE_SPEC[0], fileSpec);
                 }
             }
         }

@@ -47,6 +47,8 @@ import java.util.TimerTask;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdvancedSearchBinding;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
@@ -76,7 +78,7 @@ public class FTSSearchActivity
     /** Handle inter-thread messages. */
     private final Handler mHandler = new Handler();
     /** The results book id list. For sending back to the caller. */
-    private final ArrayList<Long> mBookIdsFound = new ArrayList<>();
+    private final ArrayList<Long> mBookIdList = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;
     /** User entered search text. */
@@ -135,10 +137,12 @@ public class FTSSearchActivity
         final Bundle currentArgs = savedInstanceState != null ? savedInstanceState
                                                               : getIntent().getExtras();
         if (currentArgs != null) {
-            mAuthorSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_AUTHOR);
+            mAuthorSearchText = currentArgs.getString(
+                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             mTitleSearchText = currentArgs.getString(DBDefinitions.KEY_TITLE);
             mSeriesTitleSearchText = currentArgs.getString(DBDefinitions.KEY_SERIES_TITLE);
-            mKeywordsSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TEXT);
+            mKeywordsSearchText = currentArgs.getString(
+                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
         }
 
         if (mAuthorSearchText != null) {
@@ -170,12 +174,14 @@ public class FTSSearchActivity
         mVb.fab.setOnClickListener(v -> {
             Intent data = new Intent()
                     // pass these for displaying to the user
-                    .putExtra(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText)
+                    .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
+                              mAuthorSearchText)
                     .putExtra(DBDefinitions.KEY_TITLE, mTitleSearchText)
                     .putExtra(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText)
-                    .putExtra(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText)
+                    .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
+                              mKeywordsSearchText)
                     // pass the book ID's for the list
-                    .putExtra(UniqueId.BKEY_ID_LIST, mBookIdsFound);
+                    .putExtra(Book.BKEY_BOOK_ID_ARRAY, mBookIdList);
             setResult(Activity.RESULT_OK, data);
             finish();
         });
@@ -243,10 +249,12 @@ public class FTSSearchActivity
     @Override
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_AUTHOR, mAuthorSearchText);
+        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
+                           mAuthorSearchText);
         outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
         outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText);
-        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mKeywordsSearchText);
+        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
+                           mKeywordsSearchText);
     }
 
     @Override
@@ -329,9 +337,9 @@ public class FTSSearchActivity
                     if (cursor != null) {
                         count = cursor.getCount();
 
-                        mBookIdsFound.clear();
+                        mBookIdList.clear();
                         while (cursor.moveToNext()) {
-                            mBookIdsFound.add(cursor.getLong(0));
+                            mBookIdList.add(cursor.getLong(0));
                         }
                     }
                 }

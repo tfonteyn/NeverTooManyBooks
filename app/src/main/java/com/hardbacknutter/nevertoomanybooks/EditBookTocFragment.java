@@ -267,16 +267,16 @@ public class EditBookTocFragment
         Book book = mBookViewModel.getBook();
 
         // update the book with Series information that was gathered from the TOC
-        List<Series> series = bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        List<Series> series = bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         if (series != null && !series.isEmpty()) {
-            ArrayList<Series> inBook = book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+            ArrayList<Series> inBook = book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
             // add, weeding out duplicates
             for (Series s : series) {
                 if (!inBook.contains(s)) {
                     inBook.add(s);
                 }
             }
-            book.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, inBook);
+            book.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, inBook);
         }
 
         // update the book with the first publication date that was gathered from the TOC
@@ -302,7 +302,7 @@ public class EditBookTocFragment
         mIsbn = book.getString(DBDefinitions.KEY_ISBN);
 
         // Author to use if mVb.cbxMultipleAuthors is set to false
-        final List<Author> authorList = book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        final List<Author> authorList = book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         if (!authorList.isEmpty()) {
             mBookAuthor = authorList.get(0);
         } else {
@@ -311,7 +311,7 @@ public class EditBookTocFragment
         }
 
         // Populate the list view with the book content table.
-        mList = book.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        mList = book.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
 
         //noinspection ConstantConditions
         mListAdapter = new TocListEditAdapter(getContext(), mList,
@@ -342,7 +342,7 @@ public class EditBookTocFragment
 
         // The toc list is not a 'real' field. Hence the need to store it manually here.
         // It requires no special validation.
-        book.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, mList);
+        book.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, mList);
     }
 
     @Override
@@ -599,7 +599,7 @@ public class EditBookTocFragment
             super.onCreate(savedInstanceState);
 
             final Bundle args = requireArguments();
-            mTocEntries = args.getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+            mTocEntries = args.getParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY);
             Objects.requireNonNull(mTocEntries, ErrorMsg.ARGS_MISSING_TOC_ENTRIES);
 
             mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);

@@ -112,6 +112,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.tasks.ExportTaskModel;
@@ -280,7 +281,7 @@ public class BooksOnBookshelf
                                 .putExtra(DBDefinitions.KEY_PK_ID, bookId)
                                 .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_TABLE, navTableName)
                                 .putExtra(BookDetailsFragmentViewModel.BKEY_NAV_ROW_ID, rowId);
-                        startActivityForResult(intent, UniqueId.REQ_BOOK_VIEW);
+                        startActivityForResult(intent, RequestCode.BOOK_VIEW);
 
                     } else {
                         // it's a level, expand/collapse.
@@ -655,7 +656,7 @@ public class BooksOnBookshelf
                 // overridden, so we can pass the current criteria
                 Intent searchIntent = new Intent(this, FTSSearchActivity.class);
                 mModel.getSearchCriteria().to(searchIntent);
-                startActivityForResult(searchIntent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+                startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
                 return true;
             }
             case R.id.nav_manage_bookshelves: {
@@ -663,13 +664,14 @@ public class BooksOnBookshelf
                 final Intent intent = new Intent(this, EditBookshelvesActivity.class)
                         .putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF,
                                   mModel.getCurrentBookshelf().getId());
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
             }
             case R.id.nav_manage_list_styles: {
                 final Intent intent = new Intent(this, PreferredStylesActivity.class)
-                        .putExtra(UniqueId.BKEY_STYLE_ID, mModel.getCurrentStyle(this).getId());
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_STYLES);
+                        .putExtra(BooklistStyle.BKEY_STYLE_ID,
+                                  mModel.getCurrentStyle(this).getId());
+                startActivityForResult(intent, RequestCode.NAV_PANEL_EDIT_STYLES);
                 return true;
             }
 
@@ -738,11 +740,11 @@ public class BooksOnBookshelf
             case R.id.MENU_UPDATE_FROM_INTERNET: {
                 // IMPORTANT: this is from an options menu selection.
                 // We pass the book ID's for the currently displayed list.
-                final ArrayList<Long> bookIds = mModel.getCurrentBookIdList();
+                final ArrayList<Long> bookIdList = mModel.getCurrentBookIdList();
                 final Intent intent = new Intent(this, BookSearchActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                        .putExtra(UniqueId.BKEY_ID_LIST, bookIds);
-                startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
+                        .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList);
+                startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
                 return true;
             }
 
@@ -910,7 +912,7 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_EDIT: {
                 final Intent intent = new Intent(this, EditBookActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, bookId);
-                startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                startActivityForResult(intent, RequestCode.BOOK_EDIT);
                 return true;
             }
             case R.id.MENU_BOOK_DELETE: {
@@ -926,8 +928,8 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_DUPLICATE: {
                 final Book book = new Book(bookId, mModel.getDb());
                 final Intent dupIntent = new Intent(this, EditBookActivity.class)
-                        .putExtra(UniqueId.BKEY_BOOK_DATA, book.duplicate());
-                startActivityForResult(dupIntent, UniqueId.REQ_BOOK_DUPLICATE);
+                        .putExtra(Book.BKEY_BOOK_DATA, book.duplicate());
+                startActivityForResult(dupIntent, RequestCode.BOOK_DUPLICATE);
                 return true;
             }
 
@@ -976,36 +978,36 @@ public class BooksOnBookshelf
                 // IMPORTANT: this is from a context click on a row.
                 // We pass the book ID's which are suited for that row.
                 final Intent intent = new Intent(this, BookSearchActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG);
+                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG);
 
-                ArrayList<Long> bookIds;
+                ArrayList<Long> bookIdList;
                 switch (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP)) {
 
                     case BooklistGroup.BOOK: {
-                        bookIds = new ArrayList<>();
-                        bookIds.add(bookId);
-                        intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
+                        bookIdList = new ArrayList<>();
+                        bookIdList.add(bookId);
+                        intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_TITLE));
                         break;
                     }
                     case BooklistGroup.AUTHOR: {
-                        bookIds = mModel.getDb().getBookIdsByAuthor(
+                        bookIdList = mModel.getDb().getBookIdsByAuthor(
                                 rowData.getLong(DBDefinitions.KEY_FK_AUTHOR));
-                        intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
+                        intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
                         break;
                     }
                     case BooklistGroup.SERIES: {
-                        bookIds = mModel.getDb().getBookIdsBySeries(
+                        bookIdList = mModel.getDb().getBookIdsBySeries(
                                 rowData.getLong(DBDefinitions.KEY_FK_SERIES));
-                        intent.putExtra(UniqueId.BKEY_DIALOG_TITLE,
+                        intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE,
                                         rowData.getString(DBDefinitions.KEY_SERIES_TITLE));
                         break;
                     }
                     case BooklistGroup.PUBLISHER: {
                         String publisher = rowData.getString(DBDefinitions.KEY_PUBLISHER);
-                        bookIds = mModel.getDb().getBookIdsByPublisher(publisher);
-                        intent.putExtra(UniqueId.BKEY_DIALOG_TITLE, publisher);
+                        bookIdList = mModel.getDb().getBookIdsByPublisher(publisher);
+                        intent.putExtra(StandardDialogs.BKEY_DIALOG_TITLE, publisher);
                         break;
                     }
                     default: {
@@ -1019,8 +1021,8 @@ public class BooksOnBookshelf
                     }
                 }
 
-                intent.putExtra(UniqueId.BKEY_ID_LIST, bookIds);
-                startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                intent.putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList);
+                startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
                 return true;
             }
 
@@ -1064,7 +1066,7 @@ public class BooksOnBookshelf
                                   rowData.getLong(DBDefinitions.KEY_FK_AUTHOR))
                         .putExtra(DBDefinitions.KEY_FK_BOOKSHELF,
                                   mModel.getCurrentBookshelf().getId());
-                startActivityForResult(intent, UniqueId.REQ_AUTHOR_WORKS);
+                startActivityForResult(intent, RequestCode.AUTHOR_WORKS);
                 return true;
             }
 
@@ -1173,7 +1175,7 @@ public class BooksOnBookshelf
         }
 
         switch (requestCode) {
-            case UniqueId.REQ_ADVANCED_LOCAL_SEARCH:
+            case RequestCode.ADVANCED_LOCAL_SEARCH:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (mModel.setSearchCriteria(data.getExtras(), true)) {
                         //URGENT: switch bookshelf? all-books?
@@ -1182,20 +1184,22 @@ public class BooksOnBookshelf
                 }
                 break;
 
-            case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
-            case UniqueId.REQ_BOOK_VIEW:
-            case UniqueId.REQ_BOOK_EDIT:
-            case UniqueId.REQ_BOOK_DUPLICATE:
-            case UniqueId.REQ_BOOK_SEARCH:
-            case UniqueId.REQ_AUTHOR_WORKS: {
+            case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
+            case RequestCode.BOOK_VIEW:
+            case RequestCode.BOOK_EDIT:
+            case RequestCode.BOOK_DUPLICATE:
+            case RequestCode.BOOK_SEARCH:
+            case RequestCode.AUTHOR_WORKS: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     final Bundle extras = data.getExtras();
                     if (extras != null) {
-                        // modified status includes creation and duplication of books
-                        if (extras.getBoolean(UniqueId.BKEY_BOOK_MODIFIED, false)) {
+                        if (extras.getBoolean(BookViewModel.BKEY_BOOK_CREATED, false)) {
                             mModel.setForceRebuildInOnResume(true);
                         }
-                        if (extras.getBoolean(UniqueId.BKEY_BOOK_DELETED, false)) {
+                        if (extras.getBoolean(BookViewModel.BKEY_BOOK_MODIFIED, false)) {
+                            mModel.setForceRebuildInOnResume(true);
+                        }
+                        if (extras.getBoolean(BookViewModel.BKEY_BOOK_DELETED, false)) {
                             mModel.setForceRebuildInOnResume(true);
                         }
                         if (extras.containsKey(BooksOnBookshelfModel.BKEY_LIST_STATE)) {
@@ -1215,7 +1219,7 @@ public class BooksOnBookshelf
                 break;
             }
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES: {
+            case RequestCode.NAV_PANEL_EDIT_BOOKSHELVES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     // the last edited/inserted shelf
                     final long bookshelfId = data.getLongExtra(DBDefinitions.KEY_PK_ID,
@@ -1228,14 +1232,14 @@ public class BooksOnBookshelf
                 break;
             }
             // from BaseActivity Nav Panel or from sort menu dialog
-            case UniqueId.REQ_NAV_PANEL_EDIT_STYLES:
+            case RequestCode.NAV_PANEL_EDIT_STYLES:
                 // or directly from the style edit screen
-            case UniqueId.REQ_EDIT_STYLE: {
+            case RequestCode.EDIT_STYLE: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
 
                     @Nullable
-                    final BooklistStyle style = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
                     if (style != null) {
                         // always save a new style to the database
                         if (style.getId() == 0) {
@@ -1246,7 +1250,7 @@ public class BooksOnBookshelf
                         mModel.setCurrentStyle(this, style);
                     }
 
-                    if (data.getBooleanExtra(UniqueId.BKEY_STYLE_MODIFIED, false)) {
+                    if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
                         mModel.setForceRebuildInOnResume(true);
                     }
                 }
@@ -1254,13 +1258,14 @@ public class BooksOnBookshelf
             }
 
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_EXPORT:
+            case RequestCode.NAV_PANEL_EXPORT:
                 break;
+
             // from BaseActivity Nav Panel
-            case UniqueId.REQ_NAV_PANEL_IMPORT: {
+            case RequestCode.NAV_PANEL_IMPORT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (data.hasExtra(UniqueId.BKEY_IMPORT_RESULT)) {
-                        final int options = data.getIntExtra(UniqueId.BKEY_IMPORT_RESULT,
+                    if (data.hasExtra(ImportResults.BKEY_IMPORT_RESULTS)) {
+                        final int options = data.getIntExtra(ImportResults.BKEY_IMPORT_RESULTS,
                                                              Options.NOTHING);
                         if (options != 0) {
                             if ((options & Options.STYLES) != 0) {
@@ -1280,7 +1285,7 @@ public class BooksOnBookshelf
                 break;
             }
 
-            case UniqueId.REQ_EXPORT_PICK_URI: {
+            case RequestCode.EXPORT_PICK_URI: {
                 // The user selected a file to backup to. Next step starts the export task.
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
@@ -1292,7 +1297,7 @@ public class BooksOnBookshelf
                 break;
             }
 
-            case UniqueId.REQ_IMPORT_PICK_URI: {
+            case RequestCode.IMPORT_PICK_URI: {
                 // The user selected a file to import from. Next step asks for the options.
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
@@ -1404,20 +1409,20 @@ public class BooksOnBookshelf
 
     private void addBySearch(@NonNull final String tag) {
         Intent intent = new Intent(this, BookSearchActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, tag);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, tag);
+        startActivityForResult(intent, RequestCode.BOOK_SEARCH);
     }
 
     private void addByIsbn(final boolean scanMode) {
         Intent intent = new Intent(this, BookSearchActivity.class)
-                .putExtra(UniqueId.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
+                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
                 .putExtra(BookSearchByIsbnFragment.BKEY_SCAN_MODE, scanMode);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_SEARCH);
+        startActivityForResult(intent, RequestCode.BOOK_SEARCH);
     }
 
     private void addManually() {
         Intent intent = new Intent(this, EditBookActivity.class);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+        startActivityForResult(intent, RequestCode.BOOK_EDIT);
     }
 
     /**
@@ -1820,7 +1825,7 @@ public class BooksOnBookshelf
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
                 .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName(this));
-        startActivityForResult(intent, UniqueId.REQ_EXPORT_PICK_URI);
+        startActivityForResult(intent, RequestCode.EXPORT_PICK_URI);
     }
 
     /**
@@ -1916,7 +1921,7 @@ public class BooksOnBookshelf
                 .addCategory(Intent.CATEGORY_OPENABLE)
 //                .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
                 .setType("*/*");
-        startActivityForResult(intent, UniqueId.REQ_IMPORT_PICK_URI);
+        startActivityForResult(intent, RequestCode.IMPORT_PICK_URI);
     }
 
     /**

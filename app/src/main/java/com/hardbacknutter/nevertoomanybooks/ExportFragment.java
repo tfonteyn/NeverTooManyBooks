@@ -135,7 +135,7 @@ public class ExportFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case UniqueId.REQ_EXPORT_PICK_URI: {
+            case RequestCode.EXPORT_PICK_URI: {
                 // The user selected a file to backup to. Next step starts the export task.
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
@@ -215,7 +215,7 @@ public class ExportFragment
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("*/*")
                 .putExtra(Intent.EXTRA_TITLE, mExportModel.getDefaultUriName(getContext()));
-        startActivityForResult(intent, UniqueId.REQ_EXPORT_PICK_URI);
+        startActivityForResult(intent, RequestCode.EXPORT_PICK_URI);
     }
 
     /**

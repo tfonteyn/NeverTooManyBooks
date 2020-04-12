@@ -883,7 +883,7 @@ public class XmlExporter
      * Supports a list of Styles.
      * <p>
      * - 'flat' preferences for the style.
-     * --- This includes the actual groups of the style: a CSV String of ID's (kinds)
+     * --- This includes the actual groups of the style: a CSV String of group ID's
      * - Filters and Groups are flattened.
      * - each filter/group has a typed tag
      * - each preference in a group has a typed tag.

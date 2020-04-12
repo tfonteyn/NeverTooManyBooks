@@ -311,21 +311,21 @@ class CoverHandler {
                                     final int resultCode,
                                     @Nullable final Intent data) {
         switch (requestCode) {
-            case UniqueId.REQ_ACTION_COVER_BROWSER: {
+            case RequestCode.ACTION_COVER_BROWSER: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     processCoverBrowserResult(data);
                 }
                 return true;
             }
-            case UniqueId.REQ_ACTION_GET_CONTENT: {
+            case RequestCode.ACTION_GET_CONTENT: {
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     processChooserResult(data);
                 }
                 return true;
             }
-            case UniqueId.REQ_ACTION_IMAGE_CAPTURE: {
+            case RequestCode.ACTION_IMAGE_CAPTURE: {
                 if (resultCode == Activity.RESULT_OK) {
                     //noinspection ConstantConditions
                     final File source = mCameraHelper.getFile(mContext, data);
@@ -363,8 +363,8 @@ class CoverHandler {
                 CameraHelper.deleteCameraFile(mContext);
                 return true;
             }
-            case UniqueId.REQ_CROP_IMAGE:
-            case UniqueId.REQ_EDIT_IMAGE: {
+            case RequestCode.CROP_IMAGE:
+            case RequestCode.EDIT_IMAGE: {
                 if (resultCode == Activity.RESULT_OK) {
                     final File source = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
                     final File destination = getCoverFile();
@@ -391,7 +391,7 @@ class CoverHandler {
             new ImageUtils.ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, true)
                     .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             mCoverView.setBackground(null);
-            mBook.putString(UniqueId.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
+            mBook.putString(Book.BKEY_FILE_SPEC[mCIdx], file.getAbsolutePath());
             return;
         }
 
@@ -402,7 +402,7 @@ class CoverHandler {
             mCoverView.setImageResource(R.drawable.ic_broken_image);
             mCoverView.setBackgroundResource(R.drawable.outline);
         }
-        mBook.remove(UniqueId.BKEY_FILE_SPEC[mCIdx]);
+        mBook.remove(Book.BKEY_FILE_SPEC[mCIdx]);
     }
 
     /**
@@ -417,7 +417,7 @@ class CoverHandler {
         }
 
         // for new books, check the bundle.
-        final String fileSpec = mBook.getString(UniqueId.BKEY_FILE_SPEC[mCIdx]);
+        final String fileSpec = mBook.getString(Book.BKEY_FILE_SPEC[mCIdx]);
         if (!fileSpec.isEmpty()) {
             return new File(fileSpec);
         }
@@ -451,7 +451,7 @@ class CoverHandler {
             mCameraHelper.setRotationAngle(
                     PIntString.getListPreference(context, Prefs.pk_camera_image_autorotate, 0));
         }
-        mCameraHelper.startCamera(mFragment, UniqueId.REQ_ACTION_IMAGE_CAPTURE);
+        mCameraHelper.startCamera(mFragment, RequestCode.ACTION_IMAGE_CAPTURE);
     }
 
     /**
@@ -477,7 +477,7 @@ class CoverHandler {
                 coverBrowser.show(mFragment.getParentFragmentManager(),
                                   CoverBrowserDialogFragment.TAG);
                 // ... as the coverBrowser will send its results directly to that fragment.
-                coverBrowser.setTargetFragment(mFragment, UniqueId.REQ_ACTION_COVER_BROWSER);
+                coverBrowser.setTargetFragment(mFragment, RequestCode.ACTION_COVER_BROWSER);
                 return;
             }
         }
@@ -491,7 +491,7 @@ class CoverHandler {
      * we take that image and stuff it into the view.
      */
     private void processCoverBrowserResult(@NonNull final Intent data) {
-        final String fileSpec = data.getStringExtra(UniqueId.BKEY_FILE_SPEC[mCIdx]);
+        final String fileSpec = data.getStringExtra(Book.BKEY_FILE_SPEC[mCIdx]);
         if (fileSpec != null && !fileSpec.isEmpty()) {
             final File source = new File(fileSpec);
             final File destination = getCoverFile();
@@ -542,7 +542,7 @@ class CoverHandler {
                 .setType(IMAGE_MIME_TYPE);
         mFragment.startActivityForResult(
                 Intent.createChooser(intent, mContext.getString(R.string.lbl_select_image)),
-                UniqueId.REQ_ACTION_GET_CONTENT);
+                RequestCode.ACTION_GET_CONTENT);
     }
 
     /**
@@ -565,7 +565,7 @@ class CoverHandler {
                           outputFile.getAbsolutePath())
                 .putExtra(CropImageActivity.BKEY_WHOLE_IMAGE, wholeImage);
 
-        mFragment.startActivityForResult(intent, UniqueId.REQ_CROP_IMAGE);
+        mFragment.startActivityForResult(intent, RequestCode.CROP_IMAGE);
     }
 
     /**
@@ -599,7 +599,7 @@ class CoverHandler {
 
             mFragment.startActivityForResult(
                     Intent.createChooser(intent, mContext.getString(R.string.action_edit)),
-                    UniqueId.REQ_EDIT_IMAGE);
+                    RequestCode.EDIT_IMAGE);
 
         } else {
             Snackbar.make(mCoverView, mFragment.getString(R.string.error_no_image_editor),

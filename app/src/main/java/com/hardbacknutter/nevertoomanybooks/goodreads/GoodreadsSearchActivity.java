@@ -55,7 +55,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -65,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.FetchWorksTask;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
 
@@ -204,7 +204,8 @@ public class GoodreadsSearchActivity
     @Override
     protected void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(UniqueId.BKEY_SEARCH_TEXT, mModel.getSearchText());
+        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
+                           mModel.getSearchText());
     }
 
     /**
@@ -288,7 +289,9 @@ public class GoodreadsSearchActivity
                 }
             }
             Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
-            mSearchText = currentArgs.getString(UniqueId.BKEY_SEARCH_TEXT, mSearchText);
+            mSearchText = currentArgs
+                    .getString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
+                               mSearchText);
         }
 
         public long getBookId() {

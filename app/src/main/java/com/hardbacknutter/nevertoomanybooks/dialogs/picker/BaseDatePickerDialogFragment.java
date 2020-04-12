@@ -40,8 +40,8 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 public class BaseDatePickerDialogFragment
@@ -89,7 +89,7 @@ public class BaseDatePickerDialogFragment
     void baseSetup(@Nullable final Bundle savedInstanceState) {
 
         Bundle args = requireArguments();
-        mDestinationFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+        mDestinationFieldId = args.getInt(StandardDialogs.BKEY_DIALOG_FIELD_ID);
 
         args = savedInstanceState != null ? savedInstanceState : args;
         if (args.containsKey(BKEY_DATE)) {

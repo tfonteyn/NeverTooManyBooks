@@ -47,7 +47,7 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
 /**
  * Progress support for a {@link Cancellable}. There can only be one Cancellable at a time.
@@ -107,7 +107,7 @@ public class ProgressDialogFragment
                                                      final int maxValue) {
         ProgressDialogFragment frag = new ProgressDialogFragment();
         Bundle args = new Bundle(3);
-        args.putInt(UniqueId.BKEY_DIALOG_TITLE, titleId);
+        args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, titleId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         args.putInt(BKEY_MAX, maxValue);
         args.putBoolean(BKEY_PREVENT_SLEEP, preventSleep);
@@ -158,7 +158,7 @@ public class ProgressDialogFragment
         Bundle args = getArguments();
         if (args != null) {
             @StringRes
-            int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE,
+            int titleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE,
                                       R.string.progress_msg_please_wait);
             if (titleId != 0) {
                 dialog.setTitle(titleId);

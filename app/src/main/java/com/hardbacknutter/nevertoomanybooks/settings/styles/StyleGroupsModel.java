@@ -42,7 +42,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
@@ -65,7 +64,7 @@ public class StyleGroupsModel
      */
     public void init(@NonNull final Bundle args) {
         if (mStyle == null) {
-            mStyle = args.getParcelable(UniqueId.BKEY_STYLE);
+            mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
             Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
             mList = createList();
         }

@@ -55,8 +55,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
@@ -113,8 +113,8 @@ public class CheckListDialogFragment
 
         CheckListDialogFragment frag = new CheckListDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
+        args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
+        args.putInt(StandardDialogs.BKEY_DIALOG_FIELD_ID, fieldId);
 
         args.putParcelableArrayList(BKEY_ALL, allItems);
         args.putParcelableArrayList(BKEY_SELECTED, selectedItems);
@@ -128,8 +128,8 @@ public class CheckListDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mDialogTitleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.action_edit);
-        mFieldId = args.getInt(UniqueId.BKEY_FIELD_ID);
+        mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE, R.string.action_edit);
+        mFieldId = args.getInt(StandardDialogs.BKEY_DIALOG_FIELD_ID);
 
         args = savedInstanceState != null ? savedInstanceState : args;
 

@@ -53,9 +53,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
@@ -497,7 +497,7 @@ public class OpenLibrarySearchEngine
             }
         }
         if (!authors.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, authors);
+            bookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, authors);
         }
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
@@ -588,12 +588,12 @@ public class OpenLibrarySearchEngine
                     String fileSpec = ImageUtils.saveImage(context, coverUrl, name);
                     if (fileSpec != null) {
                         ArrayList<String> imageList =
-                                bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                                bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0]);
                         if (imageList == null) {
                             imageList = new ArrayList<>();
                         }
                         imageList.add(fileSpec);
-                        bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+                        bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[0], imageList);
                     }
                 }
             }
@@ -611,7 +611,7 @@ public class OpenLibrarySearchEngine
             }
         }
         if (!publishers.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY, publishers);
+            bookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, publishers);
         }
 
         // always use the first author only for TOC entries.
@@ -627,7 +627,7 @@ public class OpenLibrarySearchEngine
             }
         }
         if (!toc.isEmpty()) {
-            bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, toc);
+            bookData.putParcelableArrayList(Book.BKEY_TOC_ENTRY_ARRAY, toc);
         }
 
         return bookData;

@@ -64,8 +64,8 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -77,6 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.FormattedMessageException;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.SingleLiveEvent;
 
 /**
@@ -312,7 +313,9 @@ public class SearchCoordinator
                 //TODO: (maybe) implement native id as argument
 //                mNativeIdSearchText = args.get...(UniqueId.BKEY_NATIVE_ID_ARRAY);
 
-                mAuthorSearchText = args.getString(UniqueId.BKEY_SEARCH_AUTHOR, "");
+                mAuthorSearchText = args
+                        .getString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
+                                   "");
 
                 mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
                 mPublisherSearchText = args.getString(DBDefinitions.KEY_PUBLISHER, "");
@@ -879,9 +882,9 @@ public class SearchCoordinator
         }
 
         //ENHANCE: for now, we need to compress the list of publishers into a single String.
-        if (mBookData.containsKey(UniqueId.BKEY_PUBLISHER_ARRAY)) {
+        if (mBookData.containsKey(Book.BKEY_PUBLISHER_ARRAY)) {
             ArrayList<Publisher> publishers =
-                    mBookData.getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                    mBookData.getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
             if (publishers != null && !publishers.isEmpty()) {
                 StringBuilder sb = new StringBuilder();
                 boolean first = true;
@@ -895,7 +898,7 @@ public class SearchCoordinator
                 }
                 mBookData.putString(DBDefinitions.KEY_PUBLISHER, sb.toString());
             }
-            mBookData.remove(UniqueId.BKEY_PUBLISHER_ARRAY);
+            mBookData.remove(Book.BKEY_PUBLISHER_ARRAY);
         }
 
         // run the mappers
@@ -903,18 +906,18 @@ public class SearchCoordinator
             mapper.map(context, mBookData);
         }
 
-        // Pick the best front cover (if any) and clean/delete all others.
-        ArrayList<String> imageList = mBookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
-        if (imageList != null && !imageList.isEmpty()) {
-            String coverName = ImageUtils.cleanupImages(imageList);
-            if (coverName != null) {
-                mBookData.putString(UniqueId.BKEY_FILE_SPEC[0], coverName);
+        // Pick the best covers for each list (if any) and clean/delete all others.
+        for (int cIdx = 0; cIdx < 2; cIdx++) {
+            ArrayList<String> imageList = mBookData
+                    .getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
+            if (imageList != null && !imageList.isEmpty()) {
+                String coverName = ImageUtils.cleanupImages(imageList);
+                if (coverName != null) {
+                    mBookData.putString(Book.BKEY_FILE_SPEC[cIdx], coverName);
+                }
             }
+            mBookData.remove(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
         }
-        mBookData.remove(UniqueId.BKEY_FILE_SPEC_ARRAY);
-
-        //ENHANCE: there is only one (potential) back-cover coming from StripInfo.
-        // it's stored in UniqueId.BKEY_FILE_SPEC[1]
 
         // If we did not get an ISBN, use the one we originally searched for.
         String isbn = mBookData.getString(DBDefinitions.KEY_ISBN);
@@ -957,11 +960,12 @@ public class SearchCoordinator
                 || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
                 accumulateDates(site.getLocale(context), key, siteData);
 
-            } else if (UniqueId.BKEY_AUTHOR_ARRAY.equals(key)
-                       || UniqueId.BKEY_SERIES_ARRAY.equals(key)
-                       || UniqueId.BKEY_PUBLISHER_ARRAY.equals(key)
-                       || UniqueId.BKEY_TOC_ENTRY_ARRAY.equals(key)
-                       || UniqueId.BKEY_FILE_SPEC_ARRAY.equals(key)) {
+            } else if (Book.BKEY_AUTHOR_ARRAY.equals(key)
+                       || Book.BKEY_SERIES_ARRAY.equals(key)
+                       || Book.BKEY_PUBLISHER_ARRAY.equals(key)
+                       || Book.BKEY_TOC_ENTRY_ARRAY.equals(key)
+                       || Book.BKEY_FILE_SPEC_ARRAY[0].equals(key)
+                       || Book.BKEY_FILE_SPEC_ARRAY[1].equals(key)) {
                 accumulateList(key, siteData);
 
             } else {

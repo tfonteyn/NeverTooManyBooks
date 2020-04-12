@@ -87,6 +87,14 @@ public abstract class BaseActivity
 
     /** Log tag. */
     private static final String TAG = "BaseActivity";
+
+    /**
+     * tag of fragment to display if an Activity supports multiple.
+     * <p>
+     * <br>type: {@code String}
+     */
+    public static final String BKEY_FRAGMENT_TAG = TAG + ":fragment";
+
     /**
      * Something changed (or not) that warrants a recreation of the caller to be needed.
      * <p>
@@ -347,12 +355,12 @@ public abstract class BaseActivity
         switch (item.getItemId()) {
             case R.id.nav_advanced_search: {
                 Intent searchIntent = new Intent(this, FTSSearchActivity.class);
-                startActivityForResult(searchIntent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+                startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
                 return true;
             }
             case R.id.nav_manage_bookshelves: {
                 Intent intent = new Intent(this, EditBookshelvesActivity.class);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_EDIT_BOOKSHELVES);
                 return true;
             }
 //            case R.id.nav_manage_list_styles: {
@@ -368,13 +376,13 @@ public abstract class BaseActivity
 
             case R.id.nav_goodreads: {
                 Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_GOODREADS);
+                        .putExtra(BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_GOODREADS);
                 return true;
             }
             case R.id.nav_settings: {
                 Intent intent = new Intent(this, SettingsActivity.class);
-                startActivityForResult(intent, UniqueId.REQ_NAV_PANEL_SETTINGS);
+                startActivityForResult(intent, RequestCode.NAV_PANEL_SETTINGS);
                 return true;
             }
             case R.id.nav_about: {
@@ -405,7 +413,7 @@ public abstract class BaseActivity
         if (Prefs.isAdvancedSearch(this)) {
             Intent searchIntent = new Intent(this, FTSSearchActivity.class);
             if (onAdvancedSearchRequested(searchIntent)) {
-                startActivityForResult(searchIntent, UniqueId.REQ_ADVANCED_LOCAL_SEARCH);
+                startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
                 return true;
             } else {
                 return false;
@@ -477,7 +485,7 @@ public abstract class BaseActivity
 
         // generic actions & logging. Anything specific should be done in a child class.
         switch (requestCode) {
-            case UniqueId.REQ_NAV_PANEL_SETTINGS:
+            case RequestCode.NAV_PANEL_SETTINGS:
                 if (BuildConfig.DEBUG && (DEBUG_SWITCHES.ON_ACTIVITY_RESULT
                                           || DEBUG_SWITCHES.RECREATE_ACTIVITY)) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_SETTINGS");
@@ -491,35 +499,35 @@ public abstract class BaseActivity
                 return;
 
             // logging only
-            case UniqueId.REQ_NAV_PANEL_EDIT_BOOKSHELVES:
+            case RequestCode.NAV_PANEL_EDIT_BOOKSHELVES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_BOOKSHELVES");
                 }
                 return;
 
             // logging only
-            case UniqueId.REQ_NAV_PANEL_EDIT_STYLES:
+            case RequestCode.NAV_PANEL_EDIT_STYLES:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_STYLES");
                 }
                 return;
 
             // logging only
-            case UniqueId.REQ_NAV_PANEL_IMPORT:
+            case RequestCode.NAV_PANEL_IMPORT:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_IMPORT");
                 }
                 return;
 
             // logging only
-            case UniqueId.REQ_NAV_PANEL_EXPORT:
+            case RequestCode.NAV_PANEL_EXPORT:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EXPORT");
                 }
                 return;
 
             // logging only
-            case UniqueId.REQ_NAV_PANEL_GOODREADS:
+            case RequestCode.NAV_PANEL_GOODREADS:
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                     Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_GOODREADS");
                 }

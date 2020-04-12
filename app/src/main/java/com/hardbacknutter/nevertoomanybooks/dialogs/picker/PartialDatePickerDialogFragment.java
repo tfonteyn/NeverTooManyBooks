@@ -53,7 +53,7 @@ import java.util.Calendar;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
@@ -99,8 +99,8 @@ public class PartialDatePickerDialogFragment
 
         PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
         Bundle args = new Bundle(3);
-        args.putInt(UniqueId.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putInt(UniqueId.BKEY_FIELD_ID, fieldId);
+        args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
+        args.putInt(StandardDialogs.BKEY_DIALOG_FIELD_ID, fieldId);
         args.putString(BKEY_DATE, date);
         frag.setArguments(args);
         return frag;
@@ -276,7 +276,7 @@ public class PartialDatePickerDialogFragment
 
             if (args != null) {
                 @StringRes
-                int titleId = args.getInt(UniqueId.BKEY_DIALOG_TITLE, R.string.action_edit);
+                int titleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE, R.string.action_edit);
                 if (titleId != 0) {
                     setTitle(titleId);
                 }

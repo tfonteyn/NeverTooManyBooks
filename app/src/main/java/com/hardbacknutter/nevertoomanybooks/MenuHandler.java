@@ -60,9 +60,9 @@ final class MenuHandler {
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final Book book) {
 
-        final boolean hasAuthor = !book.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY)
+        final boolean hasAuthor = !book.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY)
                                        .isEmpty();
-        final boolean hasSeries = !book.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY)
+        final boolean hasSeries = !book.getParcelableArrayList(Book.BKEY_SERIES_ARRAY)
                                        .isEmpty();
 
         prepareOpenOnWebsiteMenu(menu, getNativeIds(book));

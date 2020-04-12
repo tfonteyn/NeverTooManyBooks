@@ -49,8 +49,8 @@ import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.CoverBrowserDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -191,7 +191,7 @@ public interface SearchEngine {
                 if (seriesTitleWithNumber != null && !seriesTitleWithNumber.isEmpty()) {
                     // we'll add to, or create the Series list
                     ArrayList<Series> seriesList =
-                            bookData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+                            bookData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
                     if (seriesList == null) {
                         seriesList = new ArrayList<>();
                     }
@@ -202,7 +202,7 @@ public interface SearchEngine {
                     seriesList.add(0, Series.from(seriesTitleWithNumber));
 
                     // store Series back
-                    bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, seriesList);
+                    bookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, seriesList);
                     // and store cleaned book title back
                     bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
                 }
@@ -410,12 +410,12 @@ public interface SearchEngine {
             }
             if (fileSpec != null) {
                 ArrayList<String> imageList =
-                        bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                        bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
                 if (imageList == null) {
                     imageList = new ArrayList<>();
                 }
                 imageList.add(fileSpec);
-                bookData.putStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY, imageList);
+                bookData.putStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx], imageList);
             }
         }
 
@@ -470,7 +470,7 @@ public interface SearchEngine {
                 }
 
                 ArrayList<String> imageList =
-                        bookData.getStringArrayList(UniqueId.BKEY_FILE_SPEC_ARRAY);
+                        bookData.getStringArrayList(Book.BKEY_FILE_SPEC_ARRAY[cIdx]);
                 if (imageList != null && !imageList.isEmpty()) {
                     // This is from a single site, no need to get the 'best'.
                     // Just use the first one found.

@@ -45,7 +45,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -100,8 +100,8 @@ public class StyleFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), StyleGroupsActivity.class);
-                intent.putExtra(UniqueId.BKEY_STYLE, mStyle);
-                startActivityForResult(intent, UniqueId.REQ_EDIT_STYLE_GROUPS);
+                intent.putExtra(BooklistStyle.BKEY_STYLE, mStyle);
+                startActivityForResult(intent, RequestCode.EDIT_STYLE_GROUPS);
                 return true;
             });
         }
@@ -224,16 +224,16 @@ public class StyleFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case UniqueId.REQ_EDIT_STYLE_GROUPS:
+            case RequestCode.EDIT_STYLE_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
                     // replace the current style with the edited copy;
                     // do NOT save to the database yet/here
-                    mStyle = data.getParcelableExtra(UniqueId.BKEY_STYLE);
+                    mStyle = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
                     Objects.requireNonNull(mStyle, ErrorMsg.ARGS_MISSING_STYLE);
 
-                    mResultDataModel.putResultData(UniqueId.BKEY_STYLE_MODIFIED, true);
-                    mResultDataModel.putResultData(UniqueId.BKEY_STYLE, mStyle);
+                    mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
+                    mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
                 }
                 break;
 

@@ -40,7 +40,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -153,7 +152,7 @@ public class AuthorWorksModel
             case Book:
                 if (mDb.deleteBook(context, item.getId()) == 1) {
                     mTocEntries.remove(item);
-                    putResultData(UniqueId.BKEY_BOOK_DELETED, true);
+                    putResultData(BookViewModel.BKEY_BOOK_DELETED, true);
                 }
                 break;
 

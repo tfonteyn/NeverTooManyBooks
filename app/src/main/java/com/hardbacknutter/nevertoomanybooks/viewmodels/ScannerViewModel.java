@@ -46,7 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.scanner.Scanner;
 import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
@@ -263,7 +263,7 @@ public class ScannerViewModel
                             .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                       Prefs.PSK_BARCODE_SCANNER);
 
-                    fragment.startActivityForResult(intent, UniqueId.REQ_SETTINGS);
+                    fragment.startActivityForResult(intent, RequestCode.SETTINGS);
                 })
                 .create()
                 .show();
@@ -290,7 +290,7 @@ public class ScannerViewModel
                             .putExtra(BasePreferenceFragment.BKEY_AUTO_SCROLL_TO_KEY,
                                       Prefs.PSK_BARCODE_SCANNER);
 
-                    fragment.startActivityForResult(intent, UniqueId.REQ_SETTINGS);
+                    fragment.startActivityForResult(intent, RequestCode.SETTINGS);
                 })
                 .setPositiveButton(R.string.action_retry, (d, w) -> {})
                 .create()

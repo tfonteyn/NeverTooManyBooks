@@ -61,6 +61,7 @@ public final class DEBUG_SWITCHES {
      * use standard tables instead of Temporary ones.
      */
     public static final boolean BOOK_LIST_USES_STANDARD_TABLES = false;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
     public static final boolean BOB_THE_BUILDER = false;
     /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */

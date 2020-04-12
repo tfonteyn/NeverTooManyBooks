@@ -52,8 +52,10 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SiteList;
+import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
@@ -153,7 +155,7 @@ public class BookSearchByIsbnFragment
 
         // auto-start scanner first time.
         if (mScanMode && mScannerModel.isFirstStart()) {
-            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+            mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         }
 
 //        if (savedInstanceState == null) {
@@ -185,7 +187,7 @@ public class BookSearchByIsbnFragment
         switch (item.getItemId()) {
             case R.id.MENU_SCAN_BARCODE: {
                 Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 return true;
             }
             case R.id.MENU_STRICT_ISBN: {
@@ -227,7 +229,7 @@ public class BookSearchByIsbnFragment
 
         if (mScanMode) {
             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+            mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         }
     }
 
@@ -241,17 +243,17 @@ public class BookSearchByIsbnFragment
         }
 
         switch (requestCode) {
-            case UniqueId.REQ_BOOK_EDIT: {
+            case RequestCode.BOOK_EDIT: {
                 // first do the common action when the user has saved the data for the book.
                 super.onActivityResult(requestCode, resultCode, data);
                 // go scan next book until the user cancels scanning.
                 if (mScanMode) {
                     Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                    mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                    mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 }
                 break;
             }
-            case UniqueId.REQ_SCAN_BARCODE: {
+            case RequestCode.SCAN_BARCODE: {
                 Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
@@ -273,7 +275,7 @@ public class BookSearchByIsbnFragment
                 mScanMode = false;
                 return;
             }
-            case UniqueId.REQ_SETTINGS: {
+            case RequestCode.SETTINGS: {
                 // Settings initiated from the local menu or dialog box.
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     // update the search sites list.
@@ -286,7 +288,8 @@ public class BookSearchByIsbnFragment
                     }
 
                     // init the scanner if it was changed.
-                    if (data.getBooleanExtra(UniqueId.BKEY_SHOULD_INIT_SCANNER, false)) {
+                    if (data.getBooleanExtra(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED,
+                                             false)) {
                         Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                         mScannerModel.resetScanner();
                     }
@@ -294,16 +297,16 @@ public class BookSearchByIsbnFragment
 
                 if (mScanMode) {
                     Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                    mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                    mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 }
                 break;
             }
-            case UniqueId.REQ_UPDATE_GOOGLE_PLAY_SERVICES: {
+            case RequestCode.UPDATE_GOOGLE_PLAY_SERVICES: {
                 if (mScanMode) {
                     if (resultCode == Activity.RESULT_OK) {
                         Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
                         // go scan next book until the user cancels scanning.
-                        mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                        mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                     } else {
                         mScanMode = false;
                     }
@@ -349,7 +352,7 @@ public class BookSearchByIsbnFragment
 
             if (mScanMode) {
                 Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
             }
             return;
         }
@@ -380,14 +383,14 @@ public class BookSearchByIsbnFragment
                         clearPreviousSearchCriteria();
                         if (mScanMode) {
                             Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
-                            mScanMode = mScannerModel.scan(this, UniqueId.REQ_SCAN_BARCODE);
+                            mScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                         }
                     })
                     // User wants to review the existing book
                     .setNeutralButton(R.string.action_edit, (d, w) -> {
                         final Intent intent = new Intent(getContext(), EditBookActivity.class)
                                 .putExtra(DBDefinitions.KEY_PK_ID, existingId);
-                        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                        startActivityForResult(intent, RequestCode.BOOK_EDIT);
                     })
                     // User wants to add regardless
                     .setPositiveButton(R.string.action_add, (d, w) -> startSearch())
@@ -405,8 +408,8 @@ public class BookSearchByIsbnFragment
         final String title = bookData.getString(DBDefinitions.KEY_TITLE);
         if ((title != null && !title.isEmpty()) || bookData.size() > 2) {
             final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                    .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-            startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                    .putExtra(Book.BKEY_BOOK_DATA, bookData);
+            startActivityForResult(intent, RequestCode.BOOK_EDIT);
             clearPreviousSearchCriteria();
         } else {
             Snackbar.make(mVb.isbn, R.string.warning_no_matching_book_found,

@@ -200,17 +200,17 @@ public abstract class BookBaseFragment
 
         switch (item.getItemId()) {
             case R.id.MENU_UPDATE_FROM_INTERNET: {
-                ArrayList<Long> bookIds = new ArrayList<>();
-                bookIds.add(book.getId());
+                ArrayList<Long> bookIdList = new ArrayList<>();
+                bookIdList.add(book.getId());
                 Intent intent = new Intent(context, BookSearchActivity.class)
-                        .putExtra(UniqueId.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                        .putExtra(UniqueId.BKEY_ID_LIST, bookIds)
+                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
+                        .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList)
                         // pass the title for displaying to the user
                         .putExtra(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE))
                         // pass the author for displaying to the user
                         .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
                                   book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
-                startActivityForResult(intent, UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET);
+                startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
@@ -262,7 +262,7 @@ public abstract class BookBaseFragment
         }
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case UniqueId.REQ_UPDATE_FIELDS_FROM_INTERNET:
+            case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
 

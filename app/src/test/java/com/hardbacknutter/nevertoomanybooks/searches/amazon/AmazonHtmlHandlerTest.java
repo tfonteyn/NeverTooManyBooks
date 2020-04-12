@@ -39,9 +39,9 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -89,13 +89,13 @@ class AmazonHtmlHandlerTest
         assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
         ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(1, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());
@@ -138,12 +138,12 @@ class AmazonHtmlHandlerTest
         assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
 
         ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
         assertEquals("Gollancz", allPublishers.get(0).getName());
 
-        ArrayList<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertEquals(2, authors.size());
         assertEquals("Reynolds", authors.get(0).getFamilyName());

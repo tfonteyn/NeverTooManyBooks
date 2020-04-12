@@ -50,7 +50,6 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -70,10 +69,6 @@ public class Book
         implements ItemWithTitle {
 
     /**
-     * Rating goes from 0 to 5 stars, in 0.5 increments.
-     */
-    public static final int RATING_STARS = 5;
-    /**
      * {@link DBDefinitions#KEY_TOC_BITMASK}
      * <p>
      * 0b001 = indicates if a book has one (bit unset) or multiple (bit set) works
@@ -91,10 +86,82 @@ public class Book
     public static final int TOC_SINGLE_AUTHOR_SINGLE_WORK = 0;
     public static final int TOC_MULTIPLE_WORKS = 1;
     public static final int TOC_MULTIPLE_AUTHORS = 1 << 1;
-    /** Extracting a series/nr from the book title. */
-    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
+    /**
+     * Rating goes from 0 to 5 stars, in 0.5 increments.
+     */
+    public static final int RATING_STARS = 5;
+
+    /**
+     * Single front/back cover file specs.
+     * <p>
+     * <br>type: {@code String}
+     */
+    public static final String[] BKEY_FILE_SPEC = new String[2];
+
+    /**
+     * List of front/back cover file specs.
+     * <p>
+     * <br>type: {@code ArrayList<String>}
+     */
+    public static final String[] BKEY_FILE_SPEC_ARRAY = new String[2];
+
     /** Log tag. */
     private static final String TAG = "Book";
+
+    /**
+     * Bundle key for {@code ParcelableArrayList<Author>}.
+     */
+    public static final String BKEY_AUTHOR_ARRAY = TAG + ":author_array";
+
+    /**
+     * Bundle key for {@code ParcelableArrayList<Series>}.
+     */
+    public static final String BKEY_SERIES_ARRAY = TAG + ":series_array";
+
+    /**
+     * Bundle key for {@code ParcelableArrayList<Publisher>}. FIXME: NOT FULLY SUPPORTED YET.
+     */
+    public static final String BKEY_PUBLISHER_ARRAY = TAG + ":publisher_array";
+
+    /**
+     * Bundle key for {@code ParcelableArrayList<TocEntry>}.
+     */
+    public static final String BKEY_TOC_ENTRY_ARRAY = TAG + ":toc_titles_array";
+
+    /**
+     * Bundle key for {@code ParcelableArrayList<Bookshelf>}.
+     */
+    public static final String BKEY_BOOKSHELF_ARRAY = TAG + ":bookshelf_array";
+
+    /**
+     * Bundle key for an {@code ArrayList<Long>} of book ids.
+     * <p>
+     * <br>type: {@code Serializable}
+     */
+    public static final String BKEY_BOOK_ID_ARRAY = TAG + ":id_array";
+
+    /**
+     * Bundle key to pass a Bundle with book data around.
+     * i.e. before the data becomes an actual {@link Book}.
+     * <p>
+     * <br>type: {@code Bundle}
+     */
+    public static final String BKEY_BOOK_DATA = TAG + ":plainBundle";
+
+    /** Extracting a series/nr from the book title. */
+    private static final Pattern SERIES_NR_PATTERN = Pattern.compile("#", Pattern.LITERAL);
+
+    static {
+        // Single front cover
+        BKEY_FILE_SPEC[0] = TAG + ":fileSpec:0";
+        // Single back cover
+        BKEY_FILE_SPEC[1] = TAG + ":fileSpec:1";
+
+        // list of front covers
+        BKEY_FILE_SPEC_ARRAY[0] = TAG + ":fileSpec_array:0";
+        // list of back covers
+        BKEY_FILE_SPEC_ARRAY[1] = TAG + ":fileSpec_array:1";
+    }
 
     /**
      * Public Constructor.
@@ -217,12 +284,12 @@ public class Book
         bookData.putString(DBDefinitions.KEY_ISBN,
                            getString(DBDefinitions.KEY_ISBN));
 
-        bookData.putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY,
-                                        getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY));
-        bookData.putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY,
-                                        getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY));
-        bookData.putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY,
-                                        getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY));
+        bookData.putParcelableArrayList(BKEY_AUTHOR_ARRAY,
+                                        getParcelableArrayList(BKEY_AUTHOR_ARRAY));
+        bookData.putParcelableArrayList(BKEY_SERIES_ARRAY,
+                                        getParcelableArrayList(BKEY_SERIES_ARRAY));
+        bookData.putParcelableArrayList(BKEY_TOC_ENTRY_ARRAY,
+                                        getParcelableArrayList(BKEY_TOC_ENTRY_ARRAY));
 
         // publication data
         bookData.putString(DBDefinitions.KEY_PUBLISHER,
@@ -374,11 +441,11 @@ public class Book
                 //pro: one call for book and sublist(s)
                 //con: the sublist comes in as one column. Will need json format to keep it flexible
                 // and then decode here (or StringList custom (de)coding? hum...)
-                putParcelableArrayList(UniqueId.BKEY_BOOKSHELF_ARRAY,
+                putParcelableArrayList(BKEY_BOOKSHELF_ARRAY,
                                        db.getBookshelvesByBookId(bookId));
-                putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
-                putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
-                putParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY, db.getTocEntryByBook(bookId));
+                putParcelableArrayList(BKEY_AUTHOR_ARRAY, db.getAuthorsByBookId(bookId));
+                putParcelableArrayList(BKEY_SERIES_ARRAY, db.getSeriesByBookId(bookId));
+                putParcelableArrayList(BKEY_TOC_ENTRY_ARRAY, db.getTocEntryByBook(bookId));
             }
         }
         return this;
@@ -393,7 +460,7 @@ public class Book
      */
     @Nullable
     public String getPrimaryAuthor(@NonNull final Context context) {
-        ArrayList<Author> authors = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
         return authors.isEmpty() ? null : authors.get(0).getLabel(context);
     }
 
@@ -406,7 +473,7 @@ public class Book
      */
     @NonNull
     public String getAuthorTextShort(@NonNull final Context context) {
-        List<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        List<Author> list = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
         // could/should? use AuthorListFormatter
         if (list.isEmpty()) {
             return "";
@@ -427,11 +494,11 @@ public class Book
      */
     public void refreshAuthorList(@NonNull final Context context,
                                   @NonNull final DAO db) {
-        ArrayList<Author> list = getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_ARRAY);
         for (Author author : list) {
             db.refreshAuthor(context, author);
         }
-        putParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY, list);
+        putParcelableArrayList(BKEY_AUTHOR_ARRAY, list);
     }
 
     /**
@@ -441,7 +508,7 @@ public class Book
      */
     @Nullable
     public String getPrimarySeriesTitle() {
-        ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
         return list.isEmpty() ? null : list.get(0).getTitle();
     }
 
@@ -529,11 +596,11 @@ public class Book
     public void refreshSeriesList(@NonNull final Context context,
                                   @NonNull final DAO db) {
 
-        ArrayList<Series> list = getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_ARRAY);
         for (Series series : list) {
             db.refreshSeries(context, series, getLocale(context));
         }
-        putParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY, list);
+        putParcelableArrayList(BKEY_SERIES_ARRAY, list);
     }
 
     /**
@@ -545,7 +612,7 @@ public class Book
 
         addValidator(DBDefinitions.KEY_TITLE,
                      NON_BLANK_VALIDATOR, R.string.lbl_title);
-        addValidator(UniqueId.BKEY_AUTHOR_ARRAY,
+        addValidator(BKEY_AUTHOR_ARRAY,
                      NON_BLANK_VALIDATOR, R.string.lbl_author);
 
         addValidator(DBDefinitions.KEY_LANGUAGE,
@@ -615,7 +682,7 @@ public class Book
 
         // Handle TOC_BITMASK only, no handling of actual titles here,
         // but making sure TOC_MULTIPLE_AUTHORS is correct.
-        ArrayList<TocEntry> tocEntries = getParcelableArrayList(UniqueId.BKEY_TOC_ENTRY_ARRAY);
+        ArrayList<TocEntry> tocEntries = getParcelableArrayList(BKEY_TOC_ENTRY_ARRAY);
         if (!tocEntries.isEmpty()) {
             @Book.TocBits
             long type = getLong(DBDefinitions.KEY_TOC_BITMASK);

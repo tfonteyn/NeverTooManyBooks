@@ -49,8 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByText
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
@@ -193,10 +195,10 @@ public class BookSearchByTextFragment
         }
 
         final ArrayList<Author> authors =
-                bookData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+                bookData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         if (authors == null || authors.isEmpty()) {
             // do NOT use the array, that's reserved for verified names.
-            bookData.putString(UniqueId.BKEY_SEARCH_AUTHOR,
+            bookData.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
                                mSearchCoordinator.getAuthorSearchText());
         }
 
@@ -206,8 +208,8 @@ public class BookSearchByTextFragment
         }
 
         final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                .putExtra(UniqueId.BKEY_BOOK_DATA, bookData);
-        startActivityForResult(intent, UniqueId.REQ_BOOK_EDIT);
+                .putExtra(Book.BKEY_BOOK_DATA, bookData);
+        startActivityForResult(intent, RequestCode.BOOK_EDIT);
         clearPreviousSearchCriteria();
     }
 

@@ -49,7 +49,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
@@ -81,7 +80,7 @@ public class SettingsActivity
 
         mModel = new ViewModelProvider(this).get(ResultDataModel.class);
 
-        String tag = getIntent().getStringExtra(UniqueId.BKEY_FRAGMENT_TAG);
+        String tag = getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG);
         if (tag == null) {
             tag = GlobalPreferenceFragment.TAG;
         }

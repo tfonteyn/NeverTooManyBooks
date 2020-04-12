@@ -43,9 +43,9 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.CommonSetup;
-import com.hardbacknutter.nevertoomanybooks.UniqueId;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -94,14 +94,14 @@ class KbNlBookHandlerTest
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
 
         ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Dark Dragon Books", allPublishers.get(0).getName());
 
 
-        List<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        List<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -114,7 +114,7 @@ class KbNlBookHandlerTest
         expectedAuthor = Author.from("Mariella Manfré");
         assertEquals(expectedAuthor, authors.get(3));
 
-        List<Series> series = mRawData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         Series expectedSeries;
@@ -142,13 +142,13 @@ class KbNlBookHandlerTest
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
 
         ArrayList<Publisher> allPublishers = mRawData
-                .getParcelableArrayList(UniqueId.BKEY_PUBLISHER_ARRAY);
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY);
         assertNotNull(allPublishers);
         assertEquals(1, allPublishers.size());
 
         assertEquals("Bruna", allPublishers.get(0).getName());
 
-        List<Author> authors = mRawData.getParcelableArrayList(UniqueId.BKEY_AUTHOR_ARRAY);
+        List<Author> authors = mRawData.getParcelableArrayList(Book.BKEY_AUTHOR_ARRAY);
         assertNotNull(authors);
         assertFalse(authors.isEmpty());
         Author expectedAuthor;
@@ -157,7 +157,7 @@ class KbNlBookHandlerTest
         expectedAuthor = Author.from("Jack Kröner");
         assertEquals(expectedAuthor, authors.get(1));
 
-        List<Series> series = mRawData.getParcelableArrayList(UniqueId.BKEY_SERIES_ARRAY);
+        List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_ARRAY);
         assertNotNull(series);
         assertFalse(series.isEmpty());
         Series expectedSeries;
