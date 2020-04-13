@@ -221,24 +221,24 @@ public class SearchCoordinator
                             long end = mSearchTasksEndTime.get(key);
                             String name = SearchSites.getName(key);
                             if (end != 0) {
-                                Log.d(TAG, String.format(Locale.UK,
+                                Log.d(TAG, String.format(Locale.ENGLISH,
                                                          "mSearchTaskListener.onFinished"
                                                          + "|taskId=%20s:%10d ms",
                                                          name, (end - start) / NANO_TO_MILLIS));
                             } else {
-                                Log.d(TAG, String.format(Locale.UK,
+                                Log.d(TAG, String.format(Locale.ENGLISH,
                                                          "mSearchTaskListener.onFinished"
                                                          + "|task=%20s|never finished",
                                                          name));
                             }
                         }
 
-                        Log.d(TAG, String.format(Locale.UK,
+                        Log.d(TAG, String.format(Locale.ENGLISH,
                                                  "mSearchTaskListener.onFinished"
                                                  + "|total search time: %10d ms",
                                                  (processTime - mSearchStartTime)
                                                  / NANO_TO_MILLIS));
-                        Log.d(TAG, String.format(Locale.UK,
+                        Log.d(TAG, String.format(Locale.ENGLISH,
                                                  "mSearchTaskListener.onFinished"
                                                  + "|processing time: %10d ms",
                                                  (System.nanoTime() - processTime)
