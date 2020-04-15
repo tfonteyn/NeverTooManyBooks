@@ -39,6 +39,7 @@ import androidx.annotation.Nullable;
 public class VirtualDomain
         implements Parcelable {
 
+    /** {@link Parcelable}. */
     public static final Creator<VirtualDomain> CREATOR = new Creator<VirtualDomain>() {
         @Override
         public VirtualDomain createFromParcel(@NonNull final Parcel in) {

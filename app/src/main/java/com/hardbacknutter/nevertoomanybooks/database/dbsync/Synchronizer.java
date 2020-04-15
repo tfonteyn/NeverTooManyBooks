@@ -97,6 +97,8 @@ public class Synchronizer {
 
     /**
      * Add a new SharedLock to the collection and return it.
+     *
+     * @return lock
      */
     @NonNull
     SyncLock getSharedLock() {
@@ -112,7 +114,7 @@ public class Synchronizer {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
             Log.d(TAG, "getSharedLock.lock"
                        + "|" + thread.getName()
-                       + "|lock held by " + mLock.getHoldCount());
+                       + "|held by " + mLock.getHoldCount());
         }
 
         purgeOldLocks();
@@ -135,7 +137,7 @@ public class Synchronizer {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
                 Log.d(TAG, "getSharedLock.unlock"
                            + "|" + thread.getName()
-                           + "|lock held by " + mLock.getHoldCount());
+                           + "|held by " + mLock.getHoldCount());
             }
         }
     }
@@ -155,7 +157,7 @@ public class Synchronizer {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
             Log.d(TAG, "releaseSharedLock.lock"
                        + "|" + thread.getName()
-                       + "|lock held by " + mLock.getHoldCount());
+                       + "|held by " + mLock.getHoldCount());
         }
         try {
             Integer count = mSharedOwners.get(thread);
@@ -183,7 +185,7 @@ public class Synchronizer {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
                 Log.d(TAG, "releaseSharedLock.unlock"
                            + "|" + thread.getName()
-                           + "|lock held by " + mLock.getHoldCount());
+                           + "|held by " + mLock.getHoldCount());
             }
         }
     }
@@ -196,6 +198,8 @@ public class Synchronizer {
      *      <li>if not, return with the lock still held -- this prevents more EX or SH locks.</li>
      *      <li>if there are other SH locks, wait for one to be release and loop.</li>
      * </ol>
+     *
+     * @return lock
      */
     @NonNull
     SyncLock getExclusiveLock() {
@@ -213,7 +217,7 @@ public class Synchronizer {
                                + "|Thread " + thread.getName()
                                + "|requesting EXCLUSIVE lock with "
                                + mSharedOwners.size() + " shared locks."
-                               + "|Lock held by " + mLock.getHoldCount());
+                               + "|held by " + mLock.getHoldCount());
                 }
                 try {
                     // Simple case -- no locks held, just return and keep the lock
@@ -279,7 +283,7 @@ public class Synchronizer {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_SYNC_LOCKING) {
             Log.d(TAG, "releaseExclusiveLock.unlock"
                        + "|" + thread.getName()
-                       + "|lock held by " + mLock.getHoldCount());
+                       + "|held by " + mLock.getHoldCount());
         }
     }
 

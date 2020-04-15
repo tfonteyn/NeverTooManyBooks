@@ -318,17 +318,17 @@ public final class CoversDAO
     }
 
     /**
-     * Analyze the database.
+     * Optimize the database.
      *
      * @param context Current context
      */
-    public static void analyze(@NonNull final Context context) {
+    public static void optimize(@NonNull final Context context) {
         // safely initialise if needed
         try (@SuppressWarnings("unused") CoversDAO dummy = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
-            sSyncedDb.analyze();
+            sSyncedDb.optimize();
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e);
         }

@@ -297,12 +297,9 @@ class ImportLegacyTask
                 mPosition++;
             }
         }
-        try {
-            db.analyze();
-        } catch (@NonNull final RuntimeException e) {
-            // Do nothing. Not a critical step.
-            Logger.warn(context, TAG, "processReviews", e);
-        }
+
+        db.analyze();
+
         return true;
     }
 

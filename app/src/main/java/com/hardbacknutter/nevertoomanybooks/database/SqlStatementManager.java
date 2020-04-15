@@ -82,12 +82,12 @@ public class SqlStatementManager
     /**
      * Constructor.
      *
-     * @param syncedDb the database
-     * @param name     instance name; used for logging
+     * @param db   the database
+     * @param name instance name; used for logging
      */
-    public SqlStatementManager(@NonNull final SynchronizedDb syncedDb,
+    public SqlStatementManager(@NonNull final SynchronizedDb db,
                                final String name) {
-        mSyncedDb = syncedDb;
+        mSyncedDb = db;
         mInstanceName = name;
     }
 

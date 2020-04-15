@@ -86,13 +86,13 @@ class ExtCursor
     /**
      * See class docs.
      *
-     * @param syncedDb        Database Access; needed to get the real meta data for the columns.
+     * @param db              Database Access; needed to get the real meta data for the columns.
      * @param tableDefinition to read types from
      */
-    void setDb(@NonNull final SynchronizedDb syncedDb,
+    void setDb(@NonNull final SynchronizedDb db,
                @SuppressWarnings("SameParameterValue")
                @NonNull final TableDefinition tableDefinition) {
-        mSyncedDb = syncedDb;
+        mSyncedDb = db;
         mTableDefinition = tableDefinition;
     }
 

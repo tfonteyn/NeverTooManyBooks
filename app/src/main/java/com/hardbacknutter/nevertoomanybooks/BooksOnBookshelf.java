@@ -1377,7 +1377,7 @@ public class BooksOnBookshelf
             mModel.buildBookList(this);
 
         } else if (!mModel.isListLoaded()) {
-            //FIXME: this branch is almost certainly never reached.
+            //TEST: this branch is almost certainly never reached.
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "onResume|initial build");
             }
@@ -1619,7 +1619,7 @@ public class BooksOnBookshelf
                 best = ri;
             }
         }
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_NODE_STATE) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "scrollToTarget"
                        + "|targetRows=" + targetRows
                        + "|best=" + best);

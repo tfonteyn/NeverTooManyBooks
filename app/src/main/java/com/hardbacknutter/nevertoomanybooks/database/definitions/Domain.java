@@ -375,17 +375,6 @@ public class Domain
         }
 
         /**
-         * Add a current timestamp default constraint.
-         *
-         * @return Builder (for chaining)
-         */
-        @NonNull
-        public Builder withDefaultCurrentTimeStamp() {
-            mDefaultClause = "current_timestamp";
-            return this;
-        }
-
-        /**
          * Add a string default constraint.
          *
          * @param value to add (a string default must include the quotes!)
@@ -395,6 +384,17 @@ public class Domain
         @NonNull
         public Builder withDefault(@NonNull final String value) {
             mDefaultClause = value;
+            return this;
+        }
+
+        /**
+         * Add a current timestamp default constraint.
+         *
+         * @return Builder (for chaining)
+         */
+        @NonNull
+        public Builder withDefaultCurrentTimeStamp() {
+            mDefaultClause = "current_timestamp";
             return this;
         }
 

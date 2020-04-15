@@ -46,13 +46,13 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 
 /**
- * Run 'analyse' on our databases.
+ * Run 'PRAGMA optimize' on our databases.
  */
-public class AnalyzeDbTask
+public class OptimizeDbTask
         extends TaskBase<Void, Boolean> {
 
     /** Log tag. */
-    private static final String TAG = "AnalyzeDbTask";
+    private static final String TAG = "OptimizeDbTask";
 
     /** Database Access. */
     @NonNull
@@ -69,10 +69,10 @@ public class AnalyzeDbTask
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public AnalyzeDbTask(final int taskId,
-                         @NonNull final DAO db,
-                         final boolean doCoversDb,
-                         @NonNull final TaskListener<Boolean> taskListener) {
+    public OptimizeDbTask(final int taskId,
+                          @NonNull final DAO db,
+                          final boolean doCoversDb,
+                          @NonNull final TaskListener<Boolean> taskListener) {
         super(taskId, taskListener);
         mDb = db;
         mDoCoversDb = doCoversDb;
@@ -95,9 +95,9 @@ public class AnalyzeDbTask
                 mDb.rebuildTriggers();
             }
 
-            mDb.analyze();
+            mDb.optimize();
             if (mDoCoversDb) {
-                CoversDAO.analyze(context);
+                CoversDAO.optimize(context);
             }
             return true;
 

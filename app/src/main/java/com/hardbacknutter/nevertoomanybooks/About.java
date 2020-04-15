@@ -59,7 +59,7 @@ public class About
      * SQLite shell updates are not allowed.
      */
     private static final int DEBUG_CLICKS = 3;
-    /** After clicking the icon 3 times, the SQLite shell will allow updates. */
+    /** After clicking the icon 3 more times, the SQLite shell will allow updates. */
     private static final int DEBUG_CLICKS_ALLOW_UPD = 6;
 
     /** Log tag. */

@@ -175,10 +175,10 @@ public final class DBHelper
      * DEBUG only.
      */
     @SuppressLint("LogConditional")
-    public static void dumpTempTableNames(@NonNull final SynchronizedDb syncedDb) {
+    public static void dumpTempTableNames(@NonNull final SynchronizedDb db) {
         String sql = "SELECT name FROM sqlite_temp_master WHERE type='table'";
         Collection<String> names = new ArrayList<>();
-        try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = db.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
                 String name = cursor.getString(0);
                 if (!name.startsWith("sqlite")) {
@@ -254,17 +254,17 @@ public final class DBHelper
      * <p>
      * (re)Creates the indexes as defined on the tables.
      *
-     * @param syncedDb the database
+     * @param db the database
      */
-    void recreateIndices(@NonNull final SynchronizedDb syncedDb) {
+    void recreateIndices(@NonNull final SynchronizedDb db) {
         // Delete all indices.
         // We read the index names from the database, so we can delete
         // indexes which were removed from the TableDefinition objects.
-        try (Cursor current = syncedDb.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
             while (current.moveToNext()) {
                 String indexName = current.getString(0);
                 try {
-                    syncedDb.execSQL("DROP INDEX " + indexName);
+                    db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
                     // bad sql is a developer issue... die!
                     Logger.error(App.getAppContext(), TAG, e);
@@ -277,10 +277,10 @@ public final class DBHelper
 
         // now recreate
         for (TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
-            table.createIndices(syncedDb);
+            table.createIndices(db);
         }
 
-        syncedDb.analyze();
+        db.analyze();
     }
 
     /**
@@ -340,9 +340,9 @@ public final class DBHelper
      * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
      * this will need to be added.
      *
-     * @param syncedDb the database
+     * @param db the database
      */
-    void createTriggers(@NonNull final SynchronizedDb syncedDb) {
+    void createTriggers(@NonNull final SynchronizedDb db) {
 
         String name;
         String body;
@@ -357,11 +357,11 @@ public final class DBHelper
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
+               + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
 //        /*
 //         * Deleting an {@link Author). Currently not possible to delete an Author directly.
@@ -397,17 +397,17 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + " IN \n"
                // actual books by this Author
                + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_AUTHOR.getName()
-               + " WHERE " + KEY_FK_AUTHOR + "=Old." + KEY_PK_ID + ")\n"
+               + " WHERE " + KEY_FK_AUTHOR + "=OLD." + KEY_PK_ID + ")\n"
 
                + " OR " + KEY_PK_ID + " IN \n"
                // books with entries in anthologies by this Author
                + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES.ref()
                + TBL_BOOK_TOC_ENTRIES.join(TBL_TOC_ENTRIES)
-               + " WHERE " + KEY_FK_AUTHOR + "=Old." + KEY_PK_ID + ");\n"
+               + " WHERE " + KEY_FK_AUTHOR + "=OLD." + KEY_PK_ID + ");\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Deleting a {@link Series).
@@ -419,11 +419,11 @@ public final class DBHelper
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
+               + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Update a {@link Series}
@@ -437,11 +437,11 @@ public final class DBHelper
                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                + " WHERE " + KEY_PK_ID + " IN \n"
                + "(SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_SERIES.getName()
-               + " WHERE " + KEY_FK_SERIES + "=Old." + KEY_PK_ID + ");\n"
+               + " WHERE " + KEY_FK_SERIES + "=OLD." + KEY_PK_ID + ");\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Deleting a Loan.
@@ -453,11 +453,11 @@ public final class DBHelper
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
+               + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Updating a Loan.
@@ -469,11 +469,11 @@ public final class DBHelper
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=New." + KEY_FK_BOOK + ";\n"
+               + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Inserting a Loan.
@@ -485,11 +485,11 @@ public final class DBHelper
                + " BEGIN\n"
                + "  UPDATE " + TBL_BOOKS.getName()
                + "  SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
-               + " WHERE " + KEY_PK_ID + "=New." + KEY_FK_BOOK + ";\n"
+               + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
 
         /*
@@ -501,11 +501,11 @@ public final class DBHelper
         body = " AFTER DELETE ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
                + " BEGIN\n"
                + "  DELETE FROM " + TBL_FTS_BOOKS.getName()
-               + " WHERE " + KEY_FTS_BOOKS_PK + '=' + "Old." + KEY_PK_ID + ";\n"
+               + " WHERE " + KEY_FTS_BOOKS_PK + "=OLD." + KEY_PK_ID + ";\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
 
         /*
@@ -513,7 +513,7 @@ public final class DBHelper
          */
         name = "after_update_of_" + KEY_ISBN + "_on_" + TBL_BOOKS.getName();
         body = " AFTER UPDATE OF " + KEY_ISBN + " ON " + TBL_BOOKS.getName() + " FOR EACH ROW\n"
-               + " WHEN New." + KEY_ISBN + " <> Old." + KEY_ISBN + '\n'
+               + " WHEN NEW." + KEY_ISBN + " <> OLD." + KEY_ISBN + '\n'
                + " BEGIN\n"
                + "    UPDATE " + TBL_BOOKS.getName() + " SET "
                //NEWTHINGS: add new site specific ID: add a reset value
@@ -524,11 +524,11 @@ public final class DBHelper
                + ',' + KEY_EID_STRIP_INFO_BE + "=0"
 
                + ',' + KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "=''"
-               + /* */ " WHERE " + KEY_PK_ID + "=New." + KEY_PK_ID + ";\n"
+               + /* */ " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"
                + " END";
 
-        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
     }
 
     @Override

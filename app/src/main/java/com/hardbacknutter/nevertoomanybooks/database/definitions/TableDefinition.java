@@ -58,7 +58,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class TableDefinition
         implements Cloneable {
 
-    private static final String EXISTS_SQL =
+    /** Check if a table exists; either in permanent or temporary storage. */
+    private static final String TABLE_EXISTS_SQL =
             "SELECT "
             + "(SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?) + "
             + "(SELECT COUNT(*) FROM sqlite_temp_master WHERE type='table' AND name=?)";
@@ -95,6 +96,7 @@ public class TableDefinition
     /** Table type. */
     @NonNull
     private TableType mType = TableType.Standard;
+    /** Cached table structure info. */
     @Nullable
     private TableInfo mTableInfo;
 
@@ -280,6 +282,8 @@ public class TableDefinition
     }
 
     /**
+     * Get the table name.
+     *
      * @return table name.
      */
     @NonNull
@@ -315,6 +319,8 @@ public class TableDefinition
     }
 
     /**
+     * Get the alias name.
+     *
      * @return the table alias, or if blank, return the table name.
      */
     @NonNull
@@ -380,6 +386,8 @@ public class TableDefinition
     }
 
     /**
+     * Get the complete list of domains used by this table.
+     *
      * @return list of domains.
      */
     @NonNull
@@ -682,10 +690,14 @@ public class TableDefinition
     }
 
     /**
+     * Check if this table exists.
+     *
+     * @param db the database
+     *
      * @return {@code true} if this table exists
      */
     public boolean exists(@NonNull final SynchronizedDb db) {
-        try (SynchronizedStatement stmt = db.compileStatement(EXISTS_SQL)) {
+        try (SynchronizedStatement stmt = db.compileStatement(TABLE_EXISTS_SQL)) {
             stmt.bindString(1, mName);
             stmt.bindString(2, mName);
             return stmt.count() > 0;
@@ -695,13 +707,13 @@ public class TableDefinition
     /**
      * DEBUG. Dumps the content of this table to the debug output.
      *
-     * @param syncedDb the database
-     * @param tag      log tag to use
-     * @param header   a header which will be logged first
-     * @param limit    LIMIT limit
-     * @param orderBy  ORDER BY orderBy
+     * @param db      the database
+     * @param tag     log tag to use
+     * @param header  a header which will be logged first
+     * @param limit   LIMIT limit
+     * @param orderBy ORDER BY orderBy
      */
-    public void dumpTable(@NonNull final SynchronizedDb syncedDb,
+    public void dumpTable(@NonNull final SynchronizedDb db,
                           @NonNull final String tag,
                           @NonNull final String header,
                           final int limit,
@@ -710,7 +722,7 @@ public class TableDefinition
             Log.d(tag, "Table: " + mName + ": " + header);
 
             String sql = "SELECT * FROM " + mName + " ORDER BY " + orderBy + " LIMIT " + limit;
-            try (Cursor cursor = syncedDb.rawQuery(sql, null)) {
+            try (Cursor cursor = db.rawQuery(sql, null)) {
                 StringBuilder columnHeading = new StringBuilder("\n");
                 String[] columnNames = cursor.getColumnNames();
                 for (String column : columnNames) {
@@ -732,15 +744,15 @@ public class TableDefinition
     /**
      * Get a description/info structure for this table describing the columns etc.
      *
-     * @param syncedDb the database
+     * @param db the database
      *
      * @return info object
      */
     @NonNull
-    public TableInfo getTableInfo(@NonNull final SynchronizedDb syncedDb) {
+    public TableInfo getTableInfo(@NonNull final SynchronizedDb db) {
         synchronized (this) {
             if (mTableInfo == null) {
-                mTableInfo = new TableInfo(syncedDb, mName);
+                mTableInfo = new TableInfo(db, mName);
             }
         }
         return mTableInfo;
@@ -749,12 +761,12 @@ public class TableDefinition
     /**
      * Alter the physical table in the database: add the given domain.
      *
-     * @param syncedDb the database
-     * @param domain   to add
+     * @param db     the database
+     * @param domain to add
      */
-    public void alterTableAddColumn(@NonNull final SynchronizedDb syncedDb,
+    public void alterTableAddColumn(@NonNull final SynchronizedDb db,
                                     @NonNull final Domain domain) {
-        syncedDb.execSQL("ALTER TABLE " + getName() + " ADD " + domain.def(true));
+        db.execSQL("ALTER TABLE " + getName() + " ADD " + domain.def(true));
     }
 
     /**

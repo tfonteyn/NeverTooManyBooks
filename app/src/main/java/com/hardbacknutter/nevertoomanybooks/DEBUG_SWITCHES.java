@@ -62,25 +62,33 @@ public final class DEBUG_SWITCHES {
      */
     public static final boolean BOOK_LIST_USES_STANDARD_TABLES = false;
 
+
     /** {@link com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder}. */
     public static final boolean BOB_THE_BUILDER = false;
+    /** {@link BooksOnBookshelfModel#buildBookList}. */
+    public static final boolean BOB_INIT_BOOK_LIST = false;
     /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
-    public static final boolean BOOK_LIST_NODE_STATE = false;
+    public static final boolean BOB_NODE_STATE = false;
     /** {@link BooklistCursor}. */
     public static final boolean BOB_PSEUDO_CURSOR = false;
-    /** Dump SQL when executing  {@link SynchronizedStatement}. */
-    public static final boolean DB_STMT_EXECUTE = false;
 
     /** enable timers for performance measurements. */
-    public static final boolean TIMERS = false;
+    public static final boolean TIMERS = true;
+
+    /** Log the full flow of {@link Activity#recreate()}. */
+    public static final boolean RECREATE_ACTIVITY = false;
     /** track the flow & values on startActivityForResult & onActivityResult. */
     public static final boolean ON_ACTIVITY_RESULT = false;
-    /** reading/writing a backup file. */
-    public static final boolean BACKUP = false;
+
     /** {@link com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel}. */
     public static final boolean STARTUP_TASKS = false;
     /** Where listeners are held in a WeakReference, log dead references. */
     public static final boolean TRACE_WEAK_REFERENCES = false;
+
+    /** dump the style each time it is accessed. Medium length in the log. */
+    public static final boolean DUMP_STYLE = false;
+    public static final boolean LOCALE = false;
+    public static final boolean ISBN = false;
 
     /** {@link CoverBrowserDialogFragment}. */
     public static final boolean COVER_BROWSER = false;
@@ -101,14 +109,9 @@ public final class DEBUG_SWITCHES {
     /** {@link com.hardbacknutter.nevertoomanybooks.searches.isfdb}. */
     public static final boolean ISFDB = false;
 
-    /** {@link com.hardbacknutter.nevertoomanybooks.database.dbsync}. */
-    public static final boolean DB_SYNC = false;
-    public static final boolean DB_SYNC_LOCKING = false;
-    /** Dump SQL for {@link SynchronizedDb#execSQL(String)}. */
-    public static final boolean DB_SYNC_EXEC_SQL = false;
-    /** {@link BooksOnBookshelfModel#buildBookList}. */
-    public static final boolean BOB_INIT_BOOK_LIST = false;
 
+    /** reading/writing a backup file. */
+    public static final boolean BACKUP = false;
     /**
      * {@link com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter}.
      * Normal logging.
@@ -120,12 +123,13 @@ public final class DEBUG_SWITCHES {
      */
     public static final boolean IMPORT_CSV_BOOKS_EXT = false;
 
-    /** dump the style each time it is accessed. Medium length in the log. */
-    public static final boolean DUMP_STYLE = false;
-    public static final boolean LOCALE = false;
-
-    /** Log the full flow of {@link Activity#recreate()}. */
-    public static final boolean RECREATE_ACTIVITY = false;
+    /** {@link com.hardbacknutter.nevertoomanybooks.database.dbsync}. */
+    public static final boolean DB_SYNC = false;
+    public static final boolean DB_SYNC_LOCKING = false;
+    /** Dump SQL for {@link SynchronizedDb#execSQL(String)}. */
+    public static final boolean DB_SYNC_EXEC_SQL = false;
+    /** Dump SQL when executing  {@link SynchronizedStatement}. */
+    public static final boolean DB_STMT_EXECUTE = false;
 
     /** Enable strict mode reporting on network,disc,... usage. */
     public static final boolean STRICT_MODE = false;

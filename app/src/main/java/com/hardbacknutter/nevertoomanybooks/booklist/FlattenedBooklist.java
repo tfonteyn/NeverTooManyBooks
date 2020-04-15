@@ -110,13 +110,13 @@ public class FlattenedBooklist
      * Create a flattened table of ordered book ID's based on the underlying list.
      * Any old data is removed before the new table is created.
      *
-     * @param syncedDb   the database
+     * @param db         the database
      * @param instanceId counter which will be used to create the table name
      *
      * @return the created table name.
      */
     @NonNull
-    static String createTable(@NonNull final SynchronizedDb syncedDb,
+    static String createTable(@NonNull final SynchronizedDb db,
                               final int instanceId,
                               @NonNull final RowStateDAO rowStateDAO,
                               @NonNull final TableDefinition listTable) {
@@ -125,7 +125,7 @@ public class FlattenedBooklist
         navTable.setName(navTable.getName() + instanceId);
 
         //IMPORTANT: withConstraints MUST BE false
-        navTable.recreate(syncedDb, false);
+        navTable.recreate(db, false);
 
         final long t0 = System.nanoTime();
 
@@ -140,11 +140,15 @@ public class FlattenedBooklist
                      + " WHERE " + listTable.dot(DBDefinitions.KEY_FK_BOOK) + " NOT NULL"
                      + " ORDER BY " + rowStateTable.dot(DBDefinitions.KEY_PK_ID);
 
-        syncedDb.execSQL(sql);
+        int rowsUpdated;
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+            rowsUpdated = stmt.executeUpdateDelete();
+        }
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
             Log.d(TAG, "createTable"
                        + "|" + navTable.getName()
+                       + "|inserted: " + rowsUpdated
                        + "|completed in "
                        + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
         }

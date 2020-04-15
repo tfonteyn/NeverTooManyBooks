@@ -45,6 +45,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -203,8 +204,8 @@ public class ISBN {
                         }
                     }
                 } catch (@NonNull final NumberFormatException e) {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Logger.d(TAG, "str=" + str, e);
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISBN) {
+                        Logger.d(TAG, "str=`" + str + '`', e);
                     }
                 }
 

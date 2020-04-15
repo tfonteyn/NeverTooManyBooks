@@ -286,6 +286,8 @@ public class DAO
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
     private static final String _DELETE_FROM_ = "DELETE FROM ";
+    public static final String _FROM_ = " FROM ";
+    private static final String _WHERE_ = " WHERE ";
     /** Actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
     /** Synchronization wrapper around the real database. */
@@ -425,7 +427,7 @@ public class DAO
     public void purgeNodeStatesByBookshelf(final long bookshelfId) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 _DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
-                + " WHERE " + KEY_FK_BOOKSHELF + "=?")) {
+                + _WHERE_ + KEY_FK_BOOKSHELF + "=?")) {
             stmt.bindLong(1, bookshelfId);
             stmt.executeUpdateDelete();
         }
@@ -440,7 +442,7 @@ public class DAO
     public void purgeNodeStatesByStyle(final long styleId) {
         try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
                 _DELETE_FROM_ + DBDefinitions.TBL_BOOK_LIST_NODE_STATE
-                + " WHERE " + KEY_FK_STYLE + "=?")) {
+                + _WHERE_ + KEY_FK_STYLE + "=?")) {
             stmt.bindLong(1, styleId);
             stmt.executeUpdateDelete();
         }
@@ -662,12 +664,12 @@ public class DAO
         if (withTocEntries) {
             sql += SqlSelectList.TOC_ENTRIES_BY_AUTHOR_ID
                    // join with the books, so we can group by toc id, and get the number of books.
-                   + " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
+                   + _FROM_ + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
                    + (byShelf ? " JOIN " + TBL_BOOK_BOOKSHELF.ref()
                                 + " ON (" + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_BOOK)
                                 + '=' + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK) + ")"
                               : "")
-                   + " WHERE " + TBL_TOC_ENTRIES.dot(KEY_FK_AUTHOR) + "=?"
+                   + _WHERE_ + TBL_TOC_ENTRIES.dot(KEY_FK_AUTHOR) + "=?"
                    + (byShelf ? " AND " + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF) + "=?"
                               : "")
                    + " GROUP BY " + TBL_TOC_ENTRIES.dot(KEY_PK_ID);
@@ -683,10 +685,10 @@ public class DAO
 
         if (withBooks) {
             sql += SqlSelectList.BOOK_TITLES_BY_AUTHOR_ID
-                   + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
+                   + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
                    + (byShelf ? TBL_BOOKS.join(TBL_BOOK_BOOKSHELF)
                               : "")
-                   + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?"
+                   + _WHERE_ + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?"
                    + (byShelf ? " AND " + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF) + "=?"
                               : "");
             paramList.add(authorIdStr);
@@ -2382,7 +2384,7 @@ public class DAO
     @NonNull
     public Cursor fetchBookshelves() {
         String sql = SqlSelectFullTable.BOOKSHELVES
-                     + " WHERE " + TBL_BOOKSHELF.dot(KEY_PK_ID) + ">0"
+                     + _WHERE_ + TBL_BOOKSHELF.dot(KEY_PK_ID) + ">0"
                      + " ORDER BY " + KEY_BOOKSHELF_NAME + COLLATION;
         return sSyncedDb.rawQuery(sql, null);
     }
@@ -2420,7 +2422,7 @@ public class DAO
         Map<String, BooklistStyle> list = new LinkedHashMap<>();
 
         String sql = SqlSelectFullTable.BOOKLIST_STYLES
-                     + " WHERE " + KEY_STYLE_IS_BUILTIN + "=0"
+                     + _WHERE_ + KEY_STYLE_IS_BUILTIN + "=0"
                      // We order by the id, i.e. in the order the styles were created.
                      // This is only done to get a reproducible and consistent order.
                      + " ORDER BY " + KEY_PK_ID;
@@ -3117,7 +3119,7 @@ public class DAO
     public Cursor fetchBooksForExportToGoodreads(final long startId,
                                                  final boolean updatesOnly) {
         String sql = SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND
-                     + " WHERE " + KEY_PK_ID + ">?";
+                     + _WHERE_ + KEY_PK_ID + ">?";
 
         if (updatesOnly) {
             sql += " AND " + KEY_DATE_LAST_UPDATED + '>' + KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
@@ -3740,6 +3742,10 @@ public class DAO
         sSyncedDb.analyze();
     }
 
+    public void optimize() {
+        sSyncedDb.optimize();
+    }
+
     public static class DaoWriteException
             extends Exception {
 
@@ -3770,8 +3776,8 @@ public class DAO
 
         /** Virtual columns: "primary Author id" (, "total authors count" is disabled). */
         private static final String PRIM_AUTHOR =
-                "(SELECT " + KEY_FK_AUTHOR + " FROM " + TBL_BOOK_AUTHOR.ref()
-                + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
+                "(SELECT " + KEY_FK_AUTHOR + _FROM_ + TBL_BOOK_AUTHOR.ref()
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
                 + " ORDER BY " + KEY_BOOK_AUTHOR_POSITION + ',' + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR)
                 + " LIMIT 1"
                 + ") AS " + KEY_FK_AUTHOR;
@@ -3790,22 +3796,22 @@ public class DAO
          */
         private static final String PRIM_SERIES =
                 // Find the first (i.e. primary) Series id.
-                "(SELECT " + KEY_FK_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
+                "(SELECT " + KEY_FK_SERIES + _FROM_ + TBL_BOOK_SERIES.ref()
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
                 + " ORDER BY " + KEY_BOOK_SERIES_POSITION + " LIMIT 1)"
                 + " AS " + KEY_FK_SERIES
 
                 // Find the Series number for the first (i.e. primary) Series
                 + ','
-                + "(SELECT " + KEY_BOOK_NUM_IN_SERIES + " FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
+                + "(SELECT " + KEY_BOOK_NUM_IN_SERIES + _FROM_ + TBL_BOOK_SERIES.ref()
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
                 + " ORDER BY " + KEY_BOOK_SERIES_POSITION + " LIMIT 1"
                 + ") AS " + KEY_BOOK_NUM_IN_SERIES
 
                 // Get the total series count.
                 + ','
                 + "(SELECT COUNT(*) FROM " + TBL_BOOK_SERIES.ref()
-                + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID)
                 + ')' + " AS " + COLUMN_ALIAS_NR_OF_SERIES;
 
         /**
@@ -3875,7 +3881,7 @@ public class DAO
                 // use an empty loanee (i.e. don't use null's) if there is no loanee
                 + ',' + "COALESCE(" + KEY_LOANEE + ", '') AS " + KEY_LOANEE
 
-                + " FROM " + TBL_BOOKS.ref()
+                + _FROM_ + TBL_BOOKS.ref()
                 + " LEFT OUTER JOIN " + TBL_BOOK_LOANEE.ref()
                 + " ON (" + TBL_BOOK_LOANEE.dot(KEY_FK_BOOK) + '=' + TBL_BOOKS.dot(KEY_PK_ID) + ')';
 
@@ -3913,7 +3919,7 @@ public class DAO
                 + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + KEY_AUTHOR_FORMATTED
                 + ',' + TBL_BOOK_AUTHOR.dotAs(KEY_FK_BOOK)
 
-                + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                + _FROM_ + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
                 + ") a ON a." + KEY_FK_BOOK + "=b." + KEY_PK_ID
                 + " AND a." + KEY_FK_AUTHOR + "=b." + KEY_FK_AUTHOR
 
@@ -3925,7 +3931,7 @@ public class DAO
                 + ',' + TBL_BOOK_SERIES.dotAs(KEY_FK_BOOK)
                 + ',' + SqlColumns.EXP_SERIES_WITH_NUMBER + " AS " + KEY_SERIES_FORMATTED
 
-                + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
+                + _FROM_ + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
                 + ") s ON s." + KEY_FK_BOOK + "=b." + KEY_PK_ID
                 + " AND s." + KEY_FK_SERIES + "=b." + KEY_FK_SERIES
                 + " AND s." + KEY_BOOK_NUM_IN_SERIES + "=b." + KEY_BOOK_NUM_IN_SERIES + COLLATION;
@@ -3958,7 +3964,7 @@ public class DAO
                    + " END AS " + KEY_SERIES_FORMATTED
 
                    + " FROM (" + ALL_BOOKS
-                   + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
+                   + (!whereClause.isEmpty() ? _WHERE_ + " (" + whereClause + ')' : "")
                    + " ORDER BY " + TBL_BOOKS.dot(KEY_TITLE_OB) + ' ' + COLLATION
                    + ") b" + SUFFIX;
         }
@@ -3976,7 +3982,7 @@ public class DAO
         @NonNull
         private static String withPrimaryAuthorAndSeries(@NonNull final String whereClause) {
             return ALL_BOOKS
-                   + (!whereClause.isEmpty() ? " WHERE " + " (" + whereClause + ')' : "")
+                   + (!whereClause.isEmpty() ? _WHERE_ + " (" + whereClause + ')' : "")
                    + " ORDER BY " + TBL_BOOKS.dot(KEY_PK_ID);
         }
     }
@@ -4067,8 +4073,8 @@ public class DAO
         public static final String EXP_BOOKSHELF_ID_CSV =
                 "("
                 + "SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_PK_ID) + ",', ')"
-                + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
-                + " WHERE " + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
+                + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
+                + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
                 + ")";
 
         /**
@@ -4080,8 +4086,8 @@ public class DAO
         public static final String EXP_BOOKSHELF_NAME_CSV =
                 "("
                 + "SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + ",', ')"
-                + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
-                + " WHERE " + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
+                + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
+                + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
                 + ")";
 
         /**
@@ -4230,7 +4236,7 @@ public class DAO
                 + ',' + KEY_READ_END
                 + ',' + KEY_RATING
                 + ',' + KEY_PRIVATE_NOTES
-                + " FROM " + TBL_BOOKS.getName();
+                + _FROM_ + TBL_BOOKS.getName();
 
         /** {@link Book}, all columns. */
         private static final String BOOKS = "SELECT * FROM " + TBL_BOOKS.getName();
@@ -4247,7 +4253,7 @@ public class DAO
                 + ',' + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME)
                 + ',' + TBL_BOOKSHELF.dot(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(KEY_UUID)
-                + " FROM " + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
+                + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
 
         /** {@link BooklistStyle} all columns. */
         private static final String BOOKLIST_STYLES =
@@ -4255,18 +4261,18 @@ public class DAO
 
         /** Book UUID only, for accessing all cover image files. */
         private static final String BOOK_ALL_UUID =
-                "SELECT " + KEY_BOOK_UUID + " FROM " + TBL_BOOKS.getName();
+                "SELECT " + KEY_BOOK_UUID + _FROM_ + TBL_BOOKS.getName();
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_FAMILY_NAMES =
                 "SELECT DISTINCT " + KEY_AUTHOR_FAMILY_NAME + ',' + KEY_AUTHOR_FAMILY_NAME_OB
-                + " FROM " + TBL_AUTHORS.getName()
+                + _FROM_ + TBL_AUTHORS.getName()
                 + " ORDER BY " + KEY_AUTHOR_FAMILY_NAME_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String AUTHORS_GIVEN_NAMES =
                 "SELECT DISTINCT " + KEY_AUTHOR_GIVEN_NAMES + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
-                + " FROM " + TBL_AUTHORS.getName()
+                + _FROM_ + TBL_AUTHORS.getName()
                 + " ORDER BY " + KEY_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
@@ -4275,7 +4281,7 @@ public class DAO
                 + SqlColumns.EXP_AUTHOR_FORMATTED_FAMILY_COMMA_GIVEN + " AS " + KEY_AUTHOR_FORMATTED
                 + ',' + KEY_AUTHOR_FAMILY_NAME_OB
                 + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
-                + " FROM " + TBL_AUTHORS.ref()
+                + _FROM_ + TBL_AUTHORS.ref()
                 + " ORDER BY " + KEY_AUTHOR_FAMILY_NAME_OB + COLLATION
                 + ',' + KEY_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
@@ -4285,7 +4291,7 @@ public class DAO
                 + " AS " + KEY_AUTHOR_FORMATTED_GIVEN_FIRST
                 + ',' + KEY_AUTHOR_FAMILY_NAME_OB
                 + ',' + KEY_AUTHOR_GIVEN_NAMES_OB
-                + " FROM " + TBL_AUTHORS.ref()
+                + _FROM_ + TBL_AUTHORS.ref()
                 + " ORDER BY " + KEY_AUTHOR_FAMILY_NAME_OB + COLLATION
                 + ',' + KEY_AUTHOR_GIVEN_NAMES_OB + COLLATION;
 
@@ -4293,43 +4299,43 @@ public class DAO
         private static final String SERIES_NAME =
                 "SELECT " + KEY_SERIES_TITLE
                 + ',' + KEY_SERIES_TITLE_OB
-                + " FROM " + TBL_SERIES.getName()
+                + _FROM_ + TBL_SERIES.getName()
                 + " ORDER BY " + KEY_SERIES_TITLE_OB + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String FORMATS =
                 "SELECT DISTINCT " + KEY_FORMAT
-                + " FROM " + TBL_BOOKS.getName()
+                + _FROM_ + TBL_BOOKS.getName()
                 + " ORDER BY " + KEY_FORMAT + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String COLORS =
                 "SELECT DISTINCT " + KEY_COLOR
-                + " FROM " + TBL_BOOKS.getName()
+                + _FROM_ + TBL_BOOKS.getName()
                 + " ORDER BY " + KEY_COLOR + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String GENRES =
                 "SELECT DISTINCT " + KEY_GENRE
-                + " FROM " + TBL_BOOKS.getName()
+                + _FROM_ + TBL_BOOKS.getName()
                 + " ORDER BY " + KEY_GENRE + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LANGUAGES =
                 "SELECT DISTINCT " + KEY_LANGUAGE
-                + " FROM " + TBL_BOOKS.getName()
+                + _FROM_ + TBL_BOOKS.getName()
                 + " ORDER BY " + KEY_DATE_LAST_UPDATED + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LOCATIONS =
                 "SELECT DISTINCT " + KEY_LOCATION
-                + " FROM " + TBL_BOOKS.getName()
+                + _FROM_ + TBL_BOOKS.getName()
                 + " ORDER BY " + KEY_LOCATION + COLLATION;
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String PUBLISHERS =
                 "SELECT DISTINCT " + KEY_PUBLISHER
-                + " FROM " + TBL_BOOKS.getName()
+                + _FROM_ + TBL_BOOKS.getName()
                 + " ORDER BY " + KEY_PUBLISHER + COLLATION;
 
         /**
@@ -4339,7 +4345,7 @@ public class DAO
                 // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
                 "SELECT " + KEY_PK_ID + ',' + KEY_TITLE + ',' + KEY_TITLE_OB
                 + ',' + KEY_LANGUAGE
-                + " FROM " + TBL_BOOKS.getName();
+                + _FROM_ + TBL_BOOKS.getName();
 
         /**
          * All Series for a rebuild of the {@link DBDefinitions#KEY_SERIES_TITLE_OB} column.
@@ -4348,7 +4354,7 @@ public class DAO
                 // The index of KEY_PK_ID, KEY_SERIES_TITLE, KEY_SERIES_TITLE_OB is hardcoded
                 // Don't change!
                 "SELECT " + KEY_PK_ID + ',' + KEY_SERIES_TITLE + ',' + KEY_SERIES_TITLE_OB
-                + " FROM " + TBL_SERIES.getName();
+                + _FROM_ + TBL_SERIES.getName();
 
         /**
          * All Series for a rebuild of the {@link DBDefinitions#KEY_TITLE_OB} column.
@@ -4356,12 +4362,12 @@ public class DAO
         private static final String TOC_ENTRY_TITLES =
                 // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
                 "SELECT " + KEY_PK_ID + ',' + KEY_TITLE + ',' + KEY_TITLE_OB
-                + " FROM " + TBL_TOC_ENTRIES.getName();
+                + _FROM_ + TBL_TOC_ENTRIES.getName();
 
         /** name only, for {@link AutoCompleteTextView}. */
         private static final String LOANEE =
                 "SELECT DISTINCT " + KEY_LOANEE
-                + " FROM " + TBL_BOOK_LOANEE.getName()
+                + _FROM_ + TBL_BOOK_LOANEE.getName()
                 + " ORDER BY " + KEY_LOANEE + COLLATION;
     }
 
@@ -4380,10 +4386,10 @@ public class DAO
                 + ',' + TBL_BOOKSHELF.dot(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dot(KEY_UUID)
 
-                + " FROM " + TBL_BOOK_BOOKSHELF.ref()
+                + _FROM_ + TBL_BOOK_BOOKSHELF.ref()
                 + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
                 + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES)
-                + " WHERE " + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK) + "=?"
+                + _WHERE_ + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK) + "=?"
                 + " ORDER BY " + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + COLLATION;
 
         /**
@@ -4401,8 +4407,8 @@ public class DAO
                 + ',' + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)
                 + ',' + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK)
 
-                + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + "=?"
+                + _FROM_ + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + "=?"
                 + " ORDER BY "
                 + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)
                 + ',' + KEY_AUTHOR_FAMILY_NAME_OB + COLLATION
@@ -4421,8 +4427,8 @@ public class DAO
                 + ',' + SqlColumns.EXP_SERIES_WITH_NUMBER_IN_BRACKETS
                 + " AS " + KEY_SERIES_FORMATTED
 
-                + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
-                + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + "=?"
+                + _FROM_ + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + "=?"
                 + " ORDER BY " + TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION)
                 + ',' + TBL_SERIES.dot(KEY_SERIES_TITLE_OB) + COLLATION;
 
@@ -4442,14 +4448,14 @@ public class DAO
                 // count the number of books this TOC entry is present in.
                 + ',' + "(SELECT COUNT(*) FROM " + TBL_BOOK_TOC_ENTRIES.getName()
                 // use the full table name on the left as we need a full table scan
-                + " WHERE " + TBL_BOOK_TOC_ENTRIES.getName() + '.' + KEY_FK_TOC_ENTRY
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.getName() + '.' + KEY_FK_TOC_ENTRY
                 // but filtered on the results from the main query (i.e. alias on the right).
                 + "=" + TBL_TOC_ENTRIES.dot(KEY_PK_ID) + ") AS " + KEY_BOOK_COUNT
 
-                + " FROM " + TBL_TOC_ENTRIES.ref()
+                + _FROM_ + TBL_TOC_ENTRIES.ref()
                 + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
                 + TBL_TOC_ENTRIES.join(TBL_AUTHORS)
-                + " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_BOOK) + "=?"
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_BOOK) + "=?"
                 + " ORDER BY " + TBL_BOOK_TOC_ENTRIES.dot(KEY_BOOK_TOC_ENTRY_POSITION);
 
         /**
@@ -4457,23 +4463,23 @@ public class DAO
          */
         private static final String BOOK_IDS_BY_AUTHOR_ID =
                 "SELECT " + TBL_BOOKS.dot(KEY_PK_ID)
-                + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
-                + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?";
+                + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?";
 
         /**
          * All Books (id only!) for a given Series.
          */
         private static final String BOOK_IDS_BY_SERIES_ID =
                 "SELECT " + TBL_BOOKS.dot(KEY_PK_ID)
-                + " FROM " + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_SERIES)
-                + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_SERIES) + "=?";
+                + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_SERIES)
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_SERIES) + "=?";
 
         /**
          * All Books (id only!) for a given Publisher.
          */
         private static final String BOOK_IDS_BY_PUBLISHER =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_PUBLISHER + "=?";
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_PUBLISHER + "=?";
 
         /**
          * All TocEntry's for an Author.
@@ -4518,8 +4524,8 @@ public class DAO
          * as valid ISBN numbers are always stored in uppercase (the 'X').
          */
         static final String BOOK_ID_BY_VALID_ISBN =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_ISBN + " IN (?,?)";
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_ISBN + " IN (?,?)";
 
         /**
          * Find the Book id based on a search for the ISBN; the isbn need not be valid
@@ -4527,33 +4533,33 @@ public class DAO
          * Hence, we use 'upper()' on BOTH sides.
          */
         static final String BOOK_ID_BY_ISBN =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
                 + " WHERE upper(" + KEY_ISBN + ")=upper(?)";
 
 
         static final String BOOKLIST_STYLE_ID_BY_UUID =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKLIST_STYLES.getName()
-                + " WHERE " + KEY_UUID + "=?";
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_BOOKLIST_STYLES.getName()
+                + _WHERE_ + KEY_UUID + "=?";
 
         /**
          * Can return more then one row if the KEY_AUTHOR_GIVEN_NAMES_OB is empty.
          */
         static final String AUTHOR_ID_BY_NAME =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_AUTHORS.getName()
-                + " WHERE " + KEY_AUTHOR_FAMILY_NAME_OB + "=?" + COLLATION
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_AUTHORS.getName()
+                + _WHERE_ + KEY_AUTHOR_FAMILY_NAME_OB + "=?" + COLLATION
                 + " AND " + KEY_AUTHOR_GIVEN_NAMES_OB + "=?" + COLLATION;
 
         static final String BOOKSHELF_ID_BY_NAME =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKSHELF.getName()
-                + " WHERE " + KEY_BOOKSHELF_NAME + "=?" + COLLATION;
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_BOOKSHELF.getName()
+                + _WHERE_ + KEY_BOOKSHELF_NAME + "=?" + COLLATION;
 
         /**
          * Get the id of a {@link Series} by its Title.
          * Search KEY_SERIES_TITLE_OB on both "The Title" and "Title, The"
          */
         static final String SERIES_ID_BY_NAME =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_SERIES.getName()
-                + " WHERE " + KEY_SERIES_TITLE_OB + "=?" + COLLATION
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_SERIES.getName()
+                + _WHERE_ + KEY_SERIES_TITLE_OB + "=?" + COLLATION
                 + " OR " + KEY_SERIES_TITLE_OB + "=?" + COLLATION;
 
         /**
@@ -4561,45 +4567,45 @@ public class DAO
          * Search KEY_TITLE_OB on both "The Title" and "Title, The"
          */
         static final String TOC_ENTRY_ID =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_TOC_ENTRIES.getName()
-                + " WHERE " + KEY_FK_AUTHOR + "=?"
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
+                + _WHERE_ + KEY_FK_AUTHOR + "=?"
                 + " AND (" + KEY_TITLE_OB + "=? " + COLLATION
                 + " OR " + KEY_TITLE_OB + "=?" + COLLATION + ')';
 
         static final String BOOK_ID_BY_TOC_ENTRY_ID =
-                "SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOK_TOC_ENTRIES.getName()
-                + " WHERE " + KEY_FK_TOC_ENTRY + "=?";
+                "SELECT " + KEY_FK_BOOK + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
+                + _WHERE_ + KEY_FK_TOC_ENTRY + "=?";
 
         /**
          * Get the UUID of a {@link Book} by its id.
          */
         static final String BOOK_UUID_BY_ID =
-                "SELECT " + KEY_BOOK_UUID + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_PK_ID + "=?";
+                "SELECT " + KEY_BOOK_UUID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_PK_ID + "=?";
         /**
          * Get the id of a {@link Book} by its UUID.
          */
         static final String BOOK_ID_BY_UUID =
-                "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_BOOK_UUID + "=?";
+                "SELECT " + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_BOOK_UUID + "=?";
         /**
          * Get the ISBN of a {@link Book} by its id.
          */
         static final String BOOK_ISBN_BY_BOOK_ID =
-                "SELECT " + KEY_ISBN + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_PK_ID + "=?";
+                "SELECT " + KEY_ISBN + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_PK_ID + "=?";
         /**
          * Get the title of a {@link Book} by its id.
          */
         static final String BOOK_TITLE_BY_BOOK_ID =
-                "SELECT " + KEY_TITLE + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_PK_ID + "=?";
+                "SELECT " + KEY_TITLE + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_PK_ID + "=?";
         /**
          * Get the name of the loanee of a {@link Book}.
          */
         static final String LOANEE_BY_BOOK_ID =
-                "SELECT " + KEY_LOANEE + " FROM " + TBL_BOOK_LOANEE.getName()
-                + " WHERE " + KEY_FK_BOOK + "=?";
+                "SELECT " + KEY_LOANEE + _FROM_ + TBL_BOOK_LOANEE.getName()
+                + _WHERE_ + KEY_FK_BOOK + "=?";
     }
 
     /**
@@ -4611,32 +4617,32 @@ public class DAO
          * Get a {@link Book} by its id.
          */
         static final String BOOK_BY_ID =
-                SqlSelectFullTable.BOOKS + " WHERE " + KEY_PK_ID + "=?";
+                SqlSelectFullTable.BOOKS + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Get a {@link Bookshelf} by its id.
          */
         static final String BOOKSHELF_BY_ID =
-                SqlSelectFullTable.BOOKSHELVES + " WHERE " + TBL_BOOKSHELF.dot(KEY_PK_ID) + "=?";
+                SqlSelectFullTable.BOOKSHELVES + _WHERE_ + TBL_BOOKSHELF.dot(KEY_PK_ID) + "=?";
 
         /**
          * Get a {@link Bookshelf} by its name.
          */
         static final String BOOKSHELF_BY_NAME =
                 SqlSelectFullTable.BOOKSHELVES
-                + " WHERE " + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + "=?" + COLLATION;
+                + _WHERE_ + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + "=?" + COLLATION;
 
         /**
          * Get an {@link Author} by its id.
          */
         static final String AUTHOR_BY_ID =
-                SqlSelectFullTable.AUTHORS + " WHERE " + KEY_PK_ID + "=?";
+                SqlSelectFullTable.AUTHORS + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Get a {@link Series} by its id.
          */
         static final String SERIES_BY_ID =
-                SqlSelectFullTable.SERIES + " WHERE " + KEY_PK_ID + "=?";
+                SqlSelectFullTable.SERIES + _WHERE_ + KEY_PK_ID + "=?";
 
 
         /**
@@ -4645,8 +4651,8 @@ public class DAO
          */
         static final String SERIES_LANGUAGE =
                 "SELECT " + TBL_BOOKS.dot(KEY_LANGUAGE)
-                + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_BOOKS)
-                + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_SERIES) + "=?"
+                + _FROM_ + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_BOOKS)
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_SERIES) + "=?"
                 + " ORDER BY " + TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES)
                 + " LIMIT 1";
 
@@ -4654,15 +4660,15 @@ public class DAO
          * Get the last-update-date for a {@link Book} by its id.
          */
         static final String LAST_UPDATE_DATE_BY_BOOK_ID =
-                "SELECT " + KEY_DATE_LAST_UPDATED + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_PK_ID + "=?";
+                "SELECT " + KEY_DATE_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Check if a {@link Book} exists.
          */
         static final String BOOK_EXISTS =
-                "SELECT COUNT(*) " + " FROM " + TBL_BOOKS.getName()
-                + " WHERE " + KEY_PK_ID + "=?";
+                "SELECT COUNT(*) " + _FROM_ + TBL_BOOKS.getName()
+                + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Count all {@link Book}'s.
@@ -4674,21 +4680,21 @@ public class DAO
          */
         static final String COUNT_BOOKS_IN_SERIES =
                 "SELECT COUNT(" + KEY_FK_BOOK + ") FROM " + TBL_BOOK_SERIES.getName()
-                + " WHERE " + KEY_FK_SERIES + "=?";
+                + _WHERE_ + KEY_FK_SERIES + "=?";
 
         /**
          * Count the number of {@link Book}'s by an {@link Author}.
          */
         static final String COUNT_BOOKS_BY_AUTHOR =
                 "SELECT COUNT(" + KEY_FK_BOOK + ") FROM " + TBL_BOOK_AUTHOR.getName()
-                + " WHERE " + KEY_FK_AUTHOR + "=?";
+                + _WHERE_ + KEY_FK_AUTHOR + "=?";
 
         /**
          * Count the number of {@link TocEntry}'s by an {@link Author}.
          */
         static final String COUNT_TOC_ENTRIES_BY_AUTHOR =
                 "SELECT COUNT(" + KEY_PK_ID + ") FROM " + TBL_TOC_ENTRIES.getName()
-                + " WHERE " + KEY_FK_AUTHOR + "=?";
+                + _WHERE_ + KEY_FK_AUTHOR + "=?";
 
         /**
          * Get the needed fields of a {@link Book} to send to Goodreads.
@@ -4696,7 +4702,7 @@ public class DAO
          * param KEY_PK_ID of the Book
          */
         static final String GOODREADS_GET_BOOK_TO_SEND_BY_BOOK_ID =
-                SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND + " WHERE " + KEY_PK_ID + "=?";
+                SqlSelectFullTable.GOODREADS_BOOK_DATA_TO_SEND + _WHERE_ + KEY_PK_ID + "=?";
     }
 
     /**
@@ -4790,7 +4796,7 @@ public class DAO
         static final String GOODREADS_LAST_SYNC_DATE =
                 "UPDATE " + TBL_BOOKS.getName()
                 + " SET " + KEY_BOOK_GOODREADS_LAST_SYNC_DATE + "=current_timestamp"
-                + " WHERE " + KEY_PK_ID + "=?";
+                + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Update a single Book's Goodreads id. Do not update the last-update-date!
@@ -4798,48 +4804,48 @@ public class DAO
         static final String GOODREADS_BOOK_ID =
                 "UPDATE " + TBL_BOOKS.getName()
                 + " SET " + KEY_EID_GOODREADS_BOOK + "=?"
-                + " WHERE " + KEY_PK_ID + "=?";
+                + _WHERE_ + KEY_PK_ID + "=?";
 
         static final String AUTHOR_ON_TOC_ENTRIES =
                 "UPDATE " + TBL_TOC_ENTRIES.getName()
                 + " SET " + KEY_FK_AUTHOR + "=?"
-                + " WHERE " + KEY_FK_AUTHOR + "=?";
+                + _WHERE_ + KEY_FK_AUTHOR + "=?";
 
         static final String FORMAT =
                 "UPDATE " + TBL_BOOKS.getName()
                 + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_FORMAT + "=?"
-                + " WHERE " + KEY_FORMAT + "=?";
+                + _WHERE_ + KEY_FORMAT + "=?";
 
         static final String COLOR =
                 "UPDATE " + TBL_BOOKS.getName()
                 + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_COLOR + "=?"
-                + " WHERE " + KEY_COLOR + "=?";
+                + _WHERE_ + KEY_COLOR + "=?";
 
         static final String GENRE =
                 "UPDATE " + TBL_BOOKS.getName()
                 + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_GENRE + "=?"
-                + " WHERE " + KEY_GENRE + "=?";
+                + _WHERE_ + KEY_GENRE + "=?";
 
         static final String LANGUAGE =
                 "UPDATE " + TBL_BOOKS.getName()
                 + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_LANGUAGE + "=?"
-                + " WHERE " + KEY_LANGUAGE + "=?";
+                + _WHERE_ + KEY_LANGUAGE + "=?";
 
         static final String LOCATION =
                 "UPDATE " + TBL_BOOKS.getName()
                 + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_LOCATION + "=?"
-                + " WHERE " + KEY_LOCATION + "=?";
+                + _WHERE_ + KEY_LOCATION + "=?";
 
         static final String PUBLISHER =
                 "UPDATE " + TBL_BOOKS.getName()
                 + " SET " + KEY_DATE_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_PUBLISHER + "=?"
-                + " WHERE " + KEY_PUBLISHER + "=?";
+                + _WHERE_ + KEY_PUBLISHER + "=?";
     }
 
     /**
@@ -4854,31 +4860,31 @@ public class DAO
          * Delete a {@link Book}.
          */
         static final String BOOK_BY_ID =
-                _DELETE_FROM_ + TBL_BOOKS.getName() + " WHERE " + KEY_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_BOOKS.getName() + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Delete a {@link Bookshelf}.
          */
         static final String BOOKSHELF_BY_ID =
-                _DELETE_FROM_ + TBL_BOOKSHELF.getName() + " WHERE " + KEY_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_BOOKSHELF.getName() + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Delete a {@link Series}.
          */
         static final String SERIES_BY_ID =
-                _DELETE_FROM_ + TBL_SERIES.getName() + " WHERE " + KEY_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_SERIES.getName() + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Delete a {@link TocEntry}.
          */
         static final String TOC_ENTRY =
-                _DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + " WHERE " + KEY_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Delete a {@link BooklistStyle}.
          */
         static final String STYLE_BY_ID =
-                _DELETE_FROM_ + TBL_BOOKLIST_STYLES.getName() + " WHERE " + KEY_PK_ID + "=?";
+                _DELETE_FROM_ + TBL_BOOKLIST_STYLES.getName() + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Delete the link between a {@link Book} and an {@link Author}.
@@ -4886,7 +4892,7 @@ public class DAO
          * This is done when a book is updated; first delete all links, then re-create them.
          */
         static final String BOOK_AUTHOR_BY_BOOK_ID =
-                _DELETE_FROM_ + TBL_BOOK_AUTHOR.getName() + " WHERE " + KEY_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_AUTHOR.getName() + _WHERE_ + KEY_FK_BOOK + "=?";
 
         /**
          * Delete the link between a {@link Book} and a {@link Bookshelf}.
@@ -4894,7 +4900,7 @@ public class DAO
          * This is done when a book is updated; first delete all links, then re-create them.
          */
         static final String BOOK_BOOKSHELF_BY_BOOK_ID =
-                _DELETE_FROM_ + TBL_BOOK_BOOKSHELF.getName() + " WHERE " + KEY_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_BOOKSHELF.getName() + _WHERE_ + KEY_FK_BOOK + "=?";
 
         /**
          * Delete the link between a {@link Book} and a {@link Series}.
@@ -4902,7 +4908,7 @@ public class DAO
          * This is done when a book is updated; first delete all links, then re-create them.
          */
         static final String BOOK_SERIES_BY_BOOK_ID =
-                _DELETE_FROM_ + TBL_BOOK_SERIES.getName() + " WHERE " + KEY_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_SERIES.getName() + _WHERE_ + KEY_FK_BOOK + "=?";
 
         /**
          * Delete the link between a {@link Book} and a {@link TocEntry}.
@@ -4910,32 +4916,32 @@ public class DAO
          * This is done when a TOC is updated; first delete all links, then re-create them.
          */
         static final String BOOK_TOC_ENTRIES_BY_BOOK_ID =
-                _DELETE_FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + " WHERE " + KEY_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_TOC_ENTRIES.getName() + _WHERE_ + KEY_FK_BOOK + "=?";
 
         /**
          * Delete the loan of a {@link Book}; i.e. 'return the book'.
          */
         static final String BOOK_LOANEE_BY_BOOK_ID =
-                _DELETE_FROM_ + TBL_BOOK_LOANEE.getName() + " WHERE " + KEY_FK_BOOK + "=?";
+                _DELETE_FROM_ + TBL_BOOK_LOANEE.getName() + _WHERE_ + KEY_FK_BOOK + "=?";
 
 
         /**
          * Purge an {@link Author} if no longer in use (check both book_author AND toc_entries).
          */
         static final String PURGE_AUTHORS = _DELETE_FROM_ + TBL_AUTHORS.getName()
-                                            + " WHERE " + KEY_PK_ID + " NOT IN"
-                                            + " (SELECT DISTINCT " + KEY_FK_AUTHOR + " FROM "
+                                            + _WHERE_ + KEY_PK_ID + " NOT IN"
+                                            + " (SELECT DISTINCT " + KEY_FK_AUTHOR + _FROM_
                                             + TBL_BOOK_AUTHOR.getName() + ')'
                                             + " AND " + KEY_PK_ID + " NOT IN"
-                                            + " (SELECT DISTINCT " + KEY_FK_AUTHOR + " FROM "
+                                            + " (SELECT DISTINCT " + KEY_FK_AUTHOR + _FROM_
                                             + TBL_TOC_ENTRIES.getName() + ')';
 
         /**
          * Purge a {@link Series} if no longer in use.
          */
         static final String PURGE_SERIES = _DELETE_FROM_ + TBL_SERIES.getName()
-                                           + " WHERE " + KEY_PK_ID + " NOT IN"
-                                           + " (SELECT DISTINCT " + KEY_FK_SERIES + " FROM "
+                                           + _WHERE_ + KEY_PK_ID + " NOT IN"
+                                           + " (SELECT DISTINCT " + KEY_FK_SERIES + _FROM_
                                            + TBL_BOOK_SERIES.getName() + ')';
 
         private SqlDelete() {
@@ -4951,23 +4957,23 @@ public class DAO
         static final String GET_AUTHORS_BY_BOOK_ID =
                 "SELECT " + TBL_AUTHORS.dot(KEY_AUTHOR_FAMILY_NAME)
                 + ',' + TBL_AUTHORS.dot(KEY_AUTHOR_GIVEN_NAMES)
-                + " FROM " + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
-                + " WHERE " + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + "=?"
+                + _FROM_ + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(KEY_FK_BOOK) + "=?"
                 + " ORDER BY " + TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION);
         /** Used during insert of a book. Minimal column list. Ordered by position. */
         static final String GET_SERIES_BY_BOOK_ID =
                 "SELECT " + TBL_SERIES.dot(KEY_SERIES_TITLE) + "||' '||"
                 + " COALESCE(" + TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES) + ",'')"
                 + " AS " + KEY_SERIES_TITLE
-                + " FROM " + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
-                + " WHERE " + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + "=?"
+                + _FROM_ + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_SERIES)
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_BOOK) + "=?"
                 + " ORDER BY " + TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION);
         /** Used during insert of a book. Minimal column list. Not ordered. */
         static final String GET_TOC_TITLES_BY_BOOK_ID =
                 "SELECT " + TBL_TOC_ENTRIES.dot(KEY_TITLE)
-                + " FROM " + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
+                + _FROM_ + TBL_TOC_ENTRIES.ref() + TBL_TOC_ENTRIES.join(TBL_BOOK_TOC_ENTRIES)
 
-                + " WHERE " + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_BOOK) + "=?";
+                + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_BOOK) + "=?";
         /** the body of an INSERT INTO [table]. Used more than once. */
         static final String INSERT_BODY =
                 " (" + KEY_TITLE
@@ -5007,7 +5013,7 @@ public class DAO
                 + ',' + KEY_ISBN + "=?"
                 + ',' + KEY_FTS_TOC_ENTRY_TITLE + "=?"
 
-                + " WHERE " + KEY_FTS_BOOKS_PK + "=?";
+                + _WHERE_ + KEY_FTS_BOOKS_PK + "=?";
 
         /** Standard Local-search. */
         static final String SEARCH_SUGGESTIONS =
@@ -5019,16 +5025,16 @@ public class DAO
                                             SearchManager.SUGGEST_COLUMN_TEXT_2)
                 + ',' + TBL_FTS_BOOKS.dotAs(KEY_TITLE,
                                             SearchManager.SUGGEST_COLUMN_INTENT_DATA)
-                + " FROM " + TBL_FTS_BOOKS.getName()
-                + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH ?";
+                + _FROM_ + TBL_FTS_BOOKS.getName()
+                + _WHERE_ + TBL_FTS_BOOKS.getName() + " MATCH ?";
 
         /** Advanced Local-search. */
         static final String SEARCH
                 = "SELECT "
                   // KEY_FTS_BOOKS_PK is the _id into the books table.
                   + KEY_FTS_BOOKS_PK + " AS " + KEY_PK_ID
-                  + " FROM " + TBL_FTS_BOOKS.getName()
-                  + " WHERE " + TBL_FTS_BOOKS.getName() + " MATCH ?"
+                  + _FROM_ + TBL_FTS_BOOKS.getName()
+                  + _WHERE_ + TBL_FTS_BOOKS.getName() + " MATCH ?"
                   + " LIMIT ?";
 
 

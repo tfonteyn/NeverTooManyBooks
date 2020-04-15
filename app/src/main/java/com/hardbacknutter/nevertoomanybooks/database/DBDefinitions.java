@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.RowStateDAO;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -99,28 +100,36 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOKLIST_STYLES;
     /** Full text search; should NOT be added to {@link #ALL_TABLES}. */
     public static final TableDefinition TBL_FTS_BOOKS;
+
     /** Keeps track of nodes in the list across application restarts. */
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
-    public static final TableDefinition TMP_TBL_BOOK_LIST;
 
-    /* ======================================================================================
-     * Reminder: {@link TableDefinition.TableType#Temporary).
-     * Should NOT be added to {@link #ALL_TABLES}.
-     * ====================================================================================== */
+    /**
+     * The temp booklist table. Constructed by {@link BooklistBuilder}.
+     * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
+     */
+    public static final TableDefinition TMP_TBL_BOOK_LIST;
+    /**
+     * The temp booklist row state table. Constructed by  {@link RowStateDAO}.
+     * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
+     */
     public static final TableDefinition TMP_TBL_BOOK_LIST_ROW_STATE;
     /**
      * This table should always be created without column constraints applied,
      * with the exception of the "_id" primary key autoincrement.
+     * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
      */
     public static final TableDefinition TMP_TBL_BOOK_LIST_NAVIGATOR;
-    /** Primary key. */
-    public static final Domain DOM_PK_ID;
+
 
     /* ======================================================================================
      * Primary and Foreign key domain definitions.
      * ====================================================================================== */
+    /** Primary key. */
+    public static final Domain DOM_PK_ID;
     /** FTS Primary key. */
     public static final Domain DOM_FTS_BOOKS_PK;
+
     /** Foreign key. */
     public static final Domain DOM_FK_AUTHOR;
     /** Foreign key. */
@@ -137,19 +146,21 @@ public final class DBDefinitions {
      * {@link BooklistStyle#DEFAULT_STYLE_ID}
      */
     public static final Domain DOM_FK_STYLE;
+
     /**
      * Foreign key.
      * Links {@link #TMP_TBL_BOOK_LIST_ROW_STATE} and {@link #TMP_TBL_BOOK_LIST}.
      */
     public static final Domain DOM_FK_BL_ROW_ID;
-    /** {@link #TBL_BOOKSHELF}. */
-    public static final Domain DOM_BOOKSHELF_NAME;
 
     /* ======================================================================================
      * Domain definitions.
      * ====================================================================================== */
+    /** {@link #TBL_BOOKSHELF}. */
+    public static final Domain DOM_BOOKSHELF_NAME;
     /** Virtual: build from "GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF) + ",', ')". */
     public static final Domain DOM_BOOKSHELF_NAME_CSV;
+
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
     /** {@link #TBL_AUTHORS}. */
@@ -160,10 +171,12 @@ public final class DBDefinitions {
     public static final Domain DOM_AUTHOR_GIVEN_NAMES_OB;
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_IS_COMPLETE;
+
     /** Virtual: "FamilyName, GivenName". */
     public static final Domain DOM_AUTHOR_FORMATTED;
     /** Virtual: "GivenName FamilyName". */
     public static final Domain DOM_AUTHOR_FORMATTED_GIVEN_FIRST;
+
     /** {@link #TBL_SERIES}. */
     public static final Domain DOM_SERIES_TITLE;
     /** {@link #TBL_SERIES}. */
@@ -172,6 +185,7 @@ public final class DBDefinitions {
     public static final Domain DOM_SERIES_IS_COMPLETE;
     /** Virtual: Series (nr). */
     public static final Domain DOM_SERIES_FORMATTED;
+
     /** {@link #TBL_BOOKS} + {@link #TBL_TOC_ENTRIES}. */
     public static final Domain DOM_TITLE;
     /**
@@ -256,8 +270,10 @@ public final class DBDefinitions {
     public static final Domain DOM_EID_STRIP_INFO_BE;
     /** {@link #TBL_BOOK_SERIES}. */
     public static final Domain DOM_BOOK_NUM_IN_SERIES;
+
     /** All native id keys supported for lookups. Also see {@link #NATIVE_ID_KEYS}. */
     public static final Collection<Domain> NATIVE_ID_DOMAINS = new ArrayList<>();
+
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
     /**
@@ -265,14 +281,20 @@ public final class DBDefinitions {
      * Virtual: returns 0 for 'available' or 1 for 'lend out'
      */
     public static final Domain DOM_BL_LOANEE_AS_BOOL;
+
+
     /** {@link #TBL_BOOK_AUTHOR}. */
     public static final Domain DOM_BOOK_AUTHOR_TYPE_BITMASK;
     /** {@link #TBL_BOOK_AUTHOR}. */
     public static final Domain DOM_BOOK_AUTHOR_POSITION;
+
+
     /** {@link #TBL_BOOK_TOC_ENTRIES}. */
     public static final Domain DOM_BOOK_TOC_ENTRY_POSITION;
+
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final Domain DOM_STYLE_IS_BUILTIN;
+
     /**
      * {@link #TBL_BOOK_SERIES}.
      * The Series position is the order the Series show up in a book. Particularly important
@@ -295,8 +317,6 @@ public final class DBDefinitions {
      * ====================================================================================== */
     /** For sorting in the {@link BooklistBuilder}. */
     public static final Domain DOM_BL_SERIES_SORT;
-    /** {@link #TMP_TBL_BOOK_LIST} {@link BooklistBuilder}. */
-    public static final Domain DOM_BL_BOOK_COUNT;
     /**
      * Series number, cast()'d for sorting purposes in {@link BooklistBuilder}
      * so we can sort it numerically regardless of content.
@@ -907,9 +927,6 @@ public final class DBDefinitions {
          *  BooklistBuilder domains
          * ====================================================================================== */
 
-        DOM_BL_BOOK_COUNT =
-                new Domain.Builder(KEY_BOOK_COUNT, ColumnInfo.TYPE_INTEGER).build();
-
         DOM_BL_AUTHOR_SORT =
                 new Domain.Builder(KEY_BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT).build();
 
@@ -1173,17 +1190,17 @@ public final class DBDefinitions {
 
         // Stores the node state across application restarts.
         TBL_BOOK_LIST_NODE_STATE.addDomains(DOM_PK_ID,
-                                            DOM_FK_BOOKSHELF,
-                                            DOM_FK_STYLE,
-
                                             DOM_BL_NODE_KEY,
                                             DOM_BL_NODE_LEVEL,
                                             DOM_BL_NODE_GROUP,
-                                            DOM_BL_NODE_EXPANDED
+                                            DOM_BL_NODE_EXPANDED,
+
+                                            DOM_FK_BOOKSHELF,
+                                            DOM_FK_STYLE
                                            )
                                 .setPrimaryKey(DOM_PK_ID)
-                                .addIndex(KEY_FK_BOOKSHELF, false, DOM_FK_BOOKSHELF)
-                                .addIndex(KEY_FK_STYLE, false, DOM_FK_STYLE);
+                                .addIndex("BOOKSHELF_STYLE", false,
+                                          DOM_FK_BOOKSHELF, DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(), TBL_BOOK_LIST_NODE_STATE);
 
         /*

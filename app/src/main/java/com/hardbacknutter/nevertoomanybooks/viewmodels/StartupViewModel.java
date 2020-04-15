@@ -44,8 +44,8 @@ import java.util.HashSet;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.tasks.AnalyzeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
+import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildOrderByTitleColumnsTask;
@@ -298,9 +298,9 @@ public class StartupViewModel
 
         // shouldn't be needed every single time.
         if (mDoMaintenance) {
-            // analyse db should always be started as the last task.
-            startTask(new AnalyzeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(context),
-                                        mTaskListener), false);
+            // optimize db should always be started as the last task.
+            startTask(new OptimizeDbTask(++taskId, mDb, ImageUtils.imagesAreCached(context),
+                                         mTaskListener), false);
         }
 
         synchronized (mAllTasks) {

@@ -44,7 +44,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -343,12 +342,6 @@ public class BooklistBuilder
      * @param context Current context
      */
     public void build(@NonNull final Context context) {
-        final long t00 = System.nanoTime();
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-            Log.d(TAG, "ENTER|build|mInstanceId=" + mInstanceId);
-        }
-
         // Setup the tables (but don't create them yet)
         mListTable = new TableDefinition(TMP_TBL_BOOK_LIST);
         mListTable.setName(mListTable.getName() + mInstanceId);
@@ -373,8 +366,6 @@ public class BooklistBuilder
 
         // The book id itself
         helper.addDomain(new VirtualDomain(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID)), false);
-        // each row has a book count, for books this is obviously always == 1.
-        //helper.addDomain(new VirtualDomain(DOM_BL_BOOK_COUNT, "1"), false);
 
         // add style-specified groups
         for (BooklistGroup group : mStyle.getGroups()) {
@@ -389,25 +380,33 @@ public class BooklistBuilder
         // and finally, add all filters to be used for the WHERE clause
         helper.addFilters(mFilters);
 
-        final long t01_domains_done = System.nanoTime();
-
         // Construct the initial insert statement components.
         String initialInsertSql = helper.build();
 
-        final long t02_base_insert_prepared = System.nanoTime();
-
         // We are good to go.
-        long t03_list_table_created = 0;
-        long t04_base_insert_executed = 0;
-        long t05_listTable_analyzed = 0;
-        long t06_stateTable_created = 0;
+        long t0 = 0;
+        long t1_insert = 0;
+
+        long initialInsertCount = 0;
 
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             //IMPORTANT: withConstraints MUST BE false
             mListTable.recreate(mSyncedDb, false);
 
-            //TEST: index on list table.
+            t0 = System.nanoTime();
+
+            // get the triggers in place, ready to act on our upcoming initial insert.
+            createTriggers(helper.getSortedDomains());
+
+            // Build the lowest level (i.e. books) using our initial insert statement
+            // The triggers will do the other levels.
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(initialInsertSql)) {
+                initialInsertCount = stmt.executeUpdateDelete();
+            }
+
+            t1_insert = System.nanoTime();
+
             if (!DBHelper.isCollationCaseSensitive()) {
                 // can't do this, IndexDefinition class does not support DESC columns for now.
                 // mListTable.addIndex("SDI", false, helper.getSortedDomains());
@@ -415,32 +414,16 @@ public class BooklistBuilder
                                   + "(" + helper.getSortedDomainsIndexColumns() + ")");
             }
 
-            t03_list_table_created = System.nanoTime();
-
-            // get the triggers in place, ready to act on our upcoming initial insert.
-            createTriggers(helper.getSortedDomains());
-
-            // Build the lowest level using our initial insert statement
-            // The triggers will do the rest.
-            mSyncedDb.execSQL(initialInsertSql);
-
-            t04_base_insert_executed = System.nanoTime();
-
             // The list table is now fully populated.
             mSyncedDb.analyze(mListTable);
-
-            t05_listTable_analyzed = System.nanoTime();
 
             // build the row-state table for expansion/visibility tracking
             // clean up previously used table (if any)
             if (mRowStateDAO != null) {
                 mRowStateDAO.close();
             }
-
             mRowStateDAO = new RowStateDAO(mSyncedDb, mInstanceId, mStyle, mBookshelf);
             mRowStateDAO.build(context, mListTable, mRebuildState);
-
-            t06_stateTable_created = System.nanoTime();
 
             mSyncedDb.setTransactionSuccessful();
 
@@ -449,28 +432,8 @@ public class BooklistBuilder
 
             // we don't catch exceptions but we do want to log the time it took here.
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "build|" + String.format(
-                        Locale.UK, ""
-                                   + "\ndomain setup        : %5d"
-                                   + "\nbuild insert        : %5d"
-                                   + "\nlist table created  : %5d"
-                                   + "\nbase insert executed: %5d"
-                                   + "\nlist table analyzed : %5d"
-                                   + "\nstate table build   : %5d"
-                                   + "\n============================"
-                                   + "\nTotal time in ms    : %5d",
-
-                        (t01_domains_done - t00) / NANO_TO_MILLIS,
-                        (t02_base_insert_prepared - t01_domains_done) / NANO_TO_MILLIS,
-                        (t03_list_table_created - t02_base_insert_prepared) / NANO_TO_MILLIS,
-                        (t04_base_insert_executed - t03_list_table_created) / NANO_TO_MILLIS,
-                        (t05_listTable_analyzed - t04_base_insert_executed) / NANO_TO_MILLIS,
-                        (t06_stateTable_created - t05_listTable_analyzed) / NANO_TO_MILLIS,
-                        (System.nanoTime() - t00) / NANO_TO_MILLIS));
-            }
-
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                Log.d(TAG, "EXIT|build|mInstanceId=" + mInstanceId);
+                Log.d(TAG, "build|insert(" + initialInsertCount + ") : "
+                           + ((t1_insert - t0) / NANO_TO_MILLIS) + " ms");
             }
         }
     }
@@ -578,8 +541,8 @@ public class BooklistBuilder
                     + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + " WHERE " + whereClause
                     + /* */ ')'
                     + "\n BEGIN"
-                    + "\n   INSERT INTO " + mListTable.getName() + " (" + listColumns + ")"
-                    + /*               */ " VALUES(" + listValues + ");"
+                    + "\n  INSERT INTO " + mListTable.getName() + " (" + listColumns + ")"
+                    + /*             */ " VALUES(" + listValues + ");"
                     + "\n END";
 
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(levelTgSql)) {
@@ -697,8 +660,8 @@ public class BooklistBuilder
 
         try (Cursor cursor = mSyncedDb
                 .rawQuery(sql, new String[]{String.valueOf(BooklistGroup.BOOK)})) {
-            ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
             if (cursor.moveToFirst()) {
+                ArrayList<Long> rows = new ArrayList<>(cursor.getCount());
                 do {
                     long id = cursor.getInt(0);
                     rows.add(id);
@@ -735,19 +698,12 @@ public class BooklistBuilder
      * @return count
      */
     public int getDistinctBookCount() {
-        final long t0 = System.nanoTime();
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 "SELECT COUNT(DISTINCT " + KEY_FK_BOOK + ")"
                 + " FROM " + mListTable.getName()
                 + " WHERE " + KEY_BL_NODE_GROUP + "=?")) {
             stmt.bindLong(1, BooklistGroup.BOOK);
-            long count = stmt.count();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "getDistinctBookCount"
-                           + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
-            }
-            return (int) count;
+            return (int) stmt.count();
         }
     }
 
@@ -757,19 +713,12 @@ public class BooklistBuilder
      * @return count
      */
     public int getBookCount() {
-        final long t0 = System.nanoTime();
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 "SELECT COUNT(*)"
                 + " FROM " + mListTable.getName()
                 + " WHERE " + KEY_BL_NODE_GROUP + "=?")) {
             stmt.bindLong(1, BooklistGroup.BOOK);
-            long count = stmt.count();
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TIMERS) {
-                Log.d(TAG, "getBookCount"
-                           + "|count=" + count
-                           + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
-            }
-            return (int) count;
+            return (int) stmt.count();
         }
     }
 
@@ -1096,7 +1045,9 @@ public class BooklistBuilder
 
             // add the node key column
             destColumns.append(',').append(KEY_BL_NODE_KEY);
-            sourceColumns.append(',').append(buildNodeKey());
+            sourceColumns.append(',').append(buildNodeKey())
+                         // 'AS' for SQL readability/debug only
+                         .append(" AS ").append(DOM_BL_NODE_KEY);
 
             String sql = "INSERT INTO " + mDestinationTable.getName() + " (" + destColumns + ')'
                          + " SELECT " + sourceColumns
