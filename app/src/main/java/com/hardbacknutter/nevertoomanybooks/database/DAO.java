@@ -286,14 +286,14 @@ public class DAO
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
     private static final String _DELETE_FROM_ = "DELETE FROM ";
-    public static final String _FROM_ = " FROM ";
+    private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
     /** Actual SQLiteOpenHelper. */
     private static DBHelper sDbHelper;
     /** Synchronization wrapper around the real database. */
     private static SynchronizedDb sSyncedDb;
 
-    /** a cache for statements, where they are pre-compiled. */
+    /** Collection of statements pre-compiled for this object. */
     private final SqlStatementManager mSqlStatementManager;
     @NonNull
     private final String mInstanceName;

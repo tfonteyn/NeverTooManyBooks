@@ -176,7 +176,7 @@ public final class CoversDAO
                           true, DOM_CACHE_ID, DOM_DATE);
     }
 
-    /** List of statements we create so we can clean them when the instance is closed. */
+    /** Collection of statements pre-compiled for this object. */
     private SqlStatementManager mStatementManager;
 
     /** singleton. */

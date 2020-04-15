@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.ListOfValuesFilter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
@@ -129,13 +128,7 @@ public class BooklistBuilder
     // not in use for now
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
     //private String mGroupColumnList;
-    /**
-     * Collection of statements created by this Builder.
-     * Private and single thread usage, hence no need to synchronize the statements.
-     */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final SqlStatementManager mStatementManager;
+
     /** Database Access. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -221,7 +214,6 @@ public class BooklistBuilder
         // Get the database and create a statements collection
         mDb = new DAO(TAG);
         mSyncedDb = mDb.getSyncDb();
-        mStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + mInstanceId);
     }
 
     /**
@@ -768,8 +760,6 @@ public class BooklistBuilder
     @Override
     public void close() {
         mCloseWasCalled = true;
-
-        mStatementManager.close();
 
         if (mRowStateDAO != null) {
             mRowStateDAO.close();

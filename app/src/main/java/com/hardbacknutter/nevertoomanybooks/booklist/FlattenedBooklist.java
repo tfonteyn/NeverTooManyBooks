@@ -77,7 +77,7 @@ public class FlattenedBooklist
     /** The underlying database. We need this to keep the table alive. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
-    /** Collection of statements compiled for this object. */
+    /** Collection of statements pre-compiled for this object. */
     @NonNull
     private final SqlStatementManager mSqlStatementManager;
     /** Underlying table definition. */
