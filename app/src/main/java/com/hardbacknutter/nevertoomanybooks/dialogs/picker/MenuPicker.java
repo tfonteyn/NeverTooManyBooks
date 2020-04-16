@@ -34,11 +34,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -113,6 +113,8 @@ public class MenuPicker<T>
 
     public static Menu createMenu(@NonNull final Context context) {
         // legal trick to get an instance of Menu.
+        // We leave the anchor 'null' as we're not actually going to display this object.
+        //noinspection ConstantConditions
         return new PopupMenu(context, null).getMenu();
     }
 
