@@ -274,18 +274,18 @@ public class RowStateDAO {
             }
             case BooklistBuilder.PREF_REBUILD_SAVED_STATE: {
                 // The more nodes expanded, the slower this is.
-                // **ad-hoc** measurements: 31 top-level nodes, 9260 books running in emulator.
+                // **ad-hoc** measurements: 31 top-level nodes, 9260 rows running in emulator.
                 // fully collapsed: 117 ms
                 // fully expanded: 20.000 ms
                 sql +=
                         // KEY_BL_NODE_VISIBLE
                         ",CASE"
-                        // Level 1 is always visible whether present or not.
+                        // Level 1 is always visible (whether present or not).
                         + " WHEN " + listTable.dot(KEY_BL_NODE_LEVEL) + "=1 THEN 1"
                         // If the row is not present (check on NODE_KEY!), hide it.
                         + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY) + " IS NULL"
                         + /* */ " THEN 0"
-                        // All other rows present are visible.
+                        // All other rows are visible (whether present or not).
                         + /* */ " ELSE 1"
                         + " END"
                         // 'AS' for SQL readability/debug only
@@ -293,13 +293,14 @@ public class RowStateDAO {
                         + "\n"
 
                         // KEY_BL_NODE_EXPANDED
-                        + ",CASE"
-                        // If the row is not present (check on NODE_KEY!), collapse it.
-                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY) + " IS NULL"
-                        + /* */ " THEN 0"
-                        //  Otherwise use the stored state
-                        + /* */ " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_EXPANDED)
-                        + " END"
+                        + ",COALESCE(" + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY) + ",0)"
+//                        + ",CASE"
+//                        // If the row is not present (check on NODE_KEY!), collapse it.
+//                        + " WHEN " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY) + " IS NULL"
+//                        + /* */ " THEN 0"
+//                        //  Otherwise use the stored state
+//                        + /* */ " ELSE " + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_EXPANDED)
+//                        + " END"
                         // 'AS' for SQL readability/debug only
                         + " AS " + KEY_BL_NODE_EXPANDED
                         + "\n"
