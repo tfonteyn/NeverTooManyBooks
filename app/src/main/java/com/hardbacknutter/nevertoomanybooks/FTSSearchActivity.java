@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
  * number of hits more or less in real time. The user can choose to see a full list at any time.
- * ENHANCE: make the fields autocomplete based on individual searches?
+ * ENHANCE: SHOW the list, just like the system search does?
  * <p>
  * The form allows entering free text, author, title, series.
  * <p>

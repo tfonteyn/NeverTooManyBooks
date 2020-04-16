@@ -499,10 +499,7 @@ public interface SearchEngine {
         }
     }
 
-    /**
-     * Optional.
-     * ENHANCE: implement for multiple sites (e.g. WorldCat)
-     */
+    /** Optional. */
     interface AlternativeEditions {
 
         /**

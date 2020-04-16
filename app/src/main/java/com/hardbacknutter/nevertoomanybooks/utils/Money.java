@@ -68,11 +68,7 @@ public class Money
     /** Specific for pre-decimal UK money. */
     private static final Pattern SHILLING_PENCE_PATTERN = Pattern.compile("(\\d*|-?)/(\\d*|-?)");
 
-    /**
-     * A Map to translate currency symbols to their official ISO code.
-     * <p>
-     * ENHANCE: surely this can be done more intelligently ?
-     */
+    /** A Map to translate currency symbols to their official ISO code. */
     private static final Map<String, String> CURRENCY_MAP = new HashMap<>();
 
     private static final long serialVersionUID = 880969785357045939L;

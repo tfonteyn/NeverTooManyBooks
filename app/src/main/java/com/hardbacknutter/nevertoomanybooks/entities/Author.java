@@ -167,8 +167,6 @@ public class Author
             Pattern.compile("(le|de|van|von)",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
     /**
-     * ENHANCE: author name suffixes; needs internationalisation ? probably not.
-     * <p>
      * j/s lower or upper case
      * <p>
      * Foo Bar Jr.

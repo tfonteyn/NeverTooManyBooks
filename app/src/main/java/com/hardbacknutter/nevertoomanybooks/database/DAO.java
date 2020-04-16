@@ -3938,8 +3938,6 @@ public class DAO
 
         /**
          * Construct the SQL for a list of books in the database based on the given where-clause.
-         * <p>
-         * TODO: redo this so the sql becomes static
          *
          * @param whereClause to add to books search criteria (without the keyword 'WHERE')
          *
@@ -3972,8 +3970,6 @@ public class DAO
         /**
          * Construct the SQL for a list of books based on the given where-clause.
          * This is specifically constructed to export a set of Books.
-         * <p>
-         * TODO: redo this so the sql becomes static
          *
          * @param whereClause to add to books search criteria (without the keyword 'WHERE')
          *

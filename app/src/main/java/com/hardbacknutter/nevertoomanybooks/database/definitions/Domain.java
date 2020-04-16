@@ -38,13 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 /**
  * Defines a domain; name, type, ...
- * Cannot be modified after creation.
- * <p>
- * TODO: currently we only take reference copies of {@link Domain}.
- * Similarly, lists of domains are (sometimes) reference copies as well.
- * This is ok for now as we can't modify a Domain after initial creation.
- * But we <strong>SHOULD</strong> do a proper/full copy of the domain objects.
- * This will need some time/work to hunt down all the places in the code though.
+ * Immutable.
  * <p>
  * Parcelable: needed by {@link BooklistGroup}
  */
