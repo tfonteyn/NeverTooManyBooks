@@ -37,7 +37,7 @@
     tools:showIn="@layout/activity_edit_book"
     >
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         style="@style/Toolbar"
         app:layout_scrollFlags="scroll|enterAlways"

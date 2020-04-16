@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             >
 
-            <androidx.appcompat.widget.Toolbar
+            <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 style="@style/Toolbar"
                 app:layout_scrollFlags="scroll|enterAlways"
@@ -62,7 +62,7 @@
                     tools:entries="@array/tools_placeholder"
                     />
 
-            </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
