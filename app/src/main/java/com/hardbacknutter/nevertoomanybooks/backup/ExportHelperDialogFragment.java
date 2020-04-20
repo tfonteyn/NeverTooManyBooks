@@ -36,6 +36,7 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -62,10 +63,10 @@ public class ExportHelperDialogFragment
     /**
      * Constructor.
      *
-     * @return Created fragment
+     * @return instance
      */
     @NonNull
-    public static ExportHelperDialogFragment newInstance() {
+    public static DialogFragment newInstance() {
         return new ExportHelperDialogFragment();
     }
 

@@ -32,7 +32,6 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.widget.DatePicker;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -54,18 +53,16 @@ public class DatePickerDialogFragment
     /**
      * Constructor.
      *
-     * @param fieldId       the field whose content we want to edit
      * @param dialogTitleId resource id for the dialog title
      * @param currentValue  the current value of the field
      * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
      *
-     * @return the new instance
+     * @return instance
      */
-    public static DialogFragment newInstance(@IdRes final int fieldId,
-                                             @StringRes final int dialogTitleId,
+    public static DialogFragment newInstance(@StringRes final int dialogTitleId,
                                              @Nullable final String currentValue,
                                              final boolean todayIfNone) {
-        String date;
+        final String date;
         if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
             date = DateUtils.localSqlDateForToday();
         } else if (currentValue != null) {
@@ -74,10 +71,9 @@ public class DatePickerDialogFragment
             date = "";
         }
 
-        DatePickerDialogFragment frag = new DatePickerDialogFragment();
-        Bundle args = new Bundle(3);
+        final DialogFragment frag = new DatePickerDialogFragment();
+        final Bundle args = new Bundle(2);
         args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putInt(StandardDialogs.BKEY_DIALOG_FIELD_ID, fieldId);
         args.putString(BKEY_DATE, date);
         frag.setArguments(args);
         return frag;

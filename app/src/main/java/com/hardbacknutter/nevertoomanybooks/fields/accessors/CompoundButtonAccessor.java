@@ -27,16 +27,17 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
-import android.view.View;
-import android.widget.Checkable;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
  * CompoundButton accessor.
+ * <p>
+ * A {@code null} value is always handled as {@code false}.
  *
  * <ul>{@link CompoundButton} covers more then just a Checkbox:
  *      <li>CheckBox</li>
@@ -61,10 +62,10 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * </pre>
  */
 public class CompoundButtonAccessor
-        extends BaseDataAccessor<Boolean> {
+        extends BaseDataAccessor<Boolean, CompoundButton> {
 
     @Override
-    public void setView(@NonNull final View view) {
+    public void setView(@NonNull final CompoundButton view) {
         super.setView(view);
         addTouchSignalsDirty(view);
     }
@@ -72,17 +73,13 @@ public class CompoundButtonAccessor
     @NonNull
     @Override
     public Boolean getValue() {
-        Checkable cb = (Checkable) getView();
-        return cb.isChecked();
-
+        return getView().isChecked();
     }
 
     @Override
-    public void setValue(@NonNull final Boolean value) {
-        mRawValue = value;
-
-        Checkable cb = (Checkable) getView();
-        cb.setChecked(mRawValue);
+    public void setValue(@Nullable final Boolean value) {
+        mRawValue = value != null ? value : false;
+        getView().setChecked(mRawValue);
     }
 
     @Override

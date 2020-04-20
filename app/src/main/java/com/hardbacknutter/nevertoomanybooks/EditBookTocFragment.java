@@ -199,6 +199,8 @@ public class EditBookTocFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+
         if (ConfirmTocDialogFragment.TAG.equals(childFragment.getTag())) {
             ((ConfirmTocDialogFragment) childFragment).setListener(mConfirmTocResultsListener);
 
@@ -291,6 +293,7 @@ public class EditBookTocFragment
         // finally the TOC itself;  only put on display for the user to approve
         boolean hasOtherEditions = (mIsfdbEditions != null) && (mIsfdbEditions.size() > 1);
         ConfirmTocDialogFragment.newInstance(bookData, hasOtherEditions)
+                                //URGENT: screen rotation
                                 .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
     }
 
@@ -522,6 +525,7 @@ public class EditBookTocFragment
         mEditPosition = position;
 
         EditTocEntryDialogFragment.newInstance(tocEntry, mVb.cbxMultipleAuthors.isChecked())
+                                  //URGENT: screen rotation
                                   .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
 
     }
@@ -568,6 +572,7 @@ public class EditBookTocFragment
         private long mTocBitMask;
         private ArrayList<TocEntry> mTocEntries;
 
+        @Nullable
         private WeakReference<ConfirmTocResults> mListener;
 
         /**
@@ -575,11 +580,11 @@ public class EditBookTocFragment
          *
          * @param hasOtherEditions flag
          *
-         * @return the instance
+         * @return instance
          */
-        static ConfirmTocDialogFragment newInstance(@NonNull final Bundle bookData,
-                                                    final boolean hasOtherEditions) {
-            final ConfirmTocDialogFragment frag = new ConfirmTocDialogFragment();
+        static DialogFragment newInstance(@NonNull final Bundle bookData,
+                                          final boolean hasOtherEditions) {
+            final DialogFragment frag = new ConfirmTocDialogFragment();
             bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
             frag.setArguments(bookData);
             return frag;
@@ -653,22 +658,26 @@ public class EditBookTocFragment
 
         private void onCommitToc(@SuppressWarnings("unused") @NonNull final DialogInterface d,
                                  @SuppressWarnings("unused") final int which) {
-            if (mListener.get() != null) {
+            if (mListener != null && mListener.get() != null) {
                 mListener.get().commitIsfdbData(mTocBitMask, mTocEntries);
             } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onCommitToc|" + ErrorMsg.WEAK_REFERENCE);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "onCommitToc|" +
+                               (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                  : ErrorMsg.LISTENER_WAS_DEAD));
                 }
             }
         }
 
         private void onGetNext(@SuppressWarnings("unused") @NonNull final DialogInterface d,
                                @SuppressWarnings("unused") final int which) {
-            if (mListener.get() != null) {
+            if (mListener != null && mListener.get() != null) {
                 mListener.get().getNextEdition();
             } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onGetNext|" + ErrorMsg.WEAK_REFERENCE);
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.w(TAG, "onGetNext|" +
+                               (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                  : ErrorMsg.LISTENER_WAS_DEAD));
                 }
             }
         }

@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookFragmentViewModel
         extends BookBaseFragmentViewModel {
@@ -58,7 +59,16 @@ public class EditBookFragmentViewModel
     private List<String> mListPriceCurrencies;
     /** Field drop down list. */
     private List<String> mAuthorNames;
+    /** Field drop down list. */
+    private List<Bookshelf> mBookshelves;
 
+    @NonNull
+    public List<Bookshelf> getBookshelves() {
+        if (mBookshelves == null) {
+            mBookshelves = mDb.getBookshelves();
+        }
+        return mBookshelves;
+    }
 
     @NonNull
     public List<String> getAuthorNames() {

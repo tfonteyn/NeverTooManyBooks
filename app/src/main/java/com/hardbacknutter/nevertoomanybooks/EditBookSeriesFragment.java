@@ -326,6 +326,21 @@ public class EditBookSeriesFragment
         /** View Binding. */
         private DialogEditBookSeriesBinding mVb;
 
+        /**
+         * Constructor.
+         *
+         * @param series to edit
+         *
+         * @return instance
+         */
+        static DialogFragment newInstance(@NonNull final Series series) {
+            final DialogFragment frag = new EditBookSeriesDialogFragment();
+            final Bundle args = new Bundle(1);
+            args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
+            frag.setArguments(args);
+            return frag;
+        }
+
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -462,10 +477,7 @@ public class EditBookSeriesFragment
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> {
-                final EditBookSeriesDialogFragment frag = new EditBookSeriesDialogFragment();
-                final Bundle args = new Bundle(1);
-                args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
-                frag.setArguments(args);
+                final DialogFragment frag = EditBookSeriesDialogFragment.newInstance(series);
                 frag.setTargetFragment(EditBookSeriesFragment.this, 0);
                 frag.show(getParentFragmentManager(), EditBookSeriesDialogFragment.TAG);
             });

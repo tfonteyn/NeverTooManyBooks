@@ -30,21 +30,25 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -54,10 +58,12 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
@@ -121,6 +127,22 @@ public class EditBookFieldsFragment
         return mVb.getRoot();
     }
 
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+
+        if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {
+            //noinspection ConstantConditions
+            final int fieldId = childFragment.getArguments().getInt(BKEY_FIELD_ID);
+            ((CheckListDialogFragment) childFragment).setListener((list) -> {
+                Field<List<Entity>, TextView> field = mFragmentVM.getFields().getField(fieldId);
+                mBookViewModel.getBook().putParcelableArrayList(field.getKey(), list);
+                field.getAccessor().setValue(list);
+                field.onChanged(true);
+            });
+        }
+    }
+
     @CallSuper
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
@@ -144,28 +166,28 @@ public class EditBookFieldsFragment
         // The buttons to bring up the fragment to edit Authors / Series.
         // Not shown if the user preferences are set to use an extra tab for this.
         if (!showAuthSeriesOnTabs) {
-            fields.add(R.id.author, new TextAccessor<>(
+            fields.add(R.id.author, new TextViewAccessor<>(
                                new AuthorListFormatter(Author.Details.Short, true, false)),
                        Book.BKEY_AUTHOR_ARRAY, DBDefinitions.KEY_FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author)
                   .setErrorViewId(R.id.lbl_author)
                   .setFieldValidator(NON_BLANK_VALIDATOR);
 
-            fields.add(R.id.series_title, new TextAccessor<>(
+            fields.add(R.id.series_title, new TextViewAccessor<>(
                                new SeriesListFormatter(Series.Details.Short, true, false)),
                        Book.BKEY_SERIES_ARRAY, DBDefinitions.KEY_SERIES_TITLE)
                   .setRelatedFields(R.id.lbl_series);
         }
 
-        fields.add(R.id.title, new EditTextAccessor<String>(), DBDefinitions.KEY_TITLE)
+        fields.add(R.id.title, new EditTextAccessor<>(), DBDefinitions.KEY_TITLE)
               .setErrorViewId(R.id.lbl_title)
               .setFieldValidator(NON_BLANK_VALIDATOR);
 
-        fields.add(R.id.description, new EditTextAccessor<String>(), DBDefinitions.KEY_DESCRIPTION)
+        fields.add(R.id.description, new EditTextAccessor<>(), DBDefinitions.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        fields.add(R.id.isbn, new EditTextAccessor<String>(), DBDefinitions.KEY_ISBN)
+        fields.add(R.id.isbn, new EditTextAccessor<>(), DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
         fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(), true),
@@ -173,7 +195,7 @@ public class EditBookFieldsFragment
               .setRelatedFields(R.id.lbl_language)
               .setFieldValidator(NON_BLANK_VALIDATOR);
 
-        fields.add(R.id.genre, new EditTextAccessor<String>(), DBDefinitions.KEY_GENRE)
+        fields.add(R.id.genre, new EditTextAccessor<>(), DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
         // Personal fields
@@ -227,7 +249,7 @@ public class EditBookFieldsFragment
             // --> we need to flag up that the author list is empty.
             // Note that this does mean we will flag up the author as empty when
             // we get here when the user simply wants to add a book. Oh well...
-            getFields().getField(R.id.author).validate();
+            mFragmentVM.getFields().getField(R.id.author).validate();
         }
 
         // With all Views populated, (re-)add the helpers
@@ -248,13 +270,7 @@ public class EditBookFieldsFragment
             mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         });
 
-        setOnClickListener(R.id.bookshelves, v -> CheckListDialogFragment
-                .newInstance(R.string.lbl_bookshelves_long, R.id.bookshelves,
-                             new ArrayList<>(mFragmentVM.getDb().getBookshelves()),
-                             new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
-                                     Book.BKEY_BOOKSHELF_ARRAY)))
-                .show(getChildFragmentManager(), CheckListDialogFragment.TAG));
-
+        addBookshelfPicker(mFragmentVM.getFields().getField(R.id.bookshelves));
 
         if (!showAuthSeriesOnTabs) {
             setOnClickListener(R.id.author, v ->
@@ -265,6 +281,29 @@ public class EditBookFieldsFragment
                     showEditListFragment(new EditBookSeriesFragment(),
                                          EditBookSeriesFragment.TAG));
         }
+    }
+
+    private void addBookshelfPicker(@NonNull final Field field) {
+        // only bother when it's in use
+        //noinspection ConstantConditions
+        if (field.isUsed(getContext())) {
+            field.getAccessor().getView().setOnClickListener(v -> {
+                final DialogFragment picker = CheckListDialogFragment
+                        .newInstance(R.string.lbl_bookshelves_long,
+                                     new ArrayList<>(mFragmentVM.getBookshelves()),
+                                     new ArrayList<>(
+                                             mBookViewModel.getBook().getParcelableArrayList(
+                                                     Book.BKEY_BOOKSHELF_ARRAY)));
+                //noinspection ConstantConditions
+                picker.getArguments().putInt(BKEY_FIELD_ID, field.getId());
+                //URGENT: screen rotation
+                picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
+            });
+        }
+
+        final Fragment f = getChildFragmentManager()
+                .findFragmentByTag(CheckListDialogFragment.TAG);
+        Log.w(TAG, "f=" + f);
     }
 
     /** Called by the CoverHandler when a context menu is selected. */

@@ -28,25 +28,28 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Very simple Spinner accessor.
  * The value is expected to be the list position.
+ * <p>
+ * A {@code null} value is always handled as {@code 0}.
  */
 public class SpinnerAccessor
-        extends BaseDataAccessor<Integer> {
+        extends BaseDataAccessor<Integer, Spinner> {
 
     @NonNull
     private final SpinnerAdapter mAdapter;
@@ -75,7 +78,8 @@ public class SpinnerAccessor
      * Constructor.
      *
      * @param context Current context
-     * @param resIds  list of StringRes id to populate the spinner
+     * @param resIds  list of StringRes id to populate the spinner;
+     *                the list <strong>must</strong> not be empty
      */
     public SpinnerAccessor(@NonNull final Context context,
                            @NonNull final Iterable<Integer> resIds) {
@@ -84,29 +88,31 @@ public class SpinnerAccessor
             list.add(context.getString(id));
         }
         mAdapter = new ArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);
+        if (mAdapter.getCount() == 0) {
+            throw new IllegalStateException(ErrorMsg.EMPTY_ARRAY);
+        }
     }
 
     @Override
-    public void setView(@NonNull final View view) {
+    public void setView(@NonNull final Spinner view) {
         super.setView(view);
-        ((Spinner) view).setAdapter(mAdapter);
+        view.setAdapter(mAdapter);
         addTouchSignalsDirty(view);
     }
 
     @Override
     @NonNull
     public Integer getValue() {
-        Spinner spinner = (Spinner) getView();
-        return spinner.getSelectedItemPosition();
+        return getView().getSelectedItemPosition();
     }
 
     @Override
-    public void setValue(@NonNull final Integer value) {
-        mRawValue = value;
+    public void setValue(@Nullable final Integer value) {
+        mRawValue = value != null ? value : 0;
 
-        Spinner spinner = (Spinner) getView();
-        if (value >= 0 && value < spinner.getCount()) {
-            spinner.setSelection(value);
+        Spinner spinner = getView();
+        if (mRawValue >= 0 && mRawValue < spinner.getCount()) {
+            spinner.setSelection(mRawValue);
         } else {
             spinner.setSelection(0);
         }

@@ -43,7 +43,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,7 +55,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -80,25 +78,25 @@ public class StylePickerDialogFragment
     /** Currently selected style. */
     private BooklistStyle mCurrentStyle;
 
+    @Nullable
     private WeakReference<StyleChangedListener> mListener;
 
     /**
      * Constructor.
      *
-     * @param fm           the FragmentManager to use
      * @param currentStyle the currently active style
      * @param all          if {@code true} show all styles, otherwise only the preferred ones.
+     *
+     * @return instance
      */
-    public static void newInstance(@NonNull final FragmentManager fm,
-                                   @NonNull final BooklistStyle currentStyle,
-                                   final boolean all) {
-
-        StylePickerDialogFragment smf = new StylePickerDialogFragment();
+    public static DialogFragment newInstance(@NonNull final BooklistStyle currentStyle,
+                                             final boolean all) {
+        final DialogFragment frag = new StylePickerDialogFragment();
         Bundle args = new Bundle(2);
         args.putParcelable(BooklistStyle.BKEY_STYLE, currentStyle);
         args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
-        smf.setArguments(args);
-        smf.show(fm, TAG);
+        frag.setArguments(args);
+        return frag;
     }
 
     /**
@@ -213,11 +211,13 @@ public class StylePickerDialogFragment
      * @param style the desired style
      */
     private void onStyleSelected(@NonNull final BooklistStyle style) {
-        if (mListener.get() != null) {
+        if (mListener != null && mListener.get() != null) {
             mListener.get().onStyleChanged(style);
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onStyleChanged|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onStyleSelected|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
 

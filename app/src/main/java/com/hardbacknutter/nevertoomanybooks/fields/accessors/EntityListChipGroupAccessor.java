@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
@@ -47,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 /**
  * A {@link ChipGroup} where each {@link Chip} represents one {@link Entity} in a list.
+ * <p>
+ * A {@code null} value is always handled as an empty {@link ArrayList}.
  *
  * <pre>
  *     {@code
@@ -71,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * </pre>
  */
 public class EntityListChipGroupAccessor
-        extends BaseDataAccessor<ArrayList<Entity>> {
+        extends BaseDataAccessor<ArrayList<Entity>, ChipGroup> {
 
     @NonNull
     private final List<Entity> mAll;
@@ -107,7 +108,7 @@ public class EntityListChipGroupAccessor
     }
 
     @Override
-    public void setView(@NonNull final View view) {
+    public void setView(@NonNull final ChipGroup view) {
         super.setView(view);
         addTouchSignalsDirty(view);
     }
@@ -119,12 +120,11 @@ public class EntityListChipGroupAccessor
     }
 
     @Override
-    public void setValue(@NonNull final ArrayList<Entity> value) {
-        mRawValue = value;
+    public void setValue(@Nullable final ArrayList<Entity> value) {
+        mRawValue = value != null ? value : new ArrayList<>();
 
-        ViewGroup view = (ViewGroup) getView();
-        view.removeAllViews();
-        ChipGroup chipGroup = (ChipGroup) view;
+        ChipGroup chipGroup = getView();
+        chipGroup.removeAllViews();
         Context context = chipGroup.getContext();
 
         // *all* values

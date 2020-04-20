@@ -43,6 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GOODREADS_LAST_SYNC_DATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_GOODREADS_LAST_SYNC_DATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
@@ -51,6 +54,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PR
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED_CURRENCY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_PAID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_PAID_CURRENCY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ_END;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ_START;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -58,6 +63,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class BookTest
         extends CommonSetup {
+
+    private static final String INVALID_DEFAULT = "Invalid default";
 
     @Mock
     protected Bundle mBundleHelper;
@@ -215,18 +222,71 @@ class BookTest
         assertNull(book.get(KEY_EID_LIBRARY_THING));
     }
 
+    /**
+     * If a default was changed then one or more tests in this class will be invalid.
+     */
+    @Test
+    void domainDefaults() {
+        assertEquals("", DBDefinitions.DOM_BOOK_DATE_ACQUIRED.getDefault(), INVALID_DEFAULT);
+        assertEquals("", DBDefinitions.DOM_BOOK_DATE_READ_START.getDefault(), INVALID_DEFAULT);
+        assertEquals("", DBDefinitions.DOM_BOOK_DATE_READ_END.getDefault(), INVALID_DEFAULT);
+
+        assertEquals("0.0",
+                     DBDefinitions.DOM_BOOK_PRICE_LISTED.getDefault(), INVALID_DEFAULT);
+        assertEquals("0000-00-00",
+                     DOM_BOOK_GOODREADS_LAST_SYNC_DATE.getDefault(), INVALID_DEFAULT);
+
+    }
+
+    /** Domain: text, default "". */
     @Test
     void preprocessNullsAndBlanksForInsert() {
         Book book = new Book(mRawData);
+        book.put(KEY_DATE_ACQUIRED, "2020-01-14");
+        book.put(KEY_READ_START, "");
+        book.put(KEY_READ_END, null);
+
+        book.put(KEY_BOOK_GOODREADS_LAST_SYNC_DATE, null);
+        book.putDouble(KEY_PRICE_LISTED, 12.34);
+        book.putDouble(KEY_PRICE_PAID, 0);
 
         book.preprocessNullsAndBlanks(true);
+
+        assertEquals("2020-01-14", book.getString(KEY_DATE_ACQUIRED));
+        // text, default "". Storing an empty string is allowed.
+        assertEquals("", book.getString(KEY_READ_START));
+        // text, default "". A null is removed.
+        assertFalse(book.contains(KEY_READ_END));
+        // text, default "0000-00-00". A null is removed.
+        assertFalse(book.contains(KEY_BOOK_GOODREADS_LAST_SYNC_DATE));
+
+        assertEquals(12.34d, book.getDouble(KEY_PRICE_LISTED));
+        assertEquals(0d, book.getDouble(KEY_PRICE_PAID));
     }
 
     @Test
     void preprocessNullsAndBlanksForUpdate() {
         Book book = new Book(mRawData);
+        book.put(KEY_DATE_ACQUIRED, "2020-01-14");
+        book.put(KEY_READ_START, "");
+        book.put(KEY_READ_END, null);
+
+        book.put(KEY_BOOK_GOODREADS_LAST_SYNC_DATE, null);
+        book.putDouble(KEY_PRICE_LISTED, 12.34);
+        book.putDouble(KEY_PRICE_PAID, 0);
 
         book.preprocessNullsAndBlanks(false);
+
+        assertEquals("2020-01-14", book.getString(KEY_DATE_ACQUIRED));
+        // text, default "". Storing an empty string is allowed.
+        assertEquals("", book.getString(KEY_READ_START));
+        // text, default "". A null is replaced by the default
+        assertEquals("", book.getString(KEY_READ_END));
+        // text, default "". A null is replaced by the default
+        assertEquals("0000-00-00", book.getString(KEY_BOOK_GOODREADS_LAST_SYNC_DATE));
+
+        assertEquals(12.34d, book.getDouble(KEY_PRICE_LISTED));
+        assertEquals(0d, book.getDouble(KEY_PRICE_PAID));
     }
 
     private void dump(@NonNull final Book book) {

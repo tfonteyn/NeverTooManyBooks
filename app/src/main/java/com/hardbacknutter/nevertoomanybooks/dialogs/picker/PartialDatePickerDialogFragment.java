@@ -39,7 +39,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.NumberPicker;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -69,26 +68,27 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 public class PartialDatePickerDialogFragment
         extends BaseDatePickerDialogFragment {
 
+    /** Log tag. */
     public static final String TAG = "PartialDatePickerDialog";
 
+    /** Displayed to user: unset month. */
     private static final String UNKNOWN_MONTH = "---";
+    /** Displayed to user: unset day. */
     private static final String UNKNOWN_DAY = "--";
 
     /**
      * Constructor.
      *
-     * @param fieldId       the field whose content we want to edit
      * @param dialogTitleId resource id for the dialog title
      * @param currentValue  the current value of the field
      * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
      *
-     * @return the new instance
+     * @return instance
      */
-    public static DialogFragment newInstance(@IdRes final int fieldId,
-                                             @StringRes final int dialogTitleId,
+    public static DialogFragment newInstance(@StringRes final int dialogTitleId,
                                              @Nullable final String currentValue,
                                              final boolean todayIfNone) {
-        String date;
+        final String date;
         if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
             date = DateUtils.localSqlDateForToday();
         } else if (currentValue != null) {
@@ -97,10 +97,9 @@ public class PartialDatePickerDialogFragment
             date = "";
         }
 
-        PartialDatePickerDialogFragment frag = new PartialDatePickerDialogFragment();
-        Bundle args = new Bundle(3);
+        final DialogFragment frag = new PartialDatePickerDialogFragment();
+        final Bundle args = new Bundle(2);
         args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putInt(StandardDialogs.BKEY_DIALOG_FIELD_ID, fieldId);
         args.putString(BKEY_DATE, date);
         frag.setArguments(args);
         return frag;

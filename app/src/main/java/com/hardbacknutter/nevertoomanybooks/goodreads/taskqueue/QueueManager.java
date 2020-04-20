@@ -82,6 +82,7 @@ public final class QueueManager {
     @NonNull
     private final WeakReference<Thread> mUIThread;
     /** Objects listening for Event operations. */
+    @NonNull
     private final List<WeakReference<OnChangeListener>> mEventChangeListeners =
             new ArrayList<>();
     /** Objects listening for Task operations. */

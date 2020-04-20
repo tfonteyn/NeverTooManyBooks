@@ -184,7 +184,7 @@ public class FieldUsage {
     @NonNull
     public String toString() {
         return "FieldUsage{"
-               + "fieldId='" + fieldId + '\''
+               + "fieldId=`" + fieldId + '`'
                + ", mCanAppend=" + mCanAppend
                + ", mNameStringId=" + App.getAppContext().getString(mNameStringId)
                + ", mDefValue=" + mDefValue

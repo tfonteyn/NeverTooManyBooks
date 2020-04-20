@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
@@ -39,10 +38,7 @@ import androidx.fragment.app.DialogFragment;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.utils.DateUtils;
 
 public class BaseDatePickerDialogFragment
         extends DialogFragment {
@@ -75,11 +71,8 @@ public class BaseDatePickerDialogFragment
     Integer mDay;
 
     /** Listener for the result. */
+    @Nullable
     private WeakReference<DatePickerResultsListener> mListener;
-
-    /** identifier of the field this dialog is bound to. */
-    @IdRes
-    private int mDestinationFieldId;
 
     /**
      * Common setup for the pickers.
@@ -88,10 +81,7 @@ public class BaseDatePickerDialogFragment
      */
     void baseSetup(@Nullable final Bundle savedInstanceState) {
 
-        Bundle args = requireArguments();
-        mDestinationFieldId = args.getInt(StandardDialogs.BKEY_DIALOG_FIELD_ID);
-
-        args = savedInstanceState != null ? savedInstanceState : args;
+        Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
         if (args.containsKey(BKEY_DATE)) {
             // BKEY_DATE is only present in the original args
             setDate(args.getString(BKEY_DATE));
@@ -178,12 +168,13 @@ public class BaseDatePickerDialogFragment
               @Nullable final Integer day) {
         dismiss();
 
-        if (mListener.get() != null) {
-            String date = DateUtils.buildPartialDate(year, month, day);
-            mListener.get().onDateSet(mDestinationFieldId, date);
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().onDateSet(year, month, day);
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "send|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "send|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }

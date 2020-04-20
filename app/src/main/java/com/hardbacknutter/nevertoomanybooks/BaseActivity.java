@@ -318,7 +318,9 @@ public abstract class BaseActivity
     @CallSuper
     protected void onResume() {
         super.onResume();
-
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "sActivityRecreateStatus=" + sActivityRecreateStatus);
+        }
         maybeRecreate();
     }
 

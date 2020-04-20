@@ -47,6 +47,7 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
@@ -179,7 +180,11 @@ class CoverHandler {
         mCoverView.setOnClickListener(v -> {
             final File image = getCoverFile();
             if (image.exists()) {
-                ZoomedImageDialogFragment.show(fragment.getParentFragmentManager(), image);
+                // ParentFragmentManager:
+                // Ensures the dialog survives a screen rotation.
+                ZoomedImageDialogFragment
+                        .newInstance(image)
+                        .show(fragment.getParentFragmentManager(), ZoomedImageDialogFragment.TAG);
             } else {
                 onCreateContextMenu();
             }
@@ -471,13 +476,10 @@ class CoverHandler {
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = ISBN.createISBN(isbnStr);
             if (isbn.isValid(true)) {
-                final CoverBrowserDialogFragment coverBrowser = CoverBrowserDialogFragment
+                final DialogFragment frag = CoverBrowserDialogFragment
                         .newInstance(isbn.asText(), mCIdx);
-                // we must use the same fragment manager as the hosting fragment...
-                coverBrowser.show(mFragment.getParentFragmentManager(),
-                                  CoverBrowserDialogFragment.TAG);
-                // ... as the coverBrowser will send its results directly to that fragment.
-                coverBrowser.setTargetFragment(mFragment, RequestCode.ACTION_COVER_BROWSER);
+                frag.setTargetFragment(mFragment, RequestCode.ACTION_COVER_BROWSER);
+                frag.show(mFragment.getParentFragmentManager(), CoverBrowserDialogFragment.TAG);
                 return;
             }
         }
@@ -621,10 +623,11 @@ class CoverHandler {
     private static class RotateTask
             extends AsyncTask<Void, Void, Boolean> {
 
+        /** Log tag. */
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static final String TAG = "RotateTask";
 
-        @Nullable
+        @NonNull
         private final WeakReference<CoverHandler> mCoverHandler;
         @NonNull
         private final File mFile;
@@ -637,10 +640,10 @@ class CoverHandler {
                    @Nullable final ProgressBar progressBar,
                    @Nullable final CoverHandler coverHandler) {
 
-            mCoverHandler = new WeakReference<>(coverHandler);
             mFile = file;
             mAngle = angle;
             mProgressBar = new WeakReference<>(progressBar);
+            mCoverHandler = new WeakReference<>(coverHandler);
         }
 
         @Override
@@ -663,7 +666,7 @@ class CoverHandler {
             if (mProgressBar.get() != null) {
                 mProgressBar.get().setVisibility(View.GONE);
             }
-            if (success && mCoverHandler != null && mCoverHandler.get() != null) {
+            if (success && mCoverHandler.get() != null) {
                 mCoverHandler.get().setImage(mFile);
             }
         }

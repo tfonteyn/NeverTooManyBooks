@@ -40,7 +40,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 import java.util.Objects;
@@ -56,7 +55,7 @@ public class ZoomedImageDialogFragment
         extends DialogFragment {
 
     /** Log tag. */
-    private static final String TAG = "ZoomedImageDialogFragment";
+    public static final String TAG = "ZoomedImageDialogFragment";
     private static final String BKEY_IMAGE_PATH = TAG + ":path";
 
     /** File to display. */
@@ -65,26 +64,15 @@ public class ZoomedImageDialogFragment
     private ImageView mImageView;
 
     /**
-     * Syntax sugar for newInstance.
-     *
-     * @param fm    FragmentManager
-     * @param image to display, must be valid.
-     */
-    public static void show(@NonNull final FragmentManager fm,
-                            @NonNull final File image) {
-        newInstance(image).show(fm, TAG);
-    }
-
-    /**
      * Constructor.
      *
      * @param image to display
      *
-     * @return the instance
+     * @return instance
      */
-    private static ZoomedImageDialogFragment newInstance(@NonNull final File image) {
-        ZoomedImageDialogFragment frag = new ZoomedImageDialogFragment();
-        Bundle args = new Bundle(1);
+    public static DialogFragment newInstance(@NonNull final File image) {
+        final DialogFragment frag = new ZoomedImageDialogFragment();
+        final Bundle args = new Bundle(1);
         args.putString(BKEY_IMAGE_PATH, image.getPath());
         frag.setArguments(args);
         return frag;

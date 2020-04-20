@@ -438,6 +438,8 @@ public class BooksOnBookshelf
 
     @Override
     public void onAttachFragment(@NonNull final Fragment fragment) {
+        super.onAttachFragment(fragment);
+
         if (StylePickerDialogFragment.TAG.equals(fragment.getTag())) {
             ((StylePickerDialogFragment) fragment).setListener(mStyleChangedListener);
 
@@ -721,8 +723,9 @@ public class BooksOnBookshelf
 
         switch (item.getItemId()) {
             case R.id.MENU_SORT: {
-                StylePickerDialogFragment.newInstance(getSupportFragmentManager(),
-                                                      mModel.getCurrentStyle(this), false);
+                StylePickerDialogFragment
+                        .newInstance(mModel.getCurrentStyle(this), false)
+                        .show(getSupportFragmentManager(), StylePickerDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_LEVEL_PREFERRED_COLLAPSE: {
@@ -904,8 +907,6 @@ public class BooksOnBookshelf
 
         final RowDataHolder rowData = new CursorRow(cursor);
 
-        final FragmentManager fm = getSupportFragmentManager();
-
         final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
 
         switch (menuItem.getItemId()) {
@@ -949,7 +950,8 @@ public class BooksOnBookshelf
                 LendBookDialogFragment.newInstance(bookId,
                                                    rowData.getLong(DBDefinitions.KEY_FK_AUTHOR),
                                                    rowData.getString(DBDefinitions.KEY_TITLE))
-                                      .show(fm, LendBookDialogFragment.TAG);
+                                      .show(getSupportFragmentManager(),
+                                            LendBookDialogFragment.TAG);
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {
@@ -1033,7 +1035,8 @@ public class BooksOnBookshelf
                 final Series series = mModel.getDb().getSeries(seriesId);
                 if (series != null) {
                     EditSeriesDialogFragment.newInstance(series)
-                                            .show(fm, EditSeriesDialogFragment.TAG);
+                                            .show(getSupportFragmentManager(),
+                                                  EditSeriesDialogFragment.TAG);
                 }
                 return true;
             }
@@ -1075,7 +1078,8 @@ public class BooksOnBookshelf
                 final Author author = mModel.getDb().getAuthor(authorId);
                 if (author != null) {
                     EditAuthorDialogFragment.newInstance(author)
-                                            .show(fm, EditAuthorDialogFragment.TAG);
+                                            .show(getSupportFragmentManager(),
+                                                  EditAuthorDialogFragment.TAG);
                 }
                 return true;
             }
@@ -1095,7 +1099,8 @@ public class BooksOnBookshelf
                 final Publisher publisher = new Publisher(
                         rowData.getString(DBDefinitions.KEY_PUBLISHER));
                 EditPublisherDialogFragment.newInstance(publisher)
-                                           .show(fm, EditPublisherDialogFragment.TAG);
+                                           .show(getSupportFragmentManager(),
+                                                 EditPublisherDialogFragment.TAG);
 
                 return true;
             }

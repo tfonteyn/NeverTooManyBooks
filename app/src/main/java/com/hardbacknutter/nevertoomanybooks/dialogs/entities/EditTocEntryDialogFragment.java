@@ -37,7 +37,6 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -45,7 +44,6 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -57,10 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * Dialog to add a new TOCEntry, or edit an existing one.
- * <p>
- * Show with the {@link Fragment#getChildFragmentManager()}
- * <p>
- * Uses {@link Fragment#getParentFragment()} for sending results back.
  */
 public class EditTocEntryDialogFragment
         extends DialogFragment {
@@ -71,6 +65,7 @@ public class EditTocEntryDialogFragment
     private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
     private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
 
+    @Nullable
     private WeakReference<EditTocEntryResults> mListener;
 
     /** Database Access. */
@@ -91,12 +86,12 @@ public class EditTocEntryDialogFragment
      * @param tocEntry           to edit.
      * @param hasMultipleAuthors Flag that will enable/disable the author edit field
      *
-     * @return the instance
+     * @return instance
      */
-    public static EditTocEntryDialogFragment newInstance(@NonNull final TocEntry tocEntry,
-                                                         final boolean hasMultipleAuthors) {
-        EditTocEntryDialogFragment frag = new EditTocEntryDialogFragment();
-        Bundle args = new Bundle(2);
+    public static DialogFragment newInstance(@NonNull final TocEntry tocEntry,
+                                             final boolean hasMultipleAuthors) {
+        final DialogFragment frag = new EditTocEntryDialogFragment();
+        final Bundle args = new Bundle(2);
         args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
         args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
         frag.setArguments(args);
@@ -204,11 +199,13 @@ public class EditTocEntryDialogFragment
     private void onConfirm(@SuppressWarnings("unused") @NonNull final DialogInterface d,
                            @SuppressWarnings("unused") final int which) {
         getFields();
-        if (mListener.get() != null) {
+        if (mListener != null && mListener.get() != null) {
             mListener.get().addOrUpdateEntry(mTocEntry, mHasMultipleAuthors);
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onConfirm|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onConfirm|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }

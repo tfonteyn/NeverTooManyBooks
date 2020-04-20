@@ -96,6 +96,7 @@ public class EditBookshelvesFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+        super.onAttachFragment(childFragment);
         if (EditBookshelfDialogFragment.TAG.equals(childFragment.getTag())) {
             ((EditBookshelfDialogFragment) childFragment).setListener(mListener);
         }
@@ -233,6 +234,7 @@ public class EditBookshelvesFragment
     private void editItem(@NonNull final Bookshelf bookshelf) {
         EditBookshelfDialogFragment
                 .newInstance(bookshelf)
+                //2020-04-20: screen rotation OK
                 .show(getChildFragmentManager(), EditBookshelfDialogFragment.TAG);
     }
 

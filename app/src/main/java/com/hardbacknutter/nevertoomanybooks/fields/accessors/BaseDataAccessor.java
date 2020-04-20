@@ -45,34 +45,35 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
  * Base implementation.
  *
  * @param <T> type of Field value.
+ * @param <V> type of Field View.
  */
-public abstract class BaseDataAccessor<T>
-        implements FieldViewAccessor<T> {
+public abstract class BaseDataAccessor<T, V extends View>
+        implements FieldViewAccessor<T, V> {
 
-    Field<T> mField;
+    Field<T, V> mField;
 
     @Nullable
     T mRawValue;
 
     boolean mIsEditable;
     @Nullable
-    private WeakReference<View> mViewReference;
+    private WeakReference<V> mViewReference;
     @Nullable
     private WeakReference<View> mErrorViewReference;
     @Nullable
     private String mErrorText;
 
     @Override
-    public void setField(@NonNull final Field<T> field) {
+    public void setField(@NonNull final Field<T, V> field) {
         mField = field;
     }
 
     @NonNull
     @Override
-    public View getView()
+    public V getView()
             throws NoViewException {
         if (mViewReference != null) {
-            View view = mViewReference.get();
+            V view = mViewReference.get();
             if (view != null) {
                 return view;
             }
@@ -81,7 +82,7 @@ public abstract class BaseDataAccessor<T>
     }
 
     @Override
-    public void setView(@NonNull final View view) {
+    public void setView(@NonNull final V view) {
         mViewReference = new WeakReference<>(view);
     }
 
@@ -139,5 +140,4 @@ public abstract class BaseDataAccessor<T>
             return false;
         });
     }
-
 }

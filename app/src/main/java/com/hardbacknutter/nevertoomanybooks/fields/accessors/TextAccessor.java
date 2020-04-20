@@ -33,44 +33,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
- * Stores and retrieves data from a TextView.
- * <p>
- * The actual value is simply stored in a local variable.
- * No attempt to extract is done.
+ * Base implementation for {@link TextViewAccessor} and {@link EditTextAccessor}.
  *
- * <pre>
- *     {@code
- *             <com.google.android.material.textfield.TextInputLayout
- *             android:id="@+id/lbl_description"
- *             style="@style/Envelope.EditText"
- *             android:hint="@string/lbl_description"
- *             app:layout_constraintEnd_toEndOf="parent"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
- *             >
- *
- *             <com.google.android.material.textfield.TextInputEditText
- *                 android:id="@+id/description"
- *                 style="@style/notesTextEntry"
- *                 android:layout_width="match_parent"
- *                 tools:ignore="Autofill"
- *                 tools:text="@tools:sample/lorem/random"
- *                 />
- *
- *         </com.google.android.material.textfield.TextInputLayout>}
- * </pre>
- *
- * @param <T> type of Field value.
+ * @param <T> type of Field value. Usually just String, but any type supported by the
+ *            {@link DataManager} should work (if not -> bug).
+ * @param <V> type of Field View, must extend TextView
  */
-public class TextAccessor<T>
-        extends BaseDataAccessor<T> {
-
-    /** Log tag. */
-    private static final String TAG = "TextAccessor";
+public abstract class TextAccessor<T, V extends TextView>
+        extends BaseDataAccessor<T, V> {
 
     /** Optional formatter. */
     @Nullable
@@ -79,7 +52,7 @@ public class TextAccessor<T>
     /**
      * Constructor.
      */
-    public TextAccessor() {
+    TextAccessor() {
         mFormatter = null;
     }
 
@@ -88,41 +61,13 @@ public class TextAccessor<T>
      *
      * @param formatter to use
      */
-    public TextAccessor(@Nullable final FieldFormatter<T> formatter) {
+    TextAccessor(@Nullable final FieldFormatter<T> formatter) {
         mFormatter = formatter;
     }
 
     @Nullable
     public FieldFormatter<T> getFormatter() {
         return mFormatter;
-    }
-
-    @Nullable
-    @Override
-    public T getValue() {
-        return mRawValue;
-    }
-
-    @Override
-    public void setValue(@NonNull final T value) {
-        mRawValue = value;
-
-        TextView view = (TextView) getView();
-        if (mFormatter != null) {
-            try {
-                mFormatter.apply(mRawValue, view);
-                return;
-
-            } catch (@NonNull final ClassCastException e) {
-                // Due to the way a Book loads data from the database,
-                // it's possible that it gets the column type wrong.
-                // See {@link BookCursor} class docs.
-                Logger.error(view.getContext(), TAG, e, value);
-            }
-        }
-
-        // if we don't have a formatter, or if we had a ClassCastException
-        view.setText(String.valueOf(value));
     }
 
     @Override

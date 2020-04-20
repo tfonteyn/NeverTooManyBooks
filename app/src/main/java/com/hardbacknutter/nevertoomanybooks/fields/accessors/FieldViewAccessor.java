@@ -40,14 +40,14 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
 /**
- * Interface for view-specific accessors.
- * Handles interactions between the data and the View (with optional {@link FieldFormatter}).
+ * Handles interactions between the value and the View (with optional {@link FieldFormatter}).
  *
  * @param <T> type of Field value.
+ * @param <V> type of Field View.
  */
-public interface FieldViewAccessor<T> {
+public interface FieldViewAccessor<T, V extends View> {
 
-    View getView();
+    V getView();
 
     /**
      * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
@@ -57,13 +57,13 @@ public interface FieldViewAccessor<T> {
      *
      * @param view to use
      */
-    void setView(@NonNull View view);
+    void setView(@NonNull V view);
 
     void setErrorView(@Nullable View errorView);
 
     void setError(@Nullable String errorText);
 
-    void setField(@NonNull Field<T> field);
+    void setField(@NonNull Field<T, V> field);
 
     @Nullable
     default FieldFormatter<T> getFormatter() {
@@ -95,7 +95,7 @@ public interface FieldViewAccessor<T> {
      *
      * @param value to set.
      */
-    void setValue(@NonNull T value);
+    void setValue(@Nullable T value);
 
     /**
      * Fetch the value from the passed DataManager, and set the Field.

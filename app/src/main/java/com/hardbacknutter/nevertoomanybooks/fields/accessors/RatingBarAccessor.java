@@ -27,21 +27,23 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
-import android.view.View;
 import android.widget.RatingBar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 
 /**
  * RatingBar accessor.
+ * <p>
+ * A {@code null} value is always handled as {@code 0}.
  *
  * <pre>
  *     {@code
  *             <RatingBar
  *             android:id="@+id/rating"
- *             style="?android:attr/ratingBarStyle"
+ *             style="?attr/ratingBarStyle"
  *             android:layout_width="wrap_content"
  *             android:layout_height="wrap_content"
  *             android:numStars="5"
@@ -52,10 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * </pre>
  */
 public class RatingBarAccessor
-        extends BaseDataAccessor<Float> {
+        extends BaseDataAccessor<Float, RatingBar> {
 
     @Override
-    public void setView(@NonNull final View view) {
+    public void setView(@NonNull final RatingBar view) {
         super.setView(view);
         addTouchSignalsDirty(view);
     }
@@ -63,16 +65,14 @@ public class RatingBarAccessor
     @NonNull
     @Override
     public Float getValue() {
-        RatingBar bar = (RatingBar) getView();
-        return bar.getRating();
+        return getView().getRating();
     }
 
     @Override
-    public void setValue(@NonNull final Float value) {
-        mRawValue = value;
+    public void setValue(@Nullable final Float value) {
+        mRawValue = value != null ? value : 0f;
 
-        RatingBar bar = (RatingBar) getView();
-        bar.setRating(mRawValue);
+        getView().setRating(mRawValue);
     }
 
     @Override

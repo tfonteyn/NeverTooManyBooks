@@ -36,12 +36,15 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -54,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
  *
  * @param <T> type of Field value.
  */
-public class Field<T> {
+public class Field<T, V extends View> {
 
     /** Log tag. */
     private static final String TAG = "Field";
@@ -88,19 +91,21 @@ public class Field<T> {
 
     /** Accessor to use. Encapsulates the formatter. */
     @NonNull
-    private final FieldViewAccessor<T> mFieldViewAccessor;
-
+    private final FieldViewAccessor<T, V> mFieldViewAccessor;
+    /** Fields that need to follow visibility. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final Collection<Integer> mRelatedFields = new ArrayList<>();
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private WeakReference<Fields.AfterChangeListener> mAfterFieldChangeListener;
-
-    /** Fields that need to follow visibility. */
-    @Nullable
-    @IdRes
-    private int[] mRelatedFields;
     @SuppressWarnings("FieldNotUsedInToString")
     @IdRes
     private int mErrorViewId;
+
+    @SuppressWarnings("FieldNotUsedInToString")
+    @IdRes
+    private int mTextInputLayoutId;
+
     @Nullable
     private FieldValidator mValidator;
 
@@ -114,7 +119,7 @@ public class Field<T> {
      * @param entityKey The preference key to check if this Field is used or not
      */
     Field(final int id,
-          @NonNull final FieldViewAccessor<T> accessor,
+          @NonNull final FieldViewAccessor<T, V> accessor,
           @NonNull final String key,
           @NonNull final String entityKey) {
 
@@ -126,8 +131,13 @@ public class Field<T> {
         mFieldViewAccessor.setField(this);
     }
 
+    @IdRes
+    public int getId() {
+        return mId;
+    }
+
     @NonNull
-    public FieldViewAccessor<T> getAccessor() {
+    public FieldViewAccessor<T, V> getAccessor() {
         return mFieldViewAccessor;
     }
 
@@ -137,16 +147,20 @@ public class Field<T> {
      * <p>
      * Unused fields (as configured in the user preferences) will be hidden after this step.
      *
-     * @param parentView of the field View
+     * @param parent of the field View
      */
-    void setParentView(@NonNull final View parentView) {
-        mFieldViewAccessor.setView(parentView.findViewById(mId));
-        if (!isUsed(parentView.getContext())) {
-            mFieldViewAccessor.getView().setVisibility(View.GONE);
-        } else {
+    void setParentView(@NonNull final View parent) {
+        mFieldViewAccessor.setView(parent.findViewById(mId));
+        if (isUsed(parent.getContext())) {
             if (mErrorViewId != 0) {
-                mFieldViewAccessor.setErrorView(parentView.findViewById(mErrorViewId));
+                mFieldViewAccessor.setErrorView(parent.findViewById(mErrorViewId));
             }
+            if (mTextInputLayoutId != 0) {
+                TextInputLayout til = parent.findViewById(mTextInputLayoutId);
+                til.setEndIconOnClickListener(v -> getAccessor().setValue((T) null));
+            }
+        } else {
+            setVisibility(parent, View.GONE);
         }
     }
 
@@ -166,8 +180,8 @@ public class Field<T> {
      * @return Field (for chaining)
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Field<T> setRelatedFields(@NonNull @IdRes final int... relatedFields) {
-        mRelatedFields = relatedFields;
+    public Field<T, V> setRelatedFields(@NonNull @IdRes final Integer... relatedFields) {
+        mRelatedFields.addAll(Arrays.asList(relatedFields));
         return this;
     }
 
@@ -224,25 +238,44 @@ public class Field<T> {
      */
     private void setRelatedFieldsVisibility(@NonNull final View parent,
                                             final int visibility) {
-        if (mRelatedFields != null) {
-            for (int fieldId : mRelatedFields) {
-                View view = parent.findViewById(fieldId);
-                if (view != null) {
-                    view.setVisibility(visibility);
-                }
+        for (int fieldId : mRelatedFields) {
+            View view = parent.findViewById(fieldId);
+            if (view != null) {
+                view.setVisibility(visibility);
             }
         }
     }
 
     /**
+     * Set the id for the surrounding TextInputLayout (if this field has one).
+     * <ul>
+     *     <li>This <strong>must</strong> be called to make the end-icon clear_text work.</li>
+     *     <li>The id will override any id set by {@link #setErrorViewId}.</li>
+     *     <li>The id is added to {@link #setRelatedFields} so it is used for visibility.</li>
+     * </ul>
+     *
+     * @param textInputLayoutId view id
+     *
+     * @return Field (for chaining)
+     */
+    public Field<T, V> setTextInputLayout(@IdRes final int textInputLayoutId) {
+        mTextInputLayoutId = textInputLayoutId;
+        mErrorViewId = textInputLayoutId;
+        mRelatedFields.add(textInputLayoutId);
+        return this;
+    }
+
+    /**
      * Set the id for the error view. This can be set independently from calling
      * {@link #setFieldValidator} for cross-validation / error reporting.
+     * <p>
+     * This call will override the value set by {@link #setTextInputLayout}.
      *
      * @param errorViewId view id
      *
      * @return Field (for chaining)
      */
-    public Field<T> setErrorViewId(@IdRes final int errorViewId) {
+    public Field<T, V> setErrorViewId(@IdRes final int errorViewId) {
         mErrorViewId = errorViewId;
         return this;
     }
@@ -255,7 +288,7 @@ public class Field<T> {
      *
      * @return Field (for chaining)
      */
-    public Field<T> setFieldValidator(@NonNull final FieldValidator validator) {
+    public Field<T, V> setFieldValidator(@NonNull final FieldValidator validator) {
         mValidator = validator;
         return this;
     }
@@ -301,13 +334,13 @@ public class Field<T> {
         if (validate) {
             validate();
         }
-        if (mAfterFieldChangeListener != null) {
-            if (mAfterFieldChangeListener.get() != null) {
-                mAfterFieldChangeListener.get().afterFieldChange(mId);
-            } else {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                    Log.d(TAG, "onChanged|" + ErrorMsg.WEAK_REFERENCE);
-                }
+        if (mAfterFieldChangeListener != null && mAfterFieldChangeListener.get() != null) {
+            mAfterFieldChangeListener.get().afterFieldChange(mId);
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onChanged|" +
+                           (mAfterFieldChangeListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                              : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }
@@ -317,11 +350,11 @@ public class Field<T> {
     public String toString() {
         return "Field{"
                + "mId=" + mId
-               + ", mIsUsedKey='" + mIsUsedKey + '\''
-               + ", mKey='" + mKey + '\''
+               + ", mIsUsedKey=`" + mIsUsedKey + '`'
+               + ", mKey=`" + mKey + '`'
                + ", mFieldDataAccessor=" + mFieldViewAccessor
                + ", mValidator=" + mValidator
-               + ", mRelatedFields=" + Arrays.toString(mRelatedFields)
                + '}';
     }
+
 }

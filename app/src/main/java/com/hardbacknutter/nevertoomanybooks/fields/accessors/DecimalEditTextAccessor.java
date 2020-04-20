@@ -30,7 +30,6 @@ package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.DigitsKeyListener;
-import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -46,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.LocaleUtils;
 /**
  * For Locales which use ',' as the decimal separator, the input panel only allows '.'.
  * See class docs: {@link com.hardbacknutter.nevertoomanybooks.utils.ParseUtils}.
+ * <p>
+ * A {@code null} or {@code 0} value is always displayed as an empty {@code String}.
  *
  * <pre>
  *     {@code
@@ -82,13 +83,10 @@ public class DecimalEditTextAccessor
     }
 
     @Override
-    public void setView(@NonNull final View view) {
+    public void setView(@NonNull final EditText view) {
         super.setView(view);
-        if (view instanceof EditText) {
-            EditText editText = (EditText) view;
-            // do not keep a strong reference to the watcher
-            editText.addTextChangedListener(new DecimalTextWatcher(editText));
-        }
+        // do not keep a strong reference to the watcher
+        view.addTextChangedListener(new DecimalTextWatcher(view));
     }
 
     /**

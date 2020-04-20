@@ -916,14 +916,16 @@ public class BooklistAdapter
                 final boolean isSet = ImageUtils.setImageView(mCoverView, uuid, 0,
                                                               mMaxCoverSize, mMaxCoverSize);
                 if (isSet) {
-                    //Allow zooming by clicking on the image
+                    // We do not go overkill here by adding a CoverHandler
+                    // but only provide zooming by clicking on the image
                     mCoverView.setOnClickListener(v -> {
                         final FragmentActivity activity = (FragmentActivity) v.getContext();
                         final String currentUuid = (String) v.getTag(R.id.TAG_ITEM);
-                        final File file = AppDir.getCoverFile(activity, currentUuid, 0);
-                        if (file.exists()) {
-                            ZoomedImageDialogFragment
-                                    .show(activity.getSupportFragmentManager(), file);
+                        final File image = AppDir.getCoverFile(activity, currentUuid, 0);
+                        if (image.exists()) {
+                            ZoomedImageDialogFragment.newInstance(image).show(
+                                    activity.getSupportFragmentManager(),
+                                    ZoomedImageDialogFragment.TAG);
                         }
                     });
                 }

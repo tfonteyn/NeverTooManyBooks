@@ -837,8 +837,7 @@ public class Book
             if (contains(key) && domain.hasDefault()) {
                 Object value = get(key);
                 if ((domain.isNotBlank() && value != null && value.toString().isEmpty())
-                    ||
-                    ((domain.isNotNull() && value == null))) {
+                    || ((domain.isNotNull() && value == null))) {
                     if (isNew) {
                         remove(key);
                     } else {

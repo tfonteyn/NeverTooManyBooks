@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Checkable;
+import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -47,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAcce
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.MaterialSpinnerAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
@@ -64,10 +65,10 @@ public class EditBookNotesFragment
      * The cross validator for read-start and read-end date fields.
      * The error is always shown on the 'end' field.
      */
-    private final FieldValidator<String> mReadStartEndValidator = field -> {
+    private final FieldValidator<String, TextView> mReadStartEndValidator = field -> {
         // we ignore the passed field, so we can use this validator for both fields.
-        Field<String> startField = getFields().getField(R.id.read_start);
-        Field<String> endField = getFields().getField(R.id.read_end);
+        Field<String, TextView> startField = mFragmentVM.getFields().getField(R.id.read_start);
+        Field<String, TextView> endField = mFragmentVM.getFields().getField(R.id.read_end);
 
         String start = startField.getAccessor().getValue();
         if (start == null || start.isEmpty()) {
@@ -120,13 +121,13 @@ public class EditBookNotesFragment
         fields.add(R.id.rating, new RatingBarAccessor(), DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
-        fields.add(R.id.notes, new EditTextAccessor<String>(), DBDefinitions.KEY_PRIVATE_NOTES)
+        fields.add(R.id.notes, new EditTextAccessor<>(), DBDefinitions.KEY_PRIVATE_NOTES)
               .setRelatedFields(R.id.lbl_notes);
 
         // MUST be defined before the currency.
         fields.add(R.id.price_paid, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
                    DBDefinitions.KEY_PRICE_PAID);
-        fields.add(R.id.price_paid_currency, new EditTextAccessor<String>(),
+        fields.add(R.id.price_paid_currency, new EditTextAccessor<>(),
                    DBDefinitions.KEY_PRICE_PAID_CURRENCY)
               .setRelatedFields(R.id.lbl_price_paid,
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
@@ -149,20 +150,18 @@ public class EditBookNotesFragment
                    DBDefinitions.KEY_EDITION_BITMASK)
               .setRelatedFields(R.id.lbl_edition);
 
-        fields.add(R.id.date_acquired, new TextAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.date_acquired, new TextViewAccessor<>(new DateFieldFormatter()),
                    DBDefinitions.KEY_DATE_ACQUIRED)
-              .setRelatedFields(R.id.lbl_date_acquired);
+              .setTextInputLayout(R.id.lbl_date_acquired);
 
-        fields.add(R.id.read_start, new TextAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.read_start, new TextViewAccessor<>(new DateFieldFormatter()),
                    DBDefinitions.KEY_READ_START)
-              .setRelatedFields(R.id.lbl_read_start)
-              .setErrorViewId(R.id.lbl_read_start)
+              .setTextInputLayout(R.id.lbl_read_start)
               .setFieldValidator(mReadStartEndValidator);
 
-        fields.add(R.id.read_end, new TextAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.read_end, new TextViewAccessor<>(new DateFieldFormatter()),
                    DBDefinitions.KEY_READ_END)
-              .setRelatedFields(R.id.lbl_read_end)
-              .setErrorViewId(R.id.lbl_read_end)
+              .setTextInputLayout(R.id.lbl_read_end)
               .setFieldValidator(mReadStartEndValidator);
     }
 
@@ -184,11 +183,12 @@ public class EditBookNotesFragment
         setOnClickListener(R.id.cbx_read, v -> {
             // when user sets 'read',
             // also set the read-end date to today (unless set before)
-            Checkable cb = (Checkable) v;
+            final Checkable cb = (Checkable) v;
             if (cb.isChecked()) {
-                Field<String> readEnd = mFragmentVM.getFields().getField(R.id.read_end);
+                final Field<String, TextView> readEnd =
+                        mFragmentVM.getFields().getField(R.id.read_end);
                 if (readEnd.getAccessor().isEmpty()) {
-                    String value = DateUtils.localSqlDateForToday();
+                    final String value = DateUtils.localSqlDateForToday();
                     // Update, display and notify
                     readEnd.getAccessor().setValue(value);
                     readEnd.onChanged(true);
@@ -199,8 +199,14 @@ public class EditBookNotesFragment
         addAutocomplete(R.id.price_paid_currency, mFragmentVM.getPricePaidCurrencyCodes());
         addAutocomplete(R.id.location, mFragmentVM.getLocations());
 
-        addDatePicker(R.id.date_acquired, R.string.lbl_date_acquired, true, false);
-        addDatePicker(R.id.read_start, R.string.lbl_read_start, true, false);
-        addDatePicker(R.id.read_end, R.string.lbl_read_end, true, false);
+        addDatePicker(mFragmentVM.getFields().getField(R.id.date_acquired),
+                      R.string.lbl_date_acquired, true);
+
+        addDateRangePicker(R.string.lbl_read,
+                           R.string.lbl_read_start,
+                           mFragmentVM.getFields().getField(R.id.read_start),
+                           R.string.lbl_read_end,
+                           mFragmentVM.getFields().getField(R.id.read_end),
+                           true);
     }
 }

@@ -48,7 +48,6 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -63,7 +62,7 @@ abstract class EditStringBaseDialog {
     final DAO mDb;
 
     @Nullable
-    private final WeakReference<BookChangedListener> mBookChangedListener;
+    private final WeakReference<BookChangedListener> mListener;
 
     @NonNull
     private final Context mContext;
@@ -86,7 +85,7 @@ abstract class EditStringBaseDialog {
                          @Nullable final BookChangedListener listener) {
         mContext = context;
         mDb = db;
-        mBookChangedListener = new WeakReference<>(listener);
+        mListener = new WeakReference<>(listener);
         mAdapter = null;
     }
 
@@ -104,7 +103,7 @@ abstract class EditStringBaseDialog {
                          @Nullable final BookChangedListener listener) {
         mContext = context;
         mDb = db;
-        mBookChangedListener = new WeakReference<>(listener);
+        mListener = new WeakReference<>(listener);
         mAdapter = new DiacriticArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);
     }
 
@@ -159,11 +158,13 @@ abstract class EditStringBaseDialog {
     void sendBookChangedMessage(@BookChangedListener.WhatChanged final int changeFlags,
                                 @SuppressWarnings("SameParameterValue")
                                 @Nullable final Bundle data) {
-        if (mBookChangedListener != null && mBookChangedListener.get() != null) {
-            mBookChangedListener.get().onBookChanged(0, changeFlags, data);
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().onBookChanged(0, changeFlags, data);
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onBookChanged|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "sendBookChangedMessage|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }

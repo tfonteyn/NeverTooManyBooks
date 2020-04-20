@@ -28,18 +28,21 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * The value is expected to be the list position.
+ * <p>
+ * A {@code null} value is always handled as {@code 0}.
  *
  * <pre>
  *     {@code
@@ -63,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * </pre>
  */
 public class MaterialSpinnerAccessor
-        extends BaseDataAccessor<Integer> {
+        extends BaseDataAccessor<Integer, AutoCompleteTextView> {
 
     @NonNull
     private final ArrayAdapter<CharSequence> mAdapter;
@@ -72,41 +75,41 @@ public class MaterialSpinnerAccessor
      * Constructor.
      *
      * @param context    Current context
-     * @param arrayResId to use
+     * @param arrayResId to use; the array <strong>must</strong> not be empty
      */
     public MaterialSpinnerAccessor(@NonNull final Context context,
                                    @ArrayRes final int arrayResId) {
         mAdapter = ArrayAdapter.createFromResource(context, arrayResId,
                                                    R.layout.dropdown_menu_popup_item);
+        if (mAdapter.getCount() == 0) {
+            throw new IllegalStateException(ErrorMsg.EMPTY_ARRAY);
+        }
     }
 
     @Override
-    public void setView(@NonNull final View view) {
+    public void setView(@NonNull final AutoCompleteTextView view) {
         super.setView(view);
-        final AutoCompleteTextView ac = (AutoCompleteTextView) view;
-        ac.setAdapter(mAdapter);
+        view.setAdapter(mAdapter);
         // FIXME: opening works fine, but a second click closes AND re-opens the MaterialSpinner
-        //ac.setOnClickListener(v -> ac.showDropDown());
+        //view.setOnClickListener(v -> view.showDropDown());
         addTouchSignalsDirty(view);
     }
 
     @Override
     @NonNull
     public Integer getValue() {
-        AutoCompleteTextView spinner = (AutoCompleteTextView) getView();
-        String current = spinner.getText().toString();
+        String current = getView().getText().toString();
         return mAdapter.getPosition(current);
     }
 
     @Override
-    public void setValue(@NonNull final Integer value) {
-        mRawValue = value;
+    public void setValue(@Nullable final Integer value) {
+        mRawValue = value != null ? value : 0;
 
-        AutoCompleteTextView spinner = (AutoCompleteTextView) getView();
-        if (value >= 0 && value < mAdapter.getCount()) {
-            spinner.setText(mAdapter.getItem(value), false);
+        if (mRawValue >= 0 && mRawValue < mAdapter.getCount()) {
+            getView().setText(mAdapter.getItem(mRawValue), false);
         } else {
-            spinner.setText(mAdapter.getItem(0), false);
+            getView().setText(mAdapter.getItem(0), false);
         }
     }
 

@@ -559,6 +559,7 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_LOAN_ADD: {
                 //noinspection ConstantConditions
                 LendBookDialogFragment.newInstance(getContext(), book)
+                                      //URGENT: screen rotation
                                       .show(getChildFragmentManager(), LendBookDialogFragment.TAG);
                 return true;
             }

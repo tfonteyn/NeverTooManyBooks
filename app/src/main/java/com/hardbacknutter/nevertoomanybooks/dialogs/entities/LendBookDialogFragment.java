@@ -54,7 +54,6 @@ import java.util.Collections;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -86,7 +85,10 @@ public class LendBookDialogFragment
     private String mAuthorName;
     private String mTitle;
     private String mLoanee;
-    private WeakReference<BookChangedListener> mBookChangedListener;
+    @Nullable
+    private WeakReference<BookChangedListener> mListener;
+    /** View Binding. */
+    private DialogEditLoanBinding mVb;
 
     /**
      * Constructor.
@@ -95,13 +97,13 @@ public class LendBookDialogFragment
      * @param authorId informational display only
      * @param title    informational display only
      *
-     * @return the instance
+     * @return instance
      */
-    public static LendBookDialogFragment newInstance(final long bookId,
-                                                     final long authorId,
-                                                     @NonNull final String title) {
-        LendBookDialogFragment frag = new LendBookDialogFragment();
-        Bundle args = new Bundle(3);
+    public static DialogFragment newInstance(final long bookId,
+                                             final long authorId,
+                                             @NonNull final String title) {
+        final DialogFragment frag = new LendBookDialogFragment();
+        final Bundle args = new Bundle(3);
         args.putLong(DBDefinitions.KEY_PK_ID, bookId);
         args.putLong(DBDefinitions.KEY_FK_AUTHOR, authorId);
         args.putString(DBDefinitions.KEY_TITLE, title);
@@ -115,12 +117,12 @@ public class LendBookDialogFragment
      * @param context Current context
      * @param book    to lend
      *
-     * @return the instance
+     * @return instance
      */
-    public static LendBookDialogFragment newInstance(@NonNull final Context context,
-                                                     @NonNull final Book book) {
-        LendBookDialogFragment frag = new LendBookDialogFragment();
-        Bundle args = new Bundle(3);
+    public static DialogFragment newInstance(@NonNull final Context context,
+                                             @NonNull final Book book) {
+        final DialogFragment frag = new LendBookDialogFragment();
+        final Bundle args = new Bundle(3);
         args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
         args.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, book.getPrimaryAuthor(context));
         args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
@@ -154,9 +156,6 @@ public class LendBookDialogFragment
         }
     }
 
-    /** View Binding. */
-    private DialogEditLoanBinding mVb;
-
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable final Bundle savedInstanceState) {
@@ -186,13 +185,14 @@ public class LendBookDialogFragment
                     // remove the loan data
                     dismiss();
                     mDb.deleteLoan(mBookId);
-                    if (mBookChangedListener.get() != null) {
-                        mBookChangedListener
-                                .get()
-                                .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, null);
+                    if (mListener != null && mListener.get() != null) {
+                        mListener.get()
+                                 .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, null);
                     } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookChanged|" + ErrorMsg.WEAK_REFERENCE);
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.w(TAG, "onBookChanged|" +
+                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                          : ErrorMsg.LISTENER_WAS_DEAD));
                         }
                     }
                 })
@@ -216,13 +216,14 @@ public class LendBookDialogFragment
 
                     Bundle data = new Bundle();
                     data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
-                    if (mBookChangedListener.get() != null) {
-                        mBookChangedListener
-                                .get()
-                                .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
+                    if (mListener != null && mListener.get() != null) {
+                        mListener.get()
+                                 .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
                     } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookChanged|" + ErrorMsg.WEAK_REFERENCE);
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.w(TAG, "onBookChanged|" +
+                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                          : ErrorMsg.LISTENER_WAS_DEAD));
                         }
                     }
                 })
@@ -250,7 +251,7 @@ public class LendBookDialogFragment
      * @param listener the object to send the result to.
      */
     public void setListener(@NonNull final BookChangedListener listener) {
-        mBookChangedListener = new WeakReference<>(listener);
+        mListener = new WeakReference<>(listener);
     }
 
     private void initAdapter(@NonNull final Collection<String> contacts) {

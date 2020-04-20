@@ -29,7 +29,6 @@ package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Checkable;
 
 import androidx.annotation.NonNull;
@@ -46,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 /**
  * A {@link ChipGroup} where each {@link Chip} represents one bit in a bitmask.
  *
+ * A {@code null} value is always handled as {@code 0}.
+ *
  * <pre>
  *     {@code
  *             <com.google.android.material.chip.ChipGroup
@@ -60,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * </pre>
  */
 public class BitmaskChipGroupAccessor
-        extends BaseDataAccessor<Integer> {
+        extends BaseDataAccessor<Integer, ChipGroup> {
 
     @NonNull
     private final Map<Integer, String> mAll;
@@ -96,7 +97,7 @@ public class BitmaskChipGroupAccessor
     }
 
     @Override
-    public void setView(@NonNull final View view) {
+    public void setView(@NonNull final ChipGroup view) {
         super.setView(view);
         addTouchSignalsDirty(view);
     }
@@ -108,12 +109,11 @@ public class BitmaskChipGroupAccessor
     }
 
     @Override
-    public void setValue(@NonNull final Integer value) {
-        mRawValue = value;
+    public void setValue(@Nullable final Integer value) {
+        mRawValue = value != null ? value : 0;
 
-        ViewGroup view = (ViewGroup) getView();
-        view.removeAllViews();
-        ChipGroup chipGroup = (ChipGroup) view;
+        ChipGroup chipGroup = getView();
+        chipGroup.removeAllViews();
         Context context = chipGroup.getContext();
 
         // *all* values

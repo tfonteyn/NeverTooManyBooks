@@ -400,6 +400,16 @@ public final class DateUtils {
     }
 
     /**
+     * Convert a Date to a System Locale based SQL datetime-string.
+     *
+     * @return SQL datetime-string, for the System Locale.
+     */
+    @NonNull
+    public static String localSqlDate(@NonNull final Date date) {
+        return LOCAL_SQL_DATE.format(date);
+    }
+
+    /**
      * Convert a Date to a UTC based SQL datetime-string.
      *
      * @return SQL datetime-string, for the UTC timezone.
@@ -480,9 +490,11 @@ public final class DateUtils {
      * Passed date components build a (partial) SQL format date string.
      * Locale independent.
      *
-     * @param month 1..12 based (or null for no month)
+     * @param year  4 digit year, or null for none
+     * @param month 1..12 based, or null for none
+     * @param day   1..31 based, or null for none
      *
-     * @return Formatted date, e.g. '2011-11-01' or '2011-11'
+     * @return Formatted date, e.g. '2011-11-01' or '2011-11' or '2011'
      */
     @NonNull
     public static String buildPartialDate(@Nullable final Integer year,

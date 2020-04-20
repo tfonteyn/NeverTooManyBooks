@@ -720,7 +720,8 @@ public final class DBDefinitions {
 
         DOM_BOOK_PUBLISHER =
                 new Domain.Builder(KEY_PUBLISHER, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString()
+                        .notNull()
+                        .withDefaultEmptyString()
                         .localized()
                         .build();
 
@@ -784,7 +785,8 @@ public final class DBDefinitions {
 
         DOM_BOOK_TOC_BITMASK =
                 new Domain.Builder(KEY_TOC_BITMASK, ColumnInfo.TYPE_INTEGER)
-                        .notNull().withDefault(Book.TOC_SINGLE_AUTHOR_SINGLE_WORK)
+                        .notNull()
+                        .withDefault(Book.TOC_SINGLE_AUTHOR_SINGLE_WORK)
                         .build();
 
         /* ======================================================================================

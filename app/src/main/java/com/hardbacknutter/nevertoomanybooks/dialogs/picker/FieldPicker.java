@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
  *            Right now, this is ALWAYS {@code String} and we use {@link #toString()}.
  *            Using another type is bound to bring up issues.
  */
-public class FieldPicker<T>
+public class FieldPicker<T, V extends View>
         extends ValuePicker {
 
     /**
@@ -66,11 +66,11 @@ public class FieldPicker<T>
      */
     private FieldPicker(@NonNull final Context context,
                         @Nullable final CharSequence title,
-                        @NonNull final Field<T> field,
+                        @NonNull final Field<T, V> field,
                         @NonNull final List<T> list) {
         super(context, title, null, false);
 
-        FieldListAdapter<T> adapter = new FieldListAdapter<>(context, field, list, item -> {
+        FieldListAdapter<T, V> adapter = new FieldListAdapter<>(context, field, list, item -> {
             dismiss();
             // Update, display and notify
             field.getAccessor().setValue(item);
@@ -91,11 +91,11 @@ public class FieldPicker<T>
      * @param dialogTitleId title of the dialog box.
      * @param list          list of strings to choose from.
      */
-    public static void create(@NonNull final AutoCompleteTextView fieldView,
-                              @NonNull final View fieldButton,
-                              @NonNull final Field<String> field,
-                              @StringRes final int dialogTitleId,
-                              @NonNull final List<String> list) {
+    public static <V extends View> void create(@NonNull final AutoCompleteTextView fieldView,
+                                               @NonNull final View fieldButton,
+                                               @NonNull final Field<String, V> field,
+                                               @StringRes final int dialogTitleId,
+                                               @NonNull final List<String> list) {
         final Context context = fieldView.getContext();
 
         // only bother when it's in use
@@ -117,14 +117,14 @@ public class FieldPicker<T>
 
         // Get the drop-down button for the list and setup dialog
         fieldButton.setOnClickListener(v -> {
-            FieldPicker<String> picker = new FieldPicker<>(context,
-                                                           context.getString(dialogTitleId),
-                                                           field, list);
+            FieldPicker<String, V> picker = new FieldPicker<>(context,
+                                                              context.getString(dialogTitleId),
+                                                              field, list);
             picker.show();
         });
     }
 
-    private static class FieldListAdapter<T>
+    private static class FieldListAdapter<T, V extends View>
             extends RecyclerView.Adapter<Holder> {
 
         @NonNull
@@ -134,7 +134,7 @@ public class FieldPicker<T>
         private final LayoutInflater mInflater;
 
         @NonNull
-        private final Field<T> mField;
+        private final Field<T, V> mField;
         @NonNull
         private final PickListener<T> mListener;
         private int mPreSelectedPosition = -1;
@@ -148,7 +148,7 @@ public class FieldPicker<T>
          * @param listener where to send the result back to
          */
         FieldListAdapter(@NonNull final Context context,
-                         @NonNull final Field<T> field,
+                         @NonNull final Field<T, V> field,
                          @NonNull final List<T> items,
                          @NonNull final PickListener<T> listener) {
 

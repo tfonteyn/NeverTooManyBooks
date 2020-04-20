@@ -97,7 +97,7 @@ public class ProgressDialogFragment
      * @param maxValue        maximum value for progress if isIndeterminate==false
      *                        Pass in 0 to keep the max as set in the layout file.
      *
-     * @return the fragment.
+     * @return instance
      */
     @NonNull
     @UiThread
@@ -105,8 +105,8 @@ public class ProgressDialogFragment
                                                      final boolean isIndeterminate,
                                                      final boolean preventSleep,
                                                      final int maxValue) {
-        ProgressDialogFragment frag = new ProgressDialogFragment();
-        Bundle args = new Bundle(3);
+        final ProgressDialogFragment frag = new ProgressDialogFragment();
+        final Bundle args = new Bundle(4);
         args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, titleId);
         args.putBoolean(BKEY_DIALOG_IS_INDETERMINATE, isIndeterminate);
         args.putInt(BKEY_MAX, maxValue);
@@ -301,26 +301,6 @@ public class ProgressDialogFragment
             outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
         }
     }
-
-//    /**
-//     * Work-around for bug in androidx library.
-//     * Currently (2019-08-01) no longer needed as we're no longer retaining this fragment.
-//     * Leaving as a reminder for now.
-//     * <p>
-//     * https://issuetracker.google.com/issues/36929400
-//     * <p>
-//     * Still not fixed in Nov 2019
-//     *
-//     * <br><br>{@inheritDoc}
-//     */
-//    @Override
-//    @CallSuper
-//    public void onDestroyView() {
-//        if (getDialog() != null && getRetainInstance()) {
-//            getDialog().setDismissMessage(null);
-//        }
-//        super.onDestroyView();
-//    }
 
     /** TODO: come up with a better name. */
     public interface Cancellable {

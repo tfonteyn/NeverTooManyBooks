@@ -38,7 +38,6 @@ import androidx.annotation.UiThread;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener.TaskStatus;
 
@@ -104,17 +103,15 @@ public abstract class TaskBase<Params, Result>
             return TaskBase.this.isCancelled();
         }
     };
-
+    /** The client listener where to send our results to. */
+    @NonNull
+    private final WeakReference<TaskListener<Result>> mTaskListener;
     /**
      * {@link #doInBackground} should catch exceptions, and set this field.
      * {@link #onPostExecute} can check it.
      */
     @Nullable
     protected Exception mException;
-
-    /** The client listener where to send our results to. */
-    @NonNull
-    private final WeakReference<TaskListener<Result>> mTaskListener;
 
     /**
      * Constructor.
@@ -153,8 +150,8 @@ public abstract class TaskBase<Params, Result>
         if (mTaskListener.get() != null) {
             mTaskListener.get().onProgress(values[0]);
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onProgressUpdate|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "onProgressUpdate|" + ErrorMsg.LISTENER_WAS_DEAD);
             }
         }
     }
@@ -166,8 +163,8 @@ public abstract class TaskBase<Params, Result>
             mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
                     mTaskId, TaskStatus.Cancelled, result, mException));
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onCancelled|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "onCancelled|" + ErrorMsg.LISTENER_WAS_DEAD);
             }
         }
     }
@@ -180,8 +177,8 @@ public abstract class TaskBase<Params, Result>
             mTaskListener.get().onFinished(new TaskListener.FinishMessage<>(
                     mTaskId, status, result, mException));
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onPostExecute|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "onPostExecute|" + ErrorMsg.LISTENER_WAS_DEAD);
             }
         }
     }

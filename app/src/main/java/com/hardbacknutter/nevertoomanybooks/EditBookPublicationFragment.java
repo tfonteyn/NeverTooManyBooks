@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -74,33 +74,33 @@ public class EditBookPublicationFragment
         super.onInitFields();
         final Fields fields = mFragmentVM.getFields();
 
-        fields.add(R.id.pages, new EditTextAccessor<String>(), DBDefinitions.KEY_PAGES)
+        fields.add(R.id.pages, new EditTextAccessor<>(), DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
-        fields.add(R.id.format, new EditTextAccessor<String>(), DBDefinitions.KEY_FORMAT)
+        fields.add(R.id.format, new EditTextAccessor<>(), DBDefinitions.KEY_FORMAT)
               .setRelatedFields(R.id.lbl_format);
 
-        fields.add(R.id.color, new EditTextAccessor<String>(), DBDefinitions.KEY_COLOR)
+        fields.add(R.id.color, new EditTextAccessor<>(), DBDefinitions.KEY_COLOR)
               .setRelatedFields(R.id.lbl_color);
 
-        fields.add(R.id.publisher, new EditTextAccessor<String>(), DBDefinitions.KEY_PUBLISHER)
+        fields.add(R.id.publisher, new EditTextAccessor<>(), DBDefinitions.KEY_PUBLISHER)
               .setRelatedFields(R.id.lbl_publisher);
 
-        fields.add(R.id.print_run, new EditTextAccessor<String>(), DBDefinitions.KEY_PRINT_RUN)
+        fields.add(R.id.print_run, new EditTextAccessor<>(), DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        fields.add(R.id.date_published, new TextAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.date_published, new TextViewAccessor<>(new DateFieldFormatter()),
                    DBDefinitions.KEY_DATE_PUBLISHED)
-              .setRelatedFields(R.id.lbl_date_published);
+              .setTextInputLayout(R.id.lbl_date_published);
 
-        fields.add(R.id.first_publication, new TextAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.first_publication, new TextViewAccessor<>(new DateFieldFormatter()),
                    DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
-              .setRelatedFields(R.id.lbl_first_publication);
+              .setTextInputLayout(R.id.lbl_first_publication);
 
         // MUST be defined before the currency field is defined.
         fields.add(R.id.price_listed, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
                    DBDefinitions.KEY_PRICE_LISTED);
-        fields.add(R.id.price_listed_currency, new EditTextAccessor<String>(),
+        fields.add(R.id.price_listed_currency, new EditTextAccessor<>(),
                    DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
               .setRelatedFields(R.id.lbl_price_listed,
                                 R.id.lbl_price_listed_currency, R.id.price_listed_currency);
@@ -126,7 +126,10 @@ public class EditBookPublicationFragment
         addAutocomplete(R.id.publisher, mFragmentVM.getPublishers());
         addAutocomplete(R.id.price_listed_currency, mFragmentVM.getListPriceCurrencyCodes());
 
-        addDatePicker(R.id.date_published, R.string.lbl_date_published, false, true);
-        addDatePicker(R.id.first_publication, R.string.lbl_first_publication, false, true);
+        addPartialDatePicker(mFragmentVM.getFields().getField(R.id.date_published),
+                             R.string.lbl_date_published, false);
+
+        addPartialDatePicker(mFragmentVM.getFields().getField(R.id.first_publication),
+                             R.string.lbl_first_publication, false);
     }
 }

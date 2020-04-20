@@ -108,12 +108,12 @@ public class CoverBrowserDialogFragment
      * @param isbn ISBN of book
      * @param cIdx 0..n image index
      *
-     * @return the instance
+     * @return instance
      */
     @NonNull
-    public static CoverBrowserDialogFragment newInstance(@NonNull final String isbn,
-                                                         final int cIdx) {
-        final CoverBrowserDialogFragment frag = new CoverBrowserDialogFragment();
+    public static DialogFragment newInstance(@NonNull final String isbn,
+                                             final int cIdx) {
+        final DialogFragment frag = new CoverBrowserDialogFragment();
         final Bundle args = new Bundle(1);
         args.putString(DBDefinitions.KEY_ISBN, isbn);
         args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);

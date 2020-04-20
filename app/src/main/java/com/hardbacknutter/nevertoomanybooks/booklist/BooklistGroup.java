@@ -1346,7 +1346,7 @@ public class BooklistGroup
         public String toString() {
             return "GroupKey{"
                    + "mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
-                   + ", mKeyPrefix='" + mKeyPrefix + '\''
+                   + ", mKeyPrefix=`" + mKeyPrefix + '`'
                    + ", mKeyDomain=" + mKeyDomain
                    + ", mSecondaryDomains=" + mGroupDomains
                    + ", mBookDomains=" + mBaseDomains

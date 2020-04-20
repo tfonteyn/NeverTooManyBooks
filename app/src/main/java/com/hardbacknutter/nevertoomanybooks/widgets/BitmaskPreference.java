@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.MultiSelectListPreferenceDialogFragmentCompat;
 import androidx.preference.PreferenceDialogFragmentCompat;
@@ -171,14 +172,13 @@ public class BitmaskPreference
          *
          * @return instance
          */
-        public static BitmaskPreferenceDialogFragment newInstance(@NonNull final
-                                                                  BitmaskPreference preference) {
-            final BitmaskPreferenceDialogFragment fragment = new BitmaskPreferenceDialogFragment();
+        public static DialogFragment newInstance(@NonNull final BitmaskPreference preference) {
+            final DialogFragment frag = new BitmaskPreferenceDialogFragment();
             final Bundle args = new Bundle(2);
             args.putString(ARG_KEY, preference.getKey());
             args.putString(BKEY_NOT_SET_STRING, preference.getNotSetSummary());
-            fragment.setArguments(args);
-            return fragment;
+            frag.setArguments(args);
+            return frag;
         }
 
         @Override

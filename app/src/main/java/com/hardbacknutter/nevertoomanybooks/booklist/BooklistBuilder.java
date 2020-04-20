@@ -307,7 +307,7 @@ public class BooklistBuilder
                     (final Context context) -> "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
                                                + " WHERE "
                                                + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
-                                               + "='" + DAO.encodeString(filter) + '\''
+                                               + "=`" + DAO.encodeString(filter) + '`'
                                                + " AND " + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
                                                + ')');
         }

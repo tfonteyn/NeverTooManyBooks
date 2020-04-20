@@ -82,7 +82,7 @@ public abstract class Event<
     public String toString() {
         return "Event{"
                + "mId=" + mId
-               + ", mDescription='" + mDescription + '\''
+               + ", mDescription=`" + mDescription + '`'
                + '}';
     }
 }

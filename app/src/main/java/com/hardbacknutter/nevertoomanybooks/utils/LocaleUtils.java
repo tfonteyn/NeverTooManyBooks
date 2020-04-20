@@ -94,6 +94,7 @@ public final class LocaleUtils {
     public static final String SYSTEM_LANGUAGE = "system";
     /** Log tag. */
     private static final String TAG = "LocaleUtils";
+    @NonNull
     private static final Collection<WeakReference<OnLocaleChangedListener>>
             ON_LOCALE_CHANGED_LISTENERS = new ArrayList<>();
 

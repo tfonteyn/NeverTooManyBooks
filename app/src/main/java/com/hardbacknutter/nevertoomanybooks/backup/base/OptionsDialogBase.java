@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -42,7 +43,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
@@ -52,6 +52,7 @@ public abstract class OptionsDialogBase<T>
     /** Log tag. */
     private static final String TAG = "OptionsDialogBase";
 
+    @Nullable
     private WeakReference<OptionsListener<T>> mListener;
 
     protected void fixDialogWidth() {
@@ -95,21 +96,25 @@ public abstract class OptionsDialogBase<T>
     }
 
     protected void onOptionsSet(@NonNull final T options) {
-        if (mListener.get() != null) {
+        if (mListener != null && mListener.get() != null) {
             mListener.get().onOptionsSet(options);
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onOptionsSet|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onOptionsSet|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }
 
     protected void onCancelled() {
-        if (mListener.get() != null) {
+        if (mListener != null && mListener.get() != null) {
             mListener.get().onCancelled();
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onCancelled|" + ErrorMsg.WEAK_REFERENCE);
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onCancelled|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }

@@ -35,6 +35,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -69,12 +70,12 @@ public class ImportHelperDialogFragment
      *
      * @param manager import configuration; must have a valid Uri set.
      *
-     * @return Created fragment
+     * @return instance
      */
     @NonNull
-    public static ImportHelperDialogFragment newInstance(@NonNull final ImportManager manager) {
-        ImportHelperDialogFragment frag = new ImportHelperDialogFragment();
-        Bundle args = new Bundle(1);
+    public static DialogFragment newInstance(@NonNull final ImportManager manager) {
+        final DialogFragment frag = new ImportHelperDialogFragment();
+        final Bundle args = new Bundle(1);
         args.putParcelable(BKEY_OPTIONS, manager);
         frag.setArguments(args);
         return frag;

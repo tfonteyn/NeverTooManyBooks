@@ -39,7 +39,6 @@ import android.widget.Checkable;
 import android.widget.CompoundButton;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -53,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -77,8 +75,9 @@ public class CheckListDialogFragment
 
     /** The list of items to display. */
     private ArrayList<Entity> mAllItems;
-    /** The list of items to display. */
+    /** The list of selected items. */
     private ArrayList<Entity> mSelectedItems;
+
     private final View.OnClickListener filterChipListener = view -> {
         Entity current = (Entity) view.getTag();
         if (((Checkable) view).isChecked()) {
@@ -87,38 +86,29 @@ public class CheckListDialogFragment
             mSelectedItems.remove(current);
         }
     };
+
     /** Where to send the result. */
+    @Nullable
     private WeakReference<CheckListResultsListener> mListener;
-    /** identifier of the field this dialog is bound to. */
-    @IdRes
-    private int mFieldId;
-    @StringRes
-    private int mDialogTitleId;
 
     /**
      * Constructor.
      *
      * @param dialogTitleId resource id for the dialog title
-     * @param fieldId       the field whose content we want to edit
      * @param allItems      list of all possible items
      * @param selectedItems list of item which are currently selected
      *
-     * @return the new instance
+     * @return instance
      */
-    public static CheckListDialogFragment newInstance(
-            @StringRes final int dialogTitleId,
-            @IdRes final int fieldId,
-            final ArrayList<Entity> allItems,
-            @NonNull final ArrayList<Entity> selectedItems) {
+    public static DialogFragment newInstance(@StringRes final int dialogTitleId,
+                                             @NonNull final ArrayList<Entity> allItems,
+                                             @NonNull final ArrayList<Entity> selectedItems) {
 
-        CheckListDialogFragment frag = new CheckListDialogFragment();
-        Bundle args = new Bundle();
+        final DialogFragment frag = new CheckListDialogFragment();
+        final Bundle args = new Bundle(3);
         args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putInt(StandardDialogs.BKEY_DIALOG_FIELD_ID, fieldId);
-
         args.putParcelableArrayList(BKEY_ALL, allItems);
         args.putParcelableArrayList(BKEY_SELECTED, selectedItems);
-
         frag.setArguments(args);
         return frag;
     }
@@ -128,14 +118,10 @@ public class CheckListDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE, R.string.action_edit);
-        mFieldId = args.getInt(StandardDialogs.BKEY_DIALOG_FIELD_ID);
-
-        args = savedInstanceState != null ? savedInstanceState : args;
-
         mAllItems = args.getParcelableArrayList(BKEY_ALL);
         Objects.requireNonNull(mAllItems, ErrorMsg.ARGS_MISSING_CHECKLIST);
 
+        args = savedInstanceState != null ? savedInstanceState : requireArguments();
         mSelectedItems = args.getParcelableArrayList(BKEY_SELECTED);
         Objects.requireNonNull(mSelectedItems, ErrorMsg.ARGS_MISSING_CHECKLIST);
     }
@@ -149,7 +135,8 @@ public class CheckListDialogFragment
         //noinspection ConstantConditions
         return new MaterialAlertDialogBuilder(getContext())
                 .setView(root)
-                .setTitle(mDialogTitleId)
+                .setTitle(getArguments().getInt(StandardDialogs.BKEY_DIALOG_TITLE,
+                                                R.string.action_edit))
                 .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                 .setPositiveButton(android.R.string.ok, (d, which) -> sendResults())
                 .create();
@@ -157,16 +144,15 @@ public class CheckListDialogFragment
 
     private View createCheckBoxes() {
         // Reminder: *always* use the activity inflater here.
+//        final LayoutInflater inflater = LayoutInflater.from(getContext());
         //noinspection ConstantConditions
         final LayoutInflater inflater = getActivity().getLayoutInflater();
         @SuppressLint("InflateParams")
         final View root = inflater.inflate(R.layout.dialog_edit_checklist, null);
         final ViewGroup body = root.findViewById(R.id.item_list);
-
         // Takes the list of items and create a list of checkboxes in the display.
         for (Entity item : mAllItems) {
             CompoundButton itemView = new CheckBox(getContext());
-
             //noinspection ConstantConditions
             itemView.setText(item.getLabel(getContext()));
             itemView.setChecked(mSelectedItems.contains(item));
@@ -174,8 +160,10 @@ public class CheckListDialogFragment
             itemView.setOnCheckedChangeListener((v, isChecked) -> {
                 if (isChecked) {
                     mSelectedItems.add(item);
+                    Log.d(TAG, "add: " + item.getLabel(getContext()));
                 } else {
                     mSelectedItems.remove(item);
+                    Log.d(TAG, "remove: " + item.getLabel(getContext()));
                 }
             });
             body.addView(itemView);
@@ -183,7 +171,7 @@ public class CheckListDialogFragment
         return root;
     }
 
-    /** this was a try... but it's not very pleasing on the eye. */
+    // this was a try... but it's not very pleasing on the eye.
     @SuppressWarnings("unused")
     private View createChips() {
 
@@ -208,12 +196,19 @@ public class CheckListDialogFragment
     }
 
     private void sendResults() {
-        if (mListener.get() != null) {
-            mListener.get().onCheckListEditorSave(mFieldId, mSelectedItems);
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().onCheckListEditorSave(mSelectedItems);
 
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                Log.d(TAG, "onCheckListEditorSave|" + ErrorMsg.WEAK_REFERENCE);
+            //URGENT: 2020-04-19: Sometimes, the reference to the listener is NULL!
+            // open editor, add/remove checks, click 'ok'
+            // Repeat this multiple times.
+            // NO screen rotation etc done.
+//            if (BuildConfig.DEBUG /* always */) {
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, "sendResults|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
             }
         }
     }
@@ -222,7 +217,7 @@ public class CheckListDialogFragment
     @CallSuper
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(BKEY_SELECTED, mAllItems);
+        outState.putParcelableArrayList(BKEY_SELECTED, mSelectedItems);
     }
 
     /**
@@ -242,10 +237,8 @@ public class CheckListDialogFragment
         /**
          * reports the results after this dialog was confirmed.
          *
-         * @param fieldId the field this dialog is bound to
-         * @param value   the CHECKED items
+         * @param list the CHECKED items
          */
-        void onCheckListEditorSave(int fieldId,
-                                   @NonNull ArrayList<Entity> value);
+        void onCheckListEditorSave(@NonNull ArrayList<Entity> list);
     }
 }

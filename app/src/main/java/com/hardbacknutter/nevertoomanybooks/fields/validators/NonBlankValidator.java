@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.validators;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -34,15 +36,15 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
 
 /**
- * Note the type Object: this class is 100% generic due to only relying on the
+ * Note the type <Object, View>: this class is 100% generic due to only relying on the
  * type agnostic {@link FieldViewAccessor#isEmpty()} method.
  */
 public class NonBlankValidator
-        implements FieldValidator<Object> {
+        implements FieldValidator<Object, View> {
 
     @Override
-    public void validate(@NonNull final Field<Object> field) {
-        final FieldViewAccessor<Object> accessor = field.getAccessor();
+    public void validate(@NonNull final Field<Object, View> field) {
+        final FieldViewAccessor<Object, View> accessor = field.getAccessor();
         if (accessor.isEmpty()) {
             accessor.setError(accessor.getView().getContext()
                                       .getString(R.string.vldt_non_blank_required));

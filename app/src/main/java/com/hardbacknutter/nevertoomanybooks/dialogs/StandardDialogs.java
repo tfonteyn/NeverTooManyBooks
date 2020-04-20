@@ -61,13 +61,6 @@ public final class StandardDialogs {
      */
     public static final String BKEY_DIALOG_TITLE = TAG + ":title";
 
-    /**
-     * Identifier of the field we want the generic Dialog to handle.
-     * <p>
-     * <br>type: {@code int} (resource ID)
-     */
-    public static final String BKEY_DIALOG_FIELD_ID = TAG + ":fieldId";
-
 
     private StandardDialogs() {
     }

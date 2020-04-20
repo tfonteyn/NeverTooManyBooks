@@ -208,12 +208,6 @@ public class DataManager
         } else if (value instanceof Boolean) {
             mRawData.putBoolean(key, (boolean) value);
 
-//        } else if ((value instanceof ArrayList)
-//                   && (!((ArrayList) value).isEmpty())
-//                   && ((ArrayList) value).get(0) instanceof Parcelable) {
-//            //noinspection unchecked
-//            putParcelableArrayList(key, (ArrayList<Parcelable>) value);
-
         } else if (value instanceof ArrayList) {
             //noinspection unchecked
             putParcelableArrayList(key, (ArrayList<Parcelable>) value);
@@ -225,8 +219,10 @@ public class DataManager
             putSerializable(key, (Serializable) value);
 
         } else if (value == null) {
-            Logger.w(TAG, "put|key=`" + key + "`|value=<NULL>");
-            remove(key);
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.w(TAG, "put|key=`" + key + "`|value=<NULL>");
+            }
+            putNull(key);
 
         } else {
             throw new UnexpectedValueException("put|key=`" + key + "`|value=" + value);
@@ -248,7 +244,7 @@ public class DataManager
             } catch (@NonNull final NumberFormatException ignore) {
                 //TEST: should we really ignore this, next step will return raw value.
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.w(TAG, "get"
+                    Logger.d(TAG, "get"
                                   + "|NumberFormatException"
                                   + "|name=" + key
                                   + "|value=`" + mRawData.get(key) + '`');

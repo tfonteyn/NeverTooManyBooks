@@ -51,6 +51,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * and call {@link PickListener#onPicked(Object)} from it.
  * <p>
  * So you basically get a 'deluxe' {@link PopupMenu}.
+ *
+ * <strong>THIS IS A DIALOG, AND WILL NOT SURVIVE SCREEN ROTATIONS.</strong>
  */
 public class ValuePicker {
 

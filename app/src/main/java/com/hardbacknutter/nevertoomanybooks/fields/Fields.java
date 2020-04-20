@@ -114,9 +114,9 @@ public class Fields {
      * @return The resulting Field.
      */
     @NonNull
-    public <T> Field<T> add(@IdRes final int id,
-                            @NonNull final FieldViewAccessor<T> accessor,
-                            @NonNull final String key) {
+    public <T, V extends View> Field<T, V> add(@IdRes final int id,
+                                               @NonNull final FieldViewAccessor<T, V> accessor,
+                                               @NonNull final String key) {
         return add(id, accessor, key, key);
     }
 
@@ -132,19 +132,19 @@ public class Fields {
      * @return The resulting Field.
      */
     @NonNull
-    public <T> Field<T> add(@IdRes final int id,
-                            @NonNull final FieldViewAccessor<T> accessor,
-                            @NonNull final String key,
-                            @NonNull final String entityKey) {
+    public <T, V extends View> Field<T, V> add(@IdRes final int id,
+                                               @NonNull final FieldViewAccessor<T, V> accessor,
+                                               @NonNull final String key,
+                                               @NonNull final String entityKey) {
 
         if (BuildConfig.DEBUG /* always */) {
             // sanity check
             if (key.isEmpty()) {
-                throw new IllegalArgumentException(ErrorMsg.KEY_SHOULD_NOT_BE_EMPTY);
+                throw new IllegalArgumentException(ErrorMsg.EMPTY_KEY);
             }
         }
 
-        Field<T> field = new Field<>(id, accessor, key, entityKey);
+        Field<T, V> field = new Field<>(id, accessor, key, entityKey);
         mAllFields.put(id, field);
         return field;
     }
@@ -160,10 +160,10 @@ public class Fields {
      * @throws IllegalArgumentException if the field does not exist.
      */
     @NonNull
-    public <T> Field<T> getField(@IdRes final int id)
+    public <T, V extends View> Field<T, V> getField(@IdRes final int id)
             throws IllegalArgumentException {
         //noinspection unchecked
-        Field<T> field = (Field<T>) mAllFields.get(id);
+        Field<T, V> field = (Field<T, V>) mAllFields.get(id);
         if (field != null) {
             return field;
         }

@@ -305,9 +305,9 @@ public class CoverBrowserViewModel
         @Override
         public String toString() {
             return "FileInfo{"
-                   + "isbn='" + isbn + '\''
+                   + "isbn=`" + isbn + '`'
                    + ", size=" + size
-                   + ", fileSpec='" + fileSpec + '\''
+                   + ", fileSpec=`" + fileSpec + '`'
                    + '}';
         }
     }

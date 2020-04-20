@@ -374,6 +374,21 @@ public class EditBookAuthorsFragment
         /** View Binding. */
         private DialogEditBookAuthorBinding mVb;
 
+        /**
+         * Constructor.
+         *
+         * @param author to edit
+         *
+         * @return instance
+         */
+        static DialogFragment newInstance(@NonNull final Author author) {
+            final DialogFragment frag = new EditBookAuthorDialogFragment();
+            final Bundle args = new Bundle(1);
+            args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
+            frag.setArguments(args);
+            return frag;
+        }
+
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -609,10 +624,7 @@ public class EditBookAuthorsFragment
 
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> {
-                EditBookAuthorDialogFragment frag = new EditBookAuthorDialogFragment();
-                Bundle args = new Bundle(1);
-                args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
-                frag.setArguments(args);
+                final DialogFragment frag = EditBookAuthorDialogFragment.newInstance(author);
                 frag.setTargetFragment(EditBookAuthorsFragment.this, 0);
                 frag.show(getParentFragmentManager(), EditBookAuthorDialogFragment.TAG);
             });

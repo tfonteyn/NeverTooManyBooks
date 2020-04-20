@@ -101,6 +101,9 @@ public class BookViewModel
      */
     private Book mBook;
 
+    /** Set after {@link #saveBook} has been called. */
+    private boolean mIsSaved;
+
     @Override
     protected void onCleared() {
         if (mDb != null) {
@@ -393,6 +396,12 @@ public class BookViewModel
         }
 
         putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
+
+        mIsSaved = true;
+    }
+
+    public boolean isSaved() {
+        return mIsSaved;
     }
 
     /**

@@ -27,6 +27,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.validators;
 
+import android.view.View;
+
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
@@ -34,12 +36,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 /**
  * Interface for all field-level validators.
  */
-public interface FieldValidator<T> {
+public interface FieldValidator<T, V extends View> {
 
     /**
      * Validation method.
      *
      * @param field to validate
      */
-    void validate(@NonNull Field<T> field);
+    void validate(@NonNull Field<T, V> field);
 }

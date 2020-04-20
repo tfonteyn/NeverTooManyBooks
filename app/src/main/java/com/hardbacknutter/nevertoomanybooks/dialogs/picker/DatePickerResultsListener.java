@@ -27,14 +27,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.picker;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Listener interface to receive notifications a date was picked.
  */
 public interface DatePickerResultsListener {
 
-    void onDateSet(@IdRes int destinationFieldId,
-                   @NonNull String date);
+    /**
+     * Report the date selected.
+     *
+     * @param year  4 digit year, or null for none
+     * @param month 1..12 based, or null for none
+     * @param day   1..31 based, or null for none
+     */
+    void onDateSet(@Nullable final Integer year,
+                   @Nullable final Integer month,
+                   @Nullable final Integer day);
 }

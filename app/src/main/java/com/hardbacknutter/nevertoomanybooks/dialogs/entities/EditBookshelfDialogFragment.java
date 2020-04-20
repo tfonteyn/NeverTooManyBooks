@@ -46,7 +46,6 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookshelvesActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -76,6 +75,8 @@ public class EditBookshelfDialogFragment
     private EditText mNameView;
 
     private String mName;
+
+    @Nullable
     private WeakReference<BookshelfChangedListener> mListener;
 
     /**
@@ -83,11 +84,11 @@ public class EditBookshelfDialogFragment
      *
      * @param bookshelf to edit.
      *
-     * @return the instance
+     * @return instance
      */
-    public static EditBookshelfDialogFragment newInstance(@NonNull final Bookshelf bookshelf) {
-        EditBookshelfDialogFragment frag = new EditBookshelfDialogFragment();
-        Bundle args = new Bundle(1);
+    public static DialogFragment newInstance(@NonNull final Bookshelf bookshelf) {
+        final DialogFragment frag = new EditBookshelfDialogFragment();
+        final Bundle args = new Bundle(1);
         args.putParcelable(DBDefinitions.KEY_FK_BOOKSHELF, bookshelf);
         frag.setArguments(args);
         return frag;
@@ -177,11 +178,13 @@ public class EditBookshelfDialogFragment
         } else {
             long styleId = mBookshelf.getStyle(getContext(), mDb).getId();
             if (mDb.updateOrInsertBookshelf(getContext(), mBookshelf, styleId)) {
-                if (mListener.get() != null) {
+                if (mListener != null && mListener.get() != null) {
                     mListener.get().onBookshelfChanged(mBookshelf.getId(), 0);
                 } else {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                        Log.d(TAG, "onBookshelfChanged|" + ErrorMsg.WEAK_REFERENCE);
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.w(TAG, "doSave|" +
+                                   (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                      : ErrorMsg.LISTENER_WAS_DEAD));
                     }
                 }
             }
@@ -219,11 +222,13 @@ public class EditBookshelfDialogFragment
                 .setPositiveButton(R.string.action_merge, (d, w) -> {
                     // move all books
                     int booksMoved = mDb.mergeBookshelves(source.getId(), destination.getId());
-                    if (mListener.get() != null) {
+                    if (mListener != null && mListener.get() != null) {
                         mListener.get().onBookshelfChanged(destination.getId(), booksMoved);
                     } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookshelfChanged|" + ErrorMsg.WEAK_REFERENCE);
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.w(TAG, "mergeShelves|" +
+                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                          : ErrorMsg.LISTENER_WAS_DEAD));
                         }
                     }
                 })

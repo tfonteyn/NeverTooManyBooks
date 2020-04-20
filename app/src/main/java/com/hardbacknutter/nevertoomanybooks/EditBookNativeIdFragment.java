@@ -88,7 +88,7 @@ public class EditBookNativeIdFragment
                    DBDefinitions.KEY_EID_STRIP_INFO_BE)
               .setRelatedFields(R.id.lbl_site_strip_info_be);
 
-        fields.add(R.id.site_open_library, new EditTextAccessor<String>(),
+        fields.add(R.id.site_open_library, new EditTextAccessor<>(),
                    DBDefinitions.KEY_EID_OPEN_LIBRARY)
               .setRelatedFields(R.id.lbl_site_open_library);
     }

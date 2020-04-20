@@ -100,6 +100,8 @@ public class ImportFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+
         if (ImportHelperDialogFragment.TAG.equals(childFragment.getTag())) {
             ((ImportHelperDialogFragment) childFragment).setListener(mImportOptionsListener);
         }
@@ -229,6 +231,7 @@ public class ImportFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
                             .newInstance(helper)
+                            //URGENT: screen rotation
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .create()
                     .show();
@@ -243,6 +246,7 @@ public class ImportFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
                             .newInstance(helper)
+                            //URGENT: screen rotation
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .setPositiveButton(android.R.string.ok, (d, w) -> mImportModel
                             .startArchiveImportTask(helper))

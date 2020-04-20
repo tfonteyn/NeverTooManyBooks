@@ -31,20 +31,25 @@
     Most attributes copied from the ListView style as used by AlertDialog to get
     a close match to the original.
 -->
-<LinearLayout
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/item_list"
-    style="@style/Widget.AppCompat.ListView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="start"
-    android:cacheColorHint="@null"
-    android:clipToPadding="false"
-    android:divider="?attr/listDividerAlertDialog"
-    android:fadingEdge="none"
-    android:orientation="vertical"
-    android:overScrollMode="ifContentScrolls"
-    android:padding="@dimen/border2"
-    android:scrollbars="vertical"
-    android:textAlignment="viewStart"
-    />
+    android:layout_height="match_parent"
+    >
+
+    <LinearLayout
+        android:id="@+id/item_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:cacheColorHint="@null"
+        android:clipToPadding="false"
+        android:divider="?attr/listDividerAlertDialog"
+        android:fadingEdge="none"
+        android:orientation="vertical"
+        android:overScrollMode="ifContentScrolls"
+        android:padding="@dimen/border2"
+        android:scrollbars="vertical"
+        android:textAlignment="viewStart"
+        />
+</androidx.core.widget.NestedScrollView>

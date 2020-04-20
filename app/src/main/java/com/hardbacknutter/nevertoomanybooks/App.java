@@ -256,6 +256,7 @@ public class App
 
         // Reminder: ***ALWAYS*** set the mode.
         if (sCurrentThemeId == THEME_DAY_NIGHT) {
+            //URGENT: D/AppCompatDelegate: setDefaultNightMode() called with an unknown mode
             if (Build.VERSION.SDK_INT >= 29) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
             } else {

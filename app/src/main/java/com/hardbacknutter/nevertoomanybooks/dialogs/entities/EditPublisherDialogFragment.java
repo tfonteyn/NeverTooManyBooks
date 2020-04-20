@@ -46,7 +46,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -68,7 +67,8 @@ public class EditPublisherDialogFragment
     /** Database Access. */
     private DAO mDb;
 
-    private WeakReference<BookChangedListener> mBookChangedListener;
+    @Nullable
+    private WeakReference<BookChangedListener> mListener;
 
     private AutoCompleteTextView mNameView;
 
@@ -82,12 +82,11 @@ public class EditPublisherDialogFragment
      *
      * @param publisher to edit.
      *
-     * @return the instance
+     * @return instance
      */
-    public static EditPublisherDialogFragment newInstance(@NonNull final Publisher publisher) {
-
-        EditPublisherDialogFragment frag = new EditPublisherDialogFragment();
-        Bundle args = new Bundle(1);
+    public static DialogFragment newInstance(@NonNull final Publisher publisher) {
+        final DialogFragment frag = new EditPublisherDialogFragment();
+        final Bundle args = new Bundle(1);
         args.putParcelable(DBDefinitions.KEY_PUBLISHER, publisher);
         frag.setArguments(args);
         return frag;
@@ -146,12 +145,13 @@ public class EditPublisherDialogFragment
                     // and spread the news of the changes.
                     //  Bundle data = new Bundle();
                     //  data.putString(DBDefinitions.KEY_PUBLISHER, mPublisher.getName());
-                    if (mBookChangedListener.get() != null) {
-                        mBookChangedListener
-                                .get().onBookChanged(0, BookChangedListener.PUBLISHER, null);
+                    if (mListener != null && mListener.get() != null) {
+                        mListener.get().onBookChanged(0, BookChangedListener.PUBLISHER, null);
                     } else {
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACE_WEAK_REFERENCES) {
-                            Log.d(TAG, "onBookChanged|" + ErrorMsg.WEAK_REFERENCE);
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.w(TAG, "onBookChanged|" +
+                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                                          : ErrorMsg.LISTENER_WAS_DEAD));
                         }
                     }
                 })
@@ -170,7 +170,7 @@ public class EditPublisherDialogFragment
      * @param listener the object to send the result to.
      */
     public void setListener(@NonNull final BookChangedListener listener) {
-        mBookChangedListener = new WeakReference<>(listener);
+        mListener = new WeakReference<>(listener);
     }
 
     @Override

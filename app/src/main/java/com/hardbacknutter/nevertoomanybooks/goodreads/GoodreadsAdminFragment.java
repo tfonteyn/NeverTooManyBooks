@@ -171,9 +171,10 @@ public class GoodreadsAdminFragment
         task.execute();
     }
 
+//    @SuppressWarnings("unused")
 //    @NonNull
 //    private ProgressDialogFragment getOrCreateProgressDialog() {
-//        FragmentManager fm = getChildFragmentManager();
+//        final FragmentManager fm = getChildFragmentManager();
 //
 //        // get dialog after a fragment restart
 //        ProgressDialogFragment dialog = (ProgressDialogFragment)
