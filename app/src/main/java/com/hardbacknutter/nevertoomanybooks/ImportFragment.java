@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,6 +101,9 @@ public class ImportFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
         super.onAttachFragment(childFragment);
 
         if (ImportHelperDialogFragment.TAG.equals(childFragment.getTag())) {

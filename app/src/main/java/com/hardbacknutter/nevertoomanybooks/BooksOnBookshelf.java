@@ -438,6 +438,9 @@ public class BooksOnBookshelf
 
     @Override
     public void onAttachFragment(@NonNull final Fragment fragment) {
+        if (BuildConfig.DEBUG) {
+            Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
+        }
         super.onAttachFragment(fragment);
 
         if (StylePickerDialogFragment.TAG.equals(fragment.getTag())) {

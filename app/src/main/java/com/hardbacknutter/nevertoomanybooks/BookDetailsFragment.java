@@ -123,6 +123,11 @@ public class BookDetailsFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
+
         if (LendBookDialogFragment.TAG.equals(childFragment.getTag())) {
             ((LendBookDialogFragment) childFragment).setListener(mBookChangedListener);
         }

@@ -29,6 +29,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -96,6 +97,9 @@ public abstract class EditBookBaseFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
         super.onAttachFragment(childFragment);
 
         if (PartialDatePickerDialogFragment.TAG.equals(childFragment.getTag())) {

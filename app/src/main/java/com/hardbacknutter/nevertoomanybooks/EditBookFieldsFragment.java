@@ -129,6 +129,9 @@ public class EditBookFieldsFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
         super.onAttachFragment(childFragment);
 
         if (CheckListDialogFragment.TAG.equals(childFragment.getTag())) {

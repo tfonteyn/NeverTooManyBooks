@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +99,14 @@ public class EditBookFragment
         final View view = inflater.inflate(R.layout.fragment_edit_book, container, false);
         mViewPager = view.findViewById(R.id.tab_fragment);
         return view;
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
+        super.onAttachFragment(childFragment);
     }
 
     @Override

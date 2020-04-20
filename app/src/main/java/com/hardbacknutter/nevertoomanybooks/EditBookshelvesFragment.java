@@ -30,6 +30,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -96,7 +97,11 @@ public class EditBookshelvesFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
+        if (BuildConfig.DEBUG) {
+            Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
+        }
         super.onAttachFragment(childFragment);
+
         if (EditBookshelfDialogFragment.TAG.equals(childFragment.getTag())) {
             ((EditBookshelfDialogFragment) childFragment).setListener(mListener);
         }
