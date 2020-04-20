@@ -42,7 +42,7 @@
         android:layout_margin="@dimen/border2"
         android:drawablePadding="@dimen/border2"
         android:text=""
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?attr/textAppearanceListItem"
         tools:drawableStart="@drawable/ic_image"
         tools:text="menu item"
         />

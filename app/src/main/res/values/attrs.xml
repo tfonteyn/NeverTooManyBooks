@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -34,10 +34,11 @@
     <attr name="nav_bar_center_color" format="reference|color" />
     <attr name="nav_bar_end_color" format="reference|color" />
 
+    <!-- Global abstraction for an icon tint. See the drawable/ic_* files. -->
+    <attr name="icon_tint" format="reference|color" />
     <!-- Color for a boolean status icon; true: this color; false: transparent. -->
-    <attr name="checked_icon_tint" format="reference|color" />
-
+    <attr name="icon_tint_checked" format="reference|color" />
     <!-- Color for a boolean status icon; true: this color; false: transparent. -->
-    <attr name="completed_icon_tint" format="reference|color" />
+    <attr name="icon_tint_completed" format="reference|color" />
 
 </resources>

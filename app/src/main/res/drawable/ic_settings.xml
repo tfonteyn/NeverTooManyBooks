@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2019 HardBackNutter
+  ~ @Copyright 2020 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:width="24dp"
     android:height="24dp"
-    android:tint="?attr/colorControlNormal"
+    android:tint="?attr/icon_tint"
     android:viewportWidth="24.0"
     android:viewportHeight="24.0">
     <path

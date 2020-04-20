@@ -32,31 +32,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- *************************************************************************************** -->
-    <!-- Page dividers -->
-    <!-- *************************************************************************************** -->
-
-    <!--    <style name="HorizontalDivider">-->
-    <!--        <item name="android:layout_width">0dp</item>-->
-    <!--        &lt;!&ndash; reminder: don't set layout_height to wrap_content,-->
-    <!--            will CF the layout &ndash;&gt;-->
-    <!--        <item name="android:layout_height">1dp</item>-->
-    <!--        <item name="android:layout_marginTop">2dp</item>-->
-    <!--        <item name="android:layout_marginBottom">2dp</item>-->
-    <!--        <item name="android:background">?android:attr/dividerHorizontal</item>-->
-    <!--    </style>-->
-
-    <!--    &lt;!&ndash; used in landscape mode only &ndash;&gt;-->
-    <!--    <style name="VerticalDivider">-->
-    <!--        &lt;!&ndash; reminder: don't set layout_width to wrap_content,-->
-    <!--            will CF the layout &ndash;&gt;-->
-    <!--        <item name="android:layout_width">1dp</item>-->
-    <!--        <item name="android:layout_height">0dp</item>-->
-    <!--        <item name="android:layout_marginStart">2dp</item>-->
-    <!--        <item name="android:layout_marginEnd">2dp</item>-->
-    <!--        <item name="android:background">?android:attr/dividerVertical</item>-->
-    <!--    </style>-->
-
-    <!-- *************************************************************************************** -->
     <!-- Field & section labels -->
     <!-- *************************************************************************************** -->
 
@@ -140,7 +115,7 @@
 
     <!-- On loan to X. -->
     <style name="Text.OnLoanBar">
-        <item name="android:background">?android:attr/colorForeground</item>
+        <item name="android:background">?attr/colorOnBackground</item>
         <item name="android:paddingStart">@dimen/indent2</item>
         <item name="android:paddingEnd">@dimen/indent2</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLargeInverse</item>
@@ -189,6 +164,7 @@
         <item name="iconPadding">0dp</item>
     </style>
 
+    <!-- parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense" -->
     <style name="Envelope.EditText"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
@@ -200,13 +176,14 @@
     <style name="Envelope.EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_check</item>
-        <item name="startIconTint">?attr/checked_icon_tint</item>
+        <item name="startIconTint">?attr/icon_tint_checked</item>
     </style>
 
     <style name="Envelope.EditText.SeriesNum">
         <item name="android:layout_width">200dp</item>
     </style>
 
+    <!-- parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu" -->
     <style name="Envelope.AutoCompleteTextView"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
@@ -297,7 +274,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:padding">@dimen/border2</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:focusable">true</item>
         <item name="android:src">@drawable/ic_view_list</item>
     </style>
@@ -352,7 +329,7 @@
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:clickable">true</item>
         <item name="android:src">@drawable/ic_delete</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
     <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
@@ -379,13 +356,12 @@
 
     <!-- Primary row inside a list details row. -->
     <style name="RowTextLine.Primary">
-        <item name="android:textAppearance">?android:attr/textAppearanceListItem</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
     </style>
 
     <!-- Secondary rows inside a list details row. -->
     <style name="RowTextLine.Secondary">
-        <item name="android:textAppearance">?android:attr/textAppearanceListItemSecondary</item>
-        <!-- indent a bit -->
+        <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
         <item name="android:layout_marginStart">@dimen/indent2</item>
     </style>
 
@@ -408,7 +384,7 @@
          Flashes when clicked.  -->
     <style name="OptionRow.Checkable">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:background">?android:attr/listChoiceBackgroundIndicator</item>
+        <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
     </style>
 
     <!-- Used for a dedicated 'help' TextView associated with a Checkable option -->
@@ -463,13 +439,13 @@
     <!-- Generic Indicator. -->
     <style name="Flag.Generic">
         <item name="android:button">@drawable/ic_selector_check</item>
-        <item name="android:buttonTint">?attr/checked_icon_tint</item>
+        <item name="android:buttonTint">?attr/icon_tint_checked</item>
     </style>
 
     <!-- Indicator a book has been read. -->
     <style name="Flag.Read">
         <item name="android:button">@drawable/ic_selector_read</item>
-        <item name="android:buttonTint">?attr/checked_icon_tint</item>
+        <item name="android:buttonTint">?attr/icon_tint_checked</item>
     </style>
 
     <!-- Indicator a book is a first edition. -->
@@ -525,7 +501,7 @@
     <!-- Booklist; not to be used directly in layouts -->
     <style name="BooklistBook.Bullet">
         <item name="android:layout_width">0dp</item>
-        <item name="android:backgroundTint">?android:attr/colorForeground</item>
+        <item name="android:backgroundTint">?attr/colorOnBackground</item>
         <item name="android:src">@drawable/ic_lens</item>
     </style>
 
@@ -612,6 +588,11 @@
     <!-- Single use / specialised styles -->
     <!-- *************************************************************************************** -->
 
+    <style name="AppName">
+        <item name="android:fontFamily">cursive</item>
+        <item name="android:textAppearance">?attr/textAppearanceHeadline5</item>
+    </style>
+
     <!-- clickable URL -->
     <style name="Url">
         <item name="android:layout_width">wrap_content</item>
@@ -627,7 +608,7 @@
     <!-- error. -->
     <style name="ErrorMessage">
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">?android:attr/colorError</item>
+        <item name="android:textColor">?attr/colorError</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
@@ -643,7 +624,7 @@
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?android:attr/colorPrimary</item>
+        <item name="android:background">?attr/colorPrimary</item>
         <item name="android:elevation">4dp</item>
     </style>
 

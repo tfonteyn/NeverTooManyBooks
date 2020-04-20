@@ -34,7 +34,6 @@ import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 @SuppressWarnings("unused")
@@ -51,9 +50,8 @@ public final class AttrUtils {
      *
      * @return resource ID
      */
-    @IdRes
-    public static int getAttrResId(@NonNull final Context context,
-                                   @AttrRes final int attr) {
+    public static int getResId(@NonNull final Context context,
+                               @AttrRes final int attr) {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);

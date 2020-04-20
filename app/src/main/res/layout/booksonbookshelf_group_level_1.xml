@@ -41,7 +41,7 @@
     <TextView
         android:id="@+id/name"
         style="@style/BooklistBook.Section.Large"
-        android:drawableTint="?attr/completed_icon_tint"
+        android:drawableTint="?attr/icon_tint_completed"
         android:textIsSelectable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -57,16 +57,16 @@
             />
 
         <TextView
+            style="@style/AppName"
             android:id="@+id/app_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="@string/app_name"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/icon"
             app:layout_constraintTop_toTopOf="parent"
+            tools:text="NeverTooManyBooks"
             />
 
         <TextView
@@ -124,9 +124,9 @@
             android:id="@id/MENU_DEBUG_PREFS"
             style="@style/MenuButton"
             android:layout_width="0dp"
-            app:icon="@drawable/ic_details"
             android:text="@string/debug_dump_prefs"
             android:visibility="gone"
+            app:icon="@drawable/ic_details"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
             app:layout_constraintTop_toBottomOf="@id/MENU_DEBUG_SQ_SHELL"
@@ -137,9 +137,9 @@
             android:id="@id/MENU_DEBUG_DUMP_TEMP_TABLES"
             style="@style/MenuButton"
             android:layout_width="0dp"
-            app:icon="@drawable/ic_details"
             android:text="@string/debug_dump_temp_tables"
             android:visibility="gone"
+            app:icon="@drawable/ic_details"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/SUBMENU_DEBUG"
             app:layout_constraintTop_toBottomOf="@id/MENU_DEBUG_PREFS"

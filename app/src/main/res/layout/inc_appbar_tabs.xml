@@ -47,7 +47,7 @@
         android:id="@+id/tab_panel"
         style="@style/TabBar"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
         app:tabMode="scrollable"
         />
 

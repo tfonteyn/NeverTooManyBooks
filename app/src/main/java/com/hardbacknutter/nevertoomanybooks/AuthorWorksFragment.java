@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.picker.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -360,9 +361,11 @@ public class AuthorWorksFragment
             super();
             mInflater = LayoutInflater.from(context);
             mDrawableOn = context.getResources().getColorStateList(
-                    R.color.primaryColor, context.getTheme());
+                    AttrUtils.getResId(context, R.attr.icon_tint),
+                    context.getTheme());
             mDrawableOff = context.getResources().getColorStateList(
-                    android.R.color.transparent, context.getTheme());
+                    android.R.color.transparent,
+                    context.getTheme());
         }
 
         @NonNull

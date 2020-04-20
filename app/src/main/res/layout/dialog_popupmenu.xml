@@ -38,7 +38,7 @@
         android:id="@+id/message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:drawableBottom="?android:attr/dividerHorizontal"
+        android:drawableBottom="?attr/dividerHorizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textIsSelectable="false"
         android:visibility="gone"

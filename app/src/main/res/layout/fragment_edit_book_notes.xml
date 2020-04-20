@@ -53,7 +53,7 @@
 
         <RatingBar
             android:id="@+id/rating"
-            style="?android:attr/ratingBarStyle"
+            style="?attr/ratingBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="5"
