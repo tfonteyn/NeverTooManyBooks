@@ -255,15 +255,26 @@ public class App
         sCurrentThemeId = PIntString.getListPreference(activity, Prefs.pk_ui_theme, DEFAULT_THEME);
 
         // Reminder: ***ALWAYS*** set the mode.
-        if (sCurrentThemeId == THEME_DAY_NIGHT) {
-            //URGENT: D/AppCompatDelegate: setDefaultNightMode() called with an unknown mode
-            if (Build.VERSION.SDK_INT >= 29) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
-            }
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_UNSPECIFIED);
+        switch (sCurrentThemeId) {
+            case THEME_INVALID:
+            case THEME_DAY_NIGHT:
+                if (Build.VERSION.SDK_INT >= 29) {
+                    AppCompatDelegate
+                            .setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                } else {
+                    AppCompatDelegate
+                            .setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY);
+                }
+                break;
+
+            case THEME_DARK:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+
+            case THEME_LIGHT:
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
         }
 
         // Reminder: ***ALWAYS*** set the theme.
