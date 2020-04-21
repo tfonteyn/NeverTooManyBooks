@@ -135,12 +135,6 @@ public class EditBookFragment
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(BKEY_TAB, mViewPager.getCurrentItem());
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -201,6 +195,18 @@ public class EditBookFragment
         if (EditBookActivity.showTabNativeId(getContext())) {
             mTabList.add(new TabInfo(EditBookNativeIdFragment.class, R.string.tab_lbl_ext_id));
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mCurrentTab = mViewPager.getCurrentItem();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(BKEY_TAB, mCurrentTab);
     }
 
     /**

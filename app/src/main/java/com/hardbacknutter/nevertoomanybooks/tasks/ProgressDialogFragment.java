@@ -201,6 +201,14 @@ public class ProgressDialogFragment
         super.onStop();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mProgressBar != null) {
+            mCurrent = mProgressBar.getProgress();
+        }
+    }
+
     /**
      * Optionally link this object with a Cancellable.
      *
@@ -297,9 +305,7 @@ public class ProgressDialogFragment
         super.onSaveInstanceState(outState);
         outState.putInt(BKEY_MAX, mMax);
         outState.putString(BKEY_CURRENT_MESSAGE, mMessage);
-        if (mProgressBar != null) {
-            outState.putInt(BKEY_CURRENT_VALUE, mProgressBar.getProgress());
-        }
+        outState.putInt(BKEY_CURRENT_VALUE, mCurrent);
     }
 
     /** TODO: come up with a better name. */
