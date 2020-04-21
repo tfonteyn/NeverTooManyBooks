@@ -1441,7 +1441,7 @@ public class DAO
 
         if (book.contains(KEY_LOANEE)
             && !book.getString(KEY_LOANEE).isEmpty()) {
-            updateOrInsertLoan(bookId, book.getString(KEY_LOANEE));
+            lendBook(bookId, book.getString(KEY_LOANEE));
         }
     }
 
@@ -2668,74 +2668,41 @@ public class DAO
     }
 
     /**
-     * Lend out a book.
+     * Lend out a book / return a book.
      *
      * @param bookId book to lend
-     * @param loanee person to lend to
+     * @param loanee person to lend to; set to {@code null} to delete the loan
      *
      * @return {@code true} for success.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean updateOrInsertLoan(final long bookId,
-                                      @NonNull final String loanee) {
-        String current = getLoaneeByBookId(bookId);
+    public boolean lendBook(final long bookId,
+                            @Nullable final String loanee) {
+        if (loanee == null || loanee.isEmpty()) {
+            try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
+                    SqlDelete.BOOK_LOANEE_BY_BOOK_ID)) {
+                stmt.bindLong(1, bookId);
+                return stmt.executeUpdateDelete() == 1;
+            }
+        }
+
+        final String current = getLoaneeByBookId(bookId);
         if (current == null || current.isEmpty()) {
-            return insertLoan(bookId, loanee);
+            try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOK_LOANEE)) {
+                stmt.bindLong(1, bookId);
+                stmt.bindString(2, loanee);
+                return stmt.executeInsert() > 0;
+            }
+
         } else if (!loanee.equals(current)) {
-            return updateLoan(bookId, loanee);
+            final ContentValues cv = new ContentValues();
+            cv.put(KEY_LOANEE, loanee);
+            return 0 < sSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
+                                        KEY_FK_BOOK + "=?",
+                                        new String[]{String.valueOf(bookId)});
         }
 
         return true;
-    }
-
-    /**
-     * Creates a new loan.
-     *
-     * @param bookId the book we're lending
-     * @param loanee name of the person we're loaning to.
-     *
-     * @return {@code true} for success.
-     */
-    private boolean insertLoan(final long bookId,
-                               @NonNull final String loanee) {
-        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(SqlInsert.BOOK_LOANEE)) {
-            stmt.bindLong(1, bookId);
-            stmt.bindString(2, loanee);
-            return stmt.executeInsert() > 0;
-        }
-    }
-
-    /**
-     * Update a loan.
-     *
-     * @param bookId the book we're lending
-     * @param loanee name of the person we're loaning to.
-     *
-     * @return {@code true} for success.
-     */
-    private boolean updateLoan(final long bookId,
-                               @NonNull final String loanee) {
-        ContentValues cv = new ContentValues();
-        cv.put(KEY_LOANEE, loanee);
-        return 0 < sSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
-                                    KEY_FK_BOOK + "=?",
-                                    new String[]{String.valueOf(bookId)});
-    }
-
-    /**
-     * Delete the loan for the given book.
-     *
-     * @param bookId id of book whose loan is to be deleted
-     *
-     * @return the number of rows affected
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public int deleteLoan(final long bookId) {
-        try (SynchronizedStatement stmt = sSyncedDb.compileStatement(
-                SqlDelete.BOOK_LOANEE_BY_BOOK_ID)) {
-            stmt.bindLong(1, bookId);
-            return stmt.executeUpdateDelete();
-        }
     }
 
     /**

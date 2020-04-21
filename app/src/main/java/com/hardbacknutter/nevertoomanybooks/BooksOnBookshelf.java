@@ -958,7 +958,7 @@ public class BooksOnBookshelf
                 return true;
             }
             case R.id.MENU_BOOK_LOAN_DELETE: {
-                mModel.getDb().deleteLoan(bookId);
+                mModel.getDb().lendBook(bookId, null);
                 mBookChangedListener.onBookChanged(bookId, BookChangedListener.BOOK_LOANEE, null);
                 return true;
             }

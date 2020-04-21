@@ -864,7 +864,7 @@ public class Book
     @SuppressWarnings("unused")
     public void deleteLoan(@NonNull final DAO db) {
         remove(DBDefinitions.KEY_LOANEE);
-        db.deleteLoan(getId());
+        db.lendBook(getId(), null);
     }
 
     public boolean isAvailable(@NonNull final DAO db) {

@@ -285,7 +285,7 @@ public class BookViewModel
      */
     public void deleteLoan() {
         mBook.remove(DBDefinitions.KEY_LOANEE);
-        mDb.deleteLoan(mBook.getId());
+        mDb.lendBook(mBook.getId(), null);
 
         // don't do this for now, BoB does not display the loan field.
         //mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED,true);

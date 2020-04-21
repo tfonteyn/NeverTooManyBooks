@@ -45,7 +45,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -72,6 +71,8 @@ public class LendBookDialogFragment
     /** Log tag. */
     public static final String TAG = "LendBookDialogFrag";
 
+    private static final String BKEY_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
+
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.LOOKUP_KEY,
@@ -84,7 +85,22 @@ public class LendBookDialogFragment
     private long mBookId;
     private String mAuthorName;
     private String mTitle;
-    private String mLoanee;
+
+    /**
+     * The person who currently has the book.
+     * Will be {@code null} if the book is available.
+     * {@link DBDefinitions#KEY_LOANEE} in savedInstanceState.
+     */
+    @Nullable
+    private String mCurrentLoanee;
+
+    /**
+     * The loanee being edited.
+     * {@link #BKEY_NEW_LOANEE} in savedInstanceState.
+     */
+    @Nullable
+    private String mNewLoanee;
+
     @Nullable
     private WeakReference<BookChangedListener> mListener;
     /** View Binding. */
@@ -149,10 +165,12 @@ public class LendBookDialogFragment
                 mAuthorName = mDb.getAuthor(args.getLong(DBDefinitions.KEY_FK_AUTHOR))
                                  .getLabel(getContext());
             }
-            mLoanee = mDb.getLoaneeByBookId(mBookId);
+            mCurrentLoanee = mDb.getLoaneeByBookId(mBookId);
+
         } else {
             mAuthorName = savedInstanceState.getString(DBDefinitions.KEY_FK_AUTHOR);
-            mLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
+            mCurrentLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
+            mNewLoanee = savedInstanceState.getString(BKEY_NEW_LOANEE);
         }
     }
 
@@ -166,8 +184,10 @@ public class LendBookDialogFragment
 
         mVb.author.setText(getString(R.string.lbl_by_author_s, mAuthorName));
 
-        if (mLoanee != null) {
-            mVb.loanedTo.setText(mLoanee);
+        if (mNewLoanee != null && !mNewLoanee.isEmpty()) {
+            mVb.loanedTo.setText(mNewLoanee);
+        } else if (mCurrentLoanee != null) {
+            mVb.loanedTo.setText(mCurrentLoanee);
         }
 
         ArrayList<String> contacts = getPhoneContacts();
@@ -180,61 +200,53 @@ public class LendBookDialogFragment
                 .setView(mVb.getRoot())
                 .setTitle(mTitle)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> dismiss())
-                .setNeutralButton(R.string.btn_loan_returned, (d, w) -> {
-                    // the book was returned (inspect it for sub-nano damage),
-                    // remove the loan data
-                    dismiss();
-                    mDb.deleteLoan(mBookId);
-                    if (mListener != null && mListener.get() != null) {
-                        mListener.get()
-                                 .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, null);
-                    } else {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.w(TAG, "onBookChanged|" +
-                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                          : ErrorMsg.LISTENER_WAS_DEAD));
-                        }
-                    }
-                })
-                .setPositiveButton(android.R.string.ok, (d, w) -> {
-                    String newName = mVb.loanedTo.getText().toString().trim();
-                    if (newName.isEmpty()) {
-                        Snackbar.make(mVb.loanedTo, R.string.warning_missing_name,
-                                      Snackbar.LENGTH_LONG).show();
-                        return;
-                    }
-                    dismiss();
-
-                    // check if there was something changed at all.
-                    if (newName.equals(mLoanee)) {
-                        return;
-                    }
-                    mLoanee = newName;
-
-                    // lend book, reluctantly...
-                    mDb.updateOrInsertLoan(mBookId, mLoanee);
-
-                    Bundle data = new Bundle();
-                    data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
-                    if (mListener != null && mListener.get() != null) {
-                        mListener.get()
-                                 .onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
-                    } else {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.w(TAG, "onBookChanged|" +
-                                       (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
-                                                          : ErrorMsg.LISTENER_WAS_DEAD));
-                        }
-                    }
-                })
+                .setNeutralButton(R.string.btn_loan_returned, (d, w) -> sendResult(null))
+                .setPositiveButton(android.R.string.ok, (d, w) ->
+                        sendResult(mVb.loanedTo.getText().toString().trim()))
                 .create();
+    }
+
+    /**
+     * Lend/return the book, and update our caller.
+     *
+     * @param loanee the name entered in the dialog.
+     *               If {@code null} or empty, the book is returned
+     */
+    private void sendResult(@Nullable final String loanee) {
+        dismiss();
+
+        Bundle data = null;
+        if (loanee != null && !loanee.isEmpty()) {
+            // lend book, reluctantly...
+            if (!loanee.equalsIgnoreCase(mCurrentLoanee)) {
+                mDb.lendBook(mBookId, loanee);
+            }
+            data = new Bundle();
+            data.putString(DBDefinitions.KEY_LOANEE, loanee);
+
+        } else {
+            // return the book
+            mDb.lendBook(mBookId, null);
+        }
+
+        if (mListener != null && mListener.get() != null) {
+            mListener.get().onBookChanged(mBookId, BookChangedListener.BOOK_LOANEE, data);
+        } else {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.w(TAG, "onBookChanged|" +
+                           (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
+                                              : ErrorMsg.LISTENER_WAS_DEAD));
+            }
+        }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
+        // save the author name to avoid a potential database trip.
         outState.putString(DBDefinitions.KEY_FK_AUTHOR, mAuthorName);
-        outState.putString(DBDefinitions.KEY_LOANEE, mLoanee);
+        outState.putString(DBDefinitions.KEY_LOANEE, mCurrentLoanee);
+        outState.putString(BKEY_NEW_LOANEE, mNewLoanee);
     }
 
     @Override
@@ -314,7 +326,7 @@ public class LendBookDialogFragment
 
     @Override
     public void onPause() {
-        mLoanee = mVb.loanedTo.getText().toString().trim();
+        mNewLoanee = mVb.loanedTo.getText().toString().trim();
         super.onPause();
     }
 }

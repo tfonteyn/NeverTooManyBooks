@@ -60,9 +60,11 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -94,19 +96,28 @@ public class BookDetailsFragment
 
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
+
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
+
     /** View model. */
     private BookDetailsFragmentViewModel mFragmentVM;
+
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
+
     /** Listen for changes. */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                populateLoanedToField(data.getString(DBDefinitions.KEY_LOANEE));
+                String loanee = data.getString(DBDefinitions.KEY_LOANEE);
+                Objects.requireNonNull(loanee, ErrorMsg.NULL_INTENT_DATA);
+                // the db was already updated, just update the book to avoid a reload.
+                mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
+                populateLoanedToField(loanee);
             } else {
                 // we don't expect/implement any others.
                 if (BuildConfig.DEBUG /* always */) {
@@ -564,7 +575,7 @@ public class BookDetailsFragment
             case R.id.MENU_BOOK_LOAN_ADD: {
                 //noinspection ConstantConditions
                 LendBookDialogFragment.newInstance(getContext(), book)
-                                      //URGENT: screen rotation
+                                      // 2020-04-21; screen rotation OK
                                       .show(getChildFragmentManager(), LendBookDialogFragment.TAG);
                 return true;
             }
