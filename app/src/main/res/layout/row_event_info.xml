@@ -89,14 +89,12 @@
 
     <TextView
         android:id="@+id/error"
-        style="@style/ErrorMessage"
-        android:layout_width="0dp"
-        android:focusable="false"
-        android:textIsSelectable="false"
+        style="@style/GoodreadsErrorMessage"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/sepBar"
         tools:text="Last error: book not found"
+        tools:ignore="SelectableText"
         />
 
     <TextView

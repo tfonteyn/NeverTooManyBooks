@@ -74,8 +74,6 @@
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
         style="@style/NavigationView"
-        app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/nav_view"
         />
 
 </androidx.drawerlayout.widget.DrawerLayout>

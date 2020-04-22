@@ -601,16 +601,19 @@
         <item name="android:textColor">?android:attr/textColorPrimaryNoDisable</item>
     </style>
 
+    <!-- Override for the default to allow 2 lines of text. -->
     <style name="SnackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
         <item name="android:maxLines">2</item>
     </style>
 
-    <!-- error. -->
-    <style name="ErrorMessage">
+    <!-- Goodreads task/event error message. -->
+    <style name="GoodreadsErrorMessage">
+        <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">?attr/colorError</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textIsSelectable">true</item>
+        <item name="android:focusable">false</item>
+        <item name="android:textIsSelectable">false</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
@@ -619,6 +622,8 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
         <item name="android:fitsSystemWindows">true</item>
+        <item name="headerLayout">@layout/nav_header_main</item>
+        <item name="menu">@menu/nav_view</item>
     </style>
 
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar">
