@@ -70,6 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.NonBlankValidator;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -131,7 +132,7 @@ public class EditBookFieldsFragment
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        if (EditBookActivity.showAuthSeriesOnTabs(getContext())) {
+        if (Prefs.showAuthSeriesOnTabs(getContext())) {
             mVb.lblAuthor.setVisibility(View.GONE);
             mVb.lblSeries.setVisibility(View.GONE);
         }
@@ -169,7 +170,7 @@ public class EditBookFieldsFragment
         final Fields fields = mFragmentVM.getFields();
 
         //noinspection ConstantConditions
-        final boolean showAuthSeriesOnTabs = EditBookActivity.showAuthSeriesOnTabs(getContext());
+        final boolean showAuthSeriesOnTabs = Prefs.showAuthSeriesOnTabs(getContext());
 
         // The buttons to bring up the fragment to edit Authors / Series.
         // Not shown if the user preferences are set to use an extra tab for this.
@@ -240,7 +241,7 @@ public class EditBookFieldsFragment
     @Override
     public void onResume() {
         //noinspection ConstantConditions
-        final boolean showAuthSeriesOnTabs = EditBookActivity.showAuthSeriesOnTabs(getContext());
+        final boolean showAuthSeriesOnTabs = Prefs.showAuthSeriesOnTabs(getContext());
 
         // If we're showing Author/Series on pop-up fragments, we need to prepare them
         // before populating the views.
@@ -279,29 +280,10 @@ public class EditBookFieldsFragment
             mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         });
 
-        addBookshelfPicker();
+        Field field;
 
-        if (!showAuthSeriesOnTabs) {
-            Field field;
-
-            field = mFragmentVM.getFields().getField(R.id.author);
-            if (field.isUsed(getContext())) {
-                mVb.author.setOnClickListener(v -> showEditListFragment(
-                        new EditBookAuthorsFragment(), EditBookAuthorsFragment.TAG));
-            }
-
-            field = mFragmentVM.getFields().getField(R.id.series_title);
-            if (field.isUsed(getContext())) {
-                mVb.seriesTitle.setOnClickListener(v -> showEditListFragment(
-                        new EditBookSeriesFragment(), EditBookSeriesFragment.TAG));
-            }
-        }
-    }
-
-    private void addBookshelfPicker() {
-        // only bother when it's in use
-        final Field field = mFragmentVM.getFields().getField(R.id.bookshelves);
-        //noinspection ConstantConditions
+        // Bookshelves editor (dialog)
+        field = mFragmentVM.getFields().getField(R.id.bookshelves);
         if (field.isUsed(getContext())) {
             mVb.bookshelves.setOnClickListener(v -> {
                 mFragmentVM.setCurrentDialogFieldId(R.id.bookshelves);
@@ -313,6 +295,20 @@ public class EditBookFieldsFragment
                                                      Book.BKEY_BOOKSHELF_ARRAY)));
                 picker.show(getChildFragmentManager(), CheckListDialogFragment.TAG);
             });
+        }
+
+        if (!showAuthSeriesOnTabs) {
+            field = mFragmentVM.getFields().getField(R.id.author);
+            if (field.isUsed(getContext())) {
+                mVb.author.setOnClickListener(v -> showEditListFragment(
+                        new EditBookAuthorsFragment(), EditBookAuthorsFragment.TAG));
+            }
+
+            field = mFragmentVM.getFields().getField(R.id.series_title);
+            if (field.isUsed(getContext())) {
+                mVb.seriesTitle.setOnClickListener(v -> showEditListFragment(
+                        new EditBookSeriesFragment(), EditBookSeriesFragment.TAG));
+            }
         }
     }
 

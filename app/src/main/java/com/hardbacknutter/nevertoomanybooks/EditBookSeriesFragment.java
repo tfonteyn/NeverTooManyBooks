@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewViewHolderBase;
@@ -103,7 +104,7 @@ public class EditBookSeriesFragment
         super.onActivityCreated(savedInstanceState);
 
         //noinspection ConstantConditions
-        if (!EditBookActivity.showAuthSeriesOnTabs(getContext())) {
+        if (!Prefs.showAuthSeriesOnTabs(getContext())) {
             //noinspection ConstantConditions
             getActivity().findViewById(R.id.tab_panel).setVisibility(View.GONE);
         }

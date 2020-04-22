@@ -47,7 +47,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  */
 public interface FieldViewAccessor<T, V extends View> {
 
-    V getView();
+    /**
+     * Hook up the field.
+     *
+     * @param field to use
+     */
+    void setField(@NonNull Field<T, V> field);
 
     /**
      * Hook up the view. Reminder: do <strong>NOT</strong> set the view in the constructor.
@@ -59,11 +64,27 @@ public interface FieldViewAccessor<T, V extends View> {
      */
     void setView(@NonNull V view);
 
+    /**
+     * Get the previously set view.
+     *
+     * @return view
+     */
+    @NonNull
+    V getView();
+
+    /**
+     * Set a view for displaying an error.
+     *
+     * @param errorView view
+     */
     void setErrorView(@Nullable View errorView);
 
+    /**
+     * Display an error message in the previously set error view.
+     *
+     * @param errorText to display.
+     */
     void setError(@Nullable String errorText);
-
-    void setField(@NonNull Field<T, V> field);
 
     @Nullable
     default FieldFormatter<T> getFormatter() {

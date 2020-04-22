@@ -255,4 +255,15 @@ public final class Prefs {
                                 .getBoolean(Prefs.pk_search_form_advanced, false);
     }
 
+    public static boolean showTabNativeId(@NonNull final Context context) {
+        return PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(pk_edit_book_tabs_native_id, false);
+    }
+
+    public static boolean showAuthSeriesOnTabs(@NonNull final Context context) {
+        return PreferenceManager
+                .getDefaultSharedPreferences(context)
+                .getBoolean(pk_edit_book_tabs_authSer, false);
+    }
 }
