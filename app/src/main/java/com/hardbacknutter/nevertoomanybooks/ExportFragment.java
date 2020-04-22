@@ -201,7 +201,7 @@ public class ExportFragment
                 })
                 .setNeutralButton(R.string.btn_options, (d, w) -> ExportHelperDialogFragment
                         .newInstance()
-                        //URGENT: screen rotation
+                        //TEST: screen rotation
                         .show(getChildFragmentManager(), ExportHelperDialogFragment.TAG))
                 .setPositiveButton(android.R.string.ok, (d, w) ->
                         exportPickUri(new ExportManager(Options.ALL)))

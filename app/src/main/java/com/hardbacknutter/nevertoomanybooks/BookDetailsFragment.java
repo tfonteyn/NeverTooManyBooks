@@ -652,7 +652,6 @@ public class BookDetailsFragment
                     populateViews();
                     return true;
                 }
-
             } else if ((e2.getX() - e1.getX()) > SENSITIVITY) {
                 if (mFragmentVM.move(mBookViewModel.getBook(), false)) {
                     populateViews();

@@ -200,12 +200,7 @@ public class CheckListDialogFragment
             mListener.get().onCheckListEditorSave(mSelectedItems);
 
         } else {
-            //URGENT: 2020-04-19: Sometimes, the reference to the listener is NULL!
-            // open editor, add/remove checks, click 'ok'
-            // Repeat this multiple times.
-            // NO screen rotation etc done.
-//            if (BuildConfig.DEBUG /* always */) {
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "sendResults|" +
                            (mListener == null ? ErrorMsg.LISTENER_WAS_NULL
                                               : ErrorMsg.LISTENER_WAS_DEAD));

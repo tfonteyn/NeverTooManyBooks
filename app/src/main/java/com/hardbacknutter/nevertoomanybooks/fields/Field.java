@@ -336,6 +336,7 @@ public class Field<T, V extends View> {
         }
         if (mAfterFieldChangeListener != null && mAfterFieldChangeListener.get() != null) {
             mAfterFieldChangeListener.get().afterFieldChange(mId);
+
         } else {
             if (BuildConfig.DEBUG /* always */) {
                 Log.w(TAG, "onChanged|" +

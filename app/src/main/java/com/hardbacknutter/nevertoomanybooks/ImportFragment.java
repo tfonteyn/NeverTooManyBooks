@@ -235,7 +235,7 @@ public class ImportFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
                             .newInstance(helper)
-                            //URGENT: screen rotation
+                            //TEST: screen rotation
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .create()
                     .show();
@@ -250,7 +250,7 @@ public class ImportFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                     .setNeutralButton(R.string.btn_options, (d, w) -> ImportHelperDialogFragment
                             .newInstance(helper)
-                            //URGENT: screen rotation
+                            //TEST: screen rotation
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
                     .setPositiveButton(android.R.string.ok, (d, w) -> mImportModel
                             .startArchiveImportTask(helper))
