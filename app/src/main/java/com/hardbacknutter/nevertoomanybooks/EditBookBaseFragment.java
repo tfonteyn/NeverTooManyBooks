@@ -114,7 +114,7 @@ public abstract class EditBookBaseFragment
 
     @Override
     public void onAttachFragment(@NonNull final Fragment childFragment) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
             Log.d(getClass().getName(), "onAttachFragment: " + childFragment.getTag());
         }
         super.onAttachFragment(childFragment);

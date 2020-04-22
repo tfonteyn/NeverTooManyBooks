@@ -438,7 +438,7 @@ public class BooksOnBookshelf
 
     @Override
     public void onAttachFragment(@NonNull final Fragment fragment) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ATTACH_FRAGMENT) {
             Log.d(getClass().getName(), "onAttachFragment: " + fragment.getTag());
         }
         super.onAttachFragment(fragment);

@@ -319,7 +319,7 @@ public abstract class BaseActivity
     protected void onResume() {
         super.onResume();
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "sActivityRecreateStatus=" + sActivityRecreateStatus);
+            Log.d(TAG, "onResume|sActivityRecreateStatus=" + sActivityRecreateStatus);
         }
         maybeRecreate();
     }

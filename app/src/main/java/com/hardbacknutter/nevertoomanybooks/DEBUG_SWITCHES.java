@@ -75,6 +75,9 @@ public final class DEBUG_SWITCHES {
     /** enable timers for performance measurements. */
     public static final boolean TIMERS = true;
 
+    /** Log all attaching fragments. Goal is to detect leaking fragments. */
+    public static final boolean ATTACH_FRAGMENT = false;
+
     /** Log the full flow of {@link Activity#recreate()}. */
     public static final boolean RECREATE_ACTIVITY = false;
     /** track the flow & values on startActivityForResult & onActivityResult. */
